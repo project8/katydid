@@ -14,13 +14,19 @@
 #include "KTGainVariationData.hh"
 #include "KTSlot.hh"
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
-    class KTParamNode;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
     //class KTSlidingWindowFSData;

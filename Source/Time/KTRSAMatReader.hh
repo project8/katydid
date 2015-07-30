@@ -45,6 +45,7 @@ to not work with Katydid on Linux systems.
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
 
     class KTRSAMatReader : public KTEggReader

@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTSliceHeader : public KTExtensibleData< KTSliceHeader >
     {
         public:

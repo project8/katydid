@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(termlog, "KTTerminalWriter");
 
     class KTTerminalWriter;
@@ -34,11 +35,14 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     - "dig":
+     - "header": void (KTDataPtr) -- Print the egg header information
+     - "ts": void (KTDataPtr) -- Prints information about each slice
+     - "dig": void (KTDataPtr) -- Prints information about digitizer test results
+     - "summary": void (const KTProcSummary*) -- Prints the processor summary information
      
     */
 
-    class KTTerminalWriter : public KTWriterWithTypists< KTTerminalWriter >
+    class KTTerminalWriter : public KTWriterWithTypists< KTTerminalWriter, KTTerminalTypeWriter >
     {
         public:
             KTTerminalWriter(const std::string& name = "terminal-writer");

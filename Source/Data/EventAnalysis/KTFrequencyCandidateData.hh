@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTFrequencyCandidateData : public KTExtensibleData< KTFrequencyCandidateData >
     {

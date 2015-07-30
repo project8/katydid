@@ -1,3 +1,6 @@
 [submodule "Source/Time/Monarch"]
 	path = Source/Time/Monarch
 	url = https://github.com/project8/monarch.git
+[submodule "Nymph"]
+	path = Nymph
+	url = git@github.com:project8/nymph

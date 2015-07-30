@@ -20,7 +20,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTDataDisplay, "data-display");
 
     KTDataDisplay::KTDataDisplay(const std::string& name) :
-            KTWriterWithTypists< KTDataDisplay >(name),
+            KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >(name),
             fHeight(500),
             fWidth(700),
             fDisplayWindow(NULL),

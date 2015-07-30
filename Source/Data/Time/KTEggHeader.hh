@@ -17,6 +17,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTChannelHeader
     {
         public:

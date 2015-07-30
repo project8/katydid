@@ -13,6 +13,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTTimeSeriesReal : public KTTimeSeries, public KTPhysicalArray< 1, double >
     {
         public:

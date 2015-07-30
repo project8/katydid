@@ -17,6 +17,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     //*************************
     // Type information
     // Specializations for valid types

@@ -22,6 +22,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     /*!
      @class KTHoughTransform
      @author N. S. Oblath

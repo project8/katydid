@@ -18,13 +18,19 @@
 
 #include <vector>
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(egglog_scdac, "KTSingleChannelDAC");
 
     class KTChannelHeader;
     class KTEggHeader;
-    class KTParamNode;
     class KTSliceHeader;
 
 

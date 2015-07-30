@@ -21,6 +21,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTGainVariationData : public KTExtensibleData< KTGainVariationData >
     {

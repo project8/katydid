@@ -18,9 +18,16 @@
 
 class TH1D;
 
-namespace Katydid
+
+namespace Nymph
 {
     class KTParamNode;
+}
+;
+
+namespace Katydid
+{
+    using namespace Nymph;
     class KTTimeSeriesData;
 
     /*!

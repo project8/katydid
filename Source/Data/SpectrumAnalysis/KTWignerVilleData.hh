@@ -13,6 +13,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTWignerVilleData : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTWignerVilleData >
     {
         public:

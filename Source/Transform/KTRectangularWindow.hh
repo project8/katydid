@@ -13,6 +13,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     /*!
      @class KTRectangularWindow
      @author N. S. Oblath

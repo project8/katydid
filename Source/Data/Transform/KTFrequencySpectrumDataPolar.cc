@@ -10,6 +10,7 @@
 namespace Katydid
 {
     KTFrequencySpectrumDataPolarCore::KTFrequencySpectrumDataPolarCore() :
+            KTFrequencySpectrumData(),
             fSpectra(1)
     {
         fSpectra[0] = NULL;

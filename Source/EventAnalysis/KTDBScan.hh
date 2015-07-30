@@ -21,6 +21,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(dbslog, "KTDBScan");
 
 

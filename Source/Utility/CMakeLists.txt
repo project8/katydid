@@ -2,7 +2,6 @@
 # Author: N. Oblath
 
 set (UTILITY_DICT_HEADERFILES
-    KTEventLoop.hh
     KTRootGuiLoop.hh
 )
 
@@ -35,7 +34,6 @@ set (UTILITY_SOURCEFILES
     KTAxisProperties.cc
     KTCountHistogram.cc
     KTECDF.cc
-    KTEventLoop.cc
     KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
@@ -52,7 +50,7 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
-    KTCore
+    Nymph
 )
 
 ##################################################

@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTMultiFSDataPolar;

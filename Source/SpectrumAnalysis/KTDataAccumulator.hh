@@ -19,15 +19,21 @@
 #include <map>
 #include <typeinfo>
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
-    class KTParamNode;
     class KTPowerSpectrumData;
     class KTTimeSeriesData;
 

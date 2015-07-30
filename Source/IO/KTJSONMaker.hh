@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     template<typename Stream, typename Encoding = rapidjson::UTF8<>, typename Allocator = rapidjson::MemoryPoolAllocator<> >
     class KTJSONMaker
     {

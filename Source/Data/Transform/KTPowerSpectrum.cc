@@ -16,6 +16,7 @@ namespace Katydid
 
     KTPowerSpectrum::KTPowerSpectrum(size_t nBins, double rangeMin, double rangeMax) :
             KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax),
+            KTFrequencyDomainArray(),
             fMode(kPower)
     {
         SetAxisLabel("Frequency (Hz)");
@@ -23,12 +24,23 @@ namespace Katydid
     }
     KTPowerSpectrum::KTPowerSpectrum(const KTPowerSpectrum& orig) :
             KTPhysicalArray< 1, double >(orig),
+            KTFrequencyDomainArray(orig),
             fMode(orig.GetMode())
     {
     }
 
     KTPowerSpectrum::~KTPowerSpectrum()
     {
+    }
+
+    const KTAxisProperties< 1 >& KTPowerSpectrum::GetAxis() const
+    {
+        return *this;
+    }
+
+    KTAxisProperties< 1 >& KTPowerSpectrum::GetAxis()
+    {
+        return *this;
     }
 
     void KTPowerSpectrum::ConvertToPowerSpectrum()

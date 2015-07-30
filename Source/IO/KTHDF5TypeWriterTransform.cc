@@ -30,292 +30,24 @@ namespace Katydid {
 
     KTHDF5TypeWriterTransform::KTHDF5TypeWriterTransform() :
         KTHDF5TypeWriter(),
-        fPolarFFTBuffer(NULL),
-        fPolarFFTDSpace(NULL),
-        fCmplxFFTBuffer(NULL),
-        fCmplxFFTDSpace(NULL),
-        fPolarPwrBuffer(NULL),
-        fPolarPwrDSpace(NULL),
-        fCmplxPwrBuffer(NULL),
-        fCmplxPwrDSpace(NULL),
-        fPwrSpecDSpace(NULL),
-        fPwrSpecBuffer(NULL),
-        fPSDDSpace(NULL),
-        fPSDBuffer(NULL),
+        fFFTBuffer(NULL),
+        fFFTFreqArrayBuffer(NULL),
+        fFFTDataSpace(NULL),
+        fFFTFreqArrayDataSpace(NULL),
         fSpectraGroup(NULL),
         fFFTGroup(NULL),
-        fPowerGroup(NULL),
+        fDSet(NULL),
+        fDSet_FreqArray(NULL),
         fFirstSliceHasBeenWritten(false),
-        fCompressFFTFlag(false)
+        fUseCompressionFlag(false)
     {}
 
     KTHDF5TypeWriterTransform::~KTHDF5TypeWriterTransform()
     {
-      if(fPolarFFTBuffer) delete fPolarFFTBuffer;
-      if(fPolarFFTDSpace) delete fPolarFFTDSpace;
-      if(fPolarPwrBuffer) delete fPolarPwrBuffer;
-      if(fPolarPwrDSpace) delete fPolarPwrDSpace;
-      if(fCmplxFFTBuffer) delete fCmplxFFTBuffer;
-      if(fCmplxFFTDSpace) delete fCmplxFFTDSpace;
-      if(fCmplxPwrBuffer) delete fCmplxPwrBuffer;
-      if(fCmplxPwrDSpace) delete fCmplxPwrDSpace;
-      if(fPwrSpecBuffer) delete fPwrSpecBuffer;
-      if(fPwrSpecDSpace) delete fPwrSpecDSpace;
-      if(fPSDBuffer) delete fPSDBuffer;
-      if(fPSDDSpace) delete fPSDDSpace;
-    }
-
-    void KTHDF5TypeWriterTransform::ProcessEggHeader() {
-        KTEggHeader* header = fWriter->GetHeader();
-        if(header != NULL) {
-            KTDEBUG(publog, "Configuring from Egg header...");
-            this->fNComponents = (header->GetNChannels());
-            this->fSliceSize = (header->GetChannelHeader(0)->GetSliceSize());
-
-
-            /*
-             * Polar FFT preparation.  
-             * Each component gets two rows - one for abs, and one for arg.
-             * Each row is fSliceSize/2 + 1 long.  
-             * Our array is therefore 2N*(fSliceSize/2 + 1).
-             */
-            this->fPolarFFTSize = (this->fSliceSize >> 1) + 1;
-            this->fPolarFFTBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fPolarFFTSize]);     
-
-            /*
-             * Complex FFT preparation.
-             * Each component gets two rows, one for real and one for imag.
-             * Each row is slice_len long.
-             * Our array is therefore 2N*(fSliceSize).
-             */
-             this->fCmplxFFTSize = this->fSliceSize;
-             this->fCmplxFFTBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fCmplxFFTSize]);
-
-             /*
-              * Polar power spectrum preparation.
-              * Each component gets a single row, as a power spectrum has only
-              * magnitude by definition.
-              * Power in only positive frequencies and DC is calculated i.e.
-              * the shape of the buffer is identical to the fPolarFFTBuffer
-              * except there is only one component.
-              */
-              this->fPolarPwrSize = this->fPolarFFTSize;
-              this->fPolarPwrBuffer = new fft_buffer(boost::extents[fNComponents][this->fPolarPwrSize]);
-
-              /*
-               * Complex (FFTW) power spectrum preparation.
-               * Each component gets a single row as above.
-               * Power is calculated in positive and negative frequencies
-               * i.e. the buffer has the same shape as the complex fft buffer.
-               */
-               this->fCmplxPwrSize = this->fCmplxFFTSize;
-               this->fCmplxPwrBuffer = new fft_buffer(boost::extents[fNComponents][this->fCmplxPwrSize]);
-
-              /*
-               * PS and PSD spectrum preparation.  Each component gets a single 
-               * row.
-               * Power is only calculated for positive frequencies and DC.
-               * The buffer is therefore the same shape as the polar power 
-               * spectrum.
-               */
-               this->fPSDSize = this->fPolarPwrSize;
-               this->fPwrSpecSize = this->fPolarPwrSize;
-               this->fPSDBuffer = new fft_buffer(boost::extents[fNComponents][this->fPSDSize]);
-               this->fPwrSpecBuffer = new fft_buffer(boost::extents[fNComponents][this->fPSDSize]);
-
-              /*
-               * Common FFT preparation
-               * Create arrays to store the frequency bins used in the FFT
-               * The arrays are the same size as the Polar and FFTW spectra
-               * Polar: 2N*(fSliceSize/2 + 1).
-               * FFTW: 2N*(fSliceSize).
-               */
-              this->fPolarFFTFreqArrayBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fPolarFFTSize]);     
-              this->fCmplxFFTFreqArrayBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fCmplxFFTSize]);
-
-
-        }
-        KTDEBUG(publog, "Done.");
-        std::string fFileFlag = fWriter->GetFileFlag();
-        if ( fFileFlag.compare("compressfft") == 0 ) {
-          SetCompressFFTFlag(true);
-          KTDEBUG(publog, "fFileFlag=compressfft");
-        }
-        this->fSpectraGroup = fWriter->AddGroup("/spectra");
-        this->CreateDataspaces();
-    }
-
-    void KTHDF5TypeWriterTransform::CreateDataspaces() {
-        /*
-        If the dataspaces have already been created, this is a no-op.  
-        Create dataspaces for:
-            - Polar FFT data.  This is 2XN where N == slice_len/2 + 1
-        */
-        if(this->fPolarFFTDSpace == NULL) {
-            KTDEBUG(publog, "Creating H5::DataSpaces for Polar FFT");
-            hsize_t polar_fft_dims[] = {2*this->fNComponents, 
-                                        this->fPolarFFTSize};
-            hsize_t polar_freqarray_dims[] = {this->fNComponents, 
-                                             this->fPolarFFTSize};
-            this->fPolarFFTDSpace = new H5::DataSpace(2, polar_fft_dims);
-            this->fPolarFreqArrayDSpace = new H5::DataSpace(2, polar_freqarray_dims);
-            KTDEBUG(publog, "Done.");
-        }
-        if(this->fCmplxFFTDSpace == NULL) {
-            KTDEBUG(publog, "Creating H5::DataSpaces for Complex FFT");
-            hsize_t cmplx_fft_dims[] = {2*this->fNComponents, 
-                                        this->fCmplxFFTSize};
-            hsize_t fftw_freqarray_dims[] = {this->fNComponents, 
-                                             this->fCmplxFFTSize};
-            this->fCmplxFFTDSpace = new H5::DataSpace(2, cmplx_fft_dims);
-            this->fFFTWFreqArrayDSpace = new H5::DataSpace(2, fftw_freqarray_dims);
-            KTDEBUG(publog, "Done.");
-        }
-        if(this->fPolarPwrDSpace == NULL) {
-            KTDEBUG(publog, "Creating H5::DataSpace for Polar PS");
-            hsize_t polar_pwr_dims[] = {this->fNComponents,
-                                        this->fPolarPwrSize};
-            hsize_t polar_freqarray_dims[] = {this->fNComponents, 
-                                             this->fPolarFFTSize};
-            this->fPolarPwrDSpace = new H5::DataSpace(2, polar_pwr_dims);
-            this->fPolarFreqArrayDSpace = new H5::DataSpace(2, polar_freqarray_dims);
-            KTDEBUG(publog, "Done.");
-        }
-        if(this->fCmplxPwrDSpace == NULL) {
-            KTDEBUG(publog, "Creating H5::DataSpace for Complex PS");
-            hsize_t cmplx_pwr_dims[] = {this->fNComponents,
-                                        this->fCmplxPwrSize};
-            hsize_t fftw_freqarray_dims[] = {this->fNComponents, 
-                                             this->fCmplxFFTSize};
-            this->fCmplxPwrDSpace = new H5::DataSpace(2, cmplx_pwr_dims);
-            this->fFFTWFreqArrayDSpace = new H5::DataSpace(2, fftw_freqarray_dims);
-            KTDEBUG(publog, "Done.");
-        }
-        if(this->fPwrSpecDSpace == NULL) {
-            KTDEBUG(publog, "Creating H5::DataSpace for Power Spectrum");
-            hsize_t pwr_spec_dims[] = {this->fNComponents,
-                                        this->fPwrSpecSize};
-            hsize_t polar_freqarray_dims[] = {this->fNComponents, 
-                                             this->fPolarFFTSize};
-            this->fPwrSpecDSpace = new H5::DataSpace(2, pwr_spec_dims);
-            this->fPolarFreqArrayDSpace = new H5::DataSpace(2, polar_freqarray_dims);
-            KTDEBUG(publog, "Done.");
-        }
-        if(this->fPSDDSpace == NULL) {
-            KTDEBUG(publog, "Creating H5::DataSpace for PSD");
-            hsize_t psd_dims[] = {this->fNComponents,
-                                        this->fPSDSize};
-            hsize_t polar_freqarray_dims[] = {this->fNComponents, 
-                                             this->fPolarFFTSize};
-            this->fPSDDSpace = new H5::DataSpace(2, psd_dims);
-            this->fPolarFreqArrayDSpace = new H5::DataSpace(2, polar_freqarray_dims);
-            KTDEBUG(publog, "Done.");
-        }
-
-    }
-
-     H5::DataSet* KTHDF5TypeWriterTransform::CreatePolarFFTDSet(const std::string& name) {
-      if(this->fFFTGroup == NULL) {
-        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
-      }
-      H5::DataSet* dset = this->CreateDSet(name, 
-                                           this->fFFTGroup,
-                                           *(this->fPolarFFTDSpace));
-        return dset;
-    }
-
-     H5::DataSet* KTHDF5TypeWriterTransform::CreatePolarPowerDSet(const std::string& name) {
-      if(this->fPowerGroup == NULL) {
-        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fPowerGroup,
-                                             *(this->fPolarPwrDSpace));
-        return dset;
-    }    
-
-     H5::DataSet* KTHDF5TypeWriterTransform::CreateComplexFFTDSet(const std::string& name) {
-      if(this->fFFTGroup == NULL) {
-        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fFFTGroup,
-                                             *(this->fCmplxFFTDSpace));
-        return dset;
-    }
-
-    H5::DataSet* KTHDF5TypeWriterTransform::CreateComplexPowerDSet(const std::string& name) {
-      if(this->fPowerGroup == NULL) {
-        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fPowerGroup,
-                                             *(this->fCmplxPwrDSpace));
-        return dset;
-    }
-
-    H5::DataSet* KTHDF5TypeWriterTransform::CreatePowerSpecDSet(const std::string& name) {
-      if(this->fPowerGroup == NULL) {
-        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fPowerGroup,
-                                             *(this->fPwrSpecDSpace));
-        return dset;
-    }
-
-    H5::DataSet* KTHDF5TypeWriterTransform::CreatePSDDSet(const std::string& name) {
-      if(this->fPowerGroup == NULL) {
-        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fPowerGroup,
-                                             *(this->fPSDDSpace));
-        return dset;
-    }
-
-    H5::DataSet* KTHDF5TypeWriterTransform::CreateFFTWFreqArrayDSet(const std::string& name) {
-      if(this->fFFTGroup == NULL) {
-        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fFFTGroup,
-                                             *(this->fFFTWFreqArrayDSpace));
-        return dset;
-    }
-    H5::DataSet* KTHDF5TypeWriterTransform::CreatePolarFreqArrayDSet(const std::string& name) {
-      if(this->fFFTGroup == NULL) {
-        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
-      }
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fFFTGroup,
-                                             *(this->fPolarFreqArrayDSpace));
-        return dset;
-    }
-
-
-    H5::DataSet* KTHDF5TypeWriterTransform::CreateDSet(const std::string& name,
-                                                 const H5::Group* grp, 
-                                                 const H5::DataSpace& ds) {
-        herr_t   hstatus;
-        H5::DSetCreatPropList plist;
-        unsigned default_value = 0.0;
-        plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
-        if ( fCompressFFTFlag ) {
-          hsize_t ChunkSize[2] = {this->fNComponents,
-                                      this->fSliceSize};
-          plist.setChunk(2, ChunkSize);
-          plist.setDeflate(6);
-          KTDEBUG(publog, "Creating compressed HDF5 dataset.");
-        }
-        KTDEBUG(publog, "Creating complex FFT dataset.");
-        KTDEBUG(publog, grp);
-        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
-                                                               H5::PredType::NATIVE_DOUBLE,
-                                                               ds,
-                                                               plist));
-        KTDEBUG("Done.");
-        return dset;
+      if(fFFTBuffer) delete fFFTBuffer;
+      if(fFFTFreqArrayBuffer) delete fFFTFreqArrayBuffer;
+      if(fFFTDataSpace) delete fFFTDataSpace;
+      if(fFFTFreqArrayDataSpace) delete fFFTFreqArrayDataSpace;
     }
 
     void KTHDF5TypeWriterTransform::RegisterSlots() {
@@ -340,227 +72,358 @@ namespace Katydid {
         fWriter->RegisterSlot("multi-fs-fftw", this, &KTHDF5TypeWriterTransform::WriteMultiFSDataFFTW);
     }
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolar(KTDataPtr data) {
-        if (!data) return;
 
-        if ( fWriter->DidParseHeader() ) {
-            this->ProcessEggHeader();
+    void KTHDF5TypeWriterTransform::ProcessEggHeader() {
+        KTEggHeader* header = fWriter->GetHeader();
+        if(header != NULL) {
+            KTDEBUG(publog, "Configuring from Egg header...");
+            this->fNChannels = (header->GetNChannels());
+            KTDEBUG(publog, "Header Number of Channels: " << header->GetNChannels());
+            this->fSliceSize = (header->GetChannelHeader(0)->GetSliceSize());
+            //this->fNumberOfSlices = (int) ceil ( (double) (header->GetChannelHeader(0)->GetRecordSize()) / (double) (this->fSliceSize));
+            this->fNumberOfSlices = (header->GetChannelHeader(0)->GetRecordSize())/(this->fSliceSize) + ((header->GetChannelHeader(0)->GetRecordSize()) % (this->fSliceSize) != 0);
+            KTDEBUG(publog, "Number of Slices: " << this->fNumberOfSlices);
         }
-        else {
-            return;
+        KTDEBUG(publog, "Done.");
+        if ( fWriter->GetUseCompressionFlag() ) {
+          SetUseCompressionFlag(true);
         }
+        this->fSpectraGroup = fWriter->AddGroup("/spectra");
+    }
 
-        KTDEBUG(publog, "Creating spectrum and dataset...");
-        std::string spectrum_name;
-        std::stringstream name_builder;
-
-        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
-        name_builder << "FSpolar_" << sliceN;
-        name_builder >> spectrum_name;
-
-        // START First Slice -> Create Frequency Array Name
-        KTDEBUG(publog, "Creating Frequency Array...");
-        std::string FreqArray_name;
-        std::stringstream FreqArray_name_builder;
-        FreqArray_name_builder << "FreqArray_" << sliceN;
-        FreqArray_name_builder >> FreqArray_name;
-        // END First Slice -> Create Frequency Array Name
-
-        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        unsigned nComp = fsData.GetNComponents();
+    void KTHDF5TypeWriterTransform::PrepareHDF5File() {
 
         if( !fWriter->OpenAndVerifyFile() ) return;
 
-        KTDEBUG(publog, "Writing Polar FFT data to HDF5 file.");
-        for (unsigned iC = 0; iC < nComp; iC++) {
-            const KTFrequencySpectrumPolar* spec = fsData.GetSpectrumPolar(iC);
-            if (spec != NULL) {
-                for(int f=0; f < spec[0].size(); f++) {
-                    (*this->fPolarFFTBuffer)[iC][f] = spec[0].GetAbs(f);
-                    (*this->fPolarFFTBuffer)[iC+1][f] = spec[0].GetArg(f);
-                    if ( !fFirstSliceHasBeenWritten ) (*this->fPolarFFTFreqArrayBuffer)[iC][f] = spec[0].GetBinCenter(f);
-                }
-                
-            }
+        /*
+        A Buffer is the memory array where the data is copied to right before being written to file
+        A Dataspace is what gets written to the HDF5 file.
+        Buffers and Dataspaces will have 4 dimensions:
+        1 - Number of channels (sometimes called fNComponents in other modules)
+        2 - Number of slices
+        3 - Number of Parts (real-only: 1;  real and imaginary: 2;  polar amplitude and angle: 2)
+        4 - Number of samples in slice
+        */
+
+        /*
+         * Defining Buffer and Dataset Size
+         *
+         * There are 2 choices to make:  Polar vs Complex ;  FFT Amplitude vs Power
+         *
+         * The choices are made in the functions called by the slot
+         * i.e.: WriteFrequencySpectrumDataFFTW, WriteFrequencySpectrumDataPolar, etc...
+         * There are two variables that need to be defined in theses functions before calling PrepareHDF5File:
+         * (1) fFFTSize  and  (2) fNParts
+         *
+         * (1) FFTSize:  Number of Samples in the FFT in each Slice
+         * Polar FFT -> Each row is fSliceSize/2 + 1 long.
+         * Complex FFT -> Each row is fSliceSize long.
+         * PS and PSD spectrum -> Power is only calculated for positive frequencies and DC. The buffer is therefore the same shape as the polar power spectrum.
+         *
+         * (2) fNParts: number of parts in each sample: Complex FFT has 2 parts (real and imag), Polar FFT has 2 parts (magnitude and angle), power has 1 part (real)
+         *
+         */
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Create Buffers
+        this->fFFTBuffer = new fft_buffer(boost::extents[fNChannels][1][this->fNParts][this->fFFTSize]);
+        // Create arrays to store the frequency bins used in the FFT. The arrays are the same size as the Polar and FFTW spectra
+        this->fFFTFreqArrayBuffer = new freq_buffer(boost::extents[this->fFFTSize]);
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Create Data Space
+
+        KTDEBUG(publog, "Creating HDF5 Dataspace...");
+
+        if(this->fFFTDataSpace == NULL) {
+            this->ds_dims[0] = this->fNChannels;
+            this->ds_dims[1] = this->fNumberOfSlices;
+            this->ds_dims[2] = this->fNParts;
+            this->ds_dims[3] = this->fFFTSize;
+            this->ds_maxdims[0] = this->fNChannels;
+            this->ds_maxdims[1] = H5S_UNLIMITED;
+            this->ds_maxdims[2] = this->fNParts;
+            this->ds_maxdims[3] = this->fFFTSize;
+            this->fFFTDataSpace = new H5::DataSpace(4, this->ds_dims,this->ds_maxdims);
         }
-        if ( !fFirstSliceHasBeenWritten ) {
-          // If First Slice -> Create and Write the Frequency Array
-          H5::DataSet* dset_FreqArray = this->CreatePolarFreqArrayDSet(FreqArray_name);
-          dset_FreqArray->write(this->fPolarFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-          SetFirstSliceHasBeenWritten(true);
+        if(this->fFFTFreqArrayDataSpace == NULL) {
+            hsize_t freqarray_dims[] = {this->fFFTSize};
+            this->fFFTFreqArrayDataSpace = new H5::DataSpace(1, freqarray_dims);
         }
-        H5::DataSet* dset = this->CreatePolarFFTDSet(spectrum_name);
-        dset->write(this->fPolarFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-        KTDEBUG(publog, "Done.");
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Create Dataset
+
+        KTDEBUG(publog, "Creating Spectrum Dataset in HDF5 file...");
+        std::string FreqArray_name ("FreqArray");
+        if(this->fFFTGroup == NULL)       this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/spectrum"));
+        if(this->fDSet_FreqArray == NULL) this->fDSet_FreqArray = this->CreateDSet(FreqArray_name, this->fFFTGroup, *(this->fFFTFreqArrayDataSpace));
+        if(this->fDSet == NULL)           this->fDSet = this->CreateDSet(this->fSpectrumName, this->fFFTGroup, *(this->fFFTDataSpace));
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Resize Dataset
+
+        // If sliceN is greater than the number of Slices per Record, then extend the dataset
+        // This probably happens because there is more than 1 record in the Egg file being processed
+        if ( this->fSliceNumber >= this->ds_dims[1] ) {
+            this->ds_dims[1] = this->ds_dims[1] + this->fNumberOfSlices;
+            this->fDSet->extend( this->ds_dims );
+        }
+
     }
-  
+
+    H5::DataSet* KTHDF5TypeWriterTransform::CreateDSet(const std::string& name,
+                                                 const H5::Group* grp,
+                                                 const H5::DataSpace& ds) {
+        herr_t   hstatus;
+        H5::DSetCreatPropList plist;
+        unsigned default_value = 0;
+        plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
+        int rank = ds.getSimpleExtentNdims();
+        if (rank==4) {
+            // Uses 10 slices per chunk; we want a high number to improve compression, but not too high so that it's still fast
+            hsize_t ChunkSize[4] = {this->ds_dims[0],10,this->ds_dims[2],this->ds_dims[3]};
+            plist.setChunk(4, ChunkSize);
+        }
+        if (rank==1) {
+            hsize_t ChunkSize[1] = {this->fFFTSize};
+            plist.setChunk(1, ChunkSize);
+        }
+        if ( fUseCompressionFlag ) {
+          plist.setDeflate(6);
+          KTDEBUG(publog, "Creating compressed HDF5 dataset.");
+        }
+        KTDEBUG(publog, "Creating HDF5 dataset " << name);
+        KTDEBUG(publog, grp);
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
+                                                               H5::PredType::NATIVE_DOUBLE,
+                                                               ds,
+                                                               plist));
+        KTDEBUG("Done.");
+        return dset;
+    }
+
+
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTW(KTDataPtr data) {
         if (!data) return;
 
+        // Get Data and Slice Number
+        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
+        this->fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTDEBUG(publog, "Writing Slice " << this->fSliceNumber);
+
+        // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
+            this->fFFTSize = this->fSliceSize;
+            this->fNParts = 2;
+            this->fSpectrumName = "complexFS";
+            this->PrepareHDF5File();
         }
-        else {
-            return;
-        }
+        else return;
 
-        KTDEBUG(publog, "Creating spectrum and dataset...");
-        std::string spectrum_name;
-        std::stringstream name_builder;
+        // Select hyperslabs to save the spectrum data
+        hsize_t offset[4] = {0,this->fSliceNumber,0,0};
+        hsize_t dims1[4] = { this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]}; /* data slice dimensions */
+        H5::DataSpace memspace1 ( 4, dims1 );
+        H5::DataSpace filespace1 = this->fDSet->getSpace();
+        filespace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
 
-        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
-        name_builder << "complexFS_" << sliceN;
-        name_builder >> spectrum_name;
-
-        // START First Slice -> Create Frequency Array Name
-        KTDEBUG(publog, "Creating Frequency Array...");
-        std::string FreqArray_name;
-        std::stringstream FreqArray_name_builder;
-        FreqArray_name_builder << "FreqArray_" << sliceN;
-        FreqArray_name_builder >> FreqArray_name;
-        // END First Slice -> Create Frequency Array Name
-
-        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        unsigned nComp = fsData.GetNComponents();
-
-        if( !fWriter->OpenAndVerifyFile() ) return;
-
-        KTDEBUG(publog, "Writing Complex FFT data to HDF5 file.");
-        for (unsigned iC = 0; iC < nComp; iC++) {
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (Complex FFT) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
             const KTFrequencySpectrumFFTW* spec = fsData.GetSpectrumFFTW(iC);
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
-                    (*this->fCmplxFFTBuffer)[iC][f] = spec[0].GetReal(f); 
-                    (*this->fCmplxFFTBuffer)[iC+1][f] = spec[0].GetImag(f); 
-                    if ( !fFirstSliceHasBeenWritten ) (*this->fCmplxFFTFreqArrayBuffer)[iC][f] = spec[0].GetBinCenter(f);
+                    (*this->fFFTBuffer)[iC][0][0][f] = spec[0].GetReal(f);
+                    (*this->fFFTBuffer)[iC][0][1][f] = spec[0].GetImag(f);
+                    if ((!fFirstSliceHasBeenWritten) & (iC==0))  (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
                 }
-                
             }
         }
-        if ( !fFirstSliceHasBeenWritten ) {
-          // If First Slice -> Create and Write the Frequency Array
-          H5::DataSet* dset_FreqArray = this->CreateFFTWFreqArrayDSet(FreqArray_name);
-          dset_FreqArray->write(this->fCmplxFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-          SetFirstSliceHasBeenWritten(true);
+
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (Complex FFT) to HDF5 file.");
+        if (!fFirstSliceHasBeenWritten) {
+            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+            SetFirstSliceHasBeenWritten(true);
         }
-        H5::DataSet* dset = this->CreateComplexFFTDSet(spectrum_name);
-        dset->write(this->fCmplxFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-        KTDEBUG(publog, "Done.");
+        this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
+        KTDEBUG(publog, "Done Writing Slice to File.");
     }
+
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolar(KTDataPtr data) {
+        if (!data) return;
+
+        // Get Data and Slice Number
+        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
+        this->fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTDEBUG(publog, "Writing Slice " << this->fSliceNumber);
+
+        // Prepare HDF5 for writing
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+            this->fFFTSize = (this->fSliceSize >> 1) + 1;
+            this->fNParts = 2;
+            this->fSpectrumName = "polarFS";
+            this->PrepareHDF5File();
+        }
+        else return;
+
+        // Select hyperslabs to save the spectrum data
+        hsize_t offset[4] = {0,this->fSliceNumber,0,0};
+        hsize_t dims1[4] = { this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]}; /* data slice dimensions */
+        H5::DataSpace memspace1 ( 4, dims1 );
+        H5::DataSpace filespace1 = this->fDSet->getSpace();
+        filespace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
+
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (Polar FFT) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
+            const KTFrequencySpectrumPolar* spec = fsData.GetSpectrumPolar(iC);
+            if (spec != NULL) {
+                for(int f=0; f < spec[0].size(); f++) {
+                    (*this->fFFTBuffer)[iC][0][0][f] = spec[0].GetAbs(f);
+                    (*this->fFFTBuffer)[iC][0][1][f] = spec[0].GetArg(f);
+                    if ((!fFirstSliceHasBeenWritten) & (iC==0))  (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
+                }
+            }
+        }
+
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (Polar FFT) to HDF5 file.");
+        if (!fFirstSliceHasBeenWritten) {
+            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+            SetFirstSliceHasBeenWritten(true);
+        }
+        this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
+        KTDEBUG(publog, "Done Writing Slice to File.");
+
+    }
+
+
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPhase(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
+
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPower(KTDataPtr data) {
         if (!data) return;
 
+        // Get Data and Slice Number
+        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
+        this->fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTDEBUG(publog, "Writing Slice " << this->fSliceNumber);
+
+        // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
+            this->fFFTSize = (this->fSliceSize >> 1) + 1;
+            this->fNParts = 1;
+            this->fSpectrumName = "polarPS";
+            this->PrepareHDF5File();
         }
-        else {
-            return;
-        }
+        else return;
 
-        KTDEBUG(publog, "Creating polar power spectrum and dataset...");
-        std::string spectrum_name;
-        std::stringstream name_builder;
+        // Select hyperslabs to save the spectrum data
+        hsize_t offset[4] = {0,this->fSliceNumber,0,0};
+        hsize_t dims1[4] = { this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]}; /* data slice dimensions */
+        H5::DataSpace memspace1 ( 4, dims1 );
+        H5::DataSpace filespace1 = this->fDSet->getSpace();
+        filespace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
 
-        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
-        name_builder << "polarPS_" << sliceN;
-        name_builder >> spectrum_name;
-
-        // START First Slice -> Create Frequency Array Name
-        KTDEBUG(publog, "Creating Frequency Array...");
-        std::string FreqArray_name;
-        std::stringstream FreqArray_name_builder;
-        FreqArray_name_builder << "FreqArray_" << sliceN;
-        FreqArray_name_builder >> FreqArray_name;
-        // END First Slice -> Create Frequency Array Name
-
-        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        unsigned nComp = fsData.GetNComponents();
-
-        if( !fWriter->OpenAndVerifyFile() ) return;
-
-        KTDEBUG(publog, "Writing Polar PS data to HDF5 file.");
-        for (unsigned iC = 0; iC < nComp; iC++) {
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (Polar PS) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
             const KTFrequencySpectrumPolar* spec = fsData.GetSpectrumPolar(iC);
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
-                    double mag = sqrt(pow(spec[0].GetAbs(f), 2.0) 
-                                      + pow(spec[0].GetArg(f),2.0));
-                    (*this->fPolarPwrBuffer)[iC][f] = mag; 
-                    if ( !fFirstSliceHasBeenWritten ) (*this->fPolarFFTFreqArrayBuffer)[iC][f] = spec[0].GetBinCenter(f);
+                    (*this->fFFTBuffer)[iC][0][0][f] = sqrt(pow(spec[0].GetAbs(f), 2.0) + pow(spec[0].GetArg(f),2.0));
+                    if ((!fFirstSliceHasBeenWritten) & (iC==0))  (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
                 }
-                
             }
         }
-        if ( !fFirstSliceHasBeenWritten ) {
-          // If First Slice -> Create and Write the Frequency Array
-          H5::DataSet* dset_FreqArray = this->CreatePolarFreqArrayDSet(FreqArray_name);
-          dset_FreqArray->write(this->fPolarFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-          SetFirstSliceHasBeenWritten(true);
-        }
-        H5::DataSet* dset = this->CreatePolarPowerDSet(spectrum_name);
-        dset->write(this->fPolarPwrBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-        KTDEBUG(publog, "Done.");
-    }
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data) {
 
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (Polar PS) to HDF5 file.");
+        if (!fFirstSliceHasBeenWritten) {
+            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+            SetFirstSliceHasBeenWritten(true);
+        }
+        this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
+        KTDEBUG(publog, "Done Writing Slice to File.");
+    }
+
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data) {
         if (!data) return;
 
+        // Get Data and Slice Number
+        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
+        this->fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTDEBUG(publog, "Writing Slice " << this->fSliceNumber);
+
+        // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
+            this->fFFTSize = this->fSliceSize;
+            this->fNParts = 1;
+            this->fSpectrumName = "complexPS";
+            this->PrepareHDF5File();
         }
-        else {
-            return;
-        }
+        else return;
 
-        KTDEBUG(publog, "Creating spectrum and dataset...");
-        std::string spectrum_name;
-        std::stringstream name_builder;
+        // Select hyperslabs to save the spectrum data
+        hsize_t offset[4] = {0,this->fSliceNumber,0,0};
+        hsize_t dims1[4] = { this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]}; /* data slice dimensions */
+        H5::DataSpace memspace1 ( 4, dims1 );
+        H5::DataSpace filespace1 = this->fDSet->getSpace();
+        filespace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
 
-        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
-        name_builder << "complexPS_" << sliceN;
-        name_builder >> spectrum_name;
-
-        // START First Slice -> Create Frequency Array Name
-        KTDEBUG(publog, "Creating Frequency Array...");
-        std::string FreqArray_name;
-        std::stringstream FreqArray_name_builder;
-        FreqArray_name_builder << "FreqArray_" << sliceN;
-        FreqArray_name_builder >> FreqArray_name;
-        // END First Slice -> Create Frequency Array Name
-
-        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        unsigned nComp = fsData.GetNComponents();
-
-        if( !fWriter->OpenAndVerifyFile() ) return;
-
-        KTDEBUG(publog, "Writing Complex FFT data to HDF5 file.");
-        for (unsigned iC = 0; iC < nComp; iC++) {
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (Complex PS) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
             const KTFrequencySpectrumFFTW* spec = fsData.GetSpectrumFFTW(iC);
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
-                    double mag = sqrt(pow(spec[0].GetReal(f),2.0) + pow(spec[0].GetImag(f),2.0));
-                    (*this->fCmplxPwrBuffer)[iC][f] = mag;
-                    if ( !fFirstSliceHasBeenWritten ) (*this->fCmplxFFTFreqArrayBuffer)[iC][f] = spec[0].GetBinCenter(f);
+                    (*this->fFFTBuffer)[iC][0][0][f] = sqrt(pow(spec[0].GetReal(f),2.0) + pow(spec[0].GetImag(f),2.0));
+                    if ((!fFirstSliceHasBeenWritten) & (iC==0))  (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
                 }
-                
             }
         }
-        if ( !fFirstSliceHasBeenWritten ) {
-          // If First Slice -> Create and Write the Frequency Array
-          H5::DataSet* dset_FreqArray = this->CreateFFTWFreqArrayDSet(FreqArray_name);
-          dset_FreqArray->write(this->fCmplxFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-          SetFirstSliceHasBeenWritten(true);
+
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (Complex PS) to HDF5 file.");
+        if (!fFirstSliceHasBeenWritten) {
+            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+            SetFirstSliceHasBeenWritten(true);
         }
-        H5::DataSet* dset = this->CreateComplexPowerDSet(spectrum_name);
-        dset->write(this->fCmplxPwrBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-        KTDEBUG(publog, "Done.");
+        this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
+        KTDEBUG(publog, "Done Writing Slice to File.");
     }
+
+
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
@@ -573,116 +436,112 @@ namespace Katydid {
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WritePowerSpectrum(KTDataPtr data) {
-        if (! data) return;
 
+    void KTHDF5TypeWriterTransform::WritePowerSpectrum(KTDataPtr data) {
+        if (!data) return;
+
+        // Get Data and Slice Number
+        KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
+        this->fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTDEBUG(publog, "Writing Slice " << this->fSliceNumber);
+
+        // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
+            this->fFFTSize = (this->fSliceSize >> 1) + 1;
+            this->fNParts = 1;
+            this->fSpectrumName = "PS";
+            this->PrepareHDF5File();
         }
-        else {
-            return;
-        }
+        else return;
 
-        KTDEBUG(publog, "Creating spectrum and dataset...");
-        std::string spectrum_name;
-        std::stringstream name_builder;
+        // Select hyperslabs to save the spectrum data
+        hsize_t offset[4] = {0,this->fSliceNumber,0,0};
+        hsize_t dims1[4] = { this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]}; /* data slice dimensions */
+        H5::DataSpace memspace1 ( 4, dims1 );
+        H5::DataSpace filespace1 = this->fDSet->getSpace();
+        filespace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
 
-        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
-        name_builder << "PS_" << sliceN;
-        name_builder >> spectrum_name;
-
-        // START First Slice -> Create Frequency Array Name
-        KTDEBUG(publog, "Creating Frequency Array...");
-        std::string FreqArray_name;
-        std::stringstream FreqArray_name_builder;
-        FreqArray_name_builder << "FreqArray_" << sliceN;
-        FreqArray_name_builder >> FreqArray_name;
-        // END First Slice -> Create Frequency Array Name
-
-        KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
-        unsigned nComponents = fsData.GetNComponents();
-
-        if (! fWriter->OpenAndVerifyFile()) return;
-
-        for (unsigned iC=0; iC<nComponents; iC++)
-        {
-            KTPowerSpectrum* spectrum = fsData.GetSpectrum(iC);
-            if (spectrum != NULL)
-            {
-                spectrum->ConvertToPowerSpectrum();
-                for(int i=0; i < this->fPwrSpecSize; i++) {
-                    double val = (*spectrum)(i);
-                    (*this->fPwrSpecBuffer)[iC][i] = val;
-                    if ( !fFirstSliceHasBeenWritten ) (*this->fPolarFFTFreqArrayBuffer)[iC][i] = spectrum->GetBinCenter(i);
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (PS) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
+            KTPowerSpectrum* spec = fsData.GetSpectrum(iC);
+            if (spec != NULL) {
+                spec->ConvertToPowerSpectrum();
+                for(int f=0; f < spec[0].size(); f++) {
+                    (*this->fFFTBuffer)[iC][0][0][f] = (*spec)(f);
+                    if ((!fFirstSliceHasBeenWritten) & (iC==0))  (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
                 }
             }
         }
-        if ( !fFirstSliceHasBeenWritten ) {
-          // If First Slice -> Create and Write the Frequency Array
-          H5::DataSet* dset_FreqArray = this->CreatePolarFreqArrayDSet(FreqArray_name);
-          dset_FreqArray->write(this->fPolarFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-          SetFirstSliceHasBeenWritten(true);
-        }
-        H5::DataSet* dset = this->CreatePowerSpecDSet(spectrum_name);
-        dset->write(this->fPwrSpecBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-        return;
-    }
-    void KTHDF5TypeWriterTransform::WritePowerSpectralDensity(KTDataPtr data) {
-        if (! data) return;
 
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (PS) to HDF5 file.");
+        if (!fFirstSliceHasBeenWritten) {
+            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+            SetFirstSliceHasBeenWritten(true);
+        }
+        this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
+        KTDEBUG(publog, "Done Writing Slice to File.");
+    }
+
+    void KTHDF5TypeWriterTransform::WritePowerSpectralDensity(KTDataPtr data) {
+        if (!data) return;
+
+        // Get Data and Slice Number
+        KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
+        this->fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTDEBUG(publog, "Writing Slice " << this->fSliceNumber);
+
+        // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
+            this->fFFTSize = (this->fSliceSize >> 1) + 1;
+            this->fNParts = 1;
+            this->fSpectrumName = "PSD";
+            this->PrepareHDF5File();
         }
-        else {
-            return;
-        }
+        else return;
 
-        KTDEBUG(publog, "Creating spectrum and dataset...");
-        std::string spectrum_name;
-        std::stringstream name_builder;
+        // Select hyperslabs to save the spectrum data
+        hsize_t offset[4] = {0,this->fSliceNumber,0,0};
+        hsize_t dims1[4] = { this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]}; /* data slice dimensions */
+        H5::DataSpace memspace1 ( 4, dims1 );
+        H5::DataSpace filespace1 = this->fDSet->getSpace();
+        filespace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
 
-        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
-        name_builder << "PSD_" << sliceN;
-        name_builder >> spectrum_name;
-
-        // START First Slice -> Create Frequency Array Name
-        KTDEBUG(publog, "Creating Frequency Array...");
-        std::string FreqArray_name;
-        std::stringstream FreqArray_name_builder;
-        FreqArray_name_builder << "FreqArray_" << sliceN;
-        FreqArray_name_builder >> FreqArray_name;
-        // END First Slice -> Create Frequency Array Name
-
-        KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
-        unsigned nComponents = fsData.GetNComponents();
-
-        if (! fWriter->OpenAndVerifyFile()) return;
-
-        for (unsigned iC=0; iC<nComponents; iC++)
-        {
-            KTPowerSpectrum* spectrum = fsData.GetSpectrum(iC);
-            if (spectrum != NULL)
-            {
-                spectrum->ConvertToPowerSpectralDensity();
-                for(int i=0; i < this->fPwrSpecSize; i++) {
-                    double val = (*spectrum)(i);
-                    (*this->fPSDBuffer)[iC][i] = val;
-                    if ( !fFirstSliceHasBeenWritten ) (*this->fPolarFFTFreqArrayBuffer)[iC][i] = spectrum->GetBinCenter(i);
-                }               
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (PSD) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
+            KTPowerSpectrum* spec = fsData.GetSpectrum(iC);
+            if (spec != NULL) {
+                spec->ConvertToPowerSpectralDensity();
+                for(int f=0; f < spec[0].size(); f++) {
+                    (*this->fFFTBuffer)[iC][0][0][f] = (*spec)(f);
+                    if ((!fFirstSliceHasBeenWritten) & (iC==0))  (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
+                }
             }
         }
-        if ( !fFirstSliceHasBeenWritten ) {
-          // If First Slice -> Create and Write the Frequency Array
-          H5::DataSet* dset_FreqArray = this->CreatePolarFreqArrayDSet(FreqArray_name);
-          dset_FreqArray->write(this->fPolarFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-          SetFirstSliceHasBeenWritten(true);
-        }
-        H5::DataSet* dset = this->CreatePSDDSet(spectrum_name);
-        dset->write(this->fPSDBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-        return;
 
-        
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (PSD) to HDF5 file.");
+        if (!fFirstSliceHasBeenWritten) {
+            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+            SetFirstSliceHasBeenWritten(true);
+        }
+        this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
+        KTDEBUG(publog, "Done Writing Slice to File.");
     }
+
+
     void KTHDF5TypeWriterTransform::WritePowerSpectrumDistribution(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }

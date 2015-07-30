@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTJSONWriter;
     typedef KTDerivedTypeWriter< KTJSONWriter > KTJSONTypeWriter;
 
@@ -42,7 +43,7 @@ namespace Katydid
     */
 
 
-    class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter >
+    class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter, KTJSONTypeWriter >
     {
         public:
             typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;

@@ -14,10 +14,14 @@
 #include "KTMCTruthEvents.hh"
 #include "KTSlot.hh"
 
-namespace Katydid
+namespace Nymph
 {
     class KTParamNode;
+}
 
+namespace Katydid
+{
+    using namespace Nymph;
     /*!
      @class KTCompareCandidates
      @author N. S. Oblath

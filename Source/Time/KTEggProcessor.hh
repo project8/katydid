@@ -14,13 +14,20 @@
 #include "KTData.hh"
 #include "KTEggReader.hh"
 #include "KTSlot.hh"
+#include "KTEggHeader.hh"
 
+
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDAC;
     class KTProcSummary;
-    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!

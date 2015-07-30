@@ -24,10 +24,10 @@ namespace Katydid
     static KTCommandLineOption< string > sRTWFilenameCLO("HDF5 Writer", "HDF5 writer filename", "hdf5-file");
 
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
-            KTWriterWithTypists< KTHDF5Writer >(name),
+            KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter >(name),
             fHeaderSlot("header", this, &KTHDF5Writer::WriteEggHeader),
             fFilename("my_file.h5"),
-            fFileFlag("nocompress"),
+            fUseCompressionFlag(false),
             fFile(NULL),
             fHeaderParsed(false)
     {
@@ -45,7 +45,7 @@ namespace Katydid
         if (node != NULL)
         {
             SetFilename(node->GetValue("output-file", fFilename));
-            SetFileFlag(node->GetValue("file-flag", fFileFlag));
+            SetUseCompressionFlag(node->GetValue("use-compression", fUseCompressionFlag));
         }
 
         // Command-line settings
@@ -111,15 +111,17 @@ namespace Katydid
 
         // copy the egg header.
         this->fHeader = header;
+        this->fHeader.SetChannelHeader(header.GetChannelHeader(0),0);
         this->fHeaderParsed = true;
 
+
         H5::Group* header_grp = this->AddGroup("/metadata");
-       
+
         // Write the header.
         this->AddMetadata("header/mantis_timestamp",this->fHeader.GetTimestamp());
         this->AddMetadata("header/description", this->fHeader.GetDescription());
         this->AddMetadata("header/acquisition_mode", this->fHeader.GetAcquisitionMode());
-        this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());        
+        this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());
         this->AddMetadata("header/raw_slice_size",this->fHeader.GetChannelHeader(0)->GetRawSliceSize());
         this->AddMetadata("header/slice_size",this->fHeader.GetChannelHeader(0)->GetSliceSize());
         this->AddMetadata("header/slice_stride",this->fHeader.GetChannelHeader(0)->GetSliceStride());
@@ -152,9 +154,9 @@ namespace Katydid
             token = name.substr(0, pos);
             group_name_builder << token;
             group_name_builder >> group_name;
-            KTINFO(group_name);
             grp = *(this->AddGroup(group_name));
             name.erase(0, pos + delimiter.length());
+            KTINFO(group_name + delimiter + name);
         }
         H5::DataSpace dspace(H5S_SCALAR);
         H5::DSetCreatPropList plist;

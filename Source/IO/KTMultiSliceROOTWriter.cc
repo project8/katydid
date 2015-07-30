@@ -20,7 +20,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTMultiSliceROOTWriter, "multislice-root-writer");
 
     KTMultiSliceROOTWriter::KTMultiSliceROOTWriter(const std::string& name) :
-            KTWriterWithTypists< KTMultiSliceROOTWriter >(name),
+            KTWriterWithTypists< KTMultiSliceROOTWriter, KTMultiSliceROOTTypeWriter >(name),
             fUseTFile(true),
             fTFilename("multi_slice.root"),
             fTFileFlag("recreate"),

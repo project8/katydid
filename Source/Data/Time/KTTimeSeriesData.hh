@@ -20,6 +20,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTTimeSeries;
 
     class KTTimeSeriesDataCore

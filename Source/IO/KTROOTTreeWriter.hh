@@ -17,13 +17,14 @@ class TTree;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTROOTTreeWriter;
 
     typedef KTDerivedTypeWriter< KTROOTTreeWriter > KTROOTTreeTypeWriter;
 
 
 
-    class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter >//public KTWriter
+    class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >//public KTWriter
     {
         public:
             KTROOTTreeWriter(const std::string& name = "root-tree-writer");

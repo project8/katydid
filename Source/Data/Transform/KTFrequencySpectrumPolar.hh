@@ -17,8 +17,7 @@
 
 namespace Katydid
 {
-    class KTPowerSpectrum;
-
+    using namespace Nymph;
     class KTFrequencySpectrumPolar : public KTPhysicalArray< 1, complexpolar< double > >, public KTFrequencySpectrum
     {
         public:
@@ -28,6 +27,9 @@ namespace Katydid
             virtual ~KTFrequencySpectrumPolar();
 
             virtual KTFrequencySpectrumPolar& operator=(const KTFrequencySpectrumPolar& rhs);
+
+            const KTAxisProperties< 1 >& GetAxis() const;
+            KTAxisProperties< 1 >& GetAxis();
 
             virtual double GetReal(unsigned bin) const;
             virtual double GetImag(unsigned bin) const;

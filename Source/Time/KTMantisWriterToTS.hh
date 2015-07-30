@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTMantis;
     class KTRawTimeSeries;
 

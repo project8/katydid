@@ -25,6 +25,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(utillog_physarr, "KTPhysicalArray");
 
     //*******************************

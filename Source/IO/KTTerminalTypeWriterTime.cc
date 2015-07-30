@@ -5,10 +5,14 @@
  *      Author: nsoblath
  */
 
+#include "KTTerminalTypeWriterTime.hh"
+
 #include "KTDigitizerTestData.hh"
+#include "KTEggHEader.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
+#include "KTProcSummary.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
@@ -18,7 +22,6 @@
 #include <algorithm> // for max
 #include <cstdio> // for sprintf
 #include <sstream>
-#include "KTTerminalTypeWriterTime.hh"
 
 
 
@@ -41,8 +44,24 @@ namespace Katydid
 
     void KTTerminalTypeWriterTime::RegisterSlots()
     {
+        fWriter->RegisterSlot("header", this, &KTTerminalTypeWriterTime::WriteEggHeader);
         fWriter->RegisterSlot("ts", this, &KTTerminalTypeWriterTime::WriteTimeSeriesData);
         fWriter->RegisterSlot("dig-test", this, &KTTerminalTypeWriterTime::WriteDigitizerTestData);
+        fWriter->RegisterSlot("summary", this, &KTTerminalTypeWriterTime::WriteProcSummary);
+        return;
+    }
+
+
+    //****************
+    // Egg Header Data
+    //****************
+
+    void KTTerminalTypeWriterTime::WriteEggHeader(KTDataPtr data)
+    {
+        if (! data) return;
+
+        KTPROG(termlog, "Egg header:\n" << data->Of< KTEggHeader >());
+
         return;
     }
 
@@ -61,7 +80,7 @@ namespace Katydid
         unsigned nComponents = digData.GetNComponents();
 
         KTPROG(termlog, "Slice " << sliceNumber << " (" << nComponents << " components)\n" <<
-                        "-----");
+               "-----");
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
@@ -186,29 +205,48 @@ namespace Katydid
                 toTermClipping << "\tBottom\t" << digData.GetNClipBottom(iComponent) << '\t' << digData.GetBottomClipFrac(iComponent) << '\n';
                 toTermClipping << "\tSequential Top   \t" << digData.GetNMultClipTop(iComponent) << '\t' << digData.GetMultTopClipFrac(iComponent) << '\n';
                 toTermClipping << "\tSequential Bottom\t" << digData.GetNMultClipBottom(iComponent) << '\t' << digData.GetMultBottomClipFrac(iComponent) << '\n';
-	    }                
+            }
             KTPROG(termlog, toTermClipping.str());
         }
-	//Linearity
-	if (digData.GetLinearityFlag())
-	  {
-	    stringstream toTermLinearity;
-	    toTermLinearity << "Linearity Test\n";
-	    for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-	      {
-		toTermLinearity << "Component " << iComponent << '\n';
-		toTermLinearity << "Upslope: "<<'\n';
-		toTermLinearity << '\t' << "Average Fractional Max Difference: " << digData.GetMaxDiffAvg(iComponent) << " +/- " <<digData.GetMaxDiffStdev(iComponent)<< '\n';
-		toTermLinearity << '\t' << "Average LinReg Slope: "<<digData.GetAvgLinRegSlope(iComponent)<<'\n'<<'\n';
-		toTermLinearity << "Downslope: "<<'\n';
-		toTermLinearity << '\t' << "Average Fractional Max Difference: " << digData.GetMaxDiffAvgD(iComponent) << " +/- " <<digData.GetMaxDiffStdevD(iComponent)<< '\n';
-		toTermLinearity << '\t' << "Average LinReg Slope: "<<digData.GetAvgLinRegSlopeD(iComponent)<<'\n';
-		
-		  }
-	    KTPROG(termlog, toTermLinearity.str());
-	  }
+        //Linearity
+        if (digData.GetLinearityFlag())
+        {
+            stringstream toTermLinearity;
+            toTermLinearity << "Linearity Test\n";
+            for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+            {
+                toTermLinearity << "Component " << iComponent << '\n';
+                toTermLinearity << "Upslope: "<<'\n';
+                toTermLinearity << '\t' << "Average Fractional Max Difference: " << digData.GetMaxDiffAvg(iComponent) << " +/- " <<digData.GetMaxDiffStdev(iComponent)<< '\n';
+                toTermLinearity << '\t' << "Average LinReg Slope: "<<digData.GetAvgLinRegSlope(iComponent)<<'\n'<<'\n';
+                toTermLinearity << "Downslope: "<<'\n';
+                toTermLinearity << '\t' << "Average Fractional Max Difference: " << digData.GetMaxDiffAvgD(iComponent) << " +/- " <<digData.GetMaxDiffStdevD(iComponent)<< '\n';
+                toTermLinearity << '\t' << "Average LinReg Slope: "<<digData.GetAvgLinRegSlopeD(iComponent)<<'\n';
+
+            }
+            KTPROG(termlog, toTermLinearity.str());
+        }
 
         return;
     }
+
+
+    //******************
+    // Processor Summary
+    //******************
+
+    void KTTerminalTypeWriterTime::WriteProcSummary(const KTProcSummary* summary)
+    {
+        if (summary == NULL) return;
+
+        KTPROG(termlog, "Processing Summary:");
+        KTPROG(termlog, "\tNumber of slices processed: " << summary->GetNSlicesProcessed());
+        KTPROG(termlog, "\tNumber of records processed: " << summary->GetNRecordsProcessed());
+        KTPROG(termlog, "\tIntegrated time processed: " << summary->GetIntegratedTime());
+
+        return;
+    }
+
+
 
 } /* namespace Katydid */

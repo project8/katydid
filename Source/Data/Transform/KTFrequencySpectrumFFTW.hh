@@ -17,8 +17,8 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencySpectrumPolar;
-    class KTPowerSpectrum;
 
     class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >, public KTFrequencySpectrum
     {
@@ -42,6 +42,9 @@ namespace Katydid
 
 
         public:
+            const KTAxisProperties< 1 >& GetAxis() const;
+            KTAxisProperties< 1 >& GetAxis();
+
             // replace some of the KTPhysicalArray interface
 
             const fftw_complex& operator()(unsigned i) const;

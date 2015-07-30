@@ -21,12 +21,19 @@
 #include <string>
 #include <vector>
 
+
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     class KTAnalyticAssociateData;
     class KTEggHeader;
     class KTFrequencySpectrumFFTW;
-    class KTParamNode;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
 

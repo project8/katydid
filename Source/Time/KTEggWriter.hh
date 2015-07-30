@@ -22,6 +22,7 @@ namespace monarch
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
     class KTSliceHeader;
     class KTTimeSeriesData;

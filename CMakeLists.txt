@@ -9,8 +9,8 @@ cmake_policy( SET CMP0048 NEW ) # version in project()
 project (Katydid VERSION 2.2.0)
 
 # Import Katydid core features
-include (KTCore/cmake/KatydidCore.cmake)
-katydid_prepare_project ()
+include (Nymph/cmake/Nymph.cmake)
+nymph_prepare_project ()
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
@@ -22,7 +22,8 @@ set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
 set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
-set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
+set (Katydid_USE_MATLAB TRUE CACHE BOOL "Flag to optionally use MatIO libraries, needed to read MAT files")
+set (Katydid_ENABLE_BUILD_DOC FALSE CACHE BOOL "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)")
 
 
 ##############
@@ -222,7 +223,7 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
 )
 
-katydid_build_core_library()
+nymph_build_core_library()
 
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
@@ -238,11 +239,13 @@ add_subdirectory (Source/Executables/Profiling)
 add_subdirectory (Source/Executables/Validation)
 add_subdirectory (Examples)
 
-katydid_build_core_executables()
+nymph_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
-add_subdirectory (Documentation/ReferenceGuide)
+if(Katydid_ENABLE_BUILD_DOC)
+    add_subdirectory (Documentation)
+endif(Katydid_ENABLE_BUILD_DOC)
 
 
 # Install config files

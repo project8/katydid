@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDataTypeDisplaySpectrumAnalysis : public KTDataTypeDisplay
     {
         public:

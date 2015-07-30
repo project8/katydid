@@ -19,6 +19,7 @@ class TTree;
 
 namespace Katydid
 {
+    using namespace Nymph;
     struct TEggHeader
     {
         TString* fFilename;

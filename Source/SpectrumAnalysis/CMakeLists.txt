@@ -86,7 +86,7 @@ if (Katydid_ENABLE_TUTORIAL)
 endif (Katydid_ENABLE_TUTORIAL)
 
 set (KATYDID_LIBS
-    KTCore
+    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

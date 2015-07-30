@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDigitizerTestData : public KTExtensibleData< KTDigitizerTestData >
     {
         public:

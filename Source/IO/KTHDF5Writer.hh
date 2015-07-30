@@ -21,7 +21,7 @@ namespace Katydid {
     class KTHDF5Writer;
     typedef KTDerivedTypeWriter< KTHDF5Writer > KTHDF5TypeWriter;
 
-    class KTHDF5Writer : public KTWriterWithTypists< KTHDF5Writer > {
+    class KTHDF5Writer : public KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter > {
         public:
             explicit KTHDF5Writer(const std::string& name = "hdf5-writer");
             virtual ~KTHDF5Writer();
@@ -38,7 +38,7 @@ namespace Katydid {
             void CloseFile();
 
             MEMBERVARIABLEREF(std::string, Filename);
-            MEMBERVARIABLEREF(std::string, FileFlag);
+            MEMBERVARIABLEREF(bool, UseCompressionFlag);
 
             bool OpenAndVerifyFile();
 

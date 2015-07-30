@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTCluster1DData : public KTExtensibleData< KTCluster1DData >
     {
         public:

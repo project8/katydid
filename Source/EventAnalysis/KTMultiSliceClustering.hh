@@ -28,6 +28,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(sclog, "KTMultiSliceClustering");
 
     //class KTCorrelationData;

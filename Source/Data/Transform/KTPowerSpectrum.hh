@@ -10,14 +10,16 @@
 
 //#include "KTComplexVector.hh"
 
+#include "KTFrequencyDomainArray.hh"
 #include "KTPhysicalArray.hh"
 
 #include <string>
 
 namespace Katydid
 {
+    using namespace Nymph;
 
-    class KTPowerSpectrum : public KTPhysicalArray< 1, double >
+    class KTPowerSpectrum : public KTPhysicalArray< 1, double >, public KTFrequencyDomainArray
     {
         public:
             enum Mode
@@ -30,6 +32,12 @@ namespace Katydid
             KTPowerSpectrum(size_t nBins=1, double rangeMin=0., double rangeMax=1.);
             KTPowerSpectrum(const KTPowerSpectrum& orig);
             virtual ~KTPowerSpectrum();
+
+            unsigned GetNFrequencyBins() const;
+            double GetFrequencyBinWidth() const;
+
+            const KTAxisProperties< 1 >& GetAxis() const;
+            KTAxisProperties< 1 >& GetAxis();
 
             void ConvertToPowerSpectrum();
             void ConvertToPowerSpectralDensity();
@@ -55,6 +63,16 @@ namespace Katydid
             const static double fResistance; // ohms
 
     };
+
+    inline unsigned KTPowerSpectrum::GetNFrequencyBins() const
+    {
+        return size();
+    }
+
+    inline double KTPowerSpectrum::GetFrequencyBinWidth() const
+    {
+        return GetBinWidth();
+    }
 
     inline bool KTPowerSpectrum::IsPowerSpectrum() const
     {

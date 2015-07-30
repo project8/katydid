@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggProcessor;
 
     class KTEggReader

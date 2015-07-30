@@ -208,6 +208,7 @@ namespace Katydid
             else fComplexAsIQ = false;
             return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
         }
+
     }
 
     bool KTForwardFFTW::TransformRealData(KTTimeSeriesData& tsData)

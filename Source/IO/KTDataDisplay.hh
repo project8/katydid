@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDataDisplay;
     typedef KTDerivedTypeWriter< KTDataDisplay > KTDataTypeDisplay;
 
@@ -62,7 +63,7 @@ namespace Katydid
 
     */
 
-    class KTDataDisplay : public KTWriterWithTypists< KTDataDisplay >
+    class KTDataDisplay : public KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >
     {
 
         public:

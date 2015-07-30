@@ -27,7 +27,7 @@ set (SIMULATION_SOURCEFILES
 #endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
-    KTCore
+    Nymph
     KatydidUtility
     KatydidData
 )

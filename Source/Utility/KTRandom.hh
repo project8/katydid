@@ -27,6 +27,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(rnglog, "KTRandom");
 
     //**************************************

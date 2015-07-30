@@ -21,6 +21,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     /*!
      @class KTMultiFileJSONReader
      @author N. S. Oblath

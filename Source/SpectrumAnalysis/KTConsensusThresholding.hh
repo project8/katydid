@@ -15,11 +15,16 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTKDTreeData;
-    class KTParamNode;
 
    /*!
      @class KTConsensusThresholding

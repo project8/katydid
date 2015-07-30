@@ -9,11 +9,22 @@
 
 namespace Katydid
 {
-    KTFrequencySpectrum::KTFrequencySpectrum()
+    KTFrequencySpectrum::KTFrequencySpectrum() :
+            KTFrequencyDomainArray()
     {
     }
 
     KTFrequencySpectrum::~KTFrequencySpectrum()
+    {
+    }
+
+
+    KTFrequencySpectrumData::KTFrequencySpectrumData() :
+            KTFrequencyDomainArrayData()
+    {
+    }
+
+    KTFrequencySpectrumData::~KTFrequencySpectrumData()
     {
     }
 

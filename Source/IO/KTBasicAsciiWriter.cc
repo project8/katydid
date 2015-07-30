@@ -10,7 +10,7 @@ namespace Katydid {
     KT_REGISTER_PROCESSOR(KTBasicASCIIWriter, "basic-ascii-writer");
 
     KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :
-            KTWriterWithTypists<KTBasicASCIIWriter>(name),
+            KTWriterWithTypists<KTBasicASCIIWriter, KTBasicASCIITypeWriter>(name),
             fOutputStream(NULL),
             fOutputFilename("basic_ascii_output.txt")
     {

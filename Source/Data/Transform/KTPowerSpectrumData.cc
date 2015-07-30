@@ -10,7 +10,8 @@
 
 namespace Katydid
 {
-    KTPowerSpectrumDataCore::KTPowerSpectrumDataCore()
+    KTPowerSpectrumDataCore::KTPowerSpectrumDataCore() :
+            KTFrequencyDomainArrayData()
     {
     }
 

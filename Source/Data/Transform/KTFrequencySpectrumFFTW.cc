@@ -92,6 +92,16 @@ namespace Katydid
         return *this;
     }
 
+    const KTAxisProperties< 1 >& KTFrequencySpectrumFFTW::GetAxis() const
+    {
+        return *this;
+    }
+
+    KTAxisProperties< 1 >& KTFrequencySpectrumFFTW::GetAxis()
+    {
+        return *this;
+    }
+
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::CConjugate()
     {
         unsigned nBins = size();

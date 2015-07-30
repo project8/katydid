@@ -19,10 +19,17 @@
 #include <typeinfo>
 #include <vector>
 
+
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     //class KTDigitizerTestData;
-    class KTParamNode;
     class KTRawTimeSeriesData;
     class KTRawTimeSeries;
     class KTTimeSeriesData;

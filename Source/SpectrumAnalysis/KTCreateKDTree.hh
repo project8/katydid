@@ -17,10 +17,16 @@
 
 #include <limits>
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDiscriminatedPoints1DData;
-    class KTParamNode;
     class KTProcessedTrackData;
     class KTSliceHeader;
     class KTSparseWaterfallCandidateData;
