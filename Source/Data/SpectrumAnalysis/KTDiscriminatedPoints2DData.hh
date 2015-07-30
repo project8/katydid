@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     struct KTPairCompare
     {
         bool operator() (const std::pair< unsigned, unsigned >& lhs, const std::pair< unsigned, unsigned >& rhs) const

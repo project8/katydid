@@ -14,12 +14,17 @@
 #include "KTSlot.hh"
 
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataPolar;
-    class KTParamNode;
     class KTPowerSpectrumData;
 
     /*!

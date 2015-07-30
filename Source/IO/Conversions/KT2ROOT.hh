@@ -19,6 +19,7 @@ class TH2D;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;

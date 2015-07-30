@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTMCTruthEvents : public KTExtensibleData< KTMCTruthEvents >
     {

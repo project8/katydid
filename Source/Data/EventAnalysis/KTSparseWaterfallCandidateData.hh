@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTSparseWaterfallCandidateData : public KTExtensibleData< KTSparseWaterfallCandidateData >
     {
         public:

@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
 

@@ -22,6 +22,7 @@ class TTree;
 
 namespace Katydid
 {
+    using namespace Nymph;
     /*!
      @class KTMultiFileROOTTreeReader
      @author N. S. Oblath

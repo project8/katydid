@@ -24,6 +24,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencyDomainArrayData;
     class KTROOTSpectrogramWriter;
 

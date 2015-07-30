@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTMultiSliceROOTWriter;
 
     typedef KTDerivedTypeWriter< KTMultiSliceROOTWriter > KTMultiSliceROOTTypeWriter;

@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     //*************************
     // 1-D array implementation; specialization for fftw_complex

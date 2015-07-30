@@ -12,6 +12,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     /*!
      @class KTSinusoidGenerator

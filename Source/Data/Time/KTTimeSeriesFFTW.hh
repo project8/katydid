@@ -13,6 +13,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
 
     class KTTimeSeriesFFTW : public KTTimeSeries, public KTPhysicalArray< 1, fftw_complex >

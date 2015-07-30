@@ -21,6 +21,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTKDTreeData : public KTExtensibleData< KTKDTreeData >
     {

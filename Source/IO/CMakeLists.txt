@@ -114,7 +114,7 @@ if (HDF5_FOUND)
 endif (HDF5_FOUND)
 
 set (KATYDID_LIBS
-    KTCore
+    Nymph
     KatydidUtility
     KatydidData
 )

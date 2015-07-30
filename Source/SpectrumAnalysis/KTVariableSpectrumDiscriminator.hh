@@ -19,6 +19,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
     class KTFrequencySpectrumDataFFTW;

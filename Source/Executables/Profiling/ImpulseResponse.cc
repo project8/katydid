@@ -35,6 +35,7 @@ KTLOGGER(irlog, "ImpulseResponse");
 
 namespace Katydid
 {
+    using namespace Nymph;
     //***********************************
     // Definition of KTImpulseAnalysis
     //***********************************

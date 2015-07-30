@@ -15,11 +15,16 @@
 
 #include <cmath>
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTHoughData;
-    class KTParamNode;
     class KTSparseWaterfallCandidateData;
 
     /*!

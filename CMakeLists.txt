@@ -9,8 +9,8 @@ cmake_policy( SET CMP0048 NEW ) # version in project()
 project (Katydid VERSION 2.2.0)
 
 # Import Katydid core features
-include (KTCore/cmake/KatydidCore.cmake)
-katydid_prepare_project ()
+include (Nymph/cmake/Nymph.cmake)
+nymph_prepare_project ()
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
@@ -223,7 +223,7 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
 )
 
-katydid_build_core_library()
+nymph_build_core_library()
 
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
@@ -239,7 +239,7 @@ add_subdirectory (Source/Executables/Profiling)
 add_subdirectory (Source/Executables/Validation)
 add_subdirectory (Examples)
 
-katydid_build_core_executables()
+nymph_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.

@@ -21,6 +21,7 @@ class TTree;
 
 namespace Katydid
 {
+    using namespace Nymph;
     //class KTFrequencyCandidateData;
     //class KTWaterfallCandidateData;
 

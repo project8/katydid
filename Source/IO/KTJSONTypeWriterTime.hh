@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
 
     class KTJSONTypeWriterTime : public KTJSONTypeWriter//, public KTTypeWriterTime

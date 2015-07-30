@@ -14,16 +14,21 @@
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTGainVariationData;
-    class KTParamNode;
     class KTPowerSpectrumData;
     //class KTSpline;
 

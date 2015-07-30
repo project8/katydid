@@ -17,11 +17,16 @@
 #include "KTSlot.hh"
 
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
-    class KTParamNode;
 
     /*!
      @class KTAmplitudeCounter

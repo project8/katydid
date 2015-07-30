@@ -16,6 +16,7 @@ class TH1D;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTMultiSliceROOTTypeWriterTransform : public KTMEROOTTypeWriterBase//, public KTTypeWriterTransform
     {
         public:

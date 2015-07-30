@@ -17,6 +17,7 @@ class TTree;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTROOTTreeWriter;
 
     typedef KTDerivedTypeWriter< KTROOTTreeWriter > KTROOTTreeTypeWriter;

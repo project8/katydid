@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTTimeSeriesDist :public KTPhysicalArray< 1, double >
     {

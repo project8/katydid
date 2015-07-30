@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(termlog, "KTTerminalWriter");
 
     class KTTerminalWriter;

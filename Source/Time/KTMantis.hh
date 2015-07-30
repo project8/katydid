@@ -23,11 +23,17 @@ namespace mantis
     class run_context_dist;
 }
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     class KTMantisClientWriting;
     class KTEggHeader;
-    class KTParamNode;
 
     class KTMantisClientConfig : public mantis::param_node
     {

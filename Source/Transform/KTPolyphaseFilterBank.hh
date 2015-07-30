@@ -17,12 +17,19 @@
 
 #include <string>
 
+
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
 
     class KTEggHeader;
-    class KTParamNode;
     class KTSliceHeader;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;

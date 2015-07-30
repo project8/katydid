@@ -22,6 +22,7 @@ namespace mantis
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTMantis;
     class KTMantisWriterToTS;
 

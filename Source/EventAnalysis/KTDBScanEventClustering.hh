@@ -21,9 +21,15 @@
 #include <set>
 #include <vector>
 
-namespace Katydid
+namespace Nymph
 {
     class KTParamNode;
+}
+;
+
+namespace Katydid
+{
+    using namespace Nymph;
     class KTProcessedTrackData;
 
     // Track distance

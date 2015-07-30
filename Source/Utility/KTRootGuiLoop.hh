@@ -10,12 +10,15 @@
 
 #ifndef __CINT__
 #include "KTEventLoop.hh"
+#else
+namespace Nymph {} // this can be removed if something from Nymph is included outside the above ifndef statement
 #endif
 
 #include "RQ_OBJECT.h"
 
 namespace Katydid
 {
+    using namespace ::Nymph;
 
     /*!
      @class KTRootGuiLoop

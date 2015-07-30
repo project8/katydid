@@ -21,6 +21,7 @@ class TH2D;
 
 namespace Katydid
 {
+    using namespace Nymph;
     //class KTPowerSpectrum;
 
     class KTTimeFrequencyPolar : public KTPhysicalArray< 2, complexpolar< double > >, public KTTimeFrequency

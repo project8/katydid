@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
     class KTProcSummary;
     class KTTimeSeriesData;

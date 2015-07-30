@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTBasicROOTFileWriter;
 
     typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;

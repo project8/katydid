@@ -17,6 +17,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTFrequencySpectrumPolar;
 
     class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >, public KTFrequencySpectrum

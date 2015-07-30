@@ -12,7 +12,9 @@
 
 #include <fstream>
 
-namespace Katydid {
+namespace Katydid
+{
+    using namespace Nymph;
 
     class KTBasicASCIIWriter;
 

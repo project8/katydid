@@ -13,6 +13,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTWV2DData : public KTMultiFSDataFFTWCore, public KTExtensibleData< KTWV2DData >
     {
         public:

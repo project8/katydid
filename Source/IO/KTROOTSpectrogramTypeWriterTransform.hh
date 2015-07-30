@@ -12,6 +12,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTROOTSpectrogramTypeWriterTransform : public KTROOTSpectrogramTypeWriter//, public KTTypeWriterTransform
     {
         public:

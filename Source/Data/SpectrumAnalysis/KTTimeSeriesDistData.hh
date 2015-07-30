@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     //class KTTimeSeriesDist;
 
     class KTTimeSeriesDistData : public KTExtensibleData< KTTimeSeriesDistData >

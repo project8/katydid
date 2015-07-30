@@ -14,6 +14,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTJSONTypeWriterEventAnalysis : public KTJSONTypeWriter//, public KTTypeWriterEventAnalysis
     {
         public:

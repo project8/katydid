@@ -30,6 +30,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     KTLOGGER(wvlog, "KTWignerVille");
 
     class KTAnalyticAssociateData;

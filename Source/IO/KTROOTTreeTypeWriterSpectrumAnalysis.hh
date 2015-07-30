@@ -20,6 +20,7 @@ class TTree;
 
 namespace Katydid
 {
+    using namespace Nymph;
     struct TDiscriminatedPoints1DData
     {
         UInt_t fSlice;

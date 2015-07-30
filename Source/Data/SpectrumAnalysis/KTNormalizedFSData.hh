@@ -15,6 +15,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTNormalizedFSDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTNormalizedFSDataPolar >
     {

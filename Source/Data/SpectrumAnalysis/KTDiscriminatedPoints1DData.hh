@@ -16,6 +16,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
 
     class KTDiscriminatedPoints1DData : public KTExtensibleData< KTDiscriminatedPoints1DData >
     {

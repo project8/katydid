@@ -17,11 +17,17 @@
 #include "KTEggHeader.hh"
 
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     class KTDAC;
     class KTProcSummary;
-    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!

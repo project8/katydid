@@ -16,6 +16,7 @@ class TH1D;
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
 
     class KTMultiSliceROOTTypeWriterTime : public KTMEROOTTypeWriterBase//, public KTTypeWriterTime

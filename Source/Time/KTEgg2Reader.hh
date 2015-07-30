@@ -30,6 +30,7 @@ namespace monarch2
 
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
 
     class KTEgg2Reader : public KTEggReader

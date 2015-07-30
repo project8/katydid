@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 using namespace std;
-using namespace Katydid;
+using namespace Nymph;
 
 KTLOGGER(tclog, "Truncate");
 

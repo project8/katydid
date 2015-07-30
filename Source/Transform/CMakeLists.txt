@@ -52,7 +52,7 @@ endif (FFTW_FOUND)
 #endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
-    KTCore
+    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

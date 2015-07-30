@@ -27,7 +27,7 @@ set (EVENTANALYSIS_SOURCEFILES
 )
 
 set (KATYDID_LIBS
-    KTCore
+    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

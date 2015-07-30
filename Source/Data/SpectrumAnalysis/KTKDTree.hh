@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    using namespace Nymph;
     //***************************************
     // TreeIndex classes, for type erasure
     //***************************************

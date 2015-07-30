@@ -16,10 +16,16 @@
 
 #include <vector>
 
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
+
 namespace Katydid
 {
+    using namespace Nymph;
     class KTEggHeader;
-    class KTParamNode;
     class KTRawTimeSeries;
     class KTRawTimeSeriesData;
     class KTSliceHeader;
