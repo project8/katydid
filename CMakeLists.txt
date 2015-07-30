@@ -22,7 +22,7 @@ set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
 set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
-set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
+set (Katydid_USE_MATLAB TRUE CACHE BOOL "Flag to optionally use MatIO libraries, needed to read MAT files")
 set (Katydid_ENABLE_BUILD_DOC FALSE CACHE BOOL "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)")
 
 
