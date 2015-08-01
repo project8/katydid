@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.0)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.2.0)
+project (Katydid VERSION 2.3.0)
 
 # Import Katydid core features
 include (Nymph/cmake/Nymph.cmake)
