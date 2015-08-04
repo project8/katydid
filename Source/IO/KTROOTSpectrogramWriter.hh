@@ -39,11 +39,10 @@ namespace Katydid
                 TH2D* fSpectrogram;
                 unsigned fFirstFreqBin; // frequency-axis bin 0 is this bin in the incoming data
                 unsigned fLastFreqBin; // frequency-axis last-bin is this bin in the incoming data
-                unsigned fNextTimeBinToFill; // keep track of the progress filling the spectrogram from slice to slice
             };
 
             /// Checks to see if new spectrograms are needed, and creates them if so
-            void CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, unsigned sliceLength, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
 
             template< typename XDataType >
             void AddFrequencySpectrumDataHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
@@ -154,13 +153,14 @@ namespace Katydid
              {
                  const KTFrequencySpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  unsigned iSpectFreqBin = 0;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->GetXaxis()->FindBin(timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNbinsX()) continue;
                  for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
-                     spectrograms[iComponent].fSpectrogram->SetBinContent(spectrograms[iComponent].fNextTimeBinToFill, iSpectFreqBin, spectrum->GetAbs(iFreqBin));
+                     spectrograms[iComponent].fSpectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, spectrum->GetAbs(iFreqBin));
                      ++iSpectFreqBin;
                  }
-                 spectrograms[iComponent].fNextTimeBinToFill += 1;
              }
          }
 
@@ -190,13 +190,14 @@ namespace Katydid
                  KTPowerSpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  spectrum->ConvertToPowerSpectrum();
                  unsigned iSpectFreqBin = 0;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->GetXaxis()->FindBin(timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNbinsX()) continue;
                  for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
-                     spectrograms[iComponent].fSpectrogram->SetBinContent(spectrograms[iComponent].fNextTimeBinToFill, iSpectFreqBin, (*spectrum)(iFreqBin));
+                     spectrograms[iComponent].fSpectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
                      ++iSpectFreqBin;
                  }
-                 spectrograms[iComponent].fNextTimeBinToFill += 1;
              }
          }
 
@@ -226,13 +227,14 @@ namespace Katydid
                  KTPowerSpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  spectrum->ConvertToPowerSpectralDensity();
                  unsigned iSpectFreqBin = 0;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->GetXaxis()->FindBin(timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNbinsX()) continue;
                  for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
-                     spectrograms[iComponent].fSpectrogram->SetBinContent(spectrograms[iComponent].fNextTimeBinToFill, iSpectFreqBin, (*spectrum)(iFreqBin));
+                     spectrograms[iComponent].fSpectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
                      ++iSpectFreqBin;
                  }
-                 spectrograms[iComponent].fNextTimeBinToFill += 1;
              }
          }
 

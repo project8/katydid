@@ -90,7 +90,7 @@ namespace Katydid
     {
     }
 
-    void KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, unsigned sliceLength, std::vector< SpectrogramData >& spectrograms, string histNameBase)
+    void KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, string histNameBase)
     {
         if (spectrograms.size() < nComponents)
         {
@@ -102,6 +102,7 @@ namespace Katydid
             // calculate the properties of the time axis
             unsigned nSlices = unsigned((fWriter->GetMaxTime() - startTime) / sliceLength) + 1; // the +1 is so that the end time is the first slice ending outside the max time.
             double endTime = startTime + sliceLength * (double)nSlices;
+            std::cout << fWriter->GetMaxTime() << "  " << startTime << "  " << sliceLength << "  " << nSlices << "  " << endTime << std::endl;
             for (unsigned iComponent = currentSize; iComponent < nComponents; ++iComponent)
             {
                 // calculate the properties of the frequency axis
@@ -115,8 +116,8 @@ namespace Katydid
                 stringstream conv;
                 conv << iComponent;
                 string histName = histNameBase + conv.str();
+                KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << nSlices << ", " << startTime << ", " << endTime << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
                 spectrograms[iComponent].fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", nSlices, startTime, endTime, nFreqBins, startFreq, endFreq );
-                spectrograms[iComponent].fNextTimeBinToFill = 0;
             }
         } // done initializing new spectrograms
     }
