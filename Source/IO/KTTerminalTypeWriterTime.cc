@@ -8,7 +8,7 @@
 #include "KTTerminalTypeWriterTime.hh"
 
 #include "KTDigitizerTestData.hh"
-#include "KTEggHEader.hh"
+#include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
