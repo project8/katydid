@@ -8,6 +8,7 @@
 #ifndef KTFREQUENCYDOMAINARRAY_HH_
 #define KTFREQUENCYDOMAINARRAY_HH_
 
+#include <string>
 #include <sys/types.h>  // for size_t
 
 namespace Katydid
@@ -35,6 +36,9 @@ namespace Katydid
             virtual const KTAxisProperties< 1 >& GetAxis() const = 0;
             /// Access and use the axis information
             virtual KTAxisProperties< 1 >& GetAxis() = 0;
+
+            /// Access the label for the data in the array
+            virtual const std::string& GetOrdinateLabel() const = 0;
     };
 
     class KTFrequencyDomainArrayData

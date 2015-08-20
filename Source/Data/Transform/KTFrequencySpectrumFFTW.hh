@@ -45,6 +45,8 @@ namespace Katydid
             const KTAxisProperties< 1 >& GetAxis() const;
             KTAxisProperties< 1 >& GetAxis();
 
+            const std::string& GetOrdinateLabel() const;
+
             // replace some of the KTPhysicalArray interface
 
             const fftw_complex& operator()(unsigned i) const;
@@ -121,6 +123,11 @@ namespace Katydid
     inline size_t KTFrequencySpectrumFFTW::GetCenterBin() const
     {
         return fCenterBin;
+    }
+
+    inline const std::string& KTFrequencySpectrumFFTW::GetOrdinateLabel() const
+    {
+        return GetDataLabel();
     }
 
     inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const

@@ -125,6 +125,9 @@ namespace Katydid
                 string histName = histNameBase + conv.str();
                 KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << nSlices << ", " << startTime << ", " << endTime << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
                 spectrograms[iComponent].fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", nSlices, startTime, endTime, nFreqBins, startFreq, endFreq );
+                spectrograms[iComponent].fSpectrogram->SetXTitle("Time (s)");
+                spectrograms[iComponent].fSpectrogram->SetYTitle(axis.GetAxisLabel().c_str());
+                spectrograms[iComponent].fSpectrogram->SetZTitle(data.GetArray(iComponent)->GetOrdinateLabel().c_str());
             }
         } // done initializing new spectrograms
     }
