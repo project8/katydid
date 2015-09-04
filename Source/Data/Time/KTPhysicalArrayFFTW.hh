@@ -48,9 +48,13 @@ namespace Katydid
             const array_type& GetData() const;
             array_type& GetData();
 
+            const std::string& GetDataLabel() const;
+            void SetDataLabel(const std::string& label);
+
         protected:
             array_type fData;
             fftw_complex fTempCache;
+            std:: string fLabel;
 
         public:
             const fftw_complex& operator()(unsigned i) const;

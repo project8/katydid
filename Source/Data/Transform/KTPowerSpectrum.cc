@@ -33,16 +33,6 @@ namespace Katydid
     {
     }
 
-    const KTAxisProperties< 1 >& KTPowerSpectrum::GetAxis() const
-    {
-        return *this;
-    }
-
-    KTAxisProperties< 1 >& KTPowerSpectrum::GetAxis()
-    {
-        return *this;
-    }
-
     void KTPowerSpectrum::ConvertToPowerSpectrum()
     {
         if (fMode == kPower) return;

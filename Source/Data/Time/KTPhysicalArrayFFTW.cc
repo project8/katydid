@@ -66,6 +66,17 @@ namespace Katydid
     }
 
 
+    const std::string& KTPhysicalArray< 1, fftw_complex >::GetDataLabel() const
+    {
+        return fLabel;
+    }
+
+    void KTPhysicalArray< 1, fftw_complex >::SetDataLabel(const std::string& label)
+    {
+        fLabel = label;
+        return;
+    }
+
     const KTPhysicalArray< 1, fftw_complex >::value_type& KTPhysicalArray< 1, fftw_complex >::operator()(unsigned i) const
     {
         return fData[i];
