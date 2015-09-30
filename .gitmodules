@@ -3,4 +3,4 @@
 	url = https://github.com/project8/monarch.git
 [submodule "Nymph"]
 	path = Nymph
-	url = git@github.com:project8/nymph
+	url = https://github.com/project8/nymph
