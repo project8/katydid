@@ -10,6 +10,8 @@
 #include "KTCommandLineOption.hh"
 #include "KTParam.hh"
 
+#include <algorithm>
+
 using std::string;
 using std::stringstream;
 
@@ -90,7 +92,7 @@ namespace Katydid
     {
     }
 
-    void KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, unsigned sliceLength, std::vector< SpectrogramData >& spectrograms, string histNameBase)
+    void KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, string histNameBase)
     {
         if (spectrograms.size() < nComponents)
         {
@@ -102,21 +104,30 @@ namespace Katydid
             // calculate the properties of the time axis
             unsigned nSlices = unsigned((fWriter->GetMaxTime() - startTime) / sliceLength) + 1; // the +1 is so that the end time is the first slice ending outside the max time.
             double endTime = startTime + sliceLength * (double)nSlices;
+            std::cout << fWriter->GetMaxTime() << "  " << startTime << "  " << sliceLength << "  " << nSlices << "  " << endTime << std::endl;
             for (unsigned iComponent = currentSize; iComponent < nComponents; ++iComponent)
             {
                 // calculate the properties of the frequency axis
                 double freqBinWidth = data.GetArray(iComponent)->GetAxis().GetBinWidth();
-                spectrograms[iComponent].fFirstFreqBin = unsigned((fWriter->GetMinFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth);
-                spectrograms[iComponent].fLastFreqBin = unsigned((fWriter->GetMaxFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth) + 1;
+                const KTAxisProperties< 1 >& axis = data.GetArray(iComponent)->GetAxis();
+                spectrograms[iComponent].fFirstFreqBin = std::max< unsigned >(0, axis.FindBin(fWriter->GetMinFreq()));
+                spectrograms[iComponent].fLastFreqBin = std::min< unsigned >(axis.GetNBins()-1, axis.FindBin(fWriter->GetMaxFreq()));
+                //spectrograms[iComponent].fFirstFreqBin = unsigned((fWriter->GetMinFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth);
+                //spectrograms[iComponent].fLastFreqBin = unsigned((fWriter->GetMaxFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth) + 1;
                 unsigned nFreqBins = spectrograms[iComponent].fLastFreqBin - spectrograms[iComponent].fFirstFreqBin + 1;
-                double startFreq = spectrograms[iComponent].fFirstFreqBin * freqBinWidth;
-                double endFreq = spectrograms[iComponent].fLastFreqBin * freqBinWidth;
+                //double startFreq = spectrograms[iComponent].fFirstFreqBin * freqBinWidth;
+                //double endFreq = spectrograms[iComponent].fLastFreqBin * freqBinWidth;
+                double startFreq = axis.GetBinLowEdge(spectrograms[iComponent].fFirstFreqBin);
+                double endFreq = axis.GetBinLowEdge(spectrograms[iComponent].fLastFreqBin) + freqBinWidth;
                 // form the histogram name
                 stringstream conv;
                 conv << iComponent;
                 string histName = histNameBase + conv.str();
+                KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << nSlices << ", " << startTime << ", " << endTime << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
                 spectrograms[iComponent].fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", nSlices, startTime, endTime, nFreqBins, startFreq, endFreq );
-                spectrograms[iComponent].fNextTimeBinToFill = 0;
+                spectrograms[iComponent].fSpectrogram->SetXTitle("Time (s)");
+                spectrograms[iComponent].fSpectrogram->SetYTitle(axis.GetAxisLabel().c_str());
+                spectrograms[iComponent].fSpectrogram->SetZTitle(data.GetArray(iComponent)->GetOrdinateLabel().c_str());
             }
         } // done initializing new spectrograms
     }

@@ -39,6 +39,8 @@ namespace Katydid
             const KTAxisProperties< 1 >& GetAxis() const;
             KTAxisProperties< 1 >& GetAxis();
 
+            const std::string& GetOrdinateLabel() const;
+
             void ConvertToPowerSpectrum();
             void ConvertToPowerSpectralDensity();
 
@@ -63,6 +65,21 @@ namespace Katydid
             const static double fResistance; // ohms
 
     };
+
+    inline const KTAxisProperties< 1 >& KTPowerSpectrum::GetAxis() const
+    {
+        return *this;
+    }
+
+    inline KTAxisProperties< 1 >& KTPowerSpectrum::GetAxis()
+    {
+        return *this;
+    }
+
+    inline const std::string& KTPowerSpectrum::GetOrdinateLabel() const
+    {
+        return GetDataLabel();
+    }
 
     inline unsigned KTPowerSpectrum::GetNFrequencyBins() const
     {
