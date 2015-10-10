@@ -23,7 +23,7 @@ namespace Katydid
             KTExtensibleData< KTPSCollectionData >(orig),
             fSpectra()
     {
-        for (collection::iterator it = orig.fSpectra.begin(); it != orig.fSpectra.end(); ++it)
+        for (collection::const_iterator it = orig.fSpectra.begin(); it != orig.fSpectra.end(); ++it)
         {
             fSpectra.push_back(new KTPowerSpectrum(**it));
         }
@@ -39,7 +39,7 @@ namespace Katydid
 
     KTPSCollectionData& KTPSCollectionData::operator=(const KTPSCollectionData& rhs)
     {
-        for (collection::iterator it = rhs.fSpectra.begin(); it != rhs.fSpectra.end(); ++it)
+        for (collection::const_iterator it = rhs.fSpectra.begin(); it != rhs.fSpectra.end(); ++it)
         {
             fSpectra.push_back(new KTPowerSpectrum(**it));
         }
