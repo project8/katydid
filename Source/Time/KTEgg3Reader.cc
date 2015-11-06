@@ -367,6 +367,7 @@ namespace Katydid
             }
 
             //*** DEBUG ***//
+            /*
             std::stringstream readstream, writestream;
             M3DataReader< int64_t > readIfc(fM3Stream->GetChannelRecord( 0 )->GetData(), fHeader.GetChannelHeader(0)->GetDataTypeSize(), fHeader.GetChannelHeader(0)->GetDataFormat());
             KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
@@ -376,8 +377,9 @@ namespace Katydid
                 readstream << readIfc.at( readPos + iBin ) << "  ";
                 writestream << writeIfc( writePos + iBin ) << "  ";
             }
-            KTWARN(eggreadlog, "Reading:  " << readstream.str());
-            KTWARN(eggreadlog, "Writing:  " << writestream.str());
+            */
+            //KTWARN(eggreadlog, "Reading:  " << readstream.str());
+            //KTWARN(eggreadlog, "Writing:  " << writestream.str());
             //*** DEBUG ***//
 
             // update samplesRemainingToCopy
@@ -400,7 +402,7 @@ namespace Katydid
                 if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
                 {
                     KTDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
-                            "\tUnused samples: " << writePos + samplesToCopyFromThisRecord)
+                            "\tUnused samples: " << writePos + samplesToCopyFromThisRecord);
                     // now we need to start the slice over with the now-current record
                     writePos = 0;
                     samplesRemainingToCopy = fSliceSize;
