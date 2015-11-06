@@ -243,10 +243,12 @@ nymph_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
-if(Katydid_ENABLE_BUILD_DOC)
+if (Katydid_ENABLE_BUILD_DOC)
     add_subdirectory (Documentation)
-endif(Katydid_ENABLE_BUILD_DOC)
+endif (Katydid_ENABLE_BUILD_DOC)
 
+# Extract compile definitions to pass to config files
+get_directory_property (Katydid_COMP_DEFS COMPILE_DEFINITIONS)
 
 # Install config files
 pbuilder_install_config_files()
@@ -254,9 +256,3 @@ pbuilder_install_config_files()
 # Install the example CMakeLists file for building with this installation of Katydid
 configure_file (${PROJECT_SOURCE_DIR}/Examples/CustomApplications/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
 pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Examples/CustomApplications/MyApplication.cc)
-
-if (ROOT_FOUND)
-    install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${LIB_INSTALL_DIR})")
-    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Scripts/LoadLibraries.C.in ${PROJECT_BINARY_DIR}/LoadLibraries.C)
-    install (FILES ${PROJECT_BINARY_DIR}/LoadLibraries.C DESTINATION ${LIB_INSTALL_DIR})
-endif (ROOT_FOUND)
