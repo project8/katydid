@@ -22,7 +22,6 @@ using std::vector;
 namespace Katydid
 {
     KT_REGISTER_PROCESSOR(KTCompareCandidates, "compare-candidates");
-    static KTNORegistrar< KTProcessor, KTCompareCandidates > sCompCandRegistrar("compare-candidates");
 
     KTLOGGER(cclog, "KTCompareCandidates");
 
