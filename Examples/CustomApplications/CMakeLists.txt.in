@@ -2,7 +2,7 @@
 # Copy this file into a directory where you want build a Katydid-based application.
 # Customize below where noted to adapt it to what you want to build.
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0)
 
 # Change this name to something suitable (optional)
 project (MyApplication)
@@ -16,6 +16,7 @@ link_directories(${@PROJECT_NAME@_LIBRARY_DIRS})
 # Build an executable
 # Change the target name (first argument) and the source file (second argument)
 add_executable (MyApplication ${CMAKE_CURRENT_SOURCE_DIR}/MyApplication.cc)
+
 # Change the target name (first argument) to match the above target
 # Add any further libraries you need to link against after the library variables (second and third arguments)
 target_link_libraries (MyApplication ${@PROJECT_NAME@_DEPENDS_LIBRARIES} ${@PROJECT_NAME@_LIBRARIES})
