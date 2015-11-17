@@ -212,6 +212,18 @@ namespace Katydid
         {
             (*newTS)(bin) = Convert((ts)(bin));
         }
+        //*** DEBUG ***//
+        /**/
+        std::stringstream rawtsstream, tsstream;
+        for (unsigned iBin = 0; iBin < 10; ++iBin)
+        {
+            rawtsstream << (ts)(iBin) << "  ";
+            tsstream << (*newTS)(iBin) << "  ";
+        }
+        KTWARN(egglog_scdac, "Raw TS:  " << rawtsstream.str());
+        KTWARN(egglog_scdac, "TS:  " << tsstream.str());
+        /**/
+        //*** DEBUG ***//
         return newTS;
     }
 

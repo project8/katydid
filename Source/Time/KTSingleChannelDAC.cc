@@ -170,6 +170,7 @@ namespace Katydid
 
         KTDEBUG(egglog_scdac, "Assigning voltages with:\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
+                "\tBit depth mode: " << fBitDepthMode << '\n' <<
                 "\tVoltage levels: " << (1 << fNBits) << '\n' <<
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
