@@ -229,7 +229,7 @@ namespace Katydid
             nPoints = newDataSlice.GetSetOfPoints(0).size();
             KTDEBUG(sdlog, "Spectrogram slice " << i << " has " << nPoints << " points above threshold");
 
-            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints(0).begin(); it != newDataSlice.GetSetOfPoints(0).end(); ++it )
+            for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints(0).begin(); it != newDataSlice.GetSetOfPoints(0).end(); ++it )
             {
                 newData.AddPoint( i, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)i+0.5), YbinWidth * ((double)it->first+0.5), it->second.fOrdinate, it->second.fThreshold ), 0 );
             }
