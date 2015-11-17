@@ -24,6 +24,7 @@ set (DATA_HEADERFILES
     EventAnalysis/KTMultiTrackEventData.hh
     EventAnalysis/KTProcessedTrackData.hh
     EventAnalysis/KTSparseWaterfallCandidateData.hh
+    EventAnalysis/KTSpectrumCollectionData.hh
     EventAnalysis/KTWaterfallCandidateData.hh
     Time/KTDigitizerTestData.hh
     Time/KTEggHeader.hh
@@ -75,6 +76,7 @@ set (DATA_SOURCEFILES
     EventAnalysis/KTMultiTrackEventData.cc
     EventAnalysis/KTProcessedTrackData.cc
     EventAnalysis/KTSparseWaterfallCandidateData.cc
+    EventAnalysis/KTSpectrumCollectionData.cc
     EventAnalysis/KTWaterfallCandidateData.cc
     Time/KTDigitizerTestData.cc
     Time/KTEggHeader.cc

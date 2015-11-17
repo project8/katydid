@@ -31,6 +31,8 @@ namespace Katydid
             const KTAxisProperties< 1 >& GetAxis() const;
             KTAxisProperties< 1 >& GetAxis();
 
+            const std::string& GetOrdinateLabel() const;
+
             virtual double GetReal(unsigned bin) const;
             virtual double GetImag(unsigned bin) const;
 
@@ -59,6 +61,11 @@ namespace Katydid
             unsigned fNTimeBins;
 
     };
+
+    inline const std::string& KTFrequencySpectrumPolar::GetOrdinateLabel() const
+    {
+        return GetDataLabel();
+    }
 
     inline double KTFrequencySpectrumPolar::GetReal(unsigned bin) const
     {

@@ -3,27 +3,27 @@
     {
         "processors":
         [
-	        { "type": "egg-processor",           "name": "egg" },
-	        { "type": "forward-fft",             "name": "fft" },
+            { "type": "egg-processor",           "name": "egg" },
+            { "type": "forward-fftw",            "name": "fft" },
             { "type": "convert-to-power",        "name": "to-ps" },
-	        { "type": "root-spectrogram-writer", "name": "writer" }
+            { "type": "root-spectrogram-writer", "name": "writer" }
         ],
         
         "connections":
         [
-	        {
-	            "signal": "egg:header",
-	            "slot": "fft:header"
-	        },
-	        
-	        {
-	            "signal": "egg:ts",
-	            "slot": "fft:ts-fftw"
-	        },
-	        {
-	            "signal": "fft:fft",
-	            "slot": "writer:fs-fftw"
-	        }
+            {
+                "signal": "egg:header",
+                "slot": "fft:header"
+            },
+        
+            {
+                "signal": "egg:ts",
+                "slot": "fft:ts-fftw"
+            },
+            {
+                "signal": "fft:fft",
+                "slot": "writer:fs-fftw"
+            }
         ],
         
         "run-queue":
