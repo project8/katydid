@@ -61,7 +61,8 @@ namespace Katydid
     {
         if (! data) return;
 
-        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTSliceHeader& slHeader = data->Of<KTSliceHeader>();
+        uint64_t sliceNumber = slHeader.GetSliceNumber();
 
         KTRawTimeSeriesData& tsData = data->Of<KTRawTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
@@ -70,18 +71,26 @@ namespace Katydid
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            const KTRawTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
-            if (spectrum != NULL)
+            const KTRawTimeSeries* ts = tsData.GetTimeSeries(iComponent);
+            if (ts != NULL)
             {
                 stringstream conv;
                 conv << "histRawTS_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                TH1I* powerSpectrum = KT2ROOT::CreateHistogram(spectrum, histName);
-                powerSpectrum->SetDirectory(fWriter->GetFile());
-                powerSpectrum->Write();
+                TH1I* tsHist = NULL;
+                if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                {
+                    tsHist = KT2ROOT::CreateHistogram(ts, histName);
+                }
+                else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                {
+                    KTVarTypePhysicalArray< int64_t > array(*ts, false);
+                    tsHist = KT2ROOT::CreateHistogram(&array, histName);
+                }
+                tsHist->SetDirectory(fWriter->GetFile());
+                tsHist->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-                KTINFO(publog, "raw ts hist written");
             }
         }
         return;
