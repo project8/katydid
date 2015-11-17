@@ -18,10 +18,8 @@ namespace Katydid
             fComponentData(1),
             fIntercept(0.),
             fIntercept_deviation(0.),
-            fFineProbe_sigma_1(0.),
-            fFineProbe_sigma_2(0.),
-            fFineProbe_SNR_1(0.),
-            fFineProbe_SNR_2(0.),
+            fFineProbe_sigma(0.),
+            fFineProbe_SNR(0.),
             fFFT_peak(0.),
             fFFT_peak_uncertainty(0.),
             fFFT_sigma(0.),
@@ -37,10 +35,8 @@ namespace Katydid
             fComponentData(orig.fComponentData),
             fIntercept(orig.fIntercept),
             fIntercept_deviation(orig.fIntercept_deviation),
-            fFineProbe_sigma_1(orig.fFineProbe_sigma_1),
-            fFineProbe_sigma_2(orig.fFineProbe_sigma_2),
-            fFineProbe_SNR_1(orig.fFineProbe_SNR_1),
-            fFineProbe_SNR_2(orig.fFineProbe_SNR_2),
+            fFineProbe_sigma(orig.fFineProbe_sigma),
+            fFineProbe_SNR(orig.fFineProbe_SNR),
             fFFT_peak(orig.fFFT_peak),
             fFFT_peak_uncertainty(orig.fFFT_peak_uncertainty),
             fFFT_sigma(orig.fFFT_sigma),
@@ -82,10 +78,8 @@ namespace Katydid
             out << "Linear Fit Result Contents:\n" <<
                 "\tIntercept: " << hdr.GetIntercept(iComponent) << '\n' <<
                 "\tIntercept deviation: " << hdr.GetIntercept_deviation(iComponent) << '\n' <<
-                "\tFirst local min deviation (sigma): " << hdr.GetFineProbe_sigma_1(iComponent) << '\n' <<
-                "\tSecond local min deviation (sigma): " << hdr.GetFineProbe_sigma_2(iComponent) << '\n' <<
-                "\tFirst local min deviation (SNR): " << hdr.GetFineProbe_SNR_1(iComponent) << '\n' <<
-                "\tSecond local min deviation (SNR): " << hdr.GetFineProbe_SNR_2(iComponent) << '\n' <<
+                "\tLocal min deviation (sigma): " << hdr.GetFineProbe_sigma(iComponent) << '\n' <<
+                "\tLocal min deviation (SNR): " << hdr.GetFineProbe_SNR(iComponent) << '\n' <<
                 "\tMagnetron peak: " << hdr.GetFFT_peak(iComponent) << '\n' <<
                 "\tMagnetron peak uncertainty: " << hdr.GetFFT_peak_uncertainty(iComponent) << '\n' <<
                 "\tMagnetron peak significance (sigma): " << hdr.GetFFT_sigma(iComponent) << '\n' <<

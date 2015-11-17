@@ -30,21 +30,25 @@ namespace Katydid
             KTLinearFitResult& SetNComponents(unsigned num);
 
         public:
-            double GetChi2(unsigned component = 0) const;
-            void SetChi2(double chi2, unsigned component = 0);
+            double GetIntercept(unsigned component = 0) const;
+            void SetIntercept(double intercept, unsigned component = 0);
 
-            uint64_t GetNDF(unsigned component = 0) const;
-            void SetNDF(uint64_t ndf, unsigned component = 0);
+            double GetIntercept_deviation(unsigned component = 0) const;
+            void SetIntercept_deviation(double dev, unsigned component = 0);
+
+            double GetFineProbe_sigma(unsigned component = 0) const;
+            void SetFineProbe_sigma(double sigma, unsigned component = 0);
+
+            double GetFineProbe_SNR(unsigned component = 0) const;
+            void SetFineProbe_SNR(double snr, unsigned component = 0);
 
         private:
             struct PerComponentData
             {
                 double Intercept;
                 double Intercept_deviation;
-                double FineProbe_sigma_1;
-                double FineProbe_sigma_2;
-                double FineProbe_SNR_1;
-                double FineProbe_SNR_2;
+                double FineProbe_sigma;
+                double FineProbe_SNR;
                 double FFT_peak;
                 double FFT_peak_uncertainty;
                 double FFT_sigma;
@@ -96,51 +100,27 @@ namespace Katydid
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_sigma_1(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_sigma(unsigned component) const
     {
         return fComponentData[component].fFineProbe_sigma_1;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_sigma_1(double sigma, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_sigma(double sigma, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fFineProbe_sigma_1 = sigma;
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_sigma_2(unsigned component) const
-    {
-        return fComponentData[component].fFineProbe_sigma_2;
-    }
-
-    inline void KTLinearFitResult::SetIntercept(double sigma, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFineProbe_sigma_2 = sigma;
-        return;
-    }
-
-    inline double KTLinearFitResult::GetFineProbe_SNR_1(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_SNR(unsigned component) const
     {
         return fComponentData[component].fFineProbe_SNR_1;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_SNR_1(double snr, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_SNR(double snr, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fFineProbe_SNR_1 = snr;
-        return;
-    }
-
-    inline double KTLinearFitResult::GetFineProbe_SNR_2(unsigned component) const
-    {
-        return fComponentData[component].fFineProbe_SNR_2;
-    }
-
-    inline void KTLinearFitResult::SetFineProbe_SNR_2(double snr, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFineProbe_SNR_2 = snr;
         return;
     }
 
