@@ -30,31 +30,66 @@ namespace Katydid
             KTLinearFitResult& SetNComponents(unsigned num);
 
         public:
+
+            double GetSlope(unsigned component = 0) const;
+            void SetSlope(double slope, unsigned component = 0);
+
             double GetIntercept(unsigned component = 0) const;
             void SetIntercept(double intercept, unsigned component = 0);
 
             double GetIntercept_deviation(unsigned component = 0) const;
             void SetIntercept_deviation(double dev, unsigned component = 0);
 
-            double GetFineProbe_sigma(unsigned component = 0) const;
-            void SetFineProbe_sigma(double sigma, unsigned component = 0);
+            double GetFineProbe_sigma_1(unsigned component = 0) const;
+            void SetFineProbe_sigma_1(double sigma, unsigned component = 0);
 
-            double GetFineProbe_SNR(unsigned component = 0) const;
-            void SetFineProbe_SNR(double snr, unsigned component = 0);
+            double GetFineProbe_sigma_2(unsigned component = 0) const;
+            void SetFineProbe_sigma_2(double sigma, unsigned component = 0);
+
+            double GetFineProbe_SNR_1(unsigned component = 0) const;
+            void SetFineProbe_SNR_1(double snr, unsigned component = 0);
+
+            double GetFineProbe_SNR_2(unsigned component = 0) const;
+            void SetFineProbe_SNR_2(double snr, unsigned component = 0);
+/*
+            double GetFFT_peak(unsigned component = 0) const;
+            void SetFFT_peak(double amp, unsigned component = 0);
+
+            double GetFFT_peak_uncertainty(unsigned component = 0) const;
+            void SetFFT_peak_uncertainty(double sigma, unsigned component = 0);
+
+            double GetFFT_sigma(unsigned component = 0) const;
+            void SetFFT_sigma(double sigma, unsigned component = 0);
+
+            double GetFFT_SNR(unsigned component = 0) const;
+            void SetFFT_SNR(double snr, unsigned component = 0);
+*/
+            double GetFit_width(unsigned component = 0) const;
+            void SetFit_width(double freq, unsigned component = 0);
+
+            double GetNPoints(unsigned component = 0) const;
+            void SetNPoints(double n, unsigned component = 0);
+
+            double GetProbeWidth(unsigned component = 0) const;
+            void SetProbeWidth(double s, unsigned component = 0);
 
         private:
             struct PerComponentData
             {
+                double Slope;
                 double Intercept;
                 double Intercept_deviation;
-                double FineProbe_sigma;
-                double FineProbe_SNR;
-                double FFT_peak;
+                double FineProbe_sigma_1;
+                double FineProbe_sigma_2;
+                double FineProbe_SNR_1;
+                double FineProbe_SNR_2;
+/*              double FFT_peak;
                 double FFT_peak_uncertainty;
                 double FFT_sigma;
                 double FFT_SNR;
-                double Fit_width;
+*/              double Fit_width;
                 uint64_t NPoints;
+                double ProbeWidth;
             };
 
             std::vector< PerComponentData > fComponentData;
@@ -74,6 +109,18 @@ namespace Katydid
     {
         fComponentData.resize(num);
         return *this;
+    }
+
+    inline double KTLinearFitResult::GetSlope(unsigned component) const
+    {
+        return fComponentData[component].fSlope;
+    }
+
+    inline void KTLinearFitResult::SetSlope(double slope, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fSlope = slope;
+        return;
     }
 
     inline double KTLinearFitResult::GetIntercept(unsigned component) const
@@ -100,30 +147,54 @@ namespace Katydid
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_sigma(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_sigma_1(unsigned component) const
     {
         return fComponentData[component].fFineProbe_sigma_1;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_sigma(double sigma, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_sigma_1(double sigma, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fFineProbe_sigma_1 = sigma;
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_SNR(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_sigma_2(unsigned component) const
+    {
+        return fComponentData[component].fFineProbe_sigma_2;
+    }
+
+    inline void KTLinearFitResult::SetFineProbe_sigma_2(double sigma, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fFineProbe_sigma_2 = sigma;
+        return;
+    }
+
+    inline double KTLinearFitResult::GetFineProbe_SNR_1(unsigned component) const
     {
         return fComponentData[component].fFineProbe_SNR_1;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_SNR(double snr, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_SNR_1(double snr, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fFineProbe_SNR_1 = snr;
         return;
     }
 
+    inline double KTLinearFitResult::GetFineProbe_SNR_2(unsigned component) const
+    {
+        return fComponentData[component].fFineProbe_SNR_2;
+    }
+
+    inline void KTLinearFitResult::SetFineProbe_SNR_2(double snr, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fFineProbe_SNR_2 = snr;
+        return;
+    }
+/*
     inline double KTLinearFitResult::GetFFT_peak(unsigned component) const
     {
         return fComponentData[component].fFFT_peak;
@@ -171,7 +242,7 @@ namespace Katydid
         fComponentData[component].fFFT_SNR = snr;
         return;
     }
-
+*/
     inline double KTLinearFitResult::GetFit_width(unsigned component) const
     {
         return fComponentData[component].fFit_width;
@@ -193,6 +264,18 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fNPoints = n;
+        return;
+    }
+
+    inline double KTLinearFitResult::GetProbeWidth(unsigned component) const
+    {
+        return fComponentData[component].fProbeWidth;
+    }
+
+    inline void KTLinearFitResult::SetProbeWidth(double s, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fProbeWidth = s;
         return;
     }
     

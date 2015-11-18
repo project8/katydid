@@ -37,8 +37,10 @@ namespace Katydid
      - MaxFrequency: maximum frequency bound for intercept
      - MinBin: bin associated with minimum frequency bound
      - MaxBin: bin associated with maximum frequency bound
-     - ProbeWidth: 's' in the above description, the Gaussian width of the error metric
-     - StepSize: increment in the intercept sweep
+     - ProbeWidthBig: 's' in the above description, the Gaussian width of the error metric
+     - ProbeWidthSmall: same as above for the 2nd component
+     - StepSizeBig: increment in the intercept sweep
+     - StepSizeSmall: same as above for the 2nd component
 
      Slots:
      - "thresh": void (KTDataPtr) -- Requires KTProcessedTrackData, KTDiscriminatedPoints2DData; Adds KTLinearFitResult
@@ -67,11 +69,17 @@ namespace Katydid
             unsigned GetMaxBin() const;
             void SetMaxBin(unsigned bin);
 
-         	double GetProbeWidth() const;
-         	void SetProbeWidth( double sigma );
+         	double GetProbeWidthBig() const;
+         	void SetProbeWidthBig( double sigma );
 
-         	double GetStepSize() const;
-         	void SetStepSize( double dalpha );
+         	double GetProbeWidthSmall() const;
+         	void SetProbeWidthSmall( double sigma );
+
+         	double GetStepSizeBig() const;
+         	void SetStepSizeBig( double dalpha );
+
+         	double GetStepSizeSmall() const;
+         	void SetStepSizeSmall( double dalpha );
 
         private:
             double fMinFrequency;
@@ -80,12 +88,14 @@ namespace Katydid
             unsigned fMaxBin;
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
-            double fProbeWidth;
-            double fStepSize;
+            double fProbeWidthBig;
+            double fProbeWidthSmall;
+            double fStepSizeBig;
+            double fStepSizeSmall;
 
         public:
         	bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
-        	
+
             //***************
             // Signals
             //***************
@@ -147,27 +157,51 @@ namespace Katydid
         return;
     }
 
-    inline double KTLinearDensityProbeFit::GetProbeWidth() const
+    inline double KTLinearDensityProbeFit::GetProbeWidthBig() const
     {
-    	return fProbeWidth;
+    	return fProbeWidthBig;
     }
 
-    inline void KTLinearDensityProbeFit::SetProbeWidth(double sigma)
+    inline void KTLinearDensityProbeFit::SetProbeWidthBig(double sigma)
     {
-    	fProbeWidth = sigma;
+    	fProbeWidthBig = sigma;
     	return;
     }
 
-    inline double KTLinearDensityProbeFit::GetStepSize() const
+    inline double KTLinearDensityProbeFit::GetProbeWidthSmall() const
     {
-    	return fStepSize;
+    	return fProbeWidthSmall;
+    }
+
+    inline void KTLinearDensityProbeFit::SetProbeWidthSmall(double sigma)
+    {
+    	fProbeWidthSmall = sigma;
+    	return;
+    }
+
+    inline double KTLinearDensityProbeFit::GetStepSizeBig() const
+    {
+    	return fStepSizeBig;
     }
     
-    inline void KTLinearDensityProbeFit::SetStepSize(double dalpha)
+    inline void KTLinearDensityProbeFit::SetStepSizeBig(double dalpha)
     {
-    	fStepSize = dalpha;
+    	fStepSizeBig = dalpha;
     	return;
     }
+
+    inline double KTLinearDensityProbeFit::GetStepSizeSmall() const
+    {
+    	return fStepSizeSmall;
+    }
+    
+    inline void KTLinearDensityProbeFit::SetStepSizeSmall(double dalpha)
+    {
+    	fStepSizeSmall = dalpha;
+    	return;
+    }
+
+
 } /* namespace Katydid */
 
 #endif /* KTLINEARDENSITYPROBEFIT_HH */

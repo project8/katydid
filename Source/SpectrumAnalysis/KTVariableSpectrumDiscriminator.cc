@@ -52,6 +52,7 @@ namespace Katydid
             fCalculateMaxBin(true),
             fMagnitudeCache(),
             fDiscrim1DSignal("disc-1d", this),
+            fDiscrim2DSignal("disc-2d", this),
             fFSPolarSlot("fs-polar", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fFSFFTWSlot("fs-fftw", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fNormFSPolarSlot("norm-fs-polar", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
@@ -384,7 +385,7 @@ namespace Katydid
 
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {

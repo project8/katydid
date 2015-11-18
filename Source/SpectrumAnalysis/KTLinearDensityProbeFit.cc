@@ -34,8 +34,10 @@ namespace Katydid
             fMaxMin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
-            fProbeWidth(1e6),
-            fStepSize(0.2e6),
+            fProbeWidthBig(1e6),
+            fProbeWidthSmall(0.02e6),
+            fStepSizeBig(0.2e6),
+            fStepSizeSmall(0.004e6),
             fLinearDensityFitSignal("linear-density-fit", this),
             fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal),
     {
@@ -65,14 +67,23 @@ namespace Katydid
         {
             SetMaxBin(node->GetValue< unsigned >("max-bin"));
         }
-        if (node->Has("probe-width"))
+        if (node->Has("probe-width-big"))
         {
-            SetProbeWidth(node->GetValue< double >("probe-width"));
-            SetStepSize(node->GetValue< double >("probe-width") / 5);
+            SetProbeWidthBig(node->GetValue< double >("probe-width-big"));
+            SetStepSizeBig(node->GetValue< double >("probe-width-big") / 5);
         }
-        if (node->Has("step-size"))
+        if (node->Has("probe-width-small"))
         {
-            SetStepSize(node->GetValue< double >("step-size"));
+            SetProbeWidthSmall(node->GetValue< double >("probe-width-small"));
+            SetStepSizeSmall(node->GetValue< double >("probe-width-small") / 5);
+        }
+        if (node->Has("step-size-big"))
+        {
+            SetStepSizeBig(node->GetValue< double >("step-size-big"));
+        }
+        if (node->Has("step-size-small"))
+        {
+            SetStepSizeSmall(node->GetValue< double >("step-size-small"));
         }
 
         return true;
@@ -83,38 +94,61 @@ namespace Katydid
         return exp( pow(arg/sigma, 2)/2 );
     }
 
-    double Significance( vector<double> x, vector<int> omit, char* metric )
+    double Significance( vector<double> x, vector<uint64_t> omit, uint64_t include, char* metric )
     {
-        double noiseAmp = 0, signalAmp = 0;
-        double noiseDev = 0, signalDev = 0;
+        double noiseAmp = 0;
+        double noiseDev = 0;
 
-        for( int i = 0; i < x.size(); i++ )
+        uint64_t s = x.size();
+        for( uint64_t i = 0; i < s; i++ )
         {
             if( find( omit.begin(), omit.end() ) == omit.end() )
             {
-                noiseAmp += x[i];
-                noiseDev += pow( x[i], 2 );
-            }
-            else
-            {
-                signalAmp += x[i];
-                signalDev += pow( x[i], 2 );
+                noiseAmp += x[i] / s;
+                noiseDev += pow( x[i], 2 ) / s;
             }
         }
         noiseDev = sqrt( noiseDev - pow( noiseAmp, 2 ) );
-        signalDev = sqrt( signalDev - pow( signalAmp, 2 ) );
 
         if( metric == "Sigma" )
-            return (signalAmp - noiseAmp) / sqrt( pow( signalDev, 2 ) + pow( noiseDev, 2 ) );
+            return (x[include] - noiseAmp) / noiseDev;
         else if( metric == "SNR" )
-            return signalAmp / noiseAmp;
+            return x[include] / noiseAmp;
         else
             return -1.;
+    }
+
+    double findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width )
+    {
+        double alpha = fMinFrequency;
+        double bestAlpha = 0, bestError = 0, error = 0;
+        while( alpha <= fMaxFrequency )
+        {
+            error = 0;
+
+            // Calculate the associated error to the current value of alpha
+            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+            {
+                error -= Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, width );
+            }
+
+            if( error < bestError || bestError == 0 )
+            {
+                bestError = error;
+                bestAlpha = alpha;
+            }
+            
+            // Increment alpha
+            alpha += dalpha;
+        }
+
+        return bestAlpha;
     }
 
     bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
     {
         KTLinearFitResult& newData = data.Of< KTLinearFitResult >();
+        newData.SetSlope( data.fSlope );
 
         if (fCalculateMinBin)
         {
@@ -127,29 +161,33 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
+        newData.SetNComponents(2);
+        PerformTest( pts, newData, fProbeWidthBig, fStepSizeBig, 0 );
+        PerformTest( pts, newData, fProbeWidthSmall, fStepSizeSmall, 1 );
+
+        return true;
+    }
+
+    bool KTLinearDensityProbeFit::PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component)
+    {
         double alpha = fMinFrequency;
         double bestAlpha = 0, bestError = 0, error = 0;
-        while( alpha <= fMaxFrequency )
+        
+        bestAlpha = findIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
+        newData.SetIntercept( bestAlpha, component );
+
+        double alphaMean = 0.;
+        double alphaVar = 0.;
+        double t = 0.;
+
+        for( double squeeze = 0.55; squeeze <= 1.45; squeeze += 0.1 )
         {
-            error = 0;
-
-            // Calculate the associated error to the current value of alpha
-            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
-            {
-                error -= Gaus_Eval( it->second.fOrdinate - data.fSlope * it->second.fAbscissa - alpha, fProbeWidth );
-            }
-
-            if( error < bestError || bestError == 0 )
-            {
-                bestError = error;
-                bestAlpha = alpha;
-            }
-            
-            // Increment alpha
-            alpha += fStepSize;
+            t = findIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth * squeeze );
+            alphaMean += t / 10;
+            alphaVar += pow( t, 2 ) / 10;
         }
-
-        newData.SetIntercept( bestAlpha, 0 );
+        alphaVar = sqrt( alphaVar - pow( alphaMean, 2 ) );
+        newData.SetIntercept_deviation( alphaVar, component );
 
         // Next we begin the fine sweep of alpha
         alpha = bestAlpha - 2 * fProbeWidth;
@@ -163,8 +201,8 @@ namespace Katydid
         vector<double> localMinValues;
 
         // We expect two largely pronounced minima from the sideband boundaries
-        int bestLocalMin = -1, nextBestLocalMin = -1;
-        int nLocalMins = 0;
+        uint64_t bestLocalMin = -1, nextBestLocalMin = -1;
+        uint64_t nLocalMins = 0;
 
         // Temp variables used for identifying local minima
         double error_x1 = 0, error_x2 = 0;
@@ -175,7 +213,7 @@ namespace Katydid
             error = 0;
             for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
             {
-                error -= Gaus_Eval( it->second.fOrdinate - data.fSlope * it->second.fAbscissa - alpha, smallWidth );
+                error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alpha, smallWidth );
             }
 
             // A local minima is defined simply as a point x_n where
@@ -209,12 +247,80 @@ namespace Katydid
 
         } // End fine sweep of alpha
 
-        vector<int> candidates;
+        vector<uint64_t> candidates;
         candidates.push_back( bestLocalMin );
         candidates.push_back( nextBestLocalMin );
 
-        newData.SetFineProbe_sigma( Significance( localMinValues, candidates, "Sigma" ), 0 );
-        newData.SetFineProbe_SNR( Significance( localMinValues, candidates, "SNR" ), 0 );
+        newData.SetFineProbe_sigma_1( Significance( localMinValues, candidates, bestLocalMin, "Sigma" ), component );
+        newData.SetFineProbe_sigma_2( Significance( localMinValues, candidates, nextBestLocalMin, "Sigma" ), component );
+        newData.SetFineProbe_SNR_1( Significance( localMinValues, candidates, bestLocalMin, "SNR" ), component );
+        newData.SetFineProbe_SNR_2( Significance( localMinValues, candidates, nextBestLocalMin, "SNR" ), component );
+
+        double alphaBound_lower = localMins[min( bestLocalMin, nextBestLocalMin )];
+        double alphaBound_upper = localMins[max( bestLocalMin, nextBestLocalMin )];
+
+        // We will push the lower bound down from the left-most of the two minima
+        // until its error exceeds the threshold
+        error = 0;
+        while( error < threshold )
+        {
+            alphaBound_lower -= smallStep;
+            error = 0;
+            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+            {
+                error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope(component) * it->second.fAbscissa - alphaBound_lower, smallWidth );
+            }
+        }
+
+        // And the same for the upper bound
+        error = 0;
+        while( error < threshold )
+        {
+            alphaBound_upper += smallStep;
+            error = 0;
+            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+            {
+                error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alphaBound_upper, smallWidth );
+            }
+        }
+
+        // Final cut
+        // Keep only points for which y - q*x falls between the alpha bounds
+
+        vector<double> finalCutX, finalCutY;                                                                        
+        uint64_t nFinal = 0;
+
+        // Loop through the outliers
+        for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+        {
+            alpha = it->second.fOrdinate - data.fSlope * it->second.fAbscissa;
+            if( alpha > alphaBound_lower && alpha < alphaBound_upper )
+            {
+                finalCutX.push_back( it->second.fAbscissa );
+                finalCutY.push_back( it->second.fOrdinate );
+                nFinal++;
+            }
+        }
+
+        newData.SetFitWidth( alphaBound_upper - alphaBound_lower, component );
+        newData.SetNPoints( nFinal, component );
+
+        double eXY = 0, eX = 0, eY = 0, eX2 = 0;
+        uint64_t s = finalCutX.size();
+
+        for( uint64_t i = 0; i < s; i++ )
+        {
+            eXY += finalCutX[i] * finalCutY[i] / s;
+            eX += finalCutX[i] / s;
+            eY += finalCutY[i] / s;
+            eX2 += pow( finalCutX[i], 2 ) / s;
+        }
+
+        newData.SetSlope( (eXY - eX * eY)/(eX2 - pow( eX, 2 )), component );
+        newData.SetIntercept( eY - newData.GetSlope( component ) * eX, component );
+        newData.SetProbeWidth( fProbeWidth, component );
+
+        return true;
     }
 
 
