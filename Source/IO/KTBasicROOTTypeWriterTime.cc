@@ -143,16 +143,16 @@ namespace Katydid
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
-            if (spectrum != NULL)
+            const KTTimeSeries* ts = tsData.GetTimeSeries(iComponent);
+            if (ts != NULL)
             {
                 stringstream conv;
                 conv << "histTS_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreateHistogram(histName);
-                powerSpectrum->SetDirectory(fWriter->GetFile());
-                powerSpectrum->Write();
+                TH1D* tsHist = ts->CreateHistogram(histName);
+                tsHist->SetDirectory(fWriter->GetFile());
+                tsHist->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
