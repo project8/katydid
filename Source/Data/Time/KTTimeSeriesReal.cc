@@ -74,6 +74,17 @@ namespace Katydid
         {
             hist->SetBinContent((int)iBin+1, (*this)(iBin));
         }
+        /**/
+        std::stringstream tsstream, histstream;
+        for (unsigned i=0; i<30; ++i)
+        {
+            tsstream << (*this)(i) << "  ";
+            histstream << hist->GetBinContent((int)i+1) << "  ";
+        }
+        KTWARN( tslog, "ts: " << tsstream.str() );
+        KTWARN( tslog, "hist: " << histstream.str() );
+        /**/
+        //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
         return hist;

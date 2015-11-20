@@ -371,7 +371,7 @@ namespace Katydid
             std::stringstream readstream, writestream;
             M3DataReader< int64_t > readIfc(fM3Stream->GetChannelRecord( 0 )->GetData(), fHeader.GetChannelHeader(0)->GetDataTypeSize(), fHeader.GetChannelHeader(0)->GetDataFormat());
             KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
-            for (unsigned iBin = 0; iBin < 10; ++iBin)
+            for (unsigned iBin = 0; iBin < 30; ++iBin)
             {
                 std::cout << "read at " << readPos + iBin << " = " << readPos << " + " << iBin << ";    write at " << writePos + iBin << " = " << writePos << " + " << iBin << std::endl;
                 readstream << readIfc.at( readPos + iBin ) << "  ";

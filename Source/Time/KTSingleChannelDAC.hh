@@ -215,7 +215,7 @@ namespace Katydid
         //*** DEBUG ***//
         /**/
         std::stringstream rawtsstream, tsstream;
-        for (unsigned iBin = 0; iBin < 10; ++iBin)
+        for (unsigned iBin = 0; iBin < 30; ++iBin)
         {
             rawtsstream << (ts)(iBin) << "  ";
             tsstream << (*newTS)(iBin) << "  ";
