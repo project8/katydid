@@ -380,9 +380,9 @@ namespace Katydid
             fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fComponent );
             fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fComponent );
             fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fComponent );
-        }
 
-        fLinearFitResultTree->Fill();
+            fLinearFitResultTree->Fill();
+        }
 
         return;
     }
