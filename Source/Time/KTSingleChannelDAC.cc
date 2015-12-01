@@ -218,8 +218,8 @@ namespace Katydid
             {
                 if (bitAdjustCounter == 0)
                 {
-                    valueHoldPos = d2a_ud(level, &params);
-                    valueHoldNeg = d2a_ud(-level, &params);
+                    valueHoldPos = d2a_id(level, &params);
+                    valueHoldNeg = d2a_id(-level, &params);
                 }
                 fVoltages[fIntLevelOffset + level] = valueHoldPos;
                 fVoltages[fIntLevelOffset - level] = valueHoldNeg;
@@ -228,7 +228,7 @@ namespace Katydid
             }
             if (bitAdjustCounter == 0)
             {
-                valueHoldNeg = d2a_ud(-fIntLevelOffset, &params);
+                valueHoldNeg = d2a_id(-fIntLevelOffset, &params);
             }
             fVoltages[0] = valueHoldNeg;
         }
