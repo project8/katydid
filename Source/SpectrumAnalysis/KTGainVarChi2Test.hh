@@ -22,6 +22,9 @@ namespace Katydid
     using namespace Nymph;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
+    class KTPowerSpectrumUncertaintyData;
+    class KTDiscriminatedPoints1DData;
+    class KTGainVarChi2Data;
     class KTSpline;
 
     /*!
@@ -78,7 +81,7 @@ namespace Katydid
             
             bool Calculate(KTPowerSpectrumData& data, KTPowerSpectrumUncertaintyData& sigma, KTGainVariationData& gvData);
 
-            bool CalculateSpectrum(const KTPowerSpectrum* spectrum, const KTPowerSpectrum* sigma, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
+            bool CalculateSpectrum(const KTPowerSpectrum* spectrum, const KTPowerSpectrum* sigma, const KTSpline* spline, KTGainVarChi2Data& newData, unsigned component=0);
 
             //***************
             // Signals
@@ -96,46 +99,46 @@ namespace Katydid
 
     };
 
-    inline double KTVariableSpectrumDiscriminator::GetMinFrequency() const
+    inline double KTGainVarChi2Test::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMinFrequency(double freq)
+    inline void KTGainVarChi2Test::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         return;
     }
 
-    inline double KTVariableSpectrumDiscriminator::GetMaxFrequency() const
+    inline double KTGainVarChi2Test::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMaxFrequency(double freq)
+    inline void KTGainVarChi2Test::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         return;
     }
 
-    inline unsigned KTVariableSpectrumDiscriminator::GetMinBin() const
+    inline unsigned KTGainVarChi2Test::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMinBin(unsigned bin)
+    inline void KTGainVarChi2Test::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline unsigned KTVariableSpectrumDiscriminator::GetMaxBin() const
+    inline unsigned KTGainVarChi2Test::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMaxBin(unsigned bin)
+    inline void KTGainVarChi2Test::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;
@@ -145,4 +148,4 @@ namespace Katydid
 
 } /* namespace Katydid */
 
-#endif /* KTVARIABLESPECTRUMDISCRIMINATOR_HH_ */
+#endif /* KTGainVarChi2Test_HH_ */

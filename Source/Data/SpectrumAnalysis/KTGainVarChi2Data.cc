@@ -15,18 +15,14 @@ namespace Katydid
 
     KTGainVarChi2Data::KTGainVarChi2Data() :
             KTExtensibleData< KTGainVarChi2Data >(),
-            fComponentData(1),
-            fChi2(0.),
-            fNDF(1)
+            fComponentData(1)
     {
     }
 
     KTGainVarChi2Data::KTGainVarChi2Data(const KTGainVarChi2Data& orig) :
             KTExtensibleData< KTGainVarChi2Data >(orig),
             
-            fComponentData(orig.fComponentData),
-            fChi2(orig.fChi2),
-            fNDF(orig.fNDF)
+            fComponentData(orig.fComponentData)
     {
     }
 
@@ -38,8 +34,6 @@ namespace Katydid
     {
         KTExtensibleData< KTGainVarChi2Data >::operator=(rhs);
         fComponentData = rhs.fComponentData;
-        fChi2 = rhs.fChi2;
-        fNDF = rhs.fNDF;
 
         return *this;
     }

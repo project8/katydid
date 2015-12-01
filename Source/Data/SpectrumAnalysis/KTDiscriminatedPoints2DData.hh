@@ -36,7 +36,7 @@ namespace Katydid
                 double fThreshold;
                 Point(double abscissa, double ordinate, double applicate, double threshold) : fAbscissa(abscissa), fOrdinate(ordinate), fApplicate(applicate), fThreshold(threshold) {}
             };
-            typedef std::map< std::pair< unsigned, unsigned >, double, KTPairCompare > SetOfPoints;
+            typedef std::map< std::pair< unsigned, unsigned >, Point > SetOfPoints;
 
         protected:
             struct PerComponentData
@@ -53,7 +53,7 @@ namespace Katydid
 
             unsigned GetNComponents() const;
 
-            void AddPoint(unsigned bin, const Point& point, unsigned component = 0);
+            void AddPoint(unsigned binX, unsigned binY, const Point& point, unsigned component = 0);
         
             KTDiscriminatedPoints2DData& SetNComponents(unsigned channels);
 
@@ -83,18 +83,18 @@ namespace Katydid
     {
         return fComponentData[component].fPoints;
     }
-
+/*
     inline double KTDiscriminatedPoints2DData::GetThreshold(unsigned component) const
     {
         return fComponentData[component].fThreshold;
     }
-
+*/
     inline unsigned KTDiscriminatedPoints2DData::GetNComponents() const
     {
         return unsigned(fComponentData.size());
     }
 
-    inline void KTDiscriminatedPoints1DData::AddPoint(unsigned binX, unsigned binY, const Point& point, unsigned component)
+    inline void KTDiscriminatedPoints2DData::AddPoint(unsigned binX, unsigned binY, const Point& point, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fPoints.insert(std::make_pair(std::make_pair(binX, binY), point));

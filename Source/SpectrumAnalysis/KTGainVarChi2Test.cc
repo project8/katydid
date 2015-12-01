@@ -8,8 +8,10 @@
 #include "KTGainVarChi2Test.hh"
 
 #include "KTGainVariationData.hh"
+#include "KTGainVarChi2Data.hh"
 #include "KTParam.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTPowerSpectrumUncertaintyData.hh"
 #include "KTSpline.hh"
 
 #include <cmath>
@@ -34,11 +36,11 @@ namespace Katydid
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
-            fMaxMin(1),
+            fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fChi2TestSignal("chi2-test", this),
-            fPSSlot("ps", this, &KTGainVarChi2Test::Calculate, &fChi2TestSignal),
+            fPSSlot("ps", this, &KTGainVarChi2Test::Calculate, &fChi2TestSignal)
     {
     }
 
@@ -87,12 +89,12 @@ namespace Katydid
 
         unsigned nComponents = data.GetNComponents();
 
-        newData.SetNBins(data.GetSpectrum(0)->size());
-        newData.SetBinWidth(data.GetSpectrum(0)->GetBinWidth());
+        //newData.SetNBins(data.GetSpectrum(0)->size());
+        //newData.SetBinWidth(data.GetSpectrum(0)->GetBinWidth());
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            if (! CalculateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
+            if (! CalculateSpectrum(data.GetSpectrum(iComponent), sigma.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
                 KTERROR(sdlog, "Chi-squared calculation on spectrum (component " << iComponent << ") failed");
                 return false;
@@ -127,7 +129,7 @@ namespace Katydid
         }
 
         newData.SetChi2( chi2 );
-        newData.SetNDF( NDF );
+        newData.SetNDF( ndf );
 
         spline->AddToCache(splineImp);
 

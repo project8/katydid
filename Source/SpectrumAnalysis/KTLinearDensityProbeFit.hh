@@ -18,6 +18,9 @@
 namespace Katydid
 {
     using namespace Nymph;
+    class KTProcessedTrackData;
+    class KTDiscriminatedPoints2DData;
+    class KTLinearFitResult;
 
     /*!
      @class KTLinearDensityProbeFit
@@ -33,14 +36,14 @@ namespace Katydid
      It is anticipated that with s << 1 MHz, the signal will be consistently found, and with s ~ 1 MHz, the sideband will be found
 
      Available configuration values:
-     - MinFrequency: minimum frequency bound for intercept
-     - MaxFrequency: maximum frequency bound for intercept
-     - MinBin: bin associated with minimum frequency bound
-     - MaxBin: bin associated with maximum frequency bound
-     - ProbeWidthBig: 's' in the above description, the Gaussian width of the error metric
-     - ProbeWidthSmall: same as above for the 2nd component
-     - StepSizeBig: increment in the intercept sweep
-     - StepSizeSmall: same as above for the 2nd component
+     - "min-frequency": minimum frequency bound for intercept
+     - "max-frequency": maximum frequency bound for intercept
+     - "min-bin": bin associated with minimum frequency bound
+     - "max-bin": bin associated with maximum frequency bound
+     - "probe-width-big": 's' in the above description, the Gaussian width of the error metric
+     - "probe-width-small": same as above for the 2nd component
+     - "step-size-big": increment in the intercept sweep
+     - "step-size-small": same as above for the 2nd component
 
      Slots:
      - "thresh": void (KTDataPtr) -- Requires KTProcessedTrackData, KTDiscriminatedPoints2DData; Adds KTLinearFitResult
@@ -94,7 +97,8 @@ namespace Katydid
             double fStepSizeSmall;
 
         public:
-        	bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
+        	bool Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
+        	bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
 
             //***************
             // Signals

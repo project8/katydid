@@ -397,7 +397,7 @@ namespace Katydid
         }
         fWriter->AddTree( fLinearFitResultTree );
 
-        fLinearFitResultTree->Branch( "Component" &fLineFitData.fComponent, "fComponent/i" );
+        fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
         fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
         fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
         fLinearFitResultTree->Branch( "InterceptDev", &fLineFitData.fIntercept_deviation, "fIntercept_deviation/d" );

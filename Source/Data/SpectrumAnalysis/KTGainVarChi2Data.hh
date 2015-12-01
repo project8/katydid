@@ -39,8 +39,8 @@ namespace Katydid
         private:
             struct PerComponentData
             {
-                double Chi2;
-                uint64_t NDF;
+                double fChi2;
+                uint64_t fNDF;
             };
 
             std::vector< PerComponentData > fComponentData;

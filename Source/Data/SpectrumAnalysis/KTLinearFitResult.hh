@@ -76,20 +76,20 @@ namespace Katydid
         private:
             struct PerComponentData
             {
-                double Slope;
-                double Intercept;
-                double Intercept_deviation;
-                double FineProbe_sigma_1;
-                double FineProbe_sigma_2;
-                double FineProbe_SNR_1;
-                double FineProbe_SNR_2;
-/*              double FFT_peak;
-                double FFT_peak_uncertainty;
-                double FFT_sigma;
-                double FFT_SNR;
-*/              double Fit_width;
-                uint64_t NPoints;
-                double ProbeWidth;
+                double fSlope;
+                double fIntercept;
+                double fIntercept_deviation;
+                double fFineProbe_sigma_1;
+                double fFineProbe_sigma_2;
+                double fFineProbe_SNR_1;
+                double fFineProbe_SNR_2;
+/*              double fFFT_peak;
+                double fFFT_peak_uncertainty;
+                double fFFT_sigma;
+                double fFFT_SNR;
+*/              double fFit_width;
+                uint64_t fNPoints;
+                double fProbeWidth;
             };
 
             std::vector< PerComponentData > fComponentData;

@@ -6,11 +6,15 @@
  */
 
 #include "KTLinearDensityProbeFit.hh"
+#include "KTDiscriminatedPoints2DData.hh"
+#include "KTProcessedTrackData.hh"
+#include "KTLinearFitResult.hh"
 
 #include "KTParam.hh"
 
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -31,7 +35,7 @@ namespace Katydid
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
-            fMaxMin(1),
+            fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fProbeWidthBig(1e6),
@@ -39,7 +43,7 @@ namespace Katydid
             fStepSizeBig(0.2e6),
             fStepSizeSmall(0.004e6),
             fLinearDensityFitSignal("linear-density-fit", this),
-            fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal),
+            fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal)
     {
     }
 
@@ -102,7 +106,7 @@ namespace Katydid
         uint64_t s = x.size();
         for( uint64_t i = 0; i < s; i++ )
         {
-            if( find( omit.begin(), omit.end() ) == omit.end() )
+            if( find( omit.begin(), omit.end(), i ) == omit.end() )
             {
                 noiseAmp += x[i] / s;
                 noiseDev += pow( x[i], 2 ) / s;
@@ -148,8 +152,8 @@ namespace Katydid
     bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
     {
         KTLinearFitResult& newData = data.Of< KTLinearFitResult >();
-        newData.SetSlope( data.fSlope );
-
+        newData.SetSlope( data.GetSlope() );
+/*
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectra()[0]->FindBin(fMinFrequency));
@@ -160,7 +164,7 @@ namespace Katydid
             SetMaxBin(data.GetSpectra()[0]->FindBin(fMaxFrequency));
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
-
+*/
         newData.SetNComponents(2);
         PerformTest( pts, newData, fProbeWidthBig, fStepSizeBig, 0 );
         PerformTest( pts, newData, fProbeWidthSmall, fStepSizeSmall, 1 );
@@ -256,8 +260,8 @@ namespace Katydid
         newData.SetFineProbe_SNR_1( Significance( localMinValues, candidates, bestLocalMin, "SNR" ), component );
         newData.SetFineProbe_SNR_2( Significance( localMinValues, candidates, nextBestLocalMin, "SNR" ), component );
 
-        double alphaBound_lower = localMins[min( bestLocalMin, nextBestLocalMin )];
-        double alphaBound_upper = localMins[max( bestLocalMin, nextBestLocalMin )];
+        double alphaBound_lower = localMins[std::min( bestLocalMin, nextBestLocalMin )];
+        double alphaBound_upper = localMins[std::max( bestLocalMin, nextBestLocalMin )];
 
         // We will push the lower bound down from the left-most of the two minima
         // until its error exceeds the threshold
@@ -293,7 +297,7 @@ namespace Katydid
         // Loop through the outliers
         for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
         {
-            alpha = it->second.fOrdinate - data.fSlope * it->second.fAbscissa;
+            alpha = it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa;
             if( alpha > alphaBound_lower && alpha < alphaBound_upper )
             {
                 finalCutX.push_back( it->second.fAbscissa );
@@ -302,7 +306,7 @@ namespace Katydid
             }
         }
 
-        newData.SetFitWidth( alphaBound_upper - alphaBound_lower, component );
+        newData.SetFit_width( alphaBound_upper - alphaBound_lower, component );
         newData.SetNPoints( nFinal, component );
 
         double eXY = 0, eX = 0, eY = 0, eX2 = 0;
