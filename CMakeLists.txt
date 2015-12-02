@@ -16,6 +16,7 @@ nymph_prepare_project ()
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
 #optional build switches
+set (Katydid_USE_CPP11 TRUE CACHE BOOL "Flag to optionally use C++11")
 set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
 set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
@@ -25,6 +26,9 @@ set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB TRUE CACHE BOOL "Flag to optionally use MatIO libraries, needed to read MAT files")
 set (Katydid_ENABLE_BUILD_DOC FALSE CACHE BOOL "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)")
 
+if (Katydid_USE_CPP11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif (Katydid_USE_CPP11)
 
 ##############
 # Dependencies
@@ -170,6 +174,16 @@ endif (Katydid_ENABLE_TUTORIAL)
 
 # add an option to build the profiling tests
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
+
+# libthorax
+add_subdirectory( libthorax )
+pbuilder_add_submodule_libraries( ${libthorax_LIBRARIES} )
+include_directories( ${libthorax_DEP_INCLUDE_DIRS} )
+# add to the RPATH to be used when installing, but only if it's not a system directory
+list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${libthorax_LIBRARY_DIR}" isSystemDir )
+if ( "${isSystemDir}" STREQUAL "-1" )
+   list( APPEND CMAKE_INSTALL_RPATH ${libthorax_LIBRARY_DIR} )
+endif( "${isSystemDir}" STREQUAL "-1" )
 
 # Monarch
 if (Katydid_USE_MONARCH)

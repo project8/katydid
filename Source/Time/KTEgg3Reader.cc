@@ -367,19 +367,19 @@ namespace Katydid
             }
 
             //*** DEBUG ***//
-            /*
+            /**/
             std::stringstream readstream, writestream;
             M3DataReader< int64_t > readIfc(fM3Stream->GetChannelRecord( 0 )->GetData(), fHeader.GetChannelHeader(0)->GetDataTypeSize(), fHeader.GetChannelHeader(0)->GetDataFormat());
             KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
-            for (unsigned iBin = 0; iBin < 10; ++iBin)
+            for (unsigned iBin = 0; iBin < 30; ++iBin)
             {
                 std::cout << "read at " << readPos + iBin << " = " << readPos << " + " << iBin << ";    write at " << writePos + iBin << " = " << writePos << " + " << iBin << std::endl;
                 readstream << readIfc.at( readPos + iBin ) << "  ";
                 writestream << writeIfc( writePos + iBin ) << "  ";
             }
-            */
-            //KTWARN(eggreadlog, "Reading:  " << readstream.str());
-            //KTWARN(eggreadlog, "Writing:  " << writestream.str());
+            KTWARN(eggreadlog, "Reading:  " << readstream.str());
+            KTWARN(eggreadlog, "Writing:  " << writestream.str());
+            /**/
             //*** DEBUG ***//
 
             // update samplesRemainingToCopy
@@ -497,6 +497,7 @@ namespace Katydid
                 newChanHeader->SetDataTypeSize(channelHeader.GetDataTypeSize());
                 newChanHeader->SetDataFormat(ConvertMonarch3DataFormat(channelHeader.GetDataFormat()));
                 newChanHeader->SetBitDepth(channelHeader.GetBitDepth());
+                newChanHeader->SetBitAlignment(channelHeader.GetBitAlignment());
                 newChanHeader->SetVoltageOffset(channelHeader.GetVoltageOffset());
                 newChanHeader->SetVoltageRange(channelHeader.GetVoltageRange());
                 newChanHeader->SetDACGain(channelHeader.GetDACGain());
