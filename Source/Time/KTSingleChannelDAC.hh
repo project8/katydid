@@ -59,9 +59,9 @@ namespace Katydid
             bool Configure(const KTSingleChannelDAC& master);
 
             /// Set input parameters with the DAC gain calculated from the number of bits and the voltage range
-            void SetInputParameters(unsigned nBits, double voltageOffset, double voltageRange);
+            void SetInputParameters(unsigned dataTypeSize, unsigned nBits, double voltageOffset, double voltageRange, unsigned bitAlignment);
             /// Set input parameters with the DAC gain specified explicitly
-            void SetInputParameters(unsigned nBits, double voltageOffset, double voltageRange, double dacGain);
+            void SetInputParameters(unsigned datatypeSize, unsigned nBits, double voltageOffset, double voltageRange, double dacGain, unsigned bitAlignment);
 
             bool SetDigitizedDataFormat(uint32_t format);
 
@@ -69,6 +69,7 @@ namespace Katydid
 
             bool SetEmulatedNBits(unsigned nBits);
 
+            MEMBERVARIABLE_NOSET(unsigned, DataTypeSize);
             MEMBERVARIABLE_NOSET(unsigned, NBits);
             MEMBERVARIABLE_NOSET(double, VoltageOffset);
             MEMBERVARIABLE_NOSET(double, VoltageRange);
@@ -77,6 +78,7 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(TimeSeriesType, TimeSeriesType);
             MEMBERVARIABLE_NOSET(BitDepthMode, BitDepthMode);
             MEMBERVARIABLE_NOSET(unsigned, EmulatedNBits);
+            MEMBERVARIABLE_NOSET(unsigned, BitAlignment);
 
         public:
             void InitializeWithHeader(KTChannelHeader* header);
@@ -212,6 +214,18 @@ namespace Katydid
         {
             (*newTS)(bin) = Convert((ts)(bin));
         }
+        //*** DEBUG ***//
+        /**/
+        std::stringstream rawtsstream, tsstream;
+        for (unsigned iBin = 0; iBin < 30; ++iBin)
+        {
+            rawtsstream << (ts)(iBin) << "  ";
+            tsstream << (*newTS)(iBin) << "  ";
+        }
+        KTWARN(egglog_scdac, "Raw TS:  " << rawtsstream.str());
+        KTWARN(egglog_scdac, "TS:  " << tsstream.str());
+        /**/
+        //*** DEBUG ***//
         return newTS;
     }
 

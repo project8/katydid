@@ -23,10 +23,12 @@ namespace Katydid
 
     KTSingleChannelDAC::KTSingleChannelDAC(/*const std::string& name*/) :
             //KTProcessor(name),
+            fDataTypeSize(1),
             fNBits(8),
             fVoltageOffset(0.),
             fVoltageRange(0.),
             fDACGain(-1.),
+            fBitAlignment(sBitsAlignedLeft),
             fDigitizedDataFormat(sInvalidFormat),
             fTimeSeriesType(kRealTimeSeries),
             fBitDepthMode(kNoChange),
@@ -51,17 +53,21 @@ namespace Katydid
         if (node->Has("dac-gain") && node->GetValue< double >("dac-gain") >= 0.)
         {
             SetInputParameters(
+                    node->GetValue< unsigned >("data-type-size", fDataTypeSize),
                     node->GetValue< unsigned >("n-bits", fNBits),
                     node->GetValue< double >("voltage-offset", fVoltageOffset),
                     node->GetValue< double >("voltage-range", fVoltageRange),
-                    node->GetValue< double >("dac-gain", fDACGain));
+                    node->GetValue< double >("dac-gain", fDACGain),
+                    node->GetValue< unsigned >("bit-alignment", fBitAlignment));
         }
         else
         {
             SetInputParameters(
+                    node->GetValue< unsigned >("data-type-size", fDataTypeSize),
                     node->GetValue< unsigned >("n-bits", fNBits),
                     node->GetValue< double >("voltage-offset", fVoltageOffset),
-                    node->GetValue< double >("voltage-range", fVoltageRange));
+                    node->GetValue< double >("voltage-range", fVoltageRange),
+                    node->GetValue< unsigned >("bit-alignment", fBitAlignment));
         }
 
         string timeSeriesTypeString = node->GetValue("time-series-type", "real");
@@ -84,7 +90,7 @@ namespace Katydid
     bool KTSingleChannelDAC::Configure(const KTSingleChannelDAC& master)
     {
         //nbits, min voltage, voltage range, dac gain
-        SetInputParameters(master.GetNBits(), master.GetVoltageOffset(), master.GetVoltageRange(), master.GetDACGain());
+        SetInputParameters(master.GetDataTypeSize(), master.GetNBits(), master.GetVoltageOffset(), master.GetVoltageRange(), master.GetDACGain(), master.GetBitAlignment());
 
         SetTimeSeriesType(master.GetTimeSeriesType());
         SetEmulatedNBits(master.GetEmulatedNBits());
@@ -92,29 +98,33 @@ namespace Katydid
         return true;
     }
 
-    void KTSingleChannelDAC::SetInputParameters(unsigned nBits, double voltageOffset, double voltageRange)
+    void KTSingleChannelDAC::SetInputParameters(unsigned dataTypeSize, unsigned nBits, double voltageOffset, double voltageRange, unsigned bitAlignment)
     {
+        fDataTypeSize = dataTypeSize;
         fNBits = nBits;
         fVoltageOffset = voltageOffset;
         fVoltageRange = voltageRange;
         fDACGain = -1.;
+        fBitAlignment = bitAlignment;
         fShouldRunInitialize = true;
         return;
     }
 
-    void KTSingleChannelDAC::SetInputParameters(unsigned nBits, double voltageOffset, double voltageRange, double dacGain)
+    void KTSingleChannelDAC::SetInputParameters(unsigned dataTypeSize, unsigned nBits, double voltageOffset, double voltageRange, double dacGain, unsigned bitAlignment)
     {
+        fDataTypeSize = dataTypeSize;
         fNBits = nBits;
         fVoltageOffset = voltageOffset;
         fVoltageRange = voltageRange;
         fDACGain = dacGain;
+        fBitAlignment = bitAlignment;
         fShouldRunInitialize = true;
         return;
     }
 
     void KTSingleChannelDAC::InitializeWithHeader(KTChannelHeader* header)
     {
-        SetInputParameters(header->GetBitDepth(), header->GetVoltageOffset(), header->GetVoltageRange(), header->GetDACGain());
+        SetInputParameters(header->GetDataTypeSize(), header->GetBitDepth(), header->GetVoltageOffset(), header->GetVoltageRange(), header->GetDACGain(), header->GetBitAlignment());
         fDigitizedDataFormat = header->GetDataFormat();
         Initialize();
         return;
@@ -137,23 +147,32 @@ namespace Katydid
         unsigned levelDivisor = 1;
 
         dig_calib_params params;
+        // The bit adjustment is the number of bits that will be ignored, starting at the LSB.
+        // This will be used to account for both left-alignment of the data, if that's the case and if the bit depth is smaller than the data type size,
+        // and any simulated reduction in the bit depth that's requested by the user.
+        unsigned bitAdjustment = 0;
+        unsigned dataTypeBitSize = fDataTypeSize * 8;
+        if (fBitAlignment == sBitsAlignedLeft)
+        {
+            bitAdjustment += dataTypeBitSize - fNBits;
+        }
         if (fBitDepthMode == kReducing)
         {
-            get_calib_params(fEmulatedNBits, sizeof(uint64_t), fVoltageOffset, fVoltageRange, &params);
-            levelDivisor = 1 << (fNBits - fEmulatedNBits);
+            bitAdjustment += fNBits - fEmulatedNBits;
+            //get_calib_params(fEmulatedNBits, sizeof(uint64_t), fVoltageOffset, fVoltageRange, fBitAlignment == sBitsAlignedRight, &params);
+            //levelDivisor = 1 << (fNBits - fEmulatedNBits);
             //TODO: for reducing the bit depth, we currently don't account for a separately specified DAC gain
+        }
+
+        unsigned bitsForVoltageArray = fBitAlignment == sBitsAlignedLeft ? dataTypeBitSize : fNBits;
+        if (fDACGain < 0)
+        {
+            get_calib_params(bitsForVoltageArray, sizeof(uint64_t), fVoltageOffset, fVoltageRange, fBitAlignment == sBitsAlignedRight, &params);
+            fDACGain = params.dac_gain;
         }
         else
         {
-            if (fDACGain < 0)
-            {
-                get_calib_params(fNBits, sizeof(uint64_t), fVoltageOffset, fVoltageRange, &params);
-                fDACGain = params.dac_gain;
-            }
-            else
-            {
-                get_calib_params2(fNBits, sizeof(uint64_t), fVoltageOffset, fVoltageRange, fDACGain, &params);
-            }
+            get_calib_params2(bitsForVoltageArray, sizeof(uint64_t), fVoltageOffset, fVoltageRange, fDACGain, fBitAlignment == sBitsAlignedRight, &params);
         }
 
         if (fBitDepthMode == kIncreasing)
@@ -169,7 +188,10 @@ namespace Katydid
         }
 
         KTDEBUG(egglog_scdac, "Assigning voltages with:\n" <<
+                "\tData type size: " << fDataTypeSize << " bytes\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
+                "\tBit depth mode: " << fBitDepthMode << '\n' <<
+                "\tBit alignment: " << fBitAlignment << '\n' <<
                 "\tVoltage levels: " << (1 << fNBits) << '\n' <<
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
@@ -187,20 +209,42 @@ namespace Katydid
         if (fDigitizedDataFormat == sDigitizedS)
         {
             fIntLevelOffset = params.levels / 2;
+            double valueHoldPos = d2a_id(0, &params);
+            double valueHoldNeg = valueHoldPos;
             KTDEBUG( egglog_scdac, "Calculating voltage conversion for signed integers; integer level offset: " << fIntLevelOffset );
-            for (int64_t level = -fIntLevelOffset; level < fIntLevelOffset; ++level)
+            fVoltages[fIntLevelOffset] = valueHoldPos;
+            unsigned bitAdjustCounter = 1;
+            for (int64_t level = 1; level < fIntLevelOffset; ++level)
             {
-                fVoltages[level + fIntLevelOffset] = d2a_id(level / levelDivisor, &params);
+                if (bitAdjustCounter == 0)
+                {
+                    valueHoldPos = d2a_id(level, &params);
+                    valueHoldNeg = d2a_id(-level, &params);
+                }
+                fVoltages[fIntLevelOffset + level] = valueHoldPos;
+                fVoltages[fIntLevelOffset - level] = valueHoldNeg;
+                ++bitAdjustCounter;
+                if (bitAdjustCounter == bitAdjustment) bitAdjustCounter = 0;
             }
+            if (bitAdjustCounter == 0)
+            {
+                valueHoldNeg = d2a_id(-fIntLevelOffset, &params);
+            }
+            fVoltages[0] = valueHoldNeg;
         }
         else //(fDigitizedDataFormat == sDigitizedUS)
         {
             fIntLevelOffset = 0;
+            unsigned bitAdjustCounter = 0;
+            double valueHold = 0.;
             KTDEBUG( egglog_scdac, "Calculating voltage conversion for unsigned integers; integer level offset: " << fIntLevelOffset );
             for (uint64_t level = 0; level < params.levels; ++level)
             {
-                fVoltages[level] = d2a_ud(level / levelDivisor, &params);
+                if (bitAdjustCounter == 0) valueHold = d2a_ud(level, &params);
+                fVoltages[level] = valueHold;
                 //KTWARN(egglog_scdac, "level " << level << ", voltage " << fVoltages[level]);
+                ++bitAdjustCounter;
+                if (bitAdjustCounter == bitAdjustment) bitAdjustCounter = 0;
             }
         }
 

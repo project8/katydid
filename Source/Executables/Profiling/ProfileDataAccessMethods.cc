@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-using namespace Katydid;
+//using namespace Katydid;
 using namespace std;
 
 using boost::unordered_map;
@@ -319,7 +319,7 @@ int main()
 
     unsigned nIterations = 2000000;
 
-    KTThroughputProfiler prof;
+    Nymph::KTThroughputProfiler prof;
 
     //*******************
     // Prepare Bundles
