@@ -23,6 +23,12 @@ namespace Katydid
     static const uint32_t sDigitizedS = 1;
     static const uint32_t sAnalog = 2;
 
+    /// Specifies whether the meaningful bits for each sample are aligned to the left or right in each sample word
+    /// e.g. For 14-bit digitizer bit depth, represented by a 16-bit sample word, are the 14 bits aligned to the left or right in the 16-bit word?
+    static const uint32_t sBitsAlignedLeft = 0;
+    static const uint32_t sBitsAlignedRight = 1;
+
+
 } /* namespace Katydid */
 
 #endif /* KTCONSTANTS_HH_ */

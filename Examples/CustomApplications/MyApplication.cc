@@ -5,11 +5,13 @@
  *      Author: nsoblath
  */
 
-#include "KTTimeSeries.hh"
+#include "KTTimeSeriesFFTW.hh"
+
+#include <iostream>
 
 int main()
 {
-    Katydid::KTTimeSeries ts(1, 0., 1.); // Create something Katydid-specific, just to show it works
+    Katydid::KTTimeSeriesFFTW ts(1, 0., 1.); // Create something Katydid-specific, just to show it works
     std::cout << "Hello World!" << std::endl; // What else did you expect to do in an example file?
     return 0;
 }

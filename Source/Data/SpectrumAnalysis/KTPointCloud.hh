@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    //using namespace Nymph;
 
     // 2-dimensional point, templated for the type (e.g. double, float . . .)
     // To associate other information with a 2-D point, derive a class from this one.

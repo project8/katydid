@@ -90,6 +90,7 @@ if (ROOT_FOUND)
 
     set (IO_LINKDEF_HEADERFILE LinkDef/IOLinkDef.hh)
     set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict.cxx)
+    set (IO_DICT_PCMFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict_rdict.pcm)
 endif (ROOT_FOUND)
 
 if (HDF5_FOUND)
@@ -123,6 +124,9 @@ set (KATYDID_LIBS
 
 if (ROOT_FOUND)
     ROOT_GENERATE_DICTIONARY ("${IO_DICT_HEADERFILES}" "${IO_LINKDEF_HEADERFILE}" "${IO_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+    if (Katydid_USE_CPP11)
+        pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
+    endif (Katydid_USE_CPP11)
 endif (ROOT_FOUND)
 
 add_library (KatydidIO ${IO_SOURCEFILES} ${IO_DICT_OUTFILE})

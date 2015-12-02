@@ -241,6 +241,7 @@ namespace Katydid
         newChanHeader->SetDataTypeSize(1);
         newChanHeader->SetDataFormat(sDigitizedUS);
         newChanHeader->SetBitDepth(8);
+        newChanHeader->SetBitAlignment(sBitsAlignedLeft);
         newChanHeader->SetVoltageOffset(-0.25);
         newChanHeader->SetVoltageRange(0.5);
         newChanHeader->SetDACGain(newChanHeader->GetVoltageRange() / (double)(1 << newChanHeader->GetBitDepth()));

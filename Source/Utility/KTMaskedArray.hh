@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    //using namespace Nymph;
     /*!
      @class KTMaskedArray
      @author N. S. Oblath
