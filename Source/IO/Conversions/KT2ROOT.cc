@@ -51,7 +51,7 @@ namespace Katydid
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
         //**** DEBUG ****//
-        /**/
+        /*
         std::stringstream tsstream, histstream;
         for (unsigned i=0; i<10; ++i)
         {
@@ -60,7 +60,7 @@ namespace Katydid
         }
         KTWARN( dblog, "ts: " << tsstream.str() );
         KTWARN( dblog, "hist: " << histstream.str() );
-        /**/
+        */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (ADC)");
@@ -77,7 +77,7 @@ namespace Katydid
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
         //**** DEBUG ****//
-        /**/
+        /*
         std::stringstream tsstream, histstream;
         for (unsigned i=0; i<10; ++i)
         {
@@ -86,7 +86,7 @@ namespace Katydid
         }
         KTWARN( dblog, "ts: " << tsstream.str() );
         KTWARN( dblog, "hist: " << histstream.str() );
-        /**/
+        */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (ADC)");
