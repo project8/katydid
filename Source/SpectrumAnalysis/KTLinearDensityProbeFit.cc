@@ -98,7 +98,7 @@ namespace Katydid
         return exp( pow(arg/sigma, 2)/2 );
     }
 
-    double Significance( vector<double> x, vector<uint64_t> omit, uint64_t include, char* metric )
+    double Significance( vector<double> x, vector<uint64_t> omit, uint64_t include, std::string metric )
     {
         double noiseAmp = 0;
         double noiseDev = 0;
@@ -122,7 +122,7 @@ namespace Katydid
             return -1.;
     }
 
-    double findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width )
+    double KTLinearDensityProbeFit::findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width )
     {
         double alpha = fMinFrequency;
         double bestAlpha = 0, bestError = 0, error = 0;
@@ -265,6 +265,12 @@ namespace Katydid
 
         // We will push the lower bound down from the left-most of the two minima
         // until its error exceeds the threshold
+
+        double threshold = 0;
+        for( int i = std::min( bestLocalMin, nextBestLocalMin ) + 1; i < std::max( bestLocalMin, nextBestLocalMin ); i++ )
+            if( localMinValues[i] < threshold || threshold == 0 )
+                threshold = localMinValues[i];
+
         error = 0;
         while( error < threshold )
         {

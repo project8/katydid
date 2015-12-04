@@ -189,7 +189,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::Discriminate(KTSpectrumCollectionData& data, KTGainVariationData& gvData)
+    bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData)
     {
         KTDiscriminatedPoints2DData& newData = data.Of< KTDiscriminatedPoints2DData >();
         KTDiscriminatedPoints1DData newDataSlice;
@@ -205,19 +205,19 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
         
-        newData.SetNBinsX( data.GetSpectra()->size() );
+        newData.SetNBinsX( data.GetSpectra().size() );
         newData.SetNBinsY( data.GetSpectra()[0]->size() );
-        newData.SetBinWidthX( data.GetTimeLength() );
+//        newData.SetBinWidthX( data.GetTimeLength() );
         newData.SetBinWidthY( data.GetSpectra()[0]->GetBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
         newDataSlice.SetNBins( data.GetSpectra()[0]->size() );
         newDataSlice.SetBinWidth( data.GetSpectra()[0]->GetBinWidth() );
 
-        double XbinWidth = data.GetTimeLength();
+        double XbinWidth = /*data.GetTimeLength();*/ 10e-6;
         double YbinWidth = data.GetSpectra()[0]->GetBinWidth();
 
-        unsigned nSpectra = data.GetSpectra()->size();
+        unsigned nSpectra = data.GetSpectra().size();
         unsigned nPoints = 0;
 
         for( unsigned i = 0; i < nSpectra; ++i )
@@ -469,7 +469,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTPowerSpectrum* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTPowerSpectrum* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {
