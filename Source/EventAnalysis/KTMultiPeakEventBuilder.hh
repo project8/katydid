@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+#include <list>
 
 namespace Nymph
 {
@@ -122,14 +123,44 @@ namespace Katydid
             unsigned GetDataCount() const;
 
         private:
+            bool FindMultiPeakTracks();
+            bool FindEvents();
 
             double fTimeBinWidth;
             double fFreqBinWidth;
 
-            std::vector< std::vector< KTProcessedTrackData > > fCompTracks; // input tracks
+            struct TrackComp
+            {
+                bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs);
+            };
 
-            typedef std::vector< unsigned > MultiPeakTrackRef;
-            std::vector< std::vector< MultiPeakTrackRef > > fMPTracks;
+            typedef std::set< KTProcessedTrackData, TrackComp > TrackSet;
+            typedef TrackSet::iterator TrackSetIt;
+            typedef TrackSet::const_iterator TrackSetCIt;
+
+            std::vector< TrackSet > fCompTracks; // input tracks
+
+            //typedef std::vector< std::list< KTProcessedTrackData > > MultiPeakTrackRef;
+            struct MultiPeakTrackRef
+            {
+                std::set< TrackSetCIt > fTrackRefs;
+                // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
+                double fMeanStartTimeInRunC;
+                double fSumStartTimeInRunC;
+                double fMeanEndTimeInRunC;
+                double fSumEndTimeInRunC;
+
+                MultiPeakTrackRef();
+                bool InsertTrack(const TrackSetCIt& trackRef);
+                void Clear();
+            };
+
+            struct MTRComp
+            {
+                bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs);
+            };
+
+            std::vector< std::set< MultiPeakTrackRef, MTRComp > > fMPTracks;
 
             std::set< KTDataPtr > fCandidates;
             unsigned fDataCount;

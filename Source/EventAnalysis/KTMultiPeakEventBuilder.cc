@@ -14,10 +14,13 @@
 #include "KTParam.hh"
 #include "KTProcessedTrackData.hh"
 
+#include <list>
+
 #ifndef NDEBUG
 #include <sstream>
 #endif
 
+using std::list;
 using std::set;
 using std::vector;
 
@@ -34,7 +37,7 @@ namespace Katydid
             fJumpFreqTolerance(1.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
-            fCompTracks(1, vector< KTProcessedTrackData >()),
+            fCompTracks(1, vector< TrackSet >()),
             fMPTracks(1, vector< MultiPeakTrackRef >()),
             fCandidates(),
             fDataCount(0),
@@ -73,7 +76,7 @@ namespace Katydid
         }
 
         // copy the full track data
-        fCompTracks[track.GetComponent()].push_back(track);
+        fCompTracks[track.GetComponent()].insert(track);
 
         KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency());
 
@@ -115,7 +118,17 @@ namespace Katydid
 
     bool KTMultiPeakEventBuilder::DoClustering()
     {
+        if (! FindMultiPeakTracks())
+        {
+            KTERROR(tclog, "An error occurred while identifying multipeak tracks");
+            return false;
+        }
 
+        if (! FindEvents())
+        {
+            KTERROR(tclog, "An error occurred while identifying events");
+            return false;
+        }
 
         KTDEBUG(tclog, "Event building complete");
         fEventsDoneSignal();
@@ -123,10 +136,117 @@ namespace Katydid
         return true;
     }
 
+    bool KTMultiPeakEventBuilder::FindMultiPeakTracks()
+    {
+        // loop over components
+        unsigned component = 0;
+        for (vector< TrackSet >::const_iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
+        {
+            fMPTracks[component].clear();
+
+            // loop over individual tracks
+            TrackSetCIt trackIt = compIt->begin();
+            if (trackIt == compIt->end()) continue;
+
+            list< MultiPeakTrackRef > activeTrackRefs;
+            activeTrackRefs.push_back(MultiPeakTrackRef());
+            activeTrackRefs.begin()->InsertTrack(trackIt);
+
+            ++trackIt;
+            while (trackIt != compIt->end())
+            {
+                // loop over active track refs
+                list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
+                bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
+                while (mptrIt != activeTrackRefs.end())
+                {
+                    double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
+
+                    // check to see if this track ref should no longer be active
+                    if (trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC > fSidebandTimeTolerance)
+                    {
+                        // there's no way this track, or any following it in the set, will match in time
+                        fMPTracks[component].insert(*mptrIt);
+                        mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
+                    }
+                    else
+                    {
+                        double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
+                        // check if this track should be added to this track ref
+                        if (! trackHasBeenAdded && fabs(deltaStartT) <= fSidebandTimeTolerance && fabs(deltaEndT) < fSidebandTimeTolerance)
+                        {
+                            // then this track matches this track ref
+                            mptrIt->InsertTrack(trackIt);
+                            trackHasBeenAdded = true;
+                        }
+
+                        ++mptrIt;
+                    }
+                } // while loop over active track refs
+            } // while loop over tracks
+
+            // now that we're done with tracks, all active track refs are finished as well
+            list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
+            while (mptrIt != activeTrackRefs.end())
+            {
+                fMPTracks[component].insert(*mptrIt);
+                mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
+            }
+
+            ++component;
+        } // for loop over components
+
+        return true;
+    }
+
+    bool KTMultiPeakEventBuilder::FindEvents()
+    {
+
+    }
+
+
     void KTMultiPeakEventBuilder::SetNComponents(unsigned nComps)
     {
-        fCompTracks.resize(nComps, vector< KTProcessedTrackData >());
+        //TODO: fix this
+        //fCompTracks.resize(nComps, vector< KTProcessedTrackData >());
         return;
     }
+
+    KTMultiPeakEventBuilder::MultiPeakTrackRef::MultiPeakTrackRef() :
+            fTrackRefs(),
+            fMeanStartTimeInRunC(0.),
+            fSumStartTimeInRunC(0.),
+            fMeanEndTimeInRunC(0.),
+            fSumEndTimeInRunC(0.)
+    {}
+
+    bool KTMultiPeakEventBuilder::MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)
+    {
+        if (fTrackRefs.find(trackRef) != fTrackRefs.end())  return false;
+
+        fTrackRefs.insert(trackRef);
+        fSumStartTimeInRunC += trackRef->GetStartTimeInRunC();
+        fSumEndTimeInRunC += trackRef->GetEndTimeInRunC();
+        double currentSize = (double)fTrackRefs.size();
+        fMeanStartTimeInRunC = fSumStartTimeInRunC / currentSize;
+        fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
+        return true;
+    }
+
+    bool KTMultiPeakEventBuilder::TrackComp::operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs)
+    {
+        if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
+        if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
+        if (lhs.GetStartFrequency() != rhs.GetStartFrequency()) return lhs.GetStartFrequency() < rhs.GetStartFrequency();
+        return lhs.GetEndFrequency() < rhs.GetEndFrequency();
+    }
+
+    bool KTMultiPeakEventBuilder::MTRComp::operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+    {
+        if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
+        return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
+    }
+
+
 
 } /* namespace Katydid */
