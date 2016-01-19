@@ -1,283 +1,184 @@
-# $Id: FindROOT.cmake 11956 2012-01-26 15:59:33Z s_voec01 $
-# - Find ROOT instalation
-# This module tries to find the ROOT installation on your system.
-# It tries to find the root-config script which gives you all the needed information.
-# If the system variable ROOTSYS is set this is straight forward.
-# If not the module uses the pathes given in ROOT_CONFIG_SEARCHPATH.
-# If you need an other path you should add this path to this varaible.  
-# The root-config script is then used to detect basically everything else.
-# This module defines a number of key variables and macros.
+# - Finds ROOT instalation
+# This module sets up ROOT information
+# It defines:
+# ROOT_FOUND          If the ROOT is found
+# ROOT_INCLUDE_DIR    PATH to the include directory
+# ROOT_INCLUDE_DIRS   PATH to the include directories (not cached)
+# ROOT_LIBRARIES      Most common libraries
+# ROOT_<name>_LIBRARY Full path to the library <name>
+# ROOT_LIBRARY_DIR    PATH to the library directory
+# ROOT_DEFINITIONS    Compiler definitions
+# ROOT_CXX_FLAGS      Compiler flags to used by client packages
+# ROOT_C_FLAGS        Compiler flags to used by client packages
+#
+# Updated by K. Smith (ksmith37@nd.edu) to properly handle
+#  dependencies in ROOT_GENERATE_DICTIONARY
 
-# F.Uhlig@gsi.de (fairroot.gsi.de)
+find_program(ROOT_CONFIG_EXECUTABLE root-config
+  HINTS $ENV{ROOTSYS}/bin)
 
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --prefix
+    OUTPUT_VARIABLE ROOTSYS
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-MESSAGE(STATUS "Looking for Root...")
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --version
+    OUTPUT_VARIABLE ROOT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-SET(ROOT_CONFIG_SEARCHPATH
-  ${SIMPATH}/tools/root/bin
-  $ENV{ROOTSYS}/bin
-)
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --incdir
+    OUTPUT_VARIABLE ROOT_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(ROOT_INCLUDE_DIRS ${ROOT_INCLUDE_DIR})
 
-DEFINE_PROPERTY (CACHED_VARIABLE PROPERTY ROOT_FOUND BRIEF_DOCS "Records whether ROOT has been found" FULL_DOCS "Records whether ROOT has been found") 
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --libdir
+    OUTPUT_VARIABLE ROOT_LIBRARY_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(ROOT_LIBRARY_DIRS ${ROOT_LIBRARY_DIR})
 
-SET(ROOT_DEFINITIONS "")
+set(rootlibs Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+set(ROOT_LIBRARIES)
+foreach(_cpt ${rootlibs} ${ROOT_FIND_COMPONENTS})
+  find_library(ROOT_${_cpt}_LIBRARY ${_cpt} HINTS ${ROOT_LIBRARY_DIR})
+  if(ROOT_${_cpt}_LIBRARY)
+    mark_as_advanced(ROOT_${_cpt}_LIBRARY)
+    list(APPEND ROOT_LIBRARIES ${ROOT_${_cpt}_LIBRARY})
+    list(REMOVE_ITEM ROOT_FIND_COMPONENTS ${_cpt})
+  endif()
+endforeach()
+list(REMOVE_DUPLICATES ROOT_LIBRARIES)
 
-SET(ROOT_INSTALLED_VERSION_TOO_OLD FALSE)
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --cflags
+    OUTPUT_VARIABLE __cflags
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCHALL "-(D|U)[^ ]*" ROOT_DEFINITIONS "${__cflags}")
+string(REGEX REPLACE "(^|[ ]*)-I[^ ]*" "" ROOT_CXX_FLAGS "${__cflags}")
+string(REGEX REPLACE "(^|[ ]*)-I[^ ]*" "" ROOT_C_FLAGS "${__cflags}")
 
-SET(ROOT_CONFIG_EXECUTABLE ROOT_CONFIG_EXECUTABLE-NOTFOUND)
+set(ROOT_USE_FILE ${CMAKE_CURRENT_LIST_DIR}/RootUseFile.cmake)
 
-FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config PATHS
-   ${ROOT_CONFIG_SEARCHPATH})
-    
-IF (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")
-  MESSAGE( WARNING "ROOT not installed in the searchpath and ROOTSYS is not set. Please
- set ROOTSYS or add the path to your ROOT installation in the Macro FindROOT.cmake in the
- subdirectory cmake/modules.")
-  SET(ROOT_FOUND FALSE)
-  RETURN()
-ELSE (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")
-  STRING(REGEX REPLACE "(^.*)/bin/root-config" "\\1" test ${ROOT_CONFIG_EXECUTABLE}) 
-  SET( ENV{ROOTSYS} ${test})
-  set( ROOTSYS ${test})
-ENDIF (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")  
+execute_process(
+  COMMAND ${ROOT_CONFIG_EXECUTABLE} --features
+  OUTPUT_VARIABLE _root_options
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(_root_options)
+foreach(_opt ${_root_options})
+  set(ROOT_${_opt}_FOUND TRUE)
+endforeach()
 
- 
-IF (ROOT_CONFIG_EXECUTABLE)
-   
-  SET(ROOT_FOUND FALSE)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(ROOT DEFAULT_MSG ROOT_CONFIG_EXECUTABLE
+    ROOTSYS ROOT_VERSION ROOT_INCLUDE_DIR ROOT_LIBRARIES ROOT_LIBRARY_DIR)
 
-  EXECUTE_PROCESS(COMMAND ${ROOT_CONFIG_EXECUTABLE} --version OUTPUT_VARIABLE ROOTVERSION)
-  STRING(STRIP ${ROOTVERSION} ROOTVERSION)
+mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
 
-  MESSAGE(STATUS "Looking for Root... - found $ENV{ROOTSYS}/bin/root")
-  MESSAGE(STATUS "Looking for Root... - version ${ROOTVERSION} ")   
+include(CMakeParseArguments)
+find_program(ROOTCINT_EXECUTABLE rootcint HINTS $ENV{ROOTSYS}/bin)
+find_program(GENREFLEX_EXECUTABLE genreflex HINTS $ENV{ROOTSYS}/bin)
+find_package(GCCXML)
 
-  # we need at least version 5.00/00
-  IF (NOT ROOT_MIN_VERSION)
-    SET(ROOT_MIN_VERSION "5.00/00")
-  ENDIF (NOT ROOT_MIN_VERSION)
-   
-  # now parse the parts of the user given version string into variables
-  STRING(REGEX REPLACE "^([0-9]+)\\.[0-9][0-9]+\\/[0-9][0-9]+" "\\1" req_root_major_vers "${ROOT_MIN_VERSION}")
-  STRING(REGEX REPLACE "^[0-9]+\\.([0-9][0-9])+\\/[0-9][0-9]+.*" "\\1" req_root_minor_vers "${ROOT_MIN_VERSION}")
-  STRING(REGEX REPLACE "^[0-9]+\\.[0-9][0-9]+\\/([0-9][0-9]+)" "\\1" req_root_patch_vers "${ROOT_MIN_VERSION}")
-   
-  # and now the version string given by qmake
-  STRING(REGEX REPLACE "^([0-9]+)\\.[0-9][0-9]+\\/[0-9][0-9]+.*" "\\1" found_root_major_vers "${ROOTVERSION}")
-  STRING(REGEX REPLACE "^[0-9]+\\.([0-9][0-9])+\\/[0-9][0-9]+.*" "\\1" found_root_minor_vers "${ROOTVERSION}")
-  STRING(REGEX REPLACE "^[0-9]+\\.[0-9][0-9]+\\/([0-9][0-9]+).*" "\\1" found_root_patch_vers "${ROOTVERSION}")
+#----------------------------------------------------------------------------
+# function ROOT_GENERATE_DICTIONARY( dictionary
+#                                    header1 header2 ...
+#                                    LINKDEF linkdef1 ...
+#                                    OPTIONS opt1...)
+function(ROOT_GENERATE_DICTIONARY dictionary)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINKDEF;OPTIONS" "" ${ARGN})
+  #---Get the list of include directories------------------
+  get_directory_property(incdirs INCLUDE_DIRECTORIES)
+  set(includedirs)
+  foreach( d ${incdirs})
+     set(includedirs ${includedirs} -I${d})
+  endforeach()
+  #---Get the list of header files-------------------------
+  set(headerfiles)
+  foreach(fp ${ARG_UNPARSED_ARGUMENTS})
+    if(${fp} MATCHES "[*?]") # Is this header a globbing expression?
+      file(GLOB files ${fp})
+      foreach(f ${files})
+        if(NOT f MATCHES LinkDef) # skip LinkDefs from globbing result
+          set(headerfiles ${headerfiles} ${f})
+        endif()
+      endforeach()
+    else()
+      find_file(headerFile ${fp} HINTS ${incdirs})
+      set(headerfiles ${headerfiles} ${headerFile})
+      unset(headerFile CACHE)
+    endif()
+  endforeach()
+  #---Get LinkDef.h file------------------------------------
+  set(linkdefs)
+  foreach( f ${ARG_LINKDEF})
+    find_file(linkFile ${f} HINTS ${incdirs})
+    set(linkdefs ${linkdefs} ${linkFile})
+    unset(linkFile CACHE)
+  endforeach()
+  #---call rootcint------------------------------------------
+  add_custom_command(OUTPUT ${dictionary}.cxx
+                     COMMAND ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx
+                                          -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs}
+                     DEPENDS ${headerfiles} ${linkdefs} VERBATIM)
+endfunction()
 
-  IF (found_root_major_vers LESS 5)
-    MESSAGE( WARNING "Invalid ROOT version \"${ROOTERSION}\", at least major version 4 is required, e.g. \"5.00/00\"")
-    RETURN()
-  ENDIF (found_root_major_vers LESS 5)
-
-  # compute an overall version number which can be compared at once
-  MATH(EXPR req_vers "${req_root_major_vers}*10000 + ${req_root_minor_vers}*100 + ${req_root_patch_vers}")
-  MATH(EXPR found_vers "${found_root_major_vers}*10000 + ${found_root_minor_vers}*100 + ${found_root_patch_vers}")
-   
-  IF (found_vers LESS req_vers)
-    SET(ROOT_FOUND FALSE)
-    SET(ROOT_INSTALLED_VERSION_TOO_OLD TRUE)
-  ELSE (found_vers LESS req_vers)
-    SET(ROOT_FOUND TRUE)
-  ENDIF (found_vers LESS req_vers)
-
-ENDIF (ROOT_CONFIG_EXECUTABLE)
-
-
-IF (ROOT_FOUND)
-  # ask root-config for the library dir
-  # Set ROOT_LIBRARY_DIR
-
-  EXECUTE_PROCESS(COMMAND  ${ROOT_CONFIG_EXECUTABLE} --libdir
-    OUTPUT_VARIABLE ROOT_LIBRARY_DIR_TMP )
-  STRING(STRIP ${ROOT_LIBRARY_DIR_TMP} ROOT_LIBRARY_DIR_TMP)
-
-  IF(EXISTS "${ROOT_LIBRARY_DIR_TMP}/")
-    SET(ROOT_LIBRARY_DIR ${ROOT_LIBRARY_DIR_TMP} )
-  ELSE(EXISTS "${ROOT_LIBRARY_DIR_TMP}/")
-    MESSAGE("Warning: ROOT_CONFIG_EXECUTABLE reported ${ROOT_LIBRARY_DIR_TMP} as library path,")
-    MESSAGE("Warning: but ${ROOT_LIBRARY_DIR_TMP} does NOT exist, ROOT must NOT be installed correctly.")
-  ENDIF(EXISTS "${ROOT_LIBRARY_DIR_TMP}/")
-    
-  # ask root-config for the binary dir
-  EXECUTE_PROCESS(COMMAND ${ROOT_CONFIG_EXECUTABLE} --bindir
-    OUTPUT_VARIABLE root_bins )
-  STRING(STRIP ${root_bins} root_bins)
-  SET(ROOT_BINARY_DIR ${root_bins})
-
-  # ask root-config for the include dir
-  EXECUTE_PROCESS(COMMAND  ${ROOT_CONFIG_EXECUTABLE} --incdir
-    OUTPUT_VARIABLE root_headers )
-  STRING(STRIP ${root_headers} root_headers)
-  SET(ROOT_INCLUDE_DIR ${root_headers})
-      # CACHE INTERNAL "")
-
-  # ask root-config for the library varaibles
-  EXECUTE_PROCESS(COMMAND ${ROOT_CONFIG_EXECUTABLE} --noldflags --noauxlibs --glibs
-    OUTPUT_VARIABLE root_flags )
-    
-  separate_arguments (root_flags)
-  foreach (lib ${root_flags})
-    string (STRIP ${lib} lib)
-    string (REPLACE "-l" "${ROOT_LIBRARY_DIR}/lib" lib ${lib})
-    set (lib "${lib}.so")
-    list (APPEND root_full_libs ${lib})
-  endforeach (lib)
-
-#  STRING(REGEX MATCHALL "([^ ])+"  root_libs_all ${root_flags})
-#  STRING(REGEX MATCHALL "-L([^ ])+"  root_library ${root_flags})
-#  REMOVE_FROM_LIST(root_flags "${root_libs_all}" "${root_library}")
-
-  SET(ROOT_LIBRARIES ${root_full_libs})
-
-  # Make variables changeble to the advanced user
-  MARK_AS_ADVANCED( ROOT_LIBRARY_DIR ROOT_INCLUDE_DIR ROOT_DEFINITIONS)
-
-  # Set ROOT_INCLUDES
-  SET( ROOT_INCLUDES ${ROOT_INCLUDE_DIR})
-
-  SET(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${ROOT_LIBRARY_DIR})
-
-  #######################################
-  #
-  #       Check the executables of ROOT 
-  #          ( rootcint ) 
-  #
-  #######################################
-
-  FIND_PROGRAM(ROOT_CINT_EXECUTABLE
-    NAMES rootcint
-    PATHS ${ROOT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-ENDIF (ROOT_FOUND)
-
-
-
-  ###########################################
-  #
-  #       Macros for building ROOT dictionary
-  #
-  ###########################################
-
-MACRO (ROOT_GENERATE_DICTIONARY_OLD )
- 
-   set(INFILES "")    
-
-   foreach (_current_FILE ${ARGN})
-
-     IF (${_current_FILE} MATCHES "^.*\\.h$")
-       IF (${_current_FILE} MATCHES "^.*Link.*$")
-         set(LINKDEF_FILE ${_current_FILE})
-       ELSE (${_current_FILE} MATCHES "^.*Link.*$")
-         set(INFILES ${INFILES} ${_current_FILE})
-       ENDIF (${_current_FILE} MATCHES "^.*Link.*$")
-     ELSE (${_current_FILE} MATCHES "^.*\\.h$")
-       IF (${_current_FILE} MATCHES "^.*\\.cxx$")
-         set(OUTFILE ${_current_FILE})
-       ELSE (${_current_FILE} MATCHES "^.*\\.cxx$")
-         set(INCLUDE_DIRS ${INCLUDE_DIRS} -I${_current_FILE})   
-       ENDIF (${_current_FILE} MATCHES "^.*\\.cxx$")
-     ENDIF (${_current_FILE} MATCHES "^.*\\.h$")
-     
-   endforeach (_current_FILE ${ARGN})
-   
-#  MESSAGE("INFILES: ${INFILES}")
-#  MESSAGE("OutFILE: ${OUTFILE}")
-#  MESSAGE("LINKDEF_FILE: ${LINKDEF_FILE}")
-#  MESSAGE("INCLUDE_DIRS: ${INCLUDE_DIRS}")
-
-   STRING(REGEX REPLACE "(^.*).cxx" "\\1.h" bla "${OUTFILE}")
-#   MESSAGE("BLA: ${bla}")
-   SET (OUTFILES ${OUTFILE} ${bla})
-
-   ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-      COMMAND ${ROOT_CINT_EXECUTABLE}
-      ARGS -f ${OUTFILE} -c -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES})
-
-#   MESSAGE("ROOT_CINT_EXECUTABLE has created the dictionary ${OUTFILE}")
-
-ENDMACRO (ROOT_GENERATE_DICTIONARY_OLD)
-
-  ###########################################
-  #
-  #       Macros for building ROOT dictionary
-  #
-  ###########################################
-
-MACRO (ROOT_GENERATE_DICTIONARY INFILES LINKDEF_FILE OUTFILE)
- 
-  get_directory_property(INCLUDE_DIRS_IN INCLUDE_DIRECTORIES)
-  list(REMOVE_ITEM INCLUDE_DIRS_IN /usr/include)
-  set(INCLUDE_DIRS)
-
-  foreach (_current_FILE ${INCLUDE_DIRS_IN})
-    set(INCLUDE_DIRS ${INCLUDE_DIRS} -I${_current_FILE})   
-  endforeach (_current_FILE ${INCLUDE_DIRS_IN})
- 
-
-#  MESSAGE("INFILES: ${INFILES}")
-#  MESSAGE("OutFILE: ${OUTFILE}")
-#  MESSAGE("LINKDEF_FILE: ${LINKDEF_FILE}")
-#  MESSAGE("INCLUDE_DIRS: ${INCLUDE_DIRS}")
-
-  STRING(REGEX REPLACE "^(.*)\\.(.*)$" "\\1.h" bla "${OUTFILE}")
-#  MESSAGE("BLA: ${bla}")
-  SET (OUTFILES ${OUTFILE} ${bla})
-
-
-  if (CMAKE_SYSTEM_NAME MATCHES Linux)
-    ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-       COMMAND LD_LIBRARY_PATH=${ROOT_LIBRARY_DIR}:$ENV{LD_LIBRARY_PATH} ROOTSYS=${ROOTSYS} ${ROOT_CINT_EXECUTABLE}
-       ARGS -f ${OUTFILE} -c -p -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES} ${LINKDEF_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-  else (CMAKE_SYSTEM_NAME MATCHES Linux)
-    if (CMAKE_SYSTEM_NAME MATCHES Darwin)
-      ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-       COMMAND DYLD_LIBRARY_PATH=${ROOT_LIBRARY_DIR} ROOTSYS=${ROOTSYS} ${ROOT_CINT_EXECUTABLE}
-       ARGS -f ${OUTFILE} -c -p -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES} ${LINKDEF_FILE})
-    endif (CMAKE_SYSTEM_NAME MATCHES Darwin)
-  endif (CMAKE_SYSTEM_NAME MATCHES Linux)
-
-ENDMACRO (ROOT_GENERATE_DICTIONARY)
-
-MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
-
-  get_filename_component(path_name ${SCRIPT_FULL_NAME} PATH)
-  get_filename_component(file_extension ${SCRIPT_FULL_NAME} EXT)
-  get_filename_component(file_name ${SCRIPT_FULL_NAME} NAME_WE)
-  set(shell_script_name "${file_name}.sh")
-
-  #MESSAGE("PATH: ${path_name}")
-  #MESSAGE("Ext: ${file_extension}")
-  #MESSAGE("Name: ${file_name}")
-  #MESSAGE("Shell Name: ${shell_script_name}")
-
-  string(REPLACE ${PROJECT_SOURCE_DIR} 
-         ${PROJECT_BINARY_DIR} new_path ${path_name}
-        )
-
-  #MESSAGE("New PATH: ${new_path}")
-
-  file(MAKE_DIRECTORY ${new_path}/data)
-
-  CONVERT_LIST_TO_STRING(${LD_LIBRARY_PATH})
-  set(MY_LD_LIBRARY_PATH ${output})
-  set(my_script_name ${SCRIPT_FULL_NAME})
-
-  if(CMAKE_SYSTEM MATCHES Darwin)
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro_macos.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  else(CMAKE_SYSTEM MATCHES Darwin)
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  endif(CMAKE_SYSTEM MATCHES Darwin)
-
-  EXECUTE_PROCESS(COMMAND /bin/chmod u+x  ${new_path}/${shell_script_name})
-
-ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
+#----------------------------------------------------------------------------
+# function REFLEX_GENERATE_DICTIONARY(dictionary
+#                                     header1 header2 ...
+#                                     SELECTION selectionfile ...
+#                                     OPTIONS opt1...)
+function(REFLEX_GENERATE_DICTIONARY dictionary)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "SELECTION;OPTIONS" "" ${ARGN})
+  #---Get the list of header files-------------------------
+  set(headerfiles)
+  foreach(fp ${ARG_UNPARSED_ARGUMENTS})
+    file(GLOB files ${fp})
+    if(files)
+      foreach(f ${files})
+        set(headerfiles ${headerfiles} ${f})
+      endforeach()
+    else()
+      set(headerfiles ${headerfiles} ${fp})
+    endif()
+  endforeach()
+  #---Get Selection file------------------------------------
+  if(IS_ABSOLUTE ${ARG_SELECTION})
+    set(selectionfile ${ARG_SELECTION})
+  else()
+    set(selectionfile ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_SELECTION})
+  endif()
+  #---Get the list of include directories------------------
+  get_directory_property(incdirs INCLUDE_DIRECTORIES)
+  set(includedirs)
+  foreach( d ${incdirs})
+    set(includedirs ${includedirs} -I${d})
+  endforeach()
+  #---Get preprocessor definitions--------------------------
+  get_directory_property(defs COMPILE_DEFINITIONS)
+  foreach( d ${defs})
+   set(definitions ${definitions} -D${d})
+  endforeach()
+  #---Nanes and others---------------------------------------
+  set(gensrcdict ${dictionary}.cpp)
+  if(MSVC)
+    set(gccxmlopts "--gccxmlopt=\"--gccxml-compiler cl\"")
+  else()
+    #set(gccxmlopts "--gccxmlopt=\'--gccxml-cxxflags -m64 \'")
+    set(gccxmlopts)
+  endif()
+  #set(rootmapname ${dictionary}Dict.rootmap)
+  #set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}Dict)
+  #---Check GCCXML and get path-----------------------------
+  if(GCCXML)
+    get_filename_component(gccxmlpath ${GCCXML} PATH)
+  else()
+    message(WARNING "GCCXML not found. Install and setup your environment to find 'gccxml' executable")
+  endif()
+  #---Actual command----------------------------------------
+  add_custom_command(OUTPUT ${gensrcdict} ${rootmapname}
+                     COMMAND ${GENREFLEX_EXECUTABLE} ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
+                             --gccxmlpath=${gccxmlpath} ${ARG_OPTIONS} ${includedirs} ${definitions}
+                     DEPENDS ${headerfiles} ${selectionfile})
+endfunction()
