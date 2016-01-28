@@ -16,6 +16,7 @@
 #include "KTSlot.hh"
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
+#include "KTProcessedTrackData.hh"
 
 #include <algorithm>
 #include <set>
@@ -31,8 +32,7 @@ namespace Nymph
 namespace Katydid
 {
     using namespace Nymph;
-    class KTProcessedTrackData;
-
+/*
     // Track distance
     // Vector format for representing tracks: (tstart, fstart, tend, fend)
     // Dimension t: for tstart_1 < tstart_2, Dt = max(0, tstart_2 - tend_1)
@@ -61,7 +61,7 @@ namespace Katydid
             };
 
     };
-
+*/
 
     /*!
      @class KTMultiPeakEventBuilder
@@ -131,7 +131,13 @@ namespace Katydid
 
             struct TrackComp
             {
-                bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs);
+                bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs) const
+                {
+                    if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
+                    if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
+                    if (lhs.GetStartFrequency() != rhs.GetStartFrequency()) return lhs.GetStartFrequency() < rhs.GetStartFrequency();
+                    return lhs.GetEndFrequency() < rhs.GetEndFrequency();
+                }
             };
 
             typedef std::set< KTProcessedTrackData, TrackComp > TrackSet;
@@ -140,10 +146,21 @@ namespace Katydid
 
             std::vector< TrackSet > fCompTracks; // input tracks
 
+            struct TrackSetCItComp
+            {
+                bool operator() (const TrackSetCIt& lhs, const TrackSetCIt& rhs) const
+                {
+                    if (lhs->GetStartTimeInRunC() != rhs->GetStartTimeInRunC()) return lhs->GetStartTimeInRunC() < rhs->GetStartTimeInRunC();
+                    if (lhs->GetEndTimeInRunC() != rhs->GetEndTimeInRunC()) return lhs->GetEndTimeInRunC() < rhs->GetEndTimeInRunC();
+                    if (lhs->GetStartFrequency() != rhs->GetStartFrequency()) return lhs->GetStartFrequency() < rhs->GetStartFrequency();
+                    return lhs->GetEndFrequency() < rhs->GetEndFrequency();
+                }
+            };
+
             //typedef std::vector< std::list< KTProcessedTrackData > > MultiPeakTrackRef;
             struct MultiPeakTrackRef
             {
-                std::set< TrackSetCIt > fTrackRefs;
+                std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
                 // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
                 double fMeanStartTimeInRunC;
                 double fSumStartTimeInRunC;
@@ -157,7 +174,12 @@ namespace Katydid
 
             struct MTRComp
             {
-                bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs);
+                bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+                {
+                    if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
+                    return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
+                }
+
             };
 
             std::vector< std::set< MultiPeakTrackRef, MTRComp > > fMPTracks;

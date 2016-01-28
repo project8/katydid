@@ -37,8 +37,8 @@ namespace Katydid
             fJumpFreqTolerance(1.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
-            fCompTracks(1, vector< TrackSet >()),
-            fMPTracks(1, vector< MultiPeakTrackRef >()),
+            fCompTracks(1),
+            fMPTracks(1),
             fCandidates(),
             fDataCount(0),
             fEventSignal("event", this),
@@ -201,7 +201,7 @@ namespace Katydid
 
     bool KTMultiPeakEventBuilder::FindEvents()
     {
-
+        return false;
     }
 
 
@@ -232,21 +232,6 @@ namespace Katydid
         fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
         return true;
     }
-
-    bool KTMultiPeakEventBuilder::TrackComp::operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs)
-    {
-        if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
-        if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
-        if (lhs.GetStartFrequency() != rhs.GetStartFrequency()) return lhs.GetStartFrequency() < rhs.GetStartFrequency();
-        return lhs.GetEndFrequency() < rhs.GetEndFrequency();
-    }
-
-    bool KTMultiPeakEventBuilder::MTRComp::operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
-    {
-        if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
-        return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
-    }
-
 
 
 } /* namespace Katydid */
