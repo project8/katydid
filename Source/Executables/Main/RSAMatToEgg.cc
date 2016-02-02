@@ -7,6 +7,7 @@
  *  Usage: RSAMatToEgg -e outputFilename.egg [input files]
  */
 
+#include "KTConstants.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTMath.hh"
@@ -122,7 +123,7 @@ int main(int argc, char** argv)
     header->SetTimestamp(eggHeader.GetTimestamp());
     header->SetDescription(eggHeader.GetDescription());
 
-    header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, eggHeader.GetChannelHeader(0)->GetDataTypeSize(), monarch3::sAnalog, 14);
+    header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, eggHeader.GetChannelHeader(0)->GetDataTypeSize(), monarch3::sAnalog, 14, sBitsAlignedLeft);
 
     // Setup the remaining details in the channel header
     monarch3::M3ChannelHeader& chHeader = header->GetChannelHeaders()[0];

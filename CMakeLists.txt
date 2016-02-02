@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.0)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.3.0)
+project (Katydid VERSION 2.4.0)
 
 # Import Katydid core features
 include (Nymph/cmake/Nymph.cmake)
@@ -16,6 +16,7 @@ nymph_prepare_project ()
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
 #optional build switches
+set (Katydid_USE_CPP11 TRUE CACHE BOOL "Flag to optionally use C++11")
 set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
 set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
@@ -25,6 +26,9 @@ set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB TRUE CACHE BOOL "Flag to optionally use MatIO libraries, needed to read MAT files")
 set (Katydid_ENABLE_BUILD_DOC FALSE CACHE BOOL "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)")
 
+if (Katydid_USE_CPP11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif (Katydid_USE_CPP11)
 
 ##############
 # Dependencies
@@ -171,6 +175,16 @@ endif (Katydid_ENABLE_TUTORIAL)
 # add an option to build the profiling tests
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
+# libthorax
+add_subdirectory( libthorax )
+pbuilder_add_submodule_libraries( ${libthorax_LIBRARIES} )
+include_directories( ${libthorax_DEP_INCLUDE_DIRS} )
+# add to the RPATH to be used when installing, but only if it's not a system directory
+list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${libthorax_LIBRARY_DIR}" isSystemDir )
+if ( "${isSystemDir}" STREQUAL "-1" )
+   list( APPEND CMAKE_INSTALL_RPATH ${libthorax_LIBRARY_DIR} )
+endif( "${isSystemDir}" STREQUAL "-1" )
+
 # Monarch
 if (Katydid_USE_MONARCH)
     add_subdirectory (Source/Time/Monarch)
@@ -243,23 +257,16 @@ nymph_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
-if(Katydid_ENABLE_BUILD_DOC)
+if (Katydid_ENABLE_BUILD_DOC)
     add_subdirectory (Documentation)
-endif(Katydid_ENABLE_BUILD_DOC)
+endif (Katydid_ENABLE_BUILD_DOC)
 
+# Extract compile definitions to pass to config files
+get_directory_property (Katydid_COMP_DEFS COMPILE_DEFINITIONS)
 
 # Install config files
 pbuilder_install_config_files()
 
 # Install the example CMakeLists file for building with this installation of Katydid
-configure_file (${PROJECT_SOURCE_DIR}/Scripts/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
-pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Scripts/MyApplication.cc)
-
-# this is apparently not the right way to run the link_dylibs script
-#execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)
-
-if (ROOT_FOUND)
-    install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${LIB_INSTALL_DIR})")
-    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Scripts/LoadLibraries.C.in ${PROJECT_BINARY_DIR}/LoadLibraries.C)
-    install (FILES ${PROJECT_BINARY_DIR}/LoadLibraries.C DESTINATION ${LIB_INSTALL_DIR})
-endif (ROOT_FOUND)
+configure_file (${PROJECT_SOURCE_DIR}/Examples/CustomApplications/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
+pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Examples/CustomApplications/MyApplication.cc)

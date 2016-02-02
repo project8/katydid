@@ -222,10 +222,10 @@ namespace Katydid
         // data2It will be decremented before it's used
         Buffer::iterator data2It = data2End + fWindowSize;
 
-        register double t1_real;
-        register double t1_imag;
-        register double t2_real;
-        register double t2_imag;
+        double t1_real;
+        double t1_imag;
+        double t2_real;
+        double t2_imag;
 
         //KTERROR(wvlog, "iWindow = " << iWindow);
 
