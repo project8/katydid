@@ -48,7 +48,7 @@ namespace Katydid
 
     void KTPSCollectionData::AddSpectrum(KTPowerSpectrum* spectrum)
     {
-        fSpectra.push_back(spectrum);
+        fSpectra.push_back(new KTPowerSpectrum(*spectrum));
         return;
     }
 

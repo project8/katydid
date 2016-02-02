@@ -63,6 +63,20 @@ namespace Nymph
             // Perhaps there are some non-public helper functions?
 
             // And then any non-configurable member variables
+            std::vector<std::set<KTPSCollectionData>> waterfallSets;
+            struct TrackTimeInfo
+            {
+                double fStartTime;
+                double fEndTime;
+                TrackTimeInfo( double startTime, double endTime ) : fStartTime( startTime ), fEndTime( endTime ) {}
+            };
+            struct KTTrackCompare
+            {
+                bool operator() (const KTPSCollectionData lhs, const KTPSCollectionData rhs) const
+                {
+                    return lhs.fStartTime < rhs.fStartTime;
+                }
+            };
 
             //***************
             // Signals
