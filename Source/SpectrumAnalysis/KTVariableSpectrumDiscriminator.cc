@@ -188,7 +188,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::Discriminate(KTSpectrumCollectionData& data, KTGainVariationData& gvData)
+    bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData)
     {
         KTDiscriminatedPoints2DData& newData = data.Of< KTDiscriminatedPoints2DData >();
         KTDiscriminatedPoints1DData newDataSlice;
@@ -304,7 +304,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {

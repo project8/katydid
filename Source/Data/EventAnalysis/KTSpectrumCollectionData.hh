@@ -30,7 +30,7 @@ namespace Katydid
 
             KTPSCollectionData& operator=(const KTPSCollectionData& rhs);
 
-            void AddSpectrum(KTPowerSpectrum* spectrum);
+            void AddSpectrum(double t, KTPowerSpectrum* spectrum);
             MEMBERVARIABLEREF_NOSET(collection, Spectra);
             MEMBERVARIABLEREF_NOSET(double, StartTime);
             MEMBERVARIABLEREF_NOSET(double, EndTime);

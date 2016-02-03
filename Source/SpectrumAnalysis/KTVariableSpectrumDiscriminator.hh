@@ -80,7 +80,7 @@ namespace Katydid
      - "ps": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
      - "ps-pre": void (KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
-     - "spec": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTSpectrumCollectionData and KTGainVariationData; Adds KTDiscriminatedPoints2DData
+     - "spec": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTPSCollectionData and KTGainVariationData; Adds KTDiscriminatedPoints2DData
 
      Signals:
      - "disc-1d": void (KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData
@@ -146,7 +146,7 @@ namespace Katydid
             bool Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
             bool Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
             bool Discriminate(KTPowerSpectrumData& data, KTGainVariationData& gvData);
-            bool Discriminate(KTSpectrumCollectionData& data, KTGainVariationData& gvData);
+            bool Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData);
 
             bool DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
             bool DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
