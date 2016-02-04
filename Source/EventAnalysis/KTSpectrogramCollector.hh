@@ -22,6 +22,7 @@ namespace Nymph
     class KTProcessedTrackData;
     class KTSliceHeader;
     class KTPSCollectionData;
+    class KTDataPtr;
 
     /*!
      @class KTSpectrogramCollector
@@ -43,8 +44,8 @@ namespace Nymph
      - "trail-time": double -- time to collect after the end of the track
 
      Slots:
-     - "track": void (KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds KTPSCollectionData
-     - "ps": void (KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds KTPSCollectionData;
+     - "track": void (KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
+     - "ps": void (KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
 
      Signals:
      - "waterfall": void (KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
@@ -99,13 +100,13 @@ namespace Nymph
  
             struct KTTrackCompare
             {
-                bool operator() (const KTPSCollectionData lhs, const KTPSCollectionData rhs) const
+                bool operator() (const std::pair< KTDataPtr, KTPSCollectionData* > lhs, const std::pair< KTDataPtr, KTPSCollectionData* > rhs) const
                 {
-                    return lhs.fStartTime < rhs.fStartTime;
+                    return lhs.second->fStartTime < rhs.second->fStartTime;
                 }
             };
 
-            std::vector< std::set< KTPSCollectionData, KTTrackCompare > > fWaterfallSets;
+            std::vector< std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
 
 
             //***************

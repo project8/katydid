@@ -14,6 +14,7 @@
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTData.hh"
 
 
 namespace Nymph
@@ -79,34 +80,67 @@ namespace Nymph
 
     bool AddTrack( KTProcessedTrackData& trackData, unsigned component )
     {
-        KTPSCollectionData newWaterfall = new KTPSCollectionData();
+        KTDataPtr ptr( new KTDataPtr() );
+        KTSpectrumCollectionData* newWaterfall = &ptr->Of< KTSpectrumCollectionData >();
 
-        newWaterfall.fStartTime = trackData.fStartTimeInRunC;
-        newWaterfall.fEndTime = trackData.fEndTimeInRunC;
+        newWaterfall->SetStartTime( trackData.fStartTimeInRunC );
+        newWaterfall->SetEndTime( trackData.fEndTimeInRunC );
+        newWaterfall->SetFilling( false );
 
-        fWaterfallSets[component].push_back( newWaterfall );
+        fWaterfallSets[component].insert( std::make_pair< KTDataPtr, KTSpectrumCollectionData* >( &ptr, newWaterfall ) );
 
         return true;
     }
 
     bool ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component )
     {
-        for( std::set< KTPSCollectionData, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fTracks[component].end(); ++it )
+        for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fTracks[component].end(); ++it )
         {
-            if( slice.fTimeInRun >= it.fStartTime - fLeadTime && slice.fTimeInRun <= it.fEndTime + fTrailTime )
-                it->AddSpectrum( slice.fTimeInRun, ps );
+            if( slice.fTimeInRun >= it->second->fStartTime - fLeadTime && slice.fTimeInRun <= it->second->fEndTime + fTrailTime )
+            {
+                it->second->AddSpectrum( slice.fTimeInRun, ps );
+                it->second->SetDeltaT( slice.fSliceLength );
+                it->second->SetFilling( true );
+            }
+            else
+            {
+                if( it->second->GetFilling() )
+                {
+                    it->second->SetFilling( false );
+                    FinishSC( it->first );
+                    fWaterfallSets[component].erase( it );
+                }
+                else
+                    it->second->SetFilling( false );
+            }
         }
 
         return true;
     }
 
+    bool FinishSC( KTDataPtr data )
+    {
+        fWaterfallSignal( data );
+    }
+
     bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
     {
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+        }
+
         if( !AddTrack( data, data.fComponent ) )
         {
             KTERROR(sdlog, "Spectrogram collection could not add track! (component " << data.fComponent << ")" );
         }
-        
+
         return true;
     }
     

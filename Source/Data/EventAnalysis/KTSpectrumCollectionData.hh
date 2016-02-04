@@ -34,6 +34,8 @@ namespace Katydid
             MEMBERVARIABLEREF_NOSET(collection, Spectra);
             MEMBERVARIABLEREF_NOSET(double, StartTime);
             MEMBERVARIABLEREF_NOSET(double, EndTime);
+            MEMBERVARIABLEREF_NOSET(double, DeltaT);
+            MEMBERVARIABLEREF_NOSET(bool, Filling);
 
         public:
             static const std::string sName;

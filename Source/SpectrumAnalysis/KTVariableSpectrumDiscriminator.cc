@@ -206,7 +206,7 @@ namespace Katydid
         
         newData.SetNBinsX( data.GetSpectra()->size() );
         newData.SetNBinsY( data.GetSpectra()[0]->size() );
-        newData.SetBinWidthX( data.GetTimeLength() );
+        newData.SetBinWidthX( data.GetDeltaT() );
         newData.SetBinWidthY( data.GetSpectra()[0]->GetBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
