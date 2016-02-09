@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    //using namespace Nymph;
     //***************************************
     // TreeIndex classes, for type erasure
     //***************************************
@@ -54,7 +54,7 @@ namespace Katydid
                 inline bool empty() {return fIndicesAndDists.size() == 0;}
                 inline void clear() {fIndicesAndDists.clear();}
 
-                inline void push_back(PointId pid, TYPE dist=0.) {fIndicesAndDists.push_back(std::make_pair< PointId, TYPE >(pid, dist));}
+                inline void push_back(PointId pid, TYPE dist=0.) {fIndicesAndDists.push_back(std::make_pair(pid, dist));}
 
                 inline IndicesAndDists& GetIndicesAndDists() {return fIndicesAndDists;}
                 inline const IndicesAndDists& GetIndicesAndDists() const {return fIndicesAndDists;}
@@ -136,7 +136,7 @@ namespace Katydid
             Neighbors neighbors;
             for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
             {
-                neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], out_distances_sq[iPoint]));
+                neighbors.GetIndicesAndDists().push_back(std::make_pair(out_indices[iPoint], out_distances_sq[iPoint]));
             }
 
             delete [] out_indices;
@@ -206,7 +206,7 @@ namespace Katydid
             Neighbors neighbors;
             for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
             {
-                neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], sqrt(out_distances_sq[iPoint])));
+                neighbors.GetIndicesAndDists().push_back(std::make_pair(out_indices[iPoint], sqrt(out_distances_sq[iPoint])));
             }
 
             delete [] out_indices;

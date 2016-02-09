@@ -81,6 +81,7 @@ namespace Katydid
      - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
      - "ps-pre": void (KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
      - "spec": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTPSCollectionData and KTGainVariationData; Adds KTDiscriminatedPoints2DData
+     - "spec-pre": void (KTDataPtr) -- Discriminates points above a pre-calculated threshold; Requires KTPSCollectionData; Adds KTDiscriminatedPoints2DData
 
      Signals:
      - "disc-1d": void (KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData
@@ -138,6 +139,7 @@ namespace Katydid
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
 
             bool Discriminate(KTPowerSpectrumData& data);
+            bool Discriminate(KTPSCollectionData& data);
 
             bool Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
             bool Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
@@ -184,6 +186,8 @@ namespace Katydid
             KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
 
             KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
+
+            KTSlotDataOneType< KTPSCollectionData > fSpecPreCalcSlot;
 
     };
 

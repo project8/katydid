@@ -62,7 +62,8 @@ namespace Katydid
             fPSSlot("ps", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fSpecSlot("spec", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim2DSignal),
             fPreCalcSlot("gv", this, &KTVariableSpectrumDiscriminator::SetPreCalcGainVar),
-            fPSPreCalcSlot("ps-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal)
+            fPSPreCalcSlot("ps-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fSpecPreCalcSlot("spec-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim2DSignal)
     {
     }
 
@@ -115,6 +116,11 @@ namespace Katydid
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data)
+    {
+        return Discriminate(data, fGVData);
+    }
+
+    bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data)
     {
         return Discriminate(data, fGVData);
     }
@@ -207,7 +213,7 @@ namespace Katydid
         
         newData.SetNBinsX( data.GetSpectra().size() );
         newData.SetNBinsY( data.GetSpectra()[0]->size() );
-//        newData.SetBinWidthX( data.GetTimeLength() );
+        newData.SetBinWidthX( data.GetDeltaT() );
         newData.SetBinWidthY( data.GetSpectra()[0]->GetBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
@@ -305,7 +311,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {

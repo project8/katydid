@@ -22,7 +22,7 @@ namespace Katydid
     class KTPSCollectionData : public KTExtensibleData< KTPSCollectionData >
     {
         public:
-            typedef std::vector< KTPowerSpectrum* > collection;
+            typedef std::map< double, KTPowerSpectrum* > collection;
 
             KTPSCollectionData();
             KTPSCollectionData(const KTPSCollectionData& orig);
@@ -30,8 +30,12 @@ namespace Katydid
 
             KTPSCollectionData& operator=(const KTPSCollectionData& rhs);
 
-            void AddSpectrum(KTPowerSpectrum* spectrum);
+            void AddSpectrum(double t, KTPowerSpectrum* spectrum);
             MEMBERVARIABLEREF_NOSET(collection, Spectra);
+            MEMBERVARIABLEREF_NOSET(double, StartTime);
+            MEMBERVARIABLEREF_NOSET(double, EndTime);
+            MEMBERVARIABLEREF_NOSET(double, DeltaT);
+            MEMBERVARIABLEREF_NOSET(bool, Filling);
 
         public:
             static const std::string sName;

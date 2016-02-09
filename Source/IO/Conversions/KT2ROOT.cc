@@ -50,6 +50,18 @@ namespace Katydid
         {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
+        //**** DEBUG ****//
+        /**/
+        std::stringstream tsstream, histstream;
+        for (unsigned i=0; i<10; ++i)
+        {
+            tsstream << (*ts)(i) << "  ";
+            histstream << hist->GetBinContent((int)i+1) << "  ";
+        }
+        KTWARN( dblog, "ts: " << tsstream.str() );
+        KTWARN( dblog, "hist: " << histstream.str() );
+        /**/
+        //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (ADC)");
         return hist;
@@ -58,20 +70,24 @@ namespace Katydid
 
     TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName)
     {
-        //**** DEBUG ****//
-        /*std::stringstream tStream;
-        for (unsigned i=0; i<10; ++i)
-        {
-            tStream << (*ts)(i) << "  ";
-        }
-        KTWARN( dblog, tStream.str() );*/
-        //**** DEBUG ****//
         unsigned nBins = ts->size();
         TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
+        //**** DEBUG ****//
+        /**/
+        std::stringstream tsstream, histstream;
+        for (unsigned i=0; i<10; ++i)
+        {
+            tsstream << (*ts)(i) << "  ";
+            histstream << hist->GetBinContent((int)i+1) << "  ";
+        }
+        KTWARN( dblog, "ts: " << tsstream.str() );
+        KTWARN( dblog, "hist: " << histstream.str() );
+        /**/
+        //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (ADC)");
         return hist;
@@ -163,6 +179,18 @@ namespace Katydid
         {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
+        //**** DEBUG ****//
+        /**/
+        std::stringstream tsstream, histstream;
+        for (unsigned i=0; i<10; ++i)
+        {
+            tsstream << (*ts)(i) << "  ";
+            histstream << hist->GetBinContent((int)i+1) << "  ";
+        }
+        KTWARN( dblog, "ts: " << tsstream.str() );
+        KTWARN( dblog, "hist: " << histstream.str() );
+        /**/
+        //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
         return hist;
