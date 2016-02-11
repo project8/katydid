@@ -201,7 +201,78 @@ namespace Katydid
 
     bool KTMultiPeakEventBuilder::FindEvents()
     {
-        return false;
+        KTPROG(tclog, "KTMultiPeakEventBuilder combining multi-peak tracks");
+        //unsigned component = 0;
+        //for (vector< std::set< MultiPeakTrackRef, MTRComp > >::const_iterator compIt = fMPTracks.begin(); compIt != fMPTracks.end(); ++compIt)
+        
+        // loop over components
+        for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
+        {
+            KTDEBUG(tclog, "head-to-tail building component " << iComponent);
+            
+            if (fMPTracks[iComponent].empty())
+            {
+                continue;
+            }
+            //fCandidates[component].clear();
+
+//            TrackSetCIt trackIt = compIt->begin();
+            //list< MultiPeakTrackRef >::iterator trackIt = compIt->begin();
+            //MultiPeakTrackRef trackIt = compIt->begin();
+            
+//            if (trackIt == compIt->end()) continue;
+//
+            std::set< MultiPeakTrackRef, MTRComp >::iterator trackIt = fMPTracks[iComponent].begin();
+//            activeTrackRefs.push_back(MultiPeakTrackRef());
+//            activeTrackRefs.begin()->InsertTrack(trackIt);
+//
+            // loop over Multi-Peak Tracks
+            while (trackIt != fMPTracks[iComponent].end())
+            {
+//                // loop over active track refs
+//                list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
+//                bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
+//                while (mptrIt != activeTrackRefs.end())
+//                {
+//                    double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
+//
+//                    // check to see if this track ref should no longer be active
+//                    if (trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC > fSidebandTimeTolerance)
+//                    {
+//                        // there's no way this track, or any following it in the set, will match in time
+//                        fMPTracks[component].insert(*mptrIt);
+//                        mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
+//                    }
+//                    else
+//                    {
+//                        double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
+//                        // check if this track should be added to this track ref
+//                        if (! trackHasBeenAdded && fabs(deltaStartT) <= fSidebandTimeTolerance && fabs(deltaEndT) < fSidebandTimeTolerance)
+//                        {
+//                            // then this track matches this track ref
+//                            mptrIt->InsertTrack(trackIt);
+//                            trackHasBeenAdded = true;
+//                        }
+//
+//                        ++mptrIt;
+//                    }
+//                } // while loop over active track refs
+                ++trackIt;
+            } // while loop over tracks
+//
+//            // now that we're done with tracks, all active track refs are finished as well
+//            list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
+//            while (mptrIt != activeTrackRefs.end())
+//            {
+//                fMPTracks[component].insert(*mptrIt);
+//                mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
+//            }
+
+            //++component;
+        } // for loop over components
+
+       return true;
+//       return false;
     }
 
 
