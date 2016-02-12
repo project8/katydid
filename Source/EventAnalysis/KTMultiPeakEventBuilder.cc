@@ -208,13 +208,12 @@ namespace Katydid
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
         {
-            KTDEBUG(tclog, "head-to-tail building component " << iComponent);
+            KTDEBUG(tclog, "head-to-tail building events from MPTracks; component: " << iComponent);
             
             if (fMPTracks[iComponent].empty())
             {
                 continue;
             }
-            //fCandidates[component].clear();
 
 //            TrackSetCIt trackIt = compIt->begin();
             //list< MultiPeakTrackRef >::iterator trackIt = compIt->begin();
