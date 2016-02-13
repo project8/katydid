@@ -221,13 +221,13 @@ namespace Katydid
             // loop over Multi-Peak Tracks
             while (trackIt != fMPTracks[iComponent].end())
             {
-                int track_assigned = -1; // keep track of if we've added this track to any events
+                int track_assigned = -1; // keep track of which event the track when into
                 // loop over active events and add this track to something
                 for (std::vector< KTDataPtr >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
                     
                 } // for loop over active events
-                if (track_assigned != -1)
+                if (track_assigned != -1) // if the track didn't go into an active event, create a new one
                 {
                     KTDataPtr data(new KTData());
                     KTMultiTrackEventData& event = data->Of< KTMultiTrackEventData >();
