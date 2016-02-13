@@ -202,7 +202,9 @@ namespace Katydid
     bool KTMultiPeakEventBuilder::FindEvents()
     {
         KTPROG(tclog, "KTMultiPeakEventBuilder combining multi-peak tracks");
-       
+      
+        // we're unpacking all components into a unified set of events, so this goes outside the loop
+        // **note that if/when i change the type, this impacts the for loop over active events
         std::vector< KTDataPtr > active_events;
 
         // loop over components
@@ -215,21 +217,22 @@ namespace Katydid
                 continue;
             }
             std::set< MultiPeakTrackRef, MTRComp >::iterator trackIt = fMPTracks[iComponent].begin();
-            // active_events, need to figure out what that should look like
 
             // loop over Multi-Peak Tracks
             while (trackIt != fMPTracks[iComponent].end())
             {
-                bool track_assigned = false; // keep track of if we've added this track to any events
+                int track_assigned = -1; // keep track of if we've added this track to any events
                 // loop over active events and add this track to something
-                for (std::vector< KTDataPtr >::const_iterator EventIt; EventIt != active_events.end();)
+                for (std::vector< KTDataPtr >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
                     
                 } // for loop over active events
-                if (!track_assigned)
+                if (track_assigned != -1)
                 {
                     KTDataPtr data(new KTData());
                     KTMultiTrackEventData& event = data->Of< KTMultiTrackEventData >();
+                    // TODO: I probably need to set some more attributes here
+                    active_events.push_back(data);
                 }
 
 
