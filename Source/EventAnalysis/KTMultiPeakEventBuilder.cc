@@ -202,9 +202,9 @@ namespace Katydid
     bool KTMultiPeakEventBuilder::FindEvents()
     {
         KTPROG(tclog, "KTMultiPeakEventBuilder combining multi-peak tracks");
-        //unsigned component = 0;
-        //for (vector< std::set< MultiPeakTrackRef, MTRComp > >::const_iterator compIt = fMPTracks.begin(); compIt != fMPTracks.end(); ++compIt)
-        
+       
+        std::vector< KTDataPtr > active_events;
+
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
         {
@@ -214,20 +214,61 @@ namespace Katydid
             {
                 continue;
             }
-
-//            TrackSetCIt trackIt = compIt->begin();
-            //list< MultiPeakTrackRef >::iterator trackIt = compIt->begin();
-            //MultiPeakTrackRef trackIt = compIt->begin();
-            
-//            if (trackIt == compIt->end()) continue;
-//
             std::set< MultiPeakTrackRef, MTRComp >::iterator trackIt = fMPTracks[iComponent].begin();
-//            activeTrackRefs.push_back(MultiPeakTrackRef());
-//            activeTrackRefs.begin()->InsertTrack(trackIt);
-//
+            // active_events, need to figure out what that should look like
+
             // loop over Multi-Peak Tracks
             while (trackIt != fMPTracks[iComponent].end())
             {
+                bool track_assigned = false; // keep track of if we've added this track to any events
+                // loop over active events and add this track to something
+                for (std::vector< KTDataPtr >::const_iterator EventIt; EventIt != active_events.end();)
+                {
+                    
+                } // for loop over active events
+                if (!track_assigned)
+                {
+                    KTDataPtr data(new KTData());
+                    KTMultiTrackEventData& event = data->Of< KTMultiTrackEventData >();
+                }
+
+
+                /***************************************************/
+                /*
+
+                //active_events <configured prior to loop over tracks
+                // is a vector< set< KTMultiTrackEventData, vector< EndTimes>>>
+                this_track == <set by loop over tracks>
+
+                track_added_somewhere = -1; // an int
+                //events_to_conclude = []; // empty vector of int
+                events_to_drop = []; // empty vector of ints
+                
+                for event in active_events:
+                    if event.latest_end < this_track.start:
+                        <add event to fCandidates, it is complete, do this now>
+                        events_to_drop.pushback(my_iterator - my_vector.begin())
+                        continue
+                    if this_track_start in event.endtimes:
+                        # track has not been put into an event yet, add it here
+                        if track_added_somewhere == -1:
+                            track_added_somewhere = my_iterator - my_vector.begin()
+                            for peak in this_track:
+                                event.add_track(peak)
+                        # track has already been put somewhere, add this event there
+                        else:
+                            for track in event:
+                                active_events[track_added_somwhere].add_track(track)
+                            events_to_drop.push_back(my_iterator - my_vector.begin())
+                if track_added_somewhere == -1:
+                    <create a new event with only this track; pushback into vector>
+                for iEvent in events_to_drop.rbegin():
+                    active_events.erase(iEvent)
+                */
+                /***************************************************/
+
+               
+
 //                // loop over active track refs
 //                list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
 //                bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
