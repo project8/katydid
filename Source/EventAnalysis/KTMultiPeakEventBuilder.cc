@@ -205,7 +205,7 @@ namespace Katydid
       
         // we're unpacking all components into a unified set of events, so this goes outside the loop
         // **note that if/when i change the type, this impacts the for loop over active events
-        std::vector< std::pair< KTDataPtr, std::vector< float > > > active_events;
+        std::vector< std::pair< KTDataPtr, std::vector< double > > > active_events;
 
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
@@ -224,13 +224,23 @@ namespace Katydid
                 int track_assigned = -1; // keep track of which event the track when into
                 
                 // loop over active events and add this track to something
-                for (std::vector< std::pair< KTDataPtr, std::vector< float > > >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
+                for (std::vector< std::pair< KTDataPtr, std::vector< double > > >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
-                    
+                    // loop over end times in event
+                    for (std::vector< double >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    {
+                        // TODO: test if within frequency and time tolerance
+                        // TODO: if within->add
+                            // TODO: if this is the first event match, add this track to it; add this event index as the track_assigned
+                            // TODO: else, add this event to the first match; remove this event from active events; continue so that the iterator doesn't get incremented
+                            // TODO: break out of end_time loop
+                        ++end_timeIt;
+                    } // for loop over end times
+                    ++EventIt;
                 } // for loop over active events
                 if (track_assigned != -1) // if the track didn't go into an active event, create a new one
                 {
-                    std::pair< KTDataPtr, std::vector< float > > new_event;
+                    std::pair< KTDataPtr, std::vector< double > > new_event;
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     // TODO: I probably need to set some data pointer attributes
                     // TODO: Then set some event attributes
