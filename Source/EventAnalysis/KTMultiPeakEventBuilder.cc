@@ -204,8 +204,10 @@ namespace Katydid
         KTPROG(tclog, "KTMultiPeakEventBuilder combining multi-peak tracks");
       
         // we're unpacking all components into a unified set of events, so this goes outside the loop
-        // **note that if/when i change the type, this impacts the for loop over active events
-        std::vector< std::pair< KTDataPtr, std::vector< double > > > active_events;
+        // also, I've given no thought to the use of std::vector vs std::list or std::forward_list
+        typedef std::pair< KTDataPtr, std::vector< std::pair< double, double > > > ActiveEventType;
+        std::vector< ActiveEventType > active_events;
+        //std::vector< std::pair< KTDataPtr, std::vector< std::pair< double, double > > > > active_events;
 
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
@@ -224,23 +226,40 @@ namespace Katydid
                 int track_assigned = -1; // keep track of which event the track when into
                 
                 // loop over active events and add this track to something
-                for (std::vector< std::pair< KTDataPtr, std::vector< double > > >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
+                //for (std::vector< std::pair< KTDataPtr, std::vector < std::vector< std::pair< double,double > > > > >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
+                for (std::vector< ActiveEventType >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
-                    // loop over end times in event
-                    for (std::vector< double >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    // loop over track ends to test against
+                    bool increment_eventIt = true;
+                    for (std::vector< std::pair< double, double > >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
-                        // TODO: test if within frequency and time tolerance
-                        // TODO: if within->add
-                            // TODO: if this is the first event match, add this track to it; add this event index as the track_assigned
-                            // TODO: else, add this event to the first match; remove this event from active events; continue so that the iterator doesn't get incremented
-                            // TODO: break out of end_time loop
-                        ++end_timeIt;
+                        // conditions for time and frequency matches
+                        if ( (true) and (true))
+                        {
+                            if (track_assigned == -1)
+                            {
+                                track_assigned = end_timeIt - EventIt->second.begin();
+                                // TODO: add all peaks in this track to this event;
+                            }
+                            else
+                            {
+                                // TODO: add all tracks in this event to the first match
+                                EventIt = active_events.erase(EventIt);
+                                increment_eventIt = false;
+                            }
+                            break;
+                        }
+                        // don't increment if we removed this active event
+                        if (increment_eventIt)
+                        {
+                            ++end_timeIt;
+                        }
                     } // for loop over end times
                     ++EventIt;
                 } // for loop over active events
                 if (track_assigned != -1) // if the track didn't go into an active event, create a new one
                 {
-                    std::pair< KTDataPtr, std::vector< double > > new_event;
+                    std::pair< KTDataPtr, std::vector< std::pair< double,double > > > new_event;
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     // TODO: I probably need to set some data pointer attributes
                     // TODO: Then set some event attributes
@@ -249,88 +268,11 @@ namespace Katydid
                     // TODO: Also, add the track end time to the end times vector <pair>.second
                     active_events.push_back(new_event);
                 }
-
-
-                /***************************************************/
-                /*
-
-                //active_events <configured prior to loop over tracks
-                // is a vector< set< KTMultiTrackEventData, vector< EndTimes>>>
-                this_track == <set by loop over tracks>
-
-                track_added_somewhere = -1; // an int
-                //events_to_conclude = []; // empty vector of int
-                events_to_drop = []; // empty vector of ints
-                
-                for event in active_events:
-                    if event.latest_end < this_track.start:
-                        <add event to fCandidates, it is complete, do this now>
-                        events_to_drop.pushback(my_iterator - my_vector.begin())
-                        continue
-                    if this_track_start in event.endtimes:
-                        # track has not been put into an event yet, add it here
-                        if track_added_somewhere == -1:
-                            track_added_somewhere = my_iterator - my_vector.begin()
-                            for peak in this_track:
-                                event.add_track(peak)
-                        # track has already been put somewhere, add this event there
-                        else:
-                            for track in event:
-                                active_events[track_added_somwhere].add_track(track)
-                            events_to_drop.push_back(my_iterator - my_vector.begin())
-                if track_added_somewhere == -1:
-                    <create a new event with only this track; pushback into vector>
-                for iEvent in events_to_drop.rbegin():
-                    active_events.erase(iEvent)
-                */
-                /***************************************************/
-
-               
-
-//                // loop over active track refs
-//                list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
-//                bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
-//                while (mptrIt != activeTrackRefs.end())
-//                {
-//                    double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
-//
-//                    // check to see if this track ref should no longer be active
-//                    if (trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC > fSidebandTimeTolerance)
-//                    {
-//                        // there's no way this track, or any following it in the set, will match in time
-//                        fMPTracks[component].insert(*mptrIt);
-//                        mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
-//                    }
-//                    else
-//                    {
-//                        double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
-//                        // check if this track should be added to this track ref
-//                        if (! trackHasBeenAdded && fabs(deltaStartT) <= fSidebandTimeTolerance && fabs(deltaEndT) < fSidebandTimeTolerance)
-//                        {
-//                            // then this track matches this track ref
-//                            mptrIt->InsertTrack(trackIt);
-//                            trackHasBeenAdded = true;
-//                        }
-//
-//                        ++mptrIt;
-//                    }
-//                } // while loop over active track refs
                 ++trackIt;
             } // while loop over tracks
-//
-//            // now that we're done with tracks, all active track refs are finished as well
-//            list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
-//            while (mptrIt != activeTrackRefs.end())
-//            {
-//                fMPTracks[component].insert(*mptrIt);
-//                mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
-//            }
-
-            //++component;
         } // for loop over components
 
        return true;
-//       return false;
     }
 
 
