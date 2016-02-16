@@ -227,8 +227,8 @@ namespace Katydid
                 // loop over active events and add this track to something
                 for (std::vector< ActiveEventType >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
-                    // loop over track ends to test against
                     bool increment_eventIt = true;
+                    // loop over track ends to test against
                     for (std::vector< std::pair< double, double > >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
                         // conditions for time and frequency matches
@@ -247,13 +247,13 @@ namespace Katydid
                             }
                             break;
                         }
-                        // don't increment if we removed this active event
-                        if (increment_eventIt)
-                        {
-                            ++end_timeIt;
-                        }
+                        ++end_timeIt;
                     } // for loop over end times
-                    ++EventIt;
+                    // don't increment if we removed this active event
+                    if (increment_eventIt)
+                    {
+                        ++EventIt;
+                    }
                 } // for loop over active events
                 if (track_assigned != -1) // if no event matched then create one
                 {
