@@ -207,7 +207,6 @@ namespace Katydid
         // also, I've given no thought to the use of std::vector vs std::list or std::forward_list
         typedef std::pair< KTDataPtr, std::vector< std::pair< double, double > > > ActiveEventType;
         std::vector< ActiveEventType > active_events;
-        //std::vector< std::pair< KTDataPtr, std::vector< std::pair< double, double > > > > active_events;
 
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
@@ -226,7 +225,6 @@ namespace Katydid
                 int track_assigned = -1; // keep track of which event the track when into
                 
                 // loop over active events and add this track to something
-                //for (std::vector< std::pair< KTDataPtr, std::vector < std::vector< std::pair< double,double > > > > >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 for (std::vector< ActiveEventType >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
                     // loop over track ends to test against
@@ -257,12 +255,12 @@ namespace Katydid
                     } // for loop over end times
                     ++EventIt;
                 } // for loop over active events
-                if (track_assigned != -1) // if the track didn't go into an active event, create a new one
+                if (track_assigned != -1) // if no event matched then create one
                 {
-                    std::pair< KTDataPtr, std::vector< std::pair< double,double > > > new_event;
+                    ActiveEventType new_event;
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
-                    // TODO: I probably need to set some data pointer attributes
-                    // TODO: Then set some event attributes
+                    // TODO: I probably need to set some attributes of the KTDataPtr
+                    // TODO: Then set some KTMultiTrackEventData attributes
                     // TODO: Then loop over and add tracks in the MP Track
                     // TODO: And set any attributes of those tracks
                     // TODO: Also, add the track end time to the end times vector <pair>.second
