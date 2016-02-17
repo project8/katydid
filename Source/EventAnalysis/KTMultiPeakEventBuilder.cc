@@ -263,7 +263,6 @@ namespace Katydid
                                 {
                                     first_event_loc->second.push_back(*endpointIt);
                                 }
-                                // because we merged this event into an earlier one, we should remove it (and not increment the iterator)
                                 EventIt = active_events.erase(EventIt);
                                 increment_eventIt = false;
                             }
@@ -282,11 +281,13 @@ namespace Katydid
                 {
                     ActiveEventType new_event;
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
+                    event.SetComponent(iComponent);
                     // TODO: I probably need to set some attributes of the KTDataPtr
-                    // TODO: Then set some KTMultiTrackEventData attributes
-                    // TODO: Then loop over and add tracks in the MP Track
-                    // TODO: And set any attributes of those tracks
-                    // TODO: Also, add the track end time to the end times vector <pair>.second
+                    for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
+                        {
+                            event.AddTrack( **peakIt );
+                        }
+                    new_event.second.push_back( trackIt->fMeanEndTimeInRunC );
                     active_events.push_back(new_event);
                 }
                 ++trackIt;
