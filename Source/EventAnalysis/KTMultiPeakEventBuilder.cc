@@ -248,12 +248,13 @@ namespace Katydid
                                 }
                                 EventIt->second.push_back( trackIt->fMeanEndTimeInRunC );
                             }
-                            else // if this track is already in an event, merge this event into that one
+                            else // if this track is already in an event, merge this event into that one (NOTE: this is weird)
                             {
                                 std::vector< ActiveEventType >::iterator first_event_loc = active_events.begin();
                                 std::advance( first_event_loc, track_assigned);
                                 KTMultiTrackEventData& first_event = first_event_loc->first->Of< KTMultiTrackEventData >();
                                 KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
+                                this_event.SetUnknownEventTopology(true);
                                 for (unsigned iLine = 0; iLine < this_event.GetNTracks(); ++iLine)
                                 {
                                     first_event.AddTrack(this_event.GetTrack(iLine));
