@@ -95,6 +95,7 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, FirstTrackSlope);
         MEMBERVARIABLE(Double_t, FirstTrackIntercept);
         MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+        MEMBERVARIABLE(Double_t, UnknownEventTopology);
 
         public:
             TClonesArray* GetTracks() {return fTracks;}
