@@ -206,8 +206,8 @@ namespace Katydid
         // we're unpacking all components into a unified set of events, so this goes outside the loop
         typedef std::set< double > TrackEndsType;
         typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
-        std::vector< ActiveEventType > active_events;
-        std::vector< KTDataPtr > finished_events;
+        std::vector< ActiveEventType > activeEvents;
+        std::vector< KTDataPtr > finishedEvents;
 
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
@@ -222,68 +222,68 @@ namespace Katydid
             // loop over new Multi-Peak Tracks
             while (trackIt != fMPTracks[iComponent].end())
             {
-                int track_assigned = -1; // keep track of which event the track when into
+                int trackAssigned = -1; // keep track of which event the track when into
                 
                 // loop over active events and add this track to one
-                for (std::vector< ActiveEventType >::iterator EventIt=active_events.begin(); EventIt != active_events.end();)
+                for (std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin(); eventIt != activeEvents.end();)
                 {
-                    bool increment_eventIt = true;
+                    bool incrementEventIt = true;
                     // if the event's last end is earlier than this track's start, the event is done
-                    if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(EventIt->second.rbegin()) )
+                    if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(eventIt->second.rbegin()) )
                     {
-                        finished_events.push_back(EventIt->first);
-                        EventIt = active_events.erase(EventIt);
-                        increment_eventIt = false;
+                        finishedEvents.push_back(eventIt->first);
+                        eventIt = activeEvents.erase(eventIt);
+                        incrementEventIt = false;
                     }
                     // loop over track ends to test against
-                    for (TrackEndsType::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    for (TrackEndsType::iterator endTimeIt=eventIt->second.begin(); endTimeIt != eventIt->second.end();)
                     {
                         // if this track head matches the tail of a track in this event, add it
-                        if ( trackIt->fMeanEndTimeInRunC - *end_timeIt < fJumpTimeTolerance )
+                        if ( trackIt->fMeanEndTimeInRunC - *endTimeIt < fJumpTimeTolerance )
                         {
-                            if (track_assigned == -1) // If this track hasn't been added to any event, add to this one
+                            if (trackAssigned == -1) // If this track hasn't been added to any event, add to this one
                             {
-                                track_assigned = EventIt - active_events.begin();
+                                trackAssigned = eventIt - activeEvents.begin();
 
-                                KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
+                                KTMultiTrackEventData& thisEvent = eventIt->first->Of< KTMultiTrackEventData >();
                                 for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
                                 {
-                                    this_event.AddTrack( **peakIt );
+                                    thisEvent.AddTrack( **peakIt );
                                 }
-                                this_event.ProcessTracks();
-                                EventIt->second.insert( trackIt->fMeanEndTimeInRunC );
+                                thisEvent.ProcessTracks();
+                                eventIt->second.insert( trackIt->fMeanEndTimeInRunC );
                             }
                             else // if this track is already in an event, merge this event into that one (NOTE: this is weird)
                             {
-                                std::vector< ActiveEventType >::iterator first_event_loc = active_events.begin();
-                                std::advance( first_event_loc, track_assigned);
-                                KTMultiTrackEventData& first_event = first_event_loc->first->Of< KTMultiTrackEventData >();
-                                KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
-                                this_event.SetUnknownEventTopology(true);
-                                for (unsigned iLine = 0; iLine < this_event.GetNTracks(); ++iLine)
+                                std::vector< ActiveEventType >::iterator firstEventLoc = activeEvents.begin();
+                                std::advance( firstEventLoc, trackAssigned);
+                                KTMultiTrackEventData& firstEvent = firstEventLoc->first->Of< KTMultiTrackEventData >();
+                                KTMultiTrackEventData& thisEvent = eventIt->first->Of< KTMultiTrackEventData >();
+                                thisEvent.SetUnknownEventTopology(true);
+                                for (unsigned iLine = 0; iLine < thisEvent.GetNTracks(); ++iLine)
                                 {
-                                    first_event.AddTrack(this_event.GetTrack(iLine));
+                                    firstEvent.AddTrack(thisEvent.GetTrack(iLine));
                                 }
-                                first_event.ProcessTracks();
-                                for (TrackEndsType::const_iterator endpointIt=EventIt->second.begin(); endpointIt != EventIt->second.end(); ++endpointIt)
+                                firstEvent.ProcessTracks();
+                                for (TrackEndsType::const_iterator endpointIt=eventIt->second.begin(); endpointIt != eventIt->second.end(); ++endpointIt)
                                 {
-                                    first_event_loc->second.insert(*endpointIt);
+                                    firstEventLoc->second.insert(*endpointIt);
                                 }
-                                EventIt = active_events.erase(EventIt);
-                                increment_eventIt = false;
+                                eventIt = activeEvents.erase(eventIt);
+                                incrementEventIt = false;
                             }
                             // this track already matched the event, don't keep checking
                             break;
                         }
-                        ++end_timeIt;
+                        ++endTimeIt;
                     } // for loop over end times
                     // don't increment if we removed this active event from the vector
-                    if (increment_eventIt)
+                    if (incrementEventIt)
                     {
-                        ++EventIt;
+                        ++eventIt;
                     }
                 } // for loop over active events
-                if (track_assigned != -1) // if no event matched then create one
+                if (trackAssigned != -1) // if no event matched then create one
                 {
                     ActiveEventType new_event;
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
@@ -294,7 +294,7 @@ namespace Katydid
                     }
                     event.ProcessTracks();
                     new_event.second.insert( trackIt->fMeanEndTimeInRunC );
-                    active_events.push_back(new_event);
+                    activeEvents.push_back(new_event);
                 }
                 ++trackIt;
             } // while loop over tracks
