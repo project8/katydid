@@ -234,18 +234,18 @@ namespace Katydid
                     for (std::vector< double >::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
                         // conditions for time jump matching
-                        // TODO:<upgrade> there should be a freq jump limit too but for MP tracks how is that def'd?
+                        // TODO:<upgrade> there should (maybe) be a freq jump limit too but for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
                         if ( trackIt->fMeanEndTimeInRunC - *end_timeIt < fJumpTimeTolerance )
                         {
                             if (track_assigned == -1)
                             {
                                 track_assigned = end_timeIt - EventIt->second.begin();
-                                // TODO: add all peaks in this track to this event;
+
                                 KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
-                                for ( std::set< TrackSetCIt, TrackSetCItComp >::const_iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
+                                for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
                                 {
+                                    this_event.AddTrack( **peakIt );
                                 }
-                                //
                                 EventIt->second.push_back( trackIt->fMeanEndTimeInRunC );
                             }
                             else
