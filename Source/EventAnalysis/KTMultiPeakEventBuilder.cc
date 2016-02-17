@@ -207,7 +207,6 @@ namespace Katydid
         typedef std::set< double > TrackEndsType;
         typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
         std::vector< ActiveEventType > activeEvents;
-        std::vector< KTDataPtr > finishedEvents;
 
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
@@ -231,7 +230,7 @@ namespace Katydid
                     // if the event's last end is earlier than this track's start, the event is done
                     if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(eventIt->second.rbegin()) )
                     {
-                        finishedEvents.push_back(eventIt->first);
+                        fCandidates.insert(eventIt->first);
                         eventIt = activeEvents.erase(eventIt);
                         incrementEventIt = false;
                     }
@@ -299,8 +298,13 @@ namespace Katydid
                 ++trackIt;
             } // while loop over tracks
         } // for loop over components
+
+        // emit event signals
+        for (std::set< KTDataPtr >::const_iterator dataIt=fCandidates.begin(); dataIt != fCandidates.end(); ++dataIt)
+        {
+            fEventSignal(*dataIt);
+        }
        
-        // TODO:<question> events are completed based on the order in which they terminate, not the order in which they start... does fCandidates have a sort that isn't obvious to me that can deal with this?
        return true;
     }
 
