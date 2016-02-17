@@ -250,6 +250,7 @@ namespace Katydid
                                 {
                                     this_event.AddTrack( **peakIt );
                                 }
+                                this_event.ProcessTracks();
                                 EventIt->second.insert( trackIt->fMeanEndTimeInRunC );
                             }
                             else // if this track is already in an event, merge this event into that one (NOTE: this is weird)
@@ -263,6 +264,7 @@ namespace Katydid
                                 {
                                     first_event.AddTrack(this_event.GetTrack(iLine));
                                 }
+                                first_event.ProcessTracks();
                                 for (TrackEndsType::const_iterator endpointIt=EventIt->second.begin(); endpointIt != EventIt->second.end(); ++endpointIt)
                                 {
                                     first_event_loc->second.insert(*endpointIt);
@@ -290,16 +292,15 @@ namespace Katydid
                     {
                         event.AddTrack( **peakIt );
                     }
+                    event.ProcessTracks();
                     new_event.second.insert( trackIt->fMeanEndTimeInRunC );
                     active_events.push_back(new_event);
                 }
                 ++trackIt;
             } // while loop over tracks
         } // for loop over components
-        
-        // TODO:<question> there should be a freq jump limit too? for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
-        // TODO:<question> have I missed any setup for the KTDataPtr?
-        // TODO:<question> do I need to be calling KTMultiTrackEventData::ProcessTracks()? If so when does it need to be done, does when I close the event work?
+       
+        // TODO: The head to tail check is only using the time tolerance, need to add frequency tolerance
         // TODO:<question> events are completed based on the order in which they terminate, not the order in which they start... does fCandidates have a sort that isn't obvious to me that can deal with this?
        return true;
     }
