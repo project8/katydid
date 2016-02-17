@@ -230,14 +230,14 @@ namespace Katydid
                 {
                     bool increment_eventIt = true;
                     // loop over track ends to test against
-                    //for (std::vector< std::pair< double, double > >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    // TODO: track ends vector should be a set, that way random insertions maintain their order
                     for (std::vector< double >::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
-                        // conditions for time jump matching
+                        // if this track head matches the tail of a track in this event, add it
                         // TODO:<upgrade> there should (maybe) be a freq jump limit too but for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
                         if ( trackIt->fMeanEndTimeInRunC - *end_timeIt < fJumpTimeTolerance )
                         {
-                            if (track_assigned == -1)
+                            if (track_assigned == -1) // If this track hasn't been added to any event, add to this one
                             {
                                 track_assigned = end_timeIt - EventIt->second.begin();
 
@@ -248,12 +248,25 @@ namespace Katydid
                                 }
                                 EventIt->second.push_back( trackIt->fMeanEndTimeInRunC );
                             }
-                            else
+                            else // if this track is already in an event, merge this event into that one
                             {
-                                // TODO: add all tracks in this event to the first match
+                                std::vector< ActiveEventType >::iterator first_event_loc = active_events.begin();
+                                std::advance( first_event_loc, track_assigned);
+                                KTMultiTrackEventData& first_event = first_event_loc->first->Of< KTMultiTrackEventData >();
+                                KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
+                                for (unsigned iLine = 0; iLine < this_event.GetNTracks(); ++iLine)
+                                {
+                                    first_event.AddTrack(this_event.GetTrack(iLine));
+                                }
+                                for (std::vector< double >::const_iterator endpointIt=EventIt->second.begin(); endpointIt != EventIt->second.end(); ++endpointIt)
+                                {
+                                    first_event_loc->second.push_back(*endpointIt);
+                                }
+                                // because we merged this event into an earlier one, we should remove it (and not increment the iterator)
                                 EventIt = active_events.erase(EventIt);
                                 increment_eventIt = false;
                             }
+                            // since this track already matches this event, we don't keep testing track ends in the event
                             break;
                         }
                         ++end_timeIt;
