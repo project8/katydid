@@ -234,7 +234,7 @@ namespace Katydid
                     for (std::vector< double >::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
                         // if this track head matches the tail of a track in this event, add it
-                        // TODO:<upgrade> there should (maybe) be a freq jump limit too but for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
+                        // TODO:<question> there should (maybe) be a freq jump limit too but for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
                         if ( trackIt->fMeanEndTimeInRunC - *end_timeIt < fJumpTimeTolerance )
                         {
                             if (track_assigned == -1) // If this track hasn't been added to any event, add to this one
@@ -282,7 +282,6 @@ namespace Katydid
                     ActiveEventType new_event;
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
-                    // TODO: I probably need to set some attributes of the KTDataPtr
                     for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
                         {
                             event.AddTrack( **peakIt );
@@ -295,6 +294,8 @@ namespace Katydid
         } // for loop over components
         
         // TODO: move acitve tracks into fCandidates
+        // TODO: I probably need to set some attributes of the KTDataPtr
+        // TODO:<question> events are completed based on the order in which they terminate, not the order in which they start... should I save them so I can sort them before emitting? if not, how do I determine how to set the fEventId?
         // TODO: emit signals?
         // TODO:<upgrade> put logic to move active events into fCandidates into loop on active events, that way events that are closed aren't tested every time, also the signal can go ahead and by passed along
 
