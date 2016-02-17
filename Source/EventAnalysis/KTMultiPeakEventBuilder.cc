@@ -34,7 +34,7 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fSidebandTimeTolerance(0.),
             fJumpTimeTolerance(0.),
-            fJumpFreqTolerance(1.),
+            //fJumpFreqTolerance(1.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
             fCompTracks(1),
@@ -59,7 +59,7 @@ namespace Katydid
 
         SetSidebandTimeTolerance(node->GetValue("sideband-time-tol", GetSidebandTimeTolerance()));
         SetJumpTimeTolerance(node->GetValue("jump-time-tol", GetJumpTimeTolerance()));
-        SetJumpFreqTolerance(node->GetValue("jump-freq-tol", GetJumpFreqTolerance()));
+        //SetJumpFreqTolerance(node->GetValue("jump-freq-tol", GetJumpFreqTolerance()));
 
         return true;
     }
@@ -204,7 +204,7 @@ namespace Katydid
         KTPROG(tclog, "KTMultiPeakEventBuilder combining multi-peak tracks");
       
         // we're unpacking all components into a unified set of events, so this goes outside the loop
-        typedef std::set< double > TrackEndsType; // typedef mostly so that I can easily change double to std::pair < double, double > if we want frequency tolerance
+        typedef std::set< double > TrackEndsType;
         typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
         std::vector< ActiveEventType > active_events;
         std::vector< KTDataPtr > finished_events;
@@ -300,7 +300,6 @@ namespace Katydid
             } // while loop over tracks
         } // for loop over components
        
-        // TODO: The head to tail check is only using the time tolerance, need to add frequency tolerance
         // TODO:<question> events are completed based on the order in which they terminate, not the order in which they start... does fCandidates have a sort that isn't obvious to me that can deal with this?
        return true;
     }

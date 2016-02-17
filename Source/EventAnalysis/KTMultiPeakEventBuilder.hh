@@ -104,7 +104,7 @@ namespace Katydid
             MEMBERVARIABLE(double, SidebandTimeTolerance);
 
             MEMBERVARIABLE(double, JumpTimeTolerance);
-            MEMBERVARIABLE(double, JumpFreqTolerance);
+            //MEMBERVARIABLE(double, JumpFreqTolerance);
 
         public:
             // Store point information locally
