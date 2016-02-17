@@ -204,16 +204,15 @@ namespace Katydid
         KTPROG(tclog, "KTMultiPeakEventBuilder combining multi-peak tracks");
       
         // we're unpacking all components into a unified set of events, so this goes outside the loop
-        // also, I've given no thought to the use of std::vector vs std::list or std::forward_list
-        typedef std::pair< KTDataPtr, std::vector< double > > ActiveEventType; // without std::pair because not tracking frequencies
-        //typedef std::pair< KTDataPtr, std::vector< std::pair< double, double > > > ActiveEventType;
+        typedef std::set< double > TrackEndsType; // typedef mostly so that I can easily change double to std::pair < double, double > if we want frequency tolerance
+        typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
         std::vector< ActiveEventType > active_events;
+        std::vector< KTDataPtr > finished_events;
 
         // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
         {
-            KTDEBUG(tclog, "head-to-tail building events from MPTracks; component: " << iComponent);
-            
+            // if the component has no tracks, skip it
             if (fMPTracks[iComponent].empty())
             {
                 continue;
@@ -229,24 +228,29 @@ namespace Katydid
                 for (std::vector< ActiveEventType >::iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
                     bool increment_eventIt = true;
+                    // if the event's last end is earlier than this track's start, the event is done
+                    if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(EventIt->second.rbegin()) )
+                    {
+                        finished_events.push_back(EventIt->first);
+                        EventIt = active_events.erase(EventIt);
+                        increment_eventIt = false;
+                    }
                     // loop over track ends to test against
-                    // TODO: track ends vector should be a set, that way random insertions maintain their order
-                    for (std::vector< double >::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    for (TrackEndsType::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
                         // if this track head matches the tail of a track in this event, add it
-                        // TODO:<question> there should (maybe) be a freq jump limit too but for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
                         if ( trackIt->fMeanEndTimeInRunC - *end_timeIt < fJumpTimeTolerance )
                         {
                             if (track_assigned == -1) // If this track hasn't been added to any event, add to this one
                             {
-                                track_assigned = end_timeIt - EventIt->second.begin();
+                                track_assigned = EventIt - active_events.begin();
 
                                 KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
                                 for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
                                 {
                                     this_event.AddTrack( **peakIt );
                                 }
-                                EventIt->second.push_back( trackIt->fMeanEndTimeInRunC );
+                                EventIt->second.insert( trackIt->fMeanEndTimeInRunC );
                             }
                             else // if this track is already in an event, merge this event into that one (NOTE: this is weird)
                             {
@@ -259,19 +263,19 @@ namespace Katydid
                                 {
                                     first_event.AddTrack(this_event.GetTrack(iLine));
                                 }
-                                for (std::vector< double >::const_iterator endpointIt=EventIt->second.begin(); endpointIt != EventIt->second.end(); ++endpointIt)
+                                for (TrackEndsType::const_iterator endpointIt=EventIt->second.begin(); endpointIt != EventIt->second.end(); ++endpointIt)
                                 {
-                                    first_event_loc->second.push_back(*endpointIt);
+                                    first_event_loc->second.insert(*endpointIt);
                                 }
                                 EventIt = active_events.erase(EventIt);
                                 increment_eventIt = false;
                             }
-                            // since this track already matches this event, we don't keep testing track ends in the event
+                            // this track already matched the event, don't keep checking
                             break;
                         }
                         ++end_timeIt;
                     } // for loop over end times
-                    // don't increment if we removed this active event
+                    // don't increment if we removed this active event from the vector
                     if (increment_eventIt)
                     {
                         ++EventIt;
@@ -283,22 +287,20 @@ namespace Katydid
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
                     for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
-                        {
-                            event.AddTrack( **peakIt );
-                        }
-                    new_event.second.push_back( trackIt->fMeanEndTimeInRunC );
+                    {
+                        event.AddTrack( **peakIt );
+                    }
+                    new_event.second.insert( trackIt->fMeanEndTimeInRunC );
                     active_events.push_back(new_event);
                 }
                 ++trackIt;
             } // while loop over tracks
         } // for loop over components
         
-        // TODO: move acitve tracks into fCandidates
-        // TODO: I probably need to set some attributes of the KTDataPtr
-        // TODO:<question> events are completed based on the order in which they terminate, not the order in which they start... should I save them so I can sort them before emitting? if not, how do I determine how to set the fEventId?
-        // TODO: emit signals?
-        // TODO:<upgrade> put logic to move active events into fCandidates into loop on active events, that way events that are closed aren't tested every time, also the signal can go ahead and by passed along
-
+        // TODO:<question> there should be a freq jump limit too? for MP tracks how is that def'd? Is it relative to the mean? to the closest track?
+        // TODO:<question> have I missed any setup for the KTDataPtr?
+        // TODO:<question> do I need to be calling KTMultiTrackEventData::ProcessTracks()? If so when does it need to be done, does when I close the event work?
+        // TODO:<question> events are completed based on the order in which they terminate, not the order in which they start... does fCandidates have a sort that isn't obvious to me that can deal with this?
        return true;
     }
 
