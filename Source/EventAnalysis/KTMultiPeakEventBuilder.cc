@@ -205,7 +205,8 @@ namespace Katydid
       
         // we're unpacking all components into a unified set of events, so this goes outside the loop
         // also, I've given no thought to the use of std::vector vs std::list or std::forward_list
-        typedef std::pair< KTDataPtr, std::vector< std::pair< double, double > > > ActiveEventType;
+        typedef std::pair< KTDataPtr, std::vector< double > > ActiveEventType; // without std::pair because not tracking frequencies
+        //typedef std::pair< KTDataPtr, std::vector< std::pair< double, double > > > ActiveEventType;
         std::vector< ActiveEventType > active_events;
 
         // loop over components
@@ -224,20 +225,28 @@ namespace Katydid
             {
                 int track_assigned = -1; // keep track of which event the track when into
                 
-                // loop over active events and add this track to something
-                for (std::vector< ActiveEventType >::const_iterator EventIt=active_events.begin(); EventIt != active_events.end();)
+                // loop over active events and add this track to one
+                for (std::vector< ActiveEventType >::iterator EventIt=active_events.begin(); EventIt != active_events.end();)
                 {
                     bool increment_eventIt = true;
                     // loop over track ends to test against
-                    for (std::vector< std::pair< double, double > >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    //for (std::vector< std::pair< double, double > >::const_iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
+                    for (std::vector< double >::iterator end_timeIt=EventIt->second.begin(); end_timeIt != EventIt->second.end();)
                     {
-                        // conditions for time and frequency matches
-                        if ( (true) and (true))
+                        // conditions for time jump matching
+                        // TODO:<upgrade> there should be a freq jump limit too but for MP tracks how is that def'd?
+                        if ( trackIt->fMeanEndTimeInRunC - *end_timeIt < fJumpTimeTolerance )
                         {
                             if (track_assigned == -1)
                             {
                                 track_assigned = end_timeIt - EventIt->second.begin();
                                 // TODO: add all peaks in this track to this event;
+                                KTMultiTrackEventData& this_event = EventIt->first->Of< KTMultiTrackEventData >();
+                                for ( std::set< TrackSetCIt, TrackSetCItComp >::const_iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
+                                {
+                                }
+                                //
+                                EventIt->second.push_back( trackIt->fMeanEndTimeInRunC );
                             }
                             else
                             {
@@ -269,6 +278,10 @@ namespace Katydid
                 ++trackIt;
             } // while loop over tracks
         } // for loop over components
+        
+        // TODO: move acitve tracks into fCandidates
+        // TODO: emit signals?
+        // TODO:<upgrade> put logic to move active events into fCandidates into loop on active events, that way events that are closed aren't tested every time, also the signal can go ahead and by passed along
 
        return true;
     }
