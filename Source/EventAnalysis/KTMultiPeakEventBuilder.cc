@@ -162,7 +162,7 @@ namespace Katydid
                 // loop over active track refs
                 list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
                 bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
-                int activeTrackCount = -1;
+                int activeTrackCount = 0;
                 while (mptrIt != activeTrackRefs.end())
                 {
                     KTINFO(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
@@ -194,7 +194,6 @@ namespace Katydid
                 } // while loop over active track refs
                 if (! trackHasBeenAdded)
                 {
-                    KTDEBUG(tclog, "no active track match, creating a new active track ref");
                     activeTrackRefs.push_back(MultiPeakTrackRef());
                     activeTrackRefs.rbegin()->InsertTrack(trackIt);
                     trackHasBeenAdded = true;
@@ -246,11 +245,12 @@ namespace Katydid
                 // loop over active events and add this track to one
                 for (std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin(); eventIt != activeEvents.end();)
                 {
-                    KTINFO(tclog, "checking active event (" << eventIt - activeEvents.begin() << "/" << activeEvents.size() << ")");
+                    KTDEBUG(tclog, "checking active event (" << eventIt - activeEvents.begin() + 1 << "/" << activeEvents.size() << ")");
                     bool incrementEventIt = true;
                     // if the event's last end is earlier than this track's start, the event is done
                     if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(eventIt->second.rbegin()) )
                     {
+                        KTDEBUG(tclog, "event no longer active");
                         fCandidates.insert(eventIt->first);
                         eventIt = activeEvents.erase(eventIt);
                         incrementEventIt = false;
@@ -261,6 +261,7 @@ namespace Katydid
                         // if this track head matches the tail of a track in this event, add it
                         if ( trackIt->fMeanEndTimeInRunC - *endTimeIt < fJumpTimeTolerance )
                         {
+                            KTDEBUG(tclog, "track matched this active event");
                             if (trackAssigned == -1) // If this track hasn't been added to any event, add to this one
                             {
                                 trackAssigned = eventIt - activeEvents.begin();
@@ -302,12 +303,13 @@ namespace Katydid
                     {
                         ++eventIt;
                     }
-                KTINFO(tclog, "track assigned to event " << trackAssigned);
                 } // for loop over active events
                 if (trackAssigned == -1) // if no event matched then create one
                 {
                     KTINFO(tclog, "track not matched, creating new event");
-                    ActiveEventType new_event;
+                    KTDataPtr data(new KTData());
+                    ActiveEventType new_event(data, TrackEndsType());
+                    //new_event.first.reset(new KTData());
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
                     for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
@@ -318,6 +320,10 @@ namespace Katydid
                     new_event.second.insert( trackIt->fMeanEndTimeInRunC );
                     activeEvents.push_back(new_event);
                     //KTINFO(tclog, "track not matched, creating active event " << activeEvents.size());
+                }
+                else
+                {
+                    KTINFO(tclog, "track assigned to event " << trackAssigned);
                 }
                 ++trackIt;
             } // while loop over tracks
