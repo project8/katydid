@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.0)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.4.1)
+project (Katydid VERSION 2.4.2)
 
 # Import Katydid core features
 include (Nymph/cmake/Nymph.cmake)
@@ -98,25 +98,19 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 5.28)
+    find_package (ROOT 5.28 COMPONENTS Gui)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
-    list (APPEND EXTRA_ROOT_LIBRARIES libHistPainter)
-    foreach (lib ${EXTRA_ROOT_LIBRARIES})
-        string (STRIP ${lib} lib)
-        set (lib "${ROOT_LIBRARY_DIR}/${lib}.so")
-        list (APPEND ROOT_LIBRARIES ${lib})
-    endforeach (lib)
     pbuilder_add_ext_libraries (${ROOT_LIBRARIES})
     #message(STATUS "${ROOT_LIBRARIES}")
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     remove_definitions(-DROOT_FOUND)
 endif (ROOT_FOUND)
-include_directories (${ROOT_INCLUDES})
+include_directories (${ROOT_INCLUDE_DIR})
 
 # Matlab
 if (Katydid_USE_MATLAB)

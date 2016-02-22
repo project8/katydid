@@ -123,7 +123,7 @@ set (KATYDID_LIBS
 ##################################################
 
 if (ROOT_FOUND)
-    ROOT_GENERATE_DICTIONARY ("${IO_DICT_HEADERFILES}" "${IO_LINKDEF_HEADERFILE}" "${IO_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+    ROOT_GENERATE_DICTIONARY (IODict ${IO_DICT_HEADERFILES} LINKDEF ${IO_LINKDEF_HEADERFILE})
     if (Katydid_USE_CPP11)
         pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
     endif (Katydid_USE_CPP11)
