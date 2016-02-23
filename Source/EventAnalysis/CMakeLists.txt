@@ -13,6 +13,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTDBScanTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
     KTMultiSliceClustering.hh
+    KTSpectrogramCollector.hh
     KTTrackProcessing.hh
 )
 
@@ -23,6 +24,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
     KTMultiSliceClustering.cc
+    KTSpectrogramCollector.cc
     KTTrackProcessing.cc
 )
 

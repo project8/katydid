@@ -13,6 +13,7 @@
 #include "KTMemberVariable.hh"
 
 #include <vector>
+#include <map>
 
 namespace Katydid
 {

@@ -25,7 +25,7 @@ namespace Katydid
     {
         for (collection::const_iterator it = orig.fSpectra.begin(); it != orig.fSpectra.end(); ++it)
         {
-            fSpectra.push_back(new KTPowerSpectrum(**it));
+            fSpectra[it->first] = new KTPowerSpectrum(*it->second);
         }
     }
 
@@ -33,21 +33,29 @@ namespace Katydid
     {
         for (collection::iterator it = fSpectra.begin(); it != fSpectra.end(); ++it)
         {
-            delete *it;
+            delete it->second;
         }
     }
 
     KTPSCollectionData& KTPSCollectionData::operator=(const KTPSCollectionData& rhs)
     {
+        for (collection::iterator it = fSpectra.begin(); it != fSpectra.end(); ++it)
+        {
+            delete it->second;
+        }
+
+        fSpectra.clear();
+
         for (collection::const_iterator it = rhs.fSpectra.begin(); it != rhs.fSpectra.end(); ++it)
         {
-            fSpectra.push_back(new KTPowerSpectrum(**it));
+            fSpectra[it->first] = new KTPowerSpectrum(*it->second);
         }
         return *this;
     }
 
     void KTPSCollectionData::AddSpectrum(double t, KTPowerSpectrum* spectrum)
     {
+        fSpectra.erase(t);
         fSpectra[t] = new KTPowerSpectrum(*spectrum);
         return;
     }

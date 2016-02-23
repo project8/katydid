@@ -13,9 +13,9 @@
 #include "KTSliceHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTData.hh"
-
 
 namespace Nymph
 {
@@ -81,13 +81,13 @@ namespace Nymph
     bool AddTrack( KTProcessedTrackData& trackData, unsigned component )
     {
         KTDataPtr ptr( new KTDataPtr() );
-        KTSpectrumCollectionData* newWaterfall = &ptr->Of< KTSpectrumCollectionData >();
+        KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
 
         newWaterfall->SetStartTime( trackData.fStartTimeInRunC );
         newWaterfall->SetEndTime( trackData.fEndTimeInRunC );
         newWaterfall->SetFilling( false );
 
-        fWaterfallSets[component].insert( std::make_pair< KTDataPtr, KTSpectrumCollectionData* >( &ptr, newWaterfall ) );
+        fWaterfallSets[component].insert( std::make_pair< KTDataPtr, KTPSCollectionData* >( &ptr, newWaterfall ) );
 
         return true;
     }

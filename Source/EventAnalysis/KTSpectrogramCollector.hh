@@ -22,7 +22,7 @@ namespace Nymph
     class KTProcessedTrackData;
     class KTSliceHeader;
     class KTPSCollectionData;
-    class KTDataPtr;
+    //class KTDataPtr;
 
     /*!
      @class KTSpectrogramCollector
@@ -54,7 +54,7 @@ namespace Nymph
     class KTSpectrogramCollector : public KTProcessor
     {
         public:
-            KTSpectrogramCollector(const std::string& name = "[config-name]");
+            KTSpectrogramCollector(const std::string& name = "spectrogram-collector");
             virtual ~KTSpectrogramCollector();
 
             bool Configure(const KTParamNode* node);
