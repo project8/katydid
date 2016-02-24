@@ -36,11 +36,16 @@ namespace Katydid
 
     KTROOTSpectrogramTypeWriterTransform::~KTROOTSpectrogramTypeWriterTransform()
     {
+        delete fLineCollection;
+    }
+    
+    void KTROOTSpectrogramTypeWriterTransform::WriteFile(KTDataPtr data)
+    {
         KTINFO("write spectrograms to root file");
         OutputSpectrograms();
         KTINFO("output lines to root file");
         OutputLines();
-        delete fLineCollection;
+        return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
@@ -80,18 +85,11 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::OutputLines()
     {
-        KTINFO("get file");
         TFile *aFile = fWriter->GetFile();
         aFile->cd();
-        KTINFO("there are " << fLineCollection->GetEntries() << " lines in Collection");
-        KTINFO("write lines... (this is where it seems to crash)");
-        //aFile->WriteTObject(fLineCollection, "AllLines", "SingleKey");
         TOrdCollection* newLines = (TOrdCollection*)fLineCollection->Clone("AllLines");
         aFile->WriteTObject(newLines, "AllLines", "SingleKey");
-        // this fails, breaking it into bits above to try and trace
-        //fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
         fLineCollection = NULL;
-        KTINFO("lines written");
         return;
     }
 
@@ -111,6 +109,7 @@ namespace Katydid
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
+        fWriter->RegisterSlot("write-file", this, &KTROOTSpectrogramTypeWriterTransform::WriteFile);
         return;
     }
 

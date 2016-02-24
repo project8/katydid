@@ -37,6 +37,7 @@ namespace Katydid
             void OutputPSDData();
 
             void TakeLine(KTDataPtr data);
+            void WriteFile(KTDataPtr data);
 
         private:
             std::vector< SpectrogramData > fFSPolarSpectrograms;
