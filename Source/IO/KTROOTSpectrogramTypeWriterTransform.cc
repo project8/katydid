@@ -80,10 +80,11 @@ namespace Katydid
     void KTROOTSpectrogramTypeWriterTransform::OutputLines()
     {
         KTINFO("get file");
-        auto aFile = fWriter->GetFile();
+        TFile *aFile = fWriter->GetFile();
+        aFile->cd();
         KTINFO("there are " << fLineCollection.GetEntries() << " lines in Collection");
         KTINFO("write lines... (this is where it seems to crash)");
-        aFile->WriteTObject(&fLineCollection, "AllLines");
+        aFile->WriteTObject(&fLineCollection, "AllLines", "SingleKey");
         // this fails, breaking it into bits above to try and trace
         //fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
         KTINFO("lines written");
