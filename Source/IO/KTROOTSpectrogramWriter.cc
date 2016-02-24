@@ -10,6 +10,8 @@
 #include "KTCommandLineOption.hh"
 #include "KTParam.hh"
 
+#include "TLine.h"
+
 #include <algorithm>
 
 using std::string;
@@ -33,7 +35,9 @@ namespace Katydid
             fMaxTime(0.),
             fMinFreq(0.),
             fMaxFreq(0.),
-            fFile(NULL)
+            fFile(NULL),
+            fLineCollection(),
+            fTakeLineSlot("collect-lines", this, &KTROOTSpectrogramWriter::TakeLine)
     {
     }
 
@@ -75,6 +79,14 @@ namespace Katydid
             return false;
         }
         fFile->cd();
+        return true;
+    }
+
+    bool KTROOTSpectrogramWriter::TakeLine(KTProcessedTrackData& line)
+    {
+        TLine aLine = TLine(line.GetStartTimeInRunC(), line.GetStartFrequency(), line.GetEndTimeInRunC(), line.GetEndFrequency());
+        fLineCollection.Add(&aLine);
+        
         return true;
     }
 
