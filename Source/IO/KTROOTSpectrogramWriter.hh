@@ -21,7 +21,6 @@
 
 #include "TFile.h"
 #include "TH2.h"
-#include "TOrdCollection.h"
 
 #include <vector>
 
@@ -90,7 +89,6 @@ namespace Katydid
             virtual ~KTROOTSpectrogramWriter();
 
             bool Configure(const KTParamNode* node);
-            bool TakeLine(KTProcessedTrackData& line);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
@@ -109,10 +107,6 @@ namespace Katydid
 
             bool OpenAndVerifyFile();
         
-        private:
-            TOrdCollection fLineCollection;
-            KTSlotDataOneType< KTProcessedTrackData > fTakeLineSlot;
-
     };
 
     inline TFile* KTROOTSpectrogramWriter::OpenFile(const std::string& filename, const std::string& flag)
