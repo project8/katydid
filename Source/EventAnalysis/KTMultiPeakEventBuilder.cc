@@ -42,7 +42,7 @@ namespace Katydid
             fCandidates(),
             fDataCount(0),
             fEventSignal("event", this),
-            fEventsDoneSignal("clustering-done", this),
+            fEventsDoneSignal("events-done", this),
             fTakeTrackSlot("track", this, &KTMultiPeakEventBuilder::TakeTrack)
     //        fDoClusterSlot("do-cluster-trigger", this, &KTMultiPeakEventBuilder::Run)
     {
