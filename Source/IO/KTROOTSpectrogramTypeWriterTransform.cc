@@ -81,12 +81,13 @@ namespace Katydid
     {
         KTINFO("get file");
         auto aFile = fWriter->GetFile();
-        KTINFO("there are " << fLineCollection.GetEntries() << " lines");
-        KTINFO("name should be " << fLineCollection.GetName());
-        KTINFO("write lines...");
-        aFile->WriteTObject(&fLineCollection);//, "AllLines");
+        KTINFO("there are " << fLineCollection.GetEntries() << " lines in Collection");
+        KTINFO("write lines... (this is where it seems to crash)");
+        aFile->WriteTObject(&fLineCollection, "AllLines");
+        // this fails, breaking it into bits above to try and trace
         //fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
         KTINFO("lines written");
+        return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
