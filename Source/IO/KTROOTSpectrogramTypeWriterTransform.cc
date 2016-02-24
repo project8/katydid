@@ -29,7 +29,8 @@ namespace Katydid
             fFSPolarSpectrograms(),
             fFSFFTWSpectrograms(),
             fPowerSpectrograms(),
-            fPSDSpectrograms()
+            fPSDSpectrograms(),
+            fLineCollection()
     {
     }
 
@@ -78,8 +79,13 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::OutputLines()
     {
+        KTINFO("get file");
+        auto aFile = fWriter->GetFile();
+        KTINFO("there are " << fLineCollection.GetEntries() << " lines");
+        KTINFO("name should be " << fLineCollection.GetName());
         KTINFO("write lines...");
-        fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
+        aFile->WriteTObject(&fLineCollection);//, "AllLines");
+        //fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
         KTINFO("lines written");
     }
 
