@@ -11,6 +11,8 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 
+#include "TLine.h"
+
 //#include "KTLogger.hh"
 
 using std::vector;
@@ -27,13 +29,17 @@ namespace Katydid
             fFSPolarSpectrograms(),
             fFSFFTWSpectrograms(),
             fPowerSpectrograms(),
-            fPSDSpectrograms()
+            fPSDSpectrograms(),
+            fLineCollection()
     {
     }
 
     KTROOTSpectrogramTypeWriterTransform::~KTROOTSpectrogramTypeWriterTransform()
     {
+        KTINFO("write spectrograms to root file");
         OutputSpectrograms();
+        KTINFO("output lines to root file");
+        OutputLines();
     }
 
     void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
@@ -71,6 +77,20 @@ namespace Katydid
         return;
     }
 
+    void KTROOTSpectrogramTypeWriterTransform::OutputLines()
+    {
+        KTINFO("get file");
+        TFile *aFile = fWriter->GetFile();
+        aFile->cd();
+        KTINFO("there are " << fLineCollection.GetEntries() << " lines in Collection");
+        KTINFO("write lines... (this is where it seems to crash)");
+        aFile->WriteTObject(&fLineCollection, "AllLines", "SingleKey");
+        // this fails, breaking it into bits above to try and trace
+        //fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
+        KTINFO("lines written");
+        return;
+    }
+
     void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
     {
         ClearASpectrogramSet(fFSPolarSpectrograms);
@@ -86,6 +106,7 @@ namespace Katydid
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
+        fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
         return;
     }
 
@@ -120,6 +141,13 @@ namespace Katydid
     {
         AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
         return;
+    }
+
+    void KTROOTSpectrogramTypeWriterTransform::TakeLine(KTDataPtr data)
+    {
+        KTProcessedTrackData thisLine = data->Of< KTProcessedTrackData >();
+        TLine rootLine = TLine(thisLine.GetStartTimeInRunC(), thisLine.GetStartFrequency(), thisLine.GetEndTimeInRunC(), thisLine.GetEndFrequency());
+        fLineCollection.Add(&rootLine);
     }
 
 } /* namespace Katydid */

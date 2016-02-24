@@ -15,7 +15,9 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTMemberVariable.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
+#include "KTSlot.hh"
 
 #include "TFile.h"
 #include "TH2.h"
@@ -104,7 +106,7 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(TFile*, File);
 
             bool OpenAndVerifyFile();
-
+        
     };
 
     inline TFile* KTROOTSpectrogramWriter::OpenFile(const std::string& filename, const std::string& flag)

@@ -100,6 +100,7 @@ namespace Katydid
         double timeDelta, frequencyDelta;
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
+            KTDEBUG(ctlog, "checking point (" << iPoint + 1 << "/" << nPoints << ")");
             //FindDeltasFirstNeighbor(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
             (this->*fFindDeltasPtr)(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
 
