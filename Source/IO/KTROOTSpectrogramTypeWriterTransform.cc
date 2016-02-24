@@ -40,6 +40,7 @@ namespace Katydid
         OutputSpectrograms();
         KTINFO("output lines to root file");
         OutputLines();
+        delete fLineCollection;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
@@ -82,11 +83,14 @@ namespace Katydid
         KTINFO("get file");
         TFile *aFile = fWriter->GetFile();
         aFile->cd();
-        KTINFO("there are " << fLineCollection.GetEntries() << " lines in Collection");
+        KTINFO("there are " << fLineCollection->GetEntries() << " lines in Collection");
         KTINFO("write lines... (this is where it seems to crash)");
-        aFile->WriteTObject(&fLineCollection, "AllLines", "SingleKey");
+        //aFile->WriteTObject(fLineCollection, "AllLines", "SingleKey");
+        TOrdCollection* newLines = (TOrdCollection*)fLineCollection->Clone("AllLines");
+        aFile->WriteTObject(newLines, "AllLines", "SingleKey");
         // this fails, breaking it into bits above to try and trace
         //fWriter->GetFile()->WriteTObject(&fLineCollection, "AllLines");
+        fLineCollection = NULL;
         KTINFO("lines written");
         return;
     }
@@ -145,9 +149,13 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::TakeLine(KTDataPtr data)
     {
+        if (fLineCollection == NULL)
+        {
+            fLineCollection = new TOrdCollection();
+        }
         KTProcessedTrackData thisLine = data->Of< KTProcessedTrackData >();
-        TLine rootLine = TLine(thisLine.GetStartTimeInRunC(), thisLine.GetStartFrequency(), thisLine.GetEndTimeInRunC(), thisLine.GetEndFrequency());
-        fLineCollection.Add(&rootLine);
+        TLine* rootLine = new TLine(thisLine.GetStartTimeInRunC(), thisLine.GetStartFrequency(), thisLine.GetEndTimeInRunC(), thisLine.GetEndFrequency());
+        fLineCollection->Add(rootLine);
     }
 
 } /* namespace Katydid */

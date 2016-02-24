@@ -43,7 +43,7 @@ namespace Katydid
             std::vector< SpectrogramData > fFSFFTWSpectrograms;
             std::vector< SpectrogramData > fPowerSpectrograms;
             std::vector< SpectrogramData > fPSDSpectrograms;
-            TOrdCollection fLineCollection;
+            TOrdCollection *fLineCollection;
             
 
         public:
