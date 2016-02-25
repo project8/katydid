@@ -35,6 +35,7 @@ namespace Katydid
         public:
             KTROOTSpectrogramTypeWriter();
             virtual ~KTROOTSpectrogramTypeWriter();
+            virtual void OutputSpectrograms() = 0;
 
         protected:
             struct SpectrogramData {
@@ -61,7 +62,7 @@ namespace Katydid
 
      @brief Outputs a spectrogram in the form of a 2D histogram to a ROOT file
 
-     @details 
+     @details
 
      Configuration name: "root-spectrogram-writer"
 
@@ -79,7 +80,7 @@ namespace Katydid
      - "power": void (KTDataPtr) -- Contribute a spectrum to a power spectrogram.
      - "psd": void (KTDataPtr) -- Contribute a spectrum to a PSD spectrogram.
 
-     
+
     */
 
     class KTROOTSpectrogramWriter : public KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >//public KTWriter
@@ -106,7 +107,9 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(TFile*, File);
 
             bool OpenAndVerifyFile();
-        
+            void WriteFile();
+            KTSlotDone fWriteFileSlot;
+
     };
 
     inline TFile* KTROOTSpectrogramWriter::OpenFile(const std::string& filename, const std::string& flag)

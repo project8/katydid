@@ -37,7 +37,7 @@ namespace Katydid
             void OutputPSDData();
 
             void TakeLine(KTDataPtr data);
-            void WriteFile(KTDataPtr data);
+
 
         private:
             std::vector< SpectrogramData > fFSPolarSpectrograms;
@@ -45,12 +45,13 @@ namespace Katydid
             std::vector< SpectrogramData > fPowerSpectrograms;
             std::vector< SpectrogramData > fPSDSpectrograms;
             TOrdCollection *fLineCollection;
-            
+
 
         public:
             void OutputSpectrograms();
             void OutputLines();
             void ClearSpectrograms();
+            void ClearLines();
 
         private:
             void OutputASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);

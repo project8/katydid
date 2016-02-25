@@ -38,15 +38,6 @@ namespace Katydid
     {
         delete fLineCollection;
     }
-    
-    void KTROOTSpectrogramTypeWriterTransform::WriteFile(KTDataPtr data)
-    {
-        KTINFO("write spectrograms to root file");
-        OutputSpectrograms();
-        KTINFO("output lines to root file");
-        OutputLines();
-        return;
-    }
 
     void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
     {
@@ -71,24 +62,32 @@ namespace Katydid
         return;
     }
 
+    void KTROOTSpectrogramTypeWriterTransform::ClearLines()
+    {
+        delete fLineCollection;
+        fLineCollection = NULL;
+    }
+
     void KTROOTSpectrogramTypeWriterTransform::OutputSpectrograms()
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
+        KTDEBUG("calling output each spectrogram set")
         OutputASpectrogramSet(fFSPolarSpectrograms);
         OutputASpectrogramSet(fFSFFTWSpectrograms);
         OutputASpectrogramSet(fPowerSpectrograms);
         OutputASpectrogramSet(fPSDSpectrograms);
+
+        KTINFO("calling output lines")
+        OutputLines();
 
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::OutputLines()
     {
-        TFile *aFile = fWriter->GetFile();
-        aFile->cd();
-        TOrdCollection* newLines = (TOrdCollection*)fLineCollection->Clone("AllLines");
-        aFile->WriteTObject(newLines, "AllLines", "SingleKey");
+        KTINFO("grab file and cd")
+        fWriter->GetFile()->WriteTObject(fLineCollection, "AllLines", "SingleKey");
         fLineCollection = NULL;
         return;
     }
@@ -99,6 +98,8 @@ namespace Katydid
         ClearASpectrogramSet(fFSFFTWSpectrograms);
         ClearASpectrogramSet(fPowerSpectrograms);
         ClearASpectrogramSet(fPSDSpectrograms);
+
+        ClearLines();
         return;
     }
 
@@ -109,7 +110,7 @@ namespace Katydid
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
-        fWriter->RegisterSlot("write-file", this, &KTROOTSpectrogramTypeWriterTransform::WriteFile);
+        //fWriter->RegisterSlot("write-file", this, &KTROOTSpectrogramTypeWriterTransform::WriteFile);
         return;
     }
 

@@ -44,7 +44,6 @@ namespace Katydid
             fEventSignal("event", this),
             fEventsDoneSignal("events-done", this),
             fTakeTrackSlot("track", this, &KTMultiPeakEventBuilder::TakeTrack)
-    //        fDoClusterSlot("do-cluster-trigger", this, &KTMultiPeakEventBuilder::Run)
     {
         RegisterSlot("do-clustering", this, &KTMultiPeakEventBuilder::DoClusteringSlot);
     }
