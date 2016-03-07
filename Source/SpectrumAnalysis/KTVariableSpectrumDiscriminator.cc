@@ -202,33 +202,33 @@ namespace Katydid
 
         if (fCalculateMinBin)
         {
-            SetMinBin(data.GetSpectra()[0]->FindBin(fMinFrequency));
+            SetMinBin(data.GetSpectra().begin()->second[0].FindBin(fMinFrequency));
             KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin(data.GetSpectra()[0]->FindBin(fMaxFrequency));
+            SetMaxBin(data.GetSpectra().begin()->second[0].FindBin(fMaxFrequency));
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
         
         newData.SetNBinsX( data.GetSpectra().size() );
-        newData.SetNBinsY( data.GetSpectra()[0]->size() );
+        newData.SetNBinsY( data.GetSpectra().begin()->second[0].size() );
         newData.SetBinWidthX( data.GetDeltaT() );
-        newData.SetBinWidthY( data.GetSpectra()[0]->GetBinWidth() );
+        newData.SetBinWidthY( data.GetSpectra().begin()->second[0].GetBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
-        newDataSlice.SetNBins( data.GetSpectra()[0]->size() );
-        newDataSlice.SetBinWidth( data.GetSpectra()[0]->GetBinWidth() );
+        newDataSlice.SetNBins( data.GetSpectra().begin()->second[0].size() );
+        newDataSlice.SetBinWidth( data.GetSpectra().begin()->second[0].GetBinWidth() );
 
-        double XbinWidth = /*data.GetTimeLength();*/ 10e-6;
-        double YbinWidth = data.GetSpectra()[0]->GetBinWidth();
+        double XbinWidth = data.GetDeltaT();
+        double YbinWidth = data.GetSpectra().begin()->second[0].GetBinWidth();
 
         unsigned nSpectra = data.GetSpectra().size();
         unsigned nPoints = 0;
 
         for( unsigned i = 0; i < nSpectra; ++i )
         {
-            if (! DiscriminateSpectrum(data.GetSpectra()[i], gvData.GetSpline(0), newDataSlice, 0))
+            if (! DiscriminateSpectrum(&data.GetSpectra().begin()->second[i], gvData.GetSpline(0), newDataSlice, 0))
             {
                 KTERROR(sdlog, "Discrimination on spectrogram (slice " << i << ") failed");
                 return false;

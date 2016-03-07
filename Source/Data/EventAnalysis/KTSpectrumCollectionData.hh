@@ -33,10 +33,10 @@ namespace Katydid
 
             void AddSpectrum(double t, KTPowerSpectrum* spectrum);
             MEMBERVARIABLEREF_NOSET(collection, Spectra);
-            MEMBERVARIABLEREF_NOSET(double, StartTime);
-            MEMBERVARIABLEREF_NOSET(double, EndTime);
-            MEMBERVARIABLEREF_NOSET(double, DeltaT);
-            MEMBERVARIABLEREF_NOSET(bool, Filling);
+            MEMBERVARIABLEREF(double, StartTime);
+            MEMBERVARIABLEREF(double, EndTime);
+            MEMBERVARIABLEREF(double, DeltaT);
+            MEMBERVARIABLEREF(bool, Filling);
 
         public:
             static const std::string sName;

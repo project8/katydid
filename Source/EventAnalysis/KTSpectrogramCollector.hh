@@ -12,16 +12,17 @@
 
 #include "KTSlot.hh"
 
+#include "KTSpectrumCollectionData.hh"
+
+#include <set>
 
 
-namespace Nymph
+namespace Katydid
 {
     using namespace Nymph;
-    class KTParamNode;
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
     class KTSliceHeader;
-    class KTPSCollectionData;
     //class KTDataPtr;
 
     /*!
@@ -89,9 +90,10 @@ namespace Nymph
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
-            bool ConsiderSpectrum(KTPowerSpectrumData& psData, KTSliceHeader& slice, unsigned component);
+            bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component);
             bool ReceiveTrack(KTProcessedTrackData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData);
+            void FinishSC( KTDataPtr data );
 
         private:
             // Perhaps there are some non-public helper functions?
@@ -102,7 +104,7 @@ namespace Nymph
             {
                 bool operator() (const std::pair< KTDataPtr, KTPSCollectionData* > lhs, const std::pair< KTDataPtr, KTPSCollectionData* > rhs) const
                 {
-                    return lhs.second->fStartTime < rhs.second->fStartTime;
+                    return lhs.second->GetStartTime() < rhs.second->GetStartTime();
                 }
             };
 

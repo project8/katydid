@@ -17,7 +17,9 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTData.hh"
 
-namespace Nymph
+#include <set>
+
+namespace Katydid
 {
     KTLOGGER(evlog, "KTSpectrogramCollector");
 
@@ -42,6 +44,11 @@ namespace Nymph
 
     KTSpectrogramCollector::~KTSpectrogramCollector()
     {
+    }
+
+    void KTSpectrogramCollector::FinishSC( KTDataPtr data )
+    {
+        fWaterfallSignal( data );
     }
 
     bool KTSpectrogramCollector::Configure(const KTParamNode* node)
@@ -78,28 +85,28 @@ namespace Nymph
         return true;
     }
 
-    bool AddTrack( KTProcessedTrackData& trackData, unsigned component )
+    bool KTSpectrogramCollector::AddTrack( KTProcessedTrackData& trackData, unsigned component )
     {
-        KTDataPtr ptr( new KTDataPtr() );
+        KTDataPtr ptr( new KTData() );
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
 
-        newWaterfall->SetStartTime( trackData.fStartTimeInRunC );
-        newWaterfall->SetEndTime( trackData.fEndTimeInRunC );
+        newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() );
+        newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() );
         newWaterfall->SetFilling( false );
 
-        fWaterfallSets[component].insert( std::make_pair< KTDataPtr, KTPSCollectionData* >( &ptr, newWaterfall ) );
+        fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
         return true;
     }
 
-    bool ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component )
+    bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component )
     {
-        for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fTracks[component].end(); ++it )
+        for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
-            if( slice.fTimeInRun >= it->second->fStartTime - fLeadTime && slice.fTimeInRun <= it->second->fEndTime + fTrailTime )
+            if( slice.GetTimeInRun() >= it->second->GetStartTime() - fLeadTime && slice.GetTimeInRun() <= it->second->GetEndTime() + fTrailTime )
             {
-                it->second->AddSpectrum( slice.fTimeInRun, ps );
-                it->second->SetDeltaT( slice.fSliceLength );
+                it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
+                it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );
             }
             else
@@ -118,27 +125,15 @@ namespace Nymph
         return true;
     }
 
-    bool FinishSC( KTDataPtr data )
-    {
-        fWaterfallSignal( data );
-    }
-
     bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
     {
-        if (fCalculateMinBin)
-        {
-            SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
-        }
-        if (fCalculateMaxBin)
-        {
-            SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
-        }
+        unsigned iComponent = data.GetComponent();
+        if( fWaterfallSets.size() <= iComponent )
+            fWaterfallSets.resize( iComponent + 1 );
 
-        if( !AddTrack( data, data.fComponent ) )
+        if( !AddTrack( data, iComponent ) )
         {
-            KTERROR(sdlog, "Spectrogram collection could not add track! (component " << data.fComponent << ")" );
+                KTERROR(evlog, "Spectrogram collection could not add track! (component " << iComponent << ")" );
         }
 
         return true;
@@ -149,24 +144,25 @@ namespace Nymph
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+            KTDEBUG(evlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+            KTDEBUG(evlog, "Maximum bin set to " << fMaxBin);
         }
 
         unsigned nComponents = data.GetNComponents();
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            if (! ConsiderSpectrum(data.GetSpectrum(iComponent), iComponent))
+            if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent))
             {
-                KTERROR(sdlog, "Spectrogram collector could not receive spectrum! (component " << iComponent << ")");
+                KTERROR(evlog, "Spectrogram collector could not receive spectrum! (component " << iComponent << ")");
                 return false;
             }
         }
 
         return true;
     }
+} // namespace Katydid

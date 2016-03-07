@@ -1,17 +1,16 @@
 /*
- * TestSpectrogramCollector.cc
+ * Test2DDiscrim.cc
  *
- *  Created on: Feb 23, 2016
+ *  Created on: Mar 7, 2016
  *      Author: ezayas 
  */
 
-#include "KTSpectrogramCollector.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTProcessedTrackData.hh"
-#include "KTSliceHeader.hh"
 #include "KTLogger.hh"
+#include "KTVariableSpectrumDiscriminator.hh"
 
 #include <vector>
 
@@ -53,10 +52,9 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
 int main()
 {
 	double t_bin = 10e-6;
-	std::vector< KTPowerSpectrumData > psArray;
+	KTPSCollectionData psColl;
 	std::vector< KTProcessedTrackData > trackArray;
 	KTPowerSpectrum ps;
-	KTPowerSpectrumData psData;
 
 	KTProcessedTrackData tr1 = new KTProcessedTrackData();
 	tr1.SetComponent( 1 );
@@ -98,6 +96,10 @@ int main()
 	tr5.SetEndFrequency( 106e6 );
 	trackArray.push_back( tr5 );
 
+	psColl.SetStartTime( 0 );
+	psColl.SetEndTime( t_bin * 100 );
+	psColl.SetDeltaT( t_bin );
+
 	for( double t = 0; t < t_bin * 100; t += t_bin )
 	{
 		ps = new KTPowerSpectrum( 100, 50e6, 150e6 );
@@ -125,21 +127,11 @@ int main()
 		#endif
 	        }
 	    }
-	
-		psData.SetSpectrum( ps );
-		psArray.push_back( psData );
+
+	    psColl.AddSpectrum( t, ps );
+
 	}
-
-	KTSpectrogramCollector spec;
-	spec.SetMinFrequency( 50e6 );
-	spec.SetMaxFrequency( 150e6 );
-	spec.SetLeadTime( 20e-6 );
-	spec.SetTrailTime( 20e-6 );
-
-	for( int i = 0; i < 5; i++ )
-		spec.ReceiveTrack( trackArray[i] );
-
-	for( int i = 0; i < 100; i++ )
-		spec.ReceiveSpectrum( psArray[i] );
+	
+	KTVariableSpectrumDiscriminator discrim;
 	
 }
