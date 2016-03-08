@@ -253,6 +253,7 @@ namespace Katydid
                         fCandidates.insert(eventIt->first);
                         eventIt = activeEvents.erase(eventIt);
                         incrementEventIt = false;
+                        continue;
                     }
                     // loop over track ends to test against
                     for (TrackEndsType::iterator endTimeIt=eventIt->second.begin(); endTimeIt != eventIt->second.end();)
