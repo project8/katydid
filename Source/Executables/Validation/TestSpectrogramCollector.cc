@@ -12,11 +12,16 @@
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTLogger.hh"
+#include "KTData.hh"
 
 #include <vector>
+#include <set>
+#include <map>
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
+#include "TH2.h"
+#include "TFile.h"
 #include "TRandom3.h"
 #endif
 
@@ -52,6 +57,8 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
 
 int main()
 {
+	typedef std::map< double, KTPowerSpectrum* > collection;
+
 	double t_bin = 10e-6;
 	std::vector< KTPowerSpectrumData > psArray;
 	std::vector< KTProcessedTrackData > trackArray;
@@ -141,5 +148,23 @@ int main()
 
 	for( int i = 0; i < 100; i++ )
 		spec.ReceiveSpectrum( psArray[i] );
-	
+
+	vector< KTPSCollectionData > result;
+	vector< TH2D* > plots;
+
+	for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[component].begin(); it != spec.fWaterfallSets[component].end(); ++it )
+  		result.push_back( it->first->Of< KTPSCollectionData > );
+
+	for( int i = 0; i < result.size(); i++ )
+	{
+		TH2D* plot = new TH2D( "Spectrogram Collection Plot", "Spectrogram Collection Plot", 100, 0, t_bin * 100, 100, 50e6, 150e6 );
+		for (collection::const_iterator it = result[i].fSpectra.begin(); it != result[i].fSpectra.end(); ++it)
+        {
+        	for( int j = 0; j < it->second.GetNFrequencyBins(), j++)
+        	{
+        		plot->Fill( it->first, j * 1e6 + 50e6, it->second[j] )
+            }
+        }
+        plots.push_back( plot );
+	}
 }

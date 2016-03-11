@@ -13,11 +13,15 @@
 #include "KTVariableSpectrumDiscriminator.hh"
 #include "KTGainVariationData.hh"
 #include "KTSpline.hh"
+#include "KTDiscriminatedPoints2DData.hh"
 
 #include <vector>
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
+#include "TH2.h"
+#include "TGraph.h"
+#include "TFile.h"
 #include "TRandom3.h"
 #endif
 
@@ -156,5 +160,18 @@ int main()
 	discrim.SetMaxFrequency( 150e6 );
 
 	discrim.Discriminate( psColl, gv );
+
+	KTDiscriminatedPoints2DData result = psColl.Of< KTDiscriminatedPoints2DData >();
+	TGraph plot;
+
+	vector< double > xx;
+	vector< double > yy;
 	
+	for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = result.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+  	{
+  		xx.push_back( it->second.fAbscissa );
+  		yy.push_back( it->second.fOrdinate );
+  	}
+
+  	plot = new TGraph( xx, yy );
 }
