@@ -11,6 +11,8 @@
 #include "KTProcessedTrackData.hh"
 #include "KTLogger.hh"
 #include "KTVariableSpectrumDiscriminator.hh"
+#include "KTGainVariationData.hh"
+#include "KTSpline.hh"
 
 #include <vector>
 
@@ -100,6 +102,22 @@ int main()
 	psColl.SetEndTime( t_bin * 100 );
 	psColl.SetDeltaT( t_bin );
 
+	KTSpline sp;
+	KTGainVariationData gv;
+
+	double* xVals = new double[3];
+	double* yVals = new double[3];
+
+	xVals[0] = 50e6;
+	xVals[1] = 100e6;
+	xVals[2] = 150e6;
+	yVals[0] = 1e-12;
+	yVals[1] = 2e-12;
+	yVals[2] = 1.5e-12;
+
+	sp = new KTSpline( xVals, yVals, 3 );
+	gv.SetSpline( sp );
+
 	for( double t = 0; t < t_bin * 100; t += t_bin )
 	{
 		ps = new KTPowerSpectrum( 100, 50e6, 150e6 );
@@ -109,9 +127,9 @@ int main()
 	    for (unsigned iBin=0; iBin<100; iBin++)
 	    {
 	#ifdef ROOT_FOUND
-	        ps(iBin).set_polar(rand.Gaus(1e-12, 0.2e-12), 0.);
+	        ps(iBin).set_polar(rand.Gaus(sp.eval( iBin * 1e6 + 50e6 ), 0.2 * sp.eval( iBin * 1e6 + 50e6 )), 0.);
 	#else
-	        ps(iBin).set_polar(1e-12, 0.);
+	        ps(iBin).set_polar(sp.eval( iBin * 1e6 + 50e6 ), 0.);
 	#endif
 
 	        if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
@@ -121,9 +139,9 @@ int main()
 	        	lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
 	        {
 		#ifdef ROOT_FOUND
-		        ps(iBin).set_polar(rand.Gaus(1e-11, 0.2e-11), 0.);
+		        ps(iBin).set_polar(rand.Gaus(10 * sp.eval( iBin * 1e6 + 50e6 ), 2 * sp.eval( iBin * 1e6 + 50e6 )), 0.);
 		#else
-		        ps(iBin).set_polar(1e-11, 0.);
+		        ps(iBin).set_polar(10 * sp.eval( iBin * 1e6 + 50e6 ), 0.);
 		#endif
 	        }
 	    }
@@ -133,5 +151,10 @@ int main()
 	}
 	
 	KTVariableSpectrumDiscriminator discrim;
+	discrim.SetSNRPowerThreshold( 5 );
+	discrim.SetMinFrequency( 50e6 );
+	discrim.SetMaxFrequency( 150e6 );
+
+	discrim.Discriminate( psColl, gv );
 	
 }
