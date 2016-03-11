@@ -43,6 +43,7 @@ namespace Katydid
             fFirstTrackSlope(0.),
             fFirstTrackIntercept(0.),
             fFirstTrackTotalPower(0.),
+            fUnknownEventTopology(false),
             fTracks()
     {
     }
