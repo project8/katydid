@@ -159,7 +159,6 @@ namespace Katydid
             {
                 KTINFO(tclog, "considering track (" << ++trackCount << "/" << compIt->size() << ")");
                 // loop over active track refs
-                KTERROR(tclog, "new track is from acq: " << trackIt->GetAcquisitionID())
                 list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
                 bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
                 int activeTrackCount = 0;
