@@ -334,6 +334,7 @@ namespace Katydid
         {
             fEventSignal(*dataIt);
         }
+        fCandidates.clear();
        
        return true;
     }
