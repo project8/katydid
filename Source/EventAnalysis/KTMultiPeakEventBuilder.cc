@@ -334,7 +334,12 @@ namespace Katydid
         {
             fEventSignal(*dataIt);
         }
+        // clear everything since we've emitted these events
         fCandidates.clear();
+        for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
+        {
+            fCompTracks[iComponent].clear();
+        }
        
        return true;
     }
