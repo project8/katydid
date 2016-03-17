@@ -13,8 +13,6 @@
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
-#include "thorax.hh"
-
 using std::string;
 
 namespace Katydid

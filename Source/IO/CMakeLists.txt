@@ -5,10 +5,10 @@ set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
     KTJSONTypeWriterTime.hh
-    KTJSONTypeWriterEvaluation.hh
+    #KTJSONTypeWriterEvaluation.hh
     KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.hh
-    KTMultiFileJSONReader.hh
+    #KTMultiFileJSONReader.hh
     KTOfficialCandidatesWriter.hh
     KTTerminalTypeWriterTime.hh
     KTTerminalWriter.hh
@@ -18,10 +18,10 @@ set (IO_SOURCEFILES
     KTBasicASCIITypeWriterTS.cc
     KTBasicAsciiWriter.cc
     KTJSONTypeWriterTime.cc
-    KTJSONTypeWriterEvaluation.cc
+    #KTJSONTypeWriterEvaluation.cc
     KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.cc
-    KTMultiFileJSONReader.cc
+    #KTMultiFileJSONReader.cc
     KTOfficialCandidatesWriter.cc
     KTTerminalTypeWriterTime.cc
     KTTerminalWriter.cc
@@ -55,7 +55,7 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterSpectrumAnalysis.hh
         KTROOTTreeTypeWriterEventAnalysis.hh
         KTROOTTreeTypeWriterTime.hh
-        KTROOTTreeTypeWriterEvaluation.hh
+        #KTROOTTreeTypeWriterEvaluation.hh
         KTROOTTreeWriter.hh
         Conversions/KT2ROOT.hh
     )
@@ -82,7 +82,7 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterSpectrumAnalysis.cc
         KTROOTTreeTypeWriterEventAnalysis.cc
         KTROOTTreeTypeWriterTime.cc
-        KTROOTTreeTypeWriterEvaluation.cc
+        #KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
         Conversions/KT2ROOT.cc
         Conversions/KTROOTData.cc
