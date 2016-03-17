@@ -72,6 +72,7 @@ namespace Katydid
     class TMultiTrackEventData : public TObject
     {
         MEMBERVARIABLE(UInt_t, Component);
+        MEMBERVARIABLE(UInt_t, AcquisitionID);
         MEMBERVARIABLE(UInt_t, EventID);
 
         MEMBERVARIABLE(Double_t, StartTimeInRunC);

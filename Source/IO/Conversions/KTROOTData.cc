@@ -110,6 +110,7 @@ namespace Katydid
 
     TMultiTrackEventData::TMultiTrackEventData() :
             fComponent(0), fEventID(0),
+            fAcquisitionID(0),
             fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
             fStartFrequency(0.), fEndFrequency(0.), fMinimumFrequency(0.), fMaximumFrequency(0.), fFrequencyWidth(0.),
             fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
@@ -123,6 +124,7 @@ namespace Katydid
 
     TMultiTrackEventData::TMultiTrackEventData(const TMultiTrackEventData& orig) :
             fComponent(orig.fComponent), fEventID(orig.fEventID),
+            fAcquisitionID(orig.fAcquisitionID),
             fStartTimeInRunC(orig.fStartTimeInRunC), fEndTimeInRunC(orig.fEndTimeInRunC),fTimeLength(orig.fTimeLength),
             fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fMinimumFrequency(orig.fMaximumFrequency), fMaximumFrequency(orig.fMinimumFrequency), fFrequencyWidth(orig.fFrequencyWidth),
             fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma), fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma), fTimeLengthSigma(orig.fTimeLengthSigma),
@@ -136,6 +138,7 @@ namespace Katydid
 
     TMultiTrackEventData::TMultiTrackEventData(const KTMultiTrackEventData& orig) :
             fComponent(0), fEventID(0),
+            fAcquisitionID(0),
             fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
             fStartFrequency(0.), fEndFrequency(0.), fMinimumFrequency(0.), fMaximumFrequency(0.), fFrequencyWidth(0.),
             fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
@@ -162,6 +165,7 @@ namespace Katydid
     TMultiTrackEventData& TMultiTrackEventData::operator=(const TMultiTrackEventData& rhs)
     {
         fComponent = rhs.fComponent;fEventID = rhs.fEventID;
+        fAcquisitionID = rhs.fAcquisitionID;
         fStartTimeInRunC = rhs.fStartTimeInRunC; fEndTimeInRunC = rhs.fEndTimeInRunC;fTimeLength = rhs.fTimeLength;
         fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fMinimumFrequency = rhs.fMinimumFrequency; fMaximumFrequency = rhs.fMaximumFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
         fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma; fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma; fTimeLengthSigma = rhs.fTimeLengthSigma;
@@ -175,6 +179,7 @@ namespace Katydid
     void TMultiTrackEventData::Load(const KTMultiTrackEventData& data)
     {
         fComponent = data.GetComponent();fEventID = data.GetEventID();
+        fAcquisitionID = data.GetAcquisitionID();
         fStartTimeInRunC = data.GetStartTimeInRunC(); fEndTimeInRunC = data.GetEndTimeInRunC();fTimeLength = data.GetTimeLength();
         fStartFrequency = data.GetStartFrequency(); fEndFrequency = data.GetEndFrequency(); fMinimumFrequency = data.GetMinimumFrequency(); fMaximumFrequency = data.GetMaximumFrequency(); fFrequencyWidth = data.GetFrequencyWidth();
         fStartTimeInRunCSigma = data.GetStartTimeInRunCSigma(); fEndTimeInRunCSigma = data.GetEndTimeInRunCSigma(); fTimeLengthSigma = data.GetTimeLengthSigma();
@@ -195,6 +200,7 @@ namespace Katydid
     {
         data.ClearTracks(); // do this first, since it clears some of the member variables other than just fTracks
         data.SetComponent(fComponent); data.SetEventID(fEventID);
+        data.SetAcquisitionID(fAcquisitionID);
         data.SetStartTimeInRunC(fStartTimeInRunC); data.SetEndTimeInRunC(fEndTimeInRunC); data.SetTimeLength(fTimeLength);
         data.SetStartFrequency(fStartFrequency); data.SetEndFrequency(fEndFrequency); data.SetMinimumFrequency(fMinimumFrequency); data.SetMaximumFrequency(fMaximumFrequency); data.SetFrequencyWidth(fFrequencyWidth);
         data.SetStartTimeInRunCSigma(fStartTimeInRunCSigma); data.SetEndTimeInRunCSigma(fEndTimeInRunCSigma); data.SetTimeLengthSigma(fTimeLengthSigma);
@@ -212,4 +218,3 @@ namespace Katydid
     }
 
 }
-
