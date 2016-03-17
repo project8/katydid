@@ -10,6 +10,8 @@
 #include "KTMultiTrackEventData.hh"
 #include "KTProcessedTrackData.hh"
 
+#include "logger.hh"
+
 #include "TClonesArray.h"
 
 #include <iostream>
@@ -26,6 +28,7 @@ namespace Katydid
     TProcessedTrackData::TProcessedTrackData() :
             TObject(),
             fComponent(0), fTrackID(0), fIsCut(false),
+            fAcquisitionID(0),
             fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
             fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
             fSlope(0.), fIntercept(0.), fTotalPower(0.),
@@ -37,6 +40,7 @@ namespace Katydid
     TProcessedTrackData::TProcessedTrackData(const KTProcessedTrackData& orig) :
             TObject(),
             fComponent(0), fTrackID(0), fIsCut(false),
+            fAcquisitionID(0),
             fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
             fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
             fSlope(0.), fIntercept(0.), fTotalPower(0.),
@@ -50,6 +54,7 @@ namespace Katydid
     TProcessedTrackData::TProcessedTrackData(const TProcessedTrackData& orig) :
             TObject(orig),
             fComponent(orig.fComponent), fTrackID(orig.fTrackID), fIsCut(orig.fIsCut),
+            fAcquisitionID(orig.fAcquisitionID),
             fStartTimeInRunC(orig.fStartTimeInRunC), fEndTimeInRunC(orig.fEndTimeInRunC),fTimeLength(orig.fTimeLength),
             fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fFrequencyWidth(orig.fFrequencyWidth),
             fSlope(orig.fSlope), fIntercept(orig.fIntercept), fTotalPower(orig.fTotalPower),
@@ -70,6 +75,7 @@ namespace Katydid
     TProcessedTrackData& TProcessedTrackData::operator=(const TProcessedTrackData& rhs)
     {
         fComponent = rhs.fComponent;fTrackID = rhs.fTrackID; fIsCut = rhs.fIsCut;
+        fAcquisitionID = rhs.fAcquisitionID;
         fStartTimeInRunC = rhs.fStartTimeInRunC; fEndTimeInRunC = rhs.fEndTimeInRunC;fTimeLength = rhs.fTimeLength;
         fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
         fSlope = rhs.fSlope; fIntercept = rhs.fIntercept; fTotalPower = rhs.fTotalPower;
@@ -82,6 +88,7 @@ namespace Katydid
     void TProcessedTrackData::Load(const KTProcessedTrackData& data)
     {
         fComponent = data.GetComponent();fTrackID = data.GetTrackID(); fIsCut = data.GetIsCut();
+        fAcquisitionID = data.GetAcquisitionID();
         fStartTimeInRunC = data.GetStartTimeInRunC(); fEndTimeInRunC = data.GetEndTimeInRunC();fTimeLength = data.GetTimeLength();
         fStartFrequency = data.GetStartFrequency(); fEndFrequency = data.GetEndFrequency(); fFrequencyWidth = data.GetFrequencyWidth();
         fSlope = data.GetSlope(); fIntercept = data.GetIntercept(); fTotalPower = data.GetTotalPower();
@@ -93,6 +100,7 @@ namespace Katydid
     void TProcessedTrackData::Unload(KTProcessedTrackData& data) const
     {
         data.SetComponent(fComponent); data.SetTrackID(fTrackID); data.SetIsCut(fIsCut);
+        data.SetAcquisitionID(fAcquisitionID);
         data.SetStartTimeInRunC(fStartTimeInRunC); data.SetEndTimeInRunC(fEndTimeInRunC); data.SetTimeLength(fTimeLength);
         data.SetStartFrequency(fStartFrequency); data.SetEndFrequency(fEndFrequency); data.SetFrequencyWidth(fFrequencyWidth);
         data.SetSlope(fSlope); data.SetIntercept(fIntercept); data.SetTotalPower(fTotalPower);

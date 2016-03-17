@@ -25,6 +25,7 @@ namespace Katydid
     class TProcessedTrackData : public TObject
     {
             MEMBERVARIABLE(UInt_t, Component);
+            MEMBERVARIABLE(UInt_t, AcquisitionID);
             MEMBERVARIABLE(UInt_t, TrackID);
 
             MEMBERVARIABLE(Bool_t, IsCut);
