@@ -14,7 +14,7 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-#include "thorax.hh"
+#include "digital.hh"
 
 using std::string;
 
@@ -146,10 +146,12 @@ namespace Katydid
 
         unsigned levelDivisor = 1;
 
-        dig_calib_params params;
+        scarab::dig_calib_params params;
         // The bit adjustment is the number of bits that will be ignored, starting at the LSB.
         // This will be used to account for both left-alignment of the data, if that's the case and if the bit depth is smaller than the data type size,
         // and any simulated reduction in the bit depth that's requested by the user.
+        // Levels are skipped according to the bit adjustment: levelRepeat = 2^bitAdjustment
+        // The level skipping is done by repeating the same voltage for levelRepeat levels.
         unsigned bitAdjustment = 0;
         unsigned dataTypeBitSize = fDataTypeSize * 8;
         if (fBitAlignment == sBitsAlignedLeft)
@@ -163,6 +165,7 @@ namespace Katydid
             //levelDivisor = 1 << (fNBits - fEmulatedNBits);
             //TODO: for reducing the bit depth, we currently don't account for a separately specified DAC gain
         }
+        unsigned levelRepeat = pow( 2, bitAdjustment );
 
         unsigned bitsForVoltageArray = fBitAlignment == sBitsAlignedLeft ? dataTypeBitSize : fNBits;
         if (fDACGain < 0)
@@ -200,8 +203,9 @@ namespace Katydid
                 "\tVoltage offset: " << params.v_offset << " V\n" <<
                 "\tDAC gain: " << params.dac_gain << " V\n" <<
                 "\tOversampling bins: " << fOversamplingBins << '\n' <<
-                "\tOversampling scale factor: " << fOversamplingScaleFactor << '\n');
-
+                "\tOversampling scale factor: " << fOversamplingScaleFactor << '\n' <<
+                "\tBit adjustment: " << bitAdjustment << '\n' <<
+                "\tLevel repeat period: " << levelRepeat << '\n');
 
         // calculating the voltage conversion
         fVoltages.resize(params.levels);
@@ -209,42 +213,44 @@ namespace Katydid
         if (fDigitizedDataFormat == sDigitizedS)
         {
             fIntLevelOffset = params.levels / 2;
-            double valueHoldPos = d2a_id(0, &params);
+            double valueHoldPos = scarab::d2a< int64_t, double >(0, &params);
             double valueHoldNeg = valueHoldPos;
             KTDEBUG( egglog_scdac, "Calculating voltage conversion for signed integers; integer level offset: " << fIntLevelOffset );
             fVoltages[fIntLevelOffset] = valueHoldPos;
-            unsigned bitAdjustCounter = 1;
+            unsigned levelSkipCounter = 1;
             for (int64_t level = 1; level < fIntLevelOffset; ++level)
             {
-                if (bitAdjustCounter == 0)
+                if (levelSkipCounter == 0)
                 {
-                    valueHoldPos = d2a_id(level, &params);
-                    valueHoldNeg = d2a_id(-level, &params);
+                    valueHoldPos = scarab::d2a< int64_t, double >(level, &params);
+                    valueHoldNeg = scarab::d2a< int64_t, double >(-level, &params);
                 }
                 fVoltages[fIntLevelOffset + level] = valueHoldPos;
                 fVoltages[fIntLevelOffset - level] = valueHoldNeg;
-                ++bitAdjustCounter;
-                if (bitAdjustCounter == bitAdjustment) bitAdjustCounter = 0;
+                KTWARN( egglog_scdac, "level <" << fIntLevelOffset + level << "> = " << fVoltages[fIntLevelOffset + level] );
+                KTWARN( egglog_scdac, "level <" << fIntLevelOffset - level << "> = " << fVoltages[fIntLevelOffset - level] );
+                ++levelSkipCounter;
+                if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             }
-            if (bitAdjustCounter == 0)
+            if (levelSkipCounter == 0)
             {
-                valueHoldNeg = d2a_id(-fIntLevelOffset, &params);
+                valueHoldNeg = scarab::d2a< int64_t, double >(-fIntLevelOffset, &params);
             }
             fVoltages[0] = valueHoldNeg;
         }
         else //(fDigitizedDataFormat == sDigitizedUS)
         {
             fIntLevelOffset = 0;
-            unsigned bitAdjustCounter = 0;
+            unsigned levelSkipCounter = 0;
             double valueHold = 0.;
-            KTDEBUG( egglog_scdac, "Calculating voltage conversion for unsigned integers; integer level offset: " << fIntLevelOffset );
+            KTDEBUG( egglog_scdac, "Calculating voltage conversion for unsigned integers up to " << params.levels << "; integer level offset: " << fIntLevelOffset );
             for (uint64_t level = 0; level < params.levels; ++level)
             {
-                if (bitAdjustCounter == 0) valueHold = d2a_ud(level, &params);
+                if (levelSkipCounter == 0) valueHold = scarab::d2a< uint64_t, double >(level, &params);
                 fVoltages[level] = valueHold;
-                //KTWARN(egglog_scdac, "level " << level << ", voltage " << fVoltages[level]);
-                ++bitAdjustCounter;
-                if (bitAdjustCounter == bitAdjustment) bitAdjustCounter = 0;
+                KTWARN(egglog_scdac, "level <" << level << "> = voltage " << fVoltages[level]);
+                ++levelSkipCounter;
+                if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             }
         }
 
