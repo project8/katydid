@@ -43,6 +43,7 @@ namespace Katydid
     KTProcessedTrackData::KTProcessedTrackData(const KTProcessedTrackData& orig) :
             KTExtensibleData< KTProcessedTrackData >(orig),
             fComponent(orig.fComponent),
+            fAcquisitionID(orig.fAcquisitionID),
             fTrackID(orig.fTrackID),
             fEventID(orig.fEventID),
             fIsCut(orig.fIsCut),
