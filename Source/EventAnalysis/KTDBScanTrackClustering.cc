@@ -233,6 +233,7 @@ namespace Katydid
                 }
 
                 cand.SetComponent(iComponent);
+                cand.SetAcquisitionID(data.GetAcquisitionID());
                 cand.SetCandidateID(fDataCount);
 
                 //cand.SetTimeBinWidth(fTimeBinWidth);

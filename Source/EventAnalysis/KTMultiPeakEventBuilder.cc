@@ -195,6 +195,7 @@ namespace Katydid
                 {
                     activeTrackRefs.push_back(MultiPeakTrackRef());
                     activeTrackRefs.rbegin()->InsertTrack(trackIt);
+                    activeTrackRefs.rbegin()->fAcquisitionID = trackIt->GetAcquisitionID();
                     trackHasBeenAdded = true;
                 }
             ++trackIt;
@@ -217,7 +218,7 @@ namespace Katydid
     bool KTMultiPeakEventBuilder::FindEvents()
     {
         KTPROG(tclog, "combining multi-peak tracks into events");
-      
+
         // we're unpacking all components into a unified set of events, so this goes outside the loop
         typedef std::set< double > TrackEndsType;
         typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
@@ -240,7 +241,7 @@ namespace Katydid
             {
                 KTINFO(tclog, "placing MPTrack (" << ++countMPTracks << "/" << fMPTracks[iComponent].size() << ")");
                 int trackAssigned = -1; // keep track of which event the track when into
-                
+
                 // loop over active events and add this track to one
                 for (std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin(); eventIt != activeEvents.end();)
                 {
@@ -309,9 +310,9 @@ namespace Katydid
                     KTINFO(tclog, "track not matched, creating new event");
                     KTDataPtr data(new KTData());
                     ActiveEventType new_event(data, TrackEndsType());
-                    //new_event.first.reset(new KTData());
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
+                    event.SetAcquisitionID(trackIt->fAcquisitionID);
                     for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
                     {
                         event.AddTrack( **peakIt );
@@ -340,7 +341,7 @@ namespace Katydid
         {
             fCompTracks[iComponent].clear();
         }
-       
+
        return true;
     }
 
@@ -357,7 +358,8 @@ namespace Katydid
             fMeanStartTimeInRunC(0.),
             fSumStartTimeInRunC(0.),
             fMeanEndTimeInRunC(0.),
-            fSumEndTimeInRunC(0.)
+            fSumEndTimeInRunC(0.),
+            fAcquisitionID(0)
     {}
 
     bool KTMultiPeakEventBuilder::MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)

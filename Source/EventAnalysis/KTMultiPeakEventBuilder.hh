@@ -166,6 +166,7 @@ namespace Katydid
                 double fSumStartTimeInRunC;
                 double fMeanEndTimeInRunC;
                 double fSumEndTimeInRunC;
+                uint64_t fAcquisitionID;
 
                 MultiPeakTrackRef();
                 bool InsertTrack(const TrackSetCIt& trackRef);
