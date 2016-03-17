@@ -25,6 +25,7 @@ namespace Katydid
             KTProcessedTrackData& operator=(const KTProcessedTrackData& rhs);
 
             MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, TrackID);
             MEMBERVARIABLE(unsigned, EventID);
 

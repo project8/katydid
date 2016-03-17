@@ -21,6 +21,7 @@ namespace Katydid
     KTMultiTrackEventData::KTMultiTrackEventData() :
             KTExtensibleData< KTMultiTrackEventData >(),
             fComponent(0),
+            fAcquisitionID(0.),
             fEventID(0),
             fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),

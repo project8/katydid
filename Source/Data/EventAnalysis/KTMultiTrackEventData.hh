@@ -33,6 +33,7 @@ namespace Katydid
             KTMultiTrackEventData& operator=(const KTMultiTrackEventData& rhs);
 
             MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, EventID);
 
             // this group of member variables is set by ProcessTracks()
