@@ -251,6 +251,7 @@ namespace Katydid
                     if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(eventIt->second.rbegin()) )
                     {
                         KTDEBUG(tclog, "event no longer active");
+                        eventIt->first->Of< KTMultiTrackEventData >().ProcessTracks();
                         fCandidates.insert(eventIt->first);
                         eventIt = activeEvents.erase(eventIt);
                         incrementEventIt = false;
@@ -329,6 +330,15 @@ namespace Katydid
                 ++trackIt;
             } // while loop over tracks
         } // for loop over components
+        
+        // tracks are done so any remaining active events are done
+        std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin();
+        while (eventIt != activeEvents.end())
+        {
+            eventIt->first->Of< KTMultiTrackEventData >().ProcessTracks();
+            fCandidates.insert(eventIt->first);
+            eventIt = activeEvents.erase(eventIt);
+        }
 
         // emit event signals
         for (std::set< KTDataPtr >::const_iterator dataIt=fCandidates.begin(); dataIt != fCandidates.end(); ++dataIt)
