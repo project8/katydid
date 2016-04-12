@@ -58,6 +58,7 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
 int main()
 {
 	typedef std::map< double, KTPowerSpectrum* > collection;
+	TRandom3 r;
 
 	double t_bin = 10e-6;
 	std::vector< KTPowerSpectrumData > psArray;
@@ -114,7 +115,7 @@ int main()
 	    for (unsigned iBin=0; iBin<100; iBin++)
 	    {
 	#ifdef ROOT_FOUND
-	        ps(iBin).set_polar(rand.Gaus(1e-12, 0.2e-12), 0.);
+	        ps(iBin).set_polar(r.Gaus(1e-12, 0.2e-12), 0.);
 	#else
 	        ps(iBin).set_polar(1e-12, 0.);
 	#endif
@@ -126,7 +127,7 @@ int main()
 	        	lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
 	        {
 		#ifdef ROOT_FOUND
-		        ps(iBin).set_polar(rand.Gaus(1e-11, 0.2e-11), 0.);
+		        ps(iBin).set_polar(r.Gaus(1e-11, 0.2e-11), 0.);
 		#else
 		        ps(iBin).set_polar(1e-11, 0.);
 		#endif
