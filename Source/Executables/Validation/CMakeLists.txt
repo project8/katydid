@@ -8,6 +8,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (ObjectSize ObjectSize.cc)
     target_link_libraries (ObjectSize Nymph KatydidUtility ${EXTERNAL_LIBRARIES})
     
+    add_executable (Test2DDiscrim Test2DDiscrim.cc)
+    target_link_libraries (Test2DDiscrim Nymph KatydidUtility KatydidIO KatydidData KatydidSpectrumAnalysis KatydidEventAnalysis ${EXTERNAL_LIBRARIES})
+
     add_executable (TestAxisProperties TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties Nymph KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -56,6 +59,9 @@ if (Katydid_ENABLE_TESTING)
     
     add_executable (TestKDTreeData TestKDTreeData.cc)
     target_link_libraries (TestKDTreeData Nymph KatydidUtility KatydidData KatydidSpectrumAnalysis ${EXTERNAL_LIBRARIES})
+ 
+    add_executable (TestLinearDensityProbe TestLinearDensityProbe.cc)
+    target_link_libraries (TestLinearDensityProbe Nymph KatydidUtility KatydidIO KatydidData KatydidSpectrumAnalysis KatydidEventAnalysis ${EXTERNAL_LIBRARIES})
     
     add_executable (TestMinMaxBin TestMinMaxBin.cc)
     target_link_libraries (TestMinMaxBin Nymph KatydidUtility ${EXTERNAL_LIBRARIES})
@@ -82,6 +88,9 @@ if (Katydid_ENABLE_TESTING)
     #add_executable (TestSlidingWindowFFT TestSlidingWindowFFT.cc)
     #target_link_libraries (TestSlidingWindowFFT Nymph KatydidUtility KatydidData KatydidTransform KatydidIO ${EXTERNAL_LIBRARIES})
 
+    add_executable (TestSpectrogramCollector TestSpectrogramCollector.cc)
+    target_link_libraries (TestSpectrogramCollector Nymph KatydidUtility KatydidIO KatydidData KatydidSpectrumAnalysis KatydidEventAnalysis ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestSpectrumDiscriminator TestSpectrumDiscriminator.cc)
     target_link_libraries (TestSpectrumDiscriminator Nymph KatydidUtility KatydidData KatydidIO KatydidSpectrumAnalysis ${EXTERNAL_LIBRARIES})
 
@@ -96,6 +105,7 @@ if (Katydid_ENABLE_TESTING)
 
     pbuilder_install_executables (
                      ObjectSize
+                     Test2DDiscrim
                      TestAxisProperties
                      TestComplexPolar
                      TestConsensusThresholding
@@ -112,6 +122,7 @@ if (Katydid_ENABLE_TESTING)
                      TestJSONWriter
                      TestKDTree
                      TestKDTreeData
+                     TestLinearDensityProbe
                      TestMinMaxBin
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
@@ -120,6 +131,7 @@ if (Katydid_ENABLE_TESTING)
                      #TestSimpleClustering
                      #TestSlidingWindowFFT
                      TestSmoothing
+                     TestSpectrogramCollector
                      TestSpectrumDiscriminator
                      TestVector
                      TestWindowFunction

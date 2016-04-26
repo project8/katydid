@@ -14,6 +14,7 @@
 #include "KTGainVariationData.hh"
 #include "KTSpline.hh"
 #include "KTDiscriminatedPoints2DData.hh"
+#include "KT2ROOT.hh"
 
 #include <vector>
 
@@ -25,7 +26,7 @@
 #include "TRandom3.h"
 #endif
 
-using namespace Katydid;
+using namespace Nymph;
 using namespace std;
 
 KTLOGGER(testlog, "TestSpectrogramCollector");
@@ -159,10 +160,12 @@ int main()
 	discrim.SetMinFrequency( 50e6 );
 	discrim.SetMaxFrequency( 150e6 );
 
-	discrim.Discriminate( psColl, gv );
+	KTINFO(testlog, "Discriminating points");
+
+	if( !discrim.Discriminate( psColl, gv ) )
+		KTERROR(testlog, "Something went wrong discriminating points");
 
 	KTDiscriminatedPoints2DData result = psColl.Of< KTDiscriminatedPoints2DData >();
-	TGraph plot;
 
 	vector< double > xx;
 	vector< double > yy;
@@ -173,5 +176,14 @@ int main()
   		yy.push_back( it->second.fOrdinate );
   	}
 
+#ifdef ROOT_FOUND
+  	TFile* file = new TFile( "2d-discrim-test.root", "recreate" );
+  	TGraph* plot;
+  	plot->SetDirectory( file );
   	plot = new TGraph( xx, yy );
+  	plot->Write();
+  	file->Close();
+#endif
+
+  	return 0;
 }

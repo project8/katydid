@@ -10,7 +10,6 @@
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 #include "KTLogger.hh"
-#
 #include <vector>
 
 #ifdef ROOT_FOUND
@@ -21,7 +20,7 @@
 #include "TRandom3.h"
 #endif
 
-using namespace Katydid;
+using namespace Nymph;
 using namespace std;
 
 KTLOGGER(testlog, "TestLinearDensityProbe");
@@ -68,6 +67,7 @@ int main()
 	
 	KTDiscriminatedPoints2DData threshPts;
 
+	KTINFO(testlog, "Creating 2D thresholded points");
 	int iBin = 0, jBin = 0;
 	for( int i = 50e6; i < 150e6; i += 0.1e6 )
 	{
@@ -98,10 +98,19 @@ int main()
 	lineFitter.SetStepSizeBig( 0.2e6 );
 	lineFitter.SetStepSizeSmall( 0.004e6 );
 
-	lineFitter.Calculate( tr, threshPts );
+	KTINFO(testlog, "Performing density fit");
+	
+	if( !lineFitter.Calculate( tr, threshPts ) )
+		KTERROR(testlog, "Something went wrong in the fit");
 
 	KTLinearFitResult result = tr.Of< KTLinearFitResult >();
 
 	double fitSlope = result.GetSlope();
 	double fitStartFrequency = result.GetIntercept() + tr.GetStartTimeInRunC() * result.GetSlope();
+
+	double q = (tr.GetEndFrequency() - tr.GetStartFrequency())/(tr.GetEndTimeInRunC() - tr.GetStartTimeInRunC());
+
+	cout << "Actual slope: " << q << "\nFit slope: " << fitSlope << "\nActual starting frequency: " << tr.GetStartFrequency() << "\nFit starting frequency: " << fitStartFrequency << "\nSideband separation: " << sideband_separation << endl;
+
+	return 0;
 }

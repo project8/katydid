@@ -13,6 +13,7 @@
 #include "KTSliceHeader.hh"
 #include "KTLogger.hh"
 #include "KTData.hh"
+#include "KT2ROOT.hh"
 
 #include <vector>
 #include <set>
@@ -25,7 +26,7 @@
 #include "TRandom3.h"
 #endif
 
-using namespace Katydid;
+using namespace Nymph;
 using namespace std;
 
 KTLOGGER(testlog, "TestSpectrogramCollector");
@@ -144,17 +145,25 @@ int main()
 	spec.SetLeadTime( 20e-6 );
 	spec.SetTrailTime( 20e-6 );
 
+	KTINFO(testlog, "Adding tracks to the spectrogram collector");
 	for( int i = 0; i < 5; i++ )
-		spec.ReceiveTrack( trackArray[i] );
+		if( !spec.ReceiveTrack( trackArray[i] ) )
+			KTERROR(testlog, "Something went wrong adding track" << i);
 
+	KTINFO(testlog, "Adding spectra to the spectrogram collector");
 	for( int i = 0; i < 100; i++ )
-		spec.ReceiveSpectrum( psArray[i] );
+		if( !spec.ReceiveSpectrum( psArray[i] ) )
+			KTERROR(testlog, "Something went wrong adding spectrum" << i);
 
 	vector< KTPSCollectionData > result;
-	vector< TH2D* > plots;
 
 	for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[component].begin(); it != spec.fWaterfallSets[component].end(); ++it )
   		result.push_back( it->first->Of< KTPSCollectionData > );
+
+#ifdef ROOT_FOUND
+  	File* file = new TFile( "spectrogram-collector-test.root", "recreate" );
+  	vector< TH2D* > plots;
+  	plots->SetDirectory( file );
 
 	for( int i = 0; i < result.size(); i++ )
 	{
@@ -168,4 +177,9 @@ int main()
         }
         plots.push_back( plot );
 	}
+	plots->Write();
+	file->Close();
+#endif
+
+	return 0;
 }
