@@ -20,7 +20,7 @@
 #include "TRandom3.h"
 #endif
 
-using namespace Nymph;
+using namespace Katydid;
 using namespace std;
 
 KTLOGGER(testlog, "TestLinearDensityProbe");
@@ -53,7 +53,7 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
 int main()
 {
 	double t_bin = 10e-6;
-	KTProcessedTrackData tr = new KTProcessedTrackData();
+	KTProcessedTrackData tr;
 	double sideband_separation = 20e6;
 	double sideband_width = 1e6;
 	double sideband_pwrFraction = 0.5;
@@ -103,7 +103,7 @@ int main()
 	if( !lineFitter.Calculate( tr, threshPts ) )
 		KTERROR(testlog, "Something went wrong in the fit");
 
-	KTLinearFitResult result = tr.Of< KTLinearFitResult >();
+	KTLinearFitResult& result = tr.Of< KTLinearFitResult >();
 
 	double fitSlope = result.GetSlope();
 	double fitStartFrequency = result.GetIntercept() + tr.GetStartTimeInRunC() * result.GetSlope();

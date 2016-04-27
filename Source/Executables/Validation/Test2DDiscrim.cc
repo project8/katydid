@@ -26,7 +26,7 @@
 #include "TRandom3.h"
 #endif
 
-using namespace Nymph;
+using namespace Katydid;
 using namespace std;
 
 KTLOGGER(testlog, "TestSpectrogramCollector");
@@ -61,9 +61,10 @@ int main()
 	double t_bin = 10e-6;
 	KTPSCollectionData psColl;
 	std::vector< KTProcessedTrackData > trackArray;
-	KTPowerSpectrum ps;
+	KTPowerSpectrum* ps;
+	TRandom3 r;
 
-	KTProcessedTrackData tr1 = new KTProcessedTrackData();
+	KTProcessedTrackData tr1;
 	tr1.SetComponent( 1 );
 	tr1.SetStartTimeInRunC( 5e-5 );
 	tr1.SetEndTimeInRunC( 15e-5 );
@@ -71,7 +72,7 @@ int main()
 	tr1.SetEndFrequency( 85e6 );
 	trackArray.push_back( tr1 );
 
-	KTProcessedTrackData tr2 = new KTProcessedTrackData();
+	KTProcessedTrackData tr2;
 	tr2.SetComponent( 1 );
 	tr2.SetStartTimeInRunC( 20e-5 );
 	tr2.SetEndTimeInRunC( 45e-5 );
@@ -79,7 +80,7 @@ int main()
 	tr2.SetEndFrequency( 65e6 );
 	trackArray.push_back( tr2 );
 	
-	KTProcessedTrackData tr3 = new KTProcessedTrackData();
+	KTProcessedTrackData tr3;
 	tr3.SetComponent( 1 );
 	tr3.SetStartTimeInRunC( 45e-5 );
 	tr3.SetEndTimeInRunC( 55e-5 );
@@ -87,7 +88,7 @@ int main()
 	tr3.SetEndFrequency( 91e6 );
 	trackArray.push_back( tr3 );
 	
-	KTProcessedTrackData tr4 = new KTProcessedTrackData();
+	KTProcessedTrackData tr4;
 	tr4.SetComponent( 1 );
 	tr4.SetStartTimeInRunC( 50e-5 );
 	tr4.SetEndTimeInRunC( 85e-5 );
@@ -95,7 +96,7 @@ int main()
 	tr4.SetEndFrequency( 135e6 );
 	trackArray.push_back( tr4 );
 	
-	KTProcessedTrackData tr5 = new KTProcessedTrackData();
+	KTProcessedTrackData tr5;
 	tr5.SetComponent( 1 );
 	tr5.SetStartTimeInRunC( 80e-5 );
 	tr5.SetEndTimeInRunC( 90e-5 );
@@ -107,7 +108,6 @@ int main()
 	psColl.SetEndTime( t_bin * 100 );
 	psColl.SetDeltaT( t_bin );
 
-	KTSpline sp;
 	KTGainVariationData gv;
 
 	double* xVals = new double[3];
@@ -120,7 +120,7 @@ int main()
 	yVals[1] = 2e-12;
 	yVals[2] = 1.5e-12;
 
-	sp = new KTSpline( xVals, yVals, 3 );
+	KTSpline* sp = new KTSpline( xVals, yVals, 3 );
 	gv.SetSpline( sp );
 
 	for( double t = 0; t < t_bin * 100; t += t_bin )
@@ -132,9 +132,9 @@ int main()
 	    for (unsigned iBin=0; iBin<100; iBin++)
 	    {
 	#ifdef ROOT_FOUND
-	        ps(iBin).set_polar(rand.Gaus(sp.eval( iBin * 1e6 + 50e6 ), 0.2 * sp.eval( iBin * 1e6 + 50e6 )), 0.);
+	        (*ps)(iBin).set_polar(r.Gaus(sp->Evaluate( iBin * 1e6 + 50e6 ), 0.2 * sp->Evaluate( iBin * 1e6 + 50e6 )), 0.);
 	#else
-	        ps(iBin).set_polar(sp.eval( iBin * 1e6 + 50e6 ), 0.);
+	        (*ps)(iBin).set_polar(sp->eval( iBin * 1e6 + 50e6 ), 0.);
 	#endif
 
 	        if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
@@ -144,9 +144,9 @@ int main()
 	        	lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
 	        {
 		#ifdef ROOT_FOUND
-		        ps(iBin).set_polar(rand.Gaus(10 * sp.eval( iBin * 1e6 + 50e6 ), 2 * sp.eval( iBin * 1e6 + 50e6 )), 0.);
+		        (*ps)(iBin).set_polar(r.Gaus(10 * sp->Evaluate( iBin * 1e6 + 50e6 ), 2 * sp->Evaluate( iBin * 1e6 + 50e6 )), 0.);
 		#else
-		        ps(iBin).set_polar(10 * sp.eval( iBin * 1e6 + 50e6 ), 0.);
+		        (*ps)(iBin).set_polar(10 * sp->eval( iBin * 1e6 + 50e6 ), 0.);
 		#endif
 	        }
 	    }
@@ -165,22 +165,27 @@ int main()
 	if( !discrim.Discriminate( psColl, gv ) )
 		KTERROR(testlog, "Something went wrong discriminating points");
 
-	KTDiscriminatedPoints2DData result = psColl.Of< KTDiscriminatedPoints2DData >();
+	KTDiscriminatedPoints2DData& result = psColl.Of< KTDiscriminatedPoints2DData >();
 
 	vector< double > xx;
 	vector< double > yy;
+	int n = 0;
 	
-	for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = result.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+	for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = result.GetSetOfPoints(0).begin(); it != result.GetSetOfPoints(0).end(); ++it )
   	{
   		xx.push_back( it->second.fAbscissa );
   		yy.push_back( it->second.fOrdinate );
+  		n++;
   	}
+
+  	double* xArray = &xx[0];
+  	double* yArray = &yy[0];
 
 #ifdef ROOT_FOUND
   	TFile* file = new TFile( "2d-discrim-test.root", "recreate" );
   	TGraph* plot;
   	plot->SetDirectory( file );
-  	plot = new TGraph( xx, yy );
+  	plot = new TGraph( n, xArray, yArray );
   	plot->Write();
   	file->Close();
 #endif

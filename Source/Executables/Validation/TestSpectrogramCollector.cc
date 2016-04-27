@@ -26,7 +26,7 @@
 #include "TRandom3.h"
 #endif
 
-using namespace Nymph;
+using namespace Katydid;
 using namespace std;
 
 KTLOGGER(testlog, "TestSpectrogramCollector");
@@ -62,12 +62,12 @@ int main()
 	TRandom3 r;
 
 	double t_bin = 10e-6;
-	std::vector< KTPowerSpectrumData > psArray;
+	std::vector< KTPowerSpectrumData* > psArray;
 	std::vector< KTProcessedTrackData > trackArray;
-	KTPowerSpectrum ps;
-	KTPowerSpectrumData psData;
+	KTPowerSpectrum* ps;
+	KTPowerSpectrumData* psData;
 
-	KTProcessedTrackData tr1 = new KTProcessedTrackData();
+	KTProcessedTrackData tr1;
 	tr1.SetComponent( 1 );
 	tr1.SetStartTimeInRunC( 5e-5 );
 	tr1.SetEndTimeInRunC( 15e-5 );
@@ -75,7 +75,7 @@ int main()
 	tr1.SetEndFrequency( 85e6 );
 	trackArray.push_back( tr1 );
 
-	KTProcessedTrackData tr2 = new KTProcessedTrackData();
+	KTProcessedTrackData tr2;
 	tr2.SetComponent( 1 );
 	tr2.SetStartTimeInRunC( 20e-5 );
 	tr2.SetEndTimeInRunC( 45e-5 );
@@ -83,7 +83,7 @@ int main()
 	tr2.SetEndFrequency( 65e6 );
 	trackArray.push_back( tr2 );
 	
-	KTProcessedTrackData tr3 = new KTProcessedTrackData();
+	KTProcessedTrackData tr3;
 	tr3.SetComponent( 1 );
 	tr3.SetStartTimeInRunC( 45e-5 );
 	tr3.SetEndTimeInRunC( 55e-5 );
@@ -91,7 +91,7 @@ int main()
 	tr3.SetEndFrequency( 91e6 );
 	trackArray.push_back( tr3 );
 	
-	KTProcessedTrackData tr4 = new KTProcessedTrackData();
+	KTProcessedTrackData tr4;
 	tr4.SetComponent( 1 );
 	tr4.SetStartTimeInRunC( 50e-5 );
 	tr4.SetEndTimeInRunC( 85e-5 );
@@ -99,7 +99,7 @@ int main()
 	tr4.SetEndFrequency( 135e6 );
 	trackArray.push_back( tr4 );
 	
-	KTProcessedTrackData tr5 = new KTProcessedTrackData();
+	KTProcessedTrackData tr5;
 	tr5.SetComponent( 1 );
 	tr5.SetStartTimeInRunC( 80e-5 );
 	tr5.SetEndTimeInRunC( 90e-5 );
@@ -116,9 +116,9 @@ int main()
 	    for (unsigned iBin=0; iBin<100; iBin++)
 	    {
 	#ifdef ROOT_FOUND
-	        ps(iBin).set_polar(r.Gaus(1e-12, 0.2e-12), 0.);
+	        (*ps)(iBin).set_polar(r.Gaus(1e-12, 0.2e-12), 0.);
 	#else
-	        ps(iBin).set_polar(1e-12, 0.);
+	        (*ps)(iBin).set_polar(1e-12, 0.);
 	#endif
 
 	        if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
@@ -128,14 +128,14 @@ int main()
 	        	lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
 	        {
 		#ifdef ROOT_FOUND
-		        ps(iBin).set_polar(r.Gaus(1e-11, 0.2e-11), 0.);
+		        (*ps)(iBin).set_polar(r.Gaus(1e-11, 0.2e-11), 0.);
 		#else
-		        ps(iBin).set_polar(1e-11, 0.);
+		        (*ps)(iBin).set_polar(1e-11, 0.);
 		#endif
 	        }
 	    }
 	
-		psData.SetSpectrum( ps );
+		psData->SetSpectrum( ps );
 		psArray.push_back( psData );
 	}
 
@@ -155,7 +155,7 @@ int main()
 		if( !spec.ReceiveSpectrum( psArray[i] ) )
 			KTERROR(testlog, "Something went wrong adding spectrum" << i);
 
-	vector< KTPSCollectionData > result;
+	vector< KTPSCollectionData& > result;
 
 	for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[component].begin(); it != spec.fWaterfallSets[component].end(); ++it )
   		result.push_back( it->first->Of< KTPSCollectionData > );
