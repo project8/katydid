@@ -95,11 +95,6 @@ namespace Katydid
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData);
             void FinishSC( KTDataPtr data );
 
-        private:
-            // Perhaps there are some non-public helper functions?
-
-            // And then any non-configurable member variables
- 
             struct KTTrackCompare
             {
                 bool operator() (const std::pair< KTDataPtr, KTPSCollectionData* > lhs, const std::pair< KTDataPtr, KTPSCollectionData* > rhs) const
@@ -110,6 +105,10 @@ namespace Katydid
 
             std::vector< std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
 
+        private:
+            // Perhaps there are some non-public helper functions?
+
+            // And then any non-configurable member variables
 
             //***************
             // Signals

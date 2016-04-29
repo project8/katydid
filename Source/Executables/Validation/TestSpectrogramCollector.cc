@@ -9,6 +9,8 @@
 #include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTFrequencySpectrumPolar.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTLogger.hh"
@@ -61,11 +63,22 @@ int main()
 	typedef std::map< double, KTPowerSpectrum* > collection;
 	TRandom3 r;
 
+	struct KTTrackCompare
+    {
+        bool operator() (const std::pair< KTDataPtr, KTPSCollectionData* > lhs, const std::pair< KTDataPtr, KTPSCollectionData* > rhs) const
+        {
+            return lhs.second->GetStartTime() < rhs.second->GetStartTime();
+        }
+    };
+
 	double t_bin = 10e-6;
 	std::vector< KTPowerSpectrumData* > psArray;
+	std::vector< KTSliceHeader* > sArray;
 	std::vector< KTProcessedTrackData > trackArray;
 	KTPowerSpectrum* ps;
 	KTPowerSpectrumData* psData;
+	KTFrequencySpectrumPolar* fftw;
+	KTSliceHeader* s;
 
 	KTProcessedTrackData tr1;
 	tr1.SetComponent( 1 );
@@ -109,16 +122,16 @@ int main()
 
 	for( double t = 0; t < t_bin * 100; t += t_bin )
 	{
-		ps = new KTPowerSpectrum( 100, 50e6, 150e6 );
+		fftw = new KTFrequencySpectrumPolar( 100, 50e6, 150e6 );
 
 		// Fill Spectrum
 		KTINFO(testlog, "Creating the power spectra");
 	    for (unsigned iBin=0; iBin<100; iBin++)
 	    {
 	#ifdef ROOT_FOUND
-	        (*ps)(iBin).set_polar(r.Gaus(1e-12, 0.2e-12), 0.);
+	        (*fftw)(iBin).set_polar(r.Gaus(1e-12, 0.2e-12), 0.);
 	#else
-	        (*ps)(iBin).set_polar(1e-12, 0.);
+	        (*fftw)(iBin).set_polar(1e-12, 0.);
 	#endif
 
 	        if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
@@ -128,15 +141,21 @@ int main()
 	        	lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
 	        {
 		#ifdef ROOT_FOUND
-		        (*ps)(iBin).set_polar(r.Gaus(1e-11, 0.2e-11), 0.);
+		        (*fftw)(iBin).set_polar(r.Gaus(1e-11, 0.2e-11), 0.);
 		#else
-		        (*ps)(iBin).set_polar(1e-11, 0.);
+		        (*fftw)(iBin).set_polar(1e-11, 0.);
 		#endif
 	        }
 	    }
 	
+	    ps = fftw->CreatePowerSpectrum();
+	    ps->ConvertToPowerSpectrum();
 		psData->SetSpectrum( ps );
+		s->SetTimeInRun( t );
+		s->SetSliceLength( t_bin );
+
 		psArray.push_back( psData );
+		sArray.push_back( s );
 	}
 
 	KTSpectrogramCollector spec;
@@ -152,32 +171,32 @@ int main()
 
 	KTINFO(testlog, "Adding spectra to the spectrogram collector");
 	for( int i = 0; i < 100; i++ )
-		if( !spec.ReceiveSpectrum( psArray[i] ) )
+		if( !spec.ReceiveSpectrum( *psArray[i], *sArray[i] ) )
 			KTERROR(testlog, "Something went wrong adding spectrum" << i);
 
-	vector< KTPSCollectionData& > result;
+	std::vector< KTPSCollectionData > result;
 
-	for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[component].begin(); it != spec.fWaterfallSets[component].end(); ++it )
-  		result.push_back( it->first->Of< KTPSCollectionData > );
+	for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[0].begin(); it != spec.fWaterfallSets[0].end(); ++it )
+  		result.push_back( it->first->Of< KTPSCollectionData >() );
 
 #ifdef ROOT_FOUND
-  	File* file = new TFile( "spectrogram-collector-test.root", "recreate" );
-  	vector< TH2D* > plots;
-  	plots->SetDirectory( file );
+  	TFile* file = new TFile( "spectrogram-collector-test.root", "recreate" );
+  	std::vector< TH2D* > plots;
 
 	for( int i = 0; i < result.size(); i++ )
 	{
 		TH2D* plot = new TH2D( "Spectrogram Collection Plot", "Spectrogram Collection Plot", 100, 0, t_bin * 100, 100, 50e6, 150e6 );
-		for (collection::const_iterator it = result[i].fSpectra.begin(); it != result[i].fSpectra.end(); ++it)
+		for (collection::const_iterator it = result[i].GetSpectra().begin(); it != result[i].GetSpectra().end(); ++it)
         {
-        	for( int j = 0; j < it->second.GetNFrequencyBins(), j++)
+        	for( int j = 0; j < it->second->GetNFrequencyBins(); j++)
         	{
-        		plot->Fill( it->first, j * 1e6 + 50e6, it->second[j] )
+        		plot->Fill( it->first, j * 1e6 + 50e6, (*it->second)(j) );
             }
         }
+        plot->SetDirectory( file );
+        plot->Write();
         plots.push_back( plot );
 	}
-	plots->Write();
 	file->Close();
 #endif
 

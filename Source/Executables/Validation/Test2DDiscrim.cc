@@ -8,6 +8,8 @@
 #include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTFrequencySpectrumPolar.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLogger.hh"
 #include "KTVariableSpectrumDiscriminator.hh"
@@ -62,6 +64,7 @@ int main()
 	KTPSCollectionData psColl;
 	std::vector< KTProcessedTrackData > trackArray;
 	KTPowerSpectrum* ps;
+	KTFrequencySpectrumPolar* fftw;
 	TRandom3 r;
 
 	KTProcessedTrackData tr1;
@@ -125,16 +128,16 @@ int main()
 
 	for( double t = 0; t < t_bin * 100; t += t_bin )
 	{
-		ps = new KTPowerSpectrum( 100, 50e6, 150e6 );
+		fftw = new KTFrequencySpectrumPolar( 100, 50e6, 150e6 );
 
 		// Fill Spectrum
 		KTINFO(testlog, "Creating the power spectra");
 	    for (unsigned iBin=0; iBin<100; iBin++)
 	    {
 	#ifdef ROOT_FOUND
-	        (*ps)(iBin).set_polar(r.Gaus(sp->Evaluate( iBin * 1e6 + 50e6 ), 0.2 * sp->Evaluate( iBin * 1e6 + 50e6 )), 0.);
+	        (*fftw)(iBin).set_polar(r.Gaus(sp->Evaluate( iBin * 1e6 + 50e6 ), 0.2 * sp->Evaluate( iBin * 1e6 + 50e6 )), 0.);
 	#else
-	        (*ps)(iBin).set_polar(sp->eval( iBin * 1e6 + 50e6 ), 0.);
+	        (*fftw)(iBin).set_polar(sp->eval( iBin * 1e6 + 50e6 ), 0.);
 	#endif
 
 	        if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
@@ -144,13 +147,15 @@ int main()
 	        	lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
 	        {
 		#ifdef ROOT_FOUND
-		        (*ps)(iBin).set_polar(r.Gaus(10 * sp->Evaluate( iBin * 1e6 + 50e6 ), 2 * sp->Evaluate( iBin * 1e6 + 50e6 )), 0.);
+		        (*fftw)(iBin).set_polar(r.Gaus(10 * sp->Evaluate( iBin * 1e6 + 50e6 ), 2 * sp->Evaluate( iBin * 1e6 + 50e6 )), 0.);
 		#else
-		        (*ps)(iBin).set_polar(10 * sp->eval( iBin * 1e6 + 50e6 ), 0.);
+		        (*fftw)(iBin).set_polar(10 * sp->eval( iBin * 1e6 + 50e6 ), 0.);
 		#endif
 	        }
 	    }
 
+	    ps = fftw->CreatePowerSpectrum();
+	    ps->ConvertToPowerSpectrum();
 	    psColl.AddSpectrum( t, ps );
 
 	}
@@ -184,7 +189,8 @@ int main()
 #ifdef ROOT_FOUND
   	TFile* file = new TFile( "2d-discrim-test.root", "recreate" );
   	TGraph* plot;
-  	plot->SetDirectory( file );
+  	//plot->SetDirectory( file );
+  	file->Append( plot );
   	plot = new TGraph( n, xArray, yArray );
   	plot->Write();
   	file->Close();
