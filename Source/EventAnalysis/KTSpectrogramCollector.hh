@@ -104,6 +104,7 @@ namespace Katydid
             };
 
             std::vector< std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
+            std::vector< bool > fCollecting;
 
         private:
             // Perhaps there are some non-public helper functions?

@@ -96,29 +96,40 @@ namespace Katydid
 
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
+        KTDEBUG(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+        
         return true;
     }
 
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component )
     {
-        for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
+        if( fCollecting[component] )
         {
-            if( slice.GetTimeInRun() >= it->second->GetStartTime() - fLeadTime && slice.GetTimeInRun() <= it->second->GetEndTime() + fTrailTime )
+            for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
             {
-                it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
-                it->second->SetDeltaT( slice.GetSliceLength() );
-                it->second->SetFilling( true );
-            }
-            else
-            {
-                if( it->second->GetFilling() )
+                if( slice.GetTimeInRun() >= it->second->GetStartTime() - fLeadTime && slice.GetTimeInRun() <= it->second->GetEndTime() + fTrailTime )
                 {
-                    it->second->SetFilling( false );
-                    FinishSC( it->first );
-                    fWaterfallSets[component].erase( it );
+                    it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
+                    it->second->SetDeltaT( slice.GetSliceLength() );
+                    it->second->SetFilling( true );
                 }
                 else
-                    it->second->SetFilling( false );
+                {
+                    if( it->second->GetFilling() )
+                    {
+                        it->second->SetFilling( false );
+                        FinishSC( it->first );
+                    //    if( fWaterfallSets[component].size() > 1 )
+                    //        fWaterfallSets[component].erase( it );
+                    //    else
+                    //        fCollecting[component] = false;
+
+                        //KTDEBUG(evlog, "Finished track on component " << component << " at timestamp " << slice.GetTimeInRun() << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+                        KTDEBUG(evlog, "Finished a track; emitting signal");
+                    }
+                    else
+                        it->second->SetFilling( false );
+                }
             }
         }
 
@@ -128,12 +139,17 @@ namespace Katydid
     bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
     {
         unsigned iComponent = data.GetComponent();
-        if( fWaterfallSets.size() <= iComponent )
-            fWaterfallSets.resize( iComponent + 1 );
+        int fWSsize = fWaterfallSets.size();
+        std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
+        for( int i = fWSsize; i <= iComponent; i++ )
+        {
+            fWaterfallSets.push_back( blankSet );
+            fCollecting.push_back( true );
+        }
 
         if( !AddTrack( data, iComponent ) )
         {
-                KTERROR(evlog, "Spectrogram collection could not add track! (component " << iComponent << ")" );
+            KTERROR(evlog, "Spectrogram collection could not add track! (component " << iComponent << ")" );
         }
 
         return true;
@@ -153,7 +169,7 @@ namespace Katydid
         }
 
         unsigned nComponents = data.GetNComponents();
-
+        
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent))
