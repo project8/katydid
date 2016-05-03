@@ -12,6 +12,8 @@
 
 #include "KTMemberVariable.hh"
 
+#include <set>
+
 namespace Katydid
 {
     using namespace Nymph;
@@ -56,6 +58,33 @@ namespace Katydid
         public:
             static const std::string sName;
 
+    };
+
+    // containers of KTProcessedTrackData
+    struct TrackTimeComp
+    {
+        bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs) const
+        {
+            if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
+            if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
+            if (lhs.GetStartFrequency() != rhs.GetStartFrequency()) return lhs.GetStartFrequency() < rhs.GetStartFrequency();
+            return lhs.GetEndFrequency() < rhs.GetEndFrequency();
+        }
+    };
+
+    typedef std::set< KTProcessedTrackData, TrackTimeComp > TrackSet;
+    typedef TrackSet::iterator TrackSetIt;
+    typedef TrackSet::const_iterator TrackSetCIt;
+
+    struct TrackSetCItComp
+    {
+        bool operator() (const TrackSetCIt& lhs, const TrackSetCIt& rhs) const
+        {
+            if (lhs->GetStartTimeInRunC() != rhs->GetStartTimeInRunC()) return lhs->GetStartTimeInRunC() < rhs->GetStartTimeInRunC();
+            if (lhs->GetEndTimeInRunC() != rhs->GetEndTimeInRunC()) return lhs->GetEndTimeInRunC() < rhs->GetEndTimeInRunC();
+            if (lhs->GetStartFrequency() != rhs->GetStartFrequency()) return lhs->GetStartFrequency() < rhs->GetStartFrequency();
+            return lhs->GetEndFrequency() < rhs->GetEndFrequency();
+        }
     };
 
 } /* namespace Katydid */

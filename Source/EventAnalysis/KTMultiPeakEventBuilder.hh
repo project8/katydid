@@ -129,6 +129,7 @@ namespace Katydid
             double fTimeBinWidth;
             double fFreqBinWidth;
 
+/*
             struct TrackComp
             {
                 bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs) const
@@ -143,9 +144,11 @@ namespace Katydid
             typedef std::set< KTProcessedTrackData, TrackComp > TrackSet;
             typedef TrackSet::iterator TrackSetIt;
             typedef TrackSet::const_iterator TrackSetCIt;
+*/
 
             std::vector< TrackSet > fCompTracks; // input tracks
 
+/*
             struct TrackSetCItComp
             {
                 bool operator() (const TrackSetCIt& lhs, const TrackSetCIt& rhs) const
@@ -156,6 +159,7 @@ namespace Katydid
                     return lhs->GetEndFrequency() < rhs->GetEndFrequency();
                 }
             };
+*/
 
             //typedef std::vector< std::list< KTProcessedTrackData > > MultiPeakTrackRef;
             struct MultiPeakTrackRef

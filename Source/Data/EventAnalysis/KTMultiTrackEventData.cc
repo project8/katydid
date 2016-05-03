@@ -23,6 +23,7 @@ namespace Katydid
             fComponent(0),
             fAcquisitionID(0.),
             fEventID(0),
+            fTotalEventSequences(0),
             fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
@@ -53,6 +54,7 @@ namespace Katydid
             KTExtensibleData< KTMultiTrackEventData >(orig),
             fComponent(orig.fComponent),
             fEventID(orig.fEventID),
+            fTotalEventSequences(orig.fTotalEventSequences),
             fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
@@ -127,7 +129,18 @@ namespace Katydid
     void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
     {
         fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
+        return;
+    }
 
+    void KTMultiTrackEventData::AddTracks(std::set< TrackSetCIt, TrackSetCItComp > tracks)
+    {
+        AddTracks(tracks, fTotalEventSequences);
+        fTotalEventSequences++;
+        return;
+    }
+
+    void KTMultiTrackEventData::AddTracks(std::set< TrackSetCIt, TrackSetCItComp > tracks, unsigned thisEventSequenceID)
+    {
         return;
     }
 

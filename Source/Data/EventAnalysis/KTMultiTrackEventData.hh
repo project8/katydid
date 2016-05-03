@@ -14,6 +14,7 @@
 #include "KTProcessedTrackData.hh"
 
 #include <map>
+#include <set>
 
 namespace Katydid
 {
@@ -35,6 +36,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, EventID);
+            MEMBERVARIABLE(unsigned, TotalEventSequences);
 
             // this group of member variables is set by ProcessTracks()
             MEMBERVARIABLE(double, StartTimeInAcq);
@@ -72,6 +74,11 @@ namespace Katydid
             KTProcessedTrackData& GetTrack(unsigned id);
 
             void AddTrack(const KTProcessedTrackData& track);
+            /// Add a collection of tracks to the next EventSequenceID
+            void AddTracks(std::set< TrackSetCIt, TrackSetCItComp > tracks);
+            /// Add a collection of tracks to the specified EventSequenceID
+            void AddTracks(std::set< TrackSetCIt, TrackSetCItComp > tracks, unsigned thisEventSequenceID);
+
             /// Evaluates all of the tracks to fill in information about the event and first track
             void ProcessTracks();
 
