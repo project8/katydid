@@ -17,6 +17,7 @@ namespace Katydid
             fAcquisitionID(0),
             fTrackID(0),
             fEventID(0),
+            fEventSequenceID(-1),
             fIsCut(false),
             fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
@@ -46,6 +47,7 @@ namespace Katydid
             fAcquisitionID(orig.fAcquisitionID),
             fTrackID(orig.fTrackID),
             fEventID(orig.fEventID),
+            fEventSequenceID(orig.fEventSequenceID),
             fIsCut(orig.fIsCut),
             fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
@@ -78,6 +80,7 @@ namespace Katydid
         fComponent = rhs.fComponent;
         fTrackID = rhs.fTrackID;
         fEventID = rhs.fEventID;
+        fEventSequenceID = rhs.fEventSequenceID;
         fIsCut = rhs.fIsCut;
         fStartTimeInAcq = rhs.fStartTimeInAcq;
         fStartTimeInRunC = rhs.fStartTimeInRunC;

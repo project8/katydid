@@ -28,6 +28,7 @@ namespace Katydid
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, TrackID);
             MEMBERVARIABLE(unsigned, EventID);
+            MEMBERVARIABLE(ssize_t, EventSequenceID);
 
             MEMBERVARIABLE(bool, IsCut);
 
