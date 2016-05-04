@@ -63,7 +63,7 @@ namespace Katydid
     // containers of KTProcessedTrackData
     struct TrackTimeComp
     {
-        bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs) const
+        bool operator() (KTProcessedTrackData& lhs, KTProcessedTrackData& rhs)
         {
             if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
             if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
@@ -75,6 +75,17 @@ namespace Katydid
     typedef std::set< KTProcessedTrackData, TrackTimeComp > TrackSet;
     typedef TrackSet::iterator TrackSetIt;
     typedef TrackSet::const_iterator TrackSetCIt;
+
+    struct TrackSetItComp
+    {
+        bool operator() (TrackSetIt& lhs, TrackSetIt& rhs)
+        {
+            if (lhs->GetStartTimeInRunC() != rhs->GetStartTimeInRunC()) return lhs->GetStartTimeInRunC() < rhs->GetStartTimeInRunC();
+            if (lhs->GetEndTimeInRunC() != rhs->GetEndTimeInRunC()) return lhs->GetEndTimeInRunC() < rhs->GetEndTimeInRunC();
+            if (lhs->GetStartFrequency() != rhs->GetStartFrequency()) return lhs->GetStartFrequency() < rhs->GetStartFrequency();
+            return lhs->GetEndFrequency() < rhs->GetEndFrequency();
+        }
+    };
 
     struct TrackSetCItComp
     {
