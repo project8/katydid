@@ -139,7 +139,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiTrackEventData::AddTracks(TrackSet tracks, ssize_t thisEventSequenceID)
+    void KTMultiTrackEventData::AddTracks(TrackSet tracks, ssize_t eventSequenceID)
     {
         for ( TrackSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
         {

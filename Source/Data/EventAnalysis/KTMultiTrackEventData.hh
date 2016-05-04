@@ -77,7 +77,7 @@ namespace Katydid
             /// Add a collection of tracks to the next EventSequenceID
             void AddTracks(TrackSet tracks);
             /// Add a collection of tracks to the specified EventSequenceID
-            void AddTracks(TrackSet tracks, ssize_t thisEventSequenceID);
+            void AddTracks(TrackSet tracks, ssize_t eventSequenceID);
 
             /// Evaluates all of the tracks to fill in information about the event and first track
             void ProcessTracks();
