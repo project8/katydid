@@ -143,7 +143,9 @@ namespace Katydid
     {
         for ( TrackSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
         {
-            *aTrack->SetEventSequenceID(eventSequenceID);
+            KTProcessedTrackData aProcessedTrack = KTProcessedTrackData(*aTrack);
+            aProcessedTrack.SetEventSequenceID(eventSequenceID);
+            AddTrack(aProcessedTrack);
         }
         return;
     }
