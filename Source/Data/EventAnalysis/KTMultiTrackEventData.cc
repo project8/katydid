@@ -143,7 +143,7 @@ namespace Katydid
     {
         for ( TrackSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
         {
-            *aTrack->SetEventSequenceID(thisEventSequenceID);
+            *aTrack->SetEventSequenceID(eventSequenceID);
         }
         return;
     }
