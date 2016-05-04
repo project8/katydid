@@ -33,17 +33,26 @@ using namespace std;
 
 KTLOGGER(testlog, "TestSpectrogramCollector");
 
+// Method to determine whether a line intersects a bin with finite size
+// The line extends over a finite segment from (x1,y1) to (x2,y2)
+// The bin has lower-left corner (xx1,yy1) and upper-right corner (xx2,yy2)
+// It follows that the lower-right corner is (xx2,yy1) and the upper-left corner is (xx1,yy2)
 bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, double yy1, double xx2, double yy2 )
 {
-	if( x2 <=  xx1 || x1 >= xx2 )
+	// If the x or y coordinates of the line are entirely outside the bin range, we can immediately return false
+	if( x2 <= xx1 || x1 >= xx2 )
+		return false;
+	if( y2 <= yy1 || y1 >= yy2 )
 		return false;
 
-	double m = (y2 - y1) / (x2 - x1);
-	double yLeft = y1 + (y2 - y1) * (xx1 - x1) / (x2 - x1);
-	double yRight = y1 + (y2 - y1) * (xx2 - x1) / (x2 - x1);
+	double m = (y2 - y1) / (x2 - x1);		// slope
+	double yLeft = y1 + m * (xx1 - x1);		// y-position of the line at xx1
+	double yRight = y1 + m * (xx2 - x1);	// y-position of the line at xx2
 
 	if( m > 0 )
 	{
+		// Positive slope
+		// We check the upper-left corner and the lower-right corner
 		if( yLeft >= yy2 || yRight <= yy1 )
 			return false;
 		else
@@ -51,6 +60,8 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
 	}
 	else
 	{
+		// Negative slope
+		// We check the lower-left corner and the upper-right corner
 		if( yLeft <= yy1 || yRight >= yy2 )
 			return false;
 		else
@@ -73,7 +84,9 @@ int main()
         }
     };
 
-	double t_bin = 10e-6;
+	double t_bin = 10e-6;	// Length of a time bin
+
+	// Declare all required data objects
 	std::vector< KTPowerSpectrumData* > psArray;
 	std::vector< KTSliceHeader* > sArray;
 	std::vector< KTProcessedTrackData > trackArray;
@@ -82,7 +95,8 @@ int main()
 	KTFrequencySpectrumPolar* fftw;
 	KTSliceHeader* s;
 
-	//psData->SetNComponents( 1 );
+	// Next we create 5 tracks with specific start and end points
+	// Some tracks overlap in the time domain
 
 	KTProcessedTrackData tr1;
 	tr1.SetComponent( 0 );
@@ -124,9 +138,12 @@ int main()
 	tr5.SetEndFrequency( 106e6 );
 	trackArray.push_back( tr5 );
 
+	// Create power spectra to send to the spectrogram collector
 	KTINFO(testlog, "Creating Power Spectra");
+
 	for( double t = 0; t < t_bin * 100; t += t_bin )
 	{
+		// Create new frequency spectrum
 		fftw = new KTFrequencySpectrumPolar( 100, 50e6, 150e6 );
 
 		// Fill Spectrum
@@ -138,6 +155,7 @@ int main()
 	        (*fftw)(iBin).set_polar(1e-5, 0.);
 	#endif
 
+	        // If any track intersects the bin, fill by a factor of 3 greater magnitude
 	        if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
 	        	lineIntersects( tr2.GetStartTimeInRunC(), tr2.GetStartFrequency(), tr2.GetEndTimeInRunC(), tr2.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
 	        	lineIntersects( tr3.GetStartTimeInRunC(), tr3.GetStartFrequency(), tr3.GetEndTimeInRunC(), tr3.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
@@ -150,40 +168,49 @@ int main()
 		        (*fftw)(iBin).set_polar(3e-5, 0.);
 		#endif
 	        }
-
-	        //KTINFO(testlog, "Set bin " << iBin << " to " << (*fftw)(iBin));
 	    }
 	
-		fftw->SetNTimeBins( 1 );
+		fftw->SetNTimeBins( 1 );	// Default is zero, causing a divergence with the scaling
+
+		// Initialize KTPowerSpectrumData object and slice header
 		psData = new KTPowerSpectrumData();
 		psData->SetNComponents( 1 );
 		s = new KTSliceHeader();
 
+		// Send a log message just the first time
 		if( t == 0 )
 			KTINFO(testlog, "Finished filling first spectrum. 99 to go");
+
+		// Configure psData and s
 	    ps = fftw->CreatePowerSpectrum();
 	    ps->ConvertToPowerSpectrum();
 	    psData->SetSpectrum( ps, 0 );
 		s->SetTimeInRun( t );
 		s->SetSliceLength( t_bin );
 
+		// Add to vectors
 		psArray.push_back( psData );
 		sArray.push_back( s );
+
+		// Log
 		if( t == 0 )
 			KTINFO(testlog, "Finished processing first spectrum. 99 to go");
 	}
 
+	// Now we create and configure the spectrogram collector
 	KTSpectrogramCollector spec;
 	spec.SetMinFrequency( 50e6 );
 	spec.SetMaxFrequency( 150e6 );
 	spec.SetLeadTime( 20e-6 );
 	spec.SetTrailTime( 20e-6 );
 
+	// Add tracks to listen
 	KTINFO(testlog, "Adding tracks to the spectrogram collector");
 	for( int i = 0; i < 5; i++ )
 		if( !spec.ReceiveTrack( trackArray[i] ) )
 			KTERROR(testlog, "Something went wrong adding track" << i);
 
+	// Add spectra
 	KTINFO(testlog, "Adding spectra to the spectrogram collector");
 	for( int i = 0; i < 100; i++ )
 	{
@@ -191,10 +218,12 @@ int main()
 			KTERROR(testlog, "Something went wrong adding spectrum" << i);
 	}
 
+	// The result is a KTPSCollectionData for each track
 	std::vector< KTPSCollectionData > result;
 
 	KTINFO(testlog, "Finished receiving spectra. Begin retrieving produced spectrograms");
 
+	// Fill the result vector and count the number of plots
 	int nPlots = 0;
 	for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[0].begin(); it != spec.fWaterfallSets[0].end(); ++it )
 	{
@@ -211,6 +240,8 @@ int main()
   		KTINFO(testlog, "Produced " << nPlots << " spectrograms");
   	}
 
+  	// Fill a TH2D for each spectrogram and write to a file
+
 #ifdef ROOT_FOUND
   	TFile* file = new TFile( "spectrogram-collector-test.root", "recreate" );
   	std::vector< TH2D* > plots;
@@ -218,7 +249,7 @@ int main()
   	TH2D* plot = new TH2D( "Spectrogram Collection Plot", "Spectrogram Collection Plot", 100, 0, t_bin * 100, 100, 50e6, 150e6 );
 	for( int i = 0; i < nPlots; i++ )
 	{
-		plot->Reset();
+		plot->Reset();	// Clear histogram
 		for (collection::const_iterator it = result[i].GetSpectra().begin(); it != result[i].GetSpectra().end(); ++it)
         {
         	for( int j = 0; j < it->second->GetNFrequencyBins(); j++)
@@ -226,11 +257,12 @@ int main()
         		plot->Fill( it->first, j * 1e6 + 50e6, (*it->second)(j) );
             }
         }
-        //plot->SetDirectory( file );
+
         KTINFO(testlog, "Writing spectrogram for track " << i);
         plot->Write(TString::Format("track-%i", i));
-        //plots.push_back( plot );
 	}
+
+	// Cleanup
 	file->Close();
 	delete file;
 #endif

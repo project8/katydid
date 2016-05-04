@@ -2,7 +2,7 @@
  * KTSpectrogramCollector.hh
  *
  *  Created on: Oct 9, 2015
- *      Author: nsoblath
+ *      Author: ezayas
  */
 
 #ifndef KTSPECTROGRAMCOLLECTOR_HH_
@@ -27,12 +27,13 @@ namespace Katydid
 
     /*!
      @class KTSpectrogramCollector
-     @author N.S. Oblath
+     @author E. Zayas
 
      @brief Collects the spectra that pertain to a particular track or event
 
      @details
-     [detailed class description]
+     Supports an arbitrary number of tracks to collect simultaneously. Collection begins when a spectrum is received which matches the timestamp
+     of the beginning of a track. A signal is emitted when the spectrum matches the end time.
 
      Configuration name: "spectrogram-collector"
 
@@ -103,8 +104,14 @@ namespace Katydid
                 }
             };
 
+            // The spectrograms are stored in a vector of sets of pairs of KTDataPtr and KTPSCollectionData. The levels to this hierarchy are:
+            //      Vector - each element corresponding to a component
+            //      Set -    each element corresponding to a track
+            //      Pair -   the KTDataPtr which contains the spectrogram, and a pointer to the spectrogram
+            // It is necessary to store the KTDataPtr because the signal contain this object when it emits, and each spectrogram must have a
+            // unique associated KTDataPtr
+
             std::vector< std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
-            std::vector< bool > fCollecting;
 
         private:
             // Perhaps there are some non-public helper functions?
