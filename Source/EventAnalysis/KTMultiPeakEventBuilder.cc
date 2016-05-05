@@ -269,10 +269,7 @@ namespace Katydid
                                 trackAssigned = eventIt - activeEvents.begin();
 
                                 KTMultiTrackEventData& thisEvent = eventIt->first->Of< KTMultiTrackEventData >();
-                                for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
-                                {
-                                    thisEvent.AddTrack( **peakIt );
-                                }
+                                thisEvent.AddTracks(trackIt->fTrackRefs);
                                 thisEvent.ProcessTracks();
                                 eventIt->second.insert( trackIt->fMeanEndTimeInRunC );
                             }
@@ -286,6 +283,7 @@ namespace Katydid
                                 for (unsigned iLine = 0; iLine < thisEvent.GetNTracks(); ++iLine)
                                 {
                                     firstEvent.AddTrack(thisEvent.GetTrack(iLine));
+                                    KTERROR("don't know how to deal with EventSequenceID here!!!")
                                 }
                                 firstEvent.ProcessTracks();
                                 for (TrackEndsType::const_iterator endpointIt=eventIt->second.begin(); endpointIt != eventIt->second.end(); ++endpointIt)
@@ -314,10 +312,8 @@ namespace Katydid
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
                     event.SetAcquisitionID(trackIt->fAcquisitionID);
-                    for ( std::set< TrackSetCIt, TrackSetCItComp >::iterator peakIt=trackIt->fTrackRefs.begin(); peakIt != trackIt->fTrackRefs.end(); ++peakIt )
-                    {
-                        event.AddTrack( **peakIt );
-                    }
+
+                    event.AddTracks(trackIt->fTrackRefs);
                     event.ProcessTracks();
                     new_event.second.insert( trackIt->fMeanEndTimeInRunC );
                     activeEvents.push_back(new_event);
@@ -330,7 +326,7 @@ namespace Katydid
                 ++trackIt;
             } // while loop over tracks
         } // for loop over components
-        
+
         // tracks are done so any remaining active events are done
         std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin();
         while (eventIt != activeEvents.end())

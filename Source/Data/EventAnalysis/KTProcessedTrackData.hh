@@ -84,6 +84,7 @@ namespace Katydid
             return lhs->GetEndFrequency() < rhs->GetEndFrequency();
         }
     };
+    typedef std::set< TrackSetCIt, TrackSetCItComp > TrackSetCItSet;
 
 } /* namespace Katydid */
 #endif /* KTPROCESSEDTRACKDATA_HH_ */

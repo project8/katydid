@@ -132,18 +132,18 @@ namespace Katydid
         return;
     }
 
-    void KTMultiTrackEventData::AddTracks(TrackSet tracks)
+    void KTMultiTrackEventData::AddTracks(TrackSetCItSet tracks)
     {
         AddTracks(tracks, fTotalEventSequences);
         fTotalEventSequences++;
         return;
     }
 
-    void KTMultiTrackEventData::AddTracks(TrackSet tracks, ssize_t eventSequenceID)
+    void KTMultiTrackEventData::AddTracks(TrackSetCItSet tracks, ssize_t eventSequenceID)
     {
-        for ( TrackSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
+        for ( TrackSetCItSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
         {
-            KTProcessedTrackData aProcessedTrack = KTProcessedTrackData(*aTrack);
+            KTProcessedTrackData aProcessedTrack = KTProcessedTrackData(**aTrack);
             aProcessedTrack.SetEventSequenceID(eventSequenceID);
             AddTrack(aProcessedTrack);
         }

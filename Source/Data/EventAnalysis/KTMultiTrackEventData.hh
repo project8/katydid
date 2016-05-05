@@ -75,9 +75,9 @@ namespace Katydid
 
             void AddTrack(const KTProcessedTrackData& track);
             /// Add a collection of tracks to the next EventSequenceID
-            void AddTracks(TrackSet tracks);
+            void AddTracks(TrackSetCItSet tracks);
             /// Add a collection of tracks to the specified EventSequenceID
-            void AddTracks(TrackSet tracks, ssize_t eventSequenceID);
+            void AddTracks(TrackSetCItSet tracks, ssize_t eventSequenceID);
 
             /// Evaluates all of the tracks to fill in information about the event and first track
             void ProcessTracks();
