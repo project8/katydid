@@ -27,7 +27,7 @@ namespace Katydid
 
     TProcessedTrackData::TProcessedTrackData() :
             TObject(),
-            fComponent(0), fTrackID(0), fIsCut(false),
+            fComponent(0), fTrackID(0), fEventSequenceID(-1), fIsCut(false),
             fAcquisitionID(0),
             fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
             fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
@@ -39,7 +39,7 @@ namespace Katydid
 
     TProcessedTrackData::TProcessedTrackData(const KTProcessedTrackData& orig) :
             TObject(),
-            fComponent(0), fTrackID(0), fIsCut(false),
+            fComponent(0), fTrackID(0), fEventSequenceID(-1), fIsCut(false),
             fAcquisitionID(0),
             fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
             fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
@@ -53,7 +53,7 @@ namespace Katydid
 
     TProcessedTrackData::TProcessedTrackData(const TProcessedTrackData& orig) :
             TObject(orig),
-            fComponent(orig.fComponent), fTrackID(orig.fTrackID), fIsCut(orig.fIsCut),
+            fComponent(orig.fComponent), fTrackID(orig.fTrackID), fEventSequenceID(orig.fEventSequenceID), fIsCut(orig.fIsCut),
             fAcquisitionID(orig.fAcquisitionID),
             fStartTimeInRunC(orig.fStartTimeInRunC), fEndTimeInRunC(orig.fEndTimeInRunC),fTimeLength(orig.fTimeLength),
             fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fFrequencyWidth(orig.fFrequencyWidth),
@@ -74,7 +74,7 @@ namespace Katydid
 
     TProcessedTrackData& TProcessedTrackData::operator=(const TProcessedTrackData& rhs)
     {
-        fComponent = rhs.fComponent;fTrackID = rhs.fTrackID; fIsCut = rhs.fIsCut;
+        fComponent = rhs.fComponent;fTrackID = rhs.fTrackID; fEventSequenceID = rhs.fEventSequenceID; fIsCut = rhs.fIsCut;
         fAcquisitionID = rhs.fAcquisitionID;
         fStartTimeInRunC = rhs.fStartTimeInRunC; fEndTimeInRunC = rhs.fEndTimeInRunC;fTimeLength = rhs.fTimeLength;
         fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
@@ -87,7 +87,7 @@ namespace Katydid
 
     void TProcessedTrackData::Load(const KTProcessedTrackData& data)
     {
-        fComponent = data.GetComponent();fTrackID = data.GetTrackID(); fIsCut = data.GetIsCut();
+        fComponent = data.GetComponent();fTrackID = data.GetTrackID(); fEventSequenceID = data.GetEventSequenceID(); fIsCut = data.GetIsCut();
         fAcquisitionID = data.GetAcquisitionID();
         fStartTimeInRunC = data.GetStartTimeInRunC(); fEndTimeInRunC = data.GetEndTimeInRunC();fTimeLength = data.GetTimeLength();
         fStartFrequency = data.GetStartFrequency(); fEndFrequency = data.GetEndFrequency(); fFrequencyWidth = data.GetFrequencyWidth();
@@ -99,7 +99,7 @@ namespace Katydid
     }
     void TProcessedTrackData::Unload(KTProcessedTrackData& data) const
     {
-        data.SetComponent(fComponent); data.SetTrackID(fTrackID); data.SetIsCut(fIsCut);
+        data.SetComponent(fComponent); data.SetTrackID(fTrackID); data.SetEventSequenceID(fEventSequenceID); data.SetIsCut(fIsCut);
         data.SetAcquisitionID(fAcquisitionID);
         data.SetStartTimeInRunC(fStartTimeInRunC); data.SetEndTimeInRunC(fEndTimeInRunC); data.SetTimeLength(fTimeLength);
         data.SetStartFrequency(fStartFrequency); data.SetEndFrequency(fEndFrequency); data.SetFrequencyWidth(fFrequencyWidth);
