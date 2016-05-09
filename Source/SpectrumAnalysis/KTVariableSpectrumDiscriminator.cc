@@ -202,44 +202,50 @@ namespace Katydid
 
         if (fCalculateMinBin)
         {
-            SetMinBin(data.GetSpectra().begin()->second[0].FindBin(fMinFrequency));
+            SetMinBin(data.GetSpectra().begin()->second->FindBin(fMinFrequency));
             KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin(data.GetSpectra().begin()->second[0].FindBin(fMaxFrequency));
+            SetMaxBin(data.GetSpectra().begin()->second->FindBin(fMaxFrequency));
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
         
         newData.SetNBinsX( data.GetSpectra().size() );
-        newData.SetNBinsY( data.GetSpectra().begin()->second[0].size() );
+        newData.SetNBinsY( data.GetSpectra().begin()->second->GetNFrequencyBins() );
         newData.SetBinWidthX( data.GetDeltaT() );
-        newData.SetBinWidthY( data.GetSpectra().begin()->second[0].GetBinWidth() );
+        newData.SetBinWidthY( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
-        newDataSlice.SetNBins( data.GetSpectra().begin()->second[0].size() );
-        newDataSlice.SetBinWidth( data.GetSpectra().begin()->second[0].GetBinWidth() );
+        newDataSlice.SetNBins( data.GetSpectra().begin()->second->GetNFrequencyBins() );
+        newDataSlice.SetBinWidth( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
 
         double XbinWidth = data.GetDeltaT();
-        double YbinWidth = data.GetSpectra().begin()->second[0].GetBinWidth();
+        double YbinWidth = data.GetSpectra().begin()->second->GetFrequencyBinWidth();
+
+        KTDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
 
         unsigned nSpectra = data.GetSpectra().size();
         unsigned nPoints = 0;
+        unsigned sliceNumber = 0;
 
-        for( unsigned i = 0; i < nSpectra; ++i )
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = data.GetSpectra().begin(); it != data.GetSpectra().end(); ++it )
         {
-            if (! DiscriminateSpectrum(&data.GetSpectra().begin()->second[i], gvData.GetSpline(0), newDataSlice, 0))
+            newDataSlice.SetNComponents( sliceNumber + 1 );
+            if (! DiscriminateSpectrum(it->second, gvData.GetSpline(0), newDataSlice, sliceNumber))
             {
-                KTERROR(sdlog, "Discrimination on spectrogram (slice " << i << ") failed");
+                KTERROR(sdlog, "Discrimination on spectrogram (slice " << sliceNumber << ") failed");
                 return false;
             }
-            nPoints = newDataSlice.GetSetOfPoints(0).size();
-            KTDEBUG(sdlog, "Spectrogram slice " << i << " has " << nPoints << " points above threshold");
+            nPoints = newDataSlice.GetSetOfPoints( sliceNumber ).size();
+            KTDEBUG(sdlog, "Spectrogram slice " << sliceNumber << " has " << nPoints << " points above threshold");
 
-            for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints(0).begin(); it != newDataSlice.GetSetOfPoints(0).end(); ++it )
+            for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); it != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++it )
             {
-                newData.AddPoint( i, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)i+0.5), YbinWidth * ((double)it->first+0.5), it->second.fOrdinate, it->second.fThreshold ), 0 );
+                KTINFO(sdlog, "Adding point with abscissa " << XbinWidth * ((double)sliceNumber+0.5) << ", ordinate " << YbinWidth * ((double)it->first+0.5));
+                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5), YbinWidth * ((double)it->first+0.5), it->second.fOrdinate, it->second.fThreshold ), 0 );
             }
+            sliceNumber++;
         }
 
         return true;

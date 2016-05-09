@@ -93,8 +93,8 @@ namespace Katydid
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
 
         // Configure PSCollectionData timestamps
-        newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() );
-        newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() );
+        newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
+        newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
         newWaterfall->SetFilling( false );
 
         // Add to fWaterfallSets
@@ -111,8 +111,9 @@ namespace Katydid
         for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
             // If the slice time coincides with the track time window, add the spectrum
-            if( slice.GetTimeInRun() >= it->second->GetStartTime() - fLeadTime && slice.GetTimeInRun() <= it->second->GetEndTime() + fTrailTime )
+            if( slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
+                KTINFO(evlog, "Adding spectrum. Slice length = " << slice.GetSliceLength());
                 it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );

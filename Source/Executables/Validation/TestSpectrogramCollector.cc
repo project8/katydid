@@ -259,7 +259,7 @@ int main()
         }
 
         KTINFO(testlog, "Writing spectrogram for track " << i);
-        plot->Write(TString::Format("track-%i", i));
+        plot->Write( TString::Format("track-%i", i) );
 	}
 
 	// Cleanup
