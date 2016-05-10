@@ -113,7 +113,6 @@ namespace Katydid
             // If the slice time coincides with the track time window, add the spectrum
             if( slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
-                KTINFO(evlog, "Adding spectrum. Slice length = " << slice.GetSliceLength());
                 it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );

@@ -15,13 +15,21 @@ namespace Katydid
 
     KTPSCollectionData::KTPSCollectionData() :
             KTExtensibleData< KTPSCollectionData >(),
-            fSpectra()
+            fSpectra(),
+            fStartTime(0.),
+            fEndTime(0.001),
+            fDeltaT(1e-6),
+            fFilling(false)
     {
     }
 
     KTPSCollectionData::KTPSCollectionData(const KTPSCollectionData& orig) :
             KTExtensibleData< KTPSCollectionData >(orig),
-            fSpectra()
+            fSpectra(),
+            fStartTime(orig.fStartTime),
+            fEndTime(orig.fEndTime),
+            fDeltaT(orig.fDeltaT),
+            fFilling(orig.fFilling)
     {
         for (collection::const_iterator it = orig.fSpectra.begin(); it != orig.fSpectra.end(); ++it)
         {
@@ -39,6 +47,11 @@ namespace Katydid
 
     KTPSCollectionData& KTPSCollectionData::operator=(const KTPSCollectionData& rhs)
     {
+        fStartTime = rhs.fStartTime;
+        fEndTime = rhs.fEndTime;
+        fDeltaT = rhs.fDeltaT;
+        fFilling = rhs.fFilling;
+        
         for (collection::iterator it = fSpectra.begin(); it != fSpectra.end(); ++it)
         {
             delete it->second;

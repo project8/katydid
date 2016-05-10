@@ -199,6 +199,7 @@ namespace Katydid
     {
         KTDiscriminatedPoints2DData& newData = data.Of< KTDiscriminatedPoints2DData >();
         KTDiscriminatedPoints1DData newDataSlice;
+        // The 1DData will be used with the discrimination methods already in place to iteratively achieve a 2D discrimination
 
         if (fCalculateMinBin)
         {
@@ -211,6 +212,8 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
         
+        // Parametrize 2D and 1D point objects
+
         newData.SetNBinsX( data.GetSpectra().size() );
         newData.SetNBinsY( data.GetSpectra().begin()->second->GetNFrequencyBins() );
         newData.SetBinWidthX( data.GetDeltaT() );
@@ -220,31 +223,38 @@ namespace Katydid
         newDataSlice.SetNBins( data.GetSpectra().begin()->second->GetNFrequencyBins() );
         newDataSlice.SetBinWidth( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
 
+        // X and Y bin width for the 2D points
         double XbinWidth = data.GetDeltaT();
         double YbinWidth = data.GetSpectra().begin()->second->GetFrequencyBinWidth();
 
         KTDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
 
-        unsigned nSpectra = data.GetSpectra().size();
-        unsigned nPoints = 0;
-        unsigned sliceNumber = 0;
+        unsigned nSpectra = data.GetSpectra().size();   // Number of time slices in the spectrogram collection
+        unsigned nPoints = 0;                           // Number of points above threshold in one slice
+        unsigned sliceNumber = 0;                       // Slice counter
 
+        // Iterate through the power spectra
         for( std::map< double, KTPowerSpectrum* >::const_iterator it = data.GetSpectra().begin(); it != data.GetSpectra().end(); ++it )
         {
+            // To avoid confusion using newDataSlice in a loop, each time slice with be associated to a new component
             newDataSlice.SetNComponents( sliceNumber + 1 );
+
+            // Discriminate the 1D spectrum
             if (! DiscriminateSpectrum(it->second, gvData.GetSpline(0), newDataSlice, sliceNumber))
             {
                 KTERROR(sdlog, "Discrimination on spectrogram (slice " << sliceNumber << ") failed");
                 return false;
             }
+
             nPoints = newDataSlice.GetSetOfPoints( sliceNumber ).size();
             KTDEBUG(sdlog, "Spectrogram slice " << sliceNumber << " has " << nPoints << " points above threshold");
 
+            // Iterate through the 1D points and add them to the 2D points
             for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); it != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++it )
             {
-                KTINFO(sdlog, "Adding point with abscissa " << XbinWidth * ((double)sliceNumber+0.5) << ", ordinate " << YbinWidth * ((double)it->first+0.5));
-                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5), YbinWidth * ((double)it->first+0.5), it->second.fOrdinate, it->second.fThreshold ), 0 );
+                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + data.GetStartTime(), YbinWidth * ((double)it->first+0.5), it->second.fOrdinate, it->second.fThreshold ), 0 );
             }
+
             sliceNumber++;
         }
 

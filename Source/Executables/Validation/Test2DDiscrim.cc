@@ -87,8 +87,7 @@ int main()
 	TRandom3 rand(0);
 #endif
 
-	// Next we create 5 tracks with specific start and end points
-	// Some tracks overlap in the time domain
+	// Next we create a track with specific start and end points
 
 	KTProcessedTrackData tr1;
 	tr1.SetComponent( 0 );
@@ -99,6 +98,7 @@ int main()
 
 	KTGainVariationData gv;
 
+	// Spline implementation for the background will use these arrays
 	double* xVals = new double[3];
 	double* yVals = new double[3];
 
@@ -196,6 +196,7 @@ int main()
   	KTINFO(testlog, "Retrieved spectrogram. Delta T = " << spec.fWaterfallSets[0].begin()->second->GetDeltaT());
   	KTINFO(testlog, "Retrieved spectrogram. Delta T = " << psColl->GetDeltaT());
 
+  	// Now we create and configure the discriminator
 	KTVariableSpectrumDiscriminator discrim;
 	discrim.SetSNRPowerThreshold( 1.5 );
 	discrim.SetMinFrequency( 55e6 );
@@ -203,13 +204,16 @@ int main()
 
 	KTINFO(testlog, "Discriminating points");
 
+	// Discriminate the spectrogram collection
 	if( !discrim.Discriminate( *psColl, gv ) )
 		KTERROR(testlog, "Something went wrong discriminating points");
 
 	KTINFO(testlog, "Finished discriminating");
 
+	// The result is a set of 2D points
 	KTDiscriminatedPoints2DData& result = psColl->Of< KTDiscriminatedPoints2DData >();
 
+	// Add them to vectors so that we can graph them
 	vector< double > xx;
 	vector< double > yy;
 	int n = 0;
@@ -217,15 +221,17 @@ int main()
 	for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = result.GetSetOfPoints(0).begin(); it != result.GetSetOfPoints(0).end(); ++it )
   	{
   		xx.push_back( it->second.fAbscissa );
-  		yy.push_back( it->second.fOrdinate );
+  		yy.push_back( it->second.fOrdinate + spec.GetMinFrequency() );
   		n++;
   	}
 
+  	// Actually we need physical arrays lol
   	double* xArray = &xx[0];
   	double* yArray = &yy[0];
 
   	KTINFO(testlog, "Writing to file");
 
+  	// Write to file
 #ifdef ROOT_FOUND
   	TFile* file = new TFile( "2d-discrim-test.root", "recreate" );
   	TGraph* plot;
