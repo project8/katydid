@@ -34,7 +34,6 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fSidebandTimeTolerance(0.),
             fJumpTimeTolerance(0.),
-            //fJumpFreqTolerance(1.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
             fCompTracks(1),
@@ -81,25 +80,6 @@ namespace Katydid
 
         return true;
     }
-
-    /*
-    bool KTMultiPeakEventBuilder::TakePoint(double time, double frequency *//*, double amplitude*//*, unsigned component)
-    {
-        if (component >= fCompPoints.size())
-        {
-            SetNComponents(component + 1);
-        }
-
-        KTDBScan::Point newPoint(fNDimensions);
-        newPoint(0) = time;
-        newPoint(1) = frequency;
-        fCompPoints[component].push_back(newPoint);
-
-        KTDEBUG(tclog, "Point " << fCompPoints[component].size()-1 << " is now " << fCompPoints[component].back());
-
-        return true;
-    }
-    */
 
     void KTMultiPeakEventBuilder::DoClusteringSlot()
     {
@@ -150,9 +130,6 @@ namespace Katydid
             if (trackIt == compIt->end()) continue;
 
             list< MultiPeakTrackRef > activeTrackRefs;
-            //activeTrackRefs.push_back(MultiPeakTrackRef());
-            //activeTrackRefs.begin()->InsertTrack(trackIt);
-            //++trackIt;
 
             int trackCount = 0;
             while (trackIt != compIt->end())
@@ -168,7 +145,6 @@ namespace Katydid
                     double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
 
                     // check to see if this track ref should no longer be active
-                    //if (trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC > fSidebandTimeTolerance)
                     if (deltaStartT > fSidebandTimeTolerance)
                     {
                         KTDEBUG(tclog, "this track ref should no longer be active");
@@ -182,12 +158,16 @@ namespace Katydid
                         double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
                         // check if this track should be added to this track ref
                         if ( !trackHasBeenAdded &&
-                             fabs(deltaStartT) <= fSidebandTimeTolerance &&
-                             fabs(deltaEndT) < fSidebandTimeTolerance)
+                             (fabs(deltaStartT) <= fSidebandTimeTolerance || fabs(deltaEndT) < fSidebandTimeTolerance)
+                           )
                         {
                             // then this track matches this track ref
                             mptrIt->InsertTrack(trackIt);
                             trackHasBeenAdded = true;
+                            if (!(fabs(deltaStartT) <= fSidebandTimeTolerance && fabs(deltaEndT) < fSidebandTimeTolerance))
+                            {
+                                mptrIt->fUnknownEventTopology = true;
+                            }
                         }
                         ++mptrIt; // only increment if we haven't removed one
                     }
@@ -271,6 +251,10 @@ namespace Katydid
 
                                 KTMultiTrackEventData& thisEvent = eventIt->first->Of< KTMultiTrackEventData >();
                                 thisEvent.AddTracks(trackIt->fTrackRefs);
+                                if (trackIt->fUnknownEventTopology)
+                                {
+                                    thisEvent.SetUnknownEventTopology(true);
+                                }
                                 thisEvent.ProcessTracks();
                                 eventIt->second.insert( trackIt->fMeanEndTimeInRunC );
                             }
@@ -315,6 +299,10 @@ namespace Katydid
                     event.SetAcquisitionID(trackIt->fAcquisitionID);
 
                     event.AddTracks(trackIt->fTrackRefs);
+                    if (trackIt->fUnknownEventTopology)
+                    {
+                        event.SetUnknownEventTopology(true);
+                    }
                     event.ProcessTracks();
                     new_event.second.insert( trackIt->fMeanEndTimeInRunC );
                     activeEvents.push_back(new_event);
@@ -366,7 +354,8 @@ namespace Katydid
             fSumStartTimeInRunC(0.),
             fMeanEndTimeInRunC(0.),
             fSumEndTimeInRunC(0.),
-            fAcquisitionID(0)
+            fAcquisitionID(0),
+            fUnknownEventTopology(false)
     {}
 
     bool KTMultiPeakEventBuilder::MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)
