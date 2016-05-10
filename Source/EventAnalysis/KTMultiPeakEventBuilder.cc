@@ -168,7 +168,8 @@ namespace Katydid
                     double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
 
                     // check to see if this track ref should no longer be active
-                    if (trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC > fSidebandTimeTolerance)
+                    //if (trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC > fSidebandTimeTolerance)
+                    if (deltaStartT > fSidebandTimeTolerance)
                     {
                         KTDEBUG(tclog, "this track ref should no longer be active");
                         // there's no way this track, or any following it in the set, will match in time
@@ -180,18 +181,18 @@ namespace Katydid
                     {
                         double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
                         // check if this track should be added to this track ref
-                        if (! trackHasBeenAdded && fabs(deltaStartT) <= fSidebandTimeTolerance && fabs(deltaEndT) < fSidebandTimeTolerance)
+                        if ( !trackHasBeenAdded &&
+                             fabs(deltaStartT) <= fSidebandTimeTolerance &&
+                             fabs(deltaEndT) < fSidebandTimeTolerance)
                         {
                             // then this track matches this track ref
                             mptrIt->InsertTrack(trackIt);
                             trackHasBeenAdded = true;
                         }
-
-
-                        ++mptrIt;
+                        ++mptrIt; // only increment if we haven't removed one
                     }
                 } // while loop over active track refs
-                if (! trackHasBeenAdded)
+                if (! trackHasBeenAdded) //track didn't match anything, create a new MPTrack
                 {
                     activeTrackRefs.push_back(MultiPeakTrackRef());
                     activeTrackRefs.rbegin()->InsertTrack(trackIt);
