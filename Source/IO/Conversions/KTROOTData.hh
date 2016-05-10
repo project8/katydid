@@ -32,6 +32,7 @@ namespace Katydid
             MEMBERVARIABLE(Bool_t, IsCut);
 
             MEMBERVARIABLE(Double_t, StartTimeInRunC);
+            MEMBERVARIABLE(Double_t, StartTimeInAcq);
             MEMBERVARIABLE(Double_t, EndTimeInRunC);
             MEMBERVARIABLE(Double_t, TimeLength);
             MEMBERVARIABLE(Double_t, StartFrequency);
@@ -78,6 +79,7 @@ namespace Katydid
         MEMBERVARIABLE(UInt_t, EventID);
 
         MEMBERVARIABLE(Double_t, StartTimeInRunC);
+        MEMBERVARIABLE(Double_t, StartTimeInAcq);
         MEMBERVARIABLE(Double_t, EndTimeInRunC);
         MEMBERVARIABLE(Double_t, TimeLength);
         MEMBERVARIABLE(Double_t, StartFrequency);
