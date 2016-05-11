@@ -197,7 +197,7 @@ namespace Katydid
         Int_t nTracks = (Int_t)data.GetNTracks();
         fTracks->Clear(); fTracks->Expand(nTracks);
         Int_t iTrack = 0;
-        for (KTMultiTrackEventData::TrackCIt trIt = data.GetTracksBegin(); trIt != data.GetTracksEnd(); ++trIt)
+        for (TrackSetCIt trIt = data.GetTracksBegin(); trIt != data.GetTracksEnd(); ++trIt)
         {
             TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(*trIt);
             ++iTrack;

@@ -258,11 +258,13 @@ namespace Katydid
                                 KTMultiTrackEventData& firstEvent = firstEventLoc->first->Of< KTMultiTrackEventData >();
                                 KTMultiTrackEventData& thisEvent = eventIt->first->Of< KTMultiTrackEventData >();
                                 thisEvent.SetUnknownEventTopology(true);
-                                for (unsigned iLine = 0; iLine < thisEvent.GetNTracks(); ++iLine)
+                                //for (unsigned iLine = 0; iLine < thisEvent.GetNTracks(); ++iLine)
+                                firstEvent.AddTracks(thisEvent.GetTracksSet());
+                                /*for (TrackSetCIt eventTrackIt=thisEvent.GetTracksBegin(); eventTrackIt != thisEvent.GetTracksEnd(); eventTrackIt++)
                                 {
-                                    firstEvent.AddTrack(thisEvent.GetTrack(iLine));
+                                    firstEvent.AddTracks(eventTrackIt);//thisEvent.GetTrack(iLine));
                                     KTERROR("don't know how to deal with EventSequenceID here!!!")
-                                }
+                                }*/
                                 firstEvent.ProcessTracks();
                                 for (TrackEndsType::const_iterator endpointIt=eventIt->second.begin(); endpointIt != eventIt->second.end(); ++endpointIt)
                                 {

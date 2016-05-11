@@ -23,9 +23,9 @@ namespace Katydid
     {
         public:
             //typedef std::map< unsigned, KTProcessedTrackData > Tracks;
-            typedef TrackSet Tracks;
-            typedef Tracks::iterator TrackIt;
-            typedef Tracks::const_iterator TrackCIt;
+            //typedef TrackSet Tracks;
+            //typedef Tracks::iterator TrackIt;
+            //typedef Tracks::const_iterator TrackCIt;
 
         public:
             KTMultiTrackEventData();
@@ -71,14 +71,16 @@ namespace Katydid
             unsigned GetNTracks() const;
 
             bool HasTrack(unsigned id) const;
-            const KTProcessedTrackData& GetTrack(unsigned id) const;
-            KTProcessedTrackData& GetTrack(unsigned id);
+            //const KTProcessedTrackData& GetTrack(unsigned id) const;
+            //KTProcessedTrackData& GetTrack(unsigned id);
 
             void AddTrack(const KTProcessedTrackData& track);
             /// Add a collection of tracks to the next EventSequenceID
             void AddTracks(TrackSetCItSet tracks);
+            void AddTracks(TrackSet tracks);
             /// Add a collection of tracks to the specified EventSequenceID
             void AddTracks(TrackSetCItSet tracks, ssize_t eventSequenceID);
+            void AddTracks(TrackSet tracks, ssize_t eventSequenceID);
 
             /// Evaluates all of the tracks to fill in information about the event and first track
             void ProcessTracks();
@@ -86,11 +88,13 @@ namespace Katydid
             /// Removes all track data, as well as collective time and frequency info
             void ClearTracks();
 
-            TrackCIt GetTracksBegin() const;
-            TrackIt GetTracksBegin();
+            TrackSetCIt GetTracksBegin() const;
+            TrackSetIt GetTracksBegin();
 
-            TrackCIt GetTracksEnd() const;
-            TrackIt GetTracksEnd();
+            TrackSetCIt GetTracksEnd() const;
+            TrackSetIt GetTracksEnd();
+
+            TrackSet GetTracksSet();
 
         private:
             //Tracks fTracks;
@@ -105,6 +109,7 @@ namespace Katydid
         return fTracks.size();
     }
 
+/*
     inline const KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id) const
     {
         TrackSetCIt toReturn = fTracks.begin();
@@ -121,25 +126,31 @@ namespace Katydid
         //return *toReturn;
         //return fTracks.at(id);
     }
+*/
 
-    inline KTMultiTrackEventData::TrackCIt KTMultiTrackEventData::GetTracksBegin() const
+    inline TrackSetCIt KTMultiTrackEventData::GetTracksBegin() const
     {
         return fTracks.begin();
     }
 
-    inline KTMultiTrackEventData::TrackIt KTMultiTrackEventData::GetTracksBegin()
+    inline TrackSetIt KTMultiTrackEventData::GetTracksBegin()
     {
         return fTracks.begin();
     }
 
-    inline KTMultiTrackEventData::TrackCIt KTMultiTrackEventData::GetTracksEnd() const
+    inline TrackSetCIt KTMultiTrackEventData::GetTracksEnd() const
     {
         return fTracks.end();
     }
 
-    inline KTMultiTrackEventData::TrackIt KTMultiTrackEventData::GetTracksEnd()
+    inline TrackSetIt KTMultiTrackEventData::GetTracksEnd()
     {
         return fTracks.end();
+    }
+
+    inline TrackSet KTMultiTrackEventData::GetTracksSet()
+    {
+        return fTracks;
     }
 
     struct MultiPeakTrackRef

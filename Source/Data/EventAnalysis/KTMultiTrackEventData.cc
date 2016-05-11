@@ -78,7 +78,7 @@ namespace Katydid
             fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
             fTracks()
     {
-        for (TrackCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
+        for (TrackSetCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
         {
             //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
             fTracks.insert(*trackIt);
@@ -119,7 +119,7 @@ namespace Katydid
         fFirstTrackIntercept = rhs.fFirstTrackIntercept;
         fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
 
-        for (TrackCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
+        for (TrackSetCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
             //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
             fTracks.insert(*trackIt);
@@ -142,6 +142,13 @@ namespace Katydid
         return;
     }
 
+    void KTMultiTrackEventData::AddTracks(TrackSet tracks)
+    {
+        AddTracks(tracks, fTotalEventSequences);
+        fTotalEventSequences++;
+        return;
+    }
+
     void KTMultiTrackEventData::AddTracks(TrackSetCItSet tracks, ssize_t eventSequenceID)
     {
         for ( TrackSetCItSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
@@ -153,11 +160,22 @@ namespace Katydid
         return;
     }
 
+    void KTMultiTrackEventData::AddTracks(TrackSet tracks, ssize_t eventSequenceID)
+    {
+        for ( TrackSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
+        {
+            KTProcessedTrackData aProcessedTrack = KTProcessedTrackData(*aTrack);
+            aProcessedTrack.SetEventSequenceID(eventSequenceID);
+            AddTrack(aProcessedTrack);
+        }
+        return;
+    }
+
     void KTMultiTrackEventData::ProcessTracks()
     {
         KTDEBUG(evlog, "Processing tracks");
 
-        TrackCIt trackIt = fTracks.begin();
+        TrackSetCIt trackIt = fTracks.begin();
 
         fStartTimeInAcq = trackIt->GetStartTimeInAcq();
         fStartTimeInRunC = trackIt->GetStartTimeInRunC();
