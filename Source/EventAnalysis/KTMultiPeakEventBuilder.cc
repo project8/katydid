@@ -205,32 +205,27 @@ namespace Katydid
         typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
         std::vector< ActiveEventType > activeEvents;
 
-        // loop over components
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
-        {
+        { // loop over components
             KTINFO(tclog, "Doing component: (" << iComponent + 1 << "/" << fCompTracks.size() << ")");
-            // if the component has no tracks, skip it
             if (fMPTracks[iComponent].empty())
-            {
+            { // if the component has no tracks, skip it
                 continue;
             }
             std::set< MultiPeakTrackRef, MTRComp >::iterator trackIt = fMPTracks[iComponent].begin();
 
-            // loop over new Multi-Peak Tracks
             int countMPTracks = 0;
             while (trackIt != fMPTracks[iComponent].end())
-            {
+            { // loop over new Multi-Peak Tracks
                 KTINFO(tclog, "placing MPTrack (" << ++countMPTracks << "/" << fMPTracks[iComponent].size() << ")");
                 int trackAssigned = -1; // keep track of which event the track when into
 
-                // loop over active events and add this track to one
                 for (std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin(); eventIt != activeEvents.end();)
-                {
+                { // loop over active events and add this track to one
                     KTDEBUG(tclog, "checking active event (" << eventIt - activeEvents.begin() + 1 << "/" << activeEvents.size() << ")");
                     bool incrementEventIt = true;
-                    // if the event's last end is earlier than this track's start, the event is done
                     if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(eventIt->second.rbegin()) )
-                    {
+                    { // if the event's last end is earlier than this track's start, the event is done
                         KTDEBUG(tclog, "event no longer active");
                         eventIt->first->Of< KTMultiTrackEventData >().ProcessTracks();
                         fCandidates.insert(eventIt->first);
@@ -238,15 +233,13 @@ namespace Katydid
                         incrementEventIt = false;
                         continue;
                     }
-                    // loop over track ends to test against
                     for (TrackEndsType::iterator endTimeIt=eventIt->second.begin(); endTimeIt != eventIt->second.end();)
-                    {
-                        // if this track head matches the tail of a track in this event, add it
+                    { // loop over track ends to test against
                         if ( trackIt->fMeanEndTimeInRunC - *endTimeIt < fJumpTimeTolerance )
-                        {
+                        { // if this track head matches the tail of a track in this event, add it
                             KTDEBUG(tclog, "track matched this active event");
-                            if (trackAssigned == -1) // If this track hasn't been added to any event, add to this one
-                            {
+                            if (trackAssigned == -1)
+                            { // If this track hasn't been added to any event, add to this one
                                 trackAssigned = eventIt - activeEvents.begin();
 
                                 KTMultiTrackEventData& thisEvent = eventIt->first->Of< KTMultiTrackEventData >();
@@ -258,8 +251,8 @@ namespace Katydid
                                 thisEvent.ProcessTracks();
                                 eventIt->second.insert( trackIt->fMeanEndTimeInRunC );
                             }
-                            else // if this track is already in an event, merge this event into that one (NOTE: this is weird)
-                            {
+                            else
+                            { // if this track is already in an event, merge this event into that one (NOTE: this is weird)
                                 std::vector< ActiveEventType >::iterator firstEventLoc = activeEvents.begin();
                                 std::advance( firstEventLoc, trackAssigned);
                                 KTMultiTrackEventData& firstEvent = firstEventLoc->first->Of< KTMultiTrackEventData >();
@@ -278,19 +271,17 @@ namespace Katydid
                                 eventIt = activeEvents.erase(eventIt);
                                 incrementEventIt = false;
                             }
-                            // this track already matched the event, don't keep checking
-                            break;
+                            break; // this track already matched the event, don't keep checking
                         }
                         ++endTimeIt;
                     } // for loop over end times
-                    // don't increment if we removed this active event from the vector
                     if (incrementEventIt)
-                    {
+                    { // don't increment if we removed this active event from the vector
                         ++eventIt;
                     }
                 } // for loop over active events
-                if (trackAssigned == -1) // if no event matched then create one
-                {
+                if (trackAssigned == -1)
+                { // if no event matched then create one
                     KTINFO(tclog, "track not matched, creating new event");
                     KTDataPtr data(new KTData());
                     ActiveEventType new_event(data, TrackEndsType());
@@ -306,7 +297,6 @@ namespace Katydid
                     event.ProcessTracks();
                     new_event.second.insert( trackIt->fMeanEndTimeInRunC );
                     activeEvents.push_back(new_event);
-                    //KTINFO(tclog, "track not matched, creating active event " << activeEvents.size());
                 }
                 else
                 {
@@ -339,7 +329,6 @@ namespace Katydid
 
        return true;
     }
-
 
     void KTMultiPeakEventBuilder::SetNComponents(unsigned nComps)
     {

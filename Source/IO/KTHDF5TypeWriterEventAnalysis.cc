@@ -142,7 +142,7 @@ namespace Katydid {
         PTData track;
         for (KTMultiTrackEventData::TrackIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
         {
-            KTProcessedTrackData& ptData = mteData.GetTrack(MTETrackIt->first);
+            const KTProcessedTrackData ptData = *MTETrackIt;//mteData.GetTrack(MTETrackIt->first);
             track.Component = ptData.GetComponent();
             track.TrackID = ptData.GetTrackID();
             track.EventID = mteData.GetEventID();

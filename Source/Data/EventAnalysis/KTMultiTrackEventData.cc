@@ -80,7 +80,8 @@ namespace Katydid
     {
         for (TrackCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
         {
-            fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            fTracks.insert(*trackIt);
         }
     }
 
@@ -120,7 +121,8 @@ namespace Katydid
 
         for (TrackCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
-            fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            fTracks.insert(*trackIt);
         }
 
         return *this;
@@ -128,7 +130,8 @@ namespace Katydid
 
     void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
     {
-        fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
+        //fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
+        fTracks.insert(track);
         return;
     }
 
@@ -156,67 +159,67 @@ namespace Katydid
 
         TrackCIt trackIt = fTracks.begin();
 
-        fStartTimeInAcq = trackIt->second.GetStartTimeInAcq();
-        fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
-        fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
-        fTimeLength = trackIt->second.GetTimeLength();
-        fStartFrequency = trackIt->second.GetStartFrequency();
-        fEndFrequency = trackIt->second.GetEndFrequency();
+        fStartTimeInAcq = trackIt->GetStartTimeInAcq();
+        fStartTimeInRunC = trackIt->GetStartTimeInRunC();
+        fEndTimeInRunC = trackIt->GetEndTimeInRunC();
+        fTimeLength = trackIt->GetTimeLength();
+        fStartFrequency = trackIt->GetStartFrequency();
+        fEndFrequency = trackIt->GetEndFrequency();
         fMinimumFrequency = std::min(fStartFrequency, fEndFrequency);
         fMaximumFrequency = std::max(fStartFrequency, fEndFrequency);
-        fFrequencyWidth = trackIt->second.GetFrequencyWidth();
+        fFrequencyWidth = trackIt->GetFrequencyWidth();
 
-        fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
-        fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
-        fTimeLengthSigma = trackIt->second.GetTimeLengthSigma();
-        fStartFrequencySigma = trackIt->second.GetStartFrequencySigma();
-        fEndFrequencySigma = trackIt->second.GetEndFrequencySigma();
-        fFrequencyWidthSigma = trackIt->second.GetFrequencyWidthSigma();
+        fStartTimeInRunCSigma = trackIt->GetStartTimeInRunCSigma();
+        fEndTimeInRunCSigma = trackIt->GetEndTimeInRunCSigma();
+        fTimeLengthSigma = trackIt->GetTimeLengthSigma();
+        fStartFrequencySigma = trackIt->GetStartFrequencySigma();
+        fEndFrequencySigma = trackIt->GetEndFrequencySigma();
+        fFrequencyWidthSigma = trackIt->GetFrequencyWidthSigma();
 
-        fFirstTrackID = trackIt->first;
-        fFirstTrackTimeLength = trackIt->second.GetTimeLength();
-        fFirstTrackFrequencyWidth = trackIt->second.GetFrequencyWidth();
-        fFirstTrackSlope = trackIt->second.GetSlope();
-        fFirstTrackIntercept = trackIt->second.GetIntercept();
-        fFirstTrackTotalPower = trackIt->second.GetTotalPower();
+        fFirstTrackID = trackIt->GetTrackID();
+        fFirstTrackTimeLength = trackIt->GetTimeLength();
+        fFirstTrackFrequencyWidth = trackIt->GetFrequencyWidth();
+        fFirstTrackSlope = trackIt->GetSlope();
+        fFirstTrackIntercept = trackIt->GetIntercept();
+        fFirstTrackTotalPower = trackIt->GetTotalPower();
 
         for (++trackIt; trackIt != fTracks.end(); ++trackIt)
         {
             KTDEBUG(evlog, "Track " << trackIt->first);
 
-            if (trackIt->second.GetStartTimeInRunC() < fStartTimeInRunC)
+            if (trackIt->GetStartTimeInRunC() < fStartTimeInRunC)
             {
-                fStartTimeInAcq = trackIt->second.GetStartTimeInAcq();
-                fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
-                fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
-                fStartFrequency = trackIt->second.GetStartFrequency();
-                fStartFrequencySigma = trackIt->second.GetStartFrequencySigma();
+                fStartTimeInAcq = trackIt->GetStartTimeInAcq();
+                fStartTimeInRunC = trackIt->GetStartTimeInRunC();
+                fStartTimeInRunCSigma = trackIt->GetStartTimeInRunCSigma();
+                fStartFrequency = trackIt->GetStartFrequency();
+                fStartFrequencySigma = trackIt->GetStartFrequencySigma();
                 KTDEBUG(evlog, "Start time (freq) is now " << fStartTimeInRunC << "(" << fStartFrequency << ")");
-                fFirstTrackID = trackIt->first;
-                fFirstTrackTimeLength = trackIt->second.GetTimeLength();
-                fFirstTrackFrequencyWidth = trackIt->second.GetFrequencyWidth();
-                fFirstTrackSlope = trackIt->second.GetSlope();
-                fFirstTrackIntercept = trackIt->second.GetIntercept();
-                fFirstTrackTotalPower = trackIt->second.GetTotalPower();
+                fFirstTrackID = trackIt->GetTrackID();
+                fFirstTrackTimeLength = trackIt->GetTimeLength();
+                fFirstTrackFrequencyWidth = trackIt->GetFrequencyWidth();
+                fFirstTrackSlope = trackIt->GetSlope();
+                fFirstTrackIntercept = trackIt->GetIntercept();
+                fFirstTrackTotalPower = trackIt->GetTotalPower();
             }
 
-            if (trackIt->second.GetEndTimeInRunC() > fEndTimeInRunC)
+            if (trackIt->GetEndTimeInRunC() > fEndTimeInRunC)
             {
-                fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
-                fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
-                fEndFrequency = trackIt->second.GetEndFrequency();
-                fEndFrequencySigma = trackIt->second.GetEndFrequencySigma();
+                fEndTimeInRunC = trackIt->GetEndTimeInRunC();
+                fEndTimeInRunCSigma = trackIt->GetEndTimeInRunCSigma();
+                fEndFrequency = trackIt->GetEndFrequency();
+                fEndFrequencySigma = trackIt->GetEndFrequencySigma();
                 KTDEBUG(evlog, "End time (freq) is now " << fEndTimeInRunC << "(" << fEndFrequency << ")");
             }
 
-            double minFreq = std::min(trackIt->second.GetStartFrequency(), trackIt->second.GetEndFrequency());
+            double minFreq = std::min(trackIt->GetStartFrequency(), trackIt->GetEndFrequency());
             if (minFreq < fMinimumFrequency)
             {
                 fMinimumFrequency = minFreq;
                 KTDEBUG(evlog, "Minimum frequency is now " << fMinimumFrequency);
             }
 
-            double maxFreq = std::max(trackIt->second.GetStartFrequency(), trackIt->second.GetEndFrequency());
+            double maxFreq = std::max(trackIt->GetStartFrequency(), trackIt->GetEndFrequency());
             if (maxFreq > fMaximumFrequency)
             {
                 fMaximumFrequency = maxFreq;

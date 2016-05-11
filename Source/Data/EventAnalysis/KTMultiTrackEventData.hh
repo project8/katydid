@@ -22,7 +22,8 @@ namespace Katydid
     class KTMultiTrackEventData : public KTExtensibleData< KTMultiTrackEventData >
     {
         public:
-            typedef std::map< unsigned, KTProcessedTrackData > Tracks;
+            //typedef std::map< unsigned, KTProcessedTrackData > Tracks;
+            typedef TrackSet Tracks;
             typedef Tracks::iterator TrackIt;
             typedef Tracks::const_iterator TrackCIt;
 
@@ -92,7 +93,8 @@ namespace Katydid
             TrackIt GetTracksEnd();
 
         private:
-            Tracks fTracks;
+            //Tracks fTracks;
+            TrackSet fTracks;
 
         public:
             static const std::string sName;
@@ -105,12 +107,19 @@ namespace Katydid
 
     inline const KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id) const
     {
-        return fTracks.at(id);
+        TrackSetCIt toReturn = fTracks.begin();
+        std::advance(toReturn, id);
+        return *toReturn;
     }
 
     inline KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id)
     {
-        return fTracks.at(id);
+        TrackSetIt toReturn = fTracks.begin();
+        std::advance(toReturn, id);
+        KTProcessedTrackData foo = KTProcessedTrackData(*toReturn);
+        return foo;
+        //return *toReturn;
+        //return fTracks.at(id);
     }
 
     inline KTMultiTrackEventData::TrackCIt KTMultiTrackEventData::GetTracksBegin() const

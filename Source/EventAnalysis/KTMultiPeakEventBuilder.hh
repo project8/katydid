@@ -28,7 +28,7 @@ namespace Nymph
 {
     class KTParamNode;
 }
-;
+//;
 
 namespace Katydid
 {

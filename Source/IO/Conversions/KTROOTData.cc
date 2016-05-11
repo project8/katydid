@@ -199,7 +199,7 @@ namespace Katydid
         Int_t iTrack = 0;
         for (KTMultiTrackEventData::TrackCIt trIt = data.GetTracksBegin(); trIt != data.GetTracksEnd(); ++trIt)
         {
-            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(trIt->second);
+            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(*trIt);
             ++iTrack;
         }
         return;

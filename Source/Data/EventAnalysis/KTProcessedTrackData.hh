@@ -65,6 +65,7 @@ namespace Katydid
     {
         bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs) const
         {
+            if (lhs.GetEventSequenceID() != rhs.GetEventSequenceID()) return lhs.GetEventSequenceID() < rhs.GetEventSequenceID();
             if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
             if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
             if (lhs.GetStartFrequency() != rhs.GetStartFrequency()) return lhs.GetStartFrequency() < rhs.GetStartFrequency();
@@ -78,6 +79,7 @@ namespace Katydid
     {
         bool operator() (const TrackSetCIt& lhs, const TrackSetCIt& rhs) const
         {
+            if (lhs->GetEventSequenceID() != rhs->GetEventSequenceID()) return lhs->GetEventSequenceID() < rhs->GetEventSequenceID();
             if (lhs->GetStartTimeInRunC() != rhs->GetStartTimeInRunC()) return lhs->GetStartTimeInRunC() < rhs->GetStartTimeInRunC();
             if (lhs->GetEndTimeInRunC() != rhs->GetEndTimeInRunC()) return lhs->GetEndTimeInRunC() < rhs->GetEndTimeInRunC();
             if (lhs->GetStartFrequency() != rhs->GetStartFrequency()) return lhs->GetStartFrequency() < rhs->GetStartFrequency();
