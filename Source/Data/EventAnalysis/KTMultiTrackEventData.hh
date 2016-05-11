@@ -96,7 +96,7 @@ namespace Katydid
 
         public:
             static const std::string sName;
-};
+    };
 
     inline unsigned KTMultiTrackEventData::KTMultiTrackEventData::GetNTracks() const
     {
@@ -133,6 +133,31 @@ namespace Katydid
         return fTracks.end();
     }
 
+    struct MultiPeakTrackRef
+    {
+        std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
+        // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
+        double fMeanStartTimeInRunC;
+        double fSumStartTimeInRunC;
+        double fMeanEndTimeInRunC;
+        double fSumEndTimeInRunC;
+        uint64_t fAcquisitionID;
+        bool fUnknownEventTopology;
+
+        MultiPeakTrackRef();
+        bool InsertTrack(const TrackSetCIt& trackRef);
+        void Clear();
+    };
+
+    struct MTRComp
+    {
+        bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+        {
+            if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
+            return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
+        }
+
+    };
 
 } /* namespace Katydid */
 #endif /* KTMULTITRACKDATA_HH_ */

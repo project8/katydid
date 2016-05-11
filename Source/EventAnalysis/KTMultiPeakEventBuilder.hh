@@ -16,7 +16,8 @@
 #include "KTSlot.hh"
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
-#include "KTProcessedTrackData.hh"
+#include "KTMultiTrackEventData.hh"
+//#include "KTProcessedTrackData.hh"
 
 #include <algorithm>
 #include <set>
@@ -32,37 +33,6 @@ namespace Nymph
 namespace Katydid
 {
     using namespace Nymph;
-/*
-    // Track distance
-    // Vector format for representing tracks: (tstart, fstart, tend, fend)
-    // Dimension t: for tstart_1 < tstart_2, Dt = max(0, tstart_2 - tend_1)
-    // Dimension f: Df = fstart_2 - fend_1
-    // Dist = sqrt(Dt^2 + Df^2)
-    template < typename VEC_T >
-    class TrackDistance
-    {
-        protected:
-            typedef VEC_T vector_type;
-
-            double GetDistance(const VEC_T v1, const VEC_T v2)
-            {
-                double deltaT, deltaF;
-                if (v1(0) < v2(0))
-                {
-                    deltaT = std::max(0., v2(0) - v1(2));
-                    deltaF = v2(1) - v1(3);
-                }
-                else
-                {
-                    deltaT = std::max(0., v1(0) - v2(2));
-                    deltaF = v1(1) - v2(3);
-                }
-                return sqrt(deltaT * deltaT + deltaF * deltaF);
-            };
-
-    };
-*/
-
     /*!
      @class KTMultiPeakEventBuilder
      @author N.S. Oblath
@@ -129,34 +99,7 @@ namespace Katydid
 
 
             std::vector< TrackSet > fCompTracks; // input tracks
-
-            struct MultiPeakTrackRef
-            {
-                std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
-                // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
-                double fMeanStartTimeInRunC;
-                double fSumStartTimeInRunC;
-                double fMeanEndTimeInRunC;
-                double fSumEndTimeInRunC;
-                uint64_t fAcquisitionID;
-                bool fUnknownEventTopology;
-
-                MultiPeakTrackRef();
-                bool InsertTrack(const TrackSetCIt& trackRef);
-                void Clear();
-            };
-
-            struct MTRComp
-            {
-                bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
-                {
-                    if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
-                    return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
-                }
-
-            };
-
-            std::vector< std::set< MultiPeakTrackRef, MTRComp > > fMPTracks;
+            std::vector< std::set< Katydid::MultiPeakTrackRef, MTRComp > > fMPTracks;
 
             std::set< KTDataPtr > fCandidates;
             unsigned fDataCount;

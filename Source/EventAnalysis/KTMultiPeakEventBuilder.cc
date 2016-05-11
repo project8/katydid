@@ -348,28 +348,4 @@ namespace Katydid
         return;
     }
 
-    KTMultiPeakEventBuilder::MultiPeakTrackRef::MultiPeakTrackRef() :
-            fTrackRefs(),
-            fMeanStartTimeInRunC(0.),
-            fSumStartTimeInRunC(0.),
-            fMeanEndTimeInRunC(0.),
-            fSumEndTimeInRunC(0.),
-            fAcquisitionID(0),
-            fUnknownEventTopology(false)
-    {}
-
-    bool KTMultiPeakEventBuilder::MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)
-    {
-        if (fTrackRefs.find(trackRef) != fTrackRefs.end())  return false;
-
-        fTrackRefs.insert(trackRef);
-        fSumStartTimeInRunC += trackRef->GetStartTimeInRunC();
-        fSumEndTimeInRunC += trackRef->GetEndTimeInRunC();
-        double currentSize = (double)fTrackRefs.size();
-        fMeanStartTimeInRunC = fSumStartTimeInRunC / currentSize;
-        fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
-        return true;
-    }
-
-
 } /* namespace Katydid */
