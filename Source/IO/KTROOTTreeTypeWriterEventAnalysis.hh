@@ -58,6 +58,7 @@ namespace Katydid
     {
             TGraph2D* fPoints;
             UInt_t fComponent;
+            UInt_t fAcquisitionID;
             UInt_t fCandidateID;
             //Double_t fTimeBinWidth;
             //Double_t fFreqBinWidth;

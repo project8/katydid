@@ -39,6 +39,7 @@ namespace Katydid
                 double fTimeInAcq;
                 bool fNoiseFlag;
                 uint64_t fSliceNumber;
+                //uint64_t fAcquisitionID;
             };
 
             typedef KTPointCloud< Point >::SetOfPoints SetOfPoints;
@@ -51,6 +52,7 @@ namespace Katydid
             };
 
             static const unsigned fNDimensions;
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
 
         private:
             struct PerComponentData

@@ -115,6 +115,7 @@ namespace Katydid
         {
             fTreeData.SetNComponents(nComponents);
         }
+        fTreeData.SetAcquisitionID(slHeader.GetAcquisitionID());
 
         KTKDTreeData::Point newPoint;
         newPoint.fSliceNumber = slHeader.GetSliceNumber();
@@ -211,7 +212,7 @@ namespace Katydid
 
         // LdV 2015-01-14 - Commented the line below
         //                - fHaveNewData has to remain unchanged until ClearTree; it shouldn't be changed here
-        //                - This probably wasn't noticed before because we weren't using multi-record files with the digitizer data  
+        //                - This probably wasn't noticed before because we weren't using multi-record files with the digitizer data
         //fHaveNewData = false;
         return true;
     }

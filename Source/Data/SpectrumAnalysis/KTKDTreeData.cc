@@ -23,7 +23,8 @@ namespace Katydid
             fLastSlice(0),
             fXScaling(1.),
             fYScaling(1.),
-            fComponentData(1)
+            fComponentData(1),
+            fAcquisitionID(0)
     {
     }
 
@@ -102,4 +103,3 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-

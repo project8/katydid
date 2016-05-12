@@ -14,6 +14,7 @@
 #include "KTProcessedTrackData.hh"
 
 #include <map>
+#include <set>
 
 namespace Katydid
 {
@@ -21,9 +22,10 @@ namespace Katydid
     class KTMultiTrackEventData : public KTExtensibleData< KTMultiTrackEventData >
     {
         public:
-            typedef std::map< unsigned, KTProcessedTrackData > Tracks;
-            typedef Tracks::iterator TrackIt;
-            typedef Tracks::const_iterator TrackCIt;
+            //typedef std::map< unsigned, KTProcessedTrackData > Tracks;
+            //typedef TrackSet Tracks;
+            //typedef Tracks::iterator TrackIt;
+            //typedef Tracks::const_iterator TrackCIt;
 
         public:
             KTMultiTrackEventData();
@@ -33,7 +35,9 @@ namespace Katydid
             KTMultiTrackEventData& operator=(const KTMultiTrackEventData& rhs);
 
             MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, EventID);
+            MEMBERVARIABLE(unsigned, TotalEventSequences);
 
             // this group of member variables is set by ProcessTracks()
             MEMBERVARIABLE(double, StartTimeInAcq);
@@ -67,64 +71,113 @@ namespace Katydid
             unsigned GetNTracks() const;
 
             bool HasTrack(unsigned id) const;
-            const KTProcessedTrackData& GetTrack(unsigned id) const;
-            KTProcessedTrackData& GetTrack(unsigned id);
+            //const KTProcessedTrackData& GetTrack(unsigned id) const;
+            //KTProcessedTrackData& GetTrack(unsigned id);
 
             void AddTrack(const KTProcessedTrackData& track);
+            /// Add a collection of tracks to the next EventSequenceID
+            void AddTracks(TrackSetCItSet tracks);
+            void AddTracks(TrackSet tracks);
+            /// Add a collection of tracks to the specified EventSequenceID
+            void AddTracks(TrackSetCItSet tracks, ssize_t eventSequenceID);
+            void AddTracks(TrackSet tracks, ssize_t eventSequenceID);
+
             /// Evaluates all of the tracks to fill in information about the event and first track
             void ProcessTracks();
 
             /// Removes all track data, as well as collective time and frequency info
             void ClearTracks();
 
-            TrackCIt GetTracksBegin() const;
-            TrackIt GetTracksBegin();
+            TrackSetCIt GetTracksBegin() const;
+            TrackSetIt GetTracksBegin();
 
-            TrackCIt GetTracksEnd() const;
-            TrackIt GetTracksEnd();
+            TrackSetCIt GetTracksEnd() const;
+            TrackSetIt GetTracksEnd();
+
+            TrackSet GetTracksSet();
 
         private:
-            Tracks fTracks;
+            //Tracks fTracks;
+            TrackSet fTracks;
 
         public:
             static const std::string sName;
-};
+    };
 
     inline unsigned KTMultiTrackEventData::KTMultiTrackEventData::GetNTracks() const
     {
         return fTracks.size();
     }
 
+/*
     inline const KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id) const
     {
-        return fTracks.at(id);
+        TrackSetCIt toReturn = fTracks.begin();
+        std::advance(toReturn, id);
+        return *toReturn;
     }
 
     inline KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id)
     {
-        return fTracks.at(id);
+        TrackSetIt toReturn = fTracks.begin();
+        std::advance(toReturn, id);
+        KTProcessedTrackData foo = KTProcessedTrackData(*toReturn);
+        return foo;
+        //return *toReturn;
+        //return fTracks.at(id);
     }
+*/
 
-    inline KTMultiTrackEventData::TrackCIt KTMultiTrackEventData::GetTracksBegin() const
+    inline TrackSetCIt KTMultiTrackEventData::GetTracksBegin() const
     {
         return fTracks.begin();
     }
 
-    inline KTMultiTrackEventData::TrackIt KTMultiTrackEventData::GetTracksBegin()
+    inline TrackSetIt KTMultiTrackEventData::GetTracksBegin()
     {
         return fTracks.begin();
     }
 
-    inline KTMultiTrackEventData::TrackCIt KTMultiTrackEventData::GetTracksEnd() const
+    inline TrackSetCIt KTMultiTrackEventData::GetTracksEnd() const
     {
         return fTracks.end();
     }
 
-    inline KTMultiTrackEventData::TrackIt KTMultiTrackEventData::GetTracksEnd()
+    inline TrackSetIt KTMultiTrackEventData::GetTracksEnd()
     {
         return fTracks.end();
     }
 
+    inline TrackSet KTMultiTrackEventData::GetTracksSet()
+    {
+        return fTracks;
+    }
+
+    struct MultiPeakTrackRef
+    {
+        std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
+        // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
+        double fMeanStartTimeInRunC;
+        double fSumStartTimeInRunC;
+        double fMeanEndTimeInRunC;
+        double fSumEndTimeInRunC;
+        uint64_t fAcquisitionID;
+        bool fUnknownEventTopology;
+
+        MultiPeakTrackRef();
+        bool InsertTrack(const TrackSetCIt& trackRef);
+        void Clear();
+    };
+
+    struct MTRComp
+    {
+        bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+        {
+            if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
+            return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
+        }
+
+    };
 
 } /* namespace Katydid */
 #endif /* KTMULTITRACKDATA_HH_ */
