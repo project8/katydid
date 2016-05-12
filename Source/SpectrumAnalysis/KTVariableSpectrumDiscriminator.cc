@@ -227,6 +227,10 @@ namespace Katydid
         double XbinWidth = data.GetDeltaT();
         double YbinWidth = data.GetSpectra().begin()->second->GetFrequencyBinWidth();
 
+        // X and Y of first bin
+        double Xmin = data.GetStartTime();
+        double Ymin = data.GetSpectra().begin()->second->GetRangeMin();
+
         KTDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
 
         unsigned nSpectra = data.GetSpectra().size();   // Number of time slices in the spectrogram collection
@@ -252,7 +256,7 @@ namespace Katydid
             // Iterate through the 1D points and add them to the 2D points
             for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); it != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++it )
             {
-                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + data.GetStartTime(), YbinWidth * ((double)it->first+0.5), it->second.fOrdinate, it->second.fThreshold ), 0 );
+                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + Xmin, YbinWidth * ((double)it->first+0.5) + Ymin, it->second.fOrdinate, it->second.fThreshold ), 0 );
             }
 
             sliceNumber++;

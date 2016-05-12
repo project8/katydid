@@ -254,7 +254,7 @@ int main()
         {
         	for( int j = 0; j < it->second->GetNFrequencyBins(); j++)
         	{
-        		plot->Fill( it->first, j * it->second->GetFrequencyBinWidth() + spec.GetMinFrequency(), (*it->second)(j) );
+        		plot->Fill( it->first, j * it->second->GetFrequencyBinWidth() + result[i].GetSpectra().begin()->second->GetRangeMin(), (*it->second)(j) );
             }
         }
 

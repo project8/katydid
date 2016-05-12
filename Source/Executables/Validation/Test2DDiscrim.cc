@@ -193,7 +193,6 @@ int main()
 	KTPSCollectionData* psColl;
 	psColl = spec.fWaterfallSets[0].begin()->second;
   	
-  	KTINFO(testlog, "Retrieved spectrogram. Delta T = " << spec.fWaterfallSets[0].begin()->second->GetDeltaT());
   	KTINFO(testlog, "Retrieved spectrogram. Delta T = " << psColl->GetDeltaT());
 
   	// Now we create and configure the discriminator
@@ -221,7 +220,7 @@ int main()
 	for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = result.GetSetOfPoints(0).begin(); it != result.GetSetOfPoints(0).end(); ++it )
   	{
   		xx.push_back( it->second.fAbscissa );
-  		yy.push_back( it->second.fOrdinate + spec.GetMinFrequency() );
+  		yy.push_back( it->second.fOrdinate );
   		n++;
   	}
 
