@@ -167,9 +167,11 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        // This function creates a power spectrum that runs from DC to the largest absolute frequency.
-        // Negative-frequency bins are added to positive-frequency bins.
+        // This function creates a power spectrum that runs from the smallest to the largest absolute frequency.
         // It can handle frequency ranges that do or don't cross DC, and that are symmetric or asymmetric.
+        // If the frequency range does not cross DC, the power spectrum range will not either.
+        // If the frequency range crosses DC, the power spectrum range will run from DC to the maximum absolute frequency
+        // In this case negative-frequency bins are added to positive-frequency bins.
 
         double maxFreq = std::max(fabs(GetRangeMin()), fabs(GetRangeMax()));
         double minFreq = -0.5 * GetBinWidth();
@@ -180,16 +182,16 @@ namespace Katydid
             nBins = size();
         }
 
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, minFreq, maxFreq);
         for (unsigned iBin = 0; iBin < nBins; ++iBin) (*newPS)(iBin) = 0.;
 
         int dcBin = FindBin(0.);
         // default case: dcBin >= 0 && dcBin < size()
-        unsigned firstPosFreqBin = dcBin;
-        unsigned lastPosFreqBin = size();
-        unsigned firstNegFreqBin = 0;
-        unsigned lastNegFreqBin = dcBin;
-        if (dcBin >= size())
+        int firstPosFreqBin = dcBin;
+        int lastPosFreqBin = size();
+        int firstNegFreqBin = 0;
+        int lastNegFreqBin = dcBin;
+        if (dcBin >= (int)size())
         {
             firstPosFreqBin = size(); // lastPosFreqBin = size();
             lastNegFreqBin = size(); // firstNEgFreqBin = 0
