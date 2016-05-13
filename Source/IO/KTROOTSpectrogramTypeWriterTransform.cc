@@ -110,7 +110,6 @@ namespace Katydid
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
-        //fWriter->RegisterSlot("write-file", this, &KTROOTSpectrogramTypeWriterTransform::WriteFile);
         return;
     }
 
