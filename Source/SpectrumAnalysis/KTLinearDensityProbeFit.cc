@@ -9,6 +9,7 @@
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
+#include "KTLogger.hh"
 
 #include "KTParam.hh"
 
@@ -95,16 +96,16 @@ namespace Katydid
 
     double Gaus_Eval( double arg, double sigma )
     {
-        return exp( pow(arg/sigma, 2)/2 );
+        return exp( -1*pow(arg/sigma, 2)/2 );
     }
 
-    double Significance( vector<double> x, vector<uint64_t> omit, uint64_t include, std::string metric )
+    double Significance( vector<double> x, vector<int> omit, int include, std::string metric )
     {
         double noiseAmp = 0;
         double noiseDev = 0;
 
-        uint64_t s = x.size();
-        for( uint64_t i = 0; i < s; i++ )
+        int s = x.size();
+        for( int i = 0; i < s; i++ )
         {
             if( find( omit.begin(), omit.end(), i ) == omit.end() )
             {
@@ -113,7 +114,6 @@ namespace Katydid
             }
         }
         noiseDev = sqrt( noiseDev - pow( noiseAmp, 2 ) );
-
         if( metric == "Sigma" )
             return (x[include] - noiseAmp) / noiseDev;
         else if( metric == "SNR" )
@@ -135,7 +135,7 @@ namespace Katydid
             {
                 error -= Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, width );
             }
-
+            
             if( error < bestError || bestError == 0 )
             {
                 bestError = error;
@@ -152,7 +152,6 @@ namespace Katydid
     bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
     {
         KTLinearFitResult& newData = data.Of< KTLinearFitResult >();
-        newData.SetSlope( data.GetSlope() );
 /*
         if (fCalculateMinBin)
         {
@@ -165,7 +164,9 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 */
-        newData.SetNComponents(2);
+        newData.SetNComponents( 2 );
+        newData.SetSlope( data.GetSlope(), 0 );
+        newData.SetSlope( data.GetSlope(), 1 );
         PerformTest( pts, newData, fProbeWidthBig, fStepSizeBig, 0 );
         PerformTest( pts, newData, fProbeWidthSmall, fStepSizeSmall, 1 );
 
@@ -177,6 +178,7 @@ namespace Katydid
         double alpha = fMinFrequency;
         double bestAlpha = 0, bestError = 0, error = 0;
         
+        KTINFO(sdlog, "Slope = " << newData.GetSlope( component ));
         bestAlpha = findIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
 
@@ -194,111 +196,123 @@ namespace Katydid
         newData.SetIntercept_deviation( alphaVar, component );
 
         // Next we begin the fine sweep of alpha
-        alpha = bestAlpha - 2 * fProbeWidth;
-        double smallStep = 1e3, smallWidth = 1e4;
+        double alphaBound_lower;
+        double alphaBound_upper;
 
-        // We will be interested in local minima for setting a threshold of points to keep
-        // These vectors will hold the locations and values of all local minima
-        // found during the fine sweep
-
-        vector<double> localMins;
-        vector<double> localMinValues;
-
-        // We expect two largely pronounced minima from the sideband boundaries
-        uint64_t bestLocalMin = -1, nextBestLocalMin = -1;
-        uint64_t nLocalMins = 0;
-
-        // Temp variables used for identifying local minima
-        double error_x1 = 0, error_x2 = 0;
-
-        while( alpha <= bestAlpha + 2 * fProbeWidth )
+        if( component == 1 )    // Signal
         {
-            // Calculate the associated error
-            error = 0;
-            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
-            {
-                error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alpha, smallWidth );
-            }
+            alphaBound_lower = bestAlpha - 2 * fProbeWidth;
+            alphaBound_upper = bestAlpha + 2 * fProbeWidth;
+        }
+        else                    // Sideband
+        {
+            alpha = bestAlpha - 2 * fProbeWidth;
+            double smallStep = 1e3, smallWidth = 1e4;
 
-            // A local minima is defined simply as a point x_n where
-            // x_n < x_n-1 and x_n < x_n+1
-            if( error > error_x1 && error_x2 > error_x1 && error_x1 != 0 && error_x2 != 0 )
-            {
-                // Local minimum found for the previous point
-                localMins.push_back( alpha - smallStep );
-                localMinValues.push_back( error_x1 );
+            // We will be interested in local minima for setting a threshold of points to keep
+            // These vectors will hold the locations and values of all local minima
+            // found during the fine sweep
 
-                // If the local minimum is the best so far
-                if( bestLocalMin == -1 || error < localMinValues[bestLocalMin] )
+            vector<double> localMins;
+            vector<double> localMinValues;
+
+            // We expect two largely pronounced minima from the sideband boundaries
+            int bestLocalMin = -1, nextBestLocalMin = -1;
+            int nLocalMins = 0;
+
+            // Temp variables used for identifying local minima
+            double error_x1 = 0, error_x2 = 0;
+
+            KTDEBUG(sdlog, "Coarse sweep best fit intercept = " << bestAlpha);
+            while( alpha <= bestAlpha + 2 * fProbeWidth )
+            {
+                // Calculate the associated error
+                error = 0;
+                for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
                 {
-                    nextBestLocalMin = bestLocalMin;
-
-                    // nLocalMins has not yet been incremented
-                    // This accurately corresponds to the vector index
-                    bestLocalMin = nLocalMins;
+                    error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alpha, smallWidth );
                 }
-                else if( nextBestLocalMin == -1 || error < localMinValues[nextBestLocalMin] )
-                    nextBestLocalMin = nLocalMins;
+                
+                // A local minima is defined simply as a point x_n where
+                // x_n < x_n-1 and x_n < x_n+1
+                if( error > error_x1 && error_x2 > error_x1 && error_x1 != 0 && error_x2 != 0 )
+                {
+                    // Local minimum found for the previous point
+                    localMins.push_back( alpha - smallStep );
+                    localMinValues.push_back( error_x1 );
 
-                // Increment nLocalMins
-                nLocalMins++;
-            }
+                    // If the local minimum is the best so far
+                    if( bestLocalMin == -1 || error < localMinValues[bestLocalMin] )
+                    {
+                        nextBestLocalMin = bestLocalMin;
 
-            // Cleanup
-            alpha += smallStep;
-            error_x2 = error_x1;
-            error_x1 = error;
+                        // nLocalMins has not yet been incremented
+                        // This accurately corresponds to the vector index
+                        bestLocalMin = nLocalMins;
+                    }
+                    else if( nextBestLocalMin == -1 || error < localMinValues[nextBestLocalMin] )
+                        nextBestLocalMin = nLocalMins;
 
-        } // End fine sweep of alpha
+                    // Increment nLocalMins
+                    nLocalMins++;
+                }
 
-        vector<uint64_t> candidates;
-        candidates.push_back( bestLocalMin );
-        candidates.push_back( nextBestLocalMin );
+                // Cleanup
+                alpha += smallStep;
+                error_x2 = error_x1;
+                error_x1 = error;
 
-        newData.SetFineProbe_sigma_1( Significance( localMinValues, candidates, bestLocalMin, "Sigma" ), component );
-        newData.SetFineProbe_sigma_2( Significance( localMinValues, candidates, nextBestLocalMin, "Sigma" ), component );
-        newData.SetFineProbe_SNR_1( Significance( localMinValues, candidates, bestLocalMin, "SNR" ), component );
-        newData.SetFineProbe_SNR_2( Significance( localMinValues, candidates, nextBestLocalMin, "SNR" ), component );
+            } // End fine sweep of alpha
 
-        double alphaBound_lower = localMins[std::min( bestLocalMin, nextBestLocalMin )];
-        double alphaBound_upper = localMins[std::max( bestLocalMin, nextBestLocalMin )];
+            vector<int> candidates;
+            candidates.push_back( bestLocalMin );
+            candidates.push_back( nextBestLocalMin );
 
-        // We will push the lower bound down from the left-most of the two minima
-        // until its error exceeds the threshold
+            newData.SetFineProbe_sigma_1( Significance( localMinValues, candidates, bestLocalMin, "Sigma" ), component );
+            newData.SetFineProbe_sigma_2( Significance( localMinValues, candidates, nextBestLocalMin, "Sigma" ), component );
+            newData.SetFineProbe_SNR_1( Significance( localMinValues, candidates, bestLocalMin, "SNR" ), component );
+            newData.SetFineProbe_SNR_2( Significance( localMinValues, candidates, nextBestLocalMin, "SNR" ), component );
 
-        double threshold = 0;
-        for( int i = std::min( bestLocalMin, nextBestLocalMin ) + 1; i < std::max( bestLocalMin, nextBestLocalMin ); i++ )
-            if( localMinValues[i] < threshold || threshold == 0 )
-                threshold = localMinValues[i];
+            alphaBound_lower = localMins[std::min( bestLocalMin, nextBestLocalMin )];
+            alphaBound_upper = localMins[std::max( bestLocalMin, nextBestLocalMin )];
 
-        error = 0;
-        while( error < threshold )
-        {
-            alphaBound_lower -= smallStep;
+            // We will push the lower bound down from the left-most of the two minima
+            // until its error exceeds the threshold
+            double threshold = 0;
+            for( int i = std::min( bestLocalMin, nextBestLocalMin ) + 1; i < std::max( bestLocalMin, nextBestLocalMin ); i++ )
+                if( localMinValues[i] < threshold || threshold == 0 )
+                    threshold = localMinValues[i];
             error = 0;
-            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+            while( error < threshold )
             {
-                error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope(component) * it->second.fAbscissa - alphaBound_lower, smallWidth );
+                alphaBound_lower -= smallStep;
+                error = 0;
+                for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+                {
+                    error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope(component) * it->second.fAbscissa - alphaBound_lower, smallWidth );
+                }
+            }
+            
+            // And the same for the upper bound
+            error = 0;
+            while( error < threshold )
+            {
+                alphaBound_upper += smallStep;
+                error = 0;
+                for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+                {
+                    error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alphaBound_upper, smallWidth );
+                }
             }
         }
 
-        // And the same for the upper bound
-        error = 0;
-        while( error < threshold )
-        {
-            alphaBound_upper += smallStep;
-            error = 0;
-            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
-            {
-                error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alphaBound_upper, smallWidth );
-            }
-        }
+        KTDEBUG(sdlog, "Fine sweep intercept bounds: " << alphaBound_lower << " - " << alphaBound_upper);
 
         // Final cut
         // Keep only points for which y - q*x falls between the alpha bounds
 
         vector<double> finalCutX, finalCutY;                                                                        
-        uint64_t nFinal = 0;
+        int nFinal = 0;
 
         // Loop through the outliers
         for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
@@ -311,14 +325,16 @@ namespace Katydid
                 nFinal++;
             }
         }
+        KTDEBUG(sdlog, "Performed final cut. Passed " << nFinal << " points");
 
         newData.SetFit_width( alphaBound_upper - alphaBound_lower, component );
         newData.SetNPoints( nFinal, component );
 
+        // Calculate best-fit slope and intercept
         double eXY = 0, eX = 0, eY = 0, eX2 = 0;
-        uint64_t s = finalCutX.size();
+        int s = finalCutX.size();
 
-        for( uint64_t i = 0; i < s; i++ )
+        for( int i = 0; i < s; i++ )
         {
             eXY += finalCutX[i] * finalCutY[i] / s;
             eX += finalCutX[i] / s;
