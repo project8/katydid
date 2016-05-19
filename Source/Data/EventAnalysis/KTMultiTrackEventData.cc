@@ -203,7 +203,7 @@ namespace Katydid
 
         for (++trackIt; trackIt != fTracks.end(); ++trackIt)
         {
-            KTDEBUG(evlog, "Track " << trackIt->first);
+            KTDEBUG(evlog, "Track " << trackIt->GetTrackID());
 
             if (trackIt->GetStartTimeInRunC() < fStartTimeInRunC)
             {
