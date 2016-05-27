@@ -209,6 +209,7 @@ namespace Katydid
 
                 KTMultiTrackEventData& eventData = data->Of< KTMultiTrackEventData >();
                 eventData.SetComponent(iComponent);
+                eventData.SetAcquisitionID(fCompTracks[0][0].GetAcquisitionID());
                 eventData.SetEventID(fDataCount);
 
                 for (KTDBScan< DistanceMatrix >::Cluster::const_iterator pointIdIt = clustIt->begin(); pointIdIt != clustIt->end(); ++pointIdIt)

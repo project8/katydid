@@ -1,4 +1,4 @@
-/* 
+/*
  * KTHDF5TypeWriterEventAnalysis.cc
  *
  *  Created on: 9/13/2014
@@ -140,32 +140,31 @@ namespace Katydid {
         // Write the tracks that make up this event
         KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         PTData track;
-        for (KTMultiTrackEventData::TrackIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
+        for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
         {
-            KTProcessedTrackData& ptData = mteData.GetTrack(MTETrackIt->first);
-            track.Component = ptData.GetComponent();
-            track.TrackID = ptData.GetTrackID();
-            track.EventID = mteData.GetEventID();
-            track.IsCut = ptData.GetIsCut();
-            track.StartTimeInAcq = ptData.GetStartTimeInAcq();
-            track.StartTimeInRunC = ptData.GetStartTimeInRunC();
-            track.EndTimeInRunC = ptData.GetEndTimeInRunC();
-            track.TimeLength = ptData.GetTimeLength();
-            track.StartFrequency = ptData.GetStartFrequency();
-            track.EndFrequency = ptData.GetEndFrequency();
-            track.FrequencyWidth = ptData.GetFrequencyWidth();
-            track.Slope = ptData.GetSlope();
-            track.Intercept = ptData.GetIntercept();
-            track.TotalPower = ptData.GetTotalPower();
-            track.StartTimeInRunCSigma = ptData.GetStartTimeInRunCSigma();
-            track.EndTimeInRunCSigma = ptData.GetEndTimeInRunCSigma();
-            track.TimeLengthSigma = ptData.GetTimeLengthSigma();
-            track.StartFrequencySigma = ptData.GetStartFrequencySigma();
-            track.EndFrequencySigma = ptData.GetEndFrequencySigma();
-            track.FrequencyWidthSigma = ptData.GetFrequencyWidthSigma();
-            track.SlopeSigma = ptData.GetSlopeSigma();
-            track.InterceptSigma = ptData.GetInterceptSigma();
-            track.TotalPowerSigma = ptData.GetTotalPowerSigma();
+            track.Component = MTETrackIt->GetComponent();
+            track.TrackID = MTETrackIt->GetTrackID();
+            track.EventID = MTETrackIt->GetEventID();
+            track.IsCut = MTETrackIt->GetIsCut();
+            track.StartTimeInAcq = MTETrackIt->GetStartTimeInAcq();
+            track.StartTimeInRunC = MTETrackIt->GetStartTimeInRunC();
+            track.EndTimeInRunC = MTETrackIt->GetEndTimeInRunC();
+            track.TimeLength = MTETrackIt->GetTimeLength();
+            track.StartFrequency = MTETrackIt->GetStartFrequency();
+            track.EndFrequency = MTETrackIt->GetEndFrequency();
+            track.FrequencyWidth = MTETrackIt->GetFrequencyWidth();
+            track.Slope = MTETrackIt->GetSlope();
+            track.Intercept = MTETrackIt->GetIntercept();
+            track.TotalPower = MTETrackIt->GetTotalPower();
+            track.StartTimeInRunCSigma = MTETrackIt->GetStartTimeInRunCSigma();
+            track.EndTimeInRunCSigma = MTETrackIt->GetEndTimeInRunCSigma();
+            track.TimeLengthSigma = MTETrackIt->GetTimeLengthSigma();
+            track.StartFrequencySigma = MTETrackIt->GetStartFrequencySigma();
+            track.EndFrequencySigma = MTETrackIt->GetEndFrequencySigma();
+            track.FrequencyWidthSigma = MTETrackIt->GetFrequencyWidthSigma();
+            track.SlopeSigma = MTETrackIt->GetSlopeSigma();
+            track.InterceptSigma = MTETrackIt->GetInterceptSigma();
+            track.TotalPowerSigma = MTETrackIt->GetTotalPowerSigma();
             (this->fMTETracksDataBuffer).push_back(track);
             KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }

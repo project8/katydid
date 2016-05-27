@@ -17,8 +17,6 @@
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
-#include "thorax.hh"
-
 #include <algorithm> // for max
 #include <cstdio> // for sprintf
 #include <sstream>

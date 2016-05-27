@@ -10,6 +10,8 @@
 
 #include "KTROOTSpectrogramWriter.hh"
 
+#include "TOrdCollection.h"
+
 namespace Katydid
 {
     using namespace Nymph;
@@ -34,15 +36,22 @@ namespace Katydid
             void AddPSDData(KTDataPtr data);
             void OutputPSDData();
 
+            void TakeLine(KTDataPtr data);
+
+
         private:
             std::vector< SpectrogramData > fFSPolarSpectrograms;
             std::vector< SpectrogramData > fFSFFTWSpectrograms;
             std::vector< SpectrogramData > fPowerSpectrograms;
             std::vector< SpectrogramData > fPSDSpectrograms;
+            TOrdCollection *fLineCollection;
+
 
         public:
             void OutputSpectrograms();
+            void OutputLines();
             void ClearSpectrograms();
+            void ClearLines();
 
         private:
             void OutputASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);

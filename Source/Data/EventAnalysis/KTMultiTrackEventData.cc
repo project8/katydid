@@ -21,7 +21,9 @@ namespace Katydid
     KTMultiTrackEventData::KTMultiTrackEventData() :
             KTExtensibleData< KTMultiTrackEventData >(),
             fComponent(0),
+            fAcquisitionID(0.),
             fEventID(0),
+            fTotalEventSequences(0),
             fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
@@ -43,6 +45,7 @@ namespace Katydid
             fFirstTrackSlope(0.),
             fFirstTrackIntercept(0.),
             fFirstTrackTotalPower(0.),
+            fUnknownEventTopology(false),
             fTracks()
     {
     }
@@ -51,6 +54,7 @@ namespace Katydid
             KTExtensibleData< KTMultiTrackEventData >(orig),
             fComponent(orig.fComponent),
             fEventID(orig.fEventID),
+            fTotalEventSequences(orig.fTotalEventSequences),
             fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
@@ -74,9 +78,10 @@ namespace Katydid
             fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
             fTracks()
     {
-        for (TrackCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
+        for (TrackSetCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
         {
-            fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            fTracks.insert(*trackIt);
         }
     }
 
@@ -114,9 +119,10 @@ namespace Katydid
         fFirstTrackIntercept = rhs.fFirstTrackIntercept;
         fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
 
-        for (TrackCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
+        for (TrackSetCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
-            fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
+            fTracks.insert(*trackIt);
         }
 
         return *this;
@@ -124,8 +130,44 @@ namespace Katydid
 
     void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
     {
-        fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
+        //fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
+        fTracks.insert(track);
+        return;
+    }
 
+    void KTMultiTrackEventData::AddTracks(TrackSetCItSet tracks)
+    {
+        AddTracks(tracks, fTotalEventSequences);
+        fTotalEventSequences++;
+        return;
+    }
+
+    void KTMultiTrackEventData::AddTracks(TrackSet tracks)
+    {
+        AddTracks(tracks, fTotalEventSequences);
+        fTotalEventSequences++;
+        return;
+    }
+
+    void KTMultiTrackEventData::AddTracks(TrackSetCItSet tracks, ssize_t eventSequenceID)
+    {
+        for ( TrackSetCItSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
+        {
+            KTProcessedTrackData aProcessedTrack = KTProcessedTrackData(**aTrack);
+            aProcessedTrack.SetEventSequenceID(eventSequenceID);
+            AddTrack(aProcessedTrack);
+        }
+        return;
+    }
+
+    void KTMultiTrackEventData::AddTracks(TrackSet tracks, ssize_t eventSequenceID)
+    {
+        for ( TrackSet::iterator aTrack=tracks.begin(); aTrack != tracks.end(); ++aTrack )
+        {
+            KTProcessedTrackData aProcessedTrack = KTProcessedTrackData(*aTrack);
+            aProcessedTrack.SetEventSequenceID(eventSequenceID);
+            AddTrack(aProcessedTrack);
+        }
         return;
     }
 
@@ -133,69 +175,69 @@ namespace Katydid
     {
         KTDEBUG(evlog, "Processing tracks");
 
-        TrackCIt trackIt = fTracks.begin();
+        TrackSetCIt trackIt = fTracks.begin();
 
-        fStartTimeInAcq = trackIt->second.GetStartTimeInAcq();
-        fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
-        fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
-        fTimeLength = trackIt->second.GetTimeLength();
-        fStartFrequency = trackIt->second.GetStartFrequency();
-        fEndFrequency = trackIt->second.GetEndFrequency();
+        fStartTimeInAcq = trackIt->GetStartTimeInAcq();
+        fStartTimeInRunC = trackIt->GetStartTimeInRunC();
+        fEndTimeInRunC = trackIt->GetEndTimeInRunC();
+        fTimeLength = trackIt->GetTimeLength();
+        fStartFrequency = trackIt->GetStartFrequency();
+        fEndFrequency = trackIt->GetEndFrequency();
         fMinimumFrequency = std::min(fStartFrequency, fEndFrequency);
         fMaximumFrequency = std::max(fStartFrequency, fEndFrequency);
-        fFrequencyWidth = trackIt->second.GetFrequencyWidth();
+        fFrequencyWidth = trackIt->GetFrequencyWidth();
 
-        fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
-        fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
-        fTimeLengthSigma = trackIt->second.GetTimeLengthSigma();
-        fStartFrequencySigma = trackIt->second.GetStartFrequencySigma();
-        fEndFrequencySigma = trackIt->second.GetEndFrequencySigma();
-        fFrequencyWidthSigma = trackIt->second.GetFrequencyWidthSigma();
+        fStartTimeInRunCSigma = trackIt->GetStartTimeInRunCSigma();
+        fEndTimeInRunCSigma = trackIt->GetEndTimeInRunCSigma();
+        fTimeLengthSigma = trackIt->GetTimeLengthSigma();
+        fStartFrequencySigma = trackIt->GetStartFrequencySigma();
+        fEndFrequencySigma = trackIt->GetEndFrequencySigma();
+        fFrequencyWidthSigma = trackIt->GetFrequencyWidthSigma();
 
-        fFirstTrackID = trackIt->first;
-        fFirstTrackTimeLength = trackIt->second.GetTimeLength();
-        fFirstTrackFrequencyWidth = trackIt->second.GetFrequencyWidth();
-        fFirstTrackSlope = trackIt->second.GetSlope();
-        fFirstTrackIntercept = trackIt->second.GetIntercept();
-        fFirstTrackTotalPower = trackIt->second.GetTotalPower();
+        fFirstTrackID = trackIt->GetTrackID();
+        fFirstTrackTimeLength = trackIt->GetTimeLength();
+        fFirstTrackFrequencyWidth = trackIt->GetFrequencyWidth();
+        fFirstTrackSlope = trackIt->GetSlope();
+        fFirstTrackIntercept = trackIt->GetIntercept();
+        fFirstTrackTotalPower = trackIt->GetTotalPower();
 
         for (++trackIt; trackIt != fTracks.end(); ++trackIt)
         {
-            KTDEBUG(evlog, "Track " << trackIt->first);
+            KTDEBUG(evlog, "Track " << trackIt->GetTrackID());
 
-            if (trackIt->second.GetStartTimeInRunC() < fStartTimeInRunC)
+            if (trackIt->GetStartTimeInRunC() < fStartTimeInRunC)
             {
-                fStartTimeInAcq = trackIt->second.GetStartTimeInAcq();
-                fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
-                fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
-                fStartFrequency = trackIt->second.GetStartFrequency();
-                fStartFrequencySigma = trackIt->second.GetStartFrequencySigma();
+                fStartTimeInAcq = trackIt->GetStartTimeInAcq();
+                fStartTimeInRunC = trackIt->GetStartTimeInRunC();
+                fStartTimeInRunCSigma = trackIt->GetStartTimeInRunCSigma();
+                fStartFrequency = trackIt->GetStartFrequency();
+                fStartFrequencySigma = trackIt->GetStartFrequencySigma();
                 KTDEBUG(evlog, "Start time (freq) is now " << fStartTimeInRunC << "(" << fStartFrequency << ")");
-                fFirstTrackID = trackIt->first;
-                fFirstTrackTimeLength = trackIt->second.GetTimeLength();
-                fFirstTrackFrequencyWidth = trackIt->second.GetFrequencyWidth();
-                fFirstTrackSlope = trackIt->second.GetSlope();
-                fFirstTrackIntercept = trackIt->second.GetIntercept();
-                fFirstTrackTotalPower = trackIt->second.GetTotalPower();
+                fFirstTrackID = trackIt->GetTrackID();
+                fFirstTrackTimeLength = trackIt->GetTimeLength();
+                fFirstTrackFrequencyWidth = trackIt->GetFrequencyWidth();
+                fFirstTrackSlope = trackIt->GetSlope();
+                fFirstTrackIntercept = trackIt->GetIntercept();
+                fFirstTrackTotalPower = trackIt->GetTotalPower();
             }
 
-            if (trackIt->second.GetEndTimeInRunC() > fEndTimeInRunC)
+            if (trackIt->GetEndTimeInRunC() > fEndTimeInRunC)
             {
-                fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
-                fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
-                fEndFrequency = trackIt->second.GetEndFrequency();
-                fEndFrequencySigma = trackIt->second.GetEndFrequencySigma();
+                fEndTimeInRunC = trackIt->GetEndTimeInRunC();
+                fEndTimeInRunCSigma = trackIt->GetEndTimeInRunCSigma();
+                fEndFrequency = trackIt->GetEndFrequency();
+                fEndFrequencySigma = trackIt->GetEndFrequencySigma();
                 KTDEBUG(evlog, "End time (freq) is now " << fEndTimeInRunC << "(" << fEndFrequency << ")");
             }
 
-            double minFreq = std::min(trackIt->second.GetStartFrequency(), trackIt->second.GetEndFrequency());
+            double minFreq = std::min(trackIt->GetStartFrequency(), trackIt->GetEndFrequency());
             if (minFreq < fMinimumFrequency)
             {
                 fMinimumFrequency = minFreq;
                 KTDEBUG(evlog, "Minimum frequency is now " << fMinimumFrequency);
             }
 
-            double maxFreq = std::max(trackIt->second.GetStartFrequency(), trackIt->second.GetEndFrequency());
+            double maxFreq = std::max(trackIt->GetStartFrequency(), trackIt->GetEndFrequency());
             if (maxFreq > fMaximumFrequency)
             {
                 fMaximumFrequency = maxFreq;
@@ -240,5 +282,27 @@ namespace Katydid
         return;
     }
 
+    MultiPeakTrackRef::MultiPeakTrackRef() :
+            fTrackRefs(),
+            fMeanStartTimeInRunC(0.),
+            fSumStartTimeInRunC(0.),
+            fMeanEndTimeInRunC(0.),
+            fSumEndTimeInRunC(0.),
+            fAcquisitionID(0),
+            fUnknownEventTopology(false)
+    {}
+
+    bool MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)
+        {
+            if (fTrackRefs.find(trackRef) != fTrackRefs.end())  return false;
+
+            fTrackRefs.insert(trackRef);
+            fSumStartTimeInRunC += trackRef->GetStartTimeInRunC();
+            fSumEndTimeInRunC += trackRef->GetEndTimeInRunC();
+            double currentSize = (double)fTrackRefs.size();
+            fMeanStartTimeInRunC = fSumStartTimeInRunC / currentSize;
+            fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
+            return true;
+        }
 
 } /* namespace Katydid */

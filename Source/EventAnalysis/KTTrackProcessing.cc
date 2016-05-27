@@ -220,6 +220,7 @@ namespace Katydid
         // Add the new data
         KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
+        procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
         procTrack.SetTrackID(trackID);
 
         if (lsSlope < fSlopeMinimum || points.size() < fProcTrackMinPoints)

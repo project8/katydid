@@ -239,6 +239,7 @@ namespace Katydid
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
         fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
+        fSparseWaterfallCandidateData.fAcquisitionID = swcData.GetAcquisitionID();
         //fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
         //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
         fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
@@ -276,6 +277,7 @@ namespace Katydid
         fWriter->AddTree(fSparseWaterfallCandidateTree);
 
         fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/i");
+        fSparseWaterfallCandidateTree->Branch("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID, "fAcquisitionID/i");
         fSparseWaterfallCandidateTree->Branch("CandidateID", &fSparseWaterfallCandidateData.fCandidateID, "fCandidateID/i");
         //fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
         //fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
@@ -378,6 +380,3 @@ namespace Katydid
     }
 
 } /* namespace Katydid */
-
-
-

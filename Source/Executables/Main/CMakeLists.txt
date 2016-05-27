@@ -4,14 +4,14 @@
 
 # Executables
 
-add_executable (EvaluateCandidates ${PROJECT_SOURCE_DIR}/Nymph/Executables/Main/Katydid.cc)
-target_link_libraries (EvaluateCandidates Nymph KatydidUtility KatydidData KatydidIO KatydidEvaluation ${EXTERNAL_LIBRARIES})
+#add_executable (EvaluateCandidates ${PROJECT_SOURCE_DIR}/Nymph/Executables/Main/Katydid.cc)
+#target_link_libraries (EvaluateCandidates Nymph KatydidUtility KatydidData KatydidIO KatydidEvaluation ${EXTERNAL_LIBRARIES})
 
 add_executable (Truncate Truncate.cc)
 target_link_libraries (Truncate Nymph ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_executables ( 
-    EvaluateCandidates
+    #EvaluateCandidates
     Truncate
 )
 

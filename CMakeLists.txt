@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.0)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.4.2)
+project (Katydid VERSION 2.4.3)
 
 # Import Katydid core features
 include (Nymph/cmake/Nymph.cmake)
@@ -98,25 +98,19 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 5.28)
+    find_package (ROOT 5.28 COMPONENTS Gui)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
-    list (APPEND EXTRA_ROOT_LIBRARIES libHistPainter)
-    foreach (lib ${EXTRA_ROOT_LIBRARIES})
-        string (STRIP ${lib} lib)
-        set (lib "${ROOT_LIBRARY_DIR}/${lib}.so")
-        list (APPEND ROOT_LIBRARIES ${lib})
-    endforeach (lib)
     pbuilder_add_ext_libraries (${ROOT_LIBRARIES})
     #message(STATUS "${ROOT_LIBRARIES}")
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     remove_definitions(-DROOT_FOUND)
 endif (ROOT_FOUND)
-include_directories (${ROOT_INCLUDES})
+include_directories (${ROOT_INCLUDE_DIR})
 
 # Matlab
 if (Katydid_USE_MATLAB)
@@ -176,19 +170,18 @@ endif (Katydid_ENABLE_TUTORIAL)
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
 # libthorax
-add_subdirectory( libthorax )
-pbuilder_add_submodule_libraries( ${libthorax_LIBRARIES} )
-include_directories( ${libthorax_DEP_INCLUDE_DIRS} )
+#add_subdirectory( libthorax )
+#pbuilder_add_submodule_libraries( ${libthorax_LIBRARIES} )
+#include_directories( ${libthorax_DEP_INCLUDE_DIRS} )
 # add to the RPATH to be used when installing, but only if it's not a system directory
-list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${libthorax_LIBRARY_DIR}" isSystemDir )
-if ( "${isSystemDir}" STREQUAL "-1" )
-   list( APPEND CMAKE_INSTALL_RPATH ${libthorax_LIBRARY_DIR} )
-endif( "${isSystemDir}" STREQUAL "-1" )
+#list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${libthorax_LIBRARY_DIR}" isSystemDir )
+#if ( "${isSystemDir}" STREQUAL "-1" )
+#   list( APPEND CMAKE_INSTALL_RPATH ${libthorax_LIBRARY_DIR} )
+#endif( "${isSystemDir}" STREQUAL "-1" )
 
 # Monarch
 if (Katydid_USE_MONARCH)
-    add_subdirectory (Source/Time/Monarch)
-    pbuilder_add_submodule_libraries (${Monarch_LIBRARIES})
+    pbuilder_add_submodule( Monarch Source/Time/Monarch )
     add_definitions (-DUSE_MONARCH)
     if (Monarch_BUILD_MONARCH2)
         add_definitions(-DUSE_MONARCH2)
@@ -200,12 +193,6 @@ if (Katydid_USE_MONARCH)
     else (Monarch_BUILD_MONARCH3)
         remove_definitions(-DUSE_MONARCH3)
     endif (Monarch_BUILD_MONARCH3)
-
-    # add to the RPATH to be used when installing, but only if it's not a system directory
-    list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
-    if ("${isSystemDir}" STREQUAL "-1")
-       list (APPEND CMAKE_INSTALL_RPATH ${Monarch_LIBRARY_DIR})
-    endif ("${isSystemDir}" STREQUAL "-1")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
     add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)
@@ -213,11 +200,6 @@ else (Katydid_USE_MONARCH)
     remove_definitions (-DUSE_MONARCH2)
     remove_definitions (-DUSE_MONARCH3)
 endif (Katydid_USE_MONARCH)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Monarch2)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Monarch3)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax/cpp)
-include_directories (BEFORE ${PROJECT_BINARY_DIR}/Source/Time/Monarch)
 
 # Subdirectories
 include_directories (BEFORE 
@@ -226,11 +208,11 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Data/EventAnalysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Time
     ${PROJECT_SOURCE_DIR}/Source/Data/Transform
-    ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
+    #${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/IO
     ${PROJECT_SOURCE_DIR}/Source/IO/Conversions
     ${PROJECT_SOURCE_DIR}/Source/Time
-    ${PROJECT_SOURCE_DIR}/Source/Simulation
+    #${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/Transform
     ${PROJECT_SOURCE_DIR}/Source/SpectrumAnalysis
@@ -243,8 +225,8 @@ add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
 add_subdirectory (Source/Time)
-add_subdirectory (Source/Simulation)
-add_subdirectory (Source/Evaluation)
+#add_subdirectory (Source/Simulation)
+#add_subdirectory (Source/Evaluation)
 add_subdirectory (Source/Transform)
 add_subdirectory (Source/SpectrumAnalysis)
 add_subdirectory (Source/EventAnalysis)

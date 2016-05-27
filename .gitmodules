@@ -4,6 +4,3 @@
 [submodule "Nymph"]
 	path = Nymph
 	url = https://github.com/project8/nymph
-[submodule "libthorax"]
-	path = libthorax
-	url = https://github.com/project8/libthorax

@@ -25,11 +25,14 @@ namespace Katydid
     class TProcessedTrackData : public TObject
     {
             MEMBERVARIABLE(UInt_t, Component);
+            MEMBERVARIABLE(Int_t, EventSequenceID);
+            MEMBERVARIABLE(UInt_t, AcquisitionID);
             MEMBERVARIABLE(UInt_t, TrackID);
 
             MEMBERVARIABLE(Bool_t, IsCut);
 
             MEMBERVARIABLE(Double_t, StartTimeInRunC);
+            MEMBERVARIABLE(Double_t, StartTimeInAcq);
             MEMBERVARIABLE(Double_t, EndTimeInRunC);
             MEMBERVARIABLE(Double_t, TimeLength);
             MEMBERVARIABLE(Double_t, StartFrequency);
@@ -72,9 +75,11 @@ namespace Katydid
     class TMultiTrackEventData : public TObject
     {
         MEMBERVARIABLE(UInt_t, Component);
+        MEMBERVARIABLE(UInt_t, AcquisitionID);
         MEMBERVARIABLE(UInt_t, EventID);
 
         MEMBERVARIABLE(Double_t, StartTimeInRunC);
+        MEMBERVARIABLE(Double_t, StartTimeInAcq);
         MEMBERVARIABLE(Double_t, EndTimeInRunC);
         MEMBERVARIABLE(Double_t, TimeLength);
         MEMBERVARIABLE(Double_t, StartFrequency);
@@ -95,6 +100,7 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, FirstTrackSlope);
         MEMBERVARIABLE(Double_t, FirstTrackIntercept);
         MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+        MEMBERVARIABLE(Double_t, UnknownEventTopology);
 
         public:
             TClonesArray* GetTracks() {return fTracks;}
