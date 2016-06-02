@@ -43,7 +43,7 @@ namespace Katydid
             fProbeWidthSmall(0.02e6),
             fStepSizeBig(0.2e6),
             fStepSizeSmall(0.004e6),
-            fLinearDensityFitSignal("linear-density-fit", this),
+            fLinearDensityFitSignal("fit-result", this),
             fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal)
     {
     }
@@ -167,8 +167,21 @@ namespace Katydid
         newData.SetNComponents( 2 );
         newData.SetSlope( data.GetSlope(), 0 );
         newData.SetSlope( data.GetSlope(), 1 );
+        newData.SetSlopeSigma( data.GetSlopeSigma(), 0 );
+        newData.SetSlopeSigma( data.GetSlopeSigma(), 1 );
+        newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 0 );
+        newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 1 );
+
+        double intercept1, intercept2;
+
         PerformTest( pts, newData, fProbeWidthBig, fStepSizeBig, 0 );
         PerformTest( pts, newData, fProbeWidthSmall, fStepSizeSmall, 1 );
+
+        intercept1 = newData.GetIntercept( 0 );
+        intercept2 = newData.GetIntercept( 1 );
+
+        newData.SetSidebandSeparation( intercept1 - intercept2, 0 );
+        newData.SetSidebandSeparation( intercept1 - intercept2, 1 );
 
         return true;
     }
@@ -181,7 +194,7 @@ namespace Katydid
         KTINFO(sdlog, "Slope = " << newData.GetSlope( component ));
         bestAlpha = findIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
-
+/*
         double alphaMean = 0.;
         double alphaVar = 0.;
         double t = 0.;
@@ -194,7 +207,7 @@ namespace Katydid
         }
         alphaVar = sqrt( alphaVar - pow( alphaMean, 2 ) );
         newData.SetIntercept_deviation( alphaVar, component );
-
+*/
         // Next we begin the fine sweep of alpha
         double alphaBound_lower;
         double alphaBound_upper;
@@ -342,9 +355,10 @@ namespace Katydid
             eX2 += pow( finalCutX[i], 2 ) / s;
         }
 
-        newData.SetSlope( (eXY - eX * eY)/(eX2 - pow( eX, 2 )), component );
+        //newData.SetSlope( (eXY - eX * eY)/(eX2 - pow( eX, 2 )), component );
         newData.SetIntercept( eY - newData.GetSlope( component ) * eX, component );
         newData.SetProbeWidth( fProbeWidth, component );
+        //newData.SetStartingFrequency( eY - newData.GetSlope( component ) * eX + newData.GetSlope( component ) * newData.GetStartTimeInRunC( component ), component );
 
         return true;
     }

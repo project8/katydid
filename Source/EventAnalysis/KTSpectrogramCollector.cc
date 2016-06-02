@@ -37,8 +37,8 @@ namespace Katydid
             fLeadTime(0.002),
             fTrailTime(0.002),
             fWaterfallSignal("waterfall", this),
-            fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack, &fWaterfallSignal),
-            fPSSlot("ps", this, &KTSpectrogramCollector::ReceiveSpectrum, &fWaterfallSignal)
+            fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
+            fPSSlot("ps", this, &KTSpectrogramCollector::ReceiveSpectrum)
     {
     }
 
@@ -90,7 +90,14 @@ namespace Katydid
     {
         // Create new KTDataPtr and PSCollectionData
         KTDataPtr ptr( new KTData() );
+        KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
+
+        // Configure the track to retain only the slope information
+        newTrack->SetSlope( trackData.GetSlope() );
+        newTrack->SetStartTimeInRunC( trackData.GetStartTimeInRunC() );
+        newTrack->SetEndTimeInRunC( trackData.GetEndTimeInRunC() );
+        newTrack->SetSlopeSigma( trackData.GetSlopeSigma() );
 
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
@@ -100,8 +107,10 @@ namespace Katydid
         // Add to fWaterfallSets
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
-        KTDEBUG(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
-        
+        KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+        KTINFO(evlog, "Track length: " << trackData.GetEndTimeInRunC() - trackData.GetStartTimeInRunC());
+        KTINFO(evlog, "Track slope: " << trackData.GetSlope());
+
         return true;
     }
 
@@ -125,8 +134,8 @@ namespace Katydid
                     it->second->SetFilling( false );
 
                     // Emit signal
+                    KTINFO(evlog, "Finished a track; emitting signal");
                     FinishSC( it->first );
-                    KTDEBUG(evlog, "Finished a track; emitting signal");
                 }
                 else
                     it->second->SetFilling( false );
@@ -138,6 +147,12 @@ namespace Katydid
 
     bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
     {
+        if( data.GetIsCut() )
+        {
+            KTINFO(evlog, "Processed track failed cuts, skipping it");
+            return true;
+        }
+
         unsigned iComponent = data.GetComponent();
 
         // Increase size of fWaterfallSets if necessary
@@ -157,6 +172,7 @@ namespace Katydid
     
     bool KTSpectrogramCollector::ReceiveSpectrum( KTPowerSpectrumData& data, KTSliceHeader& sliceData )
     {
+        KTDEBUG(evlog, "Receiving Spectrum");
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
@@ -178,6 +194,7 @@ namespace Katydid
                 return false;
             }
         }
+        KTINFO(evlog, "Spectrum finished processing. Awaiting next spectrum");
 
         return true;
     }

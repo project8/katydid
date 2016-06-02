@@ -358,6 +358,7 @@ namespace Katydid
         KTLinearFitResult& lfData = data->Of< KTLinearFitResult >();
         
         if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "line", fLinearFitResultTree );
 
         if (fLinearFitResultTree == NULL)
         {
@@ -367,12 +368,38 @@ namespace Katydid
                 return;
             }
         }
+        else
+        {
+            KTINFO(publog, "Tree already exists!");
+            fWriter->AddTree( fLinearFitResultTree );
+            
+            fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
+            fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
+            fLinearFitResultTree->SetBranchAddress( "SlopeSigma", &fLineFitData.fSlopeSigma );
+            fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
+            fLinearFitResultTree->SetBranchAddress( "InterceptDev", &fLineFitData.fIntercept_deviation );
+            fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
+            fLinearFitResultTree->SetBranchAddress( "TrackDuration", &fLineFitData.fTrackDuration );
+            fLinearFitResultTree->SetBranchAddress( "SidebandSeparation", &fLineFitData.fSidebandSeparation );
+            fLinearFitResultTree->SetBranchAddress( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1 );
+            fLinearFitResultTree->SetBranchAddress( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2 );
+            fLinearFitResultTree->SetBranchAddress( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1 );
+            fLinearFitResultTree->SetBranchAddress( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2 );
+            fLinearFitResultTree->SetBranchAddress( "WindowBandwidth", &fLineFitData.fFit_width );
+            fLinearFitResultTree->SetBranchAddress( "NPoints", &fLineFitData.fNPoints );
+            fLinearFitResultTree->SetBranchAddress( "ProbeWidth", &fLineFitData.fProbeWidth );
+            
+        }
 
         for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
         {
             fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fComponent );
+            fLineFitData.fSlopeSigma = lfData.GetSlopeSigma( fLineFitData.fComponent );
             fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fComponent );
             fLineFitData.fIntercept_deviation = lfData.GetIntercept_deviation( fLineFitData.fComponent );
+            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fComponent );
+            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fComponent );
+            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fComponent );
             fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
             fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
             fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
@@ -399,8 +426,12 @@ namespace Katydid
 
         fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
         fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
+        fLinearFitResultTree->Branch( "SlopeSigma", &fLineFitData.fSlopeSigma, "fSlopeSigma/d" );
         fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
         fLinearFitResultTree->Branch( "InterceptDev", &fLineFitData.fIntercept_deviation, "fIntercept_deviation/d" );
+        fLinearFitResultTree->Branch( "StartingFrequency", &fLineFitData.fStartingFrequency, "fStartingFrequency/d" );
+        fLinearFitResultTree->Branch( "TrackDuration", &fLineFitData.fTrackDuration, "fTrackDuration/d" );
+        fLinearFitResultTree->Branch( "SidebandSeparation", &fLineFitData.fSidebandSeparation, "fSidebandSeparation/d" );
         fLinearFitResultTree->Branch( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1, "fFineProbe_sigma_1/d" );
         fLinearFitResultTree->Branch( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2, "fFineProbe_sigma_2/d" );
         fLinearFitResultTree->Branch( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1, "fFineProbe_SNR_1/d" );

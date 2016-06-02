@@ -46,7 +46,7 @@ namespace Katydid
      - "step-size-small": same as above for the 2nd component
 
      Slots:
-     - "thresh": void (KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTLinearFitResult
+     - "thresh-points": void (KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTLinearFitResult
      
      Signals:
      - "fit-result": void (KTDataPtr) Emitted upon minimization; Guarantees KTLinearFitResult
