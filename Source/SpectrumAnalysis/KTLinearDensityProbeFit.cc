@@ -7,9 +7,13 @@
 
 #include "KTLinearDensityProbeFit.hh"
 #include "KTDiscriminatedPoints2DData.hh"
+#include "KTDiscriminatedPoints1DData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
+#include "KTSpectrumCollectionData.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeries.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "KTParam.hh"
 
@@ -44,7 +48,9 @@ namespace Katydid
             fStepSizeBig(0.2e6),
             fStepSizeSmall(0.004e6),
             fLinearDensityFitSignal("fit-result", this),
-            fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal)
+            fTimeSeriesSignal("ts", this),
+            fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal),
+            fPreCalcSlot("gv", this, &KTLinearDensityProbeFit::SetPreCalcGainVar)
     {
     }
 
@@ -149,9 +155,16 @@ namespace Katydid
         return bestAlpha;
     }
 
+    bool KTLinearDensityProbeFit::SetPreCalcGainVar(KTGainVariationData& gvData)
+    {
+        fGVData = gvData;
+        return true;
+    }
+
     bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
     {
         KTLinearFitResult& newData = data.Of< KTLinearFitResult >();
+        KTPSCollectionData& fullSpectrogram = data.Of< KTPSCollectionData >();
 /*
         if (fCalculateMinBin)
         {
@@ -182,6 +195,88 @@ namespace Katydid
 
         newData.SetSidebandSeparation( intercept1 - intercept2, 0 );
         newData.SetSidebandSeparation( intercept1 - intercept2, 1 );
+
+        // We will need to calculate the unweighted projection first
+        double delta_f;
+        double alphaBound_upper = intercept1 + newData.GetFit_width( 0 );
+        double alphaBound_lower = intercept1 - newData.GetFit_width( 0 );
+
+        int xBinStart, xBinEnd, xWindow, yBinStart, yBinEnd, yWindow;
+        double ps_xmin, ps_xmax, ps_ymin, ps_dx, ps_dy;
+        double q_fit = newData.GetSlope( 0 );
+        double x, y;
+        
+        ps_xmin = fullSpectrogram.GetStartTime();
+        ps_xmax = fullSpectrogram.GetEndTime();
+        ps_ymin = fullSpectrogram.GetSpectra().begin()->second->GetRangeMin();
+        ps_dx   = fullSpectrogram.GetDeltaT();
+        ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
+        
+        // We add +1 for the underflow bin
+        xBinStart = floor( (data.GetStartTimeInRunC() - ps_xmin) / ps_dx ) + 1;
+        xBinEnd   = floor( (data.GetEndTimeInRunC() - ps_xmin) / ps_dx ) + 1;
+        xWindow = xBinEnd - xBinStart + 1;
+
+        // The y window this time will be floating, but its size will be consistent
+        // The number of bins between the alpha bounds
+        yWindow = ceil( (alphaBound_upper - alphaBound_lower) / ps_dy );
+
+        double *unweighted = new double[xWindow];
+
+        KTDataPtr ptr( new KTData() );
+        KTTimeSeriesData* powerModulation = &ptr->Of< KTTimeSeriesData >();
+        KTTimeSeries* ts;
+
+        int i = 0;
+        // First we compute the unweighted projection
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
+        {
+            // Set x value and starting y-bin
+            x = ps_xmin + (i - 1) * ps_dx;
+            yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
+
+            // Unweighted power = sum of raw power spectrum
+            unweighted[i - xBinStart] = 0;
+            for( int j = yBinStart; j < yBinStart + yWindow; j++ )
+            {
+                y = ps_ymin + ps_dy * (j - 1);
+
+                // We reevaluate the spline rather than deal with the appropriate index of power_minus_bkgd
+                unweighted[i - xBinStart] += (*it->second)(j) - fGVData.GetSpline()->Evaluate( y );
+            }
+            i++;
+        }
+
+        i = 0;
+
+        // Weighted projection
+        double cumulative;
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
+        {
+            cumulative = 0;
+
+            x = ps_xmin + (i - 1) * ps_dx;
+            yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
+
+            for( int j = yBinStart; j < yBinStart + yWindow; j++ )
+            {
+                y = ps_ymin + ps_dy * (j - 1);
+
+                // Calculate delta-f using the fit values
+                delta_f = y - (q_fit * x + newData.GetIntercept(0));
+                cumulative += delta_f * ((*it->second)(j) - fGVData.GetSpline()->Evaluate( y )) / unweighted[i - xBinStart];
+            }
+
+            ts->SetValue( i, cumulative );
+            i++;
+        }
+
+        powerModulation->SetNComponents( 1 );
+        powerModulation->SetTimeSeries( ts, 0 );
+
+        fTimeSeriesSignal( ptr );
+
+        KTDiscriminatedPoints1DData* fftPeaks = &ptr->Of< KTDiscriminatedPoints1DData >();
 
         return true;
     }

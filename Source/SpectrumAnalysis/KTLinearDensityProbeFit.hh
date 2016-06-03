@@ -9,6 +9,8 @@
 #ifndef KTLINEARDENSITYPROBEFIT_HH
 #define KTLINEARDENSITYPROBEFIT_HH
 
+#include "KTGainVariationData.hh"
+#include "KTPowerSpectrum.hh"
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
@@ -21,6 +23,7 @@ namespace Katydid
     class KTProcessedTrackData;
     class KTDiscriminatedPoints2DData;
     class KTLinearFitResult;
+    class KTPSCollectionData;
 
     /*!
      @class KTLinearDensityProbeFit
@@ -47,9 +50,11 @@ namespace Katydid
 
      Slots:
      - "thresh-points": void (KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTLinearFitResult
+     - "gv": void (KTDataPtr) -- Stores gain variation for later use with spectrogram; Requires KTGainVariationData
      
      Signals:
-     - "fit-result": void (KTDataPtr) Emitted upon minimization; Guarantees KTLinearFitResult
+     - "fit-result": void (KTDataPtr) -- Emitted upon minimization; Guarantees KTLinearFitResult
+     - "ts": void (KTDataPtr) -- Emitted upon power modulation computation; Guarantees KTTimeSeriesData
     */
 
     class KTLinearDensityProbeFit : public KTProcessor
@@ -97,9 +102,13 @@ namespace Katydid
             double fStepSizeSmall;
 
         public:
+            bool SetPreCalcGainVar(KTGainVariationData& gvData);
         	bool Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
         	bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
         	double findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width );
+
+        private:
+            KTGainVariationData fGVData;
 
             //***************
             // Signals
@@ -107,6 +116,7 @@ namespace Katydid
 
         private:
             KTSignalData fLinearDensityFitSignal;
+            KTSignalData fTimeSeriesSignal;
 
             //***************
             // Slots
@@ -114,6 +124,7 @@ namespace Katydid
 
         private:
             KTSlotDataTwoTypes< KTProcessedTrackData, KTDiscriminatedPoints2DData > fThreshPointsSlot;
+            KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
     };
 
     inline double KTLinearDensityProbeFit::GetMinFrequency() const
