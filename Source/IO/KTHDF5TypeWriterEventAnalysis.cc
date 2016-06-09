@@ -151,7 +151,7 @@ namespace Katydid {
             track.Component = MTETrackIt->GetComponent();
             track.AcquisitionID = MTETrackIt->GetAcquisitionID();
             track.TrackID = MTETrackIt->GetTrackID();
-            track.EventID = MTETrackIt->GetEventID();
+            track.EventID = event.EventID; // Get the Event ID from the Event, not from the Track
             track.EventSequenceID = MTETrackIt->GetEventSequenceID();
             track.IsCut = MTETrackIt->GetIsCut();
             track.StartTimeInAcq = MTETrackIt->GetStartTimeInAcq();
