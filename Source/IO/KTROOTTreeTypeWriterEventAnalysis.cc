@@ -299,6 +299,7 @@ namespace Katydid
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "procTracks", fProcessedTrackTree );
 
         if (fProcessedTrackTree == NULL)
         {
@@ -307,6 +308,13 @@ namespace Katydid
                 KTERROR(publog, "Something went wrong while setting up the processed track tree! Nothing was written.");
                 return;
             }
+        }
+        else
+        {
+            KTINFO(publog, "Tree already exists!");
+            fWriter->AddTree( fProcessedTrackTree );
+
+            fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
         }
 
         fProcessedTrackDataPtr->Load(ptData);
@@ -326,7 +334,7 @@ namespace Katydid
         }
         fWriter->AddTree(fProcessedTrackTree);
 
-        fProcessedTrackDataPtr = new TProcessedTrackData();
+        //fProcessedTrackDataPtr = new TProcessedTrackData();
 
         fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
 

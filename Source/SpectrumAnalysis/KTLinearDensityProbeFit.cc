@@ -13,7 +13,9 @@
 #include "KTSpectrumCollectionData.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeries.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
+#include "KTEggHeader.hh"
 
 #include "KTParam.hh"
 
@@ -49,6 +51,7 @@ namespace Katydid
             fStepSizeSmall(0.004e6),
             fLinearDensityFitSignal("fit-result", this),
             fTimeSeriesSignal("ts", this),
+            fTSHeaderSignal("ts-header", this),
             fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal),
             fPreCalcSlot("gv", this, &KTLinearDensityProbeFit::SetPreCalcGainVar)
     {
@@ -190,12 +193,14 @@ namespace Katydid
         PerformTest( pts, newData, fProbeWidthBig, fStepSizeBig, 0 );
         PerformTest( pts, newData, fProbeWidthSmall, fStepSizeSmall, 1 );
 
+        KTDEBUG(sdlog, "Beginning fourier analysis of sideband" );
+
         intercept1 = newData.GetIntercept( 0 );
         intercept2 = newData.GetIntercept( 1 );
 
         newData.SetSidebandSeparation( intercept1 - intercept2, 0 );
         newData.SetSidebandSeparation( intercept1 - intercept2, 1 );
-
+/*
         // We will need to calculate the unweighted projection first
         double delta_f;
         double alphaBound_upper = intercept1 + newData.GetFit_width( 0 );
@@ -216,6 +221,7 @@ namespace Katydid
         xBinStart = floor( (data.GetStartTimeInRunC() - ps_xmin) / ps_dx ) + 1;
         xBinEnd   = floor( (data.GetEndTimeInRunC() - ps_xmin) / ps_dx ) + 1;
         xWindow = xBinEnd - xBinStart + 1;
+        KTINFO(sdlog, "Set xBin range to " << xBinStart << ", " << xBinEnd);
 
         // The y window this time will be floating, but its size will be consistent
         // The number of bins between the alpha bounds
@@ -223,9 +229,7 @@ namespace Katydid
 
         double *unweighted = new double[xWindow];
 
-        KTDataPtr ptr( new KTData() );
-        KTTimeSeriesData* powerModulation = &ptr->Of< KTTimeSeriesData >();
-        KTTimeSeries* ts;
+        KTDEBUG(sdlog, "Computing unweighted projection");
 
         int i = 0;
         // First we compute the unweighted projection
@@ -236,16 +240,18 @@ namespace Katydid
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
 
             // Unweighted power = sum of raw power spectrum
-            unweighted[i - xBinStart] = 0;
+            unweighted[i] = 0;
             for( int j = yBinStart; j < yBinStart + yWindow; j++ )
             {
                 y = ps_ymin + ps_dy * (j - 1);
 
                 // We reevaluate the spline rather than deal with the appropriate index of power_minus_bkgd
-                unweighted[i - xBinStart] += (*it->second)(j) - fGVData.GetSpline()->Evaluate( y );
+                unweighted[i] += (*it->second)(j) - fGVData.GetSpline()->Evaluate( y );
             }
             i++;
         }
+
+        KTDEBUG(sdlog, "Computing weighted projection");
 
         i = 0;
 
@@ -264,20 +270,14 @@ namespace Katydid
 
                 // Calculate delta-f using the fit values
                 delta_f = y - (q_fit * x + newData.GetIntercept(0));
-                cumulative += delta_f * ((*it->second)(j) - fGVData.GetSpline()->Evaluate( y )) / unweighted[i - xBinStart];
+                //cumulative += delta_f * ((*it->second)(j) - fGVData.GetSpline()->Evaluate( y )) / unweighted[i];
             }
 
-            ts->SetValue( i, cumulative );
             i++;
         }
 
-        powerModulation->SetNComponents( 1 );
-        powerModulation->SetTimeSeries( ts, 0 );
-
-        fTimeSeriesSignal( ptr );
-
-        KTDiscriminatedPoints1DData* fftPeaks = &ptr->Of< KTDiscriminatedPoints1DData >();
-
+        KTINFO(sdlog, "Successfully obtained power modulation. Now constructing time series for fourier analysis");
+*/
         return true;
     }
 

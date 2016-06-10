@@ -54,6 +54,7 @@ namespace Katydid
      
      Signals:
      - "fit-result": void (KTDataPtr) -- Emitted upon minimization; Guarantees KTLinearFitResult
+     - "ts-header" void (KTDataPtr) -- Emitted upon construction of the egg header; Guarantees KTEggHeader
      - "ts": void (KTDataPtr) -- Emitted upon power modulation computation; Guarantees KTTimeSeriesData
     */
 
@@ -117,6 +118,7 @@ namespace Katydid
         private:
             KTSignalData fLinearDensityFitSignal;
             KTSignalData fTimeSeriesSignal;
+            KTSignalData fTSHeaderSignal;
 
             //***************
             // Slots

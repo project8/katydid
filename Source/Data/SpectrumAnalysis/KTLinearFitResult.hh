@@ -63,7 +63,7 @@ namespace Katydid
 
             double GetFineProbe_SNR_2(unsigned component = 0) const;
             void SetFineProbe_SNR_2(double snr, unsigned component = 0);
-/*
+
             double GetFFT_peak(unsigned component = 0) const;
             void SetFFT_peak(double amp, unsigned component = 0);
 
@@ -75,7 +75,7 @@ namespace Katydid
 
             double GetFFT_SNR(unsigned component = 0) const;
             void SetFFT_SNR(double snr, unsigned component = 0);
-*/
+
             double GetFit_width(unsigned component = 0) const;
             void SetFit_width(double freq, unsigned component = 0);
 
@@ -99,11 +99,11 @@ namespace Katydid
                 double fFineProbe_sigma_2;
                 double fFineProbe_SNR_1;
                 double fFineProbe_SNR_2;
-/*              double fFFT_peak;
+                double fFFT_peak;
                 double fFFT_peak_uncertainty;
                 double fFFT_sigma;
                 double fFFT_SNR;
-*/              double fFit_width;
+                double fFit_width;
                 uint64_t fNPoints;
                 double fProbeWidth;
             };
@@ -258,7 +258,7 @@ namespace Katydid
         fComponentData[component].fFineProbe_SNR_2 = snr;
         return;
     }
-/*
+
     inline double KTLinearFitResult::GetFFT_peak(unsigned component) const
     {
         return fComponentData[component].fFFT_peak;
@@ -306,7 +306,7 @@ namespace Katydid
         fComponentData[component].fFFT_SNR = snr;
         return;
     }
-*/
+
     inline double KTLinearFitResult::GetFit_width(unsigned component) const
     {
         return fComponentData[component].fFit_width;
