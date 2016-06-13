@@ -25,7 +25,9 @@ namespace Katydid {
      */
     typedef struct {
         unsigned Component;
+        uint64_t AcquisitionID;
         unsigned EventID;
+        unsigned TotalEventSequences;
         double StartTimeInAcq;
         double StartTimeInRunC;
         double EndTimeInRunC;
@@ -47,6 +49,7 @@ namespace Katydid {
         double FirstTrackSlope;
         double FirstTrackIntercept;
         double FirstTrackTotalPower;
+        bool UnknownEventTopology;
     } MTEData;
 
 
@@ -57,11 +60,13 @@ namespace Katydid {
      * are defined in KTCandidate.hh.  If the details change, this
      * has to change too.
      */
-    size_t MTENFields = 23;
+    size_t MTENFields = 26;
     size_t MTESize = sizeof(MTEData);
-    const char* MTEFieldNames[23] = {
+    const char* MTEFieldNames[26] = {
         "Component",
+        "AcquisitionID",
         "EventID",
+        "TotalEventSequences",
         "StartTimeInAcq",
         "StartTimeInRunC",
         "EndTimeInRunC",
@@ -82,11 +87,14 @@ namespace Katydid {
         "FirstTrackFrequencyWidth",
         "FirstTrackSlope",
         "FirstTrackIntercept",
-        "FirstTrackTotalPower"
+        "FirstTrackTotalPower",
+        "UnknownEventTopology"
     };
-    size_t MTEFieldOffsets[23] = {
+    size_t MTEFieldOffsets[26] = {
         HOFFSET(MTEData, Component),
+        HOFFSET(MTEData, AcquisitionID),
         HOFFSET(MTEData, EventID),
+        HOFFSET(MTEData, TotalEventSequences),
         HOFFSET(MTEData, StartTimeInAcq),
         HOFFSET(MTEData, StartTimeInRunC),
         HOFFSET(MTEData, EndTimeInRunC),
@@ -107,7 +115,8 @@ namespace Katydid {
         HOFFSET(MTEData, FirstTrackFrequencyWidth),
         HOFFSET(MTEData, FirstTrackSlope),
         HOFFSET(MTEData, FirstTrackIntercept),
-        HOFFSET(MTEData, FirstTrackTotalPower)
+        HOFFSET(MTEData, FirstTrackTotalPower),
+        HOFFSET(MTEData, UnknownEventTopology)
     };
 
 /*
@@ -138,7 +147,9 @@ namespace Katydid {
     };
 */
 
-    H5::PredType MTEFieldTypes[23] = {
+    H5::PredType MTEFieldTypes[26] = {
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT64,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_DOUBLE,
@@ -161,7 +172,8 @@ namespace Katydid {
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
-        H5::PredType::NATIVE_DOUBLE
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_INT8
     };
 
     /*
@@ -171,8 +183,10 @@ namespace Katydid {
 
     typedef struct {
         unsigned Component;
+        uint64_t AcquisitionID;
         unsigned TrackID;
         unsigned EventID;
+        unsigned EventSequenceID;
         bool IsCut;
         double StartTimeInAcq;
         double StartTimeInRunC;
@@ -195,12 +209,14 @@ namespace Katydid {
         double TotalPowerSigma;
     } PTData;
 
-    size_t PTNFields = 23;
+    size_t PTNFields = 25;
     size_t PTSize = sizeof(PTData);
-    const char* PTFieldNames[23] = {
+    const char* PTFieldNames[25] = {
         "Component",
+        "AcquisitionID",
         "TrackID",
         "EventID",
+        "EventSequenceID",
         "IsCut",
         "StartTimeInAcq",
         "StartTimeInRunC",
@@ -222,10 +238,12 @@ namespace Katydid {
         "InterceptSigma",
         "TotalPowerSigma"
     };
-    size_t PTFieldOffsets[23] = {
+    size_t PTFieldOffsets[25] = {
         HOFFSET(PTData, Component),
+        HOFFSET(PTData, AcquisitionID),
         HOFFSET(PTData, TrackID),
         HOFFSET(PTData, EventID),
+        HOFFSET(PTData, EventSequenceID),
         HOFFSET(PTData, IsCut),
         HOFFSET(PTData, StartTimeInAcq),
         HOFFSET(PTData, StartTimeInRunC),
@@ -247,7 +265,9 @@ namespace Katydid {
         HOFFSET(PTData, InterceptSigma),
         HOFFSET(PTData, TotalPowerSigma)
     };
-    H5::PredType PTFieldTypes[23] = {
+    H5::PredType PTFieldTypes[25] = {
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT64,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,

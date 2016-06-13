@@ -79,7 +79,10 @@ namespace Katydid {
 
         PTData track;
         track.Component = ptData.GetComponent();
+        track.AcquisitionID = ptData.GetAcquisitionID();
         track.TrackID = ptData.GetTrackID();
+        track.EventID = ptData.GetEventID();
+        track.EventSequenceID = ptData.GetEventSequenceID();
         track.IsCut = ptData.GetIsCut();
         track.StartTimeInAcq = ptData.GetStartTimeInAcq();
         track.StartTimeInRunC = ptData.GetStartTimeInRunC();
@@ -113,7 +116,9 @@ namespace Katydid {
         // Write the event information
         MTEData event;
         event.Component = mteData.GetComponent();
+        event.AcquisitionID = mteData.GetAcquisitionID();
         event.EventID = mteData.GetEventID();
+        event.TotalEventSequences = mteData.GetTotalEventSequences();
         event.StartTimeInAcq = mteData.GetStartTimeInAcq();
         event.StartTimeInRunC = mteData.GetStartTimeInRunC();
         event.EndTimeInRunC = mteData.GetEndTimeInRunC();
@@ -135,6 +140,7 @@ namespace Katydid {
         event.FirstTrackSlope = mteData.GetFirstTrackSlope();
         event.FirstTrackIntercept = mteData.GetFirstTrackIntercept();
         event.FirstTrackTotalPower = mteData.GetFirstTrackTotalPower();
+        event.UnknownEventTopology = mteData.GetUnknownEventTopology();
         (this->fMTEDataBuffer).push_back(event);
 
         // Write the tracks that make up this event
@@ -143,8 +149,10 @@ namespace Katydid {
         for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
         {
             track.Component = MTETrackIt->GetComponent();
+            track.AcquisitionID = MTETrackIt->GetAcquisitionID();
             track.TrackID = MTETrackIt->GetTrackID();
-            track.EventID = MTETrackIt->GetEventID();
+            track.EventID = event.EventID; // Get the Event ID from the Event, not from the Track
+            track.EventSequenceID = MTETrackIt->GetEventSequenceID();
             track.IsCut = MTETrackIt->GetIsCut();
             track.StartTimeInAcq = MTETrackIt->GetStartTimeInAcq();
             track.StartTimeInRunC = MTETrackIt->GetStartTimeInRunC();

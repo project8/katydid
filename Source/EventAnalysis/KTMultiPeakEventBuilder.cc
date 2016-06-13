@@ -39,7 +39,7 @@ namespace Katydid
             fCompTracks(1),
             fMPTracks(1),
             fCandidates(),
-            fDataCount(0),
+            fDataCount(-1),
             fEventSignal("event", this),
             fEventsDoneSignal("events-done", this),
             fTakeTrackSlot("track", this, &KTMultiPeakEventBuilder::TakeTrack)
@@ -285,11 +285,13 @@ namespace Katydid
                 if (trackAssigned == -1)
                 { // if no event matched then create one
                     KTINFO(tclog, "track not matched, creating new event");
+                    ++fDataCount;
                     KTDataPtr data(new KTData());
                     ActiveEventType new_event(data, TrackEndsType());
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
                     event.SetAcquisitionID(trackIt->fAcquisitionID);
+                    event.SetEventID(fDataCount);
 
                     event.AddTracks(trackIt->fTrackRefs);
                     if (trackIt->fUnknownEventTopology)
