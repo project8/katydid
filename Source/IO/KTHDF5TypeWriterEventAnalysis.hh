@@ -60,9 +60,9 @@ namespace Katydid {
      * are defined in KTCandidate.hh.  If the details change, this
      * has to change too.
      */
-    size_t MTENFields = 26;
+    const size_t MTENFields = 26;
     size_t MTESize = sizeof(MTEData);
-    const char* MTEFieldNames[26] = {
+    const char* MTEFieldNames[MTENFields] = {
         "Component",
         "AcquisitionID",
         "EventID",
@@ -90,7 +90,7 @@ namespace Katydid {
         "FirstTrackTotalPower",
         "UnknownEventTopology"
     };
-    size_t MTEFieldOffsets[26] = {
+    size_t MTEFieldOffsets[MTENFields] = {
         HOFFSET(MTEData, Component),
         HOFFSET(MTEData, AcquisitionID),
         HOFFSET(MTEData, EventID),
@@ -119,35 +119,8 @@ namespace Katydid {
         HOFFSET(MTEData, UnknownEventTopology)
     };
 
-/*
-    size_t FreqCanSizes[23] = {
-        sizeof(MTEData.Component),
-        sizeof(MTEData.EventID),
-        sizeof(MTEData.StartTimeInAcq),
-        sizeof(MTEData.StartTimeInRunC),
-        sizeof(MTEData.EndTimeInRunC),
-        sizeof(MTEData.TimeLength),
-        sizeof(MTEData.StartFrequency),
-        sizeof(MTEData.EndFrequency),
-        sizeof(MTEData.MinimumFrequency),
-        sizeof(MTEData.MaximumFrequency),
-        sizeof(MTEData.FrequencyWidth),
-        sizeof(MTEData.StartTimeInRunCSigma),
-        sizeof(MTEData.EndTimeInRunCSigma),
-        sizeof(MTEData.TimeLengthSigma),
-        sizeof(MTEData.StartFrequencySigma),
-        sizeof(MTEData.EndFrequencySigma),
-        sizeof(MTEData.FrequencyWidthSigma),
-        sizeof(MTEData.FirstTrackID),
-        sizeof(MTEData.FirstTrackTimeLength),
-        sizeof(MTEData.FirstTrackFrequencyWidth),
-        sizeof(MTEData.FirstTrackSlope),
-        sizeof(MTEData.FirstTrackIntercept),
-        sizeof(MTEData.FirstTrackTotalPower)
-    };
-*/
 
-    H5::PredType MTEFieldTypes[26] = {
+    H5::PredType MTEFieldTypes[MTENFields] = {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT64,
         H5::PredType::NATIVE_UINT,
@@ -209,9 +182,9 @@ namespace Katydid {
         double TotalPowerSigma;
     } PTData;
 
-    size_t PTNFields = 25;
+    const size_t PTNFields = 25;
     size_t PTSize = sizeof(PTData);
-    const char* PTFieldNames[25] = {
+    const char* PTFieldNames[PTNFields] = {
         "Component",
         "AcquisitionID",
         "TrackID",
@@ -238,7 +211,7 @@ namespace Katydid {
         "InterceptSigma",
         "TotalPowerSigma"
     };
-    size_t PTFieldOffsets[25] = {
+    size_t PTFieldOffsets[PTNFields] = {
         HOFFSET(PTData, Component),
         HOFFSET(PTData, AcquisitionID),
         HOFFSET(PTData, TrackID),
@@ -265,7 +238,7 @@ namespace Katydid {
         HOFFSET(PTData, InterceptSigma),
         HOFFSET(PTData, TotalPowerSigma)
     };
-    H5::PredType PTFieldTypes[25] = {
+    H5::PredType PTFieldTypes[PTNFields] = {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT64,
         H5::PredType::NATIVE_UINT,
