@@ -200,11 +200,11 @@ namespace Katydid
 
         newData.SetSidebandSeparation( intercept1 - intercept2, 0 );
         newData.SetSidebandSeparation( intercept1 - intercept2, 1 );
-/*
+
         // We will need to calculate the unweighted projection first
         double delta_f;
-        double alphaBound_upper = intercept1 + newData.GetFit_width( 0 );
-        double alphaBound_lower = intercept1 - newData.GetFit_width( 0 );
+        double alphaBound_upper = intercept1 + 1e6;
+        double alphaBound_lower = intercept1 - 1e6;
 
         int xBinStart, xBinEnd, xWindow, yBinStart, yBinEnd, yWindow;
         double ps_xmin, ps_xmax, ps_ymin, ps_dx, ps_dy;
@@ -223,11 +223,15 @@ namespace Katydid
         xWindow = xBinEnd - xBinStart + 1;
         KTINFO(sdlog, "Set xBin range to " << xBinStart << ", " << xBinEnd);
 
+        newData.SetFit_width( xWindow, 0 );
+        newData.SetFit_width( xWindow, 1 );
+
         // The y window this time will be floating, but its size will be consistent
         // The number of bins between the alpha bounds
         yWindow = ceil( (alphaBound_upper - alphaBound_lower) / ps_dy );
 
-        double *unweighted = new double[xWindow];
+        //double *unweighted = new double[xWindow];
+        vector< double > unweighted, weighted, fourier;
 
         KTDEBUG(sdlog, "Computing unweighted projection");
 
@@ -240,7 +244,7 @@ namespace Katydid
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
 
             // Unweighted power = sum of raw power spectrum
-            unweighted[i] = 0;
+            unweighted.push_back( 0 );
             for( int j = yBinStart; j < yBinStart + yWindow; j++ )
             {
                 y = ps_ymin + ps_dy * (j - 1);
@@ -259,7 +263,7 @@ namespace Katydid
         double cumulative;
         for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
         {
-            cumulative = 0;
+            cumulative = 0.;
 
             x = ps_xmin + (i - 1) * ps_dx;
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
@@ -270,14 +274,44 @@ namespace Katydid
 
                 // Calculate delta-f using the fit values
                 delta_f = y - (q_fit * x + newData.GetIntercept(0));
-                //cumulative += delta_f * ((*it->second)(j) - fGVData.GetSpline()->Evaluate( y )) / unweighted[i];
+                cumulative += delta_f * ((*it->second)(j) - fGVData.GetSpline()->Evaluate( y )) / unweighted[i];
             }
 
+            weighted.push_back( cumulative );
             i++;
         }
 
-        KTINFO(sdlog, "Successfully obtained power modulation. Now constructing time series for fourier analysis");
-*/
+        double pi = 3.14159265358979;
+        for( int k = 0; k < xWindow; k++ )
+        {
+            cumulative = 0.;
+            for( int n = 1; n <= xWindow - 2; n++ )
+                cumulative += weighted[n] * cos( n * k * pi / (xWindow - 1) );
+
+            fourier.push_back( pow( 0.5 * (weighted[0] + pow( -1, k ) * weighted[xWindow - 1]) + cumulative, 2 ) );
+        }
+
+        double avg_fourier = 0.;
+        double max_fourier = 0.;
+        double freq_step = 1/(2 * (xWindow - 1) * ps_dx);
+
+        for( int k = 0; k < xWindow; k++ )
+            avg_fourier += fourier[k] / xWindow;
+
+        for( int k = 0; k < xWindow; k++ )
+        {
+            if( fourier[k] > max_fourier )
+            {
+                max_fourier = fourier[k];
+                newData.SetFFT_peak( double(k) * freq_step, 0 );
+                newData.SetFFT_SNR( max_fourier / avg_fourier, 0 );
+                newData.SetFFT_peak( double(k) * freq_step, 1 );
+                newData.SetFFT_SNR( max_fourier / avg_fourier, 1 );
+            }
+        }
+
+        KTINFO(sdlog, "Successfully obtained power modulation. Maximum fourier peak at frequency " << newData.GetFFT_peak( 0 ) << " with SNR " << newData.GetFFT_SNR( 0 ));
+
         return true;
     }
 
@@ -289,6 +323,9 @@ namespace Katydid
         KTINFO(sdlog, "Slope = " << newData.GetSlope( component ));
         bestAlpha = findIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
+
+
+
 /*
         double alphaMean = 0.;
         double alphaVar = 0.;
@@ -302,18 +339,25 @@ namespace Katydid
         }
         alphaVar = sqrt( alphaVar - pow( alphaMean, 2 ) );
         newData.SetIntercept_deviation( alphaVar, component );
-*/
+
+
+
+
+
         // Next we begin the fine sweep of alpha
         double alphaBound_lower;
         double alphaBound_upper;
 
         if( component == 1 )    // Signal
         {
-            alphaBound_lower = bestAlpha - 2 * fProbeWidth;
-            alphaBound_upper = bestAlpha + 2 * fProbeWidth;
+            alphaBound_lower = bestAlpha - 10 * fProbeWidth;
+            alphaBound_upper = bestAlpha + 10 * fProbeWidth;
         }
         else                    // Sideband
         {
+            alphaBound_lower = bestAlpha - 10 * fProbeWidth;
+            alphaBound_upper = bestAlpha + 10 * fProbeWidth;
+            /*
             alpha = bestAlpha - 2 * fProbeWidth;
             double smallStep = 1e3, smallWidth = 1e4;
 
@@ -412,6 +456,10 @@ namespace Katydid
                     error -= Gaus_Eval( it->second.fOrdinate - newData.GetSlope( component ) * it->second.fAbscissa - alphaBound_upper, smallWidth );
                 }
             }
+
+
+
+
         }
 
         KTDEBUG(sdlog, "Fine sweep intercept bounds: " << alphaBound_lower << " - " << alphaBound_upper);
@@ -454,7 +502,7 @@ namespace Katydid
         newData.SetIntercept( eY - newData.GetSlope( component ) * eX, component );
         newData.SetProbeWidth( fProbeWidth, component );
         //newData.SetStartingFrequency( eY - newData.GetSlope( component ) * eX + newData.GetSlope( component ) * newData.GetStartTimeInRunC( component ), component );
-
+*/
         return true;
     }
 

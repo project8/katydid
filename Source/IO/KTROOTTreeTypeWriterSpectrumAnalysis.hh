@@ -80,6 +80,8 @@ namespace Katydid
         Double_t fFineProbe_sigma_2;
         Double_t fFineProbe_SNR_1;
         Double_t fFineProbe_SNR_2;
+        Double_t fFFT_peak;
+        Double_t fFFT_SNR;
         Double_t fFit_width;
         UInt_t fNPoints;
         Double_t fProbeWidth;
