@@ -25,7 +25,7 @@ namespace Katydid
         TString* fFilename;
         UInt_t fAcquisitionMode;
         UInt_t fNChannels;
-        UInt_t fRunDuration;
+        UInt_t fRunDuration; /// in ms
         Double_t fAcquisitionRate; /// in Hz
         Double_t fCenterFrequency;
         Double_t fMaximumFrequency;

@@ -270,7 +270,7 @@ namespace Katydid
         curr_node = data_node->first_node("SamplingFrequency");
         double fAcqBW = atof(curr_node->value());
         fHeader.SetAcquisitionRate(fAcqBW);
-        fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetChannelHeader(0)->GetRecordSize() / fHeader.GetAcquisitionRate());
+        fHeader.SetRunDuration(1000*(timeFromFirstToLastRecord + (double) fHeader.GetChannelHeader(0)->GetRecordSize() / fHeader.GetAcquisitionRate()));  /// the factor of 1000 is to convert from s to ms; timeFromFirstToLastRecord is in seconds, but RunDuration is supposed to be in ms
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
         curr_node = data_node->first_node("NumberFormat");
