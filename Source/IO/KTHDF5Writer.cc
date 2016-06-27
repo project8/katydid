@@ -122,19 +122,19 @@ namespace Katydid
         this->AddMetadata("header/description", this->fHeader.GetDescription());
         this->AddMetadata("header/acquisition_mode", this->fHeader.GetAcquisitionMode());
         this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());
-        this->AddMetadata("header/raw_slice_size",this->fHeader.GetChannelHeader(0)->GetRawSliceSize());
-        this->AddMetadata("header/slice_size",this->fHeader.GetChannelHeader(0)->GetSliceSize());
-        this->AddMetadata("header/slice_stride",this->fHeader.GetChannelHeader(0)->GetSliceStride());
-        this->AddMetadata("header/record_size",this->fHeader.GetChannelHeader(0)->GetRecordSize());
-        this->AddMetadata("header/run_duration",this->fHeader.GetRunDuration());
-        this->AddMetadata("header/acquisition_rate",this->fHeader.GetAcquisitionRate());
+        this->AddMetadata("header/raw_slice_size",this->fHeader.GetChannelHeader(0)->GetRawSliceSize()); // in number of bins
+        this->AddMetadata("header/slice_size",this->fHeader.GetChannelHeader(0)->GetSliceSize()); // in number of bins
+        this->AddMetadata("header/slice_stride",this->fHeader.GetChannelHeader(0)->GetSliceStride()); // in number of bins
+        this->AddMetadata("header/record_size",this->fHeader.GetChannelHeader(0)->GetRecordSize()); // in number of bins
+        this->AddMetadata("header/run_duration",this->fHeader.GetRunDuration()); // in ms
+        this->AddMetadata("header/acquisition_rate",this->fHeader.GetAcquisitionRate()); // in Hz
         this->AddMetadata("header/data_type_size",this->fHeader.GetChannelHeader(0)->GetDataTypeSize());
         this->AddMetadata("header/bit_depth",this->fHeader.GetChannelHeader(0)->GetBitDepth());
         this->AddMetadata("header/voltage_offset",this->fHeader.GetChannelHeader(0)->GetVoltageOffset());
         this->AddMetadata("header/voltage_range",this->fHeader.GetChannelHeader(0)->GetVoltageRange());
-        this->AddMetadata("header/center_frequency",this->fHeader.GetCenterFrequency());
-        this->AddMetadata("header/minimum_frequency",this->fHeader.GetMinimumFrequency());
-        this->AddMetadata("header/maximum_frequency",this->fHeader.GetMaximumFrequency());
+        this->AddMetadata("header/center_frequency",this->fHeader.GetCenterFrequency()); // in Hz
+        this->AddMetadata("header/minimum_frequency",this->fHeader.GetMinimumFrequency()); // in Hz
+        this->AddMetadata("header/maximum_frequency",this->fHeader.GetMaximumFrequency()); // in Hz
         return true;
     }
 

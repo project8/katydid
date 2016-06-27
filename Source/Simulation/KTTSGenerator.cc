@@ -140,7 +140,7 @@ namespace Katydid
         newHeader->SetFilename(fConfigName);
         newHeader->SetAcquisitionMode(fNChannels);
         newHeader->SetNChannels(fNChannels);
-        newHeader->SetRunDuration(fSliceSize * fNSlices * fBinWidth);
+        newHeader->SetRunDuration(fSliceSize * fNSlices * fBinWidth * 1000); /// the factor of 1000 is to convert from s to ms; fBinWidth is in seconds, but RunDuration is supposed to be in ms
         newHeader->SetAcquisitionRate(1. / fBinWidth);
         //newHeader->SetDescription();
         //newHeader->SetRunType();

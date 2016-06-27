@@ -21,7 +21,8 @@ Dependencies
 - Eigen (not currently used)
 
 **Submodules** (included with Katydid; must be fetched via Git)
-- [Monarch](https://github.com/project8/monarch) (and its submodule, [libthorax](https://github.com/project8/libthorax))
+- [Monarch](https://github.com/project8/monarch)
+- [Nymph](https://github.com/project8/nymph)
 
 **Distributed Code** (included with Mantis directly)
 - RapidJSON
@@ -31,8 +32,8 @@ Dependencies
 Operating System Support
 ------------------------
 
-* Mac OS X (usually tested on OS X 10.10)
-* Linux (usually tested on Debian Jessie)
+* Mac OS X (usually tested on OS X 10.10 and 10.11)
+* Linux (usually tested on Debian Jessie and Scientific Linux 6)
 
 
 Directory Structure
@@ -66,7 +67,7 @@ Directory Structure
 Installing
 ----------
 
-Katydid is installed using CMake (version 3.0 or better).
+Katydid is installed using CMake.
 We recommend an out-of-source build:
 ```
   >  mkdir build

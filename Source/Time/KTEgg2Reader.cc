@@ -418,7 +418,7 @@ namespace Katydid
         fHeader.SetFilename(monarchHeader->GetFilename());
         fHeader.SetAcquisitionMode(monarchHeader->GetAcquisitionMode());
         fHeader.SetNChannels(fNumberOfChannels[fHeader.GetAcquisitionMode()]);
-        fHeader.SetRunDuration(monarchHeader->GetRunDuration());
+        fHeader.SetRunDuration(monarchHeader->GetRunDuration()); // in ms
         fHeader.SetAcquisitionRate(monarchHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());

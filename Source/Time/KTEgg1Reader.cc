@@ -201,7 +201,7 @@ namespace Katydid
             KTERROR(eggreadlog, "No length attribute in the run node");
             return KTDataPtr();
         }
-        fHeaderInfo.fRunLength = ConvertFromArray< double >(attr->value()) * fHeaderInfo.fSecondsPerRunLengthUnit;
+        fHeaderInfo.fRunLength = ConvertFromArray< double >(attr->value()) * fHeaderInfo.fSecondsPerRunLengthUnit; // in seconds
 
         delete [] headerCopy;
 
@@ -222,7 +222,7 @@ namespace Katydid
         eggHeader.SetTSDataType(KTEggHeader::kReal);
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
-        eggHeader.SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
+        eggHeader.SetRunDuration(fHeaderInfo.fRunLength * 1000); // conversion from s to ms
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
         // timestamp
         // description

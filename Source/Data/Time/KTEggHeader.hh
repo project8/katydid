@@ -63,11 +63,11 @@ namespace Katydid
 
             MEMBERVARIABLEREF(std::string, Filename);
             MEMBERVARIABLE(unsigned, AcquisitionMode);
-            MEMBERVARIABLE(unsigned, RunDuration);
+            MEMBERVARIABLE(unsigned, RunDuration);  /// in ms
             MEMBERVARIABLE(double, AcquisitionRate); /// in Hz
-            MEMBERVARIABLE(double, CenterFrequency);
-            MEMBERVARIABLE(double, MinimumFrequency);
-            MEMBERVARIABLE(double, MaximumFrequency);
+            MEMBERVARIABLE(double, CenterFrequency); /// in Hz
+            MEMBERVARIABLE(double, MinimumFrequency); /// in Hz
+            MEMBERVARIABLE(double, MaximumFrequency); /// in Hz
             MEMBERVARIABLEREF(std::string, Timestamp);
             MEMBERVARIABLEREF(std::string, Description);
             MEMBERVARIABLE(TimeSeriesDataType, TSDataType );
