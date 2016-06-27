@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
     monarch3::M3Header* header = monarch->GetHeader();
     header->SetFilename(outputFilename.string());
-    header->SetRunDuration(eggHeader.GetRunDuration());
+    header->SetRunDuration(eggHeader.GetRunDuration()); // in ms
     header->SetTimestamp(eggHeader.GetTimestamp());
     header->SetDescription(eggHeader.GetDescription());
 

@@ -138,8 +138,8 @@ namespace Katydid
         fEggHeaderTree->Branch("MinimumFrequency", &fEggHeaderData.fMinimumFrequency, "fMinimumFrequency/d");
         fEggHeaderTree->Branch("AcquisitionMode", &fEggHeaderData.fAcquisitionMode, "fAcquisitionMode/i");
         fEggHeaderTree->Branch("NChannels", &fEggHeaderData.fNChannels, "fNChannels/i");
-        fEggHeaderTree->Branch("RunDuration", &fEggHeaderData.fRunDuration, "fRunDuration/i");
-        fEggHeaderTree->Branch("AcquisitionRate", &fEggHeaderData.fAcquisitionRate, "fAcquisitionRate/d");
+        fEggHeaderTree->Branch("RunDuration", &fEggHeaderData.fRunDuration, "fRunDuration/i"); // in ms
+        fEggHeaderTree->Branch("AcquisitionRate", &fEggHeaderData.fAcquisitionRate, "fAcquisitionRate/d"); // in Hz
         fEggHeaderTree->Branch("Timestamp", "TString", &fEggHeaderData.fTimestamp);
         fEggHeaderTree->Branch("Description", "TString", &fEggHeaderData.fDescription);
 

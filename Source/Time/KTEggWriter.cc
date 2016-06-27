@@ -158,7 +158,7 @@ namespace Katydid
         monarchHeader->SetFilename(fFilename);
         monarchHeader->SetAcquisitionMode(fExpectedNChannels);
         monarchHeader->SetRecordSize(fExpectedRecordSize);
-        monarchHeader->SetRunDuration(header->GetRunDuration());
+        monarchHeader->SetRunDuration(header->GetRunDuration()); // in ms
         monarchHeader->SetAcquisitionRate(header->GetAcquisitionRate() * 1.e-6); // TODO: remove this 1e-6 when switch to MHz is made
         monarchHeader->SetTimestamp(header->GetTimestamp());
         monarchHeader->SetDescription(header->GetDescription());
