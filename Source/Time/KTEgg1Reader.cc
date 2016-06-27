@@ -222,7 +222,7 @@ namespace Katydid
         eggHeader.SetTSDataType(KTEggHeader::kReal);
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
-        eggHeader.SetRunDuration(fHeaderInfo.fRunLength / fHeaderInfo.fSecondsPerRunLengthUnit);
+        eggHeader.SetRunDuration(fHeaderInfo.fRunLength * 1000); // conversion from s to ms
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
         // timestamp
         // description
