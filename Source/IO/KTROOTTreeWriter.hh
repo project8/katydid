@@ -42,6 +42,9 @@ namespace Katydid
             const std::string& GetFileFlag() const;
             void SetFileFlag(const std::string& flag);
 
+            bool GetAccumulate() const;
+            void SetAccumulate(bool acc);
+
             TFile* GetFile();
 
             bool OpenAndVerifyFile();
@@ -52,6 +55,7 @@ namespace Katydid
         protected:
             std::string fFilename;
             std::string fFileFlag;
+            bool fAccumulate;
 
             TFile* fFile;
 
@@ -76,6 +80,16 @@ namespace Katydid
     inline void KTROOTTreeWriter::SetFileFlag(const std::string& flag)
     {
         fFileFlag = flag;
+        return;
+    }
+
+    inline bool KTROOTTreeWriter::GetAccumulate() const
+    {
+        return fAccumulate;
+    }
+    inline void KTROOTTreeWrtier::SetAccumulate(bool acc)
+    {
+        fAccumulate = acc;
         return;
     }
 

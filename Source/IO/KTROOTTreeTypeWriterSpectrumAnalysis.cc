@@ -358,7 +358,9 @@ namespace Katydid
         KTLinearFitResult& lfData = data->Of< KTLinearFitResult >();
         
         if (! fWriter->OpenAndVerifyFile()) return;
-        fWriter->GetFile()->GetObject( "line", fLinearFitResultTree );
+
+        if( fWriter->GetAccumulate() )
+            fWriter->GetFile()->GetObject( "line", fLinearFitResultTree );
 
         if (fLinearFitResultTree == NULL)
         {
@@ -368,7 +370,7 @@ namespace Katydid
                 return;
             }
         }
-        else
+        else if( fWriter->GetAccumulate() )
         {
             KTINFO(publog, "Tree already exists!");
             fWriter->AddTree( fLinearFitResultTree );
