@@ -87,7 +87,7 @@ namespace Katydid
     {
         return fAccumulate;
     }
-    inline void KTROOTTreeWrtier::SetAccumulate(bool acc)
+    inline void KTROOTTreeWriter::SetAccumulate(bool acc)
     {
         fAccumulate = acc;
         return;
