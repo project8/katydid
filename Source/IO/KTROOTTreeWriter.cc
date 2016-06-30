@@ -114,7 +114,9 @@ namespace Katydid
         }
 
         if( fAccumulate )
+        {
             fFile->Purge();
+        }
 
         fTrees.clear();
         return;

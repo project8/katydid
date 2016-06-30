@@ -320,9 +320,9 @@ namespace Katydid
             fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
             fHoughData.fYOffset = htData.GetYOffset(fHoughData.fComponent);
             fHoughData.fYScale = htData.GetYScale(fHoughData.fComponent);
-        }
 
-        fHoughTree->Fill();
+            fHoughTree->Fill();
+        }
 
         return;
     }
@@ -356,11 +356,8 @@ namespace Katydid
     {
         KTDEBUG(publog, "Attempting to write to linear fit result root tree");
         KTLinearFitResult& lfData = data->Of< KTLinearFitResult >();
-        
-        if (! fWriter->OpenAndVerifyFile()) return;
 
-        if( fWriter->GetAccumulate() )
-            fWriter->GetFile()->GetObject( "line", fLinearFitResultTree );
+        if (! fWriter->OpenAndVerifyFile()) return;
 
         if (fLinearFitResultTree == NULL)
         {
@@ -369,30 +366,6 @@ namespace Katydid
                 KTERROR(publog, "Something went wrong while setting up the Linear Fit tree! Nothing was written.");
                 return;
             }
-        }
-        else if( fWriter->GetAccumulate() )
-        {
-            KTINFO(publog, "Tree already exists!");
-            fWriter->AddTree( fLinearFitResultTree );
-            
-            fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
-            fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
-            fLinearFitResultTree->SetBranchAddress( "SlopeSigma", &fLineFitData.fSlopeSigma );
-            fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
-            fLinearFitResultTree->SetBranchAddress( "InterceptDev", &fLineFitData.fIntercept_deviation );
-            fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
-            fLinearFitResultTree->SetBranchAddress( "TrackDuration", &fLineFitData.fTrackDuration );
-            fLinearFitResultTree->SetBranchAddress( "SidebandSeparation", &fLineFitData.fSidebandSeparation );
-            fLinearFitResultTree->SetBranchAddress( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1 );
-            fLinearFitResultTree->SetBranchAddress( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2 );
-            fLinearFitResultTree->SetBranchAddress( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1 );
-            fLinearFitResultTree->SetBranchAddress( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2 );
-            fLinearFitResultTree->SetBranchAddress( "FFT_peak", &fLineFitData.fFFT_peak );
-            fLinearFitResultTree->SetBranchAddress( "FFT_SNR", &fLineFitData.fFFT_SNR );
-            fLinearFitResultTree->SetBranchAddress( "WindowBandwidth", &fLineFitData.fFit_width );
-            fLinearFitResultTree->SetBranchAddress( "NPoints", &fLineFitData.fNPoints );
-            fLinearFitResultTree->SetBranchAddress( "ProbeWidth", &fLineFitData.fProbeWidth );
-            
         }
 
         for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
@@ -422,6 +395,37 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterSpectrumAnalysis::SetupLinearFitResultTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "line", fLinearFitResultTree );
+
+            if (fLinearFitResultTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fLinearFitResultTree );
+
+                fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
+                fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
+                fLinearFitResultTree->SetBranchAddress( "SlopeSigma", &fLineFitData.fSlopeSigma );
+                fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
+                fLinearFitResultTree->SetBranchAddress( "InterceptDev", &fLineFitData.fIntercept_deviation );
+                fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
+                fLinearFitResultTree->SetBranchAddress( "TrackDuration", &fLineFitData.fTrackDuration );
+                fLinearFitResultTree->SetBranchAddress( "SidebandSeparation", &fLineFitData.fSidebandSeparation );
+                fLinearFitResultTree->SetBranchAddress( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1 );
+                fLinearFitResultTree->SetBranchAddress( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2 );
+                fLinearFitResultTree->SetBranchAddress( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1 );
+                fLinearFitResultTree->SetBranchAddress( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2 );
+                fLinearFitResultTree->SetBranchAddress( "FFT_peak", &fLineFitData.fFFT_peak );
+                fLinearFitResultTree->SetBranchAddress( "FFT_SNR", &fLineFitData.fFFT_SNR );
+                fLinearFitResultTree->SetBranchAddress( "WindowBandwidth", &fLineFitData.fFit_width );
+                fLinearFitResultTree->SetBranchAddress( "NPoints", &fLineFitData.fNPoints );
+                fLinearFitResultTree->SetBranchAddress( "ProbeWidth", &fLineFitData.fProbeWidth );
+
+                return true;
+            }
+        }
+
         fLinearFitResultTree = new TTree("line", "Linear Fit Result");
         if( fLinearFitResultTree == NULL )
         {
@@ -450,7 +454,6 @@ namespace Katydid
 
         return true;
     }
-
 
 } /* namespace Katydid */
 
