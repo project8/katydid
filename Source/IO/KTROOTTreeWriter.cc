@@ -30,6 +30,7 @@ namespace Katydid
             KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >(name),
             fFilename("tree_output.root"),
             fFileFlag("recreate"),
+            fAccumulate(false),
             fFile(NULL),
             fTrees()
     {
@@ -52,6 +53,7 @@ namespace Katydid
         {
             SetFilename(node->GetValue("output-file", fFilename));
             SetFileFlag(node->GetValue("file-flag", fFileFlag));
+            SetAccumulate(node->GetValue("accumulate", fAccumulate));
         }
 
         // Command-line settings
@@ -110,6 +112,12 @@ namespace Katydid
                 (*it)->Write();
             }
         }
+
+        if( fAccumulate )
+        {
+            fFile->Purge();
+        }
+
         fTrees.clear();
         return;
     }
