@@ -35,6 +35,7 @@ namespace Katydid
             fFSFFTWSlot("fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal),
             fNormFSFFTWSlot("norm-fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal)
     {
+        fReverseFFT.SetRequestedState(KTReverseFFTW::kC2C);
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
