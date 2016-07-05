@@ -62,7 +62,10 @@ namespace Katydid
 
     bool KTAnalyticAssociator::InitializeWithHeader(KTEggHeader& header)
     {
-        if (! fForwardFFT.InitializeWithHeader(header)) return false;
+        if (! fForwardFFT.InitializeForRealAsComplexTDD(header.GetChannelHeader(0)->GetSliceSize()))
+        {
+            return false;
+        }
         return fReverseFFT.InitializeWithHeader(header);
     }
 
