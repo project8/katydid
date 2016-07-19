@@ -402,7 +402,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedTrackTree );
 
-                fProcessedTrackTree->SetBranchAddress("Track", "Katydid::TProcessedTrackData");
+                fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
 
                 return true;
             }
@@ -461,7 +461,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMultiTrackEventTree );
 
-                fMultiTrackEventTree->SetBranchAddress("Event", "Katydid::TMultiTrackEventData");
+                fMultiTrackEventTree->SetBranchAddress("Event", &fMultiTrackEventDataPtr);
 
                 return true;
             }
