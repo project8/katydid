@@ -73,6 +73,26 @@ namespace Katydid
             SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
 
             SetComplexAsIQ(node->GetValue("transform-complex-as-iq", fComplexAsIQ));
+
+            if( node->Has("transform-state") )
+            {
+                string intendedState(node->GetValue("transform-state"));
+                if (intendedState == "r2c") fState = kR2C;
+                else if (intendedState == "c2c") fState = kC2C;
+                else if (intendedState == "rasc2c") fState = kRasC2C;
+                else
+                {
+                    KTERROR(fftwlog, "Invalid transform state requested: <" << intendedState << ">");
+                    return false;
+                }
+            }
+            else
+            {
+                if (node->Has("transform-complex-as-iq"))
+                {
+                    KTWARN(fftwlog, "Transform-complex-as-iq was requested, but the transform-state was not specified; the former setting will be ignored");
+                }
+            }
         }
 
         if (fUseWisdom)
@@ -198,17 +218,23 @@ namespace Katydid
 
     bool KTForwardFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        if (header.GetTSDataType() == KTEggHeader::kReal)
+        if (fState == kNone)
         {
-            return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
+            if (header.GetTSDataType() == KTEggHeader::kReal)
+            {
+                return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
+            }
+            else // == KTEggHeader::kComplex || KTEggHeader::kIQ
+            {
+                if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
+                else fComplexAsIQ = false;
+                return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
+            }
         }
-        else // == KTEggHeader::kComplex || KTEggHeader::kIQ
+        else
         {
-            if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
-            else fComplexAsIQ = false;
-            return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
+            return InitializeFFT(fState, header.GetChannelHeader(0)->GetSliceSize());
         }
-
     }
 
     bool KTForwardFFTW::TransformRealData(KTTimeSeriesData& tsData)
