@@ -104,6 +104,27 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterSpectrumAnalysis::SetupDiscriminatedPoints1DTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "discPoints1D", fDiscPoints1DTree );
+
+            if( fDiscPoints1DTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fDiscPoints1DTree );
+
+                fDiscPoints1DTree->SetBranchAddress("Slice", &fDiscPoints1DData.fSlice);
+                fDiscPoints1DTree->SetBranchAddress("TimeInRunC", &fDiscPoints1DData.fTimeInRunC);
+                fDiscPoints1DTree->SetBranchAddress("Component", &fDiscPoints1DData.fComponent);
+                fDiscPoints1DTree->SetBranchAddress("Bin", &fDiscPoints1DData.fBin);
+                fDiscPoints1DTree->SetBranchAddress("Abscissa", &fDiscPoints1DData.fAbscissa);
+                fDiscPoints1DTree->SetBranchAddress("Ordinate", &fDiscPoints1DData.fOrdinate);
+                fDiscPoints1DTree->SetBranchAddress("Threshold", &fDiscPoints1DData.fThreshold);
+                
+                return true;
+            }
+        }
+
         fDiscPoints1DTree = new TTree("discPoints1D", "Discriminated Points 1D");
         if (fDiscPoints1DTree == NULL)
         {
@@ -193,6 +214,32 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterSpectrumAnalysis::SetupKDTreeTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "kdTree", fKDTreeTree );
+
+            if( fKDTreeTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fKDTreeTree );
+
+                fKDTreeTree->SetBranchAddress("Slice", &fKDTreePointData.fSlice);
+                fKDTreeTree->SetBranchAddress("TimeInRunC", &fKDTreePointData.fTimeInRunC);
+                fKDTreeTree->SetBranchAddress("Frequency", &fKDTreePointData.fFrequency);
+                fKDTreeTree->SetBranchAddress("Amplitude", &fKDTreePointData.fAmplitude);
+                fKDTreeTree->SetBranchAddress("NoiseFlag", &fKDTreePointData.fNoiseFlag);
+                fKDTreeTree->SetBranchAddress("NNDistance", &fKDTreePointData.fNNDistance);
+                fKDTreeTree->SetBranchAddress("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22);
+                fKDTreeTree->SetBranchAddress("KNNWithin0p32", &fKDTreePointData.fKNNWithin0p32);
+                fKDTreeTree->SetBranchAddress("KNNWithin0p45", &fKDTreePointData.fKNNWithin0p45);
+                fKDTreeTree->SetBranchAddress("KNNWithin0p7", &fKDTreePointData.fKNNWithin0p7);
+                fKDTreeTree->SetBranchAddress("KNNWithin1p0", &fKDTreePointData.fKNNWithin1p0);
+                fKDTreeTree->SetBranchAddress("KNNWithin1p4", &fKDTreePointData.fKNNWithin1p4);
+
+                return true;
+            }
+        }
+
         fKDTreeTree = new TTree("kdTree", "K-D Tree");
         if (fKDTreeTree == NULL)
         {
@@ -265,6 +312,23 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterSpectrumAnalysis::SetupAmplitudeDistributionTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "freqCand", fAmpDistTree );
+
+            if( fAmpDistTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fAmpDistTree );
+
+                fAmpDistTree->SetBranchAddress("Component", &fAmpDistData.fComponent);
+                fAmpDistTree->SetBranchAddress("FreqBin", &fAmpDistData.fFreqBin);
+                fAmpDistTree->SetBranchAddress("Distribution", &fAmpDistData.fDistribution);
+
+                return true;
+            }
+        }
+
         fAmpDistTree = new TTree("freqCand", "Frequency Analysis");
         if (fAmpDistTree == NULL)
         {
@@ -325,6 +389,26 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterSpectrumAnalysis::SetupHoughTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "hough", fHoughTree );
+
+            if( fHoughTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fHoughTree );
+
+                fHoughTree->SetBranchAddress("Component", &fHoughData.fComponent);
+                fHoughTree->SetBranchAddress("Transform", &fHoughData.fTransform);
+                fHoughTree->SetBranchAddress("XOffset", &fHoughData.fXOffset);
+                fHoughTree->SetBranchAddress("XScale", &fHoughData.fXScale);
+                fHoughTree->SetBranchAddress("YOffset", &fHoughData.fYOffset);
+                fHoughTree->SetBranchAddress("YScale", &fHoughData.fYScale);
+
+                return true;
+            }
+        }
+
         fHoughTree = new TTree("hough", "Hough Transform");
         if (fHoughTree == NULL)
         {
@@ -343,9 +427,4 @@ namespace Katydid
         return true;
     }
 
-
-
 } /* namespace Katydid */
-
-
-
