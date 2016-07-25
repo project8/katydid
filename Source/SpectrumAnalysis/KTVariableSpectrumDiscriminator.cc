@@ -198,8 +198,7 @@ namespace Katydid
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData)
     {
         KTDiscriminatedPoints2DData& newData = data.Of< KTDiscriminatedPoints2DData >();
-        KTDiscriminatedPoints1DData newDataSlice;
-        // The 1DData will be used with the discrimination methods already in place to iteratively achieve a 2D discrimination
+        KTDiscriminatedPoints1DData newDataSlice; // The 1DData will be used with the discrimination methods already in place to iteratively achieve a 2D discrimination
 
         if (fCalculateMinBin)
         {

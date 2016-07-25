@@ -1,4 +1,4 @@
-/**
+/*
  @file KTLinearDensityProbeFit.hh
  @brief Contains KTLinearDensityProbeFit
  @details Fits a set of 2D points to a line of maximum point density using a Gaussian error metric
@@ -54,8 +54,6 @@ namespace Katydid
      
      Signals:
      - "fit-result": void (KTDataPtr) -- Emitted upon minimization; Guarantees KTLinearFitResult
-     - "ts-header" void (KTDataPtr) -- Emitted upon construction of the egg header; Guarantees KTEggHeader
-     - "ts": void (KTDataPtr) -- Emitted upon power modulation computation; Guarantees KTTimeSeriesData
     */
 
     class KTLinearDensityProbeFit : public KTProcessor
@@ -117,8 +115,6 @@ namespace Katydid
 
         private:
             KTSignalData fLinearDensityFitSignal;
-            KTSignalData fTimeSeriesSignal;
-            KTSignalData fTSHeaderSignal;
 
             //***************
             // Slots

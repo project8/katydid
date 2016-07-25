@@ -1,8 +1,8 @@
 /*
  * KTSpectrumCollectionData.hh
  *
- *  Created on:Oct 9, 2015
- *      Author: nsoblath
+ *  Created on: Oct 9, 2015
+ *      Author: ezayas
  */
 
 #ifndef KTSPECTRUMCOLLECTIONDATA_HH_

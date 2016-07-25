@@ -23,9 +23,8 @@ namespace Katydid
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
     class KTSliceHeader;
-    //class KTDataPtr;
 
-    /*!
+    /*
      @class KTSpectrogramCollector
      @author E. Zayas
 
@@ -105,18 +104,15 @@ namespace Katydid
             };
 
             // The spectrograms are stored in a vector of sets of pairs of KTDataPtr and KTPSCollectionData. The levels to this hierarchy are:
-            //      Vector - each element corresponding to a component
-            //      Set -    each element corresponding to a track
-            //      Pair -   the KTDataPtr which contains the spectrogram, and a pointer to the spectrogram
-            // It is necessary to store the KTDataPtr because the signal contain this object when it emits, and each spectrogram must have a
+            //      Vector - each element corresponds to a component
+            //      Set    - each element corresponds to a track
+            //      Pair   - the KTDataPtr which contains the spectrogram, and a pointer to the spectrogram
+            // It is necessary to store the KTDataPtr because the signal must contain this object when it emits, and each spectrogram must have a
             // unique associated KTDataPtr
 
             std::vector< std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
 
         private:
-            // Perhaps there are some non-public helper functions?
-
-            // And then any non-configurable member variables
 
             //***************
             // Signals

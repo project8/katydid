@@ -1,8 +1,8 @@
 /*
- * KTPSCollectionData.cc
+ * KTSpectrumCollectionData.cc
  *
- *  Created on: July 22, 2014
- *      Author: nsoblath
+ *  Created on: Oct 9, 2015
+ *      Author: ezayas
  */
 
 #include "KTSpectrumCollectionData.hh"
