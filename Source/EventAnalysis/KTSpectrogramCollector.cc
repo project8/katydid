@@ -17,8 +17,6 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTData.hh"
 
-#include <set>
-
 namespace Katydid
 {
     KTLOGGER(evlog, "KTSpectrogramCollector");
@@ -37,9 +35,15 @@ namespace Katydid
             fLeadTime(0.002),
             fTrailTime(0.002),
             fWaterfallSignal("waterfall", this),
-            fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
-            fPSSlot("ps", this, &KTSpectrogramCollector::ReceiveSpectrum)
+            fWaterfallFinishedSignal("waterfall-finished", this),
+ //           fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
+ //           fPSSlot("ps", this, &KTSpectrogramCollector::ReceiveSpectrum),
+            fSignalMap()
     {
+        RegisterSlot( "track", this, &KTSpectrogramCollector::ReceiveTrack );
+
+        RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunction< KTPowerSpectrumData > );
+        fSignalMap.insert( SignalMapValue( &typeid( KTPSCollectionData ), SignalSet( &fWaterfallSignal, &fWaterfallFinishedSignal ) ) );
     }
 
     KTSpectrogramCollector::~KTSpectrogramCollector()
@@ -88,6 +92,11 @@ namespace Katydid
 
     bool KTSpectrogramCollector::AddTrack( KTProcessedTrackData& trackData, unsigned component )
     {
+        SpectrogramSetMap dataMap;
+        SpectrogramCollectorTrackData trackDataStruct( dataMap, trackData );
+
+        /*
+
         // Create new KTDataPtr and PSCollectionData
         KTDataPtr ptr( new KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
@@ -104,8 +113,11 @@ namespace Katydid
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
         newWaterfall->SetFilling( false );
 
+*/
+
         // Add to fWaterfallSets
-        fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
+        //fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
+        fWaterfallSets[component].insert( trackDataStruct );
 
         KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
         KTINFO(evlog, "Track length: " << trackData.GetEndTimeInRunC() - trackData.GetStartTimeInRunC());
@@ -113,7 +125,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component )
     {
         // Iterate through each track which has been added
@@ -144,7 +156,7 @@ namespace Katydid
 
         return true;
     }
-
+*/
     bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
     {
         if( data.GetIsCut() )
@@ -157,7 +169,7 @@ namespace Katydid
 
         // Increase size of fWaterfallSets if necessary
         int fWSsize = fWaterfallSets.size();
-        std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
+        std::set< SpectrogramCollectorTrackData, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
             fWaterfallSets.push_back( blankSet );
 
@@ -172,6 +184,19 @@ namespace Katydid
     
     bool KTSpectrogramCollector::ReceiveSpectrum( KTPowerSpectrumData& data, KTSliceHeader& sliceData )
     {
+        unsigned nComponents = fWaterfallSets.size();
+        for( unsigned iComponent = 0; iComponent < nComponents; ++iComponent )
+        {
+            for( SpectrogramCollectorTrackDataSetIt it = fWaterfallSets[iComponent].begin(); it != fWaterfallSets[iComponent].end(); ++it )
+            {
+                SpectrogramCollector& scDataStruct = GetOrCreateSpectrogramSet< KTPowerSpectrumData >( iComponent, it );
+                KTPSCollectionData& psCollData = scDataStruct.fData->Of< KTPSCollectionData >();
+                ReceiveSpectrumCore( data, scDataStruct, psCollData, sliceData, iComponent );
+            }
+        }
+    }
+    bool KTSpectrogramCollector::ReceiveSpectrumCore( KTPowerSpectrumData& data, SpectrogramCollector& scDataStruct, KTPSCollectionData& psCollData, KTSliceHeader& sliceData, unsigned iComponent )
+    {
         KTDEBUG(evlog, "Receiving Spectrum");
         if (fCalculateMinBin)
         {
@@ -183,7 +208,7 @@ namespace Katydid
             SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
             KTDEBUG(evlog, "Maximum bin set to " << fMaxBin);
         }
-
+/*
         unsigned nComponents = data.GetNComponents();
         
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
@@ -194,6 +219,31 @@ namespace Katydid
                 return false;
             }
         }
+*/
+
+        KTPowerSpectrum& ps = *data.GetSpectrum( iComponent );
+
+        // If the slice time coincides with the track time window, add the spectrum
+        if( sliceData.GetTimeInRun() >= psCollData.GetStartTime() && sliceData.GetTimeInRun() <= psCollData.GetEndTime() )
+        {
+            psCollData.AddSpectrum( sliceData.GetTimeInRun(), &ps );
+            psCollData.SetDeltaT( sliceData.GetSliceLength() );
+            psCollData.SetFilling( true );
+        }
+        else
+        {
+            // If GetFilling() is true, we've reached the end of the track time window
+            if( psCollData.GetFilling() )
+            {
+                psCollData.SetFilling( false );
+
+                KTINFO(evlog, "Reached the end of a track time window");
+                //FinishSC( it->first );
+            }
+            else
+                psCollData.SetFilling( false );
+        }        
+
         KTINFO(evlog, "Spectrum finished processing. Awaiting next spectrum");
 
         return true;
