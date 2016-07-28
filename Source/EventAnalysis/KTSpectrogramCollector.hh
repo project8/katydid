@@ -109,7 +109,7 @@ namespace Katydid
                 }
             };
             
-            std::vector< std::set< SpectrogramCollectorTrackData, KTTrackCompare > > fWaterfallSets;
+            mutable std::vector< std::set< SpectrogramCollectorTrackData, KTTrackCompare > > fWaterfallSets;
 
             typedef std::set< SpectrogramCollectorTrackData, KTTrackCompare >::iterator SpectrogramCollectorTrackDataSetIt;
 
@@ -180,7 +180,7 @@ namespace Katydid
             const SpectrogramCollector& GetSpectrogramSet( unsigned component, SpectrogramCollectorTrackData trackDataStruct ) const;
 
             template< class XDataType >
-            SpectrogramCollector& GetOrCreateSpectrogramSet( unsigned component, SpectrogramCollectorTrackDataSetIt trackDataStruct );
+            SpectrogramCollector& GetOrCreateSpectrogramSet( unsigned component, SpectrogramSetMap &dMap );
 
             // The spectrograms are stored in a vector of sets of pairs of KTDataPtr and KTPSCollectionData. The levels to this hierarchy are:
             //      Vector - each element corresponds to a component
@@ -309,9 +309,9 @@ namespace Katydid
     }
 
     template< class XDataType >
-    KTSpectrogramCollector::SpectrogramCollector& KTSpectrogramCollector::GetOrCreateSpectrogramSet( unsigned component, SpectrogramCollectorTrackDataSetIt trackDataStruct )
+    KTSpectrogramCollector::SpectrogramCollector& KTSpectrogramCollector::GetOrCreateSpectrogramSet( unsigned component, SpectrogramSetMap &dMap )
     {
-        fLastSpectrogramCollectorPtr = trackDataStruct->fDataMap[&typeid( XDataType )];
+        fLastSpectrogramCollectorPtr = &dMap[&typeid( XDataType )];
         return *fLastSpectrogramCollectorPtr;
     }
 
