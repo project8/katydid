@@ -26,7 +26,7 @@ namespace Katydid {
             explicit KTHDF5Writer(const std::string& name = "hdf5-writer");
             virtual ~KTHDF5Writer();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
             bool WriteEggHeader(KTEggHeader& header);
 
         private:

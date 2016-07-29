@@ -8,7 +8,6 @@
 #include "KTROOTSpectrogramWriter.hh"
 
 #include "KTCommandLineOption.hh"
-#include "KTParam.hh"
 
 #include <algorithm>
 
@@ -43,17 +42,17 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTROOTSpectrogramWriter::Configure(const KTParamNode* node)
+    bool KTROOTSpectrogramWriter::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetFileFlag(node->GetValue("file-flag", fFileFlag));
-            SetMinFreq(node->GetValue("min-freq", fMinFreq));
-            SetMaxFreq(node->GetValue("max-freq", fMaxFreq));
-            SetMinTime(node->GetValue("min-time", fMinTime));
-            SetMaxTime(node->GetValue("max-time", fMaxTime));
+            SetFilename(node->get_value("output-file", fFilename));
+            SetFileFlag(node->get_value("file-flag", fFileFlag));
+            SetMinFreq(node->get_value("min-freq", fMinFreq));
+            SetMaxFreq(node->get_value("max-freq", fMaxFreq));
+            SetMinTime(node->get_value("min-time", fMinTime));
+            SetMaxTime(node->get_value("max-time", fMaxTime));
         }
 
         // Command-line settings

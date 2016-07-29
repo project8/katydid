@@ -94,7 +94,7 @@ namespace Katydid
             KTROOTSpectrogramWriter(const std::string& name = "root-spectrogram-writer");
             virtual ~KTROOTSpectrogramWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);

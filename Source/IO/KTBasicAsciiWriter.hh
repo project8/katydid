@@ -28,7 +28,7 @@ namespace Katydid
 
             // Configuration
         public:
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
         protected:
             std::ofstream* fOutputStream;
             std::string fOutputFilename;

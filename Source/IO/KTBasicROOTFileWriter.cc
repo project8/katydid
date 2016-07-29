@@ -8,7 +8,7 @@
 #include "KTBasicROOTFileWriter.hh"
 
 #include "KTCommandLineOption.hh"
-#include "KTParam.hh"
+//#include "KTParam.hh"
 
 using std::string;
 
@@ -35,13 +35,13 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTBasicROOTFileWriter::Configure(const KTParamNode* node)
+    bool KTBasicROOTFileWriter::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetFileFlag(node->GetValue("file-flag", fFileFlag));
+            SetFilename(node->get_value("output-file", fFilename));
+            SetFileFlag(node->get_value("file-flag", fFileFlag));
         }
 
         // Command-line settings

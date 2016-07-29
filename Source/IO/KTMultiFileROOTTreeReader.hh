@@ -75,7 +75,7 @@ namespace Katydid
             KTMultiFileROOTTreeReader(const std::string& name = "mf-root-tree-reader");
             virtual ~KTMultiFileROOTTreeReader();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             const std::deque< std::string >& GetFilenames() const;
             void AddFilename(const std::string& filename);

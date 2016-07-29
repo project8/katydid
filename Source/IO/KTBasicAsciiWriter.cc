@@ -22,9 +22,9 @@ namespace Katydid {
     }
 
     // Configuration method
-    bool KTBasicASCIIWriter::Configure(const KTParamNode* n) {
+    bool KTBasicASCIIWriter::Configure(const scarab::param_node* n) {
         if (n != NULL) {
-            fOutputFilename = n->GetValue< std::string >("output-file",fOutputFilename);
+            fOutputFilename = n->get_value< std::string >("output-file",fOutputFilename);
             if( this->OpenFile() == false ) {
                 KTWARN(asciilog, "ASCII writer couldn't open output file - no data will be written!");
             }

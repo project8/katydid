@@ -48,7 +48,7 @@ namespace Katydid
             KTTerminalWriter(const std::string& name = "terminal-writer");
             virtual ~KTTerminalWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
     };
 

@@ -70,7 +70,7 @@ namespace Katydid
             KTDataDisplay(const std::string& name = "data-display");
             virtual ~KTDataDisplay();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetWidth() const;
             void SetWidth(unsigned width);

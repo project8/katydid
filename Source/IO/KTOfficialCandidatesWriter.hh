@@ -77,7 +77,7 @@ namespace Katydid
             KTOfficialCandidatesWriter(const std::string& name = "official-candidate-writer");
             virtual ~KTOfficialCandidatesWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool OpenFile();

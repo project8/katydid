@@ -8,7 +8,6 @@
 #include "KTROOTTreeWriter.hh"
 
 #include "KTCommandLineOption.hh"
-#include "KTParam.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -46,14 +45,14 @@ namespace Katydid
         delete fFile;
     }
 
-    bool KTROOTTreeWriter::Configure(const KTParamNode* node)
+    bool KTROOTTreeWriter::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetFileFlag(node->GetValue("file-flag", fFileFlag));
-            SetAccumulate(node->GetValue("accumulate", fAccumulate));
+            SetFilename(node->get_value("output-file", fFilename));
+            SetFileFlag(node->get_value("file-flag", fFileFlag));
+            SetAccumulate(node->get_value("accumulate", fAccumulate));
         }
 
         // Command-line settings
