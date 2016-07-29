@@ -22,12 +22,6 @@
 #include <vector>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -91,7 +85,7 @@ namespace Katydid
             KTReverseFFTW(const std::string& name = "reverse-fftw");
             virtual ~KTReverseFFTW();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);

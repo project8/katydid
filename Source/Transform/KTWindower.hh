@@ -17,12 +17,6 @@
 #include <string>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -64,7 +58,7 @@ namespace Katydid
             KTWindower(const std::string& name = "windower");
             virtual ~KTWindower();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             KTWindowFunction* GetWindowFunction() const;
             void SetWindowFunction(KTWindowFunction* wf);

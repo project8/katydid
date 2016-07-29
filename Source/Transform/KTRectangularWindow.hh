@@ -34,7 +34,7 @@ namespace Katydid
             KTRectangularWindow(const std::string& name = "rectangular");
             virtual ~KTRectangularWindow();
 
-            virtual bool ConfigureWFSubclass(const KTParamNode* node);
+            virtual bool ConfigureWFSubclass(const scarab::param_node* node);
 
             virtual double GetWeight(double time) const;
 

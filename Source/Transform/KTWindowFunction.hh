@@ -19,12 +19,6 @@
 class TH1D;
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -55,8 +49,8 @@ namespace Katydid
             KTWindowFunction(const std::string& name = "generic-window-function");
             virtual ~KTWindowFunction();
 
-            virtual bool Configure(const KTParamNode* node);
-            virtual bool ConfigureWFSubclass(const KTParamNode* node) = 0;
+            virtual bool Configure(const scarab::param_node* node);
+            virtual bool ConfigureWFSubclass(const scarab::param_node* node) = 0;
 
             /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.

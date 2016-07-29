@@ -22,12 +22,6 @@
 #include <vector>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -107,7 +101,7 @@ namespace Katydid
             KTForwardFFTW(const std::string& name = "forward-fftw");
             virtual ~KTForwardFFTW();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);

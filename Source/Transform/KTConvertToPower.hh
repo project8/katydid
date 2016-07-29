@@ -14,12 +14,6 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -60,7 +54,7 @@ namespace Katydid
             KTConvertToPower(const std::string& name = "convert-to-power");
             virtual ~KTConvertToPower();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         private:
 
