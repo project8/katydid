@@ -189,7 +189,7 @@ namespace Katydid
         {
             for( SpectrogramCollectorTrackDataSetIt it = fWaterfallSets[iComponent].begin(); it != fWaterfallSets[iComponent].end(); ++it )
             {
-                SpectrogramCollector& scDataStruct = GetOrCreateSpectrogramSet< KTPowerSpectrumData >( iComponent, it->fDataMap );
+                SpectrogramCollector& scDataStruct = GetOrCreateSpectrogramSet< KTPowerSpectrumData >( iComponent, it );
                 KTPSCollectionData& psCollData = scDataStruct.fData->Of< KTPSCollectionData >();
                 ReceiveSpectrumCore( data, scDataStruct, psCollData, sliceData, iComponent );
             }
