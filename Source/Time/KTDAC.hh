@@ -15,12 +15,12 @@
 #include "KTSlot.hh"
 
 #include <vector>
-
+/*
 namespace Nymph
 {
     class KTParamNode;
 }
-;
+;*/
 
 namespace Katydid
 {
@@ -65,7 +65,7 @@ namespace Katydid
             KTDAC(const std::string& name = "dac");
             virtual ~KTDAC();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetNChannels() const;
             void SetNChannels(unsigned num);

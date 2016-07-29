@@ -15,7 +15,6 @@
 #include "KTEggReader.hh"
 #include "KTFactory.hh"
 #include "KTProcSummary.hh"
-#include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
@@ -57,13 +56,13 @@ namespace Katydid
         delete fDAC;
     }
 
-    bool KTEggProcessor::Configure(const KTParamNode* node)
+    bool KTEggProcessor::Configure(const scarab::param_node* node)
     {
         // First determine the egg reader type
         // config file setting
         if (node != NULL)
         {
-            SetEggReaderType( node->GetValue("egg-reader", GetEggReaderType()) );
+            SetEggReaderType( node->get_value("egg-reader", GetEggReaderType()) );
         }
         // command line setting (overrides config file, if used)
         if (fCLHandler->IsCommandLineOptSet("use-egg1-reader"))
@@ -76,16 +75,16 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNSlices(node->GetValue< unsigned >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetValue< unsigned >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->GetValue("filename", fFilename));
+            SetNSlices(node->get_value< unsigned >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->get_value< unsigned >("progress-report-interval", fProgressReportInterval));
+            SetFilename(node->get_value("filename", fFilename));
 
             // specify the length of the time series
-            fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
+            fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->GetValue< unsigned >("stride", fSliceSize);
+            fStride = node->get_value< unsigned >("stride", fSliceSize);
             // specify the time in the run to start
-            fStartTime = node->GetValue< double >("start-time", fStartTime);
+            fStartTime = node->get_value< double >("start-time", fStartTime);
 
             if (fSliceSize == 0)
             {
@@ -93,14 +92,14 @@ namespace Katydid
                 return false;
             }
 
-            const KTParamNode* dacNode = node->NodeAt("dac");
+            const scarab::param_node* dacNode = node->node_at("dac");
             if (dacNode != NULL)
             {
                 fDAC->Configure(dacNode);
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->GetValue< bool >("normalize-voltages", fNormalizeVoltages));
+            SetNormalizeVoltages(node->get_value< bool >("normalize-voltages", fNormalizeVoltages));
         }
 
         // Command-line settings

@@ -20,12 +20,6 @@
 #include <vector>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -79,7 +73,7 @@ namespace Katydid
             KTDigitizerTests(const std::string& name = "digitizer-tests");
             virtual ~KTDigitizerTests();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetNDigitizerBits() const;
             unsigned GetNDigitizerLevels() const;

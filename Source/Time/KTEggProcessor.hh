@@ -17,12 +17,6 @@
 #include "KTEggHeader.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -91,7 +85,7 @@ namespace Katydid
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, NSlices);
             MEMBERVARIABLE(unsigned, ProgressReportInterval);
