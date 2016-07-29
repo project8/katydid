@@ -11,6 +11,7 @@
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
+#include "KTLogger.hh"
 
 #include "KTSpectrumCollectionData.hh"
 
@@ -20,6 +21,8 @@
 namespace Katydid
 {
     using namespace Nymph;
+    KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
+
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
     class KTSliceHeader;
@@ -90,9 +93,9 @@ namespace Katydid
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
-            bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component);
+            bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit);
             bool ReceiveTrack(KTProcessedTrackData& data);
-            bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData);
+            bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit);
             void FinishSC( KTDataPtr data );
 
             struct KTTrackCompare
@@ -127,7 +130,7 @@ namespace Katydid
 
         private:
             KTSlotDataOneType< KTProcessedTrackData > fTrackSlot;
-            KTSlotDataTwoTypes< KTPowerSpectrumData, KTSliceHeader > fPSSlot;
+            void SlotFunctionPSData( KTDataPtr data );
 
     };
 
@@ -198,6 +201,38 @@ namespace Katydid
     inline void KTSpectrogramCollector::SetTrailTime(double t)
     {
         fTrailTime = t;
+        return;
+    }
+
+    void KTSpectrogramCollector::SlotFunctionPSData( KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTPowerSpectrumData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTPowerSpectrumData >!");
+            return;
+        }
+        if (! data->Has< KTSliceHeader >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
+            return;
+        }
+
+        // If the slice is the last, set a flag to force a signal emit
+        bool force = data->GetLastData();
+        if (force)
+        {
+            KTDEBUG(avlog_hh, "Reached last-data, forcing emit");
+        }
+
+        // Call the function
+        if (! ReceiveSpectrum(data->Of< KTPowerSpectrumData >(), data->Of< KTSliceHeader >(), force))
+        {
+            KTERROR(avlog_hh, "Something went wrong while analyzing data with type < KTPSCollectionData >");
+            return;
+        }
+    
         return;
     }
 }

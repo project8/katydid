@@ -298,7 +298,7 @@ namespace Katydid
         double alpha = fMinFrequency;
         double bestAlpha = 0, bestError = 0, error = 0;
         
-        KTINFO(sdlog, "Slope = " << newData.GetSlope( component ));
+        KTINFO(sdlog, "Performing density probe test with fProbeWidth = " << fProbeWidth << " and fStepSize = " << fStepSize);
         bestAlpha = findIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
 

@@ -37,9 +37,9 @@ namespace Katydid
             fLeadTime(0.002),
             fTrailTime(0.002),
             fWaterfallSignal("waterfall", this),
-            fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
-            fPSSlot("ps", this, &KTSpectrogramCollector::ReceiveSpectrum)
+            fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack)
     {
+        RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunctionPSData );
     }
 
     KTSpectrogramCollector::~KTSpectrogramCollector()
@@ -114,13 +114,14 @@ namespace Katydid
         return true;
     }
 
-    bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component )
+    bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit )
     {
         // Iterate through each track which has been added
         for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
             // If the slice time coincides with the track time window, add the spectrum
-            if( slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
+            // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
+            if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
                 it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
                 it->second->SetDeltaT( slice.GetSliceLength() );
@@ -129,6 +130,7 @@ namespace Katydid
             else
             {
                 // If GetFilling() is true, we've reached the end of the track time window
+                // forceEmit=true sends all tracks to this clause, and those still filling will be closed & signals emitted
                 if( it->second->GetFilling() )
                 {
                     it->second->SetFilling( false );
@@ -170,7 +172,7 @@ namespace Katydid
         return true;
     }
     
-    bool KTSpectrogramCollector::ReceiveSpectrum( KTPowerSpectrumData& data, KTSliceHeader& sliceData )
+    bool KTSpectrogramCollector::ReceiveSpectrum( KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit )
     {
         KTDEBUG(evlog, "Receiving Spectrum");
         if (fCalculateMinBin)
@@ -188,7 +190,7 @@ namespace Katydid
         
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent))
+            if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent, forceEmit))
             {
                 KTERROR(evlog, "Spectrogram collector could not receive spectrum! (component " << iComponent << ")");
                 return false;
