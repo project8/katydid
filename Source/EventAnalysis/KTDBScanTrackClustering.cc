@@ -11,7 +11,6 @@
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTNOFactory.hh"
-#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTTimeFrequencyPolar.hh"
@@ -51,11 +50,11 @@ namespace Katydid
     {
     }
 
-    bool KTDBScanTrackClustering::Configure(const KTParamNode* node)
+    bool KTDBScanTrackClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetMinPoints(node->GetValue("min-points", GetMinPoints()));
+        SetMinPoints(node->get_value("min-points", GetMinPoints()));
 
         /*
         if (node->Has("radii"))

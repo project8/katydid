@@ -22,7 +22,6 @@
 #include "KTWignerVilleData.hh"
 
 #include <list>
-//#include <map>
 #include <set>
 #include <utility>
 
@@ -141,7 +140,7 @@ namespace Katydid
             KTMultiSliceClustering(const std::string& name = "multi-slice-clustering");
             virtual ~KTMultiSliceClustering();
 
-            bool ConfigureSubClass(const KTParamNode* node);
+            bool ConfigureSubClass(const scarab::param_node* node);
 
             double GetMaxFrequencySeparation() const;
             void SetMaxFrequencySeparation(double freqSep);

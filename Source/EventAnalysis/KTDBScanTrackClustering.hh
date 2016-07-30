@@ -19,11 +19,6 @@
 #include <set>
 #include <vector>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
 
 namespace Katydid
 {
@@ -73,7 +68,7 @@ namespace Katydid
             KTDBScanTrackClustering(const std::string& name = "dbscan-track-clustering");
             virtual ~KTDBScanTrackClustering();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, MinPoints);
             //MEMBERVARIABLEREF(Point, Radii);

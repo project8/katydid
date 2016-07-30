@@ -17,18 +17,12 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTMultiTrackEventData.hh"
-//#include "KTProcessedTrackData.hh"
 
 #include <algorithm>
 #include <set>
 #include <vector>
 #include <list>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-//;
 
 namespace Katydid
 {
@@ -69,7 +63,7 @@ namespace Katydid
             KTMultiPeakEventBuilder(const std::string& name = "multi-peak-event-builder");
             virtual ~KTMultiPeakEventBuilder();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, SidebandTimeTolerance);
 

@@ -15,11 +15,6 @@
 
 #include <cmath>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
 
 namespace Katydid
 {
@@ -56,7 +51,7 @@ namespace Katydid
             KTTrackProcessing(const std::string& name = "track-proc");
             virtual ~KTTrackProcessing();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetPointLineDistCut1() const;
             void SetPointLineDistCut1(double dist);

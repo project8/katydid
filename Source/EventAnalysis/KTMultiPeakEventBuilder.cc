@@ -11,7 +11,6 @@
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTNOFactory.hh"
-#include "KTParam.hh"
 #include "KTProcessedTrackData.hh"
 
 #include <list>
@@ -51,13 +50,12 @@ namespace Katydid
     {
     }
 
-    bool KTMultiPeakEventBuilder::Configure(const KTParamNode* node)
+    bool KTMultiPeakEventBuilder::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetSidebandTimeTolerance(node->GetValue("sideband-time-tol", GetSidebandTimeTolerance()));
-        SetJumpTimeTolerance(node->GetValue("jump-time-tol", GetJumpTimeTolerance()));
-        //SetJumpFreqTolerance(node->GetValue("jump-freq-tol", GetJumpFreqTolerance()));
+        SetSidebandTimeTolerance(node->get_value("sideband-time-tol", GetSidebandTimeTolerance()));
+        SetJumpTimeTolerance(node->get_value("jump-time-tol", GetJumpTimeTolerance()));
 
         return true;
     }

@@ -21,11 +21,6 @@
 #include <set>
 #include <vector>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
 
 namespace Katydid
 {
@@ -106,7 +101,7 @@ namespace Katydid
             KTDBScanEventClustering(const std::string& name = "dbscan-event-clustering");
             virtual ~KTDBScanEventClustering();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLEREF(Point, Radii);

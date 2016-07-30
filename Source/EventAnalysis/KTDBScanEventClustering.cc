@@ -11,7 +11,6 @@
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTNOFactory.hh"
-#include "KTParam.hh"
 #include "KTProcessedTrackData.hh"
 
 #ifndef NDEBUG
@@ -55,22 +54,22 @@ namespace Katydid
     {
     }
 
-    bool KTDBScanEventClustering::Configure(const KTParamNode* node)
+    bool KTDBScanEventClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetMinPoints(node->GetValue("min-points", GetMinPoints()));
+        SetMinPoints(node->get_value("min-points", GetMinPoints()));
 
-        if (node->Has("radii"))
+        if (node->has("radii"))
         {
-            const KTParamArray* radii = node->ArrayAt("radii");
-            if (radii->Size() != fNDimensions / fNPointsPerTrack)
+            const scarab::param_array* radii = node->array_at("radii");
+            if (radii->size() != fNDimensions / fNPointsPerTrack)
             {
-                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->Size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
+                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
                 return false;
             }
-            fRadii(0) = radii->GetValue< double >(0);
-            fRadii(1) = radii->GetValue< double >(1);
+            fRadii(0) = radii->get_value< double >(0);
+            fRadii(1) = radii->get_value< double >(1);
         }
 
         return true;

@@ -65,7 +65,7 @@ namespace Katydid
             KTFrequencyCandidateIdentifier(const std::string& name = "frequency-candidate-identifier");
             virtual ~KTFrequencyCandidateIdentifier();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData);

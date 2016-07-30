@@ -16,11 +16,8 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 using std::string;
-
-
 
 
 namespace Katydid
@@ -44,7 +41,7 @@ namespace Katydid
     {
     }
 
-    bool KTFrequencyCandidateIdentifier::Configure(const KTParamNode*)
+    bool KTFrequencyCandidateIdentifier::Configure(const scarab::param_node*)
     {
         return true;
     }

@@ -14,12 +14,6 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -52,7 +46,7 @@ namespace Katydid
             KTCandidateTrackFinder(const std::string& name = "candidate-track-finder");
             virtual ~KTCandidateTrackFinder();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         private:
 
