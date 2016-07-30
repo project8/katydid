@@ -10,7 +10,6 @@
 #define KTCORRELATOR_HH_
 
 #include "KTFrequencySpectrumDataPolar.hh"
-#include "KTParam.hh"
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
@@ -61,7 +60,7 @@ namespace Katydid
             KTCorrelator(const std::string& name = "correlator");
             virtual ~KTCorrelator();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);

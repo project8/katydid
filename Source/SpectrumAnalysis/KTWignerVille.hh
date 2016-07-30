@@ -15,7 +15,6 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -88,7 +87,7 @@ namespace Katydid
             KTWignerVille(const std::string& name = "wigner-ville");
             virtual ~KTWignerVille();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);

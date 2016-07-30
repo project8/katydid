@@ -15,12 +15,6 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -55,7 +49,7 @@ namespace Katydid
             KTConsensusThresholding(const std::string& name = "consensus-thresholding");
             virtual ~KTConsensusThresholding();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, MembershipRadius);
             MEMBERVARIABLE(unsigned, MinNumberVotes);

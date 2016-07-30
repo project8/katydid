@@ -16,12 +16,6 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -60,7 +54,7 @@ namespace Katydid
             KTNNFilter(const std::string& name = "nn-filter");
             virtual ~KTNNFilter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, MaxDist);
             MEMBERVARIABLE(double, Radius);

@@ -19,12 +19,6 @@
 #include <map>
 #include <typeinfo>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -138,7 +132,7 @@ namespace Katydid
             KTDataAccumulator(const std::string& name = "data-accumulator");
             virtual ~KTDataAccumulator();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetAccumulatorSize() const;
             double GetAveragingFrac() const;

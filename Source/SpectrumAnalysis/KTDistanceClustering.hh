@@ -50,7 +50,7 @@ namespace Katydid
             KTDistanceClustering(const std::string& name = "distance-clustering");
             virtual ~KTDistanceClustering();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetMaxFrequencyDistance() const;
             void SetMaxFrequencyDistance(double freq);

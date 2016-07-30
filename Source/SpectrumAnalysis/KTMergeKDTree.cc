@@ -9,7 +9,6 @@
 
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 using std::string;
 
@@ -37,7 +36,7 @@ namespace Katydid
     {
     }
 
-    bool KTMergeKDTree::Configure(const KTParamNode* node)
+    bool KTMergeKDTree::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return true;
 

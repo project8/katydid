@@ -9,7 +9,6 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -53,16 +52,16 @@ namespace Katydid
     {
     }
 
-    bool KTCreateKDTree::Configure(const KTParamNode* node)
+    bool KTCreateKDTree::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetWindowSize(node->GetValue("window-size", GetWindowSize()));
-        SetWindowOverlap(node->GetValue("window-overlap", GetWindowOverlap()));
+        SetWindowSize(node->get_value("window-size", GetWindowSize()));
+        SetWindowOverlap(node->get_value("window-overlap", GetWindowOverlap()));
 
-        if (node->Has("distance-method"))
+        if (node->has("distance-method"))
         {
-            string distMethod = node->GetValue("distance-method");
+            string distMethod = node->get_value("distance-method");
             if (distMethod == string("euclidean"))
             {
                 SetDistanceMethod(KTKDTreeData::kEuclidean);
@@ -77,10 +76,10 @@ namespace Katydid
             }
         }
 
-        SetMaxLeafSize(node->GetValue("max-leaf-size", GetMaxLeafSize()));
+        SetMaxLeafSize(node->get_value("max-leaf-size", GetMaxLeafSize()));
 
-        SetTimeRadius(node->GetValue("time-radius", GetTimeRadius()));
-        SetFreqRadius(node->GetValue("freq-radius", GetFreqRadius()));
+        SetTimeRadius(node->get_value("time-radius", GetTimeRadius()));
+        SetFreqRadius(node->get_value("freq-radius", GetFreqRadius()));
 
         return true;
     }

@@ -14,12 +14,6 @@
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -67,7 +61,7 @@ namespace Katydid
             KTGainVariationProcessor(const std::string& name = "gain-variation");
             virtual ~KTGainVariationProcessor();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             bool GetNormalize() const;
             void SetNormalize(bool flag);

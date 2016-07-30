@@ -14,12 +14,6 @@
 #include "KTGainVariationData.hh"
 #include "KTSlot.hh"
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -69,7 +63,7 @@ namespace Katydid
             KTGainNormalization(const std::string& name = "gain-normalization");
             virtual ~KTGainNormalization();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);

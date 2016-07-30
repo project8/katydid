@@ -14,7 +14,6 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTParam.hh"
 #include "KTWignerVilleData.hh"
 
 using std::string;
@@ -65,44 +64,44 @@ namespace Katydid
     {
     }
 
-    bool KTAmplitudeDistributor::Configure(const KTParamNode* node)
+    bool KTAmplitudeDistributor::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("min-frequency"))
+        if (node->has("min-frequency"))
         {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-frequency"))
+        if (node->has("max-frequency"))
         {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
-        }
-
-        if (node->Has("min-bin"))
-        {
-            SetMinBin(node->GetValue< unsigned >("min-bin"));
-        }
-        if (node->Has("max-bin"))
-        {
-            SetMaxBin(node->GetValue< unsigned >("max-bin"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        SetDistNBins(node->GetValue< unsigned >("dist-n-bins", fDistNBins));
-
-        SetUseBuffer(node->GetValue< bool >("use-buffers", fUseBuffer));
-
-        if (node->Has("buffer-size"))
+        if (node->has("min-bin"))
         {
-            SetBufferSize(node->GetValue< unsigned >("buffer-size"));
+            SetMinBin(node->get_value< unsigned >("min-bin"));
+        }
+        if (node->has("max-bin"))
+        {
+            SetMaxBin(node->get_value< unsigned >("max-bin"));
         }
 
-        if (node->Has("dist-min"))
+        SetDistNBins(node->get_value< unsigned >("dist-n-bins", fDistNBins));
+
+        SetUseBuffer(node->get_value< bool >("use-buffers", fUseBuffer));
+
+        if (node->has("buffer-size"))
         {
-            SetDistMin(node->GetValue< double >("dist-min"));
+            SetBufferSize(node->get_value< unsigned >("buffer-size"));
         }
-        if (node->Has("dist-max"))
+
+        if (node->has("dist-min"))
         {
-            SetDistMax(node->GetValue< double >("dist-max"));
+            SetDistMin(node->get_value< double >("dist-min"));
+        }
+        if (node->has("dist-max"))
+        {
+            SetDistMax(node->get_value< double >("dist-max"));
         }
 
         return true;

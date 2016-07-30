@@ -8,11 +8,8 @@
 #include "KTDistanceClustering.hh"
 
 #include "KTCluster1DData.hh"
-//#include "KTCluster2DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
-//#include "KTDiscriminatedPoints2DData.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
 
 #include <cmath>
 #include <map>
@@ -43,18 +40,18 @@ namespace Katydid
     {
     }
 
-    bool KTDistanceClustering::Configure(const KTParamNode* node)
+    bool KTDistanceClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("max-frequency-distance"))
+        if (node->has("max-frequency-distance"))
         {
-            SetMaxFrequencyDistance(node->GetValue< double >("max-frequency-distance"));
+            SetMaxFrequencyDistance(node->get_value< double >("max-frequency-distance"));
         }
 
-        if (node->Has("max-bin-distance"))
+        if (node->has("max-bin-distance"))
         {
-            SetMaxBinDistance(node->GetValue< unsigned >("max-bin-distance"));
+            SetMaxBinDistance(node->get_value< unsigned >("max-bin-distance"));
         }
 
         return true;

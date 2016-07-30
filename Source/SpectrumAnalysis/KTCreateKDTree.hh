@@ -17,12 +17,6 @@
 
 #include <limits>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -67,7 +61,7 @@ namespace Katydid
             KTCreateKDTree(const std::string& name = "create-kd-tree");
             virtual ~KTCreateKDTree();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, WindowSize);
             MEMBERVARIABLE(unsigned, WindowOverlap);

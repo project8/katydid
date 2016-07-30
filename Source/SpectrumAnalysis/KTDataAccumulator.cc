@@ -11,11 +11,9 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTParam.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTTimeSeriesData.hh"
-//#include "KTTimeSeriesDistData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -69,12 +67,12 @@ namespace Katydid
     {
     }
 
-    bool KTDataAccumulator::Configure(const KTParamNode* node)
+    bool KTDataAccumulator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetAccumulatorSize(node->GetValue<unsigned>("number-to-average", fAccumulatorSize));
-        SetSignalInterval(node->GetValue<unsigned>("signal-interval", fSignalInterval));
+        SetAccumulatorSize(node->get_value<unsigned>("number-to-average", fAccumulatorSize));
+        SetSignalInterval(node->get_value<unsigned>("signal-interval", fSignalInterval));
 
         return true;
     }

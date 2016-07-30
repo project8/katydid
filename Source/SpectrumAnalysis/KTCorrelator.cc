@@ -40,19 +40,19 @@ namespace Katydid
     {
     }
 
-    bool KTCorrelator::Configure(const KTParamNode* node)
+    bool KTCorrelator::Configure(const scarab::param_node* node)
     {
-        const KTParamArray* corrPairs = node->ArrayAt("corr-pairs");
+        const scarab::param_array* corrPairs = node->array_at("corr-pairs");
         if (corrPairs != NULL)
         {
-            for (KTParamArray::const_iterator pairIt = corrPairs->Begin(); pairIt != corrPairs->End(); ++pairIt)
+            for (scarab::param_array::const_iterator pairIt = corrPairs->begin(); pairIt != corrPairs->end(); ++pairIt)
             {
-                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
-                    KTERROR(corrlog, "Invalid pair: " << (*pairIt)->ToString());
+                    KTERROR(corrlog, "Invalid pair: " << (*pairIt)->to_string());
                     return false;
                 }
-                UIntPair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< unsigned >(1));
+                UIntPair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< unsigned >(1));
                 KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
                 this->AddPair(pair);
             }

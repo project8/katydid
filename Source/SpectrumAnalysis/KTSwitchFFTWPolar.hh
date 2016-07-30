@@ -14,12 +14,6 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -54,7 +48,7 @@ namespace Katydid
             KTSwitchFFTWPolar(const std::string& name = "switch-fftw-polar");
             virtual ~KTSwitchFFTWPolar();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData);

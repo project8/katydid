@@ -79,7 +79,7 @@ namespace Katydid
             KTAmplitudeDistributor(const std::string& name = "amplitude-distributor");
             virtual ~KTAmplitudeDistributor();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);

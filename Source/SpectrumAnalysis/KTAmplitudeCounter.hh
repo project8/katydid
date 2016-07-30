@@ -17,12 +17,6 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -57,7 +51,7 @@ namespace Katydid
             KTAmplitudeCounter(const std::string& name = "amp-counter");
             virtual ~KTAmplitudeCounter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);

@@ -15,12 +15,6 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
     using namespace Nymph;
@@ -54,7 +48,7 @@ namespace Katydid
             KTMergeKDTree(const std::string& name = "merge-kd-tree");
             virtual ~KTMergeKDTree();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool MergeTree(KTKDTreeData& kdTreeData);

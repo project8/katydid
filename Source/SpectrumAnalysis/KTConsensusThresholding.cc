@@ -9,7 +9,6 @@
 
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 using std::string;
 
@@ -35,17 +34,17 @@ namespace Katydid
     {
     }
 
-    bool KTConsensusThresholding::Configure(const KTParamNode* node)
+    bool KTConsensusThresholding::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetMembershipRadius(node->GetValue("membership-radius", GetMembershipRadius()));
-        SetMinNumberVotes(node->GetValue("min-number-votes", GetMinNumberVotes()));
-        SetRemoveNoiseFlag(node->GetValue("remove-noise", GetRemoveNoiseFlag()));
+        SetMembershipRadius(node->get_value("membership-radius", GetMembershipRadius()));
+        SetMinNumberVotes(node->get_value("min-number-votes", GetMinNumberVotes()));
+        SetRemoveNoiseFlag(node->get_value("remove-noise", GetRemoveNoiseFlag()));
 
-        if (node->Has("slope-algorithm"))
+        if (node->has("slope-algorithm"))
         {
-            string fdValue(node->GetValue("slope-algorithm"));
+            string fdValue(node->get_value("slope-algorithm"));
             if (fdValue == "nearest-neighbor")
             {
                 KTDEBUG(ctlog, "Setting slope function to \"nearest-neighbor\"");
