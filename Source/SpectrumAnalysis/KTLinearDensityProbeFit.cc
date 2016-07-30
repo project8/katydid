@@ -77,14 +77,9 @@ namespace Katydid
             SetProbeWidthSmall(node->GetValue< double >("probe-width-small"));
             SetStepSizeSmall(node->GetValue< double >("probe-width-small") / 5);
         }
-        if (node->Has("step-size-big"))
-        {
-            SetStepSizeBig(node->GetValue< double >("step-size-big"));
-        }
-        if (node->Has("step-size-small"))
-        {
-            SetStepSizeSmall(node->GetValue< double >("step-size-small"));
-        }
+
+        SetStepSizeBig(node->GetValue< double >("step-size-big", fStepSizeBig));
+        SetStepSizeSmall(node->GetValue< double >("step-size-small", fStepSizeSmall));
 
         return true;
     }

@@ -65,23 +65,10 @@ namespace Katydid
             SetMaxFrequency(node->GetValue< double >("max-frequency"));
         }
 
-        if (node->Has("min-bin"))
-        {
-            SetMinBin(node->GetValue< unsigned >("min-bin"));
-        }
-        if (node->Has("max-bin"))
-        {
-            SetMaxBin(node->GetValue< unsigned >("max-bin"));
-        }
-
-        if (node->Has("lead-time"))
-        {
-            SetLeadTime(node->GetValue< double >("lead-time"));
-        }
-        if (node->Has("trail-time"))
-        {
-            SetTrailTime(node->GetValue< double >("trail-time"));
-        }
+        SetMinBin(node->GetValue< unsigned >("min-bin", fMinBin));
+        SetMaxBin(node->GetValue< unsigned >("max-bin", fMaxBin));
+        SetLeadTime(node->GetValue< double >("lead-time", fLeadTime));
+        SetTrailTime(node->GetValue< double >("trail-time", fTrailTime));
 
         return true;
     }
