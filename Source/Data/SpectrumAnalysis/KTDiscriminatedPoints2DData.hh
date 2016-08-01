@@ -28,13 +28,20 @@ namespace Katydid
     class KTDiscriminatedPoints2DData : public KTExtensibleData< KTDiscriminatedPoints2DData >
     {
         public:
-            typedef std::map< std::pair< unsigned, unsigned >, double, KTPairCompare > SetOfPoints;
+            struct Point
+            {
+                double fAbscissa;
+                double fOrdinate;
+                double fApplicate;
+                double fThreshold;
+                Point(double abscissa, double ordinate, double applicate, double threshold) : fAbscissa(abscissa), fOrdinate(ordinate), fApplicate(applicate), fThreshold(threshold) {}
+            };
+            typedef std::map< std::pair< unsigned, unsigned >, Point > SetOfPoints;
 
         protected:
             struct PerComponentData
             {
                 SetOfPoints fPoints;
-                double fThreshold;
             };
 
         public:
@@ -46,9 +53,8 @@ namespace Katydid
 
             unsigned GetNComponents() const;
 
-            void AddPoint(unsigned pointX, unsigned pointY, double value, unsigned component = 0);
-            void SetThreshold(double threshold, unsigned component = 0);
-
+            void AddPoint(unsigned binX, unsigned binY, const Point& point, unsigned component = 0);
+        
             KTDiscriminatedPoints2DData& SetNComponents(unsigned channels);
 
             unsigned GetNBinsX() const;
@@ -77,27 +83,21 @@ namespace Katydid
     {
         return fComponentData[component].fPoints;
     }
-
+/*
     inline double KTDiscriminatedPoints2DData::GetThreshold(unsigned component) const
     {
         return fComponentData[component].fThreshold;
     }
-
+*/
     inline unsigned KTDiscriminatedPoints2DData::GetNComponents() const
     {
         return unsigned(fComponentData.size());
     }
 
-    inline void KTDiscriminatedPoints2DData::AddPoint(unsigned pointX, unsigned pointY, double value, unsigned component)
+    inline void KTDiscriminatedPoints2DData::AddPoint(unsigned binX, unsigned binY, const Point& point, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fPoints.insert(std::make_pair(std::make_pair(pointX, pointY), value));
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetThreshold(double threshold, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fThreshold = threshold;
+        fComponentData[component].fPoints.insert(std::make_pair(std::make_pair(binX, binY), point));
     }
 
     inline KTDiscriminatedPoints2DData& KTDiscriminatedPoints2DData::SetNComponents(unsigned channels)
