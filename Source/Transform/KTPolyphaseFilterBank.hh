@@ -20,7 +20,7 @@
 
 namespace Nymph
 {
-    class KTParamNode;
+    class scarab::param_node;
 }
 ;
 
@@ -68,7 +68,7 @@ namespace Katydid
             KTPolyphaseFilterBank(const std::string& name = "polyphase-filter-bank");
             virtual ~KTPolyphaseFilterBank();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetNSubsets() const;
             void SetNSubsets(unsigned subsets);

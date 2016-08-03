@@ -52,7 +52,7 @@ namespace Katydid
             KTSinusoidGenerator(const std::string& name = "sinusoid-generator");
             virtual ~KTSinusoidGenerator();
 
-            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
+            virtual bool ConfigureDerivedGenerator(const scarab::param_node* node);
 
             double GetFrequency() const;
             void SetFrequency(double freq);

@@ -25,7 +25,7 @@ namespace mantis
 
 namespace Nymph
 {
-    class KTParamNode;
+    class scarab::param_node;
 }
 ;
 
@@ -76,7 +76,7 @@ namespace Katydid
             KTMantis(const std::string& name = "mantis-client");
             virtual ~KTMantis();
 
-            bool ConfigureSubClass(const KTParamNode* node);
+            bool ConfigureSubClass(const scarab::param_node* node);
 
         public:
             unsigned GetSliceSize() const;

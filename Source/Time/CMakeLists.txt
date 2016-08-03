@@ -79,7 +79,6 @@ endif (Katydid_USE_MATLAB)
 
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

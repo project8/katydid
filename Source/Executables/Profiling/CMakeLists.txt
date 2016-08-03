@@ -21,10 +21,10 @@ if (Katydid_ENABLE_PROFILING)
     
     # Executables that do NOT require ROOT
     add_executable (ImpulseResponse ${CMAKE_CURRENT_SOURCE_DIR}/ImpulseResponse.cc)
-    target_link_libraries (ImpulseResponse Nymph KatydidUtility KatydidData KatydidIO KatydidTime KatydidTransform KatydidSpectrumAnalysis KatydidSimulation ${EXTERNAL_LIBRARIES})
+    target_link_libraries (ImpulseResponse KatydidUtility KatydidData KatydidIO KatydidTime KatydidTransform KatydidSpectrumAnalysis KatydidSimulation ${EXTERNAL_LIBRARIES})
         
     add_executable (ProfileDataAccessMethods ${CMAKE_CURRENT_SOURCE_DIR}/ProfileDataAccessMethods.cc)
-    target_link_libraries (ProfileDataAccessMethods Nymph KatydidUtility KatydidData KatydidTime ${EXTERNAL_LIBRARIES})
+    target_link_libraries (ProfileDataAccessMethods KatydidUtility KatydidData KatydidTime ${EXTERNAL_LIBRARIES})
     
     pbuilder_install_executables (
         ImpulseResponse
@@ -34,10 +34,10 @@ if (Katydid_ENABLE_PROFILING)
     
     if (Katydid_USE_MONARCH AND Monarch_BUILD_MONARCH2 AND FFTW_FOUND)
         add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
-        target_link_libraries (ProfileFFTWandMonarch Nymph KatydidUtility KatydidData KatydidTime KatydidTransform ${EXTERNAL_LIBRARIES})
+        target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidData KatydidTime KatydidTransform ${EXTERNAL_LIBRARIES})
 
         add_executable (ProfileManualAnalysis ${CMAKE_CURRENT_SOURCE_DIR}/ProfileManualAnalysis.cc)
-        target_link_libraries (ProfileManualAnalysis Nymph KatydidUtility KatydidData KatydidTime KatydidTransform KatydidSpectrumAnalysis KatydidEventAnalysis ${EXTERNAL_LIBRARIES})
+        target_link_libraries (ProfileManualAnalysis KatydidUtility KatydidData KatydidTime KatydidTransform KatydidSpectrumAnalysis KatydidEventAnalysis ${EXTERNAL_LIBRARIES})
 
         pbuilder_install_executables (
             ProfileFFTWandMonarch
@@ -48,7 +48,7 @@ if (Katydid_ENABLE_PROFILING)
     # executables that DO require ROOT
     if (ROOT_FOUND)
         #add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
-        #target_link_libraries (TestBasicROOTFileWriter Nymph KatydidUtility KatydidData KatydidTime KatydidTransform KatydidIO ${EXTERNAL_LIBRARIES})
+        #target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidData KatydidTime KatydidTransform KatydidIO ${EXTERNAL_LIBRARIES})
         
         #pbuilder_install_executables ( 
         #)

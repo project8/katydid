@@ -57,7 +57,7 @@ namespace Katydid
             KTDCOffsetGenerator(const std::string& name = "dc-offset-generator");
             virtual ~KTDCOffsetGenerator();
 
-            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
+            virtual bool ConfigureDerivedGenerator(const scarab::param_node* node);
 
             const std::vector< double >& GetOffsets() const;
             void SetOffset(unsigned component, double freq);

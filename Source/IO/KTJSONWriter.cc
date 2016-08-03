@@ -7,7 +7,7 @@
 
 #include "KTJSONWriter.hh"
 
-#include "KTParam.hh"
+#include "param.hh"
 
 using std::string;
 

@@ -57,7 +57,7 @@ namespace Katydid
         SetMinPoints(node->get_value("min-points", GetMinPoints()));
 
         /*
-        if (node->Has("radii"))
+        if (node->has("radii"))
         {
             const KTParamArray* radii = node->ArrayAt("radii");
             if (radii->Size() != fNDimensions)

@@ -12,7 +12,8 @@
 #include "KTSingleton.hh"
 
 #include "KTLogger.hh"
-#include "KTParam.hh"
+
+#include "param.hh"
 
 // the generator that will be used
 #include <boost/random/mersenne_twister.hpp>
@@ -46,7 +47,7 @@ namespace Katydid
         public:
             using KTSelfConfigurable::Configure;
 
-            virtual bool Configure(const KTParamNode* node);
+            virtual bool Configure(const scarab::param_node* node);
             virtual bool IsReady() const;
 
             virtual void SetSeed(unsigned seed);
@@ -113,8 +114,8 @@ namespace Katydid
             Engine* fEngine;
 
         public:
-            virtual bool Configure(const KTParamNode* node);
-            virtual bool ConfigureDistribution(const KTParamNode* node) = 0;
+            virtual bool Configure(const scarab::param_node* node);
+            virtual bool ConfigureDistribution(const scarab::param_node* node) = 0;
 
     };
 
@@ -132,7 +133,7 @@ namespace Katydid
     }
 
     template< class Engine >
-    inline bool KTRNGDistribution< Engine >::Configure(const KTParamNode* node)
+    inline bool KTRNGDistribution< Engine >::Configure(const scarab::param_node* node)
     {
         return this->ConfigureDistribution(node);
     }
@@ -168,7 +169,7 @@ namespace Katydid
 
         inline result_type operator()() {return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());}
 
-        inline virtual bool ConfigureDistribution(const KTParamNode*)
+        inline virtual bool ConfigureDistribution(const scarab::param_node*)
         {
             return true;
         }
@@ -213,10 +214,10 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(min, max));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type min = node->GetValue< input_type >("min", this->a());
-            input_type max = node->GetValue< input_type >("max", this->b());
+            input_type min = node->get_value< input_type >("min", this->a());
+            input_type max = node->get_value< input_type >("max", this->b());
             this->param(param_type(min, max));
             return true;
         }
@@ -263,10 +264,10 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type mean = node->GetValue< input_type >("mean", this->mean());
-            input_type sigma = node->GetValue< input_type >("sigma", this->sigma());
+            input_type mean = node->get_value< input_type >("mean", this->mean());
+            input_type sigma = node->get_value< input_type >("sigma", this->sigma());
             this->param(param_type(mean, sigma));
             return true;
         }
@@ -312,9 +313,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type mean = node->GetValue< input_type >("mean", this->mean());
+            input_type mean = node->get_value< input_type >("mean", this->mean());
             this->param(param_type(mean));
             return true;
         }
@@ -360,9 +361,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(lambda));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type lambda = node->GetValue< input_type >("lambda", this->lambda());
+            input_type lambda = node->get_value< input_type >("lambda", this->lambda());
             this->param(param_type(lambda));
             return true;
         }
@@ -408,9 +409,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(n));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type n = node->GetValue< input_type >("n", this->n());
+            input_type n = node->get_value< input_type >("n", this->n());
             this->param(param_type(n));
             return true;
         }

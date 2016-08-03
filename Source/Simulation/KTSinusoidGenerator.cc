@@ -9,7 +9,7 @@
 
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
@@ -36,13 +36,13 @@ namespace Katydid
     {
     }
 
-    bool KTSinusoidGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
+    bool KTSinusoidGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        fFrequency = node->GetValue< double >("frequency", fFrequency);
-        fPhase = node->GetValue< double >("phase", fPhase);
-        fAmplitude = node->GetValue< double >("amplitude", fAmplitude);
+        fFrequency = node->get_value< double >("frequency", fFrequency);
+        fPhase = node->get_value< double >("phase", fPhase);
+        fAmplitude = node->get_value< double >("amplitude", fAmplitude);
 
         return true;
     }

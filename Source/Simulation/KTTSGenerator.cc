@@ -11,7 +11,7 @@
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTProcSummary.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -50,25 +50,25 @@ namespace Katydid
     {
     }
 
-    bool KTTSGenerator::Configure(const KTParamNode* node)
+    bool KTTSGenerator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
         // set the number of slices to create
-        fNSlices = node->GetValue< unsigned >("number-of-slices", fNSlices);
+        fNSlices = node->get_value< unsigned >("number-of-slices", fNSlices);
 
         // number of slices
-        fNChannels = node->GetValue< unsigned >("n-channels", fNChannels);
+        fNChannels = node->get_value< unsigned >("n-channels", fNChannels);
 
         // specify the length of the time series
-        fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
+        fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
         // record size, after slice size
-        fRecordSize = node->GetValue< unsigned >("record-size", fSliceSize);
+        fRecordSize = node->get_value< unsigned >("record-size", fSliceSize);
 
-        fBinWidth = node->GetValue< double >("bin-width", fBinWidth);
+        fBinWidth = node->get_value< double >("bin-width", fBinWidth);
 
         // type of time series
-        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
+        string timeSeriesTypeString = node->get_value("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else

@@ -26,11 +26,11 @@ namespace Katydid
     {
     }
 
-    bool KTRNGEngine::Configure(const KTParamNode* node)
+    bool KTRNGEngine::Configure(const scarab::param_node* node)
     {
-        if (node->Has("seed"))
+        if (node->has("seed"))
         {
-            SetSeed(node->GetValue< unsigned >("seed"));
+            SetSeed(node->get_value< unsigned >("seed"));
         }
         else
         {

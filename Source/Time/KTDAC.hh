@@ -18,7 +18,7 @@
 /*
 namespace Nymph
 {
-    class KTParamNode;
+    class scarab::param_node;
 }
 ;*/
 

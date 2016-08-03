@@ -62,8 +62,8 @@ namespace Katydid
             KTTSGenerator(const std::string& name = "default-ts-generator");
             virtual ~KTTSGenerator();
 
-            virtual bool Configure(const KTParamNode* node);
-            virtual bool ConfigureDerivedGenerator(const KTParamNode* node) = 0;
+            virtual bool Configure(const scarab::param_node* node);
+            virtual bool ConfigureDerivedGenerator(const scarab::param_node* node) = 0;
 
             unsigned GetNSlices() const;
             void SetNSlices(unsigned slices);

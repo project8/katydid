@@ -52,7 +52,6 @@ endif (FFTW_FOUND)
 #endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

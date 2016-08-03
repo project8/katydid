@@ -1,5 +1,5 @@
 #include "KTBasicAsciiWriter.hh"
-#include "KTParam.hh"
+#include "param.hh"
 
 namespace Katydid {
 

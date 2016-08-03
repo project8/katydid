@@ -9,7 +9,7 @@
 
 #include "KTData.hh"
 #include "KTCCResults.hh"
-#include "KTParam.hh"
+#include "param.hh"
 
 #include <sstream>
 #include <vector>
@@ -37,11 +37,11 @@ namespace Katydid
     {
     }
 
-    bool KTCompareCandidates::Configure(const KTParamNode* node)
+    bool KTCompareCandidates::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetAssumeSparseCandidates(node->GetValue<bool>("assume-sparse-candidates", fAssumeSparseCandidates));
+        SetAssumeSparseCandidates(node->get_value<bool>("assume-sparse-candidates", fAssumeSparseCandidates));
 
         return true;
     }

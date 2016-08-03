@@ -10,7 +10,7 @@
 
 #include "KTLogger.hh"
 #include "KTParameterStore.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTTestConfigurable.hh"
 
 #include <string>

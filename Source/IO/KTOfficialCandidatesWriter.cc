@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTProcSummary.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTWaterfallCandidateData.hh"
 
 using std::string;

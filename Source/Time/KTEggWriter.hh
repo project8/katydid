@@ -68,7 +68,7 @@ namespace Katydid
             KTEggWriter(const std::string& name = "egg-writer");
             virtual ~KTEggWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);

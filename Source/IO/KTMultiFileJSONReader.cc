@@ -11,7 +11,7 @@
 #include "KTCCResults.hh"
 #include "KTFilenameParsers.hh"
 #include "KTMCTruthEvents.hh"
-#include "KTParam.hh"
+#include "param.hh"
 
 #include "filestream.h"
 
@@ -47,7 +47,7 @@ namespace Katydid
     {
     }
 
-    bool KTMultiFileJSONReader::Configure(const KTParamNode* node)
+    bool KTMultiFileJSONReader::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node == NULL) return false;
@@ -62,7 +62,7 @@ namespace Katydid
             }
         }
 
-        SetFileMode(node->GetValue("file-mode", fFileMode));
+        SetFileMode(node->get_value("file-mode", fFileMode));
 
         const KTParamArray* dataTypeArray = node->ArrayAt("data-types");
         if (inputFileArray != NULL)

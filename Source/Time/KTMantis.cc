@@ -10,7 +10,7 @@
 #include "KTCommandLineHandler.hh"
 #include "KTEggHeader.hh"
 #include "KTMantisClientWriting.hh"
-#include "KTParam.hh"
+#include "param.hh"
 
 #include "mt_configurator.hh"
 #include "mt_client_config.hh"
@@ -88,19 +88,19 @@ namespace Katydid
     {
     }
 
-    bool KTMantis::ConfigureSubClass(const KTParamNode* node)
+    bool KTMantis::ConfigureSubClass(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetSliceSize(node->GetValue< unsigned >("slice-size", fSliceSize));
-        SetStride(node->GetValue< unsigned >("stride", fStride));
+        SetSliceSize(node->get_value< unsigned >("slice-size", fSliceSize));
+        SetStride(node->get_value< unsigned >("stride", fStride));
 
-        const KTParamNode* clientNode = node->NodeAt("run-queue");
+        const scarab::param_node* clientNode = node->NodeAt("run-queue");
         if (clientNode != NULL)
         {
             // fill in fConfig
             mantis::param_value newValue;
-            for (KTParamNode::const_iterator it = clientNode->Begin(); it != clientNode->End(); ++it)
+            for (scarab::param_node::const_iterator it = clientNode->Begin(); it != clientNode->End(); ++it)
             {
                 fConfig.add(it->first, newValue << it->second->AsValue().Get());
             }

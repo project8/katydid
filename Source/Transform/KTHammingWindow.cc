@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
+#include "param.hh"
 
 #include <cmath>
 

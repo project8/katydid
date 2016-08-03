@@ -16,7 +16,7 @@
 
 namespace Nymph
 {
-    class KTParamNode;
+    class scarab::param_node;
 }
 
 namespace Katydid
@@ -64,7 +64,7 @@ namespace Katydid
             KTCompareCandidates(const std::string& name = "compare-candidates");
             virtual ~KTCompareCandidates();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             bool GetAssumeSparseCandidates() const;
             void SetAssumeSparseCandidates(bool flag);

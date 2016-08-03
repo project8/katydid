@@ -17,7 +17,7 @@
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
 
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTSlot.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
@@ -43,7 +43,7 @@ namespace Katydid {
      * Configuration, setters and getters.
      */
   public:
-    bool Configure(const KTParamNode* node);
+    bool Configure(const scarab::param_node* node);
     unsigned GetChunkSize();
     void SetChunkSize(unsigned newsize);
     std::string GetNoiseDataName();
