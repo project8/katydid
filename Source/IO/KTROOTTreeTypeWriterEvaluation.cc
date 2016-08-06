@@ -79,6 +79,25 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterEvaluation::SetupMetaCCLocustMCTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "mccLocustMC", fMetaCCLocustMCTree );
+
+            if( fMetaCCLocustMCTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fMetaCCLocustMCTree );
+
+                fMetaCCLocustMCTree->SetBranchAddress("Length", &fCCLocustMC.fLength);
+                fMetaCCLocustMCTree->SetBranchAddress("dfdt", &fCCLocustMC.fdfdt);
+                fMetaCCLocustMCTree->SetBranchAddress("Power", &fCCLocustMC.fPower);
+                fMetaCCLocustMCTree->SetBranchAddress("Efficiency", &fCCLocustMC.fEfficiency);
+                fMetaCCLocustMCTree->SetBranchAddress("FalseRate", &fCCLocustMC.fFalseRate);
+
+                return true;
+            }
+        }
+
         fMetaCCLocustMCTree = new TTree("mccLocustMC", "Meta-Candidate Comparison -- Locust MC");
         if (fMetaCCLocustMCTree == NULL)
         {

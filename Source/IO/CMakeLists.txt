@@ -5,10 +5,10 @@ set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
     KTJSONTypeWriterTime.hh
-    KTJSONTypeWriterEvaluation.hh
+    #KTJSONTypeWriterEvaluation.hh
     KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.hh
-    KTMultiFileJSONReader.hh
+    #KTMultiFileJSONReader.hh
     KTOfficialCandidatesWriter.hh
     KTTerminalTypeWriterTime.hh
     KTTerminalWriter.hh
@@ -18,10 +18,10 @@ set (IO_SOURCEFILES
     KTBasicASCIITypeWriterTS.cc
     KTBasicAsciiWriter.cc
     KTJSONTypeWriterTime.cc
-    KTJSONTypeWriterEvaluation.cc
+    #KTJSONTypeWriterEvaluation.cc
     KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.cc
-    KTMultiFileJSONReader.cc
+    #KTMultiFileJSONReader.cc
     KTOfficialCandidatesWriter.cc
     KTTerminalTypeWriterTime.cc
     KTTerminalWriter.cc
@@ -55,7 +55,7 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterSpectrumAnalysis.hh
         KTROOTTreeTypeWriterEventAnalysis.hh
         KTROOTTreeTypeWriterTime.hh
-        KTROOTTreeTypeWriterEvaluation.hh
+        #KTROOTTreeTypeWriterEvaluation.hh
         KTROOTTreeWriter.hh
         Conversions/KT2ROOT.hh
     )
@@ -82,7 +82,7 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterSpectrumAnalysis.cc
         KTROOTTreeTypeWriterEventAnalysis.cc
         KTROOTTreeTypeWriterTime.cc
-        KTROOTTreeTypeWriterEvaluation.cc
+        #KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
         Conversions/KT2ROOT.cc
         Conversions/KTROOTData.cc
@@ -123,7 +123,7 @@ set (KATYDID_LIBS
 ##################################################
 
 if (ROOT_FOUND)
-    ROOT_GENERATE_DICTIONARY ("${IO_DICT_HEADERFILES}" "${IO_LINKDEF_HEADERFILE}" "${IO_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+    ROOT_GENERATE_DICTIONARY (IODict ${IO_DICT_HEADERFILES} LINKDEF ${IO_LINKDEF_HEADERFILE})
     if (Katydid_USE_CPP11)
         pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
     endif (Katydid_USE_CPP11)

@@ -33,7 +33,8 @@ namespace Katydid
             fMaxTime(0.),
             fMinFreq(0.),
             fMaxFreq(0.),
-            fFile(NULL)
+            fFile(NULL),
+            fWriteFileSlot("write-file", this, &KTROOTSpectrogramWriter::WriteFile)
     {
     }
 
@@ -76,6 +77,15 @@ namespace Katydid
         }
         fFile->cd();
         return true;
+    }
+
+    void KTROOTSpectrogramWriter::WriteFile()
+    {
+        KTINFO("In write-file slot")
+        for (TypeWriterMap::iterator thisTypeWriter = fTypeWriters.begin(); thisTypeWriter != fTypeWriters.end(); ++thisTypeWriter)
+        {
+            thisTypeWriter->second->OutputSpectrograms();
+        }
     }
 
 

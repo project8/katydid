@@ -15,6 +15,7 @@ namespace Katydid
             KTExtensibleData< KTSparseWaterfallCandidateData >(),
             fPoints(),
             fComponent(0),
+            fAcquisitionID(0),
             fCandidateID(0),
             //fTimeBinWidth(0.),
             //fFreqBinWidth(0.),

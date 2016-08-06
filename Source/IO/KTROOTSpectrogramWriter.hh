@@ -15,7 +15,9 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTMemberVariable.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
+#include "KTSlot.hh"
 
 #include "TFile.h"
 #include "TH2.h"
@@ -33,6 +35,7 @@ namespace Katydid
         public:
             KTROOTSpectrogramTypeWriter();
             virtual ~KTROOTSpectrogramTypeWriter();
+            virtual void OutputSpectrograms() = 0;
 
         protected:
             struct SpectrogramData {
@@ -59,7 +62,10 @@ namespace Katydid
 
      @brief Outputs a spectrogram in the form of a 2D histogram to a ROOT file
 
-     @details 
+     @details
+     The first use of any of the spectrogram-contribution slots (i.e. not "write-file") will start a spectrogram.
+
+     The "write-file" slot must be called at the end to actually write out the ROOT file.
 
      Configuration name: "root-spectrogram-writer"
 
@@ -72,12 +78,14 @@ namespace Katydid
      - "max-freq": double -- end frequency for the spectrograms
 
      Slots:
-     - "fs-fftw": void (KTDataPtr) -- Contribute a spectrum to a FS-FFTW spectrogram.
-     - "fs-polar": void (KTDataPtr) -- Contribute a spectrum to a FS-polar spectrogram.
-     - "power": void (KTDataPtr) -- Contribute a spectrum to a power spectrogram.
-     - "psd": void (KTDataPtr) -- Contribute a spectrum to a PSD spectrogram.
+     - "fs-fftw": void (KTDataPtr) -- Contribute a slice to a FS-FFTW spectrogram. Requires KTFrequencySpectrumDataFFTW.
+     - "fs-polar": void (KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
+     - "ps": void (KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
+     - "psd": void (KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
+     - "all-lines": void (KTDataPtr) -- Contribute a track to a spectrogram; Requires KTProcessedTrackData.
+     - "write-file": void () -- Write out the ROOT file of any spectrograms that were built.
 
-     
+
     */
 
     class KTROOTSpectrogramWriter : public KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >//public KTWriter
@@ -104,6 +112,10 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(TFile*, File);
 
             bool OpenAndVerifyFile();
+            void WriteFile();
+
+        private:
+            KTSlotDone fWriteFileSlot;
 
     };
 

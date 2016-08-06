@@ -367,7 +367,7 @@ namespace Katydid
             }
 
             //*** DEBUG ***//
-            /**/
+            /*
             std::stringstream readstream, writestream;
             M3DataReader< int64_t > readIfc(fM3Stream->GetChannelRecord( 0 )->GetData(), fHeader.GetChannelHeader(0)->GetDataTypeSize(), fHeader.GetChannelHeader(0)->GetDataFormat());
             KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
@@ -379,7 +379,7 @@ namespace Katydid
             }
             KTWARN(eggreadlog, "Reading:  " << readstream.str());
             KTWARN(eggreadlog, "Writing:  " << writestream.str());
-            /**/
+            */
             //*** DEBUG ***//
 
             // update samplesRemainingToCopy
@@ -471,7 +471,7 @@ namespace Katydid
     {
         fHeader.SetFilename(monarchHeader->GetFilename());
         fHeader.SetAcquisitionMode(fM3StreamHeader->GetNChannels());
-        fHeader.SetRunDuration(monarchHeader->GetRunDuration());
+        fHeader.SetRunDuration(monarchHeader->GetRunDuration()); // in ms
         fHeader.SetAcquisitionRate(fM3StreamHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());

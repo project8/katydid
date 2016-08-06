@@ -61,7 +61,7 @@ int main(const int argc, const char** argv)
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
          << "\tRecord Size: " << tEggHeader.GetChannelHeader(0)->GetSliceSize() << '\n'
          << "\tRecord Size: " << tEggHeader.GetChannelHeader(0)->GetRecordSize() << '\n'
-         << "\tRun Duration: " << tEggHeader.GetRunDuration() << " s" << '\n'
+         << "\tRun Duration: " << tEggHeader.GetRunDuration() << " ms" << '\n'
          << "\tAcquisition Rate: " << tEggHeader.GetAcquisitionRate() << " Hz ");
 
     unsigned tSize = tEggHeader.GetChannelHeader(0)->GetRecordSize();

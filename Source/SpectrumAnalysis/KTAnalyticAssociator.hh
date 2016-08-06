@@ -34,12 +34,16 @@ namespace Katydid
      @brief Creates an analytic associate of a real time series
 
      @details
+     Equivalent to application of a Hilbert Transform.
+
+     Removes negative frequency components and results in a complex time series.
 
      Configuration name: "analytic-associator"
  
      Available configuration values:
      - "save-frequency-spectrum": bool -- Option to save the intermediate frequency spectrum that is calculated while creating the analytic associate
-     - "complex-fftw": nested config: -- See KTComplexFFTW
+     - "forward-fftw": nested config: -- See KTForwardFFTW
+     - "reverse-fftw": nested config: -- See KTReverseFFTW
 
      Slots:
      - "header": void (KTDataPtr) -- Initializes the FFT; Requires KTEggHeader

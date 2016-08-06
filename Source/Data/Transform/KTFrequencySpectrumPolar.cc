@@ -91,7 +91,6 @@ namespace Katydid
         // If the frequency range does not cross DC, the power spectrum range will not either.
         // If the frequency range crosses DC, the power spectrum range will run from DC to the maximum absolute frequency
         // In this case negative-frequency bins are added to positive-frequency bins.
-        
 
         double maxFreq = std::max(fabs(GetRangeMin()), fabs(GetRangeMax()));
         double minFreq = -0.5 * GetBinWidth();
