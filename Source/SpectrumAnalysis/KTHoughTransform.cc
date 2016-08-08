@@ -271,7 +271,7 @@ namespace Katydid
         {
             timeVal = pIt->first.first;
             freqVal = pIt->first.second;
-            value = pIt->second;
+            value = pIt->second.fAbscissa;
 
             for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
             {
