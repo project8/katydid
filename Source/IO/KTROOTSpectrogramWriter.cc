@@ -33,6 +33,8 @@ namespace Katydid
             fMaxTime(0.),
             fMinFreq(0.),
             fMaxFreq(0.),
+            fBufferFreq(0.),
+            fBufferTime(0.),
             fFile(NULL),
             fWriteFileSlot("write-file", this, &KTROOTSpectrogramWriter::WriteFile)
     {
@@ -54,6 +56,8 @@ namespace Katydid
             SetMaxFreq(node->GetValue("max-freq", fMaxFreq));
             SetMinTime(node->GetValue("min-time", fMinTime));
             SetMaxTime(node->GetValue("max-time", fMaxTime));
+            SetBufferFreq(node->GetValue("buffer-freq", fBufferFreq));
+            SetBufferTime(node->GetValue("buffer-time", fBufferTime));
         }
 
         // Command-line settings

@@ -76,12 +76,15 @@ namespace Katydid
      - "max-time": double -- end time for the spectrograms
      - "min-freq": double -- start frequency for the spectrograms
      - "max-freq": double -- end frequency for the spectrograms
+     - "buffer-freq": double -- range to extend the spectrogram around a track in frequency
+     - "buffer-time": double -- range to extend the spectrogram around a track in time
 
      Slots:
      - "fs-fftw": void (KTDataPtr) -- Contribute a slice to a FS-FFTW spectrogram. Requires KTFrequencySpectrumDataFFTW.
      - "fs-polar": void (KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
      - "ps": void (KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
      - "psd": void (KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
+     - "track": void (KTDataPtr) -- Set the time and frequency bounds in accordance with a track. Requires KTProcessedTrackData.
      - "all-lines": void (KTDataPtr) -- Contribute a track to a spectrogram; Requires KTProcessedTrackData.
      - "write-file": void () -- Write out the ROOT file of any spectrograms that were built.
 
@@ -108,6 +111,9 @@ namespace Katydid
 
             MEMBERVARIABLE(double, MinFreq); // in Hz
             MEMBERVARIABLE(double, MaxFreq); // in Hz
+
+            MEMBERVARIABLE(double, BufferFreq); // in sec
+            MEMBERVARIABLE(double, BufferTime); // in Hz
 
             MEMBERVARIABLE_NOSET(TFile*, File);
 

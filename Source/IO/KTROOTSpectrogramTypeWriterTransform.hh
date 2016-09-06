@@ -36,6 +36,8 @@ namespace Katydid
             void AddPSDData(KTDataPtr data);
             void OutputPSDData();
 
+            void AddProcessedTrackData(KTDataPtr data);
+
             void TakeLine(KTDataPtr data);
 
 
