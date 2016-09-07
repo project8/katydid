@@ -72,10 +72,10 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
-     - "min-time": double -- start time for the spectrograms
-     - "max-time": double -- end time for the spectrograms
-     - "min-freq": double -- start frequency for the spectrograms
-     - "max-freq": double -- end frequency for the spectrograms
+     - "min-time": double -- start time for the spectrograms. Overwritten by the 'track' slot
+     - "max-time": double -- end time for the spectrograms. Overwritten by the 'track' slot
+     - "min-freq": double -- start frequency for the spectrograms. Overwritten by the 'track' slot
+     - "max-freq": double -- end frequency for the spectrograms. Overwritten by the 'track' slot
      - "buffer-freq": double -- range to extend the spectrogram around a track in frequency
      - "buffer-time": double -- range to extend the spectrogram around a track in time
 
@@ -84,7 +84,7 @@ namespace Katydid
      - "fs-polar": void (KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
      - "ps": void (KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
      - "psd": void (KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
-     - "track": void (KTDataPtr) -- Set the time and frequency bounds in accordance with a track. Requires KTProcessedTrackData.
+     - "track": void (KTDataPtr) -- Set the time and frequency bounds in accordance with a track. Requires KTProcessedTrackData. Overwrites min-freq, max-freq, min-time and max-time configuration variables.
      - "all-lines": void (KTDataPtr) -- Contribute a track to a spectrogram; Requires KTProcessedTrackData.
      - "write-file": void () -- Write out the ROOT file of any spectrograms that were built.
 
@@ -112,8 +112,8 @@ namespace Katydid
             MEMBERVARIABLE(double, MinFreq); // in Hz
             MEMBERVARIABLE(double, MaxFreq); // in Hz
 
-            MEMBERVARIABLE(double, BufferFreq); // in sec
-            MEMBERVARIABLE(double, BufferTime); // in Hz
+            MEMBERVARIABLE(double, BufferFreq); // in Hz
+            MEMBERVARIABLE(double, BufferTime); // in sec
 
             MEMBERVARIABLE_NOSET(TFile*, File);
 
