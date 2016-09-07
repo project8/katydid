@@ -20,6 +20,7 @@ namespace Katydid
     class KTMultiFSDataPolar;
     class KTMultiFSDataFFTW;
     class KTPowerSpectrumData;
+    class KTScoredSpectrumData;
 
     class KTBasicROOTTypeWriterTransform : public KTBasicROOTTypeWriter
     {
@@ -55,7 +56,7 @@ namespace Katydid
             void WritePowerSpectrumDistribution(KTDataPtr data);
             void WritePowerSpectralDensityDistribution(KTDataPtr data);
 
-
+            void WriteScoredSpectrum(KTDataPtr data);
             //************************
             // Time/Frequency Data
             //************************

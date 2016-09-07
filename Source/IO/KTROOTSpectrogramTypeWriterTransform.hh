@@ -36,6 +36,9 @@ namespace Katydid
             void AddPSDData(KTDataPtr data);
             void OutputPSDData();
 
+            void AddScoredSpectrumData(KTDataPtr data);
+            void OutputScoredSpectrumData();
+
             void AddProcessedTrackData(KTDataPtr data);
 
             void TakeLine(KTDataPtr data);
@@ -46,6 +49,7 @@ namespace Katydid
             std::vector< SpectrogramData > fFSFFTWSpectrograms;
             std::vector< SpectrogramData > fPowerSpectrograms;
             std::vector< SpectrogramData > fPSDSpectrograms;
+            std::vector< SpectrogramData > fScoredSpectrograms;
             TOrdCollection *fLineCollection;
 
 

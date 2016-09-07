@@ -15,6 +15,7 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTMemberVariable.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTScoredSpectrum.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSlot.hh"
@@ -49,6 +50,9 @@ namespace Katydid
 
             template< typename XDataType >
             void AddFrequencySpectrumDataHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+
+            template< typename XDataType >
+            void AddScoredSpectrumDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
 
             template< typename XDataType >
             void AddPowerSpectrumDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
@@ -260,6 +264,44 @@ namespace Katydid
 
          return;
      }
+
+     template< class XDataType >
+     void KTROOTSpectrogramTypeWriter::AddScoredSpectrumDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     {
+         KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
+         double timeInRun = sliceHeader.GetTimeInRun();
+         double sliceLength = sliceHeader.GetSliceLength();
+         // Check if this is a slice we should care about.
+         // The first slice of interest will contain the writer's min time;
+         // The last slice of interest will contain the writer's max time.
+         if (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime())
+         {
+             // Ok, this is a slice we should pay attention to.
+             XDataType& fsData = data->Of< XDataType >();
+             unsigned nComponents = fsData.GetNComponents();
+
+             KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms, histNameBase);
+
+             // add this slice's data to the spectrogram
+             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+             {
+                 KTScoredSpectrum* spectrum = fsData.GetSpectrum(iComponent);
+                 spectrum->ConvertToScoredSpectrum();
+                 unsigned iSpectFreqBin = 0;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->GetXaxis()->FindBin(timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNbinsX()) continue;
+                 for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
+                 {
+                     //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
+                     spectrograms[iComponent].fSpectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
+                     ++iSpectFreqBin;
+                 }
+             }
+         }
+
+         return;
+     }
+
 
 } /* namespace Katydid */
 #endif /* KTROOTSPECTROGRAMWRITER_HH_ */

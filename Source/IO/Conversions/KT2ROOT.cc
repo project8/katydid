@@ -17,6 +17,7 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTScoredSpectrum.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -264,6 +265,7 @@ namespace Katydid
         return hist;
     }
 
+
     TH1D* KT2ROOT::CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
     {
         double tMaxMag = -1.;
@@ -457,5 +459,18 @@ namespace Katydid
 
         return hist;
 
+    }
+
+    TH1D* KT2ROOT::CreateScoredHistogram(const KTScoredSpectrum* ps, const std::string& name)
+    {
+        unsigned nBins = ps->size();
+        TH1D* hist = new TH1D(name.c_str(), "Score Spectrum", (int)nBins, ps->GetRangeMin(), ps->GetRangeMax());
+        //double value;
+        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        {
+            hist->SetBinContent((int)iBin+1, (*ps)(iBin));
+        }
+        hist->SetXTitle(ps->GetAxisLabel().c_str());
+        hist->SetYTitle(ps->GetDataLabel().c_str());
     }
 } /* namespace Katydid */

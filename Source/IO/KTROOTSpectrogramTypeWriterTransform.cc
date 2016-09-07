@@ -11,6 +11,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTScoredSpectrumData.hh"
 
 #include "TLine.h"
 
@@ -31,6 +32,7 @@ namespace Katydid
             fFSFFTWSpectrograms(),
             fPowerSpectrograms(),
             fPSDSpectrograms(),
+			fScoredSpectrograms(),
             fLineCollection()
     {
     }
@@ -78,6 +80,7 @@ namespace Katydid
         OutputASpectrogramSet(fFSFFTWSpectrograms);
         OutputASpectrogramSet(fPowerSpectrograms);
         OutputASpectrogramSet(fPSDSpectrograms);
+        OutputASpectrogramSet(fScoredSpectrograms);
 
         KTINFO("calling output lines")
         OutputLines();
@@ -99,6 +102,7 @@ namespace Katydid
         ClearASpectrogramSet(fFSFFTWSpectrograms);
         ClearASpectrogramSet(fPowerSpectrograms);
         ClearASpectrogramSet(fPSDSpectrograms);
+        ClearASpectrogramSet(fScoredSpectrograms);
 
         ClearLines();
         return;
@@ -110,6 +114,7 @@ namespace Katydid
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
+        fWriter->RegisterSlot("scores-1d", this, &KTROOTSpectrogramTypeWriterTransform::AddScoredSpectrumData);
         fWriter->RegisterSlot("track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
         return;
@@ -147,6 +152,12 @@ namespace Katydid
         AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
         return;
     }
+
+    void KTROOTSpectrogramTypeWriterTransform::AddScoredSpectrumData(KTDataPtr data)
+        {
+            AddScoredSpectrumDataCoreHelper< KTScoredSpectrumData >(data, fScoredSpectrograms, "ScoredSpectrogram_");
+            return;
+        }
 
     //*********************
     // Processed Track Data

@@ -56,6 +56,8 @@ set (DATA_HEADERFILES
     Transform/KTTimeFrequency.hh
     Transform/KTTimeFrequencyDataPolar.hh
     Transform/KTTimeFrequencyPolar.hh
+    Transform/KTScoredSpectrum.hh
+    Transform/KTScoredSpectrumData.hh
 )
 
 set (DATA_SOURCEFILES
@@ -111,6 +113,8 @@ set (DATA_SOURCEFILES
     Transform/KTTimeFrequency.cc
     Transform/KTTimeFrequencyDataPolar.cc
     Transform/KTTimeFrequencyPolar.cc
+    Transform/KTScoredSpectrum.cc
+    Transform/KTScoredSpectrumData.cc
 )
 
 if (NOT FFTW_FOUND)

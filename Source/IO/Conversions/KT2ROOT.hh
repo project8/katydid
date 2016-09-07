@@ -26,6 +26,7 @@ namespace Katydid
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
+    class KTScoredSpectrum;
 
     class KT2ROOT
     {
@@ -74,6 +75,8 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrumPower");
 
             static TH2D* CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName = "hHoughData");
+
+            static TH1D* CreateScoredHistogram(const KTScoredSpectrum* ps, const std::string& name = "hScoredSpectrum");
     };
 
 } /* namespace Katydid */
