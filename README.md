@@ -3,7 +3,7 @@ Katydid
 
 Katydid is a data analysis package for Project 8.
 
-The various actions Katydid can perform on data are packaged into Processors, which can 
+The various actions Katydid can perform on data are packaged into Processors, which can
 be setup at runtime into any number of configurations to suit any analysis procedure.
 
 
@@ -73,10 +73,10 @@ We recommend an out-of-source build:
   >  mkdir build
   >  cd build
 ```
-    
+
 To configure the installation you can use cmake, ccmake, or cmake-gui.
-You should set the variable CMAKE_BUILD_TYPE to either `Release`, `Standard`, or `Debug`, in order 
-of how much text output you would like (from least to most) and how much compiler optimization 
+You should set the variable CMAKE_BUILD_TYPE to either `Release`, `Standard`, or `Debug`, in order
+of how much text output you would like (from least to most) and how much compiler optimization
 should be performed (from most to least).
 
 Variables that start with `Katydid_` will control which parts of Katydid are built.
@@ -84,14 +84,28 @@ Variables that start with `Katydid_` will control which parts of Katydid are bui
 If using Monarch, if you want to read egg3 files, ensure that `Monarch_BUILD_MONARCH3` is set.
 If you want to read egg2 files, ensure that `Monarch_BUILD_MONARCH2` is set.
 
+Here is an example of what you have to do using ccmake for a `Debug` build.
+
+```
+ccmake ..
+```
+Press [c] to configure
+Select CMAKE_BUILD_TYPE
+Press Return
+Write `Debug`
+Press Return
+Press [c] to configure
+Press [g] to generate
+Press [q] to quit
+
 To build and install:
 ```
   >  make
   >  make install
 ```
-    
+
 The install prefix is specified by the CMake variable `CMAKE_INSTALL_PREFIX`.
-The library, binaries, and header files will be installed in the 
+The library, binaries, and header files will be installed in the
 lib, bin, and include subdirectories. The default install prefix is the
 build directory.
 
