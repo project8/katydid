@@ -62,7 +62,7 @@ namespace Katydid
             KTLinearDensityProbeFit(const std::string& name = "linear-density-fit");
             virtual ~KTLinearDensityProbeFit();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);

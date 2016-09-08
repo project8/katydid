@@ -9,7 +9,6 @@
 
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
-#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
@@ -52,23 +51,23 @@ namespace Katydid
         fWaterfallSignal( data );
     }
 
-    bool KTSpectrogramCollector::Configure(const KTParamNode* node)
+    bool KTSpectrogramCollector::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("min-frequency"))
+        if (node->has("min-frequency"))
         {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-frequency"))
+        if (node->has("max-frequency"))
         {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        SetMinBin(node->GetValue< unsigned >("min-bin", fMinBin));
-        SetMaxBin(node->GetValue< unsigned >("max-bin", fMaxBin));
-        SetLeadTime(node->GetValue< double >("lead-time", fLeadTime));
-        SetTrailTime(node->GetValue< double >("trail-time", fTrailTime));
+        SetMinBin(node->get_value< unsigned >("min-bin", fMinBin));
+        SetMaxBin(node->get_value< unsigned >("max-bin", fMaxBin));
+        SetLeadTime(node->get_value< double >("lead-time", fLeadTime));
+        SetTrailTime(node->get_value< double >("trail-time", fTrailTime));
 
         return true;
     }

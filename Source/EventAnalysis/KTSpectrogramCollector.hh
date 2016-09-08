@@ -61,7 +61,7 @@ namespace Katydid
             KTSpectrogramCollector(const std::string& name = "spectrogram-collector");
             virtual ~KTSpectrogramCollector();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);
