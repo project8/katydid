@@ -113,7 +113,7 @@ namespace Katydid
     {
         try
         {
-            mantis::run_client the_client( &fConfig, KTCommandLineHandler::GetInstance()->GetExecutableName() );
+            mantis::run_client the_client( &fConfig, KTCommandLineHandler::get_instance()->GetExecutableName() );
 
             the_client.execute();
 

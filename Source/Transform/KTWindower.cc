@@ -58,7 +58,7 @@ namespace Katydid
 
     bool KTWindower::SelectWindowFunction(const string& windowType)
     {
-        KTWindowFunction* tempWF = Nymph::KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
+        KTWindowFunction* tempWF = Nymph::KTNOFactory< KTWindowFunction >::get_instance()->Create(windowType);
         if (tempWF == NULL)
         {
             KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");

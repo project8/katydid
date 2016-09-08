@@ -113,7 +113,7 @@ namespace Katydid
     bool KTEggProcessor::ProcessEgg()
     {
         // Create egg reader and transfer information
-        KTEggReader* reader = Nymph::KTFactory< KTEggReader >::GetInstance()->Create(fEggReaderType);
+        KTEggReader* reader = Nymph::KTFactory< KTEggReader >::get_instance()->Create(fEggReaderType);
         if (reader == NULL)
         {
             KTERROR(egglog, "Invalid egg reader type: " << fEggReaderType);

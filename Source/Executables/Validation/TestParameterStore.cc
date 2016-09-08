@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     }
     string configFilename(argv[1]);
 
-    KTParameterStore* store = KTParameterStore::GetInstance();
+    KTParameterStore* store = KTParameterStore::get_instance();
     if (! store->ReadConfigFile(configFilename))
     {
         KTERROR(testparamlog, "Unable to read config file");
