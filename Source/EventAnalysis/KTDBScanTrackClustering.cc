@@ -188,7 +188,7 @@ namespace Katydid
 
                 ++fDataCount;
 
-                KTDataPtr newData(new KTData());
+                Nymph::KTDataPtr newData(new Nymph::KTData());
                 KTSparseWaterfallCandidateData& cand = newData->Of< KTSparseWaterfallCandidateData >();
 
                 DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();

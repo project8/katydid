@@ -28,8 +28,8 @@ namespace Katydid
 {
     KTLOGGER(inlog, "KTMultiFileROOTTreeReader");
 
-    static KTNORegistrar< KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
-    static KTNORegistrar< KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
+    static Nymph::KTNORegistrar< Nymph::KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
+    static Nymph::KTNORegistrar< Nymph::KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
 
     KTMultiFileROOTTreeReader::KTMultiFileROOTTreeReader(const std::string& name) :
             KTReader(name),
@@ -119,7 +119,7 @@ namespace Katydid
                 return false;
             }
 
-            KTDataPtr newData(new KTData());
+            Nymph::KTDataPtr newData(new Nymph::KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
                 KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
@@ -145,7 +145,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTMultiFileROOTTreeReader::Append(KTData& data)
+    bool KTMultiFileROOTTreeReader::Append(Nymph::KTData& data)
     {
         if (fFileIter == fFilenames.end())
         {
@@ -183,7 +183,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
+    bool KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, Nymph::KTData& appendToData)
     {
         // Determine the number of components and the number of frequency bins
         unsigned nComponents = 0;

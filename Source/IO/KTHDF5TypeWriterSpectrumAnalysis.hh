@@ -66,7 +66,7 @@ namespace Katydid {
 		void RegisterSlots();
 
 	public:
-		void WriteDiscriminatedPoints(KTDataPtr data);
+		void WriteDiscriminatedPoints(Nymph::KTDataPtr data);
 		void FlushDiscPointBuffer();
 
 	private:

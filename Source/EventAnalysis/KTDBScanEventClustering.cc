@@ -204,7 +204,7 @@ namespace Katydid
 
                 ++fDataCount;
 
-                KTDataPtr data(new KTData());
+                Nymph::KTDataPtr data(new Nymph::KTData());
 
                 KTMultiTrackEventData& eventData = data->Of< KTMultiTrackEventData >();
                 eventData.SetComponent(iComponent);

@@ -21,7 +21,7 @@ namespace Katydid
 
     KTMergeKDTree::KTMergeKDTree(const std::string& name) :
             KTProcessor(name),
-            fDataPtr(new KTData()),
+            fDataPtr(new Nymph::KTData()),
             fMergedTreeData(fDataPtr->Of< KTKDTreeData >()),
             fHaveNewData(false),
             fKDTreeSignal("kd-tree-out", this),

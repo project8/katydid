@@ -32,7 +32,7 @@ namespace Katydid
             fMaxLeafSize(10),
             fTimeRadius(1.),
             fFreqRadius(1.),
-            fDataPtr(new KTData()),
+            fDataPtr(new Nymph::KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
             fSliceInWindowCount(0),
             fInvScalingX(1.),

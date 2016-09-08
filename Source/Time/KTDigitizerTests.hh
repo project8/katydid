@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     //class KTDigitizerTestData;
     class KTRawTimeSeriesData;
     class KTRawTimeSeries;
@@ -56,13 +56,13 @@ namespace Katydid
          - "bins-per-average": unsigned -- Window size for finding fit start and end points
 
      Slots:
-     - "raw-ts": void (KTDataPtr) -- Performs the requested digitizer tests; Requires KTRawTimeSeriesData; Adds KTDigitizerTestData; Emits signal "dig-test"
+     - "raw-ts": void (Nymph::KTDataPtr) -- Performs the requested digitizer tests; Requires KTRawTimeSeriesData; Adds KTDigitizerTestData; Emits signal "dig-test"
 
      Signals:
-     - "dig-test": void (KTDataPtr) -- Emitted upon completion of digitizer tests; Guarantees KTdigitizerTestData.
+     - "dig-test": void (Nymph::KTDataPtr) -- Emitted upon completion of digitizer tests; Guarantees KTdigitizerTestData.
      */
 
-    class KTDigitizerTests : public KTProcessor
+    class KTDigitizerTests : public Nymph::KTProcessor
     {
         private:
             typedef bool (KTDigitizerTests::*ptrToTestFunc)(const KTRawTimeSeries*, KTDigitizerTestData&, unsigned);
@@ -125,14 +125,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fDigTestSignal;
+            Nymph::KTSignalData fDigTestSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTRawTimeSeriesData > fDigTestRawSlot;
+            Nymph::KTSlotDataOneType< KTRawTimeSeriesData > fDigTestRawSlot;
 
     };
 

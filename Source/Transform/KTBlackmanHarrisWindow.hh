@@ -13,7 +13,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTBlackmanHarrisWindow
      @author N. S. Oblath

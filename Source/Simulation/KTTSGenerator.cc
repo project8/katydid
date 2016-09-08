@@ -96,7 +96,7 @@ namespace Katydid
         // The local copy of the data shared pointer is created and destroyed in each iteration of the loop
         for (fSliceCounter = 0; fSliceCounter < fNSlices; ++fSliceCounter)
         {
-            KTDataPtr newData = CreateNewData();
+            Nymph::KTDataPtr newData = CreateNewData();
 
             if (! AddSliceHeader(*newData.get()))
             {
@@ -170,9 +170,9 @@ namespace Katydid
         return newHeader;
     }
 
-    KTDataPtr KTTSGenerator::CreateNewData() const
+    Nymph::KTDataPtr KTTSGenerator::CreateNewData() const
     {
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         newData->SetCounter(fSliceCounter);
 
@@ -182,7 +182,7 @@ namespace Katydid
         return newData;
     }
 
-    bool KTTSGenerator::AddSliceHeader(KTData& data) const
+    bool KTTSGenerator::AddSliceHeader(Nymph::KTData& data) const
     {
         KTSliceHeader& sliceHeader = data.Of< KTSliceHeader >().SetNComponents(1);
         sliceHeader.SetSampleRate(1. / fBinWidth);
@@ -212,7 +212,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTTSGenerator::AddEmptySlice(KTData& data) const
+    bool KTTSGenerator::AddEmptySlice(Nymph::KTData& data) const
     {
         KTTimeSeriesData& tsData = data.Of< KTTimeSeriesData >().SetNComponents(fNChannels);
 

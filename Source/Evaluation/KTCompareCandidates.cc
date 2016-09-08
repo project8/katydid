@@ -136,7 +136,7 @@ namespace Katydid
             eventCounter++;
         }
 
-        KTDataPtr dataPtr(new KTData());
+        Nymph::KTDataPtr dataPtr(new Nymph::KTData());
         dataPtr->SetLastData(true);
         KTCCResults& ccrData = dataPtr->Of< KTCCResults >();
 

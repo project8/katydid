@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(egglog_scdac, "KTSingleChannelDAC");
 
     class KTChannelHeader;
@@ -31,7 +31,7 @@ namespace Katydid
 
 
 
-    class KTSingleChannelDAC //: public KTProcessor
+    class KTSingleChannelDAC //: public Nymph::KTProcessor
     {
         public:
             enum TimeSeriesType

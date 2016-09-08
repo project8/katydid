@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     class KTPowerSpectrumData;
@@ -48,14 +48,14 @@ namespace Katydid
      - "trail-time": double -- time to collect after the end of the track
 
      Slots:
-     - "track": void (KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
-     - "ps": void (KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
+     - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
+     - "ps": void (Nymph::KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
 
      Signals:
-     - "waterfall": void (KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
+     - "waterfall": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
     */
 
-    class KTSpectrogramCollector : public KTProcessor
+    class KTSpectrogramCollector : public Nymph::KTProcessor
     {
         public:
             KTSpectrogramCollector(const std::string& name = "spectrogram-collector");
@@ -96,24 +96,24 @@ namespace Katydid
             bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit);
             bool ReceiveTrack(KTProcessedTrackData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit);
-            void FinishSC( KTDataPtr data );
+            void FinishSC( Nymph::KTDataPtr data );
 
             struct KTTrackCompare
             {
-                bool operator() (const std::pair< KTDataPtr, KTPSCollectionData* > lhs, const std::pair< KTDataPtr, KTPSCollectionData* > rhs) const
+                bool operator() (const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > rhs) const
                 {
                     return lhs.second->GetStartTime() < rhs.second->GetStartTime();
                 }
             };
 
-            // The spectrograms are stored in a vector of sets of pairs of KTDataPtr and KTPSCollectionData. The levels to this hierarchy are:
+            // The spectrograms are stored in a vector of sets of pairs of Nymph::KTDataPtr and KTPSCollectionData. The levels to this hierarchy are:
             //      Vector - each element corresponds to a component
             //      Set    - each element corresponds to a track
-            //      Pair   - the KTDataPtr which contains the spectrogram, and a pointer to the spectrogram
-            // It is necessary to store the KTDataPtr because the signal must contain this object when it emits, and each spectrogram must have a
-            // unique associated KTDataPtr
+            //      Pair   - the Nymph::KTDataPtr which contains the spectrogram, and a pointer to the spectrogram
+            // It is necessary to store the Nymph::KTDataPtr because the signal must contain this object when it emits, and each spectrogram must have a
+            // unique associated Nymph::KTDataPtr
 
-            std::vector< std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
+            std::vector< std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
 
         private:
 
@@ -122,15 +122,15 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fWaterfallSignal;
+            Nymph::KTSignalData fWaterfallSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTProcessedTrackData > fTrackSlot;
-            void SlotFunctionPSData( KTDataPtr data );
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTrackSlot;
+            void SlotFunctionPSData( Nymph::KTDataPtr data );
 
     };
 
@@ -204,7 +204,7 @@ namespace Katydid
         return;
     }
 
-    void KTSpectrogramCollector::SlotFunctionPSData( KTDataPtr data )
+    void KTSpectrogramCollector::SlotFunctionPSData( Nymph::KTDataPtr data )
     {
         // Standard data slot pattern:
         // Check to ensure that the required data types are present

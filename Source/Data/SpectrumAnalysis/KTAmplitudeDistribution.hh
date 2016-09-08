@@ -16,9 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-
-    class KTAmplitudeDistribution : public KTExtensibleData< KTAmplitudeDistribution >
+    class KTAmplitudeDistribution : public Nymph::KTExtensibleData< KTAmplitudeDistribution >
     {
         public:
             typedef KTPhysicalArray< 1, double > Distribution; // histogram over amplitude distribution index

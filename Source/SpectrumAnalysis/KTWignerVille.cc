@@ -44,7 +44,7 @@ namespace Katydid
             fWindower(new KTWindower()),
             fFFT(new KTForwardFFTW()),
             fOutputArrays(),
-            fOutputData(new KTData()),
+            fOutputData(new Nymph::KTData()),
             fOutputSHData(NULL),
             fOutputWVData(NULL),
             fWindowAverageCounter(0),
@@ -158,7 +158,7 @@ namespace Katydid
         fAdvanceStartIteratorOnNewSlice = false;
 
         // initialize the output data
-        fOutputData.reset(new KTData());
+        fOutputData.reset(new Nymph::KTData());
 
         // slice header
         fFirstHeader.SetNComponents(nPairs);
@@ -360,7 +360,7 @@ namespace Katydid
         ///}
     }
 
-    void KTWignerVille::ProcessTimeSeries(KTDataPtr data)
+    void KTWignerVille::ProcessTimeSeries(Nymph::KTDataPtr data)
     {
         // Standard data slot pattern, except the signal is called asynchronously
 
@@ -391,7 +391,7 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::ProcessAnalyticAssociate(KTDataPtr data)
+    void KTWignerVille::ProcessAnalyticAssociate(Nymph::KTDataPtr data)
     {
         // Standard data slot pattern, except the signal is called asynchronously
 

@@ -16,8 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTProcessedTrackData : public KTExtensibleData< KTProcessedTrackData >
+    class KTProcessedTrackData : public Nymph::KTExtensibleData< KTProcessedTrackData >
     {
         public:
             KTProcessedTrackData();

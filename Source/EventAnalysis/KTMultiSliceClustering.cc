@@ -36,7 +36,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTMultiSliceClustering, "multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering(const std::string& name) :
-            KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),
+            Nymph::KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
             fMaxFreqSepBins(1),
@@ -578,7 +578,7 @@ namespace Katydid
         return;
     }
 
-    KTDataPtr KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
+    Nymph::KTDataPtr KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
     {
 #ifndef NDEBUG
         // if in debug mode, put together a string to print
@@ -588,7 +588,7 @@ namespace Katydid
 
         ++fDataCount;
 
-        KTDataPtr data(new KTData());
+        Nymph::KTDataPtr data(new Nymph::KTData());
 
         KTWaterfallCandidateData& wfcData = data->Of< KTWaterfallCandidateData >();
         wfcData.SetComponent(cluster.fDataComponent);

@@ -21,7 +21,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTMultiFileJSONReader
      @author N. S. Oblath
@@ -45,27 +45,27 @@ namespace Katydid
      - "cc-results" -- Emits signal "cc-results" after a file is read
 
      Slots:
-     - "mc-truth-events": void (KTDataPtr) -- Add MC truth events data; Requires KTData; Adds KTMCTruthEvents; Emits signal "mc-truth-events" upon successful file read.
-     - "analysis-candidates": void (KTDataPtr) -- Add analysis candidates data; Requires KTData; Adds KTAnalysisCandidates; Emits signal "analysis-candidates" upon successful file read.
-     - "cc-results": void (KTDataPtr) -- Add CC (candidate comparison) Results data; Requires KTData; Adds KTCCResults; Emits signal "cc-results" upon successful file read.
+     - "mc-truth-events": void (Nymph::KTDataPtr) -- Add MC truth events data; Requires KTData; Adds KTMCTruthEvents; Emits signal "mc-truth-events" upon successful file read.
+     - "analysis-candidates": void (Nymph::KTDataPtr) -- Add analysis candidates data; Requires KTData; Adds KTAnalysisCandidates; Emits signal "analysis-candidates" upon successful file read.
+     - "cc-results": void (Nymph::KTDataPtr) -- Add CC (candidate comparison) Results data; Requires KTData; Adds KTCCResults; Emits signal "cc-results" upon successful file read.
 
      Signals:
-     - "mc-truth-events": void (KTDataPtr) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
+     - "mc-truth-events": void (Nymph::KTDataPtr) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
      - "analysis-candidates": void (shared-ptr<KTData>) -- Emitted after reading an analysis candidates file; Guarantees KTAnalysisCandidates.
-     - "cc-results": void (KTDataPtr) -- Emitted after reading an cc-results file; Guarantees KTCCResults.
+     - "cc-results": void (Nymph::KTDataPtr) -- Emitted after reading an cc-results file; Guarantees KTCCResults.
     */
 
 
-    class KTMultiFileJSONReader : public KTReader
+    class KTMultiFileJSONReader : public Nymph::KTReader
     {
         private:
-            typedef bool (KTMultiFileJSONReader::*AppendFcn)(rapidjson::Document&, KTData&);
+            typedef bool (KTMultiFileJSONReader::*AppendFcn)(rapidjson::Document&, Nymph::KTData&);
             struct DataType
             {
                     std::string fName;
                     AppendFcn fAppendFcn;
-                    KTSignalData* fSignal;
-                    DataType(const std::string& name, AppendFcn fcn, KTSignalData* signal)
+                    Nymph::KTSignalData* fSignal;
+                    DataType(const std::string& name, AppendFcn fcn, Nymph::KTSignalData* signal)
                     {
                         fName = name;
                         fAppendFcn = fcn;
@@ -97,7 +97,7 @@ namespace Katydid
         public:
             virtual bool Run();
 
-            bool Append(KTData& data);
+            bool Append(Nymph::KTData& data);
 
         private:
             std::deque< DataType > fDataTypes;
@@ -105,27 +105,27 @@ namespace Katydid
             bool OpenAndParseFile(const std::string& filename, rapidjson::Document& document) const;
 
         private:
-            bool AppendMCTruthEvents(rapidjson::Document& document, KTData& data);
-            bool AppendAnalysisCandidates(rapidjson::Document& document, KTData& data);
-            bool AppendCCResults(rapidjson::Document& document, KTData& data);
+            bool AppendMCTruthEvents(rapidjson::Document& document, Nymph::KTData& data);
+            bool AppendAnalysisCandidates(rapidjson::Document& document, Nymph::KTData& data);
+            bool AppendCCResults(rapidjson::Document& document, Nymph::KTData& data);
 
 
             //**************
             // Signals
             //**************
         private:
-            KTSignalData fMCTruthEventsSignal;
-            KTSignalData fAnalysisCandidatesSignal;
-            KTSignalData fCCResultsSignal;
-            KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalData fMCTruthEventsSignal;
+            Nymph::KTSignalData fAnalysisCandidatesSignal;
+            Nymph::KTSignalData fCCResultsSignal;
+            Nymph::KTSignalOneArg< void > fDoneSignal;
 
             //**************
             // Slots
             //**************
         private:
-            KTSlotDataOneType< KTData > fAppendMCTruthEventsSlot;
-            KTSlotDataOneType< KTData > fAppendAnalysisCandidatesSlot;
-            KTSlotDataOneType< KTData > fAppendCCResultsSlot;
+            Nymph::KTSlotDataOneType< Nymph::KTData > fAppendMCTruthEventsSlot;
+            Nymph::KTSlotDataOneType< Nymph::KTData > fAppendAnalysisCandidatesSlot;
+            Nymph::KTSlotDataOneType< Nymph::KTData > fAppendCCResultsSlot;
     };
 
     inline const std::deque< std::string >& KTMultiFileJSONReader::GetFilenames() const

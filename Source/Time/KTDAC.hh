@@ -24,7 +24,7 @@ namespace Nymph
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
     class KTRawTimeSeries;
     class KTRawTimeSeriesData;
@@ -53,13 +53,13 @@ namespace Katydid
      Slots:
      - "header": void (KTEggHeader*) -- Sets up the DACs with the header information and then updates the contents if the bit depths are being changed; Emits signal "header"
      - "header-no-init": void (KTEggHeader*) -- Updates the contents of the egg header if the bit depths are being changed; Emits signal "header"
-     - "raw-ts": void (KTDataPtr) -- Performs the DAC process on a single slice; Requires KTRawTimeSeriesData; Adds KTTimeSeriesData; Emits signal "ts"
+     - "raw-ts": void (Nymph::KTDataPtr) -- Performs the DAC process on a single slice; Requires KTRawTimeSeriesData; Adds KTTimeSeriesData; Emits signal "ts"
 
      Signals:
      - "header": void (KTEggHeader*) -- Emitted upon update of an egg header.
-     - "ts": void (KTDataPtr) -- Emitted upon DAC completion for a single slice; Guarantees KTTimeSeriesData.
+     - "ts": void (Nymph::KTDataPtr) -- Emitted upon DAC completion for a single slice; Guarantees KTTimeSeriesData.
     */
-    class KTDAC : public KTProcessor
+    class KTDAC : public Nymph::KTProcessor
     {
         public:
             KTDAC(const std::string& name = "dac");
@@ -91,17 +91,17 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
-            KTSignalData fTimeSeriesSignal;
+            Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            Nymph::KTSignalData fTimeSeriesSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
-            KTSlotOneArg< void (KTEggHeader*) > fNoInitHeaderSlot;
-            KTSlotDataTwoTypes< KTSliceHeader, KTRawTimeSeriesData > fRawTSSlot;
+            Nymph::KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            Nymph::KTSlotOneArg< void (KTEggHeader*) > fNoInitHeaderSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTRawTimeSeriesData > fRawTSSlot;
 
     };
 

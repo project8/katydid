@@ -18,8 +18,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTMultiTrackEventData : public KTExtensibleData< KTMultiTrackEventData >
+    class KTMultiTrackEventData : public Nymph::KTExtensibleData< KTMultiTrackEventData >
     {
         public:
             //typedef std::map< unsigned, KTProcessedTrackData > Tracks;

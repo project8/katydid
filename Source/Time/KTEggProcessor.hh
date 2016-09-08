@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDAC;
     class KTProcSummary;
     class KTTimeSeriesData;
@@ -63,10 +63,10 @@ namespace Katydid
      - -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
-     - "header": void (KTDataPtr) -- emitted when the file header is parsed.
-     - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is 
+     - "header": void (Nymph::KTDataPtr) -- emitted when the file header is parsed.
+     - "raw-ts" void (Nymph::KTDataPtr) -- emitted when a new raw time series is 
         produced; guarantees KTRawTimeSeriesData
-     - "ts": void (KTDataPtr) -- emitted when the new calibrated time series is
+     - "ts": void (Nymph::KTDataPtr) -- emitted when the new calibrated time series is
         produced; Guarantees KTTimeSeriesData
      - "egg-done": void () --  emitted when a file is finished.
      - "summary": void (const KTProcSummary*) -- emitted when a file is 
@@ -79,7 +79,7 @@ namespace Katydid
        tested.  R2013a is known to not work for Katydid on Macs, and R2012b
        to not work with Katydid on Linux systems.
     */
-    class KTEggProcessor : public KTPrimaryProcessor
+    class KTEggProcessor : public Nymph::KTPrimaryProcessor
     {
         public:
             KTEggProcessor(const std::string& name = "egg-processor");
@@ -107,8 +107,8 @@ namespace Katydid
 
             bool ProcessEgg();
 
-            bool HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
-            void NormalizeData(KTDataPtr& data);
+            bool HatchNextSlice(KTEggReader* reader, Nymph::KTDataPtr& data) const;
+            void NormalizeData(Nymph::KTDataPtr& data);
 
         private:
             void UnlimitedLoop(KTEggReader* reader);
@@ -120,11 +120,11 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fHeaderSignal;
-            KTSignalData fRawDataSignal;
-            KTSignalData fDataSignal;
-            KTSignalOneArg< void > fEggDoneSignal;
-            KTSignalOneArg< const KTProcSummary* > fSummarySignal;
+            Nymph::KTSignalData fHeaderSignal;
+            Nymph::KTSignalData fRawDataSignal;
+            Nymph::KTSignalData fDataSignal;
+            Nymph::KTSignalOneArg< void > fEggDoneSignal;
+            Nymph::KTSignalOneArg< const KTProcSummary* > fSummarySignal;
 
     };
 
@@ -133,7 +133,7 @@ namespace Katydid
         return ProcessEgg();
     }
 
-    inline bool KTEggProcessor::HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const
+    inline bool KTEggProcessor::HatchNextSlice(KTEggReader* reader, Nymph::KTDataPtr& data) const
     {
         data = reader->HatchNextSlice();
         if (data) return true;

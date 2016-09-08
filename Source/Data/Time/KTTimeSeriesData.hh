@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTTimeSeries;
 
     class KTTimeSeriesDataCore
@@ -68,7 +68,7 @@ namespace Katydid
 
 
 
-    class KTTimeSeriesData : public KTTimeSeriesDataCore, public KTExtensibleData< KTTimeSeriesData >
+    class KTTimeSeriesData : public KTTimeSeriesDataCore, public Nymph::KTExtensibleData< KTTimeSeriesData >
     {
         public:
             KTTimeSeriesData();

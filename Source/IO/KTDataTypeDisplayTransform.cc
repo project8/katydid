@@ -33,7 +33,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayTransform > sBRTWFFTRegistrar;
+    static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayTransform > sBRTWFFTRegistrar;
 
     KTDataTypeDisplayTransform::KTDataTypeDisplayTransform() :
             KTDataTypeDisplay()
@@ -70,7 +70,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolar(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -97,7 +97,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTW(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -124,7 +124,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarPhase(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -151,7 +151,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWPhase(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -178,7 +178,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarPower(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -205,7 +205,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWPower(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -232,7 +232,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -259,7 +259,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -286,7 +286,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -313,7 +313,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -345,7 +345,7 @@ namespace Katydid
     // Time/Frequency Data
     //************************
 
-    void KTDataTypeDisplayTransform::DrawTimeFrequencyDataPolar(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawTimeFrequencyDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -372,7 +372,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawTimeFrequencyDataPolarPhase(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -398,7 +398,7 @@ namespace Katydid
         }
         return;
     }
-    void KTDataTypeDisplayTransform::DrawTimeFrequencyDataPolarPower(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawTimeFrequencyDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -430,7 +430,7 @@ namespace Katydid
     // Multi-FS Data
     //*****************
 
-    void KTDataTypeDisplayTransform::DrawMultiFSDataPolar(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawMultiFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -453,7 +453,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTransform::DrawMultiFSDataFFTW(KTDataPtr data)
+    void KTDataTypeDisplayTransform::DrawMultiFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

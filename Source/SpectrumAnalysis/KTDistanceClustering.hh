@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
 
@@ -39,12 +39,12 @@ namespace Katydid
      - "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
 
       Slots:
-     - "disc-1d": void (KTDataPtr) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
+     - "disc-1d": void (Nymph::KTDataPtr) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
 
      Signals:
-     - "cluster-1d": void (KTDataPtr) -- Emitted after forming clusters; Guarantees KTCluster1DData
+     - "cluster-1d": void (Nymph::KTDataPtr) -- Emitted after forming clusters; Guarantees KTCluster1DData
     */
-    class KTDistanceClustering : public KTProcessor
+    class KTDistanceClustering : public Nymph::KTProcessor
     {
         public:
             KTDistanceClustering(const std::string& name = "distance-clustering");
@@ -73,20 +73,20 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fCluster1DSignal;
-            //KTSignalData fCluster2DSignal;
+            Nymph::KTSignalData fCluster1DSignal;
+            //Nymph::KTSignalData fCluster2DSignal;
 
             //***************
             // Slots
             //***************
 
         public:
-            void Process1DData(KTDataPtr data);
+            void Process1DData(Nymph::KTDataPtr data);
             //void Process2DData(const KTDiscriminatedPoints2DData* data);
 
         private:
-            KTSlotDataOneType< KTDiscriminatedPoints1DData > fDiscPoints1DSlot;
-            //KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPoints2DSlot;
+            Nymph::KTSlotDataOneType< KTDiscriminatedPoints1DData > fDiscPoints1DSlot;
+            //Nymph::KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPoints2DSlot;
 
     };
 

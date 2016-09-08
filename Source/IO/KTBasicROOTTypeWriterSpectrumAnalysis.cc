@@ -42,7 +42,7 @@ namespace Katydid
     KTLOGGER(publog, "KTBasicROOTTypeWRiterAnalysis");
 
 
-    static KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterSpectrumAnalysis > sBRTWAnalysisRegistrar;
+    static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterSpectrumAnalysis > sBRTWAnalysisRegistrar;
 
     KTBasicROOTTypeWriterSpectrumAnalysis::KTBasicROOTTypeWriterSpectrumAnalysis() :
             KTBasicROOTTypeWriter()
@@ -87,7 +87,7 @@ namespace Katydid
     // SNR
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteSNRPower(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteSNRPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -124,7 +124,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolar(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -153,7 +153,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTW(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -182,7 +182,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolarPhase(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -211,7 +211,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTWPhase(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTWPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -240,7 +240,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolarPower(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -269,7 +269,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTWPower(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTWPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -298,7 +298,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedPSData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedPSData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -333,7 +333,7 @@ namespace Katydid
     // Analytic Associate Data
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAnalyticAssociateData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAnalyticAssociateData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -365,7 +365,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAnalyticAssociateDataDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAnalyticAssociateDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -401,7 +401,7 @@ namespace Katydid
     // Correlation Data
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -434,7 +434,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationDataDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -471,7 +471,7 @@ namespace Katydid
     // Correlation Data
     //************************
 /*
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationTSData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationTSData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -500,7 +500,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationTSDataDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationTSDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -533,7 +533,7 @@ namespace Katydid
     // Hough Transform Data
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteHoughData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteHoughData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -565,7 +565,7 @@ namespace Katydid
     // Gain Variation Data
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteGainVariationData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteGainVariationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -611,7 +611,7 @@ namespace Katydid
     // WignerVille Data
     //************************
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -644,7 +644,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -677,7 +677,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -703,7 +703,7 @@ namespace Katydid
     }
 
 #ifdef ENABLE_TUTORIAL
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -732,7 +732,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -761,7 +761,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredPSData(KTDataPtr data)
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredPSData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

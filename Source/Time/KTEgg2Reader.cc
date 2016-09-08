@@ -46,7 +46,7 @@ namespace Katydid
             fStride(0),
             fStartTime(0.),
             fMonarch(NULL),
-            fHeaderPtr(new KTData()),
+            fHeaderPtr(new Nymph::KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fReadState(),
             fNumberOfChannels(),
@@ -88,7 +88,7 @@ namespace Katydid
         return true;
     }
 
-    KTDataPtr KTEgg2Reader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTEgg2Reader::BreakEgg(const string& filename)
     {
         if (fStride == 0) fStride = fSliceSize;
 
@@ -107,7 +107,7 @@ namespace Katydid
         catch (M2Exception& e)
         {
             KTERROR(eggreadlog, "Unable to break egg: " << e.what());
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
 
         }
 
@@ -123,7 +123,7 @@ namespace Katydid
             fMonarch->Close();
             delete fMonarch;
             fMonarch = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         CopyHeaderInformation(fMonarch->GetHeader());
 
@@ -162,19 +162,19 @@ namespace Katydid
         return fHeaderPtr;
     }
 
-    KTDataPtr KTEgg2Reader::HatchNextSlice()
+    Nymph::KTDataPtr KTEgg2Reader::HatchNextSlice()
     {
         unsigned recordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
 
         if (fMonarch == NULL)
         {
             KTERROR(eggreadlog, "Monarch file has not been opened");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         if (fReadState.fStatus == MonarchReadState::kInvalid)
         {
             KTERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
@@ -184,7 +184,7 @@ namespace Katydid
             if (! fMonarch->ReadRecord(fReadState.fAbsoluteRecordOffset))
             {
                 KTERROR(eggreadlog, "File appears to contain no slices.");
-                return KTDataPtr();
+                return Nymph::KTDataPtr();
             }
             fSliceNumber = 0;
         }
@@ -201,7 +201,7 @@ namespace Katydid
                 if (! fMonarch->ReadRecord())
                 {
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    return KTDataPtr();
+                    return Nymph::KTDataPtr();
                 }
                 ++(fReadState.fAbsoluteRecordOffset);
                 fReadState.fReadPtrOffset = 0;
@@ -234,7 +234,7 @@ namespace Katydid
                 if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
                 {
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    return KTDataPtr();
+                    return Nymph::KTDataPtr();
                 }
             }
             // Move the read pointer to the slice start pointer within the record
@@ -242,7 +242,7 @@ namespace Katydid
             fReadState.fReadPtrOffset = fReadState.fSliceStartPtrOffset;
         }
 
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
@@ -313,7 +313,7 @@ namespace Katydid
                     {
                         delete newRecords[iChannel];
                     }
-                    return KTDataPtr();
+                    return Nymph::KTDataPtr();
                 }
                 ++(fReadState.fAbsoluteRecordOffset);
                 fReadState.fReadPtrOffset = 0;

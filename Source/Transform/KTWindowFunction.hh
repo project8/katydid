@@ -21,7 +21,7 @@ class TH1D;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTTimeSeriesData;
 
     /*!
@@ -35,7 +35,7 @@ namespace Katydid
       none
     */
 
-   class KTWindowFunction : public KTConfigurable
+   class KTWindowFunction : public Nymph::KTConfigurable
     {
         protected:
             enum ParameterName
@@ -126,7 +126,7 @@ namespace Katydid
    }
 
 #define KT_REGISTER_WINDOWFUNCTION(window_class, window_name) \
-        static KTNORegistrar< KTWindowFunction, window_class > sWF##window_class##Registrar(window_name);
+        static Nymph::KTNORegistrar< KTWindowFunction, window_class > sWF##window_class##Registrar(window_name);
 
 } /* namespace Katydid */
 #endif /* KTWINDOWFUNCTION_HH_ */

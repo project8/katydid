@@ -31,7 +31,7 @@ namespace Nymph
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTMantisClientWriting;
     class KTEggHeader;
 
@@ -63,11 +63,11 @@ namespace Katydid
 
      Signals:
      - "header": void (KTEggHeader*) -- emitted when the file header is parsed.
-     - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is produced; guarantees KTRawTimeSeriesData
+     - "raw-ts" void (Nymph::KTDataPtr) -- emitted when a new raw time series is produced; guarantees KTRawTimeSeriesData
      - "mantis-done": void () --  emitted when a file is finished.
     */
 
-    class KTMantis : public KTDataQueueProcessorTemplate< KTMantis >
+    class KTMantis : public Nymph::KTDataQueueProcessorTemplate< KTMantis >
     {
         private:
             friend class KTMantisWriterToTS;
@@ -99,7 +99,7 @@ namespace Katydid
 
         private:
             void EmitHeaderSignal(KTEggHeader* header);
-            void EmitSliceSignal(KTDataPtr data);
+            void EmitSliceSignal(Nymph::KTDataPtr data);
             void EmitMantisDoneSignal();
 
 
@@ -109,9 +109,9 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
-            KTSignalData fSliceSignal;
-            KTSignalOneArg< void > fMantisDoneSignal;
+            Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            Nymph::KTSignalData fSliceSignal;
+            Nymph::KTSignalOneArg< void > fMantisDoneSignal;
 
             //***************
             // Slots
@@ -154,7 +154,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTMantis::EmitSliceSignal(KTDataPtr data)
+    inline void KTMantis::EmitSliceSignal(Nymph::KTDataPtr data)
     {
         fSliceSignal(data);
         return;

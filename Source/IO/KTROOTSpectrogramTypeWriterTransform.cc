@@ -21,7 +21,7 @@ namespace Katydid
 {
     //KTLOGGER(publog, "KTROOTSpectrogramTypeWriterTransform");
 
-    static KTTIRegistrar< KTROOTSpectrogramTypeWriter, KTROOTSpectrogramTypeWriterTransform > sRSTWTRegistrar;
+    static Nymph::KTTIRegistrar< KTROOTSpectrogramTypeWriter, KTROOTSpectrogramTypeWriterTransform > sRSTWTRegistrar;
 
     KTROOTSpectrogramTypeWriterTransform::KTROOTSpectrogramTypeWriterTransform() :
             KTROOTSpectrogramTypeWriter(),
@@ -118,13 +118,13 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar(KTDataPtr data)
+    void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
         AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarSpectrograms, "FSPolarSpectrogram_");
         return;
     }
 
-    void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW(KTDataPtr data)
+    void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
         AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWSpectrograms, "FSFFTWSpectrogram_");
         return;
@@ -134,19 +134,19 @@ namespace Katydid
     // Power Spectrum Data
     //********************
 
-    void KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData(KTDataPtr data)
+    void KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData(Nymph::KTDataPtr data)
     {
         AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerSpectrograms, "PowerSpectrogram_");
         return;
     }
 
-    void KTROOTSpectrogramTypeWriterTransform::AddPSDData(KTDataPtr data)
+    void KTROOTSpectrogramTypeWriterTransform::AddPSDData(Nymph::KTDataPtr data)
     {
         AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
         return;
     }
 
-    void KTROOTSpectrogramTypeWriterTransform::TakeLine(KTDataPtr data)
+    void KTROOTSpectrogramTypeWriterTransform::TakeLine(Nymph::KTDataPtr data)
     {
         if (fLineCollection == NULL)
         {

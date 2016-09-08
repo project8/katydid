@@ -19,7 +19,7 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     struct TEggHeader
     {
         TString* fFilename;
@@ -63,7 +63,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(KTDataPtr headerPtr);
+            void WriteEggHeader(Nymph::KTDataPtr headerPtr);
 
         public:
             TTree* GetEggHeaderTree() const;

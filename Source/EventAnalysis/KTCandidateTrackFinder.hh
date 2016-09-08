@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTHoughData;
     class KTSparseWaterfallCandidateData;
 
@@ -37,10 +37,10 @@ namespace Katydid
      - "swfc-and-hough": void (KTDataPr) -- Finds the track based on the dominant line from the Hough Transform ; Requires KTSparseWaterfallCandidateData and KTHoughData; Does not add data; Emits signal "clean-cand"
 
      Signals:
-     - "cand-track": void (KTDataPtr) -- Emitted when a track has been found; Guarantees [output data type].
+     - "cand-track": void (Nymph::KTDataPtr) -- Emitted when a track has been found; Guarantees [output data type].
     */
 
-    class KTCandidateTrackFinder : public KTProcessor
+    class KTCandidateTrackFinder : public Nymph::KTProcessor
     {
         public:
             KTCandidateTrackFinder(const std::string& name = "candidate-track-finder");
@@ -60,14 +60,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fTrackSignal;
+            Nymph::KTSignalData fTrackSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFCAndHoughSlot;
+            Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFCAndHoughSlot;
 
     };
 }

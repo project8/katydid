@@ -26,7 +26,7 @@ namespace Nymph
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
 
     class KTEggHeader;
@@ -55,14 +55,14 @@ namespace Katydid
 
      Slots:
      - "header": void (KTEggHeader*) -- Initialize the window function from an Egg header
-     - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "ts-real": void (Nymph::KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (Nymph::KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     - "windowed": void (KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (Nymph::KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
-    class KTPolyphaseFilterBank : public KTProcessor
+    class KTPolyphaseFilterBank : public Nymph::KTProcessor
     {
         public:
             KTPolyphaseFilterBank(const std::string& name = "polyphase-filter-bank");
@@ -90,9 +90,9 @@ namespace Katydid
             bool ProcessDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Create a new data object for the filtered time series (real-type)
-            KTDataPtr CreateFilteredDataReal(const KTTimeSeriesData& tsData);
+            Nymph::KTDataPtr CreateFilteredDataReal(const KTTimeSeriesData& tsData);
             /// Create a new data object for the filtered time series (fftw-type)
-            KTDataPtr CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
+            Nymph::KTDataPtr CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Apply PFB to a single time series (real-type); a new time series is produced
             KTTimeSeriesReal* ApplyPFB(const KTTimeSeriesReal* data) const;
@@ -107,16 +107,16 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fWindowed;
+            Nymph::KTSignalData fWindowed;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
+            Nymph::KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
 
     };
 

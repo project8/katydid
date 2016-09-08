@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumFFTW;
@@ -45,19 +45,19 @@ namespace Katydid
      - "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
 
      Slots:
-     - "fs-polar": void (KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
-     - "fs-fftw": void (KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
-     - "ps": void (KTDataPtr) -- Normalizes a power spectrum; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTNormalizedPSData; Emits signal norm-ps
-     - "ps-pre": void (KTDataPtr) -- Normalizes a power spectrum based on the pre-calculated gain variation; Requires KTPowerSpectrumData; Adds KTNormalizedPSData; Emits signal norm-ps
-     - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
+     - "ps": void (Nymph::KTDataPtr) -- Normalizes a power spectrum; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTNormalizedPSData; Emits signal norm-ps
+     - "ps-pre": void (Nymph::KTDataPtr) -- Normalizes a power spectrum based on the pre-calculated gain variation; Requires KTPowerSpectrumData; Adds KTNormalizedPSData; Emits signal norm-ps
+     - "gv": void (Nymph::KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
 
      Signals:
-     - "norm-fs-polar": void (KTDataPtr) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
-     - "norm-fs-fftw": void (KTDataPtr) emitted upon performance of a normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
-     - "norm-ps": void (KTDataPtr) emitted upon performance of a normalization of a power spectrum data object; Guarantees KTNormalizedPSData
+     - "norm-fs-polar": void (Nymph::KTDataPtr) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
+     - "norm-fs-fftw": void (Nymph::KTDataPtr) emitted upon performance of a normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
+     - "norm-ps": void (Nymph::KTDataPtr) emitted upon performance of a normalization of a power spectrum data object; Guarantees KTNormalizedPSData
     */
 
-    class KTGainNormalization : public KTProcessor
+    class KTGainNormalization : public Nymph::KTProcessor
     {
         public:
             KTGainNormalization(const std::string& name = "gain-normalization");
@@ -110,24 +110,24 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFSPolarSignal;
-            KTSignalData fFSFFTWSignal;
-            KTSignalData fPSSignal;
-            //KTSignalData fSWFSSignal;
-            //KTSignalData fSWFSFFTWSignal;
+            Nymph::KTSignalData fFSPolarSignal;
+            Nymph::KTSignalData fFSFFTWSignal;
+            Nymph::KTSignalData fPSSignal;
+            //Nymph::KTSignalData fSWFSSignal;
+            //Nymph::KTSignalData fSWFSFFTWSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
-            KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
-            KTSlotDataTwoTypes< KTPowerSpectrumData, KTGainVariationData > fPSSlot;
+            Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
+            Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTPowerSpectrumData, KTGainVariationData > fPSSlot;
 
-            KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
+            Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
 
-            KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
+            Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
 
     };
 

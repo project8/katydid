@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTMultiFSDataPolar;
@@ -34,45 +34,45 @@ namespace Katydid
             // Frequency Spectrum Data
             //************************
         public:
-            void WriteFrequencySpectrumDataPolar(KTDataPtr data);
-            void WriteFrequencySpectrumDataFFTW(KTDataPtr data);
-            void WriteFrequencySpectrumDataPolarPhase(KTDataPtr data);
-            void WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data);
-            void WriteFrequencySpectrumDataPolarPower(KTDataPtr data);
-            void WriteFrequencySpectrumDataFFTWPower(KTDataPtr data);
+            void WriteFrequencySpectrumDataPolar(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarPower(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data);
 
-            void WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data);
-            void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data);
-            void WriteFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data);
-            void WriteFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data);
 
             //********************
             // Power Spectrum Data
             //********************
-            void WritePowerSpectrum(KTDataPtr data);
-            void WritePowerSpectralDensity(KTDataPtr data);
+            void WritePowerSpectrum(Nymph::KTDataPtr data);
+            void WritePowerSpectralDensity(Nymph::KTDataPtr data);
 
-            void WritePowerSpectrumDistribution(KTDataPtr data);
-            void WritePowerSpectralDensityDistribution(KTDataPtr data);
+            void WritePowerSpectrumDistribution(Nymph::KTDataPtr data);
+            void WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data);
 
 
             //************************
             // Time/Frequency Data
             //************************
-            void WriteTimeFrequencyDataPolar(KTDataPtr data);
-            //void WriteFrequencySpectrumDataFFTW(KTDataPtr data);
-            void WriteTimeFrequencyDataPolarPhase(KTDataPtr data);
-            //void WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data);
-            void WriteTimeFrequencyDataPolarPower(KTDataPtr data);
-            //void WriteFrequencySpectrumDataFFTWPower(KTDataPtr data);
+            void WriteTimeFrequencyDataPolar(Nymph::KTDataPtr data);
+            //void WriteFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
+            void WriteTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data);
+            //void WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data);
+            void WriteTimeFrequencyDataPolarPower(Nymph::KTDataPtr data);
+            //void WriteFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data);
 
 
             //************************
             // Multi-FS Data
             //************************
         public:
-            void WriteMultiFSDataPolar(KTDataPtr data);
-            void WriteMultiFSDataFFTW(KTDataPtr data);
+            void WriteMultiFSDataPolar(Nymph::KTDataPtr data);
+            void WriteMultiFSDataFFTW(Nymph::KTDataPtr data);
     };
 
 } /* namespace Katydid */

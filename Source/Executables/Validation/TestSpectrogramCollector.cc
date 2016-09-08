@@ -78,7 +78,7 @@ int main()
 
     struct KTTrackCompare
     {
-        bool operator() (const std::pair< KTDataPtr, KTPSCollectionData* > lhs, const std::pair< KTDataPtr, KTPSCollectionData* > rhs) const
+        bool operator() (const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > rhs) const
         {
             return lhs.second->GetStartTime() < rhs.second->GetStartTime();
         }
@@ -225,7 +225,7 @@ int main()
 
     // Fill the result vector and count the number of plots
     int nPlots = 0;
-    for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[0].begin(); it != spec.fWaterfallSets[0].end(); ++it )
+    for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[0].begin(); it != spec.fWaterfallSets[0].end(); ++it )
     {
         result.push_back( it->first->Of< KTPSCollectionData >() );
         nPlots++;

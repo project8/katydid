@@ -26,7 +26,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTMultiPeakEventBuilder
      @author N.S. Oblath
@@ -57,7 +57,7 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTMultiPeakEventBuilder : public KTPrimaryProcessor
+    class KTMultiPeakEventBuilder : public Nymph::KTPrimaryProcessor
     {
         public:
             KTMultiPeakEventBuilder(const std::string& name = "multi-peak-event-builder");
@@ -81,7 +81,7 @@ namespace Katydid
 
             bool DoClustering();
 
-            const std::set< KTDataPtr >& GetCandidates() const;
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
             unsigned GetDataCount() const;
 
         private:
@@ -95,7 +95,7 @@ namespace Katydid
             std::vector< TrackSet > fCompTracks; // input tracks
             std::vector< std::set< Katydid::MultiPeakTrackRef, MTRComp > > fMPTracks;
 
-            std::set< KTDataPtr > fCandidates;
+            std::set< Nymph::KTDataPtr > fCandidates;
             unsigned fDataCount;
 
             //***************
@@ -103,15 +103,15 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fEventSignal;
-            KTSignalOneArg< void > fEventsDoneSignal;
+            Nymph::KTSignalData fEventSignal;
+            Nymph::KTSignalOneArg< void > fEventsDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
 
             void DoClusteringSlot();
 
@@ -128,7 +128,7 @@ namespace Katydid
         return;
     }
 
-    inline const std::set< KTDataPtr >& KTMultiPeakEventBuilder::GetCandidates() const
+    inline const std::set< Nymph::KTDataPtr >& KTMultiPeakEventBuilder::GetCandidates() const
     {
         return fCandidates;
     }

@@ -24,7 +24,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTProcessedTrackData;
 
     // Track distance
@@ -87,7 +87,7 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTDBScanEventClustering : public KTPrimaryProcessor
+    class KTDBScanEventClustering : public Nymph::KTPrimaryProcessor
     {
         public:
             typedef KTSymmetricDistanceMatrix< double > DistanceMatrix;
@@ -119,7 +119,7 @@ namespace Katydid
 
             bool DoClustering();
 
-            const std::set< KTDataPtr >& GetCandidates() const;
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
             unsigned GetDataCount() const;
 
         private:
@@ -129,7 +129,7 @@ namespace Katydid
 
             std::vector< std::vector< KTProcessedTrackData > > fCompTracks; // input tracks
 
-            std::set< KTDataPtr > fCandidates;
+            std::set< Nymph::KTDataPtr > fCandidates;
             unsigned fDataCount;
 
             //***************
@@ -137,16 +137,16 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fEventSignal;
-            KTSignalOneArg< void > fClusterDoneSignal;
+            Nymph::KTSignalData fEventSignal;
+            Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
-            //KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
+            //Nymph::KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
 
             void DoClusteringSlot();
 
@@ -163,7 +163,7 @@ namespace Katydid
         return;
     }
 
-    inline const std::set< KTDataPtr >& KTDBScanEventClustering::GetCandidates() const
+    inline const std::set< Nymph::KTDataPtr >& KTDBScanEventClustering::GetCandidates() const
     {
         return fCandidates;
     }

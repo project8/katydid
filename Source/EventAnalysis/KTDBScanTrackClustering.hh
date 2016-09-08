@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTKDTreeData;
 
     /*!
@@ -55,7 +55,7 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTDBScanTrackClustering : public KTProcessor
+    class KTDBScanTrackClustering : public Nymph::KTProcessor
     {
         public:
             //typedef KTSparseDistanceMatrix< double > DistanceMatrix;
@@ -90,7 +90,7 @@ namespace Katydid
 
             //bool DoClustering();
 
-            const std::set< KTDataPtr >& GetCandidates() const;
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
             unsigned GetDataCount() const;
 
         private:
@@ -100,7 +100,7 @@ namespace Katydid
 
             //std::vector< Points > fCompPoints; // points vectors for each component
 
-            std::set< KTDataPtr > fCandidates;
+            std::set< Nymph::KTDataPtr > fCandidates;
             unsigned fDataCount;
 
             //***************
@@ -108,17 +108,17 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fTrackSignal;
-            KTSignalOneArg< void > fClusterDoneSignal;
+            Nymph::KTSignalData fTrackSignal;
+            Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTKDTreeData > fClusterKDTreeSlot;
-            //KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fTakePointSlot;
-            //KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fClusterKDTreeSlot;
+            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fTakePointSlot;
+            //Nymph::KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
 
             //void DoClusteringSlot();
 
@@ -135,7 +135,7 @@ namespace Katydid
         return;
     }
 */
-    inline const std::set< KTDataPtr >& KTDBScanTrackClustering::GetCandidates() const
+    inline const std::set< Nymph::KTDataPtr >& KTDBScanTrackClustering::GetCandidates() const
     {
         return fCandidates;
     }

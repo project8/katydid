@@ -20,7 +20,7 @@ namespace Katydid
     KT_REGISTER_WRITER(KTHDF5Writer, "hdf5-writer");
     KT_REGISTER_PROCESSOR(KTHDF5Writer, "hdf5-writer");
 
-    static KTCommandLineOption< string > sRTWFilenameCLO("HDF5 Writer", "HDF5 writer filename", "hdf5-file");
+    static Nymph::KTCommandLineOption< string > sRTWFilenameCLO("HDF5 Writer", "HDF5 writer filename", "hdf5-file");
 
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
             KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter >(name),

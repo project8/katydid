@@ -30,7 +30,7 @@ namespace Katydid {
 
   KTLOGGER(nrq_log, "KTRQProcessor");
 
-  class KTRQProcessor : public KTProcessor {
+  class KTRQProcessor : public Nymph::KTProcessor {
 
     /* 
      * Constructors and destructors.
@@ -61,11 +61,11 @@ namespace Katydid {
 
 
   private:
-    KTSlotDataOneType< KTTimeSeriesData > fNoiseSlot;
+    Nymph::KTSlotDataOneType< KTTimeSeriesData > fNoiseSlot;
     bool ProcessNoiseData(KTTimeSeriesData& noise);
-    KTSlotDataOneType< KTTimeSeriesData > fCandidateSlot;
+    Nymph::KTSlotDataOneType< KTTimeSeriesData > fCandidateSlot;
     bool ProcessCandidateData(KTTimeSeriesData& candidate);
-    KTSignalData fRQSignal;
+    Nymph::KTSignalData fRQSignal;
 
     /*
      * Internal state related to processing

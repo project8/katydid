@@ -18,10 +18,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
     class KTTimeFrequency;
 
-    class KTWaterfallCandidateData : public KTExtensibleData< KTWaterfallCandidateData >
+    class KTWaterfallCandidateData : public Nymph::KTExtensibleData< KTWaterfallCandidateData >
     {
         public:
             KTWaterfallCandidateData();

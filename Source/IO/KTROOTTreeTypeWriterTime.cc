@@ -26,7 +26,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterTime");
 
-    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterTime > sRTTWCRegistrar;
+    static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterTime > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterTime::KTROOTTreeTypeWriterTime() :
             KTROOTTreeTypeWriter(),
@@ -62,7 +62,7 @@ namespace Katydid
     // Egg Header
     //*********************
 
-    void KTROOTTreeTypeWriterTime::WriteEggHeader(KTDataPtr headerPtr)
+    void KTROOTTreeTypeWriterTime::WriteEggHeader(Nymph::KTDataPtr headerPtr)
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 

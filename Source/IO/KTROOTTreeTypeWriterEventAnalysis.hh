@@ -21,7 +21,7 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     //class KTFrequencyCandidateData;
     //class KTWaterfallCandidateData;
 
@@ -88,15 +88,15 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteFrequencyCandidates(KTDataPtr data);
+            void WriteFrequencyCandidates(Nymph::KTDataPtr data);
 
-            void WriteWaterfallCandidate(KTDataPtr data);
+            void WriteWaterfallCandidate(Nymph::KTDataPtr data);
 
-            void WriteSparseWaterfallCandidate(KTDataPtr data);
+            void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
 
-            void WriteProcessedTrack(KTDataPtr data);
+            void WriteProcessedTrack(Nymph::KTDataPtr data);
 
-            void WriteMultiTrackEvent(KTDataPtr data);
+            void WriteMultiTrackEvent(Nymph::KTDataPtr data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;

@@ -27,7 +27,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayTime > sDTDERegistrar;
+    static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayTime > sDTDERegistrar;
 
     KTDataTypeDisplayTime::KTDataTypeDisplayTime() :
             KTDataTypeDisplay()
@@ -52,7 +52,7 @@ namespace Katydid
     // Raw Time Series Data
     //*********************
 
-    void KTDataTypeDisplayTime::DrawRawTimeSeriesData(KTDataPtr data)
+    void KTDataTypeDisplayTime::DrawRawTimeSeriesData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -93,7 +93,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTDataTypeDisplayTime::DrawTimeSeriesData(KTDataPtr data)
+    void KTDataTypeDisplayTime::DrawTimeSeriesData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -120,7 +120,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplayTime::DrawTimeSeriesDataDistribution(KTDataPtr data)
+    void KTDataTypeDisplayTime::DrawTimeSeriesDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

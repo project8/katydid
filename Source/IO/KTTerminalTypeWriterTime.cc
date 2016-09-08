@@ -28,7 +28,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTTIRegistrar< KTTerminalTypeWriter, KTTerminalTypeWriterTime > sTermTWERegistrar;
+    static Nymph::KTTIRegistrar< KTTerminalTypeWriter, KTTerminalTypeWriterTime > sTermTWERegistrar;
 
     KTTerminalTypeWriterTime::KTTerminalTypeWriterTime() :
             KTTerminalTypeWriter()
@@ -54,7 +54,7 @@ namespace Katydid
     // Egg Header Data
     //****************
 
-    void KTTerminalTypeWriterTime::WriteEggHeader(KTDataPtr data)
+    void KTTerminalTypeWriterTime::WriteEggHeader(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -68,7 +68,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTTerminalTypeWriterTime::WriteTimeSeriesData(KTDataPtr data)
+    void KTTerminalTypeWriterTime::WriteTimeSeriesData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -98,7 +98,7 @@ namespace Katydid
         return;
     }
 
-    void KTTerminalTypeWriterTime::WriteDigitizerTestData(KTDataPtr data)
+    void KTTerminalTypeWriterTime::WriteDigitizerTestData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

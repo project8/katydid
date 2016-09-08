@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTHoughData;
     class KTSparseWaterfallCandidateData;
 
@@ -37,10 +37,10 @@ namespace Katydid
      - "swfc-and-hough": void (KTDataPr) -- Removes points from the candidate that don't fall on the dominant line found by the Hough Transform ; Requires KTSparseWaterfallCandidateData and KTHoughData; Does not add data; Emits signal "clean-cand"
 
      Signals:
-     - "clean-cand": void (KTDataPtr) -- Emitted when a candidate has been cleaned; Guarantees [output data type].
+     - "clean-cand": void (Nymph::KTDataPtr) -- Emitted when a candidate has been cleaned; Guarantees [output data type].
     */
 
-    class KTCandidateCleaner : public KTProcessor
+    class KTCandidateCleaner : public Nymph::KTProcessor
     {
         public:
             KTCandidateCleaner(const std::string& name = "candidate-cleaner");
@@ -60,14 +60,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fCleanedCandidateSignal;
+            Nymph::KTSignalData fCleanedCandidateSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFCAndHoughSlot;
+            Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFCAndHoughSlot;
 
     };
 }

@@ -107,7 +107,7 @@ namespace Katydid
         return true;
     }
 
-    void KTDistanceClustering::Process1DData(KTDataPtr data)
+    void KTDistanceClustering::Process1DData(Nymph::KTDataPtr data)
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {

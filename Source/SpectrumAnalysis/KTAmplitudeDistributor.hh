@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
     class KTEggHeader;
@@ -55,20 +55,20 @@ namespace Katydid
 
      Slots:
      - Running
-       - "fs-polar": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
-       - "fs-fftw": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataFFTW
-       - "norm-fs-polar": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
-       - "norm-fs-fftw": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTNormalizedFSDataFFTW
-       - "corr": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTCorrelationData
-       - "wv": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTWignerVilleData
+       - "fs-polar": void (Nymph::KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
+       - "fs-fftw": void (Nymph::KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataFFTW
+       - "norm-fs-polar": void (Nymph::KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
+       - "norm-fs-fftw": void (Nymph::KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTNormalizedFSDataFFTW
+       - "corr": void (Nymph::KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTCorrelationData
+       - "wv": void (Nymph::KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTWignerVilleData
      - Completion
        - "finish": void () -- Completes the calculation of the amplitude distribution; Emits "amp-dist"
 
      Signals:
-     \li \c "amp-dist": void (KTDataPtr) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistributor
+     \li \c "amp-dist": void (Nymph::KTDataPtr) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistributor
     */
 
-    class KTAmplitudeDistributor : public KTProcessor
+    class KTAmplitudeDistributor : public Nymph::KTProcessor
     {
         public:
             typedef std::vector< double > Spectrum; // indexed over frequency-axis bins
@@ -159,7 +159,7 @@ namespace Katydid
 
             unsigned fNSlicesProcessed;
 
-            KTDataPtr fDistributionData;
+            Nymph::KTDataPtr fDistributionData;
             KTAmplitudeDistribution* fDistributions;
 
 
@@ -168,21 +168,21 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fAmpDistSignal;
+            Nymph::KTSignalData fAmpDistSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-            KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
-            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
-            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
-            KTSlotDataOneType< KTWignerVilleData > fWVSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            Nymph::KTSlotDataOneType< KTWignerVilleData > fWVSlot;
 
-            KTSlotNoArg< void () > fCompleteDistributions;
+            Nymph::KTSlotNoArg< void () > fCompleteDistributions;
 
     };
 

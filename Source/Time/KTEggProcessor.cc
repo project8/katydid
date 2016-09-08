@@ -24,9 +24,9 @@ using std::string;
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
-    static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
-    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
+    static Nymph::KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
+    static Nymph::KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
+    static Nymph::KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
 
     KTLOGGER(egglog, "KTEggProcessor");
 
@@ -113,7 +113,7 @@ namespace Katydid
     bool KTEggProcessor::ProcessEgg()
     {
         // Create egg reader and transfer information
-        KTEggReader* reader = KTFactory< KTEggReader >::GetInstance()->Create(fEggReaderType);
+        KTEggReader* reader = Nymph::KTFactory< KTEggReader >::GetInstance()->Create(fEggReaderType);
         if (reader == NULL)
         {
             KTERROR(egglog, "Invalid egg reader type: " << fEggReaderType);
@@ -123,7 +123,7 @@ namespace Katydid
 
         // ******************************************************************** //
         // Call BreakEgg - this actually opens the file and loads its content
-        KTDataPtr headerPtr = reader->BreakEgg(fFilename);
+        Nymph::KTDataPtr headerPtr = reader->BreakEgg(fFilename);
         if (! headerPtr)
         {
             KTERROR(egglog, "Egg did not break");
@@ -165,7 +165,7 @@ namespace Katydid
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
         unsigned iSlice = 0, iProgress = 0;
-        KTDataPtr data, nextData;
+        Nymph::KTDataPtr data, nextData;
         bool nextSliceIsValid = true;
         if (! HatchNextSlice(reader, data))
         {
@@ -179,7 +179,7 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, nextData))
             {
-                data->Of< KTData >().SetLastData(true);
+                data->Of< Nymph::KTData >().SetLastData(true);
                 nextSliceIsValid = false;
             }
 
@@ -217,7 +217,7 @@ namespace Katydid
     void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
         unsigned iSlice = 0, iProgress = 0;
-        KTDataPtr data;
+        Nymph::KTDataPtr data;
         while (true)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
@@ -231,7 +231,7 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, data)) break;
 
-            if (iSlice == fNSlices - 1) data->Of< KTData >().SetLastData(true);
+            if (iSlice == fNSlices - 1) data->Of< Nymph::KTData >().SetLastData(true);
 
             if (data->Has< KTRawTimeSeriesData >())
             {
@@ -261,7 +261,7 @@ namespace Katydid
         return;
     }
 
-    void KTEggProcessor::NormalizeData(KTDataPtr& data)
+    void KTEggProcessor::NormalizeData(Nymph::KTDataPtr& data)
     {
         if (fNormalizeVoltages)
         {

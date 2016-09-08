@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTAxisProperties
      @author N. S. Oblath
@@ -328,7 +328,7 @@ namespace Katydid
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTAxisProperties< 1 >
      @author N. S. Oblath

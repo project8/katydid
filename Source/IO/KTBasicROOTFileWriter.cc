@@ -20,7 +20,7 @@ namespace Katydid
     KT_REGISTER_WRITER(KTBasicROOTFileWriter, "basic-root-writer");
     KT_REGISTER_PROCESSOR(KTBasicROOTFileWriter, "basic-root-writer");
 
-    static KTCommandLineOption< string > sBRWFilenameCLO("Basic ROOT File Writer", "Basic ROOT file writer filename", "brw-file");
+    static Nymph::KTCommandLineOption< string > sBRWFilenameCLO("Basic ROOT File Writer", "Basic ROOT file writer filename", "brw-file");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter(const std::string& name) :
             KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >(name),

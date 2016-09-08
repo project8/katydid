@@ -15,10 +15,10 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTBasicROOTFileWriter;
 
-    typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
 
   /*!
      @class KTBasicROOTFileWriter
@@ -62,7 +62,7 @@ namespace Katydid
      
     */
 
-    class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >//public KTWriter
+    class KTBasicROOTFileWriter : public Nymph::KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >//public KTWriter
     {
         public:
             KTBasicROOTFileWriter(const std::string& name = "basic-root-writer");

@@ -71,7 +71,7 @@ namespace Katydid
 
 
     KTMantis::KTMantis(const std::string& name) :
-            KTDataQueueProcessorTemplate< KTMantis >(name),
+            Nymph::KTDataQueueProcessorTemplate< KTMantis >(name),
             fConfig(),
             fSliceSize(1024),
             fStride(0),

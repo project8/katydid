@@ -22,7 +22,7 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTMultiFileROOTTreeReader
      @author N. S. Oblath
@@ -45,24 +45,24 @@ namespace Katydid
      - "amp-dist" -- Emits signal "amp-dist" after file read
 
      Slots:
-     - "amp-dist": void (KTDataPtr) -- Add amplitude distribution data; Requires KTData; Adds KTAmplitudeDistribution; Emits signal "amp-dist" upon successful file read.
+     - "amp-dist": void (Nymph::KTDataPtr) -- Add amplitude distribution data; Requires KTData; Adds KTAmplitudeDistribution; Emits signal "amp-dist" upon successful file read.
 
      Signals:
-     - "amp-dist": void (KTDataPtr) -- Emitted after reading an amp-dist file; Guarantees KTAmplitudeDistribution.
+     - "amp-dist": void (Nymph::KTDataPtr) -- Emitted after reading an amp-dist file; Guarantees KTAmplitudeDistribution.
     */
 
 
-    class KTMultiFileROOTTreeReader : public KTReader
+    class KTMultiFileROOTTreeReader : public Nymph::KTReader
     {
         private:
-            typedef bool (KTMultiFileROOTTreeReader::*AppendFcn)(TTree*, KTData&);
+            typedef bool (KTMultiFileROOTTreeReader::*AppendFcn)(TTree*, Nymph::KTData&);
             struct DataType
             {
                     std::string fName;
                     std::string fTreeName;
                     AppendFcn fAppendFcn;
-                    KTSignalData* fSignal;
-                    DataType(const std::string& name, const std::string& treeName, AppendFcn fcn, KTSignalData* signal)
+                    Nymph::KTSignalData* fSignal;
+                    DataType(const std::string& name, const std::string& treeName, AppendFcn fcn, Nymph::KTSignalData* signal)
                     {
                         fName = name;
                         fTreeName = treeName;
@@ -92,28 +92,28 @@ namespace Katydid
         public:
             virtual bool Run();
 
-            bool Append(KTData& data);
+            bool Append(Nymph::KTData& data);
 
         private:
             TFile* OpenFile(const std::string& filename) const;
             TTree* ExtractTree(TFile* file, const std::string& treeName) const;
 
         private:
-            bool AppendAmpDistData(TTree*, KTData& data);
+            bool AppendAmpDistData(TTree*, Nymph::KTData& data);
 
 
             //**************
             // Signals
             //**************
         private:
-            KTSignalData fAmpDistSignal;
-            KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalData fAmpDistSignal;
+            Nymph::KTSignalOneArg< void > fDoneSignal;
 
             //**************
             // Slots
             //**************
         private:
-            KTSlotDataOneType< KTData > fAppendAmpDistSlot;
+            Nymph::KTSlotDataOneType< Nymph::KTData > fAppendAmpDistSlot;
     };
 
     inline const std::deque< std::string >& KTMultiFileROOTTreeReader::GetFilenames() const

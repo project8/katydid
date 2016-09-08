@@ -24,7 +24,7 @@ namespace Katydid
 {
     KTLOGGER(fcilog, "TestFrequencyCandidateIdentifier");
 
-    static KTNORegistrar< KTProcessor, KTFrequencyCandidateIdentifier > sFCIRegistrar("frequency-candidate-identifier");
+    static Nymph::KTNORegistrar< Nymph::KTProcessor, KTFrequencyCandidateIdentifier > sFCIRegistrar("frequency-candidate-identifier");
 
     KTFrequencyCandidateIdentifier::KTFrequencyCandidateIdentifier(const std::string& name) :
             KTProcessor(name),

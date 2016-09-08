@@ -47,7 +47,7 @@ namespace Katydid
             fBuffer(),
             fNBuffered(0),
             fNSlicesProcessed(0),
-            fDistributionData(KTDataPtr()),
+            fDistributionData(Nymph::KTDataPtr()),
             fDistributions(NULL),
             fAmpDistSignal("amp-dist", this),
             fFSPolarSlot("fs-polar", this, &KTAmplitudeDistributor::AddValues),
@@ -143,7 +143,7 @@ namespace Katydid
             KTDEBUG(adlog, "Function pointers set to take values to distributions");
         }
 
-        fDistributionData.reset(new KTData());
+        fDistributionData.reset(new Nymph::KTData());
 
         fDistributions = &(fDistributionData->Of< KTAmplitudeDistribution >());
         if (! fUseBuffer)

@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggProcessor;
 
     class KTEggReader
@@ -27,8 +27,8 @@ namespace Katydid
         public:
             virtual bool Configure(const KTEggProcessor& eggProc) = 0;
 
-            virtual KTDataPtr BreakEgg(const std::string&) = 0;
-            virtual KTDataPtr HatchNextSlice() = 0;
+            virtual Nymph::KTDataPtr BreakEgg(const std::string&) = 0;
+            virtual Nymph::KTDataPtr HatchNextSlice() = 0;
             virtual bool CloseEgg() = 0;
 
             virtual unsigned GetNSlicesProcessed() const = 0;
@@ -38,7 +38,7 @@ namespace Katydid
     };
 
 #define KT_REGISTER_EGGREADER(reader_class, reader_name) \
-        static KTRegistrar< KTEggReader, reader_class > sReader##reader_class##Registrar( reader_name );
+        static Nymph::KTRegistrar< KTEggReader, reader_class > sReader##reader_class##Registrar( reader_name );
 
 } /* namespace Katydid */
 #endif /* KTEGGREADER_HH_ */

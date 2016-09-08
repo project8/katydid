@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     /*!
      @class KTSinusoidGenerator
@@ -39,11 +39,11 @@ namespace Katydid
        - "amplitude": double -- Amplitude of the sinusoid
 
      Slots: (inherited from KTTSGenerator)
-     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (Nymph::KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals: (inherited from KTTSGenerator)
      - "header": void (KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
+     - "slice": void (Nymph::KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
     */
     class KTSinusoidGenerator : public KTTSGenerator

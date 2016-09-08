@@ -26,7 +26,7 @@ namespace Katydid {
             void RegisterSlots();
     
         public:
-            void WriteTimeSeriesData(KTDataPtr);
+            void WriteTimeSeriesData(Nymph::KTDataPtr);
 
     }; // class definition
 

@@ -30,7 +30,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTMultiSliceROOTTypeWriterSpectrumAnalysis");
 
-    static KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterSpectrumAnalysis > sMERTWARegistrar;
+    static Nymph::KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterSpectrumAnalysis > sMERTWARegistrar;
 
     KTMultiSliceROOTTypeWriterSpectrumAnalysis::KTMultiSliceROOTTypeWriterSpectrumAnalysis() :
             KTMEROOTTypeWriterBase(),
@@ -107,7 +107,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterSpectrumAnalysis::AddCorrelationData(KTDataPtr data)
+    void KTMultiSliceROOTTypeWriterSpectrumAnalysis::AddCorrelationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

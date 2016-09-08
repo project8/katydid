@@ -22,7 +22,7 @@ namespace monarch
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
     class KTSliceHeader;
     class KTTimeSeriesData;
@@ -50,7 +50,7 @@ namespace Katydid
 
      Slots:
      - "header": void (KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
-     - "ts": void (KTDataPtr) -- writes a record from a time series;
+     - "ts": void (Nymph::KTDataPtr) -- writes a record from a time series;
      - "done": void () -- closes the file
     */
     class KTEggWriter : public KTWriter
@@ -109,9 +109,9 @@ namespace Katydid
             // Slots
             //**************
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
-            KTSlotDataTwoTypes< KTSliceHeader, KTTimeSeriesData > fTimeSeriesSlot;
-            KTSlotNoArg< void () > fDoneSlot;
+            Nymph::KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTTimeSeriesData > fTimeSeriesSlot;
+            Nymph::KTSlotNoArg< void () > fDoneSlot;
     };
 
     inline const std::string& KTEggWriter::GetFilename() const

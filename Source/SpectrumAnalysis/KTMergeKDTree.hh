@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTKDTreeData;
 
    /*!
@@ -33,16 +33,16 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     - "kd-tree-in": void (KTDataPtr) -- Merges the input data into the output tree; Requires KTKDTreeData
+     - "kd-tree-in": void (Nymph::KTDataPtr) -- Merges the input data into the output tree; Requires KTKDTreeData
      - "finish-tree": void () -- Triggers finishing of existing tree data; emits signal "kd-tree-out"
      - "done": void () -- Finishes any existing tree data; emits signal "kd-tree-out", then signal "done"
 
      Signals:
-     - "kd-tree-out": void (KTDataPtr) emitted upon completion of a merged k-d tree
+     - "kd-tree-out": void (Nymph::KTDataPtr) emitted upon completion of a merged k-d tree
      - "done" void () emitted upon completion of all processing, as indicated by the "done" slot
     */
 
-    class KTMergeKDTree : public KTProcessor
+    class KTMergeKDTree : public Nymph::KTProcessor
     {
         public:
             KTMergeKDTree(const std::string& name = "merge-kd-tree");
@@ -59,13 +59,13 @@ namespace Katydid
 
             bool ClearTree();
 
-            KTDataPtr GetDataPtr() const;
+            Nymph::KTDataPtr GetDataPtr() const;
             const KTKDTreeData& GetKDTreeData() const;
 
             MEMBERVARIABLE(bool, HaveNewData);
 
         private:
-            KTDataPtr fDataPtr;
+            Nymph::KTDataPtr fDataPtr;
             KTKDTreeData& fMergedTreeData;
 
             //***************
@@ -73,21 +73,21 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fKDTreeSignal;
-            KTSignalDone fDoneSignal;
+            Nymph::KTSignalData fKDTreeSignal;
+            Nymph::KTSignalDone fDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
-            KTSlotDone fDoneSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
+            Nymph::KTSlotDone fDoneSlot;
 
             void FinishTreeSlot();
     };
 
-    inline KTDataPtr KTMergeKDTree::GetDataPtr() const
+    inline Nymph::KTDataPtr KTMergeKDTree::GetDataPtr() const
     {
         return fDataPtr;
     }

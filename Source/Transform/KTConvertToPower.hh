@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataPolar;
     class KTPowerSpectrumData;
@@ -35,19 +35,19 @@ namespace Katydid
        none
 
      Slots:
-     - "fs-polar-to-ps": void (KTDataPtr) -- Converts a polar FS to a PS; Requires KTFrequencySpectrumDataPolar; Adds KTPowerSpectrumData; Emits signal "ps"
-     - "fs-polar-to-psd": void (KTDataPtr) -- Converts a polar FS to a PSD; Requires KTFrequencySpectrumDataPolar; Adds KTPowerSpectrumData; Emits signal "psd"
-     - "fs-fftw-to-ps": void (KTDataPtr) -- Converts an FFTW FS to a PS; Requires KTFrequencySpectrumDataFFTW; Adds KTPowerSpectrumData; Emits signal "ps"
-     - "fs-fftw-to-psd": void (KTDataPtr) -- Converts an FFTW FS to a PSD; Requires KTFrequencySpectrumDataFFTW; Adds KTPowerSpectrumData; Emits signal "psd"
-     - "psd-to-ps": void (KTDataPtr) -- Converts a PSD to a PS (in place); Requires KTPowerSpectrumData; Does not add additional data; Emits signal "ps"
-     - "ps-to-psd": void (KTDataPtr) -- Converts a PS to a PSD (in place); Requires KTPowerSpectrumData; Does not add additional data; Emits signal "psd"
+     - "fs-polar-to-ps": void (Nymph::KTDataPtr) -- Converts a polar FS to a PS; Requires KTFrequencySpectrumDataPolar; Adds KTPowerSpectrumData; Emits signal "ps"
+     - "fs-polar-to-psd": void (Nymph::KTDataPtr) -- Converts a polar FS to a PSD; Requires KTFrequencySpectrumDataPolar; Adds KTPowerSpectrumData; Emits signal "psd"
+     - "fs-fftw-to-ps": void (Nymph::KTDataPtr) -- Converts an FFTW FS to a PS; Requires KTFrequencySpectrumDataFFTW; Adds KTPowerSpectrumData; Emits signal "ps"
+     - "fs-fftw-to-psd": void (Nymph::KTDataPtr) -- Converts an FFTW FS to a PSD; Requires KTFrequencySpectrumDataFFTW; Adds KTPowerSpectrumData; Emits signal "psd"
+     - "psd-to-ps": void (Nymph::KTDataPtr) -- Converts a PSD to a PS (in place); Requires KTPowerSpectrumData; Does not add additional data; Emits signal "ps"
+     - "ps-to-psd": void (Nymph::KTDataPtr) -- Converts a PS to a PSD (in place); Requires KTPowerSpectrumData; Does not add additional data; Emits signal "psd"
 
      Signals:
-     - "ps": void (KTDataPtr) -- Emitted upon creation of / conversion to a power spectrum; Guarantees KTPowerSpectrumData.
-     - "psd": void (KTDataPtr) -- Emitted upon creation of / conversion to a power spectral density; Guarantees KTPowerSpectrumData.
+     - "ps": void (Nymph::KTDataPtr) -- Emitted upon creation of / conversion to a power spectrum; Guarantees KTPowerSpectrumData.
+     - "psd": void (Nymph::KTDataPtr) -- Emitted upon creation of / conversion to a power spectral density; Guarantees KTPowerSpectrumData.
     */
 
-    class KTConvertToPower : public KTProcessor
+    class KTConvertToPower : public Nymph::KTProcessor
     {
 
         public:
@@ -75,20 +75,20 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fPowerSpectrumSignal;
-            KTSignalData fPowerSpectralDensitySignal;
+            Nymph::KTSignalData fPowerSpectrumSignal;
+            Nymph::KTSignalData fPowerSpectralDensitySignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPToPSSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPToPSDSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFToPSSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFToPSDSlot;
-            KTSlotDataOneType< KTPowerSpectrumData > fPSDToPSSlot;
-            KTSlotDataOneType< KTPowerSpectrumData > fPSToPSDSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPToPSSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPToPSDSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFToPSSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFToPSDSlot;
+            Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSDToPSSlot;
+            Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSToPSDSlot;
     };
 }
  /* namespace Katydid */

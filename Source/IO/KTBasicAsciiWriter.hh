@@ -14,13 +14,13 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTBasicASCIIWriter;
 
-    typedef KTDerivedTypeWriter< KTBasicASCIIWriter > KTBasicASCIITypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTBasicASCIIWriter > KTBasicASCIITypeWriter;
 
-    class KTBasicASCIIWriter : public KTWriterWithTypists< KTBasicASCIIWriter, KTBasicASCIITypeWriter > {
+    class KTBasicASCIIWriter : public Nymph::KTWriterWithTypists< KTBasicASCIIWriter, KTBasicASCIITypeWriter > {
             // Constructors/destructors
         public:
             KTBasicASCIIWriter(const std::string& name = "basic-ascii-writer");

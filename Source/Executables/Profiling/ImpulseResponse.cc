@@ -67,10 +67,10 @@ namespace Katydid
 
 int main(int argc, char** argv)
 {
-    KTApplication* app = NULL;
+    Nymph::KTApplication* app = NULL;
     try
     {
-        app = new KTApplication(argc, argv);
+        app = new Nymph::KTApplication(argc, argv);
     }
     catch( std::exception& e )
     {
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 // Implementation of KTImpulseAnalysis
 //***************************************
 
-static KTNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
+static Nymph::KTNORegistrar< Nymph::KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
 
 KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
         KTProcessor(name),

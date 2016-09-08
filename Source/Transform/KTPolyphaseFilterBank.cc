@@ -95,18 +95,18 @@ namespace Katydid
         return false;
     }
 
-    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
+    Nymph::KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
     {
         KTSliceHeader& oldSliceHeader = tsData.Of< KTSliceHeader >();
 
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
         if (! TransferHeaderInformation(oldSliceHeader, sliceHeader))
         {
             KTERROR(pfblog, "Header information was not transferred");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         KTDEBUG(pfblog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
@@ -126,7 +126,7 @@ namespace Katydid
             if (newTS == NULL)
             {
                 KTERROR(pfblog, "Time series for component " << iComponent << " was not created!");
-                return KTDataPtr();
+                return Nymph::KTDataPtr();
             }
             tsData.SetTimeSeries(newTS, iComponent);
         }
@@ -134,7 +134,7 @@ namespace Katydid
         return newData;
     }
 
-    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
+    Nymph::KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
     {
         unsigned nComponents = tsData.GetNComponents();
 

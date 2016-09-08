@@ -22,7 +22,7 @@ namespace Katydid
     KT_REGISTER_WRITER(KTROOTSpectrogramWriter, "root-spectrogram-writer");
     KT_REGISTER_PROCESSOR(KTROOTSpectrogramWriter, "root-spectrogram-writer");
 
-    static KTCommandLineOption< string > sRSWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
+    static Nymph::KTCommandLineOption< string > sRSWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
 
     KTROOTSpectrogramWriter::KTROOTSpectrogramWriter(const std::string& name) :
             KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >(name),

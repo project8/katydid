@@ -47,7 +47,7 @@ namespace Katydid
     {
         if (gClient == NULL)
         {
-            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via KTApplication)");
+            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via Nymph::KTApplication)");
             return false;
         }
 

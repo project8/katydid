@@ -90,7 +90,7 @@ namespace Katydid
 
         if (fUseWisdom)
         {
-            if (! KTCacheDirectory::GetInstance()->Configure())
+            if (! Nymph::KTCacheDirectory::GetInstance()->Configure())
             {
                 KTWARN(fftwlog, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;

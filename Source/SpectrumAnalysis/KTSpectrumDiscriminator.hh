@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
     class KTFrequencySpectrumDataFFTW;
@@ -49,17 +49,17 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
 
      Slots:
-     - "fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     - "fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
-     - "corr": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
-     - "wv": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-fftw": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "corr": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
+     - "wv": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
 
      Signals:
-     - "disc-1d": void (KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
+     - "disc-1d": void (Nymph::KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
     */
-    class KTSpectrumDiscriminator : public KTProcessor
+    class KTSpectrumDiscriminator : public Nymph::KTProcessor
     {
         private:
             enum ThresholdMode
@@ -125,19 +125,19 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fDiscrim1DSignal;
+            Nymph::KTSignalData fDiscrim1DSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-            KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
-            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
-            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
-            KTSlotDataOneType< KTWignerVilleData > fWVSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            Nymph::KTSlotDataOneType< KTWignerVilleData > fWVSlot;
 
     };
 

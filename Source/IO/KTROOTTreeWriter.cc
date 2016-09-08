@@ -23,7 +23,7 @@ namespace Katydid
     KT_REGISTER_WRITER(KTROOTTreeWriter, "root-tree-writer");
     KT_REGISTER_PROCESSOR(KTROOTTreeWriter, "root-tree-writer");
 
-    static KTCommandLineOption< string > sRTWFilenameCLO("ROOT Tree Writer", "ROOT Tree writer filename", "rtw-file");
+    static Nymph::KTCommandLineOption< string > sRTWFilenameCLO("ROOT Tree Writer", "ROOT Tree writer filename", "rtw-file");
 
     KTROOTTreeWriter::KTROOTTreeWriter(const std::string& name) :
             KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >(name),
