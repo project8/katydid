@@ -36,6 +36,8 @@ namespace Katydid
             void AddPSDData(Nymph::KTDataPtr data);
             void OutputPSDData();
 
+            void AddProcessedTrackData(Nymph::KTDataPtr data);
+
             void TakeLine(Nymph::KTDataPtr data);
 
 

@@ -10,6 +10,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTProcessedTrackData.hh"
 
 #include "TLine.h"
 
@@ -109,6 +110,7 @@ namespace Katydid
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
+        fWriter->RegisterSlot("track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
         return;
     }
@@ -145,6 +147,26 @@ namespace Katydid
         AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
         return;
     }
+
+    //*********************
+    // Processed Track Data
+    //*********************
+
+    void KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData(Nymph::KTDataPtr data)
+    {
+        KTProcessedTrackData thisTrack = data->Of< KTProcessedTrackData >();
+
+        if( !thisTrack.GetIsCut() )
+        {
+            fWriter->SetMinTime( thisTrack.GetStartTimeInRunC() - fWriter->GetBufferTime() );
+            fWriter->SetMaxTime( thisTrack.GetEndTimeInRunC() + fWriter->GetBufferTime() );
+            fWriter->SetMinFreq( thisTrack.GetStartFrequency() - fWriter->GetBufferFreq() );
+            fWriter->SetMaxFreq( thisTrack.GetEndFrequency() + fWriter->GetBufferFreq() );
+        }
+
+        return;
+    }
+
 
     void KTROOTSpectrogramTypeWriterTransform::TakeLine(Nymph::KTDataPtr data)
     {
