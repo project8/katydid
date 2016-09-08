@@ -8,7 +8,7 @@
 #include "KTDataDisplay.hh"
 
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
+
 
 namespace Katydid
 {

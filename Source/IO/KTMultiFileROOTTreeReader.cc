@@ -8,7 +8,7 @@
 #include "KTMultiFileROOTTreeReader.hh"
 
 #include "KTAmplitudeDistribution.hh"
-#include "KTNOFactory.hh"
+
 #include "KTLogger.hh"
 #include "TAxis.h"
 #include "TFile.h"
@@ -28,8 +28,9 @@ namespace Katydid
 {
     KTLOGGER(inlog, "KTMultiFileROOTTreeReader");
 
-    static Nymph::KTNORegistrar< Nymph::KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
-    static Nymph::KTNORegistrar< Nymph::KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
+    KT_REGISTER_READER(KTMultiFileROOTTreeReader, "mf-root-tree-reader");
+    KT_REGISTER_PROCESSOR(KTMultiFileROOTTreeReader, "mf-root-tree-reader");
+
 
     KTMultiFileROOTTreeReader::KTMultiFileROOTTreeReader(const std::string& name) :
             KTReader(name),

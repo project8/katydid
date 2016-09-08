@@ -13,6 +13,8 @@
 #include "KTTimeSeriesReal.hh"
 #include "KTWindowFunction.hh"
 
+#include "factory.hh"
+
 using std::string;
 
 
@@ -58,7 +60,7 @@ namespace Katydid
 
     bool KTWindower::SelectWindowFunction(const string& windowType)
     {
-        KTWindowFunction* tempWF = Nymph::KTNOFactory< KTWindowFunction >::get_instance()->Create(windowType);
+        KTWindowFunction* tempWF = scarab::factory< KTWindowFunction >::get_instance()->create(windowType);
         if (tempWF == NULL)
         {
             KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");

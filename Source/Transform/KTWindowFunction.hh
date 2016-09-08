@@ -11,7 +11,7 @@
 
 #include "KTConfigurable.hh"
 
-#include "KTNOFactory.hh"
+#include "factory.hh"
 
 #include <string>
 #include <vector>
@@ -126,7 +126,7 @@ namespace Katydid
    }
 
 #define KT_REGISTER_WINDOWFUNCTION(window_class, window_name) \
-        static Nymph::KTNORegistrar< KTWindowFunction, window_class > sWF##window_class##Registrar(window_name);
+        static scarab::registrar< KTWindowFunction, window_class > sWF##window_class##Registrar(window_name);
 
 } /* namespace Katydid */
 #endif /* KTWINDOWFUNCTION_HH_ */

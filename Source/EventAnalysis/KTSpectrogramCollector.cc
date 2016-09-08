@@ -8,7 +8,7 @@
 #include "KTSpectrogramCollector.hh"
 
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
+
 #include "KTSliceHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"

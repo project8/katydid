@@ -8,7 +8,7 @@
 #include "KTPolyphaseFilterBank.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
+
 #include "KTLogger.hh"
 #include "param.hh"
 #include "KTSliceHeader.hh"

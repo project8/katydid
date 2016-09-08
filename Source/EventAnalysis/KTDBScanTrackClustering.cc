@@ -10,7 +10,7 @@
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTNOFactory.hh"
+
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTTimeFrequencyPolar.hh"

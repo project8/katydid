@@ -9,7 +9,7 @@
 
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
+
 #include "KTProcessedTrackData.hh"
 #include "KTSmooth.hh"
 #include "KTSparseWaterfallCandidateData.hh"

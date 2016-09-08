@@ -9,7 +9,7 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
+
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -24,7 +24,7 @@ namespace Katydid
 {
     KTLOGGER(fcilog, "TestFrequencyCandidateIdentifier");
 
-    static Nymph::KTNORegistrar< Nymph::KTProcessor, KTFrequencyCandidateIdentifier > sFCIRegistrar("frequency-candidate-identifier");
+    KT_REGISTER_PROCESSOR(KTFrequencyCandidateIdentifier, "frequency-candidate-identifier");
 
     KTFrequencyCandidateIdentifier::KTFrequencyCandidateIdentifier(const std::string& name) :
             KTProcessor(name),

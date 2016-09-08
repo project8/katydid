@@ -10,7 +10,6 @@
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
-#include "KTNOFactory.hh"
 #include "KTProcessedTrackData.hh"
 
 #ifndef NDEBUG

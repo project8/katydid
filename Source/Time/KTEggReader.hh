@@ -9,7 +9,8 @@
 #define KTEGGREADER_HH_
 
 #include "KTData.hh"
-#include "KTFactory.hh"
+
+#include "factory.hh"
 
 #include <string>
 
@@ -38,7 +39,7 @@ namespace Katydid
     };
 
 #define KT_REGISTER_EGGREADER(reader_class, reader_name) \
-        static Nymph::KTRegistrar< KTEggReader, reader_class > sReader##reader_class##Registrar( reader_name );
+        static ::scarab::registrar< KTEggReader, reader_class > sReader##reader_class##Registrar( reader_name );
 
 } /* namespace Katydid */
 #endif /* KTEGGREADER_HH_ */

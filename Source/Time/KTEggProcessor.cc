@@ -13,11 +13,12 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader.hh"
-#include "KTFactory.hh"
 #include "KTProcSummary.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
+
+#include "factory.hh"
 
 using std::string;
 
@@ -113,7 +114,7 @@ namespace Katydid
     bool KTEggProcessor::ProcessEgg()
     {
         // Create egg reader and transfer information
-        KTEggReader* reader = Nymph::KTFactory< KTEggReader >::get_instance()->Create(fEggReaderType);
+        KTEggReader* reader = scarab::factory< KTEggReader >::get_instance()->create(fEggReaderType);
         if (reader == NULL)
         {
             KTERROR(egglog, "Invalid egg reader type: " << fEggReaderType);

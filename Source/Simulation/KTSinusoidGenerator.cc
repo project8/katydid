@@ -7,7 +7,7 @@
 
 #include "KTSinusoidGenerator.hh"
 
-#include "KTNOFactory.hh"
+
 #include "KTLogger.hh"
 #include "param.hh"
 #include "KTMath.hh"

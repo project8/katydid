@@ -8,7 +8,7 @@
 #include "KTMultiSliceClustering.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
+
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"

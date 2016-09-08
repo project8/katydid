@@ -7,7 +7,7 @@
 
 #include "KTRandom.hh"
 
-#include "KTFactory.hh"
+//#include "KTFactory.hh"
 //#include "KTLogger.hh"
 
 using std::string;

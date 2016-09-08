@@ -9,7 +9,6 @@
 
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
 using boost::shared_ptr;

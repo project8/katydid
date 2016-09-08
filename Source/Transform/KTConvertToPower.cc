@@ -12,7 +12,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
+
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 
