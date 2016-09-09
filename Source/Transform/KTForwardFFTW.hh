@@ -53,6 +53,10 @@ namespace Katydid
      Initialize with InitializeForRealAsComplexTDD(), and transform with TransformRealAsComplexData() and related functions.
      The output will be a KTFrequencySpectrumFFTW with size N.
 
+     If you're using the signal/slot interface, and initializing the FFT with the Egg header (slot "header"), you have two options for specifying the type of transform:
+     - Use the type recorded in the Egg header.  The choice will be based on whether the time-domain-data is real, complex (not IQ), or IQ.
+     - Specify the "transform-state" in the processor configuration.  You can then also specify whether to "transform-complex-as-iq".
+
      The FFT is implemented using FFTW.
 
      Configuration name: "forward-fftw"
@@ -61,7 +65,8 @@ namespace Katydid
      - "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
      - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     - "transform-complex-as-iq": bool -- specify whether to treat complex data as IQ: the negative frequency bins are assumed to be a continuous extension of the positive frequency bins, and the whole spectrum is shifted so that it starts at DC.
+     - "transform-state": string -- "r2c", "c2c", or "rasc2c"; specify the transform state, regardless of the time domain type listed in the egg header; this is useful when a new time domain data type (e.g. aa) has been added to the data object and is being transformed.
+     - "transform-complex-as-iq": bool -- specify whether to treat complex data as IQ: the negative frequency bins are assumed to be a continuous extension of the positive frequency bins, and the whole spectrum is shifted so that it starts at DC; this is only used if the transform state has also been specified.
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -89,6 +94,7 @@ namespace Katydid
         private:
             typedef std::map< std::string, unsigned > TransformFlagMap;
 
+        public:
             enum State
             {
                 kNone,
