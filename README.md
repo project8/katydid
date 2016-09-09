@@ -22,10 +22,14 @@ Dependencies
 
 **Submodules** (included with Katydid; must be fetched via Git)
 - [Monarch](https://github.com/project8/monarch)
+  - [Scarab](https://github.com/project8/scarab)
+    - yaml-cpp
 - [Nymph](https://github.com/project8/nymph)
+  - [Scarab](https://github.com/project8/scarab)
+    - yaml-cpp
 
-**Distributed Code** (included with Mantis directly)
-- RapidJSON
+**Distributed Code** (included with Katydid directly)
+- nanoflann
 - RapidXML
 
 
@@ -43,14 +47,8 @@ Directory Structure
 *  Documentation - Doxygen-based code documentation.
 *  Examples - Configuration files, custom applications, and a tutorial.
 *  External - A few dependencies that are included with the distribution.
-*  KTCore
-  *  cmake - Files that CMake uses to build KTCore.
-  *  Executables - Source code for the main Katydid executable and test programs.
-  *  External - RapidJSON and RapidXML packages
-  *  Library - Source for the KTCore library
-  *  Templates - Example files for creating a processor and the main CMakeLists.txt file for a package using KTCore.
+*  Nymph - Submodule
 *  OldAnalysis - Dump for old source files.
-*  Scripts - A CMakeLists.txt file that will allow you to easily build an external applicaiton using Katydid classes.
 *  Source
   *  Data - Classes that store the data as it gets processed.
   *  Evaluation - Processors for determining how well an analysis is performing.
@@ -75,7 +73,7 @@ We recommend an out-of-source build:
 ```
 
 To configure the installation you can use cmake, ccmake, or cmake-gui.
-You should set the variable CMAKE_BUILD_TYPE to either `Release`, `Standard`, or `Debug`, in order
+You should set the variable `CMAKE_BUILD_TYPE` to either `Release`, `Standard`, or `Debug`, in order
 of how much text output you would like (from least to most) and how much compiler optimization
 should be performed (from most to least).
 
