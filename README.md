@@ -84,25 +84,35 @@ Variables that start with `Katydid_` will control which parts of Katydid are bui
 If using Monarch, if you want to read egg3 files, ensure that `Monarch_BUILD_MONARCH3` is set.
 If you want to read egg2 files, ensure that `Monarch_BUILD_MONARCH2` is set.
 
-Here is an example of what you have to do using ccmake for a `Debug` build.
+Below are step-by-step instructions to install Katydid on Mac or Linux from scratch using ccmake:
 
+1. Clone the repository and make a build directory as recommended above. You will also have to initialize the submodules.
 ```
-ccmake ..
+$ git clone "https://github.com/project8/Katydid"
+$ cd Katydid
+$ git submodule update --init --recursive
+$ mkdir build
 ```
-Press [c] to configure
-Select CMAKE_BUILD_TYPE
-Press Return
-Write `Debug`
-Press Return
-Press [c] to configure
-Press [g] to generate
-Press [q] to quit
 
-To build and install:
+2. In the build directory, open ccmake and set the option `CMAKE_BUILD_TYPE` to one of the options listed above. I will use `Debug`.
 ```
-  >  make
-  >  make install
+$ cd build
+$ ccmake ..
 ```
+Now you will be prompted to press [c] to configure, and the window will fill up with several options. The second from the top is `CMAKE_BUILD_TYPE`. You may also edit the other options if you wish, or leave them as they are. After you've finished, press [c] again to configure and then [g] to generate and exit.
+
+3. Build and install. In linux:
+```
+$ make
+$ make install
+```
+
+Or in Mac OS X:
+```
+$ make -j install
+```
+
+If the compiler runs into errors during the build, first check that you've updated the submodules and that you have all of the required dependencies installed (many are called "optional" on this page, but if you want to build without them you must also specify this in the cmake window). If you made a change to the dependencies or submodules, you may have to wipe the build directory and start again from step 1; simply writing `make install` again will not always work. 
 
 The install prefix is specified by the CMake variable `CMAKE_INSTALL_PREFIX`.
 The library, binaries, and header files will be installed in the
