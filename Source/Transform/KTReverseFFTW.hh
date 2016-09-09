@@ -74,6 +74,7 @@ namespace Katydid
         private:
             typedef std::map< std::string, unsigned > TransformFlagMap;
 
+        public:
             enum State
             {
                 kNone,
