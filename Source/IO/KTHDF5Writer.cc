@@ -8,7 +8,6 @@
 #include "KTHDF5Writer.hh"
 
 #include "KTCommandLineOption.hh"
-#include "KTParam.hh"
 
 using std::set;
 using std::string;
@@ -21,7 +20,7 @@ namespace Katydid
     KT_REGISTER_WRITER(KTHDF5Writer, "hdf5-writer");
     KT_REGISTER_PROCESSOR(KTHDF5Writer, "hdf5-writer");
 
-    static KTCommandLineOption< string > sRTWFilenameCLO("HDF5 Writer", "HDF5 writer filename", "hdf5-file");
+    static Nymph::KTCommandLineOption< string > sRTWFilenameCLO("HDF5 Writer", "HDF5 writer filename", "hdf5-file");
 
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
             KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter >(name),
@@ -39,13 +38,13 @@ namespace Katydid
             CloseFile();
     }
 
-    bool KTHDF5Writer::Configure(const KTParamNode* node)
+    bool KTHDF5Writer::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetUseCompressionFlag(node->GetValue("use-compression", fUseCompressionFlag));
+            SetFilename(node->get_value("output-file", fFilename));
+            SetUseCompressionFlag(node->get_value("use-compression", fUseCompressionFlag));
         }
 
         // Command-line settings

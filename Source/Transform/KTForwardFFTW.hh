@@ -22,15 +22,9 @@
 #include <vector>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTAnalyticAssociateData;
     class KTEggHeader;
     class KTFrequencySpectrumFFTW;
@@ -80,17 +74,17 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag when necessary so that the input data is not destroyed.
 
      Slots:
-     - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
-     - "ts-real": void (KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
-     - "ts-fftw": void (KTDataPtr) -- Perform a forward FFT on a complex time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
-     - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
-     - "ts-real-as-complex": void (KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "header": void (Nymph::KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
+     - "ts-real": void (Nymph::KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "ts-fftw": void (Nymph::KTDataPtr) -- Perform a forward FFT on a complex time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "aa": void (Nymph::KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "ts-real-as-complex": void (Nymph::KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
 
      Signals:
-     - "fft": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     - "fft": void (Nymph::KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
     */
 
-    class KTForwardFFTW : public KTFFTW, public KTProcessor
+    class KTForwardFFTW : public KTFFTW, public Nymph::KTProcessor
     {
         private:
             typedef std::map< std::string, unsigned > TransformFlagMap;
@@ -107,7 +101,7 @@ namespace Katydid
             KTForwardFFTW(const std::string& name = "forward-fftw");
             virtual ~KTForwardFFTW();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);
@@ -204,18 +198,18 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFFTSignal;
+            Nymph::KTSignalData fFFTSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSRealSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
-            KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSRealAsComplexSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSRealSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
+            Nymph::KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSRealAsComplexSlot;
 
     };
 

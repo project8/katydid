@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTJSONTypeWriterEventAnalysis : public KTJSONTypeWriter//, public KTTypeWriterEventAnalysis
     {
         public:
@@ -24,7 +24,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteFrequencyCandidates(KTDataPtr data);
+            void WriteFrequencyCandidates(Nymph::KTDataPtr data);
 
     };
 

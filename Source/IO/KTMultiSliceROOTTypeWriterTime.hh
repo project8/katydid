@@ -16,7 +16,7 @@ class TH1D;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
 
     class KTMultiSliceROOTTypeWriterTime : public KTMEROOTTypeWriterBase//, public KTTypeWriterTime
@@ -35,9 +35,9 @@ namespace Katydid
             void ClearHistograms();
 
         public:
-            void StartByHeader(KTDataPtr);
+            void StartByHeader(Nymph::KTDataPtr);
 
-            void AddTimeSeriesData(KTDataPtr data);
+            void AddTimeSeriesData(Nymph::KTDataPtr data);
 
         private:
             std::vector< TH1D* > fTSHists;

@@ -14,9 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-
-    class KTAnalysisCandidates : public KTExtensibleData< KTAnalysisCandidates >
+    class KTAnalysisCandidates : public Nymph::KTExtensibleData< KTAnalysisCandidates >
     {
         public:
             struct Candidate

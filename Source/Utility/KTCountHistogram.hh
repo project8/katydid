@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTCountHistogram : public KTPhysicalArray< 1, unsigned >
     {

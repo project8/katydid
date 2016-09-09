@@ -25,7 +25,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(dmlog, "KTDBScan");
 
     // Euclidean distance

@@ -51,7 +51,6 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
-    Nymph
 )
 
 ##################################################

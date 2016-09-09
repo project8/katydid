@@ -9,25 +9,22 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
+
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 using std::string;
-
-
 
 
 namespace Katydid
 {
     KTLOGGER(fcilog, "TestFrequencyCandidateIdentifier");
 
-    static KTNORegistrar< KTProcessor, KTFrequencyCandidateIdentifier > sFCIRegistrar("frequency-candidate-identifier");
+    KT_REGISTER_PROCESSOR(KTFrequencyCandidateIdentifier, "frequency-candidate-identifier");
 
     KTFrequencyCandidateIdentifier::KTFrequencyCandidateIdentifier(const std::string& name) :
             KTProcessor(name),
@@ -44,7 +41,7 @@ namespace Katydid
     {
     }
 
-    bool KTFrequencyCandidateIdentifier::Configure(const KTParamNode*)
+    bool KTFrequencyCandidateIdentifier::Configure(const scarab::param_node*)
     {
         return true;
     }

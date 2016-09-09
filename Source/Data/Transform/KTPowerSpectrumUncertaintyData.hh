@@ -16,9 +16,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
-    class KTPowerSpectrumUncertaintyData : public KTPowerSpectrumDataCore, public KTExtensibleData< KTPowerSpectrumUncertaintyData >
+    class KTPowerSpectrumUncertaintyData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumUncertaintyData >
     {
         public:
             KTPowerSpectrumUncertaintyData();

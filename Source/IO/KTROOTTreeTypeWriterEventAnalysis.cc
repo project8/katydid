@@ -35,7 +35,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterEventAnalysis");
 
-    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
+    static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterEventAnalysis::KTROOTTreeTypeWriterEventAnalysis() :
             KTROOTTreeTypeWriter(),
@@ -75,7 +75,7 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data)
     {
         KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
         KTSliceHeader& header = data->Of< KTSliceHeader >();
@@ -168,7 +168,7 @@ namespace Katydid
     // Waterfall Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to waterfall candidate root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
@@ -268,7 +268,7 @@ namespace Katydid
     // Sparse Waterfall Candidates
     //****************************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
         KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
@@ -368,7 +368,7 @@ namespace Katydid
     // Processed Track
     //****************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to processed track root tree");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
@@ -435,7 +435,7 @@ namespace Katydid
     // Multi-Track Event
     //******************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to multi-track event root tree");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();

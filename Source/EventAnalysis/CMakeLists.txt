@@ -31,7 +31,6 @@ set (EVENTANALYSIS_SOURCEFILES
 )
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

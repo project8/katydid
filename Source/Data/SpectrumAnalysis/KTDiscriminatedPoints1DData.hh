@@ -16,9 +16,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
-    class KTDiscriminatedPoints1DData : public KTExtensibleData< KTDiscriminatedPoints1DData >
+    class KTDiscriminatedPoints1DData : public Nymph::KTExtensibleData< KTDiscriminatedPoints1DData >
     {
         public:
             struct Point

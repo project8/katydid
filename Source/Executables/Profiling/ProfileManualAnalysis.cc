@@ -117,7 +117,7 @@ int main()
 
     KTDAC* dac = new KTDAC();
 
-    KTDataPtr headerData = eggReader->BreakEgg(filename);
+    Nymph::KTDataPtr headerData = eggReader->BreakEgg(filename);
     if (! headerData)
     {
         KTERROR(proflog, "Egg did not break");
@@ -147,7 +147,7 @@ int main()
         KTINFO(proflog, "Slice " << iSlice);
 
         // Hatch the slice
-        KTDataPtr data = eggReader->HatchNextSlice();
+        Nymph::KTDataPtr data = eggReader->HatchNextSlice();
         if (data.get() == NULL) break;
 
         if (iSlice == nSlices - 1) data->SetLastData(true);

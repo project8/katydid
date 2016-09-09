@@ -17,20 +17,20 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTROOTTreeWriter;
 
-    typedef KTDerivedTypeWriter< KTROOTTreeWriter > KTROOTTreeTypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTROOTTreeWriter > KTROOTTreeTypeWriter;
 
 
 
-    class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >//public KTWriter
+    class KTROOTTreeWriter : public Nymph::KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >//public KTWriter
     {
         public:
             KTROOTTreeWriter(const std::string& name = "root-tree-writer");
             virtual ~KTROOTTreeWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);

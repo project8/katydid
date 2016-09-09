@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTMultiFSDataFFTWCore
     {
@@ -92,7 +92,7 @@ namespace Katydid
 
 
 
-    class KTMultiFSDataFFTW : public KTMultiFSDataFFTWCore, public KTExtensibleData< KTMultiFSDataFFTW >
+    class KTMultiFSDataFFTW : public KTMultiFSDataFFTWCore, public Nymph::KTExtensibleData< KTMultiFSDataFFTW >
     {
         public:
             KTMultiFSDataFFTW();

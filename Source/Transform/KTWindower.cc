@@ -8,11 +8,12 @@
 #include "KTWindower.hh"
 
 #include "KTEggHeader.hh"
-#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTWindowFunction.hh"
+
+#include "factory.hh"
 
 using std::string;
 
@@ -38,18 +39,18 @@ namespace Katydid
         delete fWindowFunction;
     }
 
-    bool KTWindower::Configure(const KTParamNode* node)
+    bool KTWindower::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node == NULL) return true;
 
-        string windowType = node->GetValue("window-function-type", "rectangular");
+        string windowType = node->get_value("window-function-type", "rectangular");
         if (! SelectWindowFunction(windowType))
         {
             return false;
         }
 
-        if (! fWindowFunction->Configure(node->NodeAt("window-function")))
+        if (! fWindowFunction->Configure(node->node_at("window-function")))
         {
             return false;
         }
@@ -59,7 +60,7 @@ namespace Katydid
 
     bool KTWindower::SelectWindowFunction(const string& windowType)
     {
-        KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
+        KTWindowFunction* tempWF = scarab::factory< KTWindowFunction >::get_instance()->create(windowType);
         if (tempWF == NULL)
         {
             KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");

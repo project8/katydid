@@ -19,18 +19,18 @@
 
 namespace Katydid {
     class KTHDF5Writer;
-    typedef KTDerivedTypeWriter< KTHDF5Writer > KTHDF5TypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTHDF5Writer > KTHDF5TypeWriter;
 
-    class KTHDF5Writer : public KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter > {
+    class KTHDF5Writer : public Nymph::KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter > {
         public:
             explicit KTHDF5Writer(const std::string& name = "hdf5-writer");
             virtual ~KTHDF5Writer();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
             bool WriteEggHeader(KTEggHeader& header);
 
         private:
-            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
 
         public:
             H5::H5File* OpenFile(const std::string& filename, 

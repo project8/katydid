@@ -7,7 +7,7 @@
 
 #include "KTJSONWriter.hh"
 
-#include "KTParam.hh"
+#include "param.hh"
 
 using std::string;
 
@@ -34,14 +34,14 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTJSONWriter::Configure(const KTParamNode* node)
+    bool KTJSONWriter::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetFileMode(node->GetValue("file-mode", fFileMode));
-            SetPrettyJSONFlag(node->GetValue<bool>("pretty-json", fPrettyJSONFlag));
+            SetFilename(node->get_value("output-file", fFilename));
+            SetFileMode(node->get_value("file-mode", fFileMode));
+            SetPrettyJSONFlag(node->get_value<bool>("pretty-json", fPrettyJSONFlag));
         }
 
         return true;

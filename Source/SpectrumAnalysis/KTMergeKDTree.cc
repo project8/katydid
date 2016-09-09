@@ -9,7 +9,6 @@
 
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 using std::string;
 
@@ -22,7 +21,7 @@ namespace Katydid
 
     KTMergeKDTree::KTMergeKDTree(const std::string& name) :
             KTProcessor(name),
-            fDataPtr(new KTData()),
+            fDataPtr(new Nymph::KTData()),
             fMergedTreeData(fDataPtr->Of< KTKDTreeData >()),
             fHaveNewData(false),
             fKDTreeSignal("kd-tree-out", this),
@@ -37,7 +36,7 @@ namespace Katydid
     {
     }
 
-    bool KTMergeKDTree::Configure(const KTParamNode* node)
+    bool KTMergeKDTree::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return true;
 

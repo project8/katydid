@@ -15,7 +15,6 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
-#include "KTParam.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -62,22 +61,22 @@ namespace Katydid
         if (fForwardPlan != NULL) fftw_destroy_plan(fForwardPlan);
     }
 
-    bool KTForwardFFTW::Configure(const KTParamNode* node)
+    bool KTForwardFFTW::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
+            SetTransformFlag(node->get_value("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
+            SetUseWisdom(node->get_value<bool>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->get_value("wisdom-filename", fWisdomFilename));
 
-            SetComplexAsIQ(node->GetValue("transform-complex-as-iq", fComplexAsIQ));
+            SetComplexAsIQ(node->get_value("transform-complex-as-iq", fComplexAsIQ));
         }
 
         if (fUseWisdom)
         {
-            if (! KTCacheDirectory::GetInstance()->Configure())
+            if (! Nymph::KTCacheDirectory::get_instance()->Configure())
             {
                 KTWARN(fftwlog, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;

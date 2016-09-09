@@ -16,12 +16,12 @@
 
 namespace Nymph
 {
-    class KTParamNode;
+    class scarab::param_node;
 }
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTCompareCandidates
      @author N. S. Oblath
@@ -39,13 +39,13 @@ namespace Katydid
      - "assume-sparse-candidates": bool -- if the candidates can be reasonably assumed to not overlap, set this to true to save reduce running time
 
      Slots:
-     - "truth-vs-analysis": void (KTDataPtr) -- Perform a comparison of MC truth events and analysis candidates; Requires KTMCTruthEvents and KTAnalysisCandidates
+     - "truth-vs-analysis": void (Nymph::KTDataPtr) -- Perform a comparison of MC truth events and analysis candidates; Requires KTMCTruthEvents and KTAnalysisCandidates
 
      Signals:
-     - "cc-results": void (KTDataPtr) -- Emitted after a comparison between truth and analysis; Guarantees KTCCResults.
+     - "cc-results": void (Nymph::KTDataPtr) -- Emitted after a comparison between truth and analysis; Guarantees KTCCResults.
     */
 
-    class KTCompareCandidates : public KTProcessor
+    class KTCompareCandidates : public Nymph::KTProcessor
     {
         private:
             // for use in setting up a map keyed by these iterators
@@ -64,7 +64,7 @@ namespace Katydid
             KTCompareCandidates(const std::string& name = "compare-candidates");
             virtual ~KTCompareCandidates();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             bool GetAssumeSparseCandidates() const;
             void SetAssumeSparseCandidates(bool flag);
@@ -86,13 +86,13 @@ namespace Katydid
             // Slots
             //***************
         private:
-            KTSlotDataTwoTypes< KTMCTruthEvents, KTAnalysisCandidates > fTruthAndAnalysisSlot;
+            Nymph::KTSlotDataTwoTypes< KTMCTruthEvents, KTAnalysisCandidates > fTruthAndAnalysisSlot;
 
             //***************
             // Signals
             //***************
         private:
-            KTSignalData fCCResultsSignal;
+            Nymph::KTSignalData fCCResultsSignal;
 
     };
 

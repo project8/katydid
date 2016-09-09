@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTBasicROOTTypeWriterEventAnalysis : public KTBasicROOTTypeWriter
     {
         public:
@@ -28,7 +28,7 @@ namespace Katydid
             // Processed Track & Sparse Waterfall Candidate
             //************************
         public:
-            void WriteProcTrackAndSWFC(KTDataPtr data);
+            void WriteProcTrackAndSWFC(Nymph::KTDataPtr data);
 
 
     };

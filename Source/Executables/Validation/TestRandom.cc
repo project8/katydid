@@ -14,7 +14,7 @@ KTLOGGER(vallog, "TestRandom");
 
 int main()
 {
-    KTRNGEngine* engine = KTGlobalRNGEngine::GetInstance();
+    KTRNGEngine* engine = KTGlobalRNGEngine::get_instance();
     engine->SetSeed(20398);
 
     unsigned nLoops = 10;

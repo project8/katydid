@@ -22,7 +22,7 @@ namespace Katydid
 {
     //KTLOGGER(publog, "KTJSONTypeWriterEventAnalysis");
 
-    static KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEventAnalysis > sJSONTWCRegistrar;
+    static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEventAnalysis > sJSONTWCRegistrar;
 
     KTJSONTypeWriterEventAnalysis::KTJSONTypeWriterEventAnalysis() :
             KTJSONTypeWriter()
@@ -46,7 +46,7 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTJSONTypeWriterEventAnalysis::WriteFrequencyCandidates(KTDataPtr data)
+    void KTJSONTypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data)
     {
         using rapidjson::SizeType;
 

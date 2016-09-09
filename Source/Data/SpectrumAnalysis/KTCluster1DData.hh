@@ -16,8 +16,8 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTCluster1DData : public KTExtensibleData< KTCluster1DData >
+    
+    class KTCluster1DData : public Nymph::KTExtensibleData< KTCluster1DData >
     {
         public:
             typedef std::pair< unsigned, unsigned > Cluster; // first unsigned: first bin in cluster; second unsigned: last bin in cluster

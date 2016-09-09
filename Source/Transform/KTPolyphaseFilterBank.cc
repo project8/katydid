@@ -8,9 +8,9 @@
 #include "KTPolyphaseFilterBank.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
+
 #include "KTLogger.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -41,7 +41,7 @@ namespace Katydid
     {
     }
 
-    bool KTPolyphaseFilterBank::Configure(const KTParamNode* node)
+    bool KTPolyphaseFilterBank::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node == NULL)
@@ -49,13 +49,13 @@ namespace Katydid
             return false;
         }
 
-        if (node->Has("n-subsets"))
+        if (node->has("n-subsets"))
         {
-            SetNSubsets(node->GetValue("n-subsets", fNSubsets));
+            SetNSubsets(node->get_value("n-subsets", fNSubsets));
         }
-        if (node->Has("subset-size"))
+        if (node->has("subset-size"))
         {
-            SetSubsetSize(node->GetValue("subset-size", fSubsetSize));
+            SetSubsetSize(node->get_value("subset-size", fSubsetSize));
         }
 
         return true;
@@ -95,18 +95,18 @@ namespace Katydid
         return false;
     }
 
-    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
+    Nymph::KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
     {
         KTSliceHeader& oldSliceHeader = tsData.Of< KTSliceHeader >();
 
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
         if (! TransferHeaderInformation(oldSliceHeader, sliceHeader))
         {
             KTERROR(pfblog, "Header information was not transferred");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         KTDEBUG(pfblog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
@@ -126,7 +126,7 @@ namespace Katydid
             if (newTS == NULL)
             {
                 KTERROR(pfblog, "Time series for component " << iComponent << " was not created!");
-                return KTDataPtr();
+                return Nymph::KTDataPtr();
             }
             tsData.SetTimeSeries(newTS, iComponent);
         }
@@ -134,7 +134,7 @@ namespace Katydid
         return newData;
     }
 
-    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
+    Nymph::KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
     {
         unsigned nComponents = tsData.GetNComponents();
 

@@ -20,7 +20,7 @@ int main()
     KTINFO(testlog, "Preparing for test");
 
     // Setup a dummy header to print
-    KTDataPtr headerPtr(new KTData());
+    Nymph::KTDataPtr headerPtr(new Nymph::KTData());
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     header.SetFilename("awesome_data.egg");
     header.SetAcquisitionMode(1);

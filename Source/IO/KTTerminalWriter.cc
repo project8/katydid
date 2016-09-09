@@ -7,8 +7,6 @@
 
 #include "KTTerminalWriter.hh"
 
-#include "KTParam.hh"
-
 using std::string;
 
 namespace Katydid
@@ -25,7 +23,7 @@ namespace Katydid
     {
     }
 
-    bool KTTerminalWriter::Configure(const KTParamNode* node)
+    bool KTTerminalWriter::Configure(const scarab::param_node* node)
     {
         return true;
     }

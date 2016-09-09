@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
 
     class KTJSONTypeWriterTime : public KTJSONTypeWriter//, public KTTypeWriterTime
@@ -26,7 +26,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(KTDataPtr headerPtr);
+            void WriteEggHeader(Nymph::KTDataPtr headerPtr);
     };
 
 } /* namespace Katydid */

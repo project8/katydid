@@ -9,7 +9,6 @@
 #include "KTDigitizerTests.hh"
 
 #include "KTDigitizerTestData.hh"
-#include "KTParam.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -57,21 +56,21 @@ namespace Katydid
     {
     }
 
-    bool KTDigitizerTests::Configure(const KTParamNode* node)
+    bool KTDigitizerTests::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        fNDigitizerBits = node->GetValue< unsigned >("n-digitizer-bits", fNDigitizerBits);
+        fNDigitizerBits = node->get_value< unsigned >("n-digitizer-bits", fNDigitizerBits);
 
-        SetTestBitOccupancy(node->GetValue< bool >("test-bit-occupancy", fTestBitOccupancy));
+        SetTestBitOccupancy(node->get_value< bool >("test-bit-occupancy", fTestBitOccupancy));
 
-        SetTestClipping(node->GetValue< bool >("test-clipping", fTestClipping));
+        SetTestClipping(node->get_value< bool >("test-clipping", fTestClipping));
 
-        SetTestLinearity(node->GetValue< bool >("test-linearity", fTestLinearity));
+        SetTestLinearity(node->get_value< bool >("test-linearity", fTestLinearity));
 
-	if (node->Has("disable-component"))
+	if (node->has("disable-component"))
 	  {
-	    fDisableComponents.push_back(node->GetValue< unsigned >("disable-component"));
+	    fDisableComponents.push_back(node->get_value< unsigned >("disable-component"));
 	    KTWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
 	    KTWARN(dtlog, fDisableComponents[0]);
 	  }

@@ -13,7 +13,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTHammingWindow
      @author N. S. Oblath
@@ -37,7 +37,7 @@ namespace Katydid
             KTHammingWindow(const std::string& name = "hamming");
             virtual ~KTHammingWindow();
 
-            virtual bool ConfigureWFSubclass(const KTParamNode* node);
+            virtual bool ConfigureWFSubclass(const scarab::param_node* node);
 
             virtual double GetWeight(double time) const;
 

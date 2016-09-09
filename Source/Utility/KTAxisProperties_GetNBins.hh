@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(utillog_getnbins, "KTAxisProperties_GetNBins");
 
     template< size_t NDims >

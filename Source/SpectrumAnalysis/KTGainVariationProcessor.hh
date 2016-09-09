@@ -14,15 +14,9 @@
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
@@ -52,22 +46,22 @@ namespace Katydid
      - "max-bin": unsigned -- maximum bin for the fit
 
      Slots:
-     - "fs-polar": void (KTDataPtr) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
-     - "fs-fftw": void (KTDataPtr) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
-     - "corr": void (KTDataPtr) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
-     - "ps": void (KTDataPtr) -- Calculates gain variation on a power power spectrum; Requires KTPowerSpectrumData; Adds KTGainVariationData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
+     - "corr": void (Nymph::KTDataPtr) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
+     - "ps": void (Nymph::KTDataPtr) -- Calculates gain variation on a power power spectrum; Requires KTPowerSpectrumData; Adds KTGainVariationData
 
      Signals:
-     - "gain-var": void (KTDataPtr) emitted upon performance of a fit; Guarantees KTGainVariationData
+     - "gain-var": void (Nymph::KTDataPtr) emitted upon performance of a fit; Guarantees KTGainVariationData
     */
 
-    class KTGainVariationProcessor : public KTProcessor
+    class KTGainVariationProcessor : public Nymph::KTProcessor
     {
         public:
             KTGainVariationProcessor(const std::string& name = "gain-variation");
             virtual ~KTGainVariationProcessor();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             bool GetNormalize() const;
             void SetNormalize(bool flag);
@@ -114,17 +108,17 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fGainVarSignal;
+            Nymph::KTSignalData fGainVarSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
-            KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
 
     };
 

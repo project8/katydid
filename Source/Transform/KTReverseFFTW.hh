@@ -22,15 +22,9 @@
 #include <vector>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTAnalyticAssociateData;
     class KTEggHeader;
     class KTTimeSeriesFFTW;
@@ -67,15 +61,15 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag when necessary so that the input data is not destroyed.
 
      Slots:
-     - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
-     - "fs-fftw-to-real": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft"
-     - "fs-fftw-to-complex": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft"
+     - "header": void (Nymph::KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
+     - "fs-fftw-to-real": void (Nymph::KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft"
+     - "fs-fftw-to-complex": void (Nymph::KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft"
 
      Signals:
-     - "fft": void (KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
+     - "fft": void (Nymph::KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
-    class KTReverseFFTW : public KTFFTW, public KTProcessor
+    class KTReverseFFTW : public KTFFTW, public Nymph::KTProcessor
     {
         private:
             typedef std::map< std::string, unsigned > TransformFlagMap;
@@ -91,7 +85,7 @@ namespace Katydid
             KTReverseFFTW(const std::string& name = "reverse-fftw");
             virtual ~KTReverseFFTW();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);
@@ -187,16 +181,16 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFFTSignal;
+            Nymph::KTSignalData fFFTSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWToRealSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWToComplexSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWToRealSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWToComplexSlot;
 
     };
 

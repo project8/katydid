@@ -224,7 +224,7 @@ int main()
 
     clustering.DoClustering(kdTreeData);
 
-    const std::set< KTDataPtr >& candidates = clustering.GetCandidates();
+    const std::set< Nymph::KTDataPtr >& candidates = clustering.GetCandidates();
 
     KTINFO(testlog, "Candidates found: " << candidates.size())
 
@@ -268,7 +268,7 @@ int main()
 
     typedef KTSparseWaterfallCandidateData::Points Points;
 
-    for (std::set< KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
+    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
         KTINFO(testlog, "Candidate " << iCand);
         KTSparseWaterfallCandidateData& swcData = (*cIt)->Of< KTSparseWaterfallCandidateData >();

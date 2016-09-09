@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTChannelHeader
     {
         public:
@@ -44,7 +44,7 @@ namespace Katydid
     };
 
 
-    class KTEggHeader : public KTExtensibleData< KTEggHeader >
+    class KTEggHeader : public Nymph::KTExtensibleData< KTEggHeader >
     {
         public:
             enum TimeSeriesDataType

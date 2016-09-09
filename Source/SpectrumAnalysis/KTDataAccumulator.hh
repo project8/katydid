@@ -19,15 +19,9 @@
 #include <map>
 #include <typeinfo>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     class KTFrequencySpectrumDataFFTW;
@@ -66,26 +60,26 @@ namespace Katydid
      - "signal-interval": unsigned -- Number of slices between signaling; set to 0 to stop slice signals
 
      Slots:
-     - "ts": void (KTDataPtr) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
-     - "ts-dist": void (KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
-     - "fs-polar": void (KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
-     - "fs-fftw": void (KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
-     - "ps": void (KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTPowerSpectrumData; Emits signal "ps"
+     - "ts": void (Nymph::KTDataPtr) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
+     - "ts-dist": void (Nymph::KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
+     - "fs-polar": void (Nymph::KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
+     - "fs-fftw": void (Nymph::KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
+     - "ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTPowerSpectrumData; Emits signal "ps"
 
      Signals:
-     - "ts": void (KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
-     - "ts-dist": void (KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
-     - "fs-polar": void (KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
-     - "fs-fftw": void (KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
-     - "ps": void (KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
-     - "ts-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
-     - "ts-dist-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
-     - "fs-polar-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
-     - "fs-fftw-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
-     - "ps-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
+     - "ts": void (Nymph::KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
+     - "ts-dist": void (Nymph::KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
+     - "fs-polar": void (Nymph::KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw": void (Nymph::KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
+     - "ps": void (Nymph::KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
+     - "ts-finished": void (Nymph::KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
+     - "ts-dist-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
+     - "fs-polar-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
+     - "ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
     */
 
-    class KTDataAccumulator : public KTProcessor
+    class KTDataAccumulator : public Nymph::KTProcessor
     {
         public:
             struct CompareTypeInfo
@@ -98,11 +92,11 @@ namespace Katydid
 
             struct Accumulator
             {
-                KTDataPtr fData;
+                Nymph::KTDataPtr fData;
                 KTSliceHeader& fSliceHeader;
 
                 void IncrementSlice();
-                Accumulator() : fData(new KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
+                Accumulator() : fData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
                 {
                 }
                 unsigned GetSliceNumber() const
@@ -122,9 +116,9 @@ namespace Katydid
             struct SignalSet
             {
                     unsigned fSignalCount;
-                    KTSignalData* fAccumulatingSignal;
-                    KTSignalData* fFinishedSignal;
-                    SignalSet(KTSignalData* accSig, KTSignalData* finishedSig) :
+                    Nymph::KTSignalData* fAccumulatingSignal;
+                    Nymph::KTSignalData* fFinishedSignal;
+                    SignalSet(Nymph::KTSignalData* accSig, Nymph::KTSignalData* finishedSig) :
                         fSignalCount(0),
                         fAccumulatingSignal(accSig),
                         fFinishedSignal(finishedSig)
@@ -138,7 +132,7 @@ namespace Katydid
             KTDataAccumulator(const std::string& name = "data-accumulator");
             virtual ~KTDataAccumulator();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetAccumulatorSize() const;
             double GetAveragingFrac() const;
@@ -192,17 +186,17 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fTSSignal;
-            KTSignalData fTSDistSignal;
-            KTSignalData fFSPolarSignal;
-            KTSignalData fFSFFTWSignal;
-            KTSignalData fPSSignal;
+            Nymph::KTSignalData fTSSignal;
+            Nymph::KTSignalData fTSDistSignal;
+            Nymph::KTSignalData fFSPolarSignal;
+            Nymph::KTSignalData fFSFFTWSignal;
+            Nymph::KTSignalData fPSSignal;
 
-            KTSignalData fTSFinishedSignal;
-            KTSignalData fTSDistFinishedSignal;
-            KTSignalData fFSPolarFinishedSignal;
-            KTSignalData fFSFFTWFinishedSignal;
-            KTSignalData fPSFinishedSignal;
+            Nymph::KTSignalData fTSFinishedSignal;
+            Nymph::KTSignalData fTSDistFinishedSignal;
+            Nymph::KTSignalData fFSPolarFinishedSignal;
+            Nymph::KTSignalData fFSFFTWFinishedSignal;
+            Nymph::KTSignalData fPSFinishedSignal;
 
             SignalMap fSignalMap;
 
@@ -212,7 +206,7 @@ namespace Katydid
 
         private:
             template< class XDataType >
-            void SlotFunction(KTDataPtr data);
+            void SlotFunction(Nymph::KTDataPtr data);
 
     };
 
@@ -271,7 +265,7 @@ namespace Katydid
     }
 
     template< class XDataType >
-    void KTDataAccumulator::SlotFunction(KTDataPtr data)
+    void KTDataAccumulator::SlotFunction(Nymph::KTDataPtr data)
     {
         // Standard data slot pattern:
         // Check to ensure that the required data type is present

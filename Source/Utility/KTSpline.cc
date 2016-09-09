@@ -122,6 +122,11 @@ namespace Katydid
         return 1.;
     }
 
+    KTPhysicalArray< 1, double >* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
+    {
+        return NULL;
+    }
+
 #endif
 
     void KTSpline::AddToCache(Implementation* imp) const

@@ -32,7 +32,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterSpectrumAnalysis");
 
-    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterSpectrumAnalysis > sRTTWCRegistrar;
+    static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterSpectrumAnalysis > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterSpectrumAnalysis::KTROOTTreeTypeWriterSpectrumAnalysis() :
             KTROOTTreeTypeWriter(),
@@ -70,7 +70,7 @@ namespace Katydid
     // Discriminated Points
     //*********************
 
-    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteDiscriminatedPoints1D(KTDataPtr data)
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteDiscriminatedPoints1D(Nymph::KTDataPtr data)
     {
         KTDiscriminatedPoints1DData& fcData = data->Of< KTDiscriminatedPoints1DData >();
         KTSliceHeader& header = data->Of< KTSliceHeader >();
@@ -155,7 +155,7 @@ namespace Katydid
     // K-D Tree
     //*********************
 
-    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTree(KTDataPtr data)
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTree(Nymph::KTDataPtr data)
     {
         static Long64_t lastSlice = -1;
 
@@ -274,7 +274,7 @@ namespace Katydid
     // Amplitude Distribution
     //**************************
 
-    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteAmplitudeDistributions(KTDataPtr data)
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteAmplitudeDistributions(Nymph::KTDataPtr data)
     {
         KTAmplitudeDistribution& adData = data->Of< KTAmplitudeDistribution >();
         //KTSliceHeader& header = data->Of< KTSliceHeader >();
@@ -353,7 +353,7 @@ namespace Katydid
     // Hough Transform Data
     //*************************
 
-    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData(KTDataPtr data)
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to hough data root tree");
         KTHoughData& htData = data->Of< KTHoughData >();
@@ -435,7 +435,7 @@ namespace Katydid
     // Linear Fit Result Data
     //**************************
 
-    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteLinearFitResultData(KTDataPtr data)
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteLinearFitResultData(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to linear fit result root tree");
         KTLinearFitResult& lfData = data->Of< KTLinearFitResult >();
