@@ -1,0 +1,7 @@
+<map id="Katydid::KTFrequencySpectrumDataFFTWCore" name="Katydid::KTFrequencySpectrumDataFFTWCore">
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_frequency_spectrum_data_f_f_t_w.html" title="{Katydid::KTFrequencySpectrum\lDataFFTW\n|+ sName\l|+ KTFrequencySpectrumDataFFTW()\l+ ~KTFrequencySpectrumDataFFTW()\l+ SetNComponents()\l}" alt="" coords="5,636,257,749"/>
+<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_normalized_f_s_data_f_f_t_w.html" title="{Katydid::KTNormalizedFSDataFFTW\n|+ sName\l|+ KTNormalizedFSDataFFTW()\l+ ~KTNormalizedFSDataFFTW()\l+ SetNComponents()\l}" alt="" coords="281,643,520,743"/>
+<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_wigner_ville_data.html" title="{Katydid::KTWignerVilleData\n|+ sName\l&#45; fWVComponentData\l|+ KTWignerVilleData()\l+ ~KTWignerVilleData()\l+ GetInputPair()\l+ SetInputPair()\l+ SetNComponents()\l}" alt="" coords="545,623,731,763"/>
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_frequency_spectrum_data.html" title="{Katydid::KTFrequencySpectrumData\n||+ KTFrequencySpectrumData()\l+ ~KTFrequencySpectrumData()\l+ GetSpectrum()\l+ GetSpectrum()\l}" alt="" coords="281,180,520,293"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_frequency_domain_array_data.html" title="{Katydid::KTFrequencyDomain\lArrayData\n||+ KTFrequencyDomainArrayData()\l+ ~KTFrequencyDomainArrayData()\l+ GetArray()\l+ GetArray()\l}" alt="" coords="283,5,518,132"/>
+</map>

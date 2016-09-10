@@ -1,0 +1,6 @@
+<map id="Katydid::KTHDF5TypeWriterEventAnalysis" name="Katydid::KTHDF5TypeWriterEventAnalysis">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{KTHDF5TypeWriter\n||+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="100,273,276,373"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_type_writer.html" title="{Nymph::KTTypeWriter\n||+ KTTypeWriter()\l+ ~KTTypeWriter()\l+ RegisterSlots()\l}" alt="" coords="5,59,158,159"/>
+<area shape="rect" id="node6" href="$struct_katydid_1_1_p_t_data.html" title="{Katydid::PTData\n|+ Component\l+ AcquisitionID\l+ TrackID\l+ EventID\l+ EventSequenceID\l+ IsCut\l+ StartTimeInAcq\l+ StartTimeInRunC\l+ EndTimeInRunC\l+ TimeLength\land 15 more...\l|}" alt="" coords="298,5,438,212"/>
+<area shape="rect" id="node8" href="$struct_katydid_1_1_m_t_e_data.html" title="{Katydid::MTEData\n|+ Component\l+ AcquisitionID\l+ EventID\l+ TotalEventSequences\l+ StartTimeInAcq\l+ StartTimeInRunC\l+ EndTimeInRunC\l+ TimeLength\l+ StartFrequency\l+ EndFrequency\land 16 more...\l|}" alt="" coords="462,5,624,212"/>
+</map>

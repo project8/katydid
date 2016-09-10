@@ -36,7 +36,8 @@ option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
 option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
 option (Katydid_USE_MATLAB "Flag to optionally use MatIO libraries, needed to read MAT files" ON)
-option (Katydid_BUILD_DOC "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)" OFF)
+option (Katydid_BUILD_DOC "Enable the options to build the documentation (requires Doxygen and Sphinx (optional) with Breathe)" OFF)
+option (Katydid_USE_SPHINX "Flag to optionall use Sphinx documentation" OFF)
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 

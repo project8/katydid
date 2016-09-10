@@ -1,0 +1,19 @@
+<map id="KTROOTSpectrogramWriter.hh" name="KTROOTSpectrogramWriter.hh">
+<area shape="rect" id="node2" href="$_k_t_writer_8hh.html" title="KTWriter.hh" alt="" coords="174,152,265,177"/>
+<area shape="rect" id="node13" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="1125,225,1210,251"/>
+<area shape="rect" id="node16" href="$_k_t_member_variable_8hh.html" title="KTMemberVariable.hh" alt="" coords="1565,299,1719,324"/>
+<area shape="rect" id="node18" href="$_k_t_frequency_spectrum_8hh.html" title="KTFrequencySpectrum.hh" alt="" coords="1310,79,1486,104"/>
+<area shape="rect" id="node20" href="$_k_t_power_spectrum_8hh.html" title="KTPowerSpectrum.hh" alt="" coords="1197,152,1349,177"/>
+<area shape="rect" id="node22" href="$_k_t_processed_track_data_8hh.html" title="KTProcessedTrackData.hh" alt="" coords="1424,152,1604,177"/>
+<area shape="rect" id="node24" href="$_k_t_slice_header_8hh.html" title="KTSliceHeader.hh" alt="" coords="1679,152,1808,177"/>
+<area shape="rect" id="node27" href="$_k_t_slot_8hh.html" title="KTSlot.hh" alt="" coords="729,79,809,104"/>
+<area shape="rect" id="node3" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="429,225,545,251"/>
+<area shape="rect" id="node6" href="$factory_8hh.html" title="factory.hh" alt="" coords="384,299,463,324"/>
+<area shape="rect" id="node11" href="$_k_t_t_i_factory_8hh.html" title="KTTIFactory.hh" alt="" coords="66,225,178,251"/>
+<area shape="rect" id="node4" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="211,299,308,324"/>
+<area shape="rect" id="node14" href="$_k_t_extensible_struct_8hh.html" title="KTExtensibleStruct.hh" alt="" coords="1287,299,1440,324"/>
+<area shape="rect" id="node15" href="$_k_t_cut_status_8hh.html" title="KTCutStatus.hh" alt="" coords="927,299,1042,324"/>
+<area shape="rect" id="node19" href="$_k_t_frequency_domain_array_8hh.html" title="KTFrequencyDomainArray.hh" alt="" coords="1294,225,1491,251"/>
+<area shape="rect" id="node21" href="$_k_t_physical_array_8hh.html" title="KTPhysicalArray.hh" alt="" coords="911,225,1048,251"/>
+<area shape="rect" id="node28" href="$_k_t_signal_8hh.html" title="KTSignal.hh" alt="" coords="638,152,732,177"/>
+</map>

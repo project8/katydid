@@ -1,0 +1,5 @@
+<map id="Katydid::KTNBinsFunctor&lt; NDims &gt;" name="Katydid::KTNBinsFunctor&lt; NDims &gt;">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_default_n_bins.html" title="{Katydid::KTDefaultNBins\l\&lt; NDims \&gt;\n||+ KTDefaultNBins()\l+ ~KTDefaultNBins()\l+ operator()()\l+ Clone()\l}" alt="" coords="5,227,173,353"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_n_bins_in_array.html" title="{Katydid::KTNBinsInArray\l\&lt; NDims \&gt;\n|&#45; fPtrToArray\l&#45; fNBinsFuncPtr\l&#45; fMode\l&#45; fDirectNBinsPtr\l&#45; fArrayOfGetNBinsPtrs\l|+ KTNBinsInArray()\l+ KTNBinsInArray()\l+ ~KTNBinsInArray()\l+ operator()()\l+ Clone()\l&#45; GetNBinsByDimDirectly()\l&#45; GetNBinsByDimWithArray()\l}" alt="" coords="197,180,390,400"/>
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_n_bins_in_array_3_01_n_dims_00_01_fixed_size_01_4.html" title="{Katydid::KTNBinsInArray\l\&lt; NDims, FixedSize \&gt;\n|&#45; fNBins\l|+ KTNBinsInArray()\l+ ~KTNBinsInArray()\l+ operator()()\l+ Clone()\l}" alt="" coords="414,227,583,353"/>
+</map>

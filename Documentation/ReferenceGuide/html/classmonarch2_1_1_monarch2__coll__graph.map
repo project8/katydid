@@ -1,0 +1,5 @@
+<map id="monarch2::Monarch2" name="monarch2::Monarch2">
+<area shape="rect" id="node2" href="$classmonarch2_1_1_m2_header.html" title="{monarch2::M2Header\n|&#45; fProtobufHeader\l|+ M2Header()\l+ ~M2Header()\l+ ByteSize()\l+ MarshalToArray()\l+ MarshalToStream()\l+ DemarshalFromArray()\l+ DemarshalFromStream()\l+ SetFilename()\l+ GetFilename()\l+ SetAcquisitionMode()\land 25 more...\l}" alt="" coords="5,19,186,225"/>
+<area shape="rect" id="node3" href="$structmonarch2_1_1_m2_record.html" title="{monarch2::M2Record\l\&lt; DataType \&gt;\n|+ fAcquisitionId\l+ fRecordId\l+ fTime\l+ fData\l|}" alt="" coords="210,59,360,185"/>
+<area shape="rect" id="node4" href="$classmonarch2_1_1_m2_i_o.html" title="{monarch2::M2IO\n|&#45; fFile\l&#45; fMode\l|+ M2IO()\l+ ~M2IO()\l+ Open()\l+ Write()\l+ Write()\l+ Write()\l+ Seek()\l+ Read()\l+ Read()\l+ Read()\l+ Done()\l+ Close()\l}" alt="" coords="390,5,510,239"/>
+</map>

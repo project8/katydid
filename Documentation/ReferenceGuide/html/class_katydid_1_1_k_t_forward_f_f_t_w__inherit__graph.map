@@ -1,0 +1,6 @@
+<map id="Katydid::KTForwardFFTW" name="Katydid::KTForwardFFTW">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_f_f_t_w.html" title="{Katydid::KTFFTW\n|+ sInstanceCount\l+ sMultithreadedIsInitialized\l|+ KTFFTW()\l+ ~KTFFTW()\l+ InitializeMultithreaded()\l}" alt="" coords="5,307,192,420"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_f_f_t.html" title="{Katydid::KTFFT\n||+ KTFFT()\l+ ~KTFFT()\l+ GetTimeSize()\l+ GetFrequencySize()\l+ GetTimeBinWidth()\l+ GetMinTime()\l+ GetMaxTime()\l+ GetFrequencyBinWidth()\l+ GetMinFrequency()\l+ GetMaxFrequency()\l}" alt="" coords="9,5,188,199"/>
+<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n|# fSignalMap\l# fSlotMap\l|+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="216,247,381,480"/>
+<area shape="rect" id="node5" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n|# fCLHandler\l# fConfigName\l|+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="217,32,380,172"/>
+</map>

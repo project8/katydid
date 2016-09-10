@@ -1,0 +1,6 @@
+<map id="Katydid::KTPowerSpectrum" name="Katydid::KTPowerSpectrum">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_physical_array.html" title="{Katydid::KTPhysicalArray\l\&lt; 1, double \&gt;\n|# fData\l|+ KTPhysicalArray()\l+ KTPhysicalArray()\l+ ~KTPhysicalArray()\l+ GetData()\l+ GetData()\l+ GetDataLabel()\l+ SetDataLabel()\l+ operator()()\l+ operator()()\l+ IsCompatibleWith()\land 9 more...\l}" alt="" coords="5,449,177,669"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_axis_properties.html" title="Encapsulates the properties of n&#45;dimensional binned axes. " alt="" coords="146,140,321,400"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="86,5,165,79"/>
+<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_frequency_domain_array.html" title="{Katydid::KTFrequencyDomain\lArray\n||+ KTFrequencyDomainArray()\l+ ~KTFrequencyDomainArray()\l+ GetNFrequencyBins()\l+ GetFrequencyBinWidth()\l+ GetAxis()\l+ GetAxis()\l+ GetOrdinateLabel()\l}" alt="" coords="201,476,408,643"/>
+</map>

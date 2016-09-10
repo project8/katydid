@@ -1,0 +1,9 @@
+<map id="Katydid::KTDigitizerTestData" name="Katydid::KTDigitizerTestData">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTDigitizerTestData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="23,247,201,360"/>
+<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTDigitizerTestData,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,5,190,185"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="253,267,332,340"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="213,52,339,139"/>
+<area shape="rect" id="node7" href="$struct_katydid_1_1_k_t_digitizer_test_data_1_1_clipping_data.html" title="{Katydid::KTDigitizerTest\lData::ClippingData\n|+ fNClipTop\l+ fNClipBottom\l+ fNMultClipTop\l+ fNMultClipBottom\l+ fTopClipFrac\l+ fBottomClipFrac\l+ fMultTopClipFrac\l+ fMultBottomClipFrac\l|}" alt="" coords="363,5,526,185"/>
+<area shape="rect" id="node9" href="$struct_katydid_1_1_k_t_digitizer_test_data_1_1_bit_occupancy_data.html" title="{Katydid::KTDigitizerTest\lData::BitOccupancyData\n||}" alt="" coords="550,52,717,139"/>
+<area shape="rect" id="node11" href="$struct_katydid_1_1_k_t_digitizer_test_data_1_1_linearity_data.html" title="{Katydid::KTDigitizerTest\lData::LinearityData\n|+ fMaxDiffAvg\l+ fMaxDiffStdev\l+ fAvgLinRegSlope\l+ fMaxDiffAvgD\l+ fMaxDiffStdevD\l+ fAvgLinRegSlopeD\l|}" alt="" coords="741,19,904,172"/>
+</map>

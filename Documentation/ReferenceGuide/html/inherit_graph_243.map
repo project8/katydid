@@ -1,0 +1,31 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_nymph_1_1_k_t_type_writer.html" title="Nymph::KTTypeWriter" alt="" coords="5,471,158,496"/>
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="Nymph::KTDerivedTypeWriter\l\&lt; KTROOTSpectrogramWriter \&gt;" alt="" coords="206,281,417,320"/>
+<area shape="rect" id="node5" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="Nymph::KTDerivedTypeWriter\l\&lt; XWriter \&gt;" alt="" coords="212,647,410,685"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_r_o_o_t_spectrogram_type_writer.html" title="Katydid::KTROOTSpectrogram\lTypeWriter" alt="" coords="487,5,692,44"/>
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_r_o_o_t_spectrogram_type_writer_transform.html" title="Katydid::KTROOTSpectrogram\lTypeWriterTransform" alt="" coords="767,5,972,44"/>
+<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_basic_a_s_c_i_i_type_writer_t_s.html" title="Katydid::KTBasicASCIIType\lWriterTS" alt="" coords="496,68,683,107"/>
+<area shape="rect" id="node7" href="$class_katydid_1_1_k_t_basic_r_o_o_t_type_writer_event_analysis.html" title="Katydid::KTBasicROOTType\lWriterEventAnalysis" alt="" coords="494,131,685,169"/>
+<area shape="rect" id="node8" href="$class_katydid_1_1_k_t_basic_r_o_o_t_type_writer_spectrum_analysis.html" title="Katydid::KTBasicROOTType\lWriterSpectrumAnalysis" alt="" coords="494,193,685,232"/>
+<area shape="rect" id="node9" href="$class_katydid_1_1_k_t_basic_r_o_o_t_type_writer_time.html" title="Katydid::KTBasicROOTType\lWriterTime" alt="" coords="494,256,685,295"/>
+<area shape="rect" id="node10" href="$class_katydid_1_1_k_t_basic_r_o_o_t_type_writer_transform.html" title="Katydid::KTBasicROOTType\lWriterTransform" alt="" coords="494,319,685,357"/>
+<area shape="rect" id="node11" href="$class_katydid_1_1_k_t_data_type_display_spectrum_analysis.html" title="Katydid::KTDataTypeDisplay\lSpectrumAnalysis" alt="" coords="494,381,685,420"/>
+<area shape="rect" id="node12" href="$class_katydid_1_1_k_t_data_type_display_time.html" title="Katydid::KTDataTypeDisplayTime" alt="" coords="480,444,700,469"/>
+<area shape="rect" id="node13" href="$class_katydid_1_1_k_t_data_type_display_transform.html" title="Katydid::KTDataTypeDisplay\lTransform" alt="" coords="494,493,685,532"/>
+<area shape="rect" id="node14" href="$class_katydid_1_1_k_t_h_d_f5_type_writer_event_analysis.html" title="Katydid::KTHDF5TypeWriter\lEventAnalysis" alt="" coords="495,556,684,595"/>
+<area shape="rect" id="node15" href="$class_katydid_1_1_k_t_h_d_f5_type_writer_spectrum_analysis.html" title="Katydid::KTHDF5TypeWriter\lSpectrumAnalysis" alt="" coords="495,619,684,657"/>
+<area shape="rect" id="node16" href="$class_katydid_1_1_k_t_h_d_f5_type_writer_time.html" title="Katydid::KTHDF5TypeWriterTime" alt="" coords="480,681,699,707"/>
+<area shape="rect" id="node17" href="$class_katydid_1_1_k_t_h_d_f5_type_writer_transform.html" title="Katydid::KTHDF5TypeWriter\lTransform" alt="" coords="495,731,684,769"/>
+<area shape="rect" id="node18" href="$class_katydid_1_1_k_t_j_s_o_n_type_writer_evaluation.html" title="Katydid::KTJSONTypeWriter\lEvaluation" alt="" coords="495,793,685,832"/>
+<area shape="rect" id="node19" href="$class_katydid_1_1_k_t_j_s_o_n_type_writer_event_analysis.html" title="Katydid::KTJSONTypeWriter\lEventAnalysis" alt="" coords="495,856,685,895"/>
+<area shape="rect" id="node20" href="$class_katydid_1_1_k_t_j_s_o_n_type_writer_time.html" title="Katydid::KTJSONTypeWriterTime" alt="" coords="480,919,699,944"/>
+<area shape="rect" id="node21" href="$class_katydid_1_1_k_t_m_e_r_o_o_t_type_writer_base.html" title="Katydid::KTMEROOTTypeWriterBase" alt="" coords="468,968,711,993"/>
+<area shape="rect" id="node25" href="$class_katydid_1_1_k_t_r_o_o_t_tree_type_writer_evaluation.html" title="Katydid::KTROOTTreeTypeWriter\lEvaluation" alt="" coords="480,1017,700,1056"/>
+<area shape="rect" id="node26" href="$class_katydid_1_1_k_t_r_o_o_t_tree_type_writer_event_analysis.html" title="Katydid::KTROOTTreeTypeWriter\lEventAnalysis" alt="" coords="480,1080,700,1119"/>
+<area shape="rect" id="node27" href="$class_katydid_1_1_k_t_r_o_o_t_tree_type_writer_spectrum_analysis.html" title="Katydid::KTROOTTreeTypeWriter\lSpectrumAnalysis" alt="" coords="480,1143,700,1181"/>
+<area shape="rect" id="node28" href="$class_katydid_1_1_k_t_r_o_o_t_tree_type_writer_time.html" title="Katydid::KTROOTTreeTypeWriterTime" alt="" coords="465,1205,714,1231"/>
+<area shape="rect" id="node29" href="$class_katydid_1_1_k_t_terminal_type_writer_time.html" title="Katydid::KTTerminalTypeWriterTime" alt="" coords="473,1255,707,1280"/>
+<area shape="rect" id="node22" href="$class_katydid_1_1_k_t_multi_slice_r_o_o_t_type_writer_spectrum_analysis.html" title="Katydid::KTMultiSliceROOTType\lWriterSpectrumAnalysis" alt="" coords="762,899,977,937"/>
+<area shape="rect" id="node23" href="$class_katydid_1_1_k_t_multi_slice_r_o_o_t_type_writer_time.html" title="Katydid::KTMultiSliceROOTType\lWriterTime" alt="" coords="762,961,977,1000"/>
+<area shape="rect" id="node24" href="$class_katydid_1_1_k_t_multi_slice_r_o_o_t_type_writer_transform.html" title="Katydid::KTMultiSliceROOTType\lWriterTransform" alt="" coords="762,1024,977,1063"/>
+</map>

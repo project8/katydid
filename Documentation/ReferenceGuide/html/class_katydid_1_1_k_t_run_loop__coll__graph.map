@@ -1,0 +1,4 @@
+<map id="Katydid::KTRunLoop" name="Katydid::KTRunLoop">
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_mantis_client_writing.html" title="{Katydid::KTMantisClientWriting\n|&#45; f_config\l&#45; f_server\l&#45; f_buffer_condition\l&#45; f_buffer\l&#45; f_receiver\l&#45; f_worker\l&#45; f_thread\l|+ KTMantisClientWriting()\l+ ~KTMantisClientWriting()\l+ wait_for_finish()\l+ cancel()\l+ is_done()\l}" alt="" coords="142,313,347,520"/>
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_mantis_writer_to_t_s.html" title="{Katydid::KTMantisWriterToTS\n|&#45; f_dig_params\l&#45; f_slice_size\l&#45; f_stride\l&#45; f_sample_rate_units\l_in_hz\l&#45; f_advance_records\l&#45; f_data_ptr\l|+ KTMantisWriterToTS()\l+ ~KTMantisWriterToTS()\l+ configure()\l+ initialize_derived()\l+ finalize()\l+ set_client()\l&#45; write()\l&#45; hatch_next_slice()\l}" alt="" coords="147,5,343,252"/>
+</map>

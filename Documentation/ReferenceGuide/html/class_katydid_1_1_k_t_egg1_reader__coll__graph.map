@@ -1,0 +1,8 @@
+<map id="Katydid::KTEgg1Reader" name="Katydid::KTEgg1Reader">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_egg_reader.html" title="{Katydid::KTEggReader\n||+ KTEggReader()\l+ ~KTEggReader()\l+ Configure()\l+ BreakEgg()\l+ HatchNextSlice()\l+ CloseEgg()\l+ GetNSlicesProcessed()\l+ GetNRecordsProcessed()\l+ GetIntegratedTime()\l}" alt="" coords="5,148,191,328"/>
+<area shape="rect" id="node3" title="STL class. " alt="" coords="215,201,309,275"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="196,5,328,92"/>
+<area shape="rect" id="node5" href="$struct_katydid_1_1_k_t_egg1_reader_1_1_header_info.html" title="{Katydid::KTEgg1Reader\l::HeaderInfo\n|+ fSliceSize\l+ fFrameIDSize\l+ fRecordSize\l+ fTimeStampSize\l+ fRunLength\l+ fSampleRate\l+ fHertzPerSampleRateUnit\l+ fSecondsPerRunLengthUnit\l+ fDataFormat\l|+ HeaderInfo()\l}" alt="" coords="334,141,532,335"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="556,201,635,275"/>
+<area shape="rect" id="node7" title="STL class. " alt="" coords="533,5,658,92"/>
+</map>
