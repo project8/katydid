@@ -18,9 +18,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDataDisplay;
-    typedef KTDerivedTypeWriter< KTDataDisplay > KTDataTypeDisplay;
+    typedef Nymph::KTDerivedTypeWriter< KTDataDisplay > KTDataTypeDisplay;
 
   /*!
      @class KTDataDisplay
@@ -63,14 +63,14 @@ namespace Katydid
 
     */
 
-    class KTDataDisplay : public KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >
+    class KTDataDisplay : public Nymph::KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >
     {
 
         public:
             KTDataDisplay(const std::string& name = "data-display");
             virtual ~KTDataDisplay();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetWidth() const;
             void SetWidth(unsigned width);

@@ -1,0 +1,13 @@
+<map id="KTSignal.hh" name="KTSignal.hh">
+<area shape="rect" id="node2" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="1255,79,1371,104"/>
+<area shape="rect" id="node16" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="437,79,522,104"/>
+<area shape="rect" id="node3" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="843,152,975,177"/>
+<area shape="rect" id="node5" href="$_k_t_connection_8hh.html" title="KTConnection.hh" alt="" coords="1330,225,1454,251"/>
+<area shape="rect" id="node7" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="999,152,1097,177"/>
+<area shape="rect" id="node9" href="$_k_t_signal_wrapper_8hh.html" title="KTSignalWrapper.hh" alt="" coords="1684,225,1828,251"/>
+<area shape="rect" id="node10" href="$_k_t_slot_wrapper_8hh.html" title="KTSlotWrapper.hh" alt="" coords="1427,152,1557,177"/>
+<area shape="rect" id="node12" href="$factory_8hh.html" title="factory.hh" alt="" coords="1120,152,1199,177"/>
+<area shape="rect" id="node17" href="$_k_t_extensible_struct_8hh.html" title="KTExtensibleStruct.hh" alt="" coords="564,152,718,177"/>
+<area shape="rect" id="node18" href="$_k_t_cut_status_8hh.html" title="KTCutStatus.hh" alt="" coords="375,152,491,177"/>
+<area shape="rect" id="node19" href="$_k_t_member_variable_8hh.html" title="KTMemberVariable.hh" alt="" coords="27,152,181,177"/>
+</map>

@@ -9,8 +9,7 @@
 
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 #include "KTProcessedTrackData.hh"
 #include "KTSmooth.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -43,16 +42,16 @@ namespace Katydid
     {
     }
 
-    bool KTTrackProcessing::Configure(const KTParamNode* node)
+    bool KTTrackProcessing::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetPointLineDistCut1(node->GetValue("pl-dist-cut1", GetPointLineDistCut1()));
-        SetPointLineDistCut2(node->GetValue("pl-dist-cut2", GetPointLineDistCut2()));
+        SetPointLineDistCut1(node->get_value("pl-dist-cut1", GetPointLineDistCut1()));
+        SetPointLineDistCut2(node->get_value("pl-dist-cut2", GetPointLineDistCut2()));
 
-        SetSlopeMinimum(node->GetValue("min-slope", GetSlopeMinimum()));
+        SetSlopeMinimum(node->get_value("min-slope", GetSlopeMinimum()));
 
-        SetProcTrackMinPoints(node->GetValue("min-points", GetProcTrackMinPoints()));
+        SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
 
         return true;
     }

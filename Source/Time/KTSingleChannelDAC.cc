@@ -8,7 +8,6 @@
 #include "KTSingleChannelDAC.hh"
 
 #include "KTEggHeader.hh"
-#include "KTParam.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -46,31 +45,31 @@ namespace Katydid
     {
     }
 
-    bool KTSingleChannelDAC::Configure(const KTParamNode* node)
+    bool KTSingleChannelDAC::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("dac-gain") && node->GetValue< double >("dac-gain") >= 0.)
+        if (node->has("dac-gain") && node->get_value< double >("dac-gain") >= 0.)
         {
             SetInputParameters(
-                    node->GetValue< unsigned >("data-type-size", fDataTypeSize),
-                    node->GetValue< unsigned >("n-bits", fNBits),
-                    node->GetValue< double >("voltage-offset", fVoltageOffset),
-                    node->GetValue< double >("voltage-range", fVoltageRange),
-                    node->GetValue< double >("dac-gain", fDACGain),
-                    node->GetValue< unsigned >("bit-alignment", fBitAlignment));
+                    node->get_value< unsigned >("data-type-size", fDataTypeSize),
+                    node->get_value< unsigned >("n-bits", fNBits),
+                    node->get_value< double >("voltage-offset", fVoltageOffset),
+                    node->get_value< double >("voltage-range", fVoltageRange),
+                    node->get_value< double >("dac-gain", fDACGain),
+                    node->get_value< unsigned >("bit-alignment", fBitAlignment));
         }
         else
         {
             SetInputParameters(
-                    node->GetValue< unsigned >("data-type-size", fDataTypeSize),
-                    node->GetValue< unsigned >("n-bits", fNBits),
-                    node->GetValue< double >("voltage-offset", fVoltageOffset),
-                    node->GetValue< double >("voltage-range", fVoltageRange),
-                    node->GetValue< unsigned >("bit-alignment", fBitAlignment));
+                    node->get_value< unsigned >("data-type-size", fDataTypeSize),
+                    node->get_value< unsigned >("n-bits", fNBits),
+                    node->get_value< double >("voltage-offset", fVoltageOffset),
+                    node->get_value< double >("voltage-range", fVoltageRange),
+                    node->get_value< unsigned >("bit-alignment", fBitAlignment));
         }
 
-        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
+        string timeSeriesTypeString = node->get_value("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
@@ -79,9 +78,9 @@ namespace Katydid
             return false;
         }
 
-        if (node->Has("n-bits-emulated"))
+        if (node->has("n-bits-emulated"))
         {
-            SetEmulatedNBits(node->GetValue< unsigned >("n-bits-emulated", fEmulatedNBits));
+            SetEmulatedNBits(node->get_value< unsigned >("n-bits-emulated", fEmulatedNBits));
         }
 
         return true;

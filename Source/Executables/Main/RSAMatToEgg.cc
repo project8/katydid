@@ -104,7 +104,7 @@ int main(int argc, char** argv)
     // setting the slice size to 0 will make the slice the size of the record in the matlab file (see KTRSAMatReader::BreakEgg)
     matReader->SetSliceSize(0);
     std::vector< boost::filesystem::path >::const_iterator matIt = matFiles.begin();
-    KTDataPtr matHeaderPtr = matReader->BreakEgg(matIt->string());
+    Nymph::KTDataPtr matHeaderPtr = matReader->BreakEgg(matIt->string());
     KTEggHeader& eggHeader = matHeaderPtr->Of< KTEggHeader >();
     double acqRate = eggHeader.GetAcquisitionRate();
     unsigned recSize = eggHeader.GetChannelHeader(0)->GetRecordSize();
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
             // this will not the be the case in the first iteration, since the file is already open, but will be true after that
             matReader = new KTRSAMatReader();
             matReader->SetSliceSize(0);
-            KTDataPtr newMatHeaderPtr = matReader->BreakEgg(matIt->string());
+            Nymph::KTDataPtr newMatHeaderPtr = matReader->BreakEgg(matIt->string());
             KTEggHeader& newEggHeader = matHeaderPtr->Of< KTEggHeader >();
             if (newEggHeader.GetAcquisitionRate() != acqRate || newEggHeader.GetChannelHeader(0)->GetRecordSize() != recSize)
             {
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
             }
         }
 
-        KTDataPtr data = matReader->HatchNextSlice();
+        Nymph::KTDataPtr data = matReader->HatchNextSlice();
         bool firstRec = true;
         while (data)
         {

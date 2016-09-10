@@ -1,0 +1,5 @@
+<map id="Katydid::KTAnalyticAssociateData" name="Katydid::KTAnalyticAssociateData">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_time_series_data_core.html" title="{Katydid::KTTimeSeriesDataCore\n|# fTimeSeries\l|+ KTTimeSeriesDataCore()\l+ ~KTTimeSeriesDataCore()\l+ GetNComponents()\l+ GetTimeSeries()\l+ GetTimeSeries()\l+ SetNComponents()\l+ SetTimeSeries()\l}" alt="" coords="5,233,220,387"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTAnalyticAssociateData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="244,253,437,367"/>
+<area shape="rect" id="node4" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTAnalyticAssociateData,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="248,5,433,185"/>
+</map>

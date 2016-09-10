@@ -7,8 +7,6 @@
 
 #include "KTMultiSliceROOTWriter.hh"
 
-#include "KTParam.hh"
-
 using std::string;
 
 namespace Katydid
@@ -43,19 +41,19 @@ namespace Katydid
         delete fFile;
     }
 
-    bool KTMultiSliceROOTWriter::Configure(const KTParamNode* node)
+    bool KTMultiSliceROOTWriter::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetUseTFile(node->GetValue<bool>("use-tfile", fUseTFile));
-            SetTFilename(node->GetValue("output-tfile", fTFilename));
-            SetTFileFlag(node->GetValue("tfile-flag", fTFileFlag));
+            SetUseTFile(node->get_value<bool>("use-tfile", fUseTFile));
+            SetTFilename(node->get_value("output-tfile", fTFilename));
+            SetTFileFlag(node->get_value("tfile-flag", fTFileFlag));
 
-            SetUseGraphics(node->GetValue<bool>("use-graphics", fUseGraphics));
-            SetGraphicsFilePath(node->GetValue("graphics-file-path", fGraphicsFilePath));
-            SetGraphicsFilenameBase(node->GetValue("graphics-filename-base", fGraphicsFilenameBase));
-            SetGraphicsFileType(node->GetValue("graphics-file-type", fGraphicsFileType));
+            SetUseGraphics(node->get_value<bool>("use-graphics", fUseGraphics));
+            SetGraphicsFilePath(node->get_value("graphics-file-path", fGraphicsFilePath));
+            SetGraphicsFilenameBase(node->get_value("graphics-filename-base", fGraphicsFilenameBase));
+            SetGraphicsFileType(node->get_value("graphics-file-type", fGraphicsFileType));
         }
 
         return true;

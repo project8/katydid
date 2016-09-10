@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
 
     KTINFO(testegg, "Opening file");
-    KTDataPtr headerPtr = reader->BreakEgg(filename);
+    Nymph::KTDataPtr headerPtr = reader->BreakEgg(filename);
     if (headerPtr)
     {
         KTINFO(testegg, "Egg opened successfully");
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
         KTINFO(testegg, "Slice " << iSlice);
-        KTDataPtr data = reader->HatchNextSlice();
+        Nymph::KTDataPtr data = reader->HatchNextSlice();
         if (! data)
         {
             KTERROR(testegg, "Slice did not hatch");

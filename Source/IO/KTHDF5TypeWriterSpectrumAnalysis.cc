@@ -21,7 +21,7 @@
 namespace Katydid {
 
 	KTLOGGER(publog, "KTHDF5TypeWriterSpectrumAnalysis");
-	static KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterSpectrumAnalysis> sH5TWALYSrg;
+	static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterSpectrumAnalysis> sH5TWALYSrg;
 
 	KTHDF5TypeWriterSpectrumAnalysis::KTHDF5TypeWriterSpectrumAnalysis() :
 		KTHDF5TypeWriter(),
@@ -51,7 +51,7 @@ namespace Katydid {
 		fWriter->RegisterSlot("final-write-points", this, &KTHDF5TypeWriterSpectrumAnalysis::FlushDiscPointBuffer);
 	}
 
-	void KTHDF5TypeWriterSpectrumAnalysis::WriteDiscriminatedPoints(KTDataPtr data) {
+	void KTHDF5TypeWriterSpectrumAnalysis::WriteDiscriminatedPoints(Nymph::KTDataPtr data) {
 		KTDiscriminatedPoints1DData& fcData = data->Of<KTDiscriminatedPoints1DData>();
 		KTSliceHeader& header = data->Of<KTSliceHeader>();
 

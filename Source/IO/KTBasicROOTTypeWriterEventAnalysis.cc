@@ -31,7 +31,7 @@ namespace Katydid
     KTLOGGER(publog, "KTBasicROOTTypeWriterEventAnalysis");
 
 
-    static KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEventAnalysis > sBRTWCandidatesRegistrar;
+    static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEventAnalysis > sBRTWCandidatesRegistrar;
 
     KTBasicROOTTypeWriterEventAnalysis::KTBasicROOTTypeWriterEventAnalysis() :
             KTBasicROOTTypeWriter()
@@ -55,7 +55,7 @@ namespace Katydid
     // Processed Track & Sparse Waterfall Candidate
     //************************
 
-    void KTBasicROOTTypeWriterEventAnalysis::WriteProcTrackAndSWFC(KTDataPtr data)
+    void KTBasicROOTTypeWriterEventAnalysis::WriteProcTrackAndSWFC(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

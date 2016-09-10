@@ -8,8 +8,7 @@
 #include "KTDataDisplay.hh"
 
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 
 namespace Katydid
 {
@@ -34,12 +33,12 @@ namespace Katydid
         delete fDisplayWindow;
     }
 
-    bool KTDataDisplay::Configure(const KTParamNode* node)
+    bool KTDataDisplay::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return true;
 
-        fHeight = node->GetValue< unsigned >("window-height", fHeight);
-        fWidth = node->GetValue< unsigned >("window-width", fWidth);
+        fHeight = node->get_value< unsigned >("window-height", fHeight);
+        fWidth = node->get_value< unsigned >("window-width", fWidth);
 
         return true;
     }
@@ -48,7 +47,7 @@ namespace Katydid
     {
         if (gClient == NULL)
         {
-            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via KTApplication)");
+            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via Nymph::KTApplication)");
             return false;
         }
 

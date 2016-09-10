@@ -279,11 +279,11 @@ namespace Katydid {
     public:
         void ProcessEggHeader(KTEggHeader* header);
 
-        void WriteFrequencyCandidates(KTDataPtr data);
-        void WriteWaterfallCandidate(KTDataPtr data);
-        void WriteSparseWaterfallCandidate(KTDataPtr data);
-        void WriteProcessedTrack(KTDataPtr data);
-        void WriteMultiTrackEvent(KTDataPtr data);
+        void WriteFrequencyCandidates(Nymph::KTDataPtr data);
+        void WriteWaterfallCandidate(Nymph::KTDataPtr data);
+        void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+        void WriteProcessedTrack(Nymph::KTDataPtr data);
+        void WriteMultiTrackEvent(Nymph::KTDataPtr data);
         void WriteMTEBuffer();
         void WritePTBuffer();
 

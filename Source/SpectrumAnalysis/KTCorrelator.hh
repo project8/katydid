@@ -10,7 +10,6 @@
 #define KTCORRELATOR_HH_
 
 #include "KTFrequencySpectrumDataPolar.hh"
-#include "KTParam.hh"
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
@@ -20,7 +19,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTCorrelationData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
@@ -43,15 +42,15 @@ namespace Katydid
                                         e.g.: "corr-pairs": [ [0, 1], [1, 0], [1, 1] ]
 
       Slots:
-     - "fs-polar": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
-     - "fs-fftw": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataFFTW; Adds KTCorrelationData
-     - "norm-fs-polar": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
-     - "norm-fs-fftw": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataFFTW; Adds KTCorrelationData
+     - "norm-fs-polar": void (Nymph::KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
+     - "norm-fs-fftw": void (Nymph::KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
 
      Signals:
-     - "correlation": void (KTDataPtr) -- Emitted upon performance of a correlation; Guarantees KTCorrelationData
+     - "correlation": void (Nymph::KTDataPtr) -- Emitted upon performance of a correlation; Guarantees KTCorrelationData
     */
-    class KTCorrelator : public KTProcessor
+    class KTCorrelator : public Nymph::KTProcessor
     {
         public:
             typedef std::pair< unsigned, unsigned > UIntPair;
@@ -61,7 +60,7 @@ namespace Katydid
             KTCorrelator(const std::string& name = "correlator");
             virtual ~KTCorrelator();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
@@ -90,17 +89,17 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fCorrSignal;
+            Nymph::KTSignalData fCorrSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-            KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
-            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
     };
 
     inline void KTCorrelator::AddPair(const UIntPair& pair)

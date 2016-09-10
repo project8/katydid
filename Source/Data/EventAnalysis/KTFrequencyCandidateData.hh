@@ -16,9 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-
-    class KTFrequencyCandidateData : public KTExtensibleData< KTFrequencyCandidateData >
+    class KTFrequencyCandidateData : public Nymph::KTExtensibleData< KTFrequencyCandidateData >
     {
         public:
             typedef std::vector< KTFrequencyCandidate > Candidates;

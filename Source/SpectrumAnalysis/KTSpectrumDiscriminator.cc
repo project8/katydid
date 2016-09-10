@@ -14,7 +14,6 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTParam.hh"
 #include "KTWignerVilleData.hh"
 
 #include <cmath>
@@ -59,39 +58,39 @@ namespace Katydid
     {
     }
 
-    bool KTSpectrumDiscriminator::Configure(const KTParamNode* node)
+    bool KTSpectrumDiscriminator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("snr-threshold-amplitude"))
+        if (node->has("snr-threshold-amplitude"))
         {
-            SetSNRAmplitudeThreshold(node->GetValue< double >("snr-threshold-amplitude"));
+            SetSNRAmplitudeThreshold(node->get_value< double >("snr-threshold-amplitude"));
         }
-        if (node->Has("snr-threshold-power"))
+        if (node->has("snr-threshold-power"))
         {
-            SetSNRPowerThreshold(node->GetValue< double >("snr-threshold-power"));
+            SetSNRPowerThreshold(node->get_value< double >("snr-threshold-power"));
         }
-        if (node->Has("sigma-threshold"))
+        if (node->has("sigma-threshold"))
         {
-            SetSigmaThreshold(node->GetValue< double >("sigma-threshold"));
-        }
-
-        if (node->Has("min-frequency"))
-        {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
-        }
-        if (node->Has("max-frequency"))
-        {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
+            SetSigmaThreshold(node->get_value< double >("sigma-threshold"));
         }
 
-        if (node->Has("min-bin"))
+        if (node->has("min-frequency"))
         {
-            SetMinBin(node->GetValue< unsigned >("min-bin"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-bin"))
+        if (node->has("max-frequency"))
         {
-            SetMaxBin(node->GetValue< unsigned >("max-bin"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
+        }
+
+        if (node->has("min-bin"))
+        {
+            SetMinBin(node->get_value< unsigned >("min-bin"));
+        }
+        if (node->has("max-bin"))
+        {
+            SetMaxBin(node->get_value< unsigned >("max-bin"));
         }
 
         return true;

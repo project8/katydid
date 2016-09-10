@@ -1,0 +1,4 @@
+<map id="Katydid::KTDBScanEventClustering" name="Katydid::KTDBScanEventClustering">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="25,287,219,400"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n|# fSignalMap\l# fSlotMap\l|+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="39,5,205,239"/>
+</map>

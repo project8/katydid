@@ -14,6 +14,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTFrequencyCandidateIdentifier.hh
     KTMultiPeakEventBuilder.hh
     KTMultiSliceClustering.hh
+    KTSpectrogramCollector.hh
     KTTrackProcessing.hh
 )
 
@@ -25,11 +26,11 @@ set (EVENTANALYSIS_SOURCEFILES
     KTFrequencyCandidateIdentifier.cc
     KTMultiPeakEventBuilder.cc
     KTMultiSliceClustering.cc
+    KTSpectrogramCollector.cc
     KTTrackProcessing.cc
 )
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

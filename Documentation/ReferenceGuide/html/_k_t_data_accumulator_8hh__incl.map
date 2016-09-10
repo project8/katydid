@@ -1,0 +1,18 @@
+<map id="KTDataAccumulator.hh" name="KTDataAccumulator.hh">
+<area shape="rect" id="node2" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="644,225,761,251"/>
+<area shape="rect" id="node7" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="314,299,411,324"/>
+<area shape="rect" id="node17" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="1592,225,1677,251"/>
+<area shape="rect" id="node22" href="$_k_t_slot_8hh.html" title="KTSlot.hh" alt="" coords="1207,79,1286,104"/>
+<area shape="rect" id="node24" href="$_k_t_slice_header_8hh.html" title="KTSliceHeader.hh" alt="" coords="1955,152,2084,177"/>
+<area shape="rect" id="node27" href="$_k_t_time_series_dist_data_8hh.html" title="KTTimeSeriesDistData.hh" alt="" coords="2119,152,2294,177"/>
+<area shape="rect" id="node3" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="944,299,1077,324"/>
+<area shape="rect" id="node5" href="$_k_t_connection_8hh.html" title="KTConnection.hh" alt="" coords="211,372,335,397"/>
+<area shape="rect" id="node9" href="$_k_t_signal_wrapper_8hh.html" title="KTSignalWrapper.hh" alt="" coords="360,372,504,397"/>
+<area shape="rect" id="node10" href="$_k_t_slot_wrapper_8hh.html" title="KTSlotWrapper.hh" alt="" coords="108,299,238,324"/>
+<area shape="rect" id="node12" href="$factory_8hh.html" title="factory.hh" alt="" coords="842,299,921,324"/>
+<area shape="rect" id="node18" href="$_k_t_extensible_struct_8hh.html" title="KTExtensibleStruct.hh" alt="" coords="1574,299,1727,324"/>
+<area shape="rect" id="node19" href="$_k_t_cut_status_8hh.html" title="KTCutStatus.hh" alt="" coords="1334,299,1450,324"/>
+<area shape="rect" id="node20" href="$_k_t_member_variable_8hh.html" title="KTMemberVariable.hh" alt="" coords="1922,299,2075,324"/>
+<area shape="rect" id="node23" href="$_k_t_signal_8hh.html" title="KTSignal.hh" alt="" coords="1284,152,1377,177"/>
+<area shape="rect" id="node28" href="$_k_t_time_series_dist_8hh.html" title="KTTimeSeriesDist.hh" alt="" coords="2270,225,2417,251"/>
+</map>

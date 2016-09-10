@@ -8,9 +8,8 @@
 #include "KTMultiFileROOTTreeReader.hh"
 
 #include "KTAmplitudeDistribution.hh"
-#include "KTNOFactory.hh"
+
 #include "KTLogger.hh"
-#include "KTParam.hh"
 #include "TAxis.h"
 #include "TFile.h"
 #include "TH1D.h"
@@ -29,8 +28,9 @@ namespace Katydid
 {
     KTLOGGER(inlog, "KTMultiFileROOTTreeReader");
 
-    static KTNORegistrar< KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
-    static KTNORegistrar< KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
+    KT_REGISTER_READER(KTMultiFileROOTTreeReader, "mf-root-tree-reader");
+    KT_REGISTER_PROCESSOR(KTMultiFileROOTTreeReader, "mf-root-tree-reader");
+
 
     KTMultiFileROOTTreeReader::KTMultiFileROOTTreeReader(const std::string& name) :
             KTReader(name),
@@ -47,27 +47,27 @@ namespace Katydid
     {
     }
 
-    bool KTMultiFileROOTTreeReader::Configure(const KTParamNode* node)
+    bool KTMultiFileROOTTreeReader::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node == NULL) return false;
 
-        const KTParamArray* inputFileArray = node->ArrayAt("input-files");
+        const scarab::param_array* inputFileArray = node->array_at("input-files");
         if (inputFileArray != NULL)
         {
-            for (KTParamArray::const_iterator ifIt = inputFileArray->Begin(); ifIt != inputFileArray->End(); ++ifIt)
+            for (scarab::param_array::const_iterator ifIt = inputFileArray->begin(); ifIt != inputFileArray->end(); ++ifIt)
             {
-                AddFilename((*ifIt)->AsValue().Get());
+                AddFilename((*ifIt)->as_value().as_string());
                 KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
             }
         }
 
-        const KTParamArray* dataTypeArray = node->ArrayAt("data-types");
+        const scarab::param_array* dataTypeArray = node->array_at("data-types");
         if (inputFileArray != NULL)
         {
-            for (KTParamArray::const_iterator dtIt = dataTypeArray->Begin(); dtIt != dataTypeArray->End(); ++dtIt)
+            for (scarab::param_array::const_iterator dtIt = dataTypeArray->begin(); dtIt != dataTypeArray->end(); ++dtIt)
             {
-                AddDataType((*dtIt)->AsArray().GetValue(0), (*dtIt)->AsArray().GetValue(1));
+                AddDataType((*dtIt)->as_array().get_value(0), (*dtIt)->as_array().get_value(1));
                 KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
             }
         }
@@ -120,7 +120,7 @@ namespace Katydid
                 return false;
             }
 
-            KTDataPtr newData(new KTData());
+            Nymph::KTDataPtr newData(new Nymph::KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
                 KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
@@ -146,7 +146,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTMultiFileROOTTreeReader::Append(KTData& data)
+    bool KTMultiFileROOTTreeReader::Append(Nymph::KTData& data)
     {
         if (fFileIter == fFilenames.end())
         {
@@ -184,7 +184,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
+    bool KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, Nymph::KTData& appendToData)
     {
         // Determine the number of components and the number of frequency bins
         unsigned nComponents = 0;

@@ -8,7 +8,6 @@
 #include "KTDAC.hh"
 
 #include "KTEggHeader.hh"
-#include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
@@ -35,22 +34,22 @@ namespace Katydid
     {
     }
 
-    bool KTDAC::Configure(const KTParamNode* node)
+    bool KTDAC::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("channels"))
+        if (node->has("channels"))
         {
-            const KTParamArray* channelsArray = node->ArrayAt("channels");
-            SetNChannels(channelsArray->Size());
+            const scarab::param_array* channelsArray = node->array_at("channels");
+            SetNChannels(channelsArray->size());
             for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)
             {
-                fChannelDACs[iChannel].Configure(&(*channelsArray)[iChannel].AsNode());
+                fChannelDACs[iChannel].Configure(&(*channelsArray)[iChannel].as_node());
             }
         }
         else
         {
-            SetNChannels(node->GetValue("n-channels", 1U));
+            SetNChannels(node->get_value("n-channels", 1U));
             KTSingleChannelDAC masterCopy;
             masterCopy.Configure(node);
             for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)

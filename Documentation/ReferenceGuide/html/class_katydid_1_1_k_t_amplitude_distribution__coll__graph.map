@@ -1,0 +1,7 @@
+<map id="Katydid::KTAmplitudeDistribution" name="Katydid::KTAmplitudeDistribution">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTAmplitudeDistribution \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="15,247,201,360"/>
+<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTAmplitudeDistribution,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,5,190,185"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="231,267,310,340"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="213,52,339,139"/>
+<area shape="rect" id="node7" title="STL class. " alt="" coords="402,59,516,132"/>
+</map>

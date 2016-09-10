@@ -1,0 +1,4 @@
+<map id="Nymph::KTSlotDataTwoTypes&lt; XDataType1, XDataType2 &gt;" name="Nymph::KTSlotDataTwoTypes&lt; XDataType1, XDataType2 &gt;">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="28,195,182,321"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_signal_one_arg.html" title="{Nymph::KTSignalOneArg\l\&lt; KTDataPtr \&gt;\n|# fSignal\l|+ KTSignalOneArg()\l+ ~KTSignalOneArg()\l+ operator()()\l# KTSignalOneArg()\l# KTSignalOneArg()\l}" alt="" coords="19,5,190,145"/>
+</map>

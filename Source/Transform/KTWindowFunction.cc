@@ -15,7 +15,6 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -46,7 +45,7 @@ namespace Katydid
     {
     }
 
-    bool KTWindowFunction::Configure(const KTParamNode* node)
+    bool KTWindowFunction::Configure(const scarab::param_node* node)
     {
         return ConfigureWFSubclass(node);
     }

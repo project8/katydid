@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTMultiFSDataPolarCore
     {
@@ -104,7 +104,7 @@ namespace Katydid
 
 
 
-    class KTMultiFSDataPolar : public KTMultiFSDataPolarCore, public KTExtensibleData< KTMultiFSDataPolar >
+    class KTMultiFSDataPolar : public KTMultiFSDataPolarCore, public Nymph::KTExtensibleData< KTMultiFSDataPolar >
     {
         public:
             KTMultiFSDataPolar();

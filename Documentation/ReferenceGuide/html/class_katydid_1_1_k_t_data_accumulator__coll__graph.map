@@ -1,0 +1,8 @@
+<map id="Katydid::KTDataAccumulator" name="Katydid::KTDataAccumulator">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="248,635,414,855"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="5,313,169,440"/>
+<area shape="rect" id="node7" href="$struct_katydid_1_1_k_t_data_accumulator_1_1_signal_set.html" title="{Katydid::KTDataAccumulator\l::SignalSet\n|+ fSignalCount\l|+ SignalSet()\l}" alt="" coords="611,333,803,420"/>
+<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="541,59,694,185"/>
+<area shape="rect" id="node9" href="$struct_katydid_1_1_k_t_data_accumulator_1_1_accumulator.html" title="{Katydid::KTDataAccumulator\l::Accumulator\n|+ fData\l|+ IncrementSlice()\l+ Accumulator()\l+ GetSliceNumber()\l+ BumpSliceNumber()\l}" alt="" coords="895,313,1087,440"/>
+<area shape="rect" id="node10" href="$class_katydid_1_1_k_t_slice_header.html" title="{Katydid::KTSliceHeader\n|&#45; fTemp1\l&#45; fTemp2\l&#45; fTemp3\l|+ KTSliceHeader()\l+ KTSliceHeader()\l+ ~KTSliceHeader()\l+ operator=()\l+ CopySliceHeaderOnly()\l+ GetNComponents()\l+ SetNComponents()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\land 27 more...\l}" alt="" coords="905,5,1078,239"/>
+</map>

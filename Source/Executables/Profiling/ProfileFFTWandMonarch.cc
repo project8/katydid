@@ -69,7 +69,7 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
     // Dummy data pointer
-    KTDataPtr dataPtr(new KTData());
+    Nymph::KTDataPtr dataPtr(new Nymph::KTData());
 
     // Create FFT
     KTINFO(proflog, "Setting up the FFT");

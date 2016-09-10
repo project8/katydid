@@ -30,7 +30,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTMultiSliceROOTTypeWriterTransform");
 
-    static KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterTransform > sMERTWFRegistrar;
+    static Nymph::KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterTransform > sMERTWFRegistrar;
 
     KTMultiSliceROOTTypeWriterTransform::KTMultiSliceROOTTypeWriterTransform() :
             KTMEROOTTypeWriterBase(),
@@ -135,7 +135,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterTransform::AddFrequencySpectrumDataPolar(KTDataPtr data)
+    void KTMultiSliceROOTTypeWriterTransform::AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
         KTFrequencySpectrumDataPolar& fsData = data->Of< KTFrequencySpectrumDataPolar >();
         if (fFSHists.size() == 0)
@@ -164,7 +164,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiSliceROOTTypeWriterTransform::AddFrequencySpectrumDataFFTW(KTDataPtr data)
+    void KTMultiSliceROOTTypeWriterTransform::AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
         KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
         if (fFSFFTWHists.size() == 0)

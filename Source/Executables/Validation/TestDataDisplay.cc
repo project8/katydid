@@ -29,7 +29,7 @@ using namespace std;
 
 int main()
 {
-    KTApplication fApp(true);
+    Nymph::KTApplication fApp(true);
 
     cout << "Testing KTDisplayWindow" << endl;
     {
@@ -78,7 +78,7 @@ int main()
     cout << "\nTesting KTDataDisplay" << endl;
     {
         // Set up the data
-        KTDataPtr data(new KTData);
+        Nymph::KTDataPtr data(new KTData);
 
         KTSliceHeader& header = data->Of< KTSliceHeader >();
         header.SetSliceNumber(1);

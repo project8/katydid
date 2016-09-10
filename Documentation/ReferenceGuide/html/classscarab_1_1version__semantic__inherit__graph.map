@@ -1,0 +1,6 @@
+<map id="scarab::version_semantic" name="scarab::version_semantic">
+<area shape="rect" id="node3" href="$classmonarch2_1_1_m2_version.html" title="{monarch2::M2Version\n||+ M2Version()\l+ ~M2Version()\l}" alt="" coords="5,675,156,761"/>
+<area shape="rect" id="node4" href="$classmonarch3_1_1_m3_version.html" title="{monarch3::M3Version\n||+ M3Version()\l+ ~M3Version()\l}" alt="" coords="180,675,331,761"/>
+<area shape="rect" id="node5" href="$classscarab_1_1version.html" title="{scarab::version\n||+ version()\l+ ~version()\l}" alt="" coords="356,675,467,761"/>
+<area shape="rect" id="node2" href="$classscarab_1_1version__ifc.html" title="{scarab::version_ifc\n||+ version_ifc()\l+ version_ifc()\l+ ~version_ifc()\l+ operator=()\l+ major_version()\l+ minor_version()\l+ patch_version()\l+ version_str()\l+ package()\l+ commit()\l+ exe_name()\l+ hostname()\l+ username()\l+ version_info_string()\l}" alt="" coords="179,5,332,252"/>
+</map>

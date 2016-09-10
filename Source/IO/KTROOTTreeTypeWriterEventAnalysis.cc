@@ -35,7 +35,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterEventAnalysis");
 
-    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
+    static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterEventAnalysis::KTROOTTreeTypeWriterEventAnalysis() :
             KTROOTTreeTypeWriter(),
@@ -75,7 +75,7 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data)
     {
         KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
         KTSliceHeader& header = data->Of< KTSliceHeader >();
@@ -116,6 +116,29 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterEventAnalysis::SetupFrequencyCandidateTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "freqCand", fFreqCandidateTree );
+
+            if( fFreqCandidateTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fFreqCandidateTree );
+
+                fFreqCandidateTree->SetBranchAddress("Component", &fFreqCandidateData.fComponent);
+                fFreqCandidateTree->SetBranchAddress("Slice", &fFreqCandidateData.fSlice);
+                fFreqCandidateTree->SetBranchAddress("TimeInRun", &fFreqCandidateData.fTimeInRun);
+                fFreqCandidateTree->SetBranchAddress("Threshold", &fFreqCandidateData.fThreshold);
+                fFreqCandidateTree->SetBranchAddress("FirstBin", &fFreqCandidateData.fFirstBin);
+                fFreqCandidateTree->SetBranchAddress("LastBin", &fFreqCandidateData.fLastBin);
+                fFreqCandidateTree->SetBranchAddress("MeanFrequency", &fFreqCandidateData.fMeanFrequency);
+                fFreqCandidateTree->SetBranchAddress("PeakAmplitude", &fFreqCandidateData.fPeakAmplitude);
+                fFreqCandidateTree->SetBranchAddress("AmplitudeSum", &fFreqCandidateData.fAmplitudeSum);
+
+                return true;
+            }
+        }
+
         fFreqCandidateTree = new TTree("freqCand", "Frequency Candidates");
         if (fFreqCandidateTree == NULL)
         {
@@ -145,7 +168,7 @@ namespace Katydid
     // Waterfall Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to waterfall candidate root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
@@ -193,6 +216,31 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterEventAnalysis::SetupWaterfallCandidateTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "wfCand", fWaterfallCandidateTree );
+
+            if( fWaterfallCandidateTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fWaterfallCandidateTree );
+
+                fWaterfallCandidateTree->SetBranchAddress("Component", &fWaterfallCandidateData.fComponent);
+                fWaterfallCandidateTree->SetBranchAddress("TimeInRun", &fWaterfallCandidateData.fTimeInRun);
+                fWaterfallCandidateTree->SetBranchAddress("TimeLength", &fWaterfallCandidateData.fTimeLength);
+                fWaterfallCandidateTree->SetBranchAddress("FirstSlice", &fWaterfallCandidateData.fFirstSliceNumber);
+                fWaterfallCandidateTree->SetBranchAddress("LastSlice", &fWaterfallCandidateData.fLastSliceNumber);
+                fWaterfallCandidateTree->SetBranchAddress("MinFrequency", &fWaterfallCandidateData.fMinFrequency);
+                fWaterfallCandidateTree->SetBranchAddress("MaxFrequency", &fWaterfallCandidateData.fMaxFrequency);
+                fWaterfallCandidateTree->SetBranchAddress("MeanStartFrequency", &fWaterfallCandidateData.fMeanStartFrequency);
+                fWaterfallCandidateTree->SetBranchAddress("MeanEndFrequency", &fWaterfallCandidateData.fMeanEndFrequency);
+                fWaterfallCandidateTree->SetBranchAddress("FrequencyWidth", &fWaterfallCandidateData.fFrequencyWidth);
+                fWaterfallCandidateTree->SetBranchAddress("Candidate", &fWaterfallCandidateData.fCandidate);
+
+                return true;
+            }
+        }
+
         fWaterfallCandidateTree = new TTree("wfCand", "Waterfall Candidates");
         if (fWaterfallCandidateTree == NULL)
         {
@@ -220,7 +268,7 @@ namespace Katydid
     // Sparse Waterfall Candidates
     //****************************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
         KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
@@ -268,6 +316,31 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterEventAnalysis::SetupSparseWaterfallCandidateTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "swfCand", fSparseWaterfallCandidateTree );
+
+            if( fSparseWaterfallCandidateTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fSparseWaterfallCandidateTree );
+
+                fSparseWaterfallCandidateTree->SetBranchAddress("Component", &fSparseWaterfallCandidateData.fComponent);
+                fSparseWaterfallCandidateTree->SetBranchAddress("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID);
+                fSparseWaterfallCandidateTree->SetBranchAddress("CandidateID", &fSparseWaterfallCandidateData.fCandidateID);
+                //fSparseWaterfallCandidateTree->SetBranchAddress("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth);
+                //fSparseWaterfallCandidateTree->SetBranchAddress("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth);
+                fSparseWaterfallCandidateTree->SetBranchAddress("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC);
+                fSparseWaterfallCandidateTree->SetBranchAddress("TimeLength", &fSparseWaterfallCandidateData.fTimeLength);
+                fSparseWaterfallCandidateTree->SetBranchAddress("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency);
+                fSparseWaterfallCandidateTree->SetBranchAddress("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency);
+                fSparseWaterfallCandidateTree->SetBranchAddress("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth);
+                fSparseWaterfallCandidateTree->SetBranchAddress("Points", &fSparseWaterfallCandidateData.fPoints);
+
+                return true;
+            }
+        }
+
         fSparseWaterfallCandidateTree = new TTree("swfCand", "Sparse Waterfall Candidates");
         if (fSparseWaterfallCandidateTree == NULL)
         {
@@ -295,12 +368,13 @@ namespace Katydid
     // Processed Track
     //****************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to processed track root tree");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "procTracks", fProcessedTrackTree );
 
         if (fProcessedTrackTree == NULL)
         {
@@ -309,6 +383,13 @@ namespace Katydid
                 KTERROR(publog, "Something went wrong while setting up the processed track tree! Nothing was written.");
                 return;
             }
+        }
+        else
+        {
+            KTINFO(publog, "Tree already exists!");
+            fWriter->AddTree( fProcessedTrackTree );
+
+            fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
         }
 
         fProcessedTrackDataPtr->Load(ptData);
@@ -320,6 +401,21 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterEventAnalysis::SetupProcessedTrackTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "procTracks", fProcessedTrackTree );
+
+            if( fProcessedTrackTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fProcessedTrackTree );
+
+                fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
+
+                return true;
+            }
+        }
+
         fProcessedTrackTree = new TTree("procTracks", "Processed Tracks");
         if (fProcessedTrackTree == NULL)
         {
@@ -328,7 +424,7 @@ namespace Katydid
         }
         fWriter->AddTree(fProcessedTrackTree);
 
-        fProcessedTrackDataPtr = new TProcessedTrackData();
+        //fProcessedTrackDataPtr = new TProcessedTrackData();
 
         fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
 
@@ -339,7 +435,7 @@ namespace Katydid
     // Multi-Track Event
     //******************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent(KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to multi-track event root tree");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
@@ -364,6 +460,21 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterEventAnalysis::SetupMultiTrackEventTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "multiTrackEvents", fMultiTrackEventTree );
+
+            if( fMultiTrackEventTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fMultiTrackEventTree );
+
+                fMultiTrackEventTree->SetBranchAddress("Event", &fMultiTrackEventDataPtr);
+
+                return true;
+            }
+        }
+
         fMultiTrackEventTree = new TTree("multiTrackEvents", "Multi-Track Events");
         if (fMultiTrackEventTree == NULL)
         {

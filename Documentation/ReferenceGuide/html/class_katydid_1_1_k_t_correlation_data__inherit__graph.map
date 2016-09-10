@@ -1,0 +1,6 @@
+<map id="Katydid::KTCorrelationData" name="Katydid::KTCorrelationData">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_frequency_spectrum_data_polar_core.html" title="{Katydid::KTFrequencySpectrum\lDataPolarCore\n|# fSpectra\l|+ KTFrequencySpectrumDataPolarCore()\l+ ~KTFrequencySpectrumData\lPolarCore()\l+ GetNComponents()\l+ GetSpectrumPolar()\l+ GetSpectrumPolar()\l+ GetSpectrum()\l+ GetSpectrum()\l+ GetArray()\l+ GetArray()\l+ SetSpectrum()\l+ SetNComponents()\l}" alt="" coords="5,220,272,453"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_frequency_spectrum_data.html" title="{Katydid::KTFrequencySpectrumData\n||+ KTFrequencySpectrumData()\l+ ~KTFrequencySpectrumData()\l+ GetSpectrum()\l+ GetSpectrum()\l}" alt="" coords="16,32,254,145"/>
+<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTCorrelationData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="303,280,481,393"/>
+<area shape="rect" id="node5" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTCorrelationData, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="278,5,514,172"/>
+</map>

@@ -9,10 +9,11 @@
 #define KTRANDOM_HH_
 
 #include "KTConfigurable.hh"
-#include "KTSingleton.hh"
 
 #include "KTLogger.hh"
-#include "KTParam.hh"
+
+#include "param.hh"
+#include "singleton.hh"
 
 // the generator that will be used
 #include <boost/random/mersenne_twister.hpp>
@@ -27,14 +28,14 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(rnglog, "KTRandom");
 
     //**************************************
     // Definition of the RNG engine class
     //**************************************
 
-    class KTRNGEngine : public KTSelfConfigurable
+    class KTRNGEngine : public Nymph::KTSelfConfigurable
     {
         public:
             typedef boost::random::mt19937 generator_type;
@@ -44,9 +45,9 @@ namespace Katydid
             virtual ~KTRNGEngine();
 
         public:
-            using KTSelfConfigurable::Configure;
+            using Nymph::KTSelfConfigurable::Configure;
 
-            virtual bool Configure(const KTParamNode* node);
+            virtual bool Configure(const scarab::param_node* node);
             virtual bool IsReady() const;
 
             virtual void SetSeed(unsigned seed);
@@ -78,11 +79,11 @@ namespace Katydid
     // Definition of the global RNG engine
     //***************************************
 
-    class KTGlobalRNGEngine : public KTRNGEngine, public KTSingleton< KTGlobalRNGEngine >
+    class KTGlobalRNGEngine : public KTRNGEngine, public scarab::singleton< KTGlobalRNGEngine >
     {
         protected:
-            friend class KTSingleton< KTGlobalRNGEngine >;
-            friend class KTDestroyer< KTGlobalRNGEngine >;
+            friend class scarab::singleton< KTGlobalRNGEngine >;
+            friend class scarab::destroyer< KTGlobalRNGEngine >;
             KTGlobalRNGEngine(const std::string& name = "global-rng-engine") :
                 KTRNGEngine(name)
             {}
@@ -97,10 +98,10 @@ namespace Katydid
     //*********************************************
 
     template< class Engine >
-    class KTRNGDistribution : public KTConfigurable
+    class KTRNGDistribution : public Nymph::KTConfigurable
     {
         public:
-            KTRNGDistribution(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "rng") :
+            KTRNGDistribution(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "rng") :
                     KTConfigurable(name),
                     fEngine(rng)
                 {}
@@ -113,8 +114,8 @@ namespace Katydid
             Engine* fEngine;
 
         public:
-            virtual bool Configure(const KTParamNode* node);
-            virtual bool ConfigureDistribution(const KTParamNode* node) = 0;
+            virtual bool Configure(const scarab::param_node* node);
+            virtual bool ConfigureDistribution(const scarab::param_node* node) = 0;
 
     };
 
@@ -132,7 +133,7 @@ namespace Katydid
     }
 
     template< class Engine >
-    inline bool KTRNGDistribution< Engine >::Configure(const KTParamNode* node)
+    inline bool KTRNGDistribution< Engine >::Configure(const scarab::param_node* node)
     {
         return this->ConfigureDistribution(node);
     }
@@ -161,14 +162,14 @@ namespace Katydid
         typedef boost::random::uniform_01<RealType> dist_type;
         typedef typename dist_type::result_type result_type;
 
-        KTRNGUniform01(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "uniform-01") :
+        KTRNGUniform01(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "uniform-01") :
             KTRNGDistribution< Engine >(rng, name)
         {}
         virtual ~KTRNGUniform01() {}
 
         inline result_type operator()() {return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());}
 
-        inline virtual bool ConfigureDistribution(const KTParamNode*)
+        inline virtual bool ConfigureDistribution(const scarab::param_node*)
         {
             return true;
         }
@@ -195,10 +196,10 @@ namespace Katydid
         typedef typename dist_type::result_type result_type;
         typedef typename dist_type::param_type param_type;
 
-        KTRNGUniform(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "uniform") :
+        KTRNGUniform(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "uniform") :
             KTRNGDistribution< Engine >(rng, name)
         {}
-        KTRNGUniform(input_type min, input_type max, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "uniform") :
+        KTRNGUniform(input_type min, input_type max, Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "uniform") :
             KTRNGDistribution< Engine >(rng, name),
             dist_type(min, max)
         {}
@@ -213,10 +214,10 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(min, max));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type min = node->GetValue< input_type >("min", this->a());
-            input_type max = node->GetValue< input_type >("max", this->b());
+            input_type min = node->get_value< input_type >("min", this->a());
+            input_type max = node->get_value< input_type >("max", this->b());
             this->param(param_type(min, max));
             return true;
         }
@@ -245,10 +246,10 @@ namespace Katydid
         typedef typename dist_type::result_type result_type;
         typedef typename dist_type::param_type param_type;
 
-        KTRNGGaussian(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "gaussian") :
+        KTRNGGaussian(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "gaussian") :
             KTRNGDistribution< Engine >(rng, name)
         {}
-        KTRNGGaussian(input_type mean, input_type sigma, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "gaussian") :
+        KTRNGGaussian(input_type mean, input_type sigma, Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "gaussian") :
             KTRNGDistribution< Engine >(rng, name),
             dist_type(mean, sigma)
         {}
@@ -263,10 +264,10 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type mean = node->GetValue< input_type >("mean", this->mean());
-            input_type sigma = node->GetValue< input_type >("sigma", this->sigma());
+            input_type mean = node->get_value< input_type >("mean", this->mean());
+            input_type sigma = node->get_value< input_type >("sigma", this->sigma());
             this->param(param_type(mean, sigma));
             return true;
         }
@@ -294,10 +295,10 @@ namespace Katydid
         typedef typename dist_type::result_type result_type;
         typedef typename dist_type::param_type param_type;
 
-        KTRNGPoisson(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "poisson") :
-            KTRNGDistribution< Engine >(rng, name)
+        KTRNGPoisson(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "poisson") :
+            KTRNGDistribution< Engine >(KTGlobalRNGEngine::get_instance())
         {}
-        KTRNGPoisson(input_type mean, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "poisson") :
+        KTRNGPoisson(input_type mean, Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "poisson") :
             KTRNGDistribution< Engine >(rng, name),
             dist_type(mean)
         {}
@@ -312,9 +313,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type mean = node->GetValue< input_type >("mean", this->mean());
+            input_type mean = node->get_value< input_type >("mean", this->mean());
             this->param(param_type(mean));
             return true;
         }
@@ -342,10 +343,10 @@ namespace Katydid
         typedef typename dist_type::result_type result_type;
         typedef typename dist_type::param_type param_type;
 
-        KTRNGExponential(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "exponential") :
+        KTRNGExponential(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "exponential") :
             KTRNGDistribution< Engine >(rng, name)
         {}
-        KTRNGExponential(input_type lambda, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "exponential") :
+        KTRNGExponential(input_type lambda, Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "exponential") :
             KTRNGDistribution< Engine >(rng, name),
             dist_type(lambda)
         {}
@@ -360,9 +361,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(lambda));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type lambda = node->GetValue< input_type >("lambda", this->lambda());
+            input_type lambda = node->get_value< input_type >("lambda", this->lambda());
             this->param(param_type(lambda));
             return true;
         }
@@ -390,10 +391,10 @@ namespace Katydid
         typedef typename dist_type::result_type result_type;
         typedef typename dist_type::param_type param_type;
 
-        KTRNGChiSquared(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "chi-squared") :
+        KTRNGChiSquared(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "chi-squared") :
             KTRNGDistribution< Engine >(rng, name)
         {}
-        KTRNGChiSquared(input_type n, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "chi-squared") :
+        KTRNGChiSquared(input_type n, Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "chi-squared") :
             KTRNGDistribution< Engine >(rng, name),
             dist_type(n)
         {}
@@ -408,9 +409,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(n));
         }
 
-        inline virtual bool ConfigureDistribution(const KTParamNode* node)
+        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
         {
-            input_type n = node->GetValue< input_type >("n", this->n());
+            input_type n = node->get_value< input_type >("n", this->n());
             this->param(param_type(n));
             return true;
         }

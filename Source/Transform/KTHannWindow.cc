@@ -9,7 +9,6 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
 
 #include <cmath>
 
@@ -30,7 +29,7 @@ namespace Katydid
     {
     }
 
-    bool KTHannWindow::ConfigureWFSubclass(const KTParamNode*)
+    bool KTHannWindow::ConfigureWFSubclass(const scarab::param_node*)
     {
         KTDEBUG(windowlog, "Hann WF configured");
         return true;

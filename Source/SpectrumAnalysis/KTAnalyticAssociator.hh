@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -34,29 +34,33 @@ namespace Katydid
      @brief Creates an analytic associate of a real time series
 
      @details
+     Equivalent to application of a Hilbert Transform.
+
+     Removes negative frequency components and results in a complex time series.
 
      Configuration name: "analytic-associator"
  
      Available configuration values:
      - "save-frequency-spectrum": bool -- Option to save the intermediate frequency spectrum that is calculated while creating the analytic associate
-     - "complex-fftw": nested config: -- See KTComplexFFTW
+     - "forward-fftw": nested config: -- See KTForwardFFTW
+     - "reverse-fftw": nested config: -- See KTReverseFFTW
 
      Slots:
-     - "header": void (KTDataPtr) -- Initializes the FFT; Requires KTEggHeader
-     - "ts": void (KTDataPtr) -- Calculates an analytic associate of the real time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
-     - "fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
-     - "norm-fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
+     - "header": void (Nymph::KTDataPtr) -- Initializes the FFT; Requires KTEggHeader
+     - "ts": void (Nymph::KTDataPtr) -- Calculates an analytic associate of the real time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
+     - "norm-fs-fftw": void (Nymph::KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
 
      Signals:
-     - "aa": void (KTDataPtr) -- Emitted upon creation of an analytic associate; Guarantees KTAnalyticAssociateData
+     - "aa": void (Nymph::KTDataPtr) -- Emitted upon creation of an analytic associate; Guarantees KTAnalyticAssociateData
     */
-    class KTAnalyticAssociator : public KTProcessor
+    class KTAnalyticAssociator : public Nymph::KTProcessor
     {
         public:
             KTAnalyticAssociator(const std::string& name = "analytic-associator");
             virtual ~KTAnalyticAssociator();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             bool InitializeWithHeader(KTEggHeader& header);
 
@@ -89,17 +93,17 @@ namespace Katydid
             //***************
 
          private:
-             KTSignalData fAASignal;
+             Nymph::KTSignalData fAASignal;
 
              //***************
              // Slots
              //***************
 
          private:
-             KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
-             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-             KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+             Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+             Nymph::KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+             Nymph::KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
 
     };
 

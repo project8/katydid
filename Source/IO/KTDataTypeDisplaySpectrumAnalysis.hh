@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDataTypeDisplaySpectrumAnalysis : public KTDataTypeDisplay
     {
         public:
@@ -28,53 +28,53 @@ namespace Katydid
             // Normalized Frequency Spectrum Data
             //************************
         public:
-            void DrawNormalizedFSDataPolar(KTDataPtr data);
-            void DrawNormalizedFSDataFFTW(KTDataPtr data);
-            void DrawNormalizedFSDataPolarPhase(KTDataPtr data);
-            void DrawNormalizedFSDataFFTWPhase(KTDataPtr data);
-            void DrawNormalizedFSDataPolarPower(KTDataPtr data);
-            void DrawNormalizedFSDataFFTWPower(KTDataPtr data);
+            void DrawNormalizedFSDataPolar(Nymph::KTDataPtr data);
+            void DrawNormalizedFSDataFFTW(Nymph::KTDataPtr data);
+            void DrawNormalizedFSDataPolarPhase(Nymph::KTDataPtr data);
+            void DrawNormalizedFSDataFFTWPhase(Nymph::KTDataPtr data);
+            void DrawNormalizedFSDataPolarPower(Nymph::KTDataPtr data);
+            void DrawNormalizedFSDataFFTWPower(Nymph::KTDataPtr data);
 
             //************************
             // Analytic Associate Data
             //************************
         public:
-            void DrawAnalyticAssociateData(KTDataPtr data);
-            void DrawAnalyticAssociateDataDistribution(KTDataPtr data);
+            void DrawAnalyticAssociateData(Nymph::KTDataPtr data);
+            void DrawAnalyticAssociateDataDistribution(Nymph::KTDataPtr data);
 
             //************************
             // Correlation Data
             //************************
         public:
-            void DrawCorrelationData(KTDataPtr data);
-            void DrawCorrelationDataDistribution(KTDataPtr data);
+            void DrawCorrelationData(Nymph::KTDataPtr data);
+            void DrawCorrelationDataDistribution(Nymph::KTDataPtr data);
 
             //************************
             // Correlation TS Data
             //************************
         public:
-            void DrawCorrelationTSData(KTDataPtr data);
-            void DrawCorrelationTSDataDistribution(KTDataPtr data);
+            void DrawCorrelationTSData(Nymph::KTDataPtr data);
+            void DrawCorrelationTSDataDistribution(Nymph::KTDataPtr data);
 
             //************************
             // Hough Transform Data
             //************************
         public:
-            void DrawHoughData(KTDataPtr data);
+            void DrawHoughData(Nymph::KTDataPtr data);
 
             //************************
             // Gain Variation Data
             //************************
         public:
-            void DrawGainVariationData(KTDataPtr data);
+            void DrawGainVariationData(Nymph::KTDataPtr data);
 
             //************************
             // WignerVille Data
             //************************
         public:
-            void DrawWignerVilleData(KTDataPtr data);
-            void DrawWignerVilleDataDistribution(KTDataPtr data);
-            void DrawWV2DData(KTDataPtr data);
+            void DrawWignerVilleData(Nymph::KTDataPtr data);
+            void DrawWignerVilleDataDistribution(Nymph::KTDataPtr data);
+            void DrawWV2DData(Nymph::KTDataPtr data);
 
     };
 

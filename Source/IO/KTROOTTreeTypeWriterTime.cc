@@ -26,7 +26,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterTime");
 
-    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterTime > sRTTWCRegistrar;
+    static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterTime > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterTime::KTROOTTreeTypeWriterTime() :
             KTROOTTreeTypeWriter(),
@@ -62,7 +62,7 @@ namespace Katydid
     // Egg Header
     //*********************
 
-    void KTROOTTreeTypeWriterTime::WriteEggHeader(KTDataPtr headerPtr)
+    void KTROOTTreeTypeWriterTime::WriteEggHeader(Nymph::KTDataPtr headerPtr)
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -124,6 +124,30 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterTime::SetupEggHeaderTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "eggHeader", fEggHeaderTree );
+
+            if( fEggHeaderTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fEggHeaderTree );
+
+                fEggHeaderTree->SetBranchAddress("Filename", &fEggHeaderData.fFilename);
+                fEggHeaderTree->SetBranchAddress("CenterFrequency", &fEggHeaderData.fCenterFrequency);
+                fEggHeaderTree->SetBranchAddress("MaximumFrequency", &fEggHeaderData.fMaximumFrequency);
+                fEggHeaderTree->SetBranchAddress("MinimumFrequency", &fEggHeaderData.fMinimumFrequency);
+                fEggHeaderTree->SetBranchAddress("AcquisitionMode", &fEggHeaderData.fAcquisitionMode);
+                fEggHeaderTree->SetBranchAddress("NChannels", &fEggHeaderData.fNChannels);
+                fEggHeaderTree->SetBranchAddress("RunDuration", &fEggHeaderData.fRunDuration); // in ms
+                fEggHeaderTree->SetBranchAddress("AcquisitionRate", &fEggHeaderData.fAcquisitionRate); // in Hz
+                fEggHeaderTree->SetBranchAddress("Timestamp", &fEggHeaderData.fTimestamp);
+                fEggHeaderTree->SetBranchAddress("Description", &fEggHeaderData.fDescription);
+
+                return true;
+            }
+        }
+
         fEggHeaderTree = new TTree("eggHeader", "Egg Header");
         if (fEggHeaderTree == NULL)
         {
@@ -148,6 +172,32 @@ namespace Katydid
 
     bool KTROOTTreeTypeWriterTime::SetupChannelHeaderTree()
     {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "channelHeader", fChannelHeaderTree );
+
+            if( fChannelHeaderTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fChannelHeaderTree );
+
+                fChannelHeaderTree->SetBranchAddress("Number", &fChannelHeaderData.fNumber);
+                fChannelHeaderTree->SetBranchAddress("Source", &fChannelHeaderData.fSource);
+                fChannelHeaderTree->SetBranchAddress("RawSliceSize", &fChannelHeaderData.fRawSliceSize);
+                fChannelHeaderTree->SetBranchAddress("SliceSize", &fChannelHeaderData.fSliceSize);
+                fChannelHeaderTree->SetBranchAddress("SliceStride", &fChannelHeaderData.fSliceStride);
+                fChannelHeaderTree->SetBranchAddress("RecordSize", &fChannelHeaderData.fRecordSize);
+                fChannelHeaderTree->SetBranchAddress("SampleSize", &fChannelHeaderData.fSampleSize);
+                fChannelHeaderTree->SetBranchAddress("DataTypeSize", &fChannelHeaderData.fDataTypeSize);
+                fChannelHeaderTree->SetBranchAddress("BitDepth", &fChannelHeaderData.fBitDepth);
+                fChannelHeaderTree->SetBranchAddress("VoltageOffset", &fChannelHeaderData.fVoltageOffset);
+                fChannelHeaderTree->SetBranchAddress("VoltageRange", &fChannelHeaderData.fVoltageRange);
+                fChannelHeaderTree->SetBranchAddress("DACGain", &fChannelHeaderData.fDACGain);
+
+                return true;
+            }
+        }
+
         fChannelHeaderTree = new TTree("channelHeader", "Channel Headers");
         if (fChannelHeaderTree == NULL)
         {

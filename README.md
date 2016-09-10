@@ -3,7 +3,7 @@ Katydid
 
 Katydid is a data analysis package for Project 8.
 
-The various actions Katydid can perform on data are packaged into Processors, which can 
+The various actions Katydid can perform on data are packaged into Processors, which can
 be setup at runtime into any number of configurations to suit any analysis procedure.
 
 
@@ -22,10 +22,14 @@ Dependencies
 
 **Submodules** (included with Katydid; must be fetched via Git)
 - [Monarch](https://github.com/project8/monarch)
+  - [Scarab](https://github.com/project8/scarab)
+    - yaml-cpp
 - [Nymph](https://github.com/project8/nymph)
+  - [Scarab](https://github.com/project8/scarab)
+    - yaml-cpp
 
-**Distributed Code** (included with Mantis directly)
-- RapidJSON
+**Distributed Code** (included with Katydid directly)
+- nanoflann
 - RapidXML
 
 
@@ -43,14 +47,8 @@ Directory Structure
 *  Documentation - Doxygen-based code documentation.
 *  Examples - Configuration files, custom applications, and a tutorial.
 *  External - A few dependencies that are included with the distribution.
-*  KTCore
-  *  cmake - Files that CMake uses to build KTCore.
-  *  Executables - Source code for the main Katydid executable and test programs.
-  *  External - RapidJSON and RapidXML packages
-  *  Library - Source for the KTCore library
-  *  Templates - Example files for creating a processor and the main CMakeLists.txt file for a package using KTCore.
+*  Nymph - Submodule
 *  OldAnalysis - Dump for old source files.
-*  Scripts - A CMakeLists.txt file that will allow you to easily build an external applicaiton using Katydid classes.
 *  Source
   *  Data - Classes that store the data as it gets processed.
   *  Evaluation - Processors for determining how well an analysis is performing.
@@ -67,33 +65,54 @@ Directory Structure
 Installing
 ----------
 
-Katydid is installed using CMake.
-We recommend an out-of-source build:
-```
-  >  mkdir build
-  >  cd build
-```
-    
-To configure the installation you can use cmake, ccmake, or cmake-gui.
-You should set the variable CMAKE_BUILD_TYPE to either `Release`, `Standard`, or `Debug`, in order 
-of how much text output you would like (from least to most) and how much compiler optimization 
-should be performed (from most to least).
+The following steps will build Katydid from scratch.  Starting with a terminal window . . .
 
-Variables that start with `Katydid_` will control which parts of Katydid are built.
+1. Clone the repository and make a build directory as recommended above. You will also have to initialize the submodules.
+  ```
+  $ git clone "https://github.com/project8/Katydid"
+  $ cd Katydid
+  $ git submodule update --init --recursive
+  $ mkdir build
+  ```
 
-If using Monarch, if you want to read egg3 files, ensure that `Monarch_BUILD_MONARCH3` is set.
-If you want to read egg2 files, ensure that `Monarch_BUILD_MONARCH2` is set.
+2. To configure the installation you can use cmake, ccmake, or cmake-gui.
 
-To build and install:
-```
-  >  make
-  >  make install
-```
-    
-The install prefix is specified by the CMake variable `CMAKE_INSTALL_PREFIX`.
-The library, binaries, and header files will be installed in the 
-lib, bin, and include subdirectories. The default install prefix is the
-build directory.
+  For a first configuration, using either ccmake or cmake-gui is highly recommended.  The following instructions are for ccmake, but the steps with cmake-gui would be approximately the same.
+  ```
+  $ cd build
+  $ ccmake ..
+  ```
+
+  You will be prompted to press [c] to configure, and the window will fill up with several options. 
+
+  You should set the CMake variable `CMAKE_BUILD_TYPE` to either `RELEASE`, `STANDARD`, or `DEBUG` (default), in order
+  of how much text output you would like (from least to most) and how much compiler optimization
+  should be performed (from most to least).
+
+  Variables that start with `Katydid_` will control which parts of Katydid are built.
+
+  If using Monarch, if you want to read egg3 files, ensure that `Monarch_BUILD_MONARCH3` is set.
+  If you want to read egg2 files, ensure that `Monarch_BUILD_MONARCH2` is set.
+
+  The install prefix is specified by the CMake variable `CMAKE_INSTALL_PREFIX`.
+  The library, binaries, and header files will be installed in the
+  lib, bin, and include subdirectories. The default install prefix is the
+  build directory.
+
+  After you've finished, if you've changed anything press [c] again to configure.  Then [g] to generate and exit.
+
+3. Build and install.
+
+  ```
+  $ make install
+  ```
+
+  Or if you want to take advantage of parallel building to get things done faster:
+  ```
+  $ make -j install
+  ```
+
+  If the compiler runs into errors during the build, first check that you've updated the submodules and that you have all of the required dependencies installed (many are called "optional" on this page, but if you want to build without them you must also specify this in the cmake window). If you made a change to the dependencies or submodules, you may have to wipe the build directory and start again from step 1; simply writing `make install` again will not always work. 
 
 
 Instructions for Use
@@ -111,6 +130,8 @@ Documentation
 -------------
 
 Hosted at: http://www.project8.org/katydid
+
+Reference guide included with Katydid at Documentation/ReferenceGuide/html/index.html
 
 
 Development

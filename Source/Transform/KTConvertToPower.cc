@@ -12,8 +12,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 
@@ -43,7 +42,7 @@ namespace Katydid
     {
     }
 
-    bool KTConvertToPower::Configure(const KTParamNode* node)
+    bool KTConvertToPower::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return true;
 

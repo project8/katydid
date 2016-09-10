@@ -1,0 +1,14 @@
+<map id="KTDigitizerTests.hh" name="KTDigitizerTests.hh">
+<area shape="rect" id="node2" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="622,225,738,251"/>
+<area shape="rect" id="node16" href="$_k_t_digitizer_test_data_8hh.html" title="KTDigitizerTestData.hh" alt="" coords="1168,79,1325,104"/>
+<area shape="rect" id="node20" href="$_k_t_slot_8hh.html" title="KTSlot.hh" alt="" coords="1064,79,1144,104"/>
+<area shape="rect" id="node3" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="994,299,1126,324"/>
+<area shape="rect" id="node5" href="$_k_t_connection_8hh.html" title="KTConnection.hh" alt="" coords="259,372,383,397"/>
+<area shape="rect" id="node7" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="872,299,970,324"/>
+<area shape="rect" id="node9" href="$_k_t_signal_wrapper_8hh.html" title="KTSignalWrapper.hh" alt="" coords="459,372,603,397"/>
+<area shape="rect" id="node10" href="$_k_t_slot_wrapper_8hh.html" title="KTSlotWrapper.hh" alt="" coords="310,299,440,324"/>
+<area shape="rect" id="node12" href="$factory_8hh.html" title="factory.hh" alt="" coords="718,299,797,324"/>
+<area shape="rect" id="node17" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="1193,225,1278,251"/>
+<area shape="rect" id="node18" href="$_k_t_count_histogram_8hh.html" title="KTCountHistogram.hh" alt="" coords="1342,152,1495,177"/>
+<area shape="rect" id="node21" href="$_k_t_signal_8hh.html" title="KTSignal.hh" alt="" coords="1058,152,1152,177"/>
+</map>

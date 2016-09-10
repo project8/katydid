@@ -11,14 +11,10 @@
 #include "KTHoughData.hh"
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTParam.hh"
 #include "KTSparseWaterfallCandidateData.hh"
-//#include "KTSlidingWindowFSDataFFTW.hh"
 
 #include <cmath>
 
-//#include "TFile.h"
-//#include "TH2.h"
 
 
 
@@ -48,10 +44,10 @@ namespace Katydid
     {
     }
 
-    bool KTHoughTransform::Configure(const KTParamNode* node)
+    bool KTHoughTransform::Configure(const scarab::param_node* node)
     {
-        SetNThetaPoints(node->GetValue< unsigned >("n-theta-points", fNThetaPoints));
-        SetNRPoints(node->GetValue< unsigned >("n-r-points", fNRPoints));
+        SetNThetaPoints(node->get_value< unsigned >("n-theta-points", fNThetaPoints));
+        SetNRPoints(node->get_value< unsigned >("n-r-points", fNRPoints));
 
         return true;
     }
@@ -275,7 +271,7 @@ namespace Katydid
         {
             timeVal = pIt->first.first;
             freqVal = pIt->first.second;
-            value = pIt->second;
+            value = pIt->second.fAbscissa;
 
             for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
             {

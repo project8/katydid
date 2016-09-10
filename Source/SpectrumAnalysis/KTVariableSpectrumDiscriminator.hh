@@ -19,9 +19,10 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
+    class KTDiscriminatedPoints2DData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
@@ -32,6 +33,7 @@ namespace Katydid
     class KTNormalizedFSDataPolar;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
+    class KTPSCollectionData;
     class KTSpline;
     class KTWignerVilleData;
 
@@ -69,20 +71,23 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
 
      Slots:
-     - "fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
-     - "fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
-     - "corr": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
-     - "wv": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
-     - "ps": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
-     - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
-     - "ps-pre": void (KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-fftw": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
+     - "corr": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
+     - "wv": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
+     - "ps": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
+     - "gv": void (Nymph::KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
+     - "ps-pre": void (Nymph::KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
+     - "spec": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTPSCollectionData and KTGainVariationData; Adds KTDiscriminatedPoints2DData
+     - "spec-pre": void (Nymph::KTDataPtr) -- Discriminates points above a pre-calculated threshold; Requires KTPSCollectionData; Adds KTDiscriminatedPoints2DData
 
      Signals:
-     - "disc-1d": void (KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData
+     - "disc-1d": void (Nymph::KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData
+     - "disc-2d": void (Nymph::KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints2DData
     */
-    class KTVariableSpectrumDiscriminator : public KTProcessor
+    class KTVariableSpectrumDiscriminator : public Nymph::KTProcessor
     {
         private:
             enum ThresholdMode
@@ -96,7 +101,7 @@ namespace Katydid
             KTVariableSpectrumDiscriminator(const std::string& name = "variable-spectrum-discriminator");
             virtual ~KTVariableSpectrumDiscriminator();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetSNRThreshold() const;
             void SetSNRAmplitudeThreshold(double thresh);
@@ -134,6 +139,7 @@ namespace Katydid
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
 
             bool Discriminate(KTPowerSpectrumData& data);
+            bool Discriminate(KTPSCollectionData& data);
 
             bool Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
             bool Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
@@ -142,6 +148,7 @@ namespace Katydid
             bool Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
             bool Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
             bool Discriminate(KTPowerSpectrumData& data, KTGainVariationData& gvData);
+            bool Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData);
 
             bool DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
             bool DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
@@ -159,24 +166,28 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fDiscrim1DSignal;
+            Nymph::KTSignalData fDiscrim1DSignal;
+            Nymph::KTSignalData fDiscrim2DSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
-            KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
-            KTSlotDataTwoTypes< KTNormalizedFSDataPolar, KTGainVariationData > fNormFSPolarSlot;
-            KTSlotDataTwoTypes< KTNormalizedFSDataFFTW, KTGainVariationData > fNormFSFFTWSlot;
-            KTSlotDataTwoTypes< KTCorrelationData, KTGainVariationData > fCorrSlot;
-            KTSlotDataTwoTypes< KTWignerVilleData, KTGainVariationData > fWVSlot;
-            KTSlotDataTwoTypes< KTPowerSpectrumData, KTGainVariationData > fPSSlot;
+            Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
+            Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTNormalizedFSDataPolar, KTGainVariationData > fNormFSPolarSlot;
+            Nymph::KTSlotDataTwoTypes< KTNormalizedFSDataFFTW, KTGainVariationData > fNormFSFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTCorrelationData, KTGainVariationData > fCorrSlot;
+            Nymph::KTSlotDataTwoTypes< KTWignerVilleData, KTGainVariationData > fWVSlot;
+            Nymph::KTSlotDataTwoTypes< KTPowerSpectrumData, KTGainVariationData > fPSSlot;
+            Nymph::KTSlotDataTwoTypes< KTPSCollectionData, KTGainVariationData > fSpecSlot;
 
-            KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
+            Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
 
-            KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
+            Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
+
+            Nymph::KTSlotDataOneType< KTPSCollectionData > fSpecPreCalcSlot;
 
     };
 

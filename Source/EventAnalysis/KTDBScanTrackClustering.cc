@@ -10,8 +10,7 @@
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTTimeFrequencyPolar.hh"
@@ -51,14 +50,14 @@ namespace Katydid
     {
     }
 
-    bool KTDBScanTrackClustering::Configure(const KTParamNode* node)
+    bool KTDBScanTrackClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetMinPoints(node->GetValue("min-points", GetMinPoints()));
+        SetMinPoints(node->get_value("min-points", GetMinPoints()));
 
         /*
-        if (node->Has("radii"))
+        if (node->has("radii"))
         {
             const KTParamArray* radii = node->ArrayAt("radii");
             if (radii->Size() != fNDimensions)
@@ -189,7 +188,7 @@ namespace Katydid
 
                 ++fDataCount;
 
-                KTDataPtr newData(new KTData());
+                Nymph::KTDataPtr newData(new Nymph::KTData());
                 KTSparseWaterfallCandidateData& cand = newData->Of< KTSparseWaterfallCandidateData >();
 
                 DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();

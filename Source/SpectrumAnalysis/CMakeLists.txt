@@ -9,12 +9,15 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTCreateKDTree.hh
     KTDataAccumulator.hh
     KTDistanceClustering.hh
+#    KTGainVarChi2Test.hh
     KTGainVariationProcessor.hh
     KTHoughTransform.hh
+    KTLinearDensityProbeFit.hh
     KTMergeKDTree.hh
     KTNNFilter.hh
     KTSpectrumDiscriminator.hh
     KTSwitchFFTWPolar.hh
+    KTVariableSpectrumDiscriminator.hh
     #KTAutoCorrMatrix.hh
 )
 
@@ -26,12 +29,15 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTCreateKDTree.cc
     KTDataAccumulator.cc
     KTDistanceClustering.cc
+#    KTGainVarChi2Test.cc
     KTGainVariationProcessor.cc
     KTHoughTransform.cc
+    KTLinearDensityProbeFit.cc
     KTMergeKDTree.cc
     KTNNFilter.cc
     KTSpectrumDiscriminator.cc
     KTSwitchFFTWPolar.cc
+    KTVariableSpectrumDiscriminator.cc
     #KTAutoCorrMatrix.cc
 )
 
@@ -86,7 +92,6 @@ if (Katydid_ENABLE_TUTORIAL)
 endif (Katydid_ENABLE_TUTORIAL)
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

@@ -45,7 +45,7 @@ to not work with Katydid on Linux systems.
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
 
     class KTRSAMatReader : public KTEggReader
@@ -59,7 +59,7 @@ namespace Katydid
             unsigned fStride;
 
         private:
-            KTDataPtr fHeaderPtr;
+            Nymph::KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             static const unsigned fMaxChannels = 2;
             double fSampleRateUnitsInHz;
@@ -79,9 +79,9 @@ namespace Katydid
             bool Configure(const KTEggProcessor& eggProc);
 
             /// Opens the matlab file and returns a new copy of the header information.
-            KTDataPtr BreakEgg(const std::string& filename);
+            Nymph::KTDataPtr BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
-            KTDataPtr HatchNextSlice();
+            Nymph::KTDataPtr HatchNextSlice();
             /// Closes the file.
             bool CloseEgg();
 

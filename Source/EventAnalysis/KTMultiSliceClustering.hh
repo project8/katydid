@@ -22,13 +22,12 @@
 #include "KTWignerVilleData.hh"
 
 #include <list>
-//#include <map>
 #include <set>
 #include <utility>
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(sclog, "KTMultiSliceClustering");
 
     //class KTCorrelationData;
@@ -63,22 +62,22 @@ namespace Katydid
      - "n-framing-freq-bins": Number of frequency bins to include on the top and bottom of a cluster
 
      Slots:
-     - "fs-polar": void (KTDataPtr) -- Processes a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
-     - "fs-fftw": void (KTDataPtr) -- Processes a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     - "corr": void (KTDataPtr) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     - "wv": void (KTDataPtr) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
-     - "queue-fs-polar": void (KTDataPtr) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
-     - "queue-fs-fftw": void (KTDataPtr) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     - "queue-corr": void (KTDataPtr) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     - "queue-wv": void (KTDataPtr) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Processes a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Processes a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     - "corr": void (Nymph::KTDataPtr) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     - "wv": void (Nymph::KTDataPtr) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "queue-fs-polar": void (Nymph::KTDataPtr) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     - "queue-fs-fftw": void (Nymph::KTDataPtr) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     - "queue-corr": void (Nymph::KTDataPtr) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     - "queue-wv": void (Nymph::KTDataPtr) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
      - "complete-remaining-clusters": void () -- Completes any remaining partial clusters; May create new data objects with KTWaterfallCandidateData
 
      Signals:
-     - "one-slice": void (KTDataPtr) -- Emitted upon receipt of a one-slice data object, without modification
-     - "cluster": void (KTDataPtr) -- Emitted upon creation of a cluster; guarantees KTWaterfallCandidateData
-     - "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
+     - "one-slice": void (Nymph::KTDataPtr) -- Emitted upon receipt of a one-slice data object, without modification
+     - "cluster": void (Nymph::KTDataPtr) -- Emitted upon creation of a cluster; guarantees KTWaterfallCandidateData
+     - "queue-done": void () -- Emitted when queue is emptied (inherited from Nymph::KTDataQueueProcessorTemplate)
     */
-    class KTMultiSliceClustering : public KTDataQueueProcessorTemplate< KTMultiSliceClustering >
+    class KTMultiSliceClustering : public Nymph::KTDataQueueProcessorTemplate< KTMultiSliceClustering >
     {
         public:
             typedef KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
@@ -135,13 +134,13 @@ namespace Katydid
             typedef std::list< FreqBinCluster > FreqBinClusters;
 
 
-            typedef std::list< KTDataPtr > DataList;
+            typedef std::list< Nymph::KTDataPtr > DataList;
 
         public:
             KTMultiSliceClustering(const std::string& name = "multi-slice-clustering");
             virtual ~KTMultiSliceClustering();
 
-            bool ConfigureSubClass(const KTParamNode* node);
+            bool ConfigureSubClass(const scarab::param_node* node);
 
             double GetMaxFrequencySeparation() const;
             void SetMaxFrequencySeparation(double freqSep);
@@ -208,7 +207,7 @@ namespace Katydid
             unsigned GetDataCount() const;
 
         private:
-            KTDataPtr CreateDataFromCluster(const Cluster& cluster);
+            Nymph::KTDataPtr CreateDataFromCluster(const Cluster& cluster);
 
             unsigned fTimeBin;
             double fTimeBinWidth;
@@ -227,8 +226,8 @@ namespace Katydid
             //***************
 
          private:
-            KTSignalData fOneSliceDataSignal;
-            KTSignalData fClusteredDataSignal;
+            Nymph::KTSignalData fOneSliceDataSignal;
+            Nymph::KTSignalData fClusteredDataSignal;
 
 
              //***************
@@ -237,24 +236,24 @@ namespace Katydid
 
          public:
             // Queueing slot functions
-            void QueueFSPolarData(KTDataPtr& data);
-            void QueueFSFFTWData(KTDataPtr& data);
-            void QueueCorrelationData(KTDataPtr& data);
-            void QueueWVData(KTDataPtr& data);
+            void QueueFSPolarData(Nymph::KTDataPtr& data);
+            void QueueFSFFTWData(Nymph::KTDataPtr& data);
+            void QueueCorrelationData(Nymph::KTDataPtr& data);
+            void QueueWVData(Nymph::KTDataPtr& data);
 
          private:
             // Non-queueing slot functions
             // These slot functions differ slightly from the KTSlotData implementation, so these custom functions are used
-            void ProcessOneSliceFSPolarData(KTDataPtr data);
-            void ProcessOneSliceFSFFTWData(KTDataPtr data);
-            void ProcessOneSliceCorrelationData(KTDataPtr data);
-            void ProcessOneSliceWVData(KTDataPtr data);
+            void ProcessOneSliceFSPolarData(Nymph::KTDataPtr data);
+            void ProcessOneSliceFSFFTWData(Nymph::KTDataPtr data);
+            void ProcessOneSliceCorrelationData(Nymph::KTDataPtr data);
+            void ProcessOneSliceWVData(Nymph::KTDataPtr data);
 
             void CompleteRemainingClusters();
 
          private:
             template< class XDataType >
-            void ProcessOneSliceData(KTDataPtr data);
+            void ProcessOneSliceData(Nymph::KTDataPtr data);
 
             void RunDataLoop(DataList* dataList);
 
@@ -382,52 +381,52 @@ namespace Katydid
         return fDataCount;
     }
 
-    inline void KTMultiSliceClustering::QueueFSPolarData(KTDataPtr& data)
+    inline void KTMultiSliceClustering::QueueFSPolarData(Nymph::KTDataPtr& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTFrequencySpectrumDataPolar >);
     }
 
-    inline void KTMultiSliceClustering::QueueFSFFTWData(KTDataPtr& data)
+    inline void KTMultiSliceClustering::QueueFSFFTWData(Nymph::KTDataPtr& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTFrequencySpectrumDataFFTW >);
     }
 
-    inline void KTMultiSliceClustering::QueueCorrelationData(KTDataPtr& data)
+    inline void KTMultiSliceClustering::QueueCorrelationData(Nymph::KTDataPtr& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTCorrelationData >);
     }
 
-    inline void KTMultiSliceClustering::QueueWVData(KTDataPtr& data)
+    inline void KTMultiSliceClustering::QueueWVData(Nymph::KTDataPtr& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTWignerVilleData >);
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceFSPolarData(KTDataPtr data)
+    inline void KTMultiSliceClustering::ProcessOneSliceFSPolarData(Nymph::KTDataPtr data)
     {
         ProcessOneSliceData< KTFrequencySpectrumDataPolar >(data);
         return;
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(KTDataPtr data)
+    inline void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(Nymph::KTDataPtr data)
     {
         ProcessOneSliceData< KTFrequencySpectrumDataFFTW >(data);
         return;
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceCorrelationData(KTDataPtr data)
+    inline void KTMultiSliceClustering::ProcessOneSliceCorrelationData(Nymph::KTDataPtr data)
     {
         ProcessOneSliceData< KTCorrelationData >(data);
         return;
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceWVData(KTDataPtr data)
+    inline void KTMultiSliceClustering::ProcessOneSliceWVData(Nymph::KTDataPtr data)
     {
         ProcessOneSliceData< KTWignerVilleData >(data);
         return;
     }
 
     template< class XDataType >
-    void KTMultiSliceClustering::ProcessOneSliceData(KTDataPtr data)
+    void KTMultiSliceClustering::ProcessOneSliceData(Nymph::KTDataPtr data)
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {

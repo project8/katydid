@@ -1,0 +1,36 @@
+processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: forward-fftw"
+        name: fft
+      - type: convert-to-power
+        name: to-ps
+      - type: basic-root-writer
+        name: writer
+
+    connections:
+      - signal: "egg:header"
+        slot: "fft:header"
+      - signal: "egg:ts"
+        slot: "fft:ts-real"
+      - signal: "fft:fft"
+        slot: "to-ps:fs-polar-to-psd"
+      - signal: "to-ps:psd"
+        slot: "writer:ps"
+
+    run-queue:
+      - egg
+
+egg:
+    filename: "/path/to/file.egg"
+    egg-reader: egg3
+    slice-size: 16384
+    number-of-slices: 1
+
+fft:
+    transform-flag: ESTIMATE
+
+writer:
+    output-file: "/path/to/file.root",
+    file-flag: recreate

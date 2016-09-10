@@ -1,0 +1,11 @@
+<map id="Katydid::KTForwardFFTW" name="Katydid::KTForwardFFTW">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_f_f_t_w.html" title="{Katydid::KTFFTW\n|+ sInstanceCount\l+ sMultithreadedIsInitialized\l|+ KTFFTW()\l+ ~KTFFTW()\l+ InitializeMultithreaded()\l}" alt="" coords="98,521,284,635"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_f_f_t.html" title="{Katydid::KTFFT\n||+ KTFFT()\l+ ~KTFFT()\l+ GetTimeSize()\l+ GetFrequencySize()\l+ GetTimeBinWidth()\l+ GetMinTime()\l+ GetMaxTime()\l+ GetFrequencyBinWidth()\l+ GetMinFrequency()\l+ GetMaxFrequency()\l}" alt="" coords="5,140,185,333"/>
+<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="411,468,577,688"/>
+<area shape="rect" id="node5" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="209,173,373,300"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="506,5,585,79"/>
+<area shape="rect" id="node9" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTAnalyticAssociate\lData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="914,508,1119,648"/>
+<area shape="rect" id="node10" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="1050,173,1204,300"/>
+<area shape="rect" id="node11" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTEggHeader \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="1142,515,1336,641"/>
+<area shape="rect" id="node12" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTTimeSeriesData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="1360,515,1569,641"/>
+</map>

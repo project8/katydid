@@ -9,8 +9,6 @@
 
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
 using boost::shared_ptr;
@@ -33,7 +31,7 @@ namespace Katydid
     {
     }
 
-    bool KTCandidateCleaner::Configure(const KTParamNode* node)
+    bool KTCandidateCleaner::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 

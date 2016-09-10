@@ -17,15 +17,9 @@
 
 #include <limits>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDiscriminatedPoints1DData;
     class KTProcessedTrackData;
     class KTSliceHeader;
@@ -50,24 +44,24 @@ namespace Katydid
      - "freq-radius:" double -- Scaling applied to the frequency axis before adding the point to the tree. Scaled coordinate value = coordinate value / scaling
 
      Slots:
-     - "disc-1d": void (KTDataPtr) -- Adds points to the K-D Tree; Requires KTDiscriminatedPoints1DData and KTSliceHeader
-     - "swfc-and-track": void (KTDataPtr) -- Adds points to the K-D Tree only if the track is not cut; Requires KTSparseWaterfallCandidateData and KTProcessedTrackData
-     - "swfc": void (KTDataPtr) -- Adds points to the K-D Tree; Requires KTSparseWaterfallCandidateData
+     - "disc-1d": void (Nymph::KTDataPtr) -- Adds points to the K-D Tree; Requires KTDiscriminatedPoints1DData and KTSliceHeader
+     - "swfc-and-track": void (Nymph::KTDataPtr) -- Adds points to the K-D Tree only if the track is not cut; Requires KTSparseWaterfallCandidateData and KTProcessedTrackData
+     - "swfc": void (Nymph::KTDataPtr) -- Adds points to the K-D Tree; Requires KTSparseWaterfallCandidateData
      - "make-tree": void () -- Creates a tree with the existing set of points; Creates data with KTKDTreeData; Emits signal kd-tree
      - "done": void () -- same as "make-tree"; Emits signal kd-tree then signal done
 
      Signals:
-     - "kd-tree": void (KTDataPtr) emitted upon completion of a KD-Tree; Guarantees KTKDTreeData
+     - "kd-tree": void (Nymph::KTDataPtr) emitted upon completion of a KD-Tree; Guarantees KTKDTreeData
      - "done": void (void) emitted when "done" slot is called to indicate that no more k-d trees will be produced
     */
 
-    class KTCreateKDTree : public KTProcessor
+    class KTCreateKDTree : public Nymph::KTProcessor
     {
         public:
             KTCreateKDTree(const std::string& name = "create-kd-tree");
             virtual ~KTCreateKDTree();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, WindowSize);
             MEMBERVARIABLE(unsigned, WindowOverlap);
@@ -91,11 +85,11 @@ namespace Katydid
 
             bool ClearTree(bool willContinue, uint64_t firstSliceKept = std::numeric_limits<uint64_t>::max());
 
-            KTDataPtr GetDataPtr() const;
+            Nymph::KTDataPtr GetDataPtr() const;
             const KTKDTreeData& GetKDTreeData() const;
 
         private:
-            KTDataPtr fDataPtr;
+            Nymph::KTDataPtr fDataPtr;
             KTKDTreeData& fTreeData;
 
             unsigned fSliceInWindowCount;
@@ -110,18 +104,18 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fKDTreeSignal;
-            KTSignalDone fDoneSignal;
+            Nymph::KTSignalData fKDTreeSignal;
+            Nymph::KTSignalDone fDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fDiscPointsSlot;
-            KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTProcessedTrackData > fSWFCAndPTSlot;
-            KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFCSlot;
-            KTSlotDone fDoneSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fDiscPointsSlot;
+            Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTProcessedTrackData > fSWFCAndPTSlot;
+            Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFCSlot;
+            Nymph::KTSlotDone fDoneSlot;
 
             void MakeTreeSlot();
 
@@ -141,7 +135,7 @@ namespace Katydid
         return;
     }
 
-    inline KTDataPtr KTCreateKDTree::GetDataPtr() const
+    inline Nymph::KTDataPtr KTCreateKDTree::GetDataPtr() const
     {
         return fDataPtr;
     }
