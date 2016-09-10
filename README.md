@@ -131,6 +131,8 @@ Documentation
 
 Hosted at: http://www.project8.org/katydid
 
+Reference guide included with Katydid at Documentation/ReferenceGuide/html/index.html
+
 
 Development
 -----------

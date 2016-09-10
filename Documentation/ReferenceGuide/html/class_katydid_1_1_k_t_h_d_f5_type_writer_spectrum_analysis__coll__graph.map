@@ -1,0 +1,5 @@
+<map id="Katydid::KTHDF5TypeWriterSpectrumAnalysis" name="Katydid::KTHDF5TypeWriterSpectrumAnalysis">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{KTHDF5TypeWriter\n||+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="100,220,276,320"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_type_writer.html" title="{Nymph::KTTypeWriter\n||+ KTTypeWriter()\l+ ~KTTypeWriter()\l+ RegisterSlots()\l}" alt="" coords="5,32,158,132"/>
+<area shape="rect" id="node6" href="$struct_katydid_1_1_disc_point.html" title="{Katydid::DiscPoint\n|+ fSlice\l+ fTimeInRunCenter\l+ fComponent\l+ fBin\l+ fAbscissa\l+ fOrdinate\l+ fThreshold\l|}" alt="" coords="299,5,440,159"/>
+</map>

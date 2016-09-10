@@ -1,0 +1,4 @@
+<map id="Katydid::KTTimeSeries" name="Katydid::KTTimeSeries">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_time_series_f_f_t_w.html" title="{Katydid::KTTimeSeriesFFTW\n||+ KTTimeSeriesFFTW()\l+ KTTimeSeriesFFTW()\l+ KTTimeSeriesFFTW()\l+ ~KTTimeSeriesFFTW()\l+ operator=()\l+ Scale()\l+ GetNTimeBins()\l+ GetTimeBinWidth()\l+ SetValue()\l+ GetValue()\l+ Print()\l}" alt="" coords="5,220,200,427"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_time_series_real.html" title="{Katydid::KTTimeSeriesReal\n||+ KTTimeSeriesReal()\l+ KTTimeSeriesReal()\l+ KTTimeSeriesReal()\l+ ~KTTimeSeriesReal()\l+ operator=()\l+ Scale()\l+ GetNTimeBins()\l+ GetTimeBinWidth()\l+ SetValue()\l+ GetValue()\l+ Print()\l}" alt="" coords="223,220,408,427"/>
+</map>

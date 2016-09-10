@@ -1,0 +1,5 @@
+<map id="Katydid::KTFFTW" name="Katydid::KTFFTW">
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_forward_f_f_t_w.html" title="A forward FFT class. " alt="" coords="5,408,250,868"/>
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_reverse_f_f_t_w.html" title="A one&#45;dimensional complex&#45;to&#45;real or complex&#45;to&#45;complex reverse FFT class. " alt="" coords="273,415,518,861"/>
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_f_f_t.html" title="{Katydid::KTFFT\n||+ KTFFT()\l+ ~KTFFT()\l+ GetTimeSize()\l+ GetFrequencySize()\l+ GetTimeBinWidth()\l+ GetMinTime()\l+ GetMaxTime()\l+ GetFrequencyBinWidth()\l+ GetMinFrequency()\l+ GetMaxFrequency()\l}" alt="" coords="171,5,351,199"/>
+</map>

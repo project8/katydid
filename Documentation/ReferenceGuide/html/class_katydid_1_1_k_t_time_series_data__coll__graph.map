@@ -1,0 +1,7 @@
+<map id="Katydid::KTTimeSeriesData" name="Katydid::KTTimeSeriesData">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_time_series_data_core.html" title="{Katydid::KTTimeSeriesDataCore\n||+ KTTimeSeriesDataCore()\l+ ~KTTimeSeriesDataCore()\l+ GetNComponents()\l+ GetTimeSeries()\l+ GetTimeSeries()\l+ SetNComponents()\l+ SetTimeSeries()\l}" alt="" coords="5,233,220,387"/>
+<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTTimeSeriesData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="244,253,421,367"/>
+<area shape="rect" id="node5" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTTimeSeriesData, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="209,5,447,172"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="470,273,549,347"/>
+<area shape="rect" id="node7" title="STL class. " alt="" coords="471,45,597,132"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="factory.hh" name="factory.hh">
+<area shape="rect" id="node2" href="$singleton_8hh.html" title="singleton.hh" alt="" coords="87,79,181,104"/>
+<area shape="rect" id="node4" href="$mutex_8hh.html" title="mutex.hh" alt="" coords="176,152,252,177"/>
+<area shape="rect" id="node6" href="$lock__guard_8hh.html" title="lock_guard.hh" alt="" coords="255,79,360,104"/>
+<area shape="rect" id="node7" href="$logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="384,79,460,104"/>
+<area shape="rect" id="node3" href="$destroyer_8hh.html" title="destroyer.hh" alt="" coords="5,152,100,177"/>
+</map>
