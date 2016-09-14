@@ -40,6 +40,7 @@ option (Katydid_BUILD_DOC "Enable the options to build the documentation (requir
 option (Katydid_USE_SPHINX "Flag to optionall use Sphinx documentation" OFF)
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
+set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 
 
 ##############
