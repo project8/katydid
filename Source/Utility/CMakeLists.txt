@@ -14,6 +14,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTCutable.hh
     KTCutableArray.hh
     KTECDF.hh
+    KTKatydidApp.hh
     KTMaskedArray.hh
     KTMath.hh
     KTPhysicalArray.hh
@@ -34,6 +35,7 @@ set (UTILITY_SOURCEFILES
     KTAxisProperties.cc
     KTCountHistogram.cc
     KTECDF.cc
+    KTKatydidApp.cc
     KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
