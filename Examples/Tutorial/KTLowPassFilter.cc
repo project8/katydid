@@ -14,9 +14,10 @@
 #include "KTLogger.hh"
 #include "KTLowPassFilteredData.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+
+#include "param.hh"
 
 
 namespace Katydid
@@ -42,11 +43,11 @@ namespace Katydid
     {
     }
 
-    bool KTLowPassFilter::Configure(const KTParamNode* node)
+    bool KTLowPassFilter::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetRC(node->GetValue("rc", GetRC()));
+        SetRC(node->get_value("rc", GetRC()));
 
         return true;
     }

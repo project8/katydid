@@ -16,7 +16,7 @@
 namespace Katydid
 {
 
-    class KTLowPassFilteredFSDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTLowPassFilteredFSDataPolar >
+    class KTLowPassFilteredFSDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTLowPassFilteredFSDataPolar >
     {
         public:
             KTLowPassFilteredFSDataPolar();
@@ -29,7 +29,7 @@ namespace Katydid
 
     };
 
-    class KTLowPassFilteredFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTLowPassFilteredFSDataFFTW >
+    class KTLowPassFilteredFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTLowPassFilteredFSDataFFTW >
     {
         public:
             KTLowPassFilteredFSDataFFTW();
@@ -42,7 +42,7 @@ namespace Katydid
 
     };
 
-    class KTLowPassFilteredPSData : public KTPowerSpectrumDataCore, public KTExtensibleData< KTLowPassFilteredPSData >
+    class KTLowPassFilteredPSData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTLowPassFilteredPSData >
     {
         public:
             KTLowPassFilteredPSData();
