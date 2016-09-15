@@ -11,8 +11,10 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/KatydidPSAnalysisTemplate.json
     ConfigFiles/KatydidPSComplexConfig.json
     ConfigFiles/KatydidPSConfig.json
+    ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/KatydidWVConfig.json
     ConfigFiles/PrintInfo.json
+    ConfigFiles/SidebandTrackAnalysis.json
     ConfigFiles/SpectrogramConfig.json
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
