@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     reader.AddFilename(filename);
     reader.AddDataType(fileType);
 
-    Nymph::KTDataPtr parsedData(new KTData);
+    Nymph::KTDataPtr parsedData(new Nymph::KTData);
     if (fileType == "mc-truth-events")
     {
         if (! reader.Append(*(parsedData.get())))

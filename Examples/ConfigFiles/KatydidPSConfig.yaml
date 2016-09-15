@@ -32,5 +32,5 @@ fft:
     transform-flag: ESTIMATE
 
 writer:
-    output-file: "/path/to/file.root",
+    output-file: "/path/to/file.root"
     file-flag: recreate

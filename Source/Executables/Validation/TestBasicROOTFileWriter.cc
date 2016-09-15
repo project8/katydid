@@ -22,7 +22,7 @@ using namespace std;
 int main()
 {
     // Set up the data
-    Nymph::KTDataPtr data(new KTData);
+    Nymph::KTDataPtr data(new Nymph::KTData);
 
     KTSliceHeader& header = data->Of< KTSliceHeader >();
     header.SetSliceNumber(1);

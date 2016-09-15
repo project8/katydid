@@ -93,9 +93,9 @@ namespace Katydid
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
-            bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit);
+            bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit = false);
             bool ReceiveTrack(KTProcessedTrackData& data);
-            bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit);
+            bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
             void FinishSC( Nymph::KTDataPtr data );
 
             struct KTTrackCompare
