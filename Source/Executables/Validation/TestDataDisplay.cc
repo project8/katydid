@@ -5,9 +5,9 @@
  *      Author: nsoblath
  */
 
-#include "KTApplication.hh"
+#include "KTKatydidApp.hh"
 #include "KTDataDisplay.hh"
-#include "KTData.hh"
+#include "KTDataTypeDisplayTransform.hh"
 #include "KTDisplayWindow.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -15,11 +15,12 @@
 #include "KTSliceHeader.hh"
 #include "complexpolar.hh"
 
+#include "KTData.hh"
+
 #include "TCanvas.h"
 #include "TH1.h"
 
 #include <iostream>
-#include "KTDataTypeDisplayTransform.hh"
 
 
 
@@ -29,7 +30,7 @@ using namespace std;
 
 int main()
 {
-    Nymph::KTApplication fApp(true);
+    KTKatydidApp fApp(true);
 
     cout << "Testing KTDisplayWindow" << endl;
     {
