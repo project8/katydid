@@ -16,6 +16,7 @@
 #include "complexpolar.hh"
 
 #include "KTData.hh"
+#include "KTSignal.hh"
 
 #include "TCanvas.h"
 #include "TH1.h"
@@ -99,7 +100,7 @@ int main()
         display.SetWidth(700);
         display.SetHeight(500);
 
-        // Writer the data
+        // Publish the data
         display.GetTypeWriter< KTDataTypeDisplayTransform >()->DrawFrequencySpectrumDataPolar(data);
 
         // Set up next data
@@ -109,6 +110,56 @@ int main()
 
         // Publish the data
         display.GetTypeWriter< KTDataTypeDisplayTransform >()->DrawFrequencySpectrumDataPolar(data);
+    }
+
+
+    cout << "Test of KTDataDisplay complete" << endl;
+    resp = ' ';
+    while (resp != 'y' && resp != 'n')
+    {
+        cout << "Continue with KTDataDisplay slot test? (y/n)  ";
+        cin >> resp;
+    }
+    if (resp == 'n') return 0;
+
+
+    cout << "\nTesting KTDataDisplay slots" << endl;
+    {
+        // Set up the data
+        Nymph::KTDataPtr data(new KTData);
+
+        KTSliceHeader& header = data->Of< KTSliceHeader >();
+        header.SetSliceNumber(1);
+
+        KTFrequencySpectrumDataPolar& fsData = data->Of< KTFrequencySpectrumDataPolar >().SetNComponents(2);
+
+        KTFrequencySpectrumPolar* spectrum1 = new KTFrequencySpectrumPolar(200, -0.5, 500);
+        (*spectrum1)(30).set_polar(5., 1.);
+        fsData.SetSpectrum(spectrum1, 0);
+
+        KTFrequencySpectrumPolar* spectrum2 = new KTFrequencySpectrumPolar(200, -0.5, 500);
+        (*spectrum2)(80).set_polar(3., 2.);
+        fsData.SetSpectrum(spectrum2, 1);
+
+        // Set up the writer
+        KTDataDisplay display;
+        display.SetWidth(700);
+        display.SetHeight(500);
+
+        // Set up the signal and attach to the slot
+        Nymph::KTSignalData dataSignal;
+        display.ConnectSignalToSlot( new KTSignalWrapper(dataSignal.Signal()), display.GetSlot("fs-polar"));
+
+        // Publish the data
+        dataSignal(data);
+
+        // Set up next data
+        (*spectrum1)(30).set_polar(10., .5);
+        (*spectrum2)(80).set_polar(12., 2.1);
+        header.SetSliceNumber(2);
+
+        // Publish the data
+        dataSignal(data);
     }
 
 
