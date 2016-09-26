@@ -7,6 +7,11 @@
 
 #include "KTSeqTrackCreator.hh"
 
+#include "KTPowerSpectrum.hh"
+#include "KTPowerSpectrumData.hh"
+#include "KTScoredSpectrum.hh"
+#include "KTScoredSpectrumData.hh"
+
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTParam.hh"
@@ -24,11 +29,12 @@ namespace Katydid
 
     KTSeqTrackCreator::KTSeqTrackCreator(const std::string& name) :
             KTProcessor(name),
-            fFrequencyRadius(2*pow(10,6)),
-            fComponentDistance(2),
-            fMinNumberOfBins(10),
-            fSeqTrackSignal("kd-tree-out", this),
-			fKDTreeSlot("kd-tree-in", this, &KTSeqTrackCreator::PointLineAssignment, &fSeqTrackSignal)
+            fFDelta(5*pow(10,5)),
+            fTimeDistance(2),
+            fBinDelta(4),
+			fSigma(-3),
+            fSeqTrackSignal("lines-out", this),
+			fSeqTrackSlot("disc-in", this, &KTSeqTrackCreator::PointLineAssignment, &fSeqTrackSignal)
     {
     }
 
@@ -40,25 +46,48 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetFrequencyRadius(node->GetValue("frequency-radius", GetFrequencyRadius()));
-        SetComponentDistance(node->GetValue("max-bin-distance", GetComponentDistance()));
-        SetMinNumberOfBins(node->GetValue("min-number-of-bins", GetMinNumberOfBins()));
+        SetFrequencyRadius(node->GetValue<double>("frequency-radius"));
+        SetTimeDistance(node->GetValue<double>("max-component-distance"));
+        SetBinDelta(node->GetValue<int>("max-bin-distance"));
 
 
         return true;
     }
 
-    bool KTSeqTrackCreator::PointLineAssignment(KTKDTreeData& kdTreeData, KTScoredSpectrumData& slice)
+    bool KTSeqTrackCreator::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& slice,  KTDiscriminatedPoints1DData& discPoints)
     {
-        KTINFO(ctlog, "Performing point line assignment on k-d tree data");
-        unsigned nComponents = kdTreeData.GetNComponents();
-        unsigned nLines = kdLines.GetNLines();
+    	KTDEBUG(kdlog, "Is this a new acquisition? fHaveNewData=" << fHaveNewData << " and GetIsNewAcquisition=" << slHeader.GetIsNewAcquisition());
+    	// first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
+    	if (fHaveNewData && slHeader.GetIsNewAcquisition())
+    	{'do track post processing and hand them over to the event clustering'}
+        KTINFO(ctlog, "Performing point line assignment on discriminated points");
+
+        double* new_trimming_limits;
+        unsigned nComponents = slHeader.GetNComponents();
+
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
-            const KTTreeIndex< double >* kdTree = kdTreeData.GetTreeIndex(iComponent);
-            const std::vector< KTKDTreeData::Point >& setOfPoints = kdTreeData.GetSetOfPoints(iComponent);
-            if (!KTSeqTrackCreator::LoopOverDiscriminatedPoints(kdTree, setOfPoints, slice))
+        	KTPowerSpectrum* islice=slice.GetSpectrum(iComponent);
+    		double maxFreq = std::max(fabs(slice.GetRangeMin()), fabs(slice.GetRangeMax()));
+    		double minFreq = -0.5 * slice.GetBinWidth();
+    		unsigned nBins = (maxFreq - minFreq) / slice.GetBinWidth();
+    		if (slice.GetRangeMax() < 0. || slice.GetRangeMin() > 0.)
+    		{
+    			minFreq = std::min(fabs(slice.GetRangeMin()), fabs(slice.GetRangeMax()));
+    			nBins = slice.size();
+    		}
+
+        	for (unsigned iBin = 0; iBin < nBins; ++iBin)
+        	{
+        			(*new_trimming_limits) += slice(iBin)/nBins;
+
+        	}
+
+        	const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
+        	double new_TimeInAcq = (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
+
+            if (!KTSeqTrackCreator::LoopOverDiscriminatedPoints(incomingPts, slice, new_TimeInAcq, *new_trimming_limits))
             {
             	KTERROR(ctlog, "Sequential track creation failed");
             	return false;
@@ -70,96 +99,78 @@ namespace Katydid
         return true;
     }
 
-    bool KTSeqTrackCreator::LoopOverDiscriminatedPoints(const KTTreeIndex< double >* kdTree, KTScoredSpectrumData& slice, const KTKDTreeData::SetOfPoints& setOfPoints, std::vector< size_t >& noiseIndices)
+    bool KTSeqTrackCreator::LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double* new_trimming_limits)
     {
-        unsigned nPoints = kdTree->size();
-        double timeDelta, frequencyDelta;
-        for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
+    	double freq = 0.0;
+
+
+        for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
+                            pIt != incomingPts.end(); ++pIt)
         {
-            KTDEBUG(ctlog, "checking point (" << iPoint + 1 << "/" << nPoints << ")");
 
-            (this->*fFindDeltasPtr)(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
+        	if (KTSeqTrackCreator::VetoPoint(pIt, slice, freq))
+        	{
+        		bool match = false;
+        		for (KTLines::SetOfLines::const_iterator LineIt =fLines.begin(); LineIt != fLines.end(); ++LineIt)
+        			{
+        			if (LineIt.InvestigatePoint(pIt, TimeInAcq, *new_trimming_limits))
+        				{
+        				match = true;
+        				break;
+        				}
+        			}
+        		if (!match)
+        		{
+        			nLines=fLines.GetNLines()+1;
+        			fLines.SetNComponents(nLines);
+        			fLines.Line(nLines, pIt, TimeInAcq, *new_trimming_limits);
+        		 }
 
-            unsigned voteCount = 0;
-            if (! (timeDelta == 0))
-            {
-                //double slope = frequencyDelta / timeDelta;
-                //double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
-
-                bool closeEnough = true;
-                double test_pt[2];
-                std::vector< std::pair< size_t, double > > indicesDist;
-                double k = 2.0;
-                while (closeEnough)
-                {
-                    test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
-                    test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
-                    kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
-                    if (indicesDist.size() > 0)
-                    {
-                        k += 1.0;
-                        voteCount += 1;
-                    }
-                    else
-                    {
-                        closeEnough = false;
-                    }
-                }
-                closeEnough = true;
-                k = -2.0;
-                while (closeEnough)
-                {
-                    test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
-                    test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
-                    kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
-                    if (indicesDist.size() > 0)
-                    {
-                        k -= 1.0;
-                        voteCount += 1;
-                    }
-                    else
-                    {
-                        closeEnough = false;
-                    }
-                }
-            }
-            if (voteCount < fMinNumberVotes)
-            {
-                noiseIndices.push_back(iPoint);
-            }
+        	}
         }
-        return true;
     }
 
-    void KTConsensusThresholding::FindDeltasNearestNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
+    bool KTSeqTrackCreator::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq)
     {
-        KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByNumber(pid, 2);
-        deltaTime = setOfPoints[ne[1]].fCoords[0] - setOfPoints[pid].fCoords[0];
-        deltaFreq = setOfPoints[ne[1]].fCoords[1] - setOfPoints[pid].fCoords[1];
-        return;
+    	double new_freq = Point->second.fAbscissa;
+    	double new_Amp = Point->second.fOrdinate;
+    	double weighed_freq = 0;
+    	double weighed_sum = 0;
+    	int PointBin = Point->first.Bin;
+    	double new_point = 0;
+    	double df = slice(1)-slice(0);
+
+
+    	if (abs(freq-new_freq)<fFDelta)
+    	{
+    		slice.Override(PointBin)=fSigma;
+
+    		return false;
+    	}
+    	else
+		{
+    		freq = new_freq;
+
+
+    		for (unsigned iBin = PointBin-fBinDelta; iBin < PointBin+fBinDelta; ++iBin)
+    		{
+    			weighed_freq = freq*slice(iBin);
+    			weighed_sum +=slice(iBin);
+    			new_point += weighed_freq;
+    		}
+    		new_point = (new_point/weighed_sum);
+    		if (abs(freq-new_point)<df)
+    		{
+    			slice.Override(PointBin)=fSigma;
+    			return true;
+    		}
+    		else {return false;}
+		}
     }
 
-    void KTConsensusThresholding::FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
-    {
-        KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(pid, fMembershipRadius);
-        unsigned nNeighbors = ne.size();
-        double sumX, sumY, sumX2, sumXY;
-        for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)
-        {
-            sumX += setOfPoints[ne[iNe]].fCoords[0];
-            sumY += setOfPoints[ne[iNe]].fCoords[1];
-            sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
-            sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
-        }
-        //double xMean = sumX / (double)nNeighbors;
-        //double yMean = sumY / (double)nNeighbors;
-        double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors);
-        //double intercept = yMean - slope * xMean;
-        deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
-        deltaFreq = slope * deltaTime;
-        //deltaFreq = deltaTime * (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * deltaTime); // a.k.a. deltaTime * slope
-        return;
-    }
+
+
+
 
 
 } /* namespace Katydid */

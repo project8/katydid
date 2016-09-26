@@ -30,6 +30,21 @@ class KTSeqLine
 {
 
 public:
+            /// Extend KT2DPoint to include amplitude
+            struct Point : KT2DPoint< double >
+            {
+                typedef KT2DPoint< double >::coord_t coord_t;
+                Point() : fAmplitude(0.), fTimeInAcq(0.), fSliceNumber(0)
+                {
+                    fCoords[0] = 0;
+                    fCoords[1] = 0;
+                }
+                double fAmplitude;
+                double fTimeInAcq;
+                uint64_t fSliceNumber;
+                //uint64_t fAcquisitionID;
+            };
+
 	KTSeqLine(unsigned LineID, double StartTime, double StartFreq, double Score);
 	KTSeqLine(const KTSeqLine& orig);
 	virtual ~KTSeqLine();

@@ -15,7 +15,11 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
-
+namespace Nymph
+{
+    class KTParamNode;
+}
+;
 
 namespace Katydid
 {
@@ -30,19 +34,25 @@ namespace Katydid
             virtual ~KTSeqTrackCreator();
 
             bool Configure(const scarab::param_node* node);
+            void SetFrequencyRadius(double FreqRad);
+            void SetTimeDistance(double TimeDistance);
+            void SetBinDelta(int BinDelta);
 
-            MEMBERVARIABLE(double, FrequencyRadius);
-            MEMBERVARIABLE(int, ComponentDistance);
-            MEMBERVARIABLE(unsigned, MinNumberOfBins);
+            MEMBERVARIABLE(double, FDelta);
+            MEMBERVARIABLE(int, TimeDistance);
+            MEMBERVARIABLE(unsigned, Sigma);
+            MEMBERVARIABLE(unsigned, BinDelta);
+
 
         public:
-            bool PointLineAssignment(KTKDTreeData& kdTreeData);
-			void LineEventAssignment(KTKDTreeData& kdTreeData);
-			void WeightedAverage(KTScoredSpectrumData& slice);
-            bool SearchArea(KTScoredSpectrumData& slice);
+            bool Configure(const KTParamNode* node);
+            bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& slice,  KTDiscriminatedPoints1DData& discPoints);
 
         private:
-            bool LoopOverDisciminatedPoints(KTKDTreeData& kdTreeData, std::vector< KTKDTreeData::Point >& setOfPoints, KTScoredSpectrumData& slice);
+            bool LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double* new_trimming_limits);
+            bool KTSeqTrackCreator::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq);
+
+
 
 
             //***************
@@ -57,9 +67,21 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fSeqTrackSlot;
 
     };
+    inline void KTSeqTrackCreator::SetFrequencyRadius(double FreqRad)
+    {
+       	fFDelta = FreqRad;
+    }
+    inline void KTSeqTrackCreator::SetTimeDistance(double TimeDistance)
+    {
+       	fTimeDistance = TimeDistance;
+    }
+    inline void KTSeqTrackCreator::SetBinDelta(int BinDelta)
+    {
+       	fBinDelta = BinDelta;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSEQTRACKCREATOR_HH_ */

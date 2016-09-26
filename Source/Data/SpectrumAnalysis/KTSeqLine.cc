@@ -7,8 +7,8 @@
 
 #include <KTSeqLine.hh>
 
-#include "KTPowerSpectrum.hh"
-#include "KTScoredSpectrum.hh"
+
+#include "KTDiscriminatedPoints1DData.hh"
 
 #include "KTLogger.hh"
 
@@ -32,12 +32,11 @@ namespace Katydid
 {
 	KTLOGGER(sclog, "KTSeqLine");
 
-	KTSeqLine::KTSeqLine(unsigned LineID, double StartTime, double StartFreq, double Score)
+	KTSeqLine::KTSeqLine(unsigned LineID, KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, double& TimeInAcq, double* new_trimming_limits)
 
 						{
 								SetLineID(LineID);
-								SetStartFreq(StartFreq);
-								SetStartTime(StartTime);
+								this->CollectPoint(Point, TimeInAcq, *new_trimming_limits);
 						}
 
 	KTSeqLine::KTSeqLine(const KTSeqLine& orig)
@@ -51,90 +50,61 @@ namespace Katydid
 
 
 
+	bool KTSeqLine::CollectPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, double& TimeInAcq, double* new_trimming_limits)
+	{
+		scorelist.push_back(Point->second.fOrdinate);
+		timelist.push_back(TimeInAcq);
+		freqlist.push_back(Point->second.fAbscissa);
+		trimming_limits.push_back(*new_trimming_limits);
+		return true;
+	}
 
-	void KTSeqLine::InvestigatePoint(int& MatchFlag, KTSeqTrackCreator::Parameters& p, KTScoredSpectrum& slice, int point)
+	bool KTSeqLine::InvestigatePoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, double& TimeInAcq, double* new_trimming_limits)
 	{
 
 
-			double* NewFreq = slice.GetBinCenter(point);
-			double* NewScore = slice(point)->Evaluate(slice.GetBinCenter(point));
-			double* new_trimming_limits;
-
-			for (unsigned iBin = BinDelta; iBin < nBins-BinDelta; ++iBin)
-					{
-						(*new_trimming_limits) += slice(iBin)/nBins->Evaluate(slice.GetBinCenter(iBin));
-
-					}
-			trimming_limits.push_back(*new_trimming_limits);
+			double* NewFreq = Point->second.fAbscissa;
+			double* NewScore = Point->second.fOrdinate;
 
 
-			if (time-timelist.back() > p.DeltaT)
+
+
+
+
+			if (TimeInAcq-timelist.back() > DeltaT)
 			{
 				//std::cout << identifier << " time distance" << std::endl;
-				this-> TrimEdges(p);
+				this-> TrimEdges();
+				return false;
 			}
-			else if (int(timelist.size()) > p.lan &&  LineScore < p.line_thresh)
+			else if (int(timelist.size()) > Lambda &&  this->GetLineScore < LineThreshold)
 			{
 				//std::cout << identifier << " low score" << std::endl;
-				this -> TrimEdges(p);
+				this -> TrimEdges();
+				return false;
 			}
-			else if (abs(freq-(freqlist[0]+slope*(time-timelist[0]))) < p.DeltaF)
+			else if (abs(NewFreq-(freqlist[0]+LineSlope*(TimeInAcq-timelist[0]))) < DeltaF)
 			{
-				match = 1;
-				slope = (freq-freqlist[0])/(time-timelist[0]);
+				if(this->CollectPoint(Point, TimeInAcq, *new_trimming_limits))
+				{
+				LineSlope = (NewFreq-freqlist[0])/(TimeInAcq-timelist[0]);
+				LineScore += NewScore;
 
-				timelist.push_back(time);
-				freqlist.push_back(freq);
-				scorelist.push_back(new_score);
-				LineScore += slice[point];
 
-				slice[point] = p.sigma;
 
+				return true;
+				}
+				else {return false;}
+
+			}
+			else
+			{
+				return false;
 			}
 
 		}
+
 	}
-
-
-	KTScoredSpectrum* KTScoredSpectrum::CreateScoredSpectrum(KTPowerSpectrum& component, KTGainVariationData& gvData)
-	{
-
-		double maxFreq = std::max(fabs(component.GetRangeMin()), fabs(component.GetRangeMax()));
-
-		double minFreq = -0.5 * component.GetBinWidth();
-		unsigned nBins = (maxFreq - minFreq) / component.GetBinWidth();
-		if (component.GetRangeMax() < 0. || component.GetRangeMin() > 0.)
-		{
-			minFreq = std::min(fabs(component.GetRangeMin()), fabs(component.GetRangeMax()));
-			nBins = component.size();
-		}
-
-		KTScoredSpectrum* newRatios = new KTScoredSpectrum(nBins, component.GetRangeMin(), component.GetRangeMax());
-		KTScoredSpectrum* newScores = new KTScoredSpectrum(nBins, component.GetRangeMin(), component.GetRangeMax());
-
-
-		for (unsigned iBin = BinDelta; iBin < nBins-BinDelta; ++iBin)
-		{
-			(*newRatios)(iBin) = component(iBin)/(gvData.GetSpline(0)->Evaluate(component.GetBinCenter(iBin)));
-
-
-			(*newScores)(iBin) = 0.;
-
-		}
-
-
-		for (unsigned iBin = 0; iBin < nBins; ++iBin)
-		{
-
-			if ((*newRatios)(iBin) > Threshhold) (*newScores)(iBin) = aplus*pow(((*newRatios)(iBin)-Threshhold),bplus);
-			else (*newScores)(iBin) = aminus*pow(((*newRatios)(iBin)-Threshhold),bminus);
-
-
-		}
-		delete newRatios;
-		return newScores;
-	}
-
 
 } /* namespace Katydid */
 
