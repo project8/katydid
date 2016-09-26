@@ -17,8 +17,6 @@
 #include "KTTimeSeriesData.hh"
 #include "KTEggHeader.hh"
 
-#include "KTParam.hh"
-
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -55,31 +53,31 @@ namespace Katydid
     {
     }
 
-    bool KTLinearDensityProbeFit::Configure(const KTParamNode* node)
+    bool KTLinearDensityProbeFit::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("min-frequency"))
+        if (node->has("min-frequency"))
         {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-frequency"))
+        if (node->has("max-frequency"))
         {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
-        if (node->Has("probe-width-big"))
+        if (node->has("probe-width-big"))
         {
-            SetProbeWidthBig(node->GetValue< double >("probe-width-big"));
-            SetStepSizeBig(node->GetValue< double >("probe-width-big") / 5);
+            SetProbeWidthBig(node->get_value< double >("probe-width-big"));
+            SetStepSizeBig(node->get_value< double >("probe-width-big") / 5);
         }
-        if (node->Has("probe-width-small"))
+        if (node->has("probe-width-small"))
         {
-            SetProbeWidthSmall(node->GetValue< double >("probe-width-small"));
-            SetStepSizeSmall(node->GetValue< double >("probe-width-small") / 5);
+            SetProbeWidthSmall(node->get_value< double >("probe-width-small"));
+            SetStepSizeSmall(node->get_value< double >("probe-width-small") / 5);
         }
 
-        SetStepSizeBig(node->GetValue< double >("step-size-big", fStepSizeBig));
-        SetStepSizeSmall(node->GetValue< double >("step-size-small", fStepSizeSmall));
+        SetStepSizeBig(node->get_value< double >("step-size-big", fStepSizeBig));
+        SetStepSizeSmall(node->get_value< double >("step-size-small", fStepSizeSmall));
 
         return true;
     }

@@ -92,7 +92,6 @@ if (Katydid_ENABLE_TUTORIAL)
 endif (Katydid_ENABLE_TUTORIAL)
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
     KatydidIO

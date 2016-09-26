@@ -14,9 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-
-    class KTCCResults : public KTExtensibleData< KTCCResults >
+    class KTCCResults : public Nymph::KTExtensibleData< KTCCResults >
     {
         public:
             KTCCResults();

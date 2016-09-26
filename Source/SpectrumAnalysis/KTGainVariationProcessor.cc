@@ -11,7 +11,6 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
-#include "KTParam.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTSpline.hh"
 
@@ -54,31 +53,31 @@ namespace Katydid
     {
     }
 
-    bool KTGainVariationProcessor::Configure(const KTParamNode* node)
+    bool KTGainVariationProcessor::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetNormalize(node->GetValue< bool >("normalize", fNormalize));
+        SetNormalize(node->get_value< bool >("normalize", fNormalize));
 
-        if (node->Has("min-frequency"))
+        if (node->has("min-frequency"))
         {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-frequency"))
+        if (node->has("max-frequency"))
         {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
-        }
-
-        if (node->Has("min-bin"))
-        {
-            SetMinBin(node->GetValue< unsigned >("min-bin"));
-        }
-        if (node->Has("max-bin"))
-        {
-            SetMaxBin(node->GetValue< unsigned >("max-bin"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        SetNFitPoints(node->GetValue< unsigned >("fit-points", fNFitPoints));
+        if (node->has("min-bin"))
+        {
+            SetMinBin(node->get_value< unsigned >("min-bin"));
+        }
+        if (node->has("max-bin"))
+        {
+            SetMaxBin(node->get_value< unsigned >("max-bin"));
+        }
+
+        SetNFitPoints(node->get_value< unsigned >("fit-points", fNFitPoints));
 
         return true;
     }

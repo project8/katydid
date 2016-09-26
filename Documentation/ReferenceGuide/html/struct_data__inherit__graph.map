@@ -1,0 +1,8 @@
+<map id="Data" name="Data">
+<area shape="rect" id="node2" href="$struct_data_a.html" title="{DataA\n|+ fValueA\l|+ ~DataA()\l}" alt="" coords="5,127,92,200"/>
+<area shape="rect" id="node3" href="$struct_data_b.html" title="{DataB\n|+ fValueB\l|+ ~DataB()\l}" alt="" coords="116,127,203,200"/>
+<area shape="rect" id="node4" href="$struct_data_c.html" title="{DataC\n|+ fValueC\l|+ ~DataC()\l}" alt="" coords="226,127,314,200"/>
+<area shape="rect" id="node5" href="$struct_data_d.html" title="{DataD\n|+ fValueD\l|+ ~DataD()\l}" alt="" coords="337,127,424,200"/>
+<area shape="rect" id="node6" href="$struct_data_e.html" title="{DataE\n|+ fValueE\l|+ ~DataE()\l}" alt="" coords="448,127,535,200"/>
+<area shape="rect" id="node7" href="$struct_data_f.html" title="{DataF\n|+ fValueF\l|+ ~DataF()\l}" alt="" coords="559,127,645,200"/>
+</map>

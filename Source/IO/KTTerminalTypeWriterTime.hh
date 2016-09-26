@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTProcSummary;
 
     class KTTerminalTypeWriterTime : public KTTerminalTypeWriter
@@ -26,10 +26,10 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(KTDataPtr data);
+            void WriteEggHeader(Nymph::KTDataPtr data);
 
-            void WriteTimeSeriesData(KTDataPtr data);
-            void WriteDigitizerTestData(KTDataPtr data);
+            void WriteTimeSeriesData(Nymph::KTDataPtr data);
+            void WriteDigitizerTestData(Nymph::KTDataPtr data);
 
             void WriteProcSummary(const KTProcSummary* summary);
     };

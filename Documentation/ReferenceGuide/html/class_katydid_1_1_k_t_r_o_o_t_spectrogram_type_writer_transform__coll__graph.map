@@ -1,0 +1,4 @@
+<map id="Katydid::KTROOTSpectrogramTypeWriterTransform" name="Katydid::KTROOTSpectrogramTypeWriterTransform">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_r_o_o_t_spectrogram_type_writer.html" title="{Katydid::KTROOTSpectrogram\lTypeWriter\n||+ KTROOTSpectrogramTypeWriter()\l+ ~KTROOTSpectrogramTypeWriter()\l+ OutputSpectrograms()\l# CreateNewSpectrograms()\l# AddFrequencySpectrumData\lHelper()\l# AddPowerSpectrumDataCore\lHelper()\l# AddPowerSpectralDensityData\lCoreHelper()\l}" alt="" coords="5,168,251,375"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{Nymph::KTDerivedTypeWriter\l\&lt; KTROOTSpectrogramWriter \&gt;\n||+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="22,5,234,119"/>
+</map>

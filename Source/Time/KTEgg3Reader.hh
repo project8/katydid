@@ -30,7 +30,7 @@ namespace monarch3
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
 
     // NOTE: the first version of this KTEgg3Reader operates in much the same way as KTEgg2Reader, and does not take advantage of
@@ -86,9 +86,9 @@ namespace Katydid
             bool Configure(const KTEggProcessor& eggProc);
 
             /// Opens the egg file and returns a new copy of the header information.
-            KTDataPtr BreakEgg(const std::string& filename);
+            Nymph::KTDataPtr BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
-            KTDataPtr HatchNextSlice();
+            Nymph::KTDataPtr HatchNextSlice();
             /// Closes the file.
             bool CloseEgg();
 
@@ -98,16 +98,16 @@ namespace Katydid
             /// Copy header information from the M3Header object
             void CopyHeader(const monarch3::M3Header* monarchHeader);
 
-            //KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
-            //KTDataPtr HatchNextSliceRealUnsigned();
-            //KTDataPtr HatchNextSliceRealSigned();
-            //KTDataPtr HatchNextSliceComplex();
+            //Nymph::KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
+            //Nymph::KTDataPtr HatchNextSliceRealUnsigned();
+            //Nymph::KTDataPtr HatchNextSliceRealSigned();
+            //Nymph::KTDataPtr HatchNextSliceComplex();
 
             const monarch3::Monarch3* fMonarch;
             const monarch3::M3Stream* fM3Stream;
             const monarch3::M3StreamHeader* fM3StreamHeader;
 
-            KTDataPtr fHeaderPtr;
+            Nymph::KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             KTSliceHeader fMasterSliceHeader;
 

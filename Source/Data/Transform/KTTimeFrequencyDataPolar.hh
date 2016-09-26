@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTTimeFrequencyDataPolarCore
     {
@@ -111,7 +111,7 @@ namespace Katydid
 
 
 
-    class KTTimeFrequencyDataPolar : public KTTimeFrequencyDataPolarCore, public KTExtensibleData< KTTimeFrequencyDataPolar >
+    class KTTimeFrequencyDataPolar : public KTTimeFrequencyDataPolarCore, public Nymph::KTExtensibleData< KTTimeFrequencyDataPolar >
     {
         public:
             KTTimeFrequencyDataPolar();

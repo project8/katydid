@@ -1,38 +1,55 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-cmake_minimum_required (VERSION 3.0)
-
+# Minimum cmake verison 3.1 required for the variable CMAKE_CXX_STANDARD
+cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.5.2)
+project (Katydid VERSION 2.6.2)
 
-# Import Katydid core features
-include (Nymph/cmake/Nymph.cmake)
-nymph_prepare_project ()
+list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
+include( PackageBuilder )
+
+list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/cmake )
+include( Nymph )
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
-#optional build switches
-set (Katydid_USE_CPP11 TRUE CACHE BOOL "Flag to optionally use C++11")
-set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
-set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
-set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
-set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
-set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
-set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
-set (Katydid_USE_MATLAB TRUE CACHE BOOL "Flag to optionally use MatIO libraries, needed to read MAT files")
-set (Katydid_ENABLE_BUILD_DOC FALSE CACHE BOOL "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)")
+pbuilder_prepare_project()
 
-if (Katydid_USE_CPP11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif (Katydid_USE_CPP11)
+
+#########
+# Options
+#########
+
+set_option( USE_CPP11 TRUE )
+
+option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
+option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
+option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
+option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
+option (Katydid_USE_MONARCH "Flag to optionally use Monarch" ON)
+option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
+option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
+option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
+option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
+option (Katydid_USE_MATLAB "Flag to optionally use MatIO libraries, needed to read MAT files" ON)
+option (Katydid_BUILD_DOC "Enable the options to build the documentation (requires Doxygen and Sphinx (optional) with Breathe)" OFF)
+option (Katydid_USE_SPHINX "Flag to optionall use Sphinx documentation" OFF)
+
+set_option( Scarab_BUILD_CODEC_YAML TRUE )
+set_option( Nymph_BUILD_NYMPH_EXE FALSE )
+
 
 ##############
 # Dependencies
 ##############
+
+# Midge
+pbuilder_add_submodule( Nymph Nymph )
+nymph_process_options()
 
 # Mantis
 if (Katydid_USE_MANTIS)
@@ -151,33 +168,22 @@ endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
 # External packages distributed with Katydid
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
 
-# add an option to build the validation tests
-option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
+#######
+# Build
+#######
+
 if (Katydid_ENABLE_TESTING)
     enable_testing ()
 endif (Katydid_ENABLE_TESTING)
 
-option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
 if (Katydid_ENABLE_TUTORIAL)
     include_directories (${PROJECT_SOURCE_DIR}/Examples/Tutorial)
     add_definitions (-DENABLE_TUTORIAL)
 else (Katydid_ENABLE_TUTORIAL)
     remove_definitions (-DENABLE_TUTORIAL)
 endif (Katydid_ENABLE_TUTORIAL)
-
-# add an option to build the profiling tests
-option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
-
-# libthorax
-#add_subdirectory( libthorax )
-#pbuilder_add_submodule_libraries( ${libthorax_LIBRARIES} )
-#include_directories( ${libthorax_DEP_INCLUDE_DIRS} )
-# add to the RPATH to be used when installing, but only if it's not a system directory
-#list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${libthorax_LIBRARY_DIR}" isSystemDir )
-#if ( "${isSystemDir}" STREQUAL "-1" )
-#   list( APPEND CMAKE_INSTALL_RPATH ${libthorax_LIBRARY_DIR} )
-#endif( "${isSystemDir}" STREQUAL "-1" )
 
 # Monarch
 if (Katydid_USE_MONARCH)
@@ -219,8 +225,6 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
 )
 
-nymph_build_core_library()
-
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
@@ -230,18 +234,21 @@ add_subdirectory (Source/Time)
 add_subdirectory (Source/Transform)
 add_subdirectory (Source/SpectrumAnalysis)
 add_subdirectory (Source/EventAnalysis)
-add_subdirectory (Source/Executables/Main)
-add_subdirectory (Source/Executables/Profiling)
-add_subdirectory (Source/Executables/Validation)
+if (Katydid_ENABLE_EXECUTABLES)
+    add_subdirectory (Source/Executables/Main)
+    add_subdirectory (Source/Executables/Profiling)
+    add_subdirectory (Source/Executables/Validation)
+endif (Katydid_ENABLE_EXECUTABLES)
 add_subdirectory (Examples)
 
-nymph_build_core_executables()
+# Build the main executables (from Nymph, but linked to all of the Katydid libraries)
+nymph_build_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
-if (Katydid_ENABLE_BUILD_DOC)
+if (Katydid_BUILD_DOC)
     add_subdirectory (Documentation)
-endif (Katydid_ENABLE_BUILD_DOC)
+endif (Katydid_BUILD_DOC)
 
 # Extract compile definitions to pass to config files
 get_directory_property (Katydid_COMP_DEFS COMPILE_DEFINITIONS)

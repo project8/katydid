@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     /*!
      @class KTGaussianNoiseGenerator
@@ -40,11 +40,11 @@ namespace Katydid
        - "sigma": double -- Standard deviation for the randomly-chosen time-series values
 
      Slots: (inherited from KTTSGenerator)
-     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (Nymph::KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals: (inherited from KTTSGenerator)
      - "header": void (KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
+     - "slice": void (Nymph::KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
     */
     class KTGaussianNoiseGenerator : public KTTSGenerator
@@ -53,7 +53,7 @@ namespace Katydid
             KTGaussianNoiseGenerator(const std::string& name = "gaussian-noise-generator");
             virtual ~KTGaussianNoiseGenerator();
 
-            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
+            virtual bool ConfigureDerivedGenerator(const scarab::param_node* node);
 
             double GetMean() const;
             void SetMean(double mean);

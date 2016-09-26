@@ -17,10 +17,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
     class KTPowerSpectrum;
 
-    class KTPSCollectionData : public KTExtensibleData< KTPSCollectionData >
+    class KTPSCollectionData : public Nymph::KTExtensibleData< KTPSCollectionData >
     {
         public:
             typedef std::map< double, KTPowerSpectrum* > collection;

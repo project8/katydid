@@ -35,12 +35,12 @@ using namespace Katydid;
 
 KTLOGGER(eggscan, "EggScanner");
 
-static KTCommandLineOption< bool > sUseEgg1("Egg Scanner", "Use the Egg1 reader", "egg1", '1');
-static KTCommandLineOption< bool > sUseEgg2("Egg Scanner", "Use the Egg2 reader", "egg2", '2');
-static KTCommandLineOption< bool > sUseEgg3("Egg Scanner", "Use the Egg3 reader", "egg3", '3');
+static Nymph::KTCommandLineOption< bool > sUseEgg1("Egg Scanner", "Use the Egg1 reader", "egg1", '1');
+static Nymph::KTCommandLineOption< bool > sUseEgg2("Egg Scanner", "Use the Egg2 reader", "egg2", '2');
+static Nymph::KTCommandLineOption< bool > sUseEgg3("Egg Scanner", "Use the Egg3 reader", "egg3", '3');
 
-static KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
-static KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
+static Nymph::KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
+static Nymph::KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
 
 int main(int argc, char** argv)
 {
@@ -48,8 +48,8 @@ int main(int argc, char** argv)
     // Configuration phase
     //**************************
 
-    KTApplication* app = new KTApplication(argc, argv);
-    KTCommandLineHandler* clOpts = app->GetCommandLineHandler();
+    Nymph::KTApplication* app = new Nymph::KTApplication(argc, argv);
+    Nymph::KTCommandLineHandler* clOpts = app->GetCommandLineHandler();
     clOpts->DelayedCommandLineProcessing();
 
     if (! clOpts->IsCommandLineOptSet("egg-file"))
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
     uint64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
-    KTDataPtr headerPtr = reader->BreakEgg(filename);
+    Nymph::KTDataPtr headerPtr = reader->BreakEgg(filename);
     if (! headerPtr)
     {
         KTERROR(eggscan, "Egg file was not opened and no header was received");
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
             KTINFO(eggscan, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            KTDataPtr data = reader->HatchNextSlice();
+            Nymph::KTDataPtr data = reader->HatchNextSlice();
             if (data.get() == NULL) break;
 
             KTPROG(eggscan, data->Of< KTSliceHeader >());

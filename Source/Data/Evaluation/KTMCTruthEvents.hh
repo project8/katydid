@@ -14,9 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-
-    class KTMCTruthEvents : public KTExtensibleData< KTMCTruthEvents >
+    class KTMCTruthEvents : public Nymph::KTExtensibleData< KTMCTruthEvents >
     {
         public:
             struct Event

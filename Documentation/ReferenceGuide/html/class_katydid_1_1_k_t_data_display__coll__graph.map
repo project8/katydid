@@ -1,0 +1,7 @@
+<map id="Katydid::KTDataDisplay" name="Katydid::KTDataDisplay">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_writer_with_typists.html" title="{Nymph::KTWriterWithTypists\l\&lt; KTDataDisplay, KTDataTypeDisplay \&gt;\n||+ KTWriterWithTypists()\l+ ~KTWriterWithTypists()\l+ GetTypeWriter()\l}" alt="" coords="133,273,390,387"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_writer.html" title="{Nymph::KTWriter\n||+ KTWriter()\l+ ~KTWriter()\l}" alt="" coords="5,19,129,105"/>
+<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_root_gui_loop.html" title="Custom event loop for ROOT GUIs. " alt="" coords="415,220,583,440"/>
+<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_event_loop.html" title="Abstract base class for event loops. " alt="" coords="423,5,575,119"/>
+<area shape="rect" id="node7" href="$class_katydid_1_1_k_t_display_window.html" title="{Katydid::KTDisplayWindow\n|&#45; fFileMenu\l&#45; fEditMenu\l&#45; fMenuBarLayout\l&#45; fMenuBarItemLayout\l&#45; fMenuBar\l&#45; fEmbeddedCanvas\l&#45; fButtonFrame\l&#45; fContinueButton\l&#45; fCancelButton\l&#45; fCanceled\l|+ KTDisplayWindow()\l+ ~KTDisplayWindow()\l+ Draw()\l+ GetCanvas()\l+ Continue()\l+ Cancel()\l+ IsCanceled()\l+ ProcessMessage()\l&#45; ClassDef()\l}" alt="" coords="607,180,788,480"/>
+</map>

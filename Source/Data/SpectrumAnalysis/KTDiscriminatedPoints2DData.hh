@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     struct KTPairCompare
     {
         bool operator() (const std::pair< unsigned, unsigned >& lhs, const std::pair< unsigned, unsigned >& rhs) const
@@ -25,7 +25,7 @@ namespace Katydid
         }
     };
 
-    class KTDiscriminatedPoints2DData : public KTExtensibleData< KTDiscriminatedPoints2DData >
+    class KTDiscriminatedPoints2DData : public Nymph::KTExtensibleData< KTDiscriminatedPoints2DData >
     {
         public:
             struct Point

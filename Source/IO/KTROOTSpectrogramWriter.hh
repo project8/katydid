@@ -27,11 +27,11 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTFrequencyDomainArrayData;
     class KTROOTSpectrogramWriter;
 
-    class KTROOTSpectrogramTypeWriter : public KTDerivedTypeWriter< KTROOTSpectrogramWriter >
+    class KTROOTSpectrogramTypeWriter : public Nymph::KTDerivedTypeWriter< KTROOTSpectrogramWriter >
     {
         public:
             KTROOTSpectrogramTypeWriter();
@@ -49,15 +49,19 @@ namespace Katydid
             void CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
 
             template< typename XDataType >
-            void AddFrequencySpectrumDataHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
 
             template< typename XDataType >
+<<<<<<< HEAD
             void AddScoredSpectrumDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
 
             template< typename XDataType >
             void AddPowerSpectrumDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+=======
+            void AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+>>>>>>> develop
             template< typename XDataType >
-            void AddPowerSpectralDensityDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
     };
 
   /*!
@@ -76,32 +80,32 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
-     - "min-time": double -- start time for the spectrograms
-     - "max-time": double -- end time for the spectrograms
-     - "min-freq": double -- start frequency for the spectrograms
-     - "max-freq": double -- end frequency for the spectrograms
+     - "min-time": double -- start time for the spectrograms. Overwritten by the 'track' slot
+     - "max-time": double -- end time for the spectrograms. Overwritten by the 'track' slot
+     - "min-freq": double -- start frequency for the spectrograms. Overwritten by the 'track' slot
+     - "max-freq": double -- end frequency for the spectrograms. Overwritten by the 'track' slot
      - "buffer-freq": double -- range to extend the spectrogram around a track in frequency
      - "buffer-time": double -- range to extend the spectrogram around a track in time
 
      Slots:
-     - "fs-fftw": void (KTDataPtr) -- Contribute a slice to a FS-FFTW spectrogram. Requires KTFrequencySpectrumDataFFTW.
-     - "fs-polar": void (KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
-     - "ps": void (KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
-     - "psd": void (KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
-     - "track": void (KTDataPtr) -- Set the time and frequency bounds in accordance with a track. Requires KTProcessedTrackData.
-     - "all-lines": void (KTDataPtr) -- Contribute a track to a spectrogram; Requires KTProcessedTrackData.
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Contribute a slice to a FS-FFTW spectrogram. Requires KTFrequencySpectrumDataFFTW.
+     - "fs-polar": void (Nymph::KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
+     - "ps": void (Nymph::KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
+     - "psd": void (Nymph::KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
+     - "track": void (Nymph::KTDataPtr) -- Set the time and frequency bounds in accordance with a track. Requires KTProcessedTrackData. Overwrites min-freq, max-freq, min-time and max-time configuration variables.
+     - "all-lines": void (Nymph::KTDataPtr) -- Contribute a track to a spectrogram; Requires KTProcessedTrackData.
      - "write-file": void () -- Write out the ROOT file of any spectrograms that were built.
 
 
     */
 
-    class KTROOTSpectrogramWriter : public KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >//public KTWriter
+    class KTROOTSpectrogramWriter : public Nymph::KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >//public KTWriter
     {
         public:
             KTROOTSpectrogramWriter(const std::string& name = "root-spectrogram-writer");
             virtual ~KTROOTSpectrogramWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
@@ -116,8 +120,8 @@ namespace Katydid
             MEMBERVARIABLE(double, MinFreq); // in Hz
             MEMBERVARIABLE(double, MaxFreq); // in Hz
 
-            MEMBERVARIABLE(double, BufferFreq); // in sec
-            MEMBERVARIABLE(double, BufferTime); // in Hz
+            MEMBERVARIABLE(double, BufferFreq); // in Hz
+            MEMBERVARIABLE(double, BufferTime); // in sec
 
             MEMBERVARIABLE_NOSET(TFile*, File);
 
@@ -125,7 +129,7 @@ namespace Katydid
             void WriteFile();
 
         private:
-            KTSlotDone fWriteFileSlot;
+            Nymph::KTSlotDone fWriteFileSlot;
 
     };
 
@@ -154,7 +158,7 @@ namespace Katydid
     //****************************
 
      template< class XDataType >
-     void KTROOTSpectrogramTypeWriter::AddFrequencySpectrumDataHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     void KTROOTSpectrogramTypeWriter::AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
      {
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
@@ -192,7 +196,7 @@ namespace Katydid
      }
 
      template< class XDataType >
-     void KTROOTSpectrogramTypeWriter::AddPowerSpectrumDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     void KTROOTSpectrogramTypeWriter::AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
      {
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
@@ -229,7 +233,7 @@ namespace Katydid
      }
 
      template< class XDataType >
-     void KTROOTSpectrogramTypeWriter::AddPowerSpectralDensityDataCoreHelper(KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     void KTROOTSpectrogramTypeWriter::AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
      {
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();

@@ -1,0 +1,7 @@
+<map id="Katydid::KTFrequencySpectrumDataPolarCore" name="Katydid::KTFrequencySpectrumDataPolarCore">
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_correlation_data.html" title="{Katydid::KTCorrelationData\n|+ sName\l&#45; fComponentData\l|+ KTCorrelationData()\l+ ~KTCorrelationData()\l+ GetInputPair()\l+ SetInputPair()\l+ SetNComponents()\l}" alt="" coords="5,623,189,763"/>
+<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_frequency_spectrum_data_polar.html" title="{Katydid::KTFrequencySpectrum\lDataPolar\n|+ sName\l|+ KTFrequencySpectrumDataPolar()\l+ ~KTFrequencySpectrumData\lPolar()\l+ SetNComponents()\l}" alt="" coords="213,629,451,756"/>
+<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_normalized_f_s_data_polar.html" title="{Katydid::KTNormalizedFSData\lPolar\n|+ sName\l|+ KTNormalizedFSDataPolar()\l+ ~KTNormalizedFSDataPolar()\l+ SetNComponents()\l}" alt="" coords="475,636,685,749"/>
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_frequency_spectrum_data.html" title="{Katydid::KTFrequencySpectrumData\n||+ KTFrequencySpectrumData()\l+ ~KTFrequencySpectrumData()\l+ GetSpectrum()\l+ GetSpectrum()\l}" alt="" coords="213,180,451,293"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_frequency_domain_array_data.html" title="{Katydid::KTFrequencyDomain\lArrayData\n||+ KTFrequencyDomainArrayData()\l+ ~KTFrequencyDomainArrayData()\l+ GetArray()\l+ GetArray()\l}" alt="" coords="214,5,450,132"/>
+</map>

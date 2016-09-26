@@ -16,7 +16,7 @@ namespace Katydid
 {
     //KTLOGGER(publog, "KTJSONTypeWriterTime");
 
-    static KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterTime > sJSONTWERegistrar;
+    static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterTime > sJSONTWERegistrar;
 
     KTJSONTypeWriterTime::KTJSONTypeWriterTime() :
             KTJSONTypeWriter()
@@ -40,7 +40,7 @@ namespace Katydid
     // Egg Header
     //***********
 
-    void KTJSONTypeWriterTime::WriteEggHeader(KTDataPtr headerPtr)
+    void KTJSONTypeWriterTime::WriteEggHeader(Nymph::KTDataPtr headerPtr)
     {
         using rapidjson::SizeType;
 

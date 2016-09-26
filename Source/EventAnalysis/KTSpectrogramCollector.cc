@@ -8,8 +8,7 @@
 #include "KTSpectrogramCollector.hh"
 
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 #include "KTSliceHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
@@ -47,36 +46,36 @@ namespace Katydid
     }
 
     // Emit Signal
-    void KTSpectrogramCollector::FinishSC( KTDataPtr data )
+    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data )
     {
         fWaterfallSignal( data );
     }
 
-    bool KTSpectrogramCollector::Configure(const KTParamNode* node)
+    bool KTSpectrogramCollector::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("min-frequency"))
+        if (node->has("min-frequency"))
         {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-frequency"))
+        if (node->has("max-frequency"))
         {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        SetMinBin(node->GetValue< unsigned >("min-bin", fMinBin));
-        SetMaxBin(node->GetValue< unsigned >("max-bin", fMaxBin));
-        SetLeadTime(node->GetValue< double >("lead-time", fLeadTime));
-        SetTrailTime(node->GetValue< double >("trail-time", fTrailTime));
+        SetMinBin(node->get_value< unsigned >("min-bin", fMinBin));
+        SetMaxBin(node->get_value< unsigned >("max-bin", fMaxBin));
+        SetLeadTime(node->get_value< double >("lead-time", fLeadTime));
+        SetTrailTime(node->get_value< double >("trail-time", fTrailTime));
 
         return true;
     }
 
     bool KTSpectrogramCollector::AddTrack( KTProcessedTrackData& trackData, unsigned component )
     {
-        // Create new KTDataPtr and PSCollectionData
-        KTDataPtr ptr( new KTData() );
+        // Create new Nymph::KTDataPtr and PSCollectionData
+        Nymph::KTDataPtr ptr( new Nymph::KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
 
@@ -104,7 +103,7 @@ namespace Katydid
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit )
     {
         // Iterate through each track which has been added
-        for( std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
+        for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
             // If the slice time coincides with the track time window, add the spectrum
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
@@ -146,7 +145,7 @@ namespace Katydid
 
         // Increase size of fWaterfallSets if necessary
         int fWSsize = fWaterfallSets.size();
-        std::set< std::pair< KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
+        std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
             fWaterfallSets.push_back( blankSet );
 

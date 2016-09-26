@@ -1,0 +1,4 @@
+<map id="Katydid::KTPowerSpectrumDataCore" name="Katydid::KTPowerSpectrumDataCore">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_frequency_domain_array_data.html" title="{Katydid::KTFrequencyDomain\lArrayData\n||+ KTFrequencyDomainArrayData()\l+ ~KTFrequencyDomainArrayData()\l+ GetArray()\l+ GetArray()\l}" alt="" coords="5,300,241,427"/>
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_power_spectrum.html" title="{Katydid::KTPowerSpectrum\n|# fMode\l# fResistance\l|+ KTPowerSpectrum()\l+ KTPowerSpectrum()\l+ ~KTPowerSpectrum()\l+ GetNFrequencyBins()\l+ GetFrequencyBinWidth()\l+ GetAxis()\l+ GetAxis()\l+ GetOrdinateLabel()\l+ ConvertToPowerSpectrum()\l+ ConvertToPowerSpectralDensity()\land 7 more...\l+ GetResistance()\l}" alt="" coords="229,5,463,239"/>
+</map>

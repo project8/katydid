@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTPowerSpectrumDataCore : public KTFrequencyDomainArrayData
     {
@@ -73,7 +73,7 @@ namespace Katydid
         return;
     }
 
-    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public KTExtensibleData< KTPowerSpectrumData >
+    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumData >
     {
         public:
             KTPowerSpectrumData();

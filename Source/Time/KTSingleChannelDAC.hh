@@ -9,6 +9,8 @@
 #ifndef KTSINGLECHANNELDAC_HH_
 #define KTSINGLECHANNELDAC_HH_
 
+#include "param.hh"
+
 #include "KTConstants.hh"
 #include "KTLogger.hh"
 #include "KTMemberVariable.hh"
@@ -18,15 +20,9 @@
 
 #include <vector>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(egglog_scdac, "KTSingleChannelDAC");
 
     class KTChannelHeader;
@@ -35,7 +31,7 @@ namespace Katydid
 
 
 
-    class KTSingleChannelDAC //: public KTProcessor
+    class KTSingleChannelDAC //: public Nymph::KTProcessor
     {
         public:
             enum TimeSeriesType
@@ -55,7 +51,7 @@ namespace Katydid
             KTSingleChannelDAC(/*const std::string& name = "dac"*/);
             virtual ~KTSingleChannelDAC();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
             bool Configure(const KTSingleChannelDAC& master);
 
             /// Set input parameters with the DAC gain calculated from the number of bits and the voltage range

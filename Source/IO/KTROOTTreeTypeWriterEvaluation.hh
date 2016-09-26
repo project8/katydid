@@ -19,7 +19,7 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     struct TCCLocustMC
     {
         Double_t fLength;
@@ -38,7 +38,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteMetaCCLocustMC(KTDataPtr data);
+            void WriteMetaCCLocustMC(Nymph::KTDataPtr data);
 
         public:
             TTree* GetMetaCCLocustMCTree() const;

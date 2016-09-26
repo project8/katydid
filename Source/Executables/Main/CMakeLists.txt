@@ -1,34 +1,30 @@
 # CMakeLists for Katydid/Source/Executables/Main
 # Author: N. Oblath
 
+if( Katydid_ENABLE_EXECUTABLES )
 
-# Executables
+    # Executables
 
-#add_executable (EvaluateCandidates ${PROJECT_SOURCE_DIR}/Nymph/Executables/Main/Katydid.cc)
-#target_link_libraries (EvaluateCandidates Nymph KatydidUtility KatydidData KatydidIO KatydidEvaluation ${EXTERNAL_LIBRARIES})
+    get_property( all_libs GLOBAL PROPERTY ${PROJECT_NAME}_LIBRARIES )
+    message(STATUS "Katydid exectuables library dependencies: ${all_libs}" )
 
-add_executable (Truncate Truncate.cc)
-target_link_libraries (Truncate Nymph ${EXTERNAL_LIBRARIES})
-
-pbuilder_install_executables ( 
-    #EvaluateCandidates
-    Truncate
-)
-
-if (Katydid_USE_MONARCH)
-    add_executable (EggScanner EggScanner.cc)
-    target_link_libraries (EggScanner Nymph KatydidUtility KatydidData KatydidIO KatydidTime ${EXTERNAL_LIBRARIES})
-    
-    pbuilder_install_executables ( 
-        EggScanner
+    set( programs
+        Katydid
+        Truncate
     )
-endif (Katydid_USE_MONARCH)
-
-if (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
-    add_executable (RSAMatToEgg RSAMatToEgg.cc)
-    target_link_libraries (RSAMatToEgg Nymph KatydidUtility KatydidData KatydidTime ${EXTERNAL_LIBRARIES})
     
-    pbuilder_install_executables (
-        RSAMatToEgg
-    )
-endif (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
+    if (Katydid_USE_MONARCH)
+        set( programs ${programs}
+            EggScanner
+        )
+    endif (Katydid_USE_MONARCH)
+    
+    if (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
+         set( programs ${programs}
+            RSAMatToEgg
+        )
+    endif (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
+
+    pbuilder_executables( programs all_libs )
+
+endif( Katydid_ENABLE_EXECUTABLES )

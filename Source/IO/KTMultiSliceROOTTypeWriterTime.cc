@@ -28,7 +28,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTMultiSliceROOTTypeWriterTime");
 
-    static KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterTime > sMERTWERegistrar;
+    static Nymph::KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterTime > sMERTWERegistrar;
 
     KTMultiSliceROOTTypeWriterTime::KTMultiSliceROOTTypeWriterTime() :
             KTMEROOTTypeWriterBase(),
@@ -104,7 +104,7 @@ namespace Katydid
     }
 
 
-    void KTMultiSliceROOTTypeWriterTime::StartByHeader(KTDataPtr)
+    void KTMultiSliceROOTTypeWriterTime::StartByHeader(Nymph::KTDataPtr)
     {
         fWriter->Start();
         return;
@@ -115,7 +115,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterTime::AddTimeSeriesData(KTDataPtr data)
+    void KTMultiSliceROOTTypeWriterTime::AddTimeSeriesData(Nymph::KTDataPtr data)
     {
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         if (fTSHists.size() == 0)

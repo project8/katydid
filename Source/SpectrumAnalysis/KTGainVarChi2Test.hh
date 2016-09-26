@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
     class KTPowerSpectrumUncertaintyData;
@@ -42,13 +42,13 @@ namespace Katydid
      - MaxBin: bin associated with maximum frequency bound
 
      Slots:
-     - "ps": void (KTDataPtr) -- Requires KTPowerSpectrumData, KTPowerSpectrumUncertaintyData and KTGainVariationData; Adds KTGainVarChi2Data
+     - "ps": void (Nymph::KTDataPtr) -- Requires KTPowerSpectrumData, KTPowerSpectrumUncertaintyData and KTGainVariationData; Adds KTGainVarChi2Data
      
      Signals:
-     - "chi2-test": void (KTDataPtr) Emitted upon chi-squared and NDF calculation; Guarantees KTGainVarChi2Data
+     - "chi2-test": void (Nymph::KTDataPtr) Emitted upon chi-squared and NDF calculation; Guarantees KTGainVarChi2Data
     */
      
-    class KTGainVarChi2Test : public KTProcessor
+    class KTGainVarChi2Test : public Nymph::KTProcessor
     {
 
         public:
@@ -88,7 +88,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fChi2TestSignal;
+            Nymph::KTSignalData fChi2TestSignal;
 
             //***************
             // Slots

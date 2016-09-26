@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTProcessedTrackData;
     class KTDiscriminatedPoints2DData;
     class KTLinearFitResult;
@@ -49,20 +49,20 @@ namespace Katydid
      - "step-size-small": same as above for the 2nd component
 
      Slots:
-     - "thresh-points": void (KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTLinearFitResult
-     - "gv": void (KTDataPtr) -- Stores gain variation for later use with spectrogram; Requires KTGainVariationData
+     - "thresh-points": void (Nymph::KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTLinearFitResult
+     - "gv": void (Nymph::KTDataPtr) -- Stores gain variation for later use with spectrogram; Requires KTGainVariationData
      
      Signals:
-     - "fit-result": void (KTDataPtr) -- Emitted upon minimization; Guarantees KTLinearFitResult
+     - "fit-result": void (Nymph::KTDataPtr) -- Emitted upon minimization; Guarantees KTLinearFitResult
     */
 
-    class KTLinearDensityProbeFit : public KTProcessor
+    class KTLinearDensityProbeFit : public Nymph::KTProcessor
     {
     	public:
             KTLinearDensityProbeFit(const std::string& name = "linear-density-fit");
             virtual ~KTLinearDensityProbeFit();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);
@@ -114,15 +114,15 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fLinearDensityFitSignal;
+            Nymph::KTSignalData fLinearDensityFitSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTProcessedTrackData, KTDiscriminatedPoints2DData > fThreshPointsSlot;
-            KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
+            Nymph::KTSlotDataTwoTypes< KTProcessedTrackData, KTDiscriminatedPoints2DData > fThreshPointsSlot;
+            Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
     };
 
     inline double KTLinearDensityProbeFit::GetMinFrequency() const

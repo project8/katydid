@@ -10,7 +10,6 @@
 #include "KTEggHeader.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesDistData.hh"
-#include "KTParam.hh"
 
 
 using boost::shared_ptr;
@@ -35,13 +34,13 @@ namespace Katydid
     {
     }
 
-    bool KTAmplitudeCounter::Configure(const KTParamNode* node)
+    bool KTAmplitudeCounter::Configure(const scarab::param_node* node)
     {
         if (node != NULL)
         {
-            SetNumberOfBins(node->GetValue< unsigned >("num-bins", fNumberOfBins));
-            SetRangeMin(node->GetValue< double >("range-min", fRangeMin));
-            SetRangeMax(node->GetValue< double >("range-max", fRangeMax));
+            SetNumberOfBins(node->get_value< unsigned >("num-bins", fNumberOfBins));
+            SetRangeMin(node->get_value< double >("range-min", fRangeMin));
+            SetRangeMax(node->get_value< double >("range-max", fRangeMax));
             return true;
         }
         return false;

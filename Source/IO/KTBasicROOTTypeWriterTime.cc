@@ -30,7 +30,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTBasicROOTTypeWriterTime");
 
-    static KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterTime > sBRTWERegistrar;
+    static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterTime > sBRTWERegistrar;
 
     KTBasicROOTTypeWriterTime::KTBasicROOTTypeWriterTime() :
             KTBasicROOTTypeWriter()
@@ -57,7 +57,7 @@ namespace Katydid
     // Raw Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterTime::WriteRawTimeSeriesData(KTDataPtr data)
+    void KTBasicROOTTypeWriterTime::WriteRawTimeSeriesData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -96,7 +96,7 @@ namespace Katydid
         return;
     }
 
-    /*void KTBasicROOTTypeWriterTime::WriteRawTimeSeriesDataDistribution(KTDataPtr data)
+    /*void KTBasicROOTTypeWriterTime::WriteRawTimeSeriesDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -130,7 +130,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterTime::WriteTimeSeriesData(KTDataPtr data)
+    void KTBasicROOTTypeWriterTime::WriteTimeSeriesData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -159,7 +159,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTime::WriteTimeSeriesDataDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTime::WriteTimeSeriesDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

@@ -1,0 +1,4 @@
+<map id="Katydid::KTKDTreeData::PerComponentData" name="Katydid::KTKDTreeData::PerComponentData">
+<area shape="rect" id="node2" href="$struct_katydid_1_1_k_t_point_cloud.html" title="{Katydid::KTPointCloud\l\&lt; Katydid::KTKDTreeData\l::Point \&gt;\n||+ kdtree_get_point_count()\l+ kdtree_distance()\l+ kdtree_get_pt()\l+ kdtree_get_bbox()\l}" alt="" coords="5,213,186,353"/>
+<area shape="rect" id="node4" href="$struct_katydid_1_1_k_t_tree_index.html" title="{Katydid::KTTreeIndex\l\&lt; double \&gt;\n||+ ~KTTreeIndex()\l+ FreeIndex()\l+ BuildIndex()\l+ size()\l+ Veclen()\l+ UsedMemory()\l+ SaveIndex()\l+ LoadIndex()\l+ FindNeighbors()\l+ FindNeighbors()\l+ KNNSearch()\l+ RadiusSearch()\l+ NearestNeighborsByRadius()\l+ NearestNeighborsByNumber()\l}" alt="" coords="210,153,422,413"/>
+</map>

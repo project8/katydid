@@ -16,9 +16,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
-    class KTHoughData : public KTExtensibleData< KTHoughData >
+    class KTHoughData : public Nymph::KTExtensibleData< KTHoughData >
     {
         public:
             KTHoughData();

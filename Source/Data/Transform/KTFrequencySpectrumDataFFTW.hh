@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTFrequencySpectrumDataFFTWCore : public KTFrequencySpectrumData
     {
@@ -89,7 +89,7 @@ namespace Katydid
     }
 
 
-    class KTFrequencySpectrumDataFFTW : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTFrequencySpectrumDataFFTW >
+    class KTFrequencySpectrumDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataFFTW >
     {
         public:
             KTFrequencySpectrumDataFFTW();

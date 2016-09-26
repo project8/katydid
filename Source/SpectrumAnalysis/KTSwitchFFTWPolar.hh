@@ -14,15 +14,9 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTFrequencySpectrumDataFFTW;
     class KTNormalizedFSDataFFTW;
     class KTWignerVilleData;
@@ -40,21 +34,21 @@ namespace Katydid
      - "use-neg-freqs": bool -- If true [default], corresponding negative and positive frequency bins are summed; if false, the negative frequency bins are dropped.
 
      Slots:
-     - "fs-fftw": void (shared_data< KTData >) -- Switch an fftw FS to polar; Requires KTFrequencySpectrumDataFFTW; Adds KTFrequencySpectrumDataPolar
-     - "norm-fs-fftw": void (shared_data< KTData >) -- Switch a normalized fftw FS to polar; Requires KTNormalizedFSDataPolar; Adds KTFrequencySpectrumDataPolar
-     - "wv": void (shared_data< KTData >) -- Switch an WV FS to polar; Requires KTWignerVilleData; Adds KTFrequencySpectrumDataPolar
+     - "fs-fftw": void (shared_data< Nymph::KTData >) -- Switch an fftw FS to polar; Requires KTFrequencySpectrumDataFFTW; Adds KTFrequencySpectrumDataPolar
+     - "norm-fs-fftw": void (shared_data< Nymph::KTData >) -- Switch a normalized fftw FS to polar; Requires KTNormalizedFSDataPolar; Adds KTFrequencySpectrumDataPolar
+     - "wv": void (shared_data< Nymph::KTData >) -- Switch an WV FS to polar; Requires KTWignerVilleData; Adds KTFrequencySpectrumDataPolar
 
      Signals:
-     - "fs-polar": void (shared_data< KTData >) emitted upon performance of a switch from fftw to polar; Guarantees KTFrequencySpectrumDataPolar
+     - "fs-polar": void (shared_data< Nymph::KTData >) emitted upon performance of a switch from fftw to polar; Guarantees KTFrequencySpectrumDataPolar
     */
 
-    class KTSwitchFFTWPolar : public KTProcessor
+    class KTSwitchFFTWPolar : public Nymph::KTProcessor
     {
         public:
             KTSwitchFFTWPolar(const std::string& name = "switch-fftw-polar");
             virtual ~KTSwitchFFTWPolar();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData);
@@ -66,17 +60,17 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFSPolarSignal;
-            //KTSignalData fFSFFTWSignal;
+            Nymph::KTSignalData fFSPolarSignal;
+            //Nymph::KTSignalData fFSFFTWSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
-            KTSlotDataOneType< KTWignerVilleData > fWignerVilleSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTWignerVilleData > fWignerVilleSlot;
 
     };
 

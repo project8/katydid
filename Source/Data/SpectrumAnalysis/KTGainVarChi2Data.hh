@@ -16,8 +16,8 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTGainVarChi2Data : public KTExtensibleData< KTGainVarChi2Data >
+    
+    class KTGainVarChi2Data : public Nymph::KTExtensibleData< KTGainVarChi2Data >
     {
         public:
             KTGainVarChi2Data();

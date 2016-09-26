@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTBasicROOTTypeWriterSpectrumAnalysis : public KTBasicROOTTypeWriter
     {
         public:
@@ -27,70 +27,70 @@ namespace Katydid
             // SNR
             //************************
         public:
-            void WriteSNRPower(KTDataPtr data);
+            void WriteSNRPower(Nymph::KTDataPtr data);
 
             //************************
             // Normalized Frequency Spectrum Data
             //************************
         public:
-            void WriteNormalizedFSDataPolar(KTDataPtr data);
-            void WriteNormalizedFSDataFFTW(KTDataPtr data);
-            void WriteNormalizedFSDataPolarPhase(KTDataPtr data);
-            void WriteNormalizedFSDataFFTWPhase(KTDataPtr data);
-            void WriteNormalizedFSDataPolarPower(KTDataPtr data);
-            void WriteNormalizedFSDataFFTWPower(KTDataPtr data);
+            void WriteNormalizedFSDataPolar(Nymph::KTDataPtr data);
+            void WriteNormalizedFSDataFFTW(Nymph::KTDataPtr data);
+            void WriteNormalizedFSDataPolarPhase(Nymph::KTDataPtr data);
+            void WriteNormalizedFSDataFFTWPhase(Nymph::KTDataPtr data);
+            void WriteNormalizedFSDataPolarPower(Nymph::KTDataPtr data);
+            void WriteNormalizedFSDataFFTWPower(Nymph::KTDataPtr data);
 
-            void WriteNormalizedPSData(KTDataPtr data);
+            void WriteNormalizedPSData(Nymph::KTDataPtr data);
 
             //************************
             // Analytic Associate Data
             //************************
         public:
-            void WriteAnalyticAssociateData(KTDataPtr data);
-            void WriteAnalyticAssociateDataDistribution(KTDataPtr data);
+            void WriteAnalyticAssociateData(Nymph::KTDataPtr data);
+            void WriteAnalyticAssociateDataDistribution(Nymph::KTDataPtr data);
 
             //************************
             // Correlation Data
             //************************
         public:
-            void WriteCorrelationData(KTDataPtr data);
-            void WriteCorrelationDataDistribution(KTDataPtr data);
+            void WriteCorrelationData(Nymph::KTDataPtr data);
+            void WriteCorrelationDataDistribution(Nymph::KTDataPtr data);
 
             //************************
             // Correlation TS Data
             //************************
         public:
-            //void WriteCorrelationTSData(KTDataPtr data);
-            //void WriteCorrelationTSDataDistribution(KTDataPtr data);
+            //void WriteCorrelationTSData(Nymph::KTDataPtr data);
+            //void WriteCorrelationTSDataDistribution(Nymph::KTDataPtr data);
 
             //************************
             // Hough Transform Data
             //************************
         public:
-            void WriteHoughData(KTDataPtr data);
+            void WriteHoughData(Nymph::KTDataPtr data);
 
             //************************
             // Gain Variation Data
             //************************
         public:
-            void WriteGainVariationData(KTDataPtr data);
+            void WriteGainVariationData(Nymph::KTDataPtr data);
 
             //************************
             // WignerVille Data
             //************************
         public:
-            void WriteWignerVilleData(KTDataPtr data);
-            void WriteWignerVilleDataDistribution(KTDataPtr data);
-            void WriteWV2DData(KTDataPtr data);
+            void WriteWignerVilleData(Nymph::KTDataPtr data);
+            void WriteWignerVilleDataDistribution(Nymph::KTDataPtr data);
+            void WriteWV2DData(Nymph::KTDataPtr data);
 
 #ifdef ENABLE_TUTORIAL
             //************************
             // LPF Tutorial Data
             //************************
         public:
-            void WriteLowPassFilteredFSDataPolar(KTDataPtr data);
-            void WriteLowPassFilteredFSDataFFTW(KTDataPtr data);
-            void WriteLowPassFilteredPSData(KTDataPtr data);
+            void WriteLowPassFilteredFSDataPolar(Nymph::KTDataPtr data);
+            void WriteLowPassFilteredFSDataFFTW(Nymph::KTDataPtr data);
+            void WriteLowPassFilteredPSData(Nymph::KTDataPtr data);
 #endif /* ENABLE_TUTORIAL */
 
     };

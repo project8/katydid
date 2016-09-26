@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDataTypeDisplayTime : public KTDataTypeDisplay
     {
         public:
@@ -24,9 +24,9 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void DrawRawTimeSeriesData(KTDataPtr data);
-            void DrawTimeSeriesData(KTDataPtr data);
-            void DrawTimeSeriesDataDistribution(KTDataPtr data);
+            void DrawRawTimeSeriesData(Nymph::KTDataPtr data);
+            void DrawTimeSeriesData(Nymph::KTDataPtr data);
+            void DrawTimeSeriesDataDistribution(Nymph::KTDataPtr data);
 
     };
 

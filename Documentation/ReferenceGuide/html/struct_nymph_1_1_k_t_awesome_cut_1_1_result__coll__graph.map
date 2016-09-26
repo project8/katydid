@@ -1,0 +1,6 @@
+<map id="Nymph::KTAwesomeCut::Result" name="Nymph::KTAwesomeCut::Result">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_cut_result.html" title="{Nymph::KTExtensibleCutResult\l\&lt; Result \&gt;\n||+ KTExtensibleCutResult()\l+ ~KTExtensibleCutResult()\l+ Name()\l}" alt="" coords="5,221,213,335"/>
+<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; Result, KTCutResultCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="8,5,202,172"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="246,241,325,315"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="227,45,352,132"/>
+</map>

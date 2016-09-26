@@ -44,7 +44,7 @@ namespace Katydid
             fWindower(new KTWindower()),
             fFFT(new KTForwardFFTW()),
             fOutputArrays(),
-            fOutputData(new KTData()),
+            fOutputData(new Nymph::KTData()),
             fOutputSHData(NULL),
             fOutputWVData(NULL),
             fWindowAverageCounter(0),
@@ -68,36 +68,36 @@ namespace Katydid
         }
     }
 
-    bool KTWignerVille::Configure(const KTParamNode* node)
+    bool KTWignerVille::Configure(const scarab::param_node* node)
     {
-        fFFT->Configure(node->NodeAt("forward-fftw"));
+        fFFT->Configure(node->node_at("forward-fftw"));
 
-        const KTParamNode* windowerNode = node->NodeAt("windower");
+        const scarab::param_node* windowerNode = node->node_at("windower");
         if (windowerNode != NULL)
         {
             fUseWindowFunction = true;
             fWindower->Configure(windowerNode);
         }
 
-        const KTParamArray* wvPairs = node->ArrayAt("wv-pairs");
+        const scarab::param_array* wvPairs = node->array_at("wv-pairs");
         if (wvPairs != NULL)
         {
-            for (KTParamArray::const_iterator pairIt = wvPairs->Begin(); pairIt != wvPairs->End(); ++pairIt)
+            for (scarab::param_array::const_iterator pairIt = wvPairs->begin(); pairIt != wvPairs->end(); ++pairIt)
             {
-                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
-                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->ToString());
+                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->to_string());
                     return false;
                 }
-                UIntPair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< unsigned >(1));
+                UIntPair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< unsigned >(1));
                 KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
                 this->AddPair(pair);
             }
         }
 
-        SetWindowSize(node->GetValue< unsigned >("window-size", fWindowSize));
-        SetWindowStride(node->GetValue< unsigned >("window-stride", fWindowStride));
-        SetNWindowsToAverage(node->GetValue< unsigned >("n-windows-to-average", fNWindowsToAverage));
+        SetWindowSize(node->get_value< unsigned >("window-size", fWindowSize));
+        SetWindowStride(node->get_value< unsigned >("window-stride", fWindowStride));
+        SetNWindowsToAverage(node->get_value< unsigned >("n-windows-to-average", fNWindowsToAverage));
 
         return true;
     }
@@ -158,7 +158,7 @@ namespace Katydid
         fAdvanceStartIteratorOnNewSlice = false;
 
         // initialize the output data
-        fOutputData.reset(new KTData());
+        fOutputData.reset(new Nymph::KTData());
 
         // slice header
         fFirstHeader.SetNComponents(nPairs);
@@ -360,7 +360,7 @@ namespace Katydid
         ///}
     }
 
-    void KTWignerVille::ProcessTimeSeries(KTDataPtr data)
+    void KTWignerVille::ProcessTimeSeries(Nymph::KTDataPtr data)
     {
         // Standard data slot pattern, except the signal is called asynchronously
 
@@ -391,7 +391,7 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::ProcessAnalyticAssociate(KTDataPtr data)
+    void KTWignerVille::ProcessAnalyticAssociate(Nymph::KTDataPtr data)
     {
         // Standard data slot pattern, except the signal is called asynchronously
 

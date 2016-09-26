@@ -26,7 +26,7 @@
 namespace Katydid {
     KTLOGGER(publog, "KTHDF5TypeWriterTransform");
 
-    static KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterTransform> sH5TWFFTReg;
+    static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterTransform> sH5TWFFTReg;
 
     KTHDF5TypeWriterTransform::KTHDF5TypeWriterTransform() :
         KTHDF5TypeWriter(),
@@ -208,7 +208,7 @@ namespace Katydid {
     }
 
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTW(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTW(Nymph::KTDataPtr data) {
         if (!data) return;
 
         // Get Data and Slice Number
@@ -260,7 +260,7 @@ namespace Katydid {
         KTDEBUG(publog, "Done Writing Slice to File.");
     }
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolar(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolar(Nymph::KTDataPtr data) {
         if (!data) return;
 
         // Get Data and Slice Number
@@ -314,14 +314,14 @@ namespace Katydid {
     }
 
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPhase(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPower(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPower(Nymph::KTDataPtr data) {
         if (!data) return;
 
         // Get Data and Slice Number
@@ -372,7 +372,7 @@ namespace Katydid {
         KTDEBUG(publog, "Done Writing Slice to File.");
     }
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data) {
         if (!data) return;
 
         // Get Data and Slice Number
@@ -424,20 +424,20 @@ namespace Katydid {
     }
 
 
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
 
-    void KTHDF5TypeWriterTransform::WritePowerSpectrum(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WritePowerSpectrum(Nymph::KTDataPtr data) {
         if (!data) return;
 
         // Get Data and Slice Number
@@ -489,7 +489,7 @@ namespace Katydid {
         KTDEBUG(publog, "Done Writing Slice to File.");
     }
 
-    void KTHDF5TypeWriterTransform::WritePowerSpectralDensity(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WritePowerSpectralDensity(Nymph::KTDataPtr data) {
         if (!data) return;
 
         // Get Data and Slice Number
@@ -542,25 +542,25 @@ namespace Katydid {
     }
 
 
-    void KTHDF5TypeWriterTransform::WritePowerSpectrumDistribution(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WritePowerSpectrumDistribution(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WritePowerSpectralDensityDistribution(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolar(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolar(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolarPhase(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolarPower(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolarPower(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteMultiFSDataPolar(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteMultiFSDataPolar(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterTransform::WriteMultiFSDataFFTW(KTDataPtr data) {
+    void KTHDF5TypeWriterTransform::WriteMultiFSDataFFTW(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
 }

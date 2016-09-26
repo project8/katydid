@@ -1,0 +1,6 @@
+<map id="Katydid::KTMultiFSDataFFTW" name="Katydid::KTMultiFSDataFFTW">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_multi_f_s_data_f_f_t_w_core.html" title="{Katydid::KTMultiFSDataFFTWCore\n||+ KTMultiFSDataFFTWCore()\l+ ~KTMultiFSDataFFTWCore()\l+ GetSpectra()\l+ GetSpectra()\l+ GetNComponents()\l+ SetSpectra()\l+ SetSpectrum()\l+ SetNSpectra()\l+ SetNComponents()\l# DeleteSpectra()\l}" alt="" coords="12,233,242,427"/>
+<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTMultiFSDataFFTW \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="274,273,452,387"/>
+<area shape="rect" id="node5" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTMultiFSDataFFTW, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="243,5,496,172"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="475,293,555,367"/>
+</map>

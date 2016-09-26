@@ -36,7 +36,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplaySpectrumAnalysis > sBRTWAnalysisRegistrar;
+    static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplaySpectrumAnalysis > sBRTWAnalysisRegistrar;
 
     KTDataTypeDisplaySpectrumAnalysis::KTDataTypeDisplaySpectrumAnalysis() :
             KTDataTypeDisplay()
@@ -75,7 +75,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataPolar(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -102,7 +102,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataFFTW(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -129,7 +129,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataPolarPhase(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -156,7 +156,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataFFTWPhase(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataFFTWPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -183,7 +183,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataPolarPower(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -210,7 +210,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataFFTWPower(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawNormalizedFSDataFFTWPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -241,7 +241,7 @@ namespace Katydid
     // Analytic Associate Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawAnalyticAssociateData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawAnalyticAssociateData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -271,7 +271,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawAnalyticAssociateDataDistribution(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawAnalyticAssociateDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -305,7 +305,7 @@ namespace Katydid
     // Correlation Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -336,7 +336,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationDataDistribution(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -371,7 +371,7 @@ namespace Katydid
     // Correlation Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationTSData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationTSData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -398,7 +398,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationTSDataDistribution(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawCorrelationTSDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -429,7 +429,7 @@ namespace Katydid
     // Hough Transform Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawHoughData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawHoughData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -460,7 +460,7 @@ namespace Katydid
     // Gain Variation Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawGainVariationData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawGainVariationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -504,7 +504,7 @@ namespace Katydid
     // WignerVille Data
     //************************
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawWignerVilleData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawWignerVilleData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -535,7 +535,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawWignerVilleDataDistribution(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawWignerVilleDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -566,7 +566,7 @@ namespace Katydid
         return;
     }
 
-    void KTDataTypeDisplaySpectrumAnalysis::DrawWV2DData(KTDataPtr data)
+    void KTDataTypeDisplaySpectrumAnalysis::DrawWV2DData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

@@ -15,15 +15,10 @@
 
 #include <cmath>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTHoughData;
     class KTSparseWaterfallCandidateData;
 
@@ -47,16 +42,16 @@ namespace Katydid
      - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
 
      Signals:
-     - "track": void (KTDataPtr) -- Emitted when a track has been processed; Guarantees KTProcessedTrackData.
+     - "track": void (Nymph::KTDataPtr) -- Emitted when a track has been processed; Guarantees KTProcessedTrackData.
     */
 
-    class KTTrackProcessing : public KTProcessor
+    class KTTrackProcessing : public Nymph::KTProcessor
     {
         public:
             KTTrackProcessing(const std::string& name = "track-proc");
             virtual ~KTTrackProcessing();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             double GetPointLineDistCut1() const;
             void SetPointLineDistCut1(double dist);
@@ -90,14 +85,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fTrackSignal;
+            Nymph::KTSignalData fTrackSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
+            Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
 
     };
 

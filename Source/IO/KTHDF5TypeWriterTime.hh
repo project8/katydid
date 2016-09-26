@@ -22,9 +22,9 @@ namespace Katydid {
 
             void RegisterSlots();
 
-            void WriteRawTimeSeriesData(KTDataPtr data);
+            void WriteRawTimeSeriesData(Nymph::KTDataPtr data);
 
-            void WriteRealTimeSeriesData(KTDataPtr data);
+            void WriteRealTimeSeriesData(Nymph::KTDataPtr data);
 
         private:
             H5::DataSpace* fRawTSliceDSpace; //raw_time_slice_dspace

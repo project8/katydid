@@ -15,15 +15,9 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTKDTreeData;
 
    /*!
@@ -43,19 +37,19 @@ namespace Katydid
      - "slope-algorithm": string -- Method used to find the slope around each point: "nearest-neighbor" or "radius" (default)
 
      Slots:
-     - "kd-tree-in": void (KTDataPtr) -- Performs the CT algorithm on the data in a k-d tree; Requires KTKDTreeData; existing data is modified
+     - "kd-tree-in": void (Nymph::KTDataPtr) -- Performs the CT algorithm on the data in a k-d tree; Requires KTKDTreeData; existing data is modified
 
      Signals:
-     - "kd-tree-out": void (KTDataPtr) emitted upon completion of the CT algorithm
+     - "kd-tree-out": void (Nymph::KTDataPtr) emitted upon completion of the CT algorithm
     */
 
-    class KTConsensusThresholding : public KTProcessor
+    class KTConsensusThresholding : public Nymph::KTProcessor
     {
         public:
             KTConsensusThresholding(const std::string& name = "consensus-thresholding");
             virtual ~KTConsensusThresholding();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, MembershipRadius);
             MEMBERVARIABLE(unsigned, MinNumberVotes);
@@ -78,14 +72,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fKDTreeSignal;
+            Nymph::KTSignalData fKDTreeSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
 
     };
 

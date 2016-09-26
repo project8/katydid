@@ -13,7 +13,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTSincWindow
      @author N. S. Oblath
@@ -34,7 +34,7 @@ namespace Katydid
             KTSincWindow(const std::string& name = "sinc");
             virtual ~KTSincWindow();
 
-            virtual bool ConfigureWFSubclass(const KTParamNode* node);
+            virtual bool ConfigureWFSubclass(const scarab::param_node* node);
 
             virtual double GetWeight(double time) const;
 

@@ -22,15 +22,9 @@
 #include <vector>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTAnalyticAssociateData;
     class KTEggHeader;
     class KTFrequencySpectrumFFTW;
@@ -59,6 +53,10 @@ namespace Katydid
      Initialize with InitializeForRealAsComplexTDD(), and transform with TransformRealAsComplexData() and related functions.
      The output will be a KTFrequencySpectrumFFTW with size N.
 
+     If you're using the signal/slot interface, and initializing the FFT with the Egg header (slot "header"), you have two options for specifying the type of transform:
+     - Use the type recorded in the Egg header.  The choice will be based on whether the time-domain-data is real, complex (not IQ), or IQ.
+     - Specify the "transform-state" in the processor configuration.  You can then also specify whether to "transform-complex-as-iq".
+
      The FFT is implemented using FFTW.
 
      Configuration name: "forward-fftw"
@@ -67,7 +65,8 @@ namespace Katydid
      - "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
      - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     - "transform-complex-as-iq": bool -- specify whether to treat complex data as IQ: the negative frequency bins are assumed to be a continuous extension of the positive frequency bins, and the whole spectrum is shifted so that it starts at DC.
+     - "transform-state": string -- "r2c", "c2c", or "rasc2c"; specify the transform state, regardless of the time domain type listed in the egg header; this is useful when a new time domain data type (e.g. aa) has been added to the data object and is being transformed.
+     - "transform-complex-as-iq": bool -- specify whether to treat complex data as IQ: the negative frequency bins are assumed to be a continuous extension of the positive frequency bins, and the whole spectrum is shifted so that it starts at DC; this is only used if the transform state has also been specified.
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -80,21 +79,22 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag when necessary so that the input data is not destroyed.
 
      Slots:
-     - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
-     - "ts-real": void (KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
-     - "ts-fftw": void (KTDataPtr) -- Perform a forward FFT on a complex time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
-     - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
-     - "ts-real-as-complex": void (KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "header": void (Nymph::KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
+     - "ts-real": void (Nymph::KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "ts-fftw": void (Nymph::KTDataPtr) -- Perform a forward FFT on a complex time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "aa": void (Nymph::KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "ts-real-as-complex": void (Nymph::KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
 
      Signals:
-     - "fft": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     - "fft": void (Nymph::KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
     */
 
-    class KTForwardFFTW : public KTFFTW, public KTProcessor
+    class KTForwardFFTW : public KTFFTW, public Nymph::KTProcessor
     {
         private:
             typedef std::map< std::string, unsigned > TransformFlagMap;
 
+        public:
             enum State
             {
                 kNone,
@@ -107,7 +107,7 @@ namespace Katydid
             KTForwardFFTW(const std::string& name = "forward-fftw");
             virtual ~KTForwardFFTW();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);
@@ -204,18 +204,18 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFFTSignal;
+            Nymph::KTSignalData fFFTSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSRealSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
-            KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSRealAsComplexSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSRealSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
+            Nymph::KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSRealAsComplexSlot;
 
     };
 

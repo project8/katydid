@@ -8,7 +8,6 @@
 #include "KTRectangularWindow.hh"
 
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 #include <cmath>
 
@@ -30,9 +29,9 @@ namespace Katydid
     {
     }
 
-    bool KTRectangularWindow::ConfigureWFSubclass(const KTParamNode* node)
+    bool KTRectangularWindow::ConfigureWFSubclass(const scarab::param_node* node)
     {
-        SetBoxcarSize(node->GetValue< unsigned >("boxcar-size", fBoxcarSize));
+        SetBoxcarSize(node->get_value< unsigned >("boxcar-size", fBoxcarSize));
 
         KTDEBUG(windowlog, "Rectangular WF configured: boxcar size = " << fBoxcarSize);
         return true;

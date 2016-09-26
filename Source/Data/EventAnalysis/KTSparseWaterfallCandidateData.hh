@@ -16,8 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTSparseWaterfallCandidateData : public KTExtensibleData< KTSparseWaterfallCandidateData >
+    class KTSparseWaterfallCandidateData : public Nymph::KTExtensibleData< KTSparseWaterfallCandidateData >
     {
         public:
             struct Point

@@ -15,9 +15,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
-    class KTNormalizedFSDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTNormalizedFSDataPolar >
+    class KTNormalizedFSDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTNormalizedFSDataPolar >
     {
         public:
             KTNormalizedFSDataPolar();
@@ -30,7 +30,7 @@ namespace Katydid
 
     };
 
-    class KTNormalizedFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTNormalizedFSDataFFTW >
+    class KTNormalizedFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTNormalizedFSDataFFTW >
     {
         public:
             KTNormalizedFSDataFFTW();
@@ -43,7 +43,7 @@ namespace Katydid
 
     };
 
-    class KTNormalizedPSData : public KTPowerSpectrumDataCore, public KTExtensibleData< KTNormalizedPSData >
+    class KTNormalizedPSData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTNormalizedPSData >
     {
         public:
             KTNormalizedPSData();

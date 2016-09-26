@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTPowerSpectrum : public KTPhysicalArray< 1, double >, public KTFrequencyDomainArray
     {

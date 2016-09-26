@@ -13,7 +13,6 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTParam.hh"
 #include "KTWignerVilleData.hh"
 
 using std::string;
@@ -39,7 +38,7 @@ namespace Katydid
     {
     }
 
-    bool KTSwitchFFTWPolar::Configure(const KTParamNode* node)
+    bool KTSwitchFFTWPolar::Configure(const scarab::param_node* node)
     {
         return true;
     }

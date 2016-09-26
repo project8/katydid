@@ -11,7 +11,7 @@ namespace Katydid
 
     KTLOGGER(ats_log, "KTBasicASCIITypeWriterTS");
 
-    static KTTIRegistrar< KTBasicASCIITypeWriter, KTBasicASCIITypeWriterTS > sBATWReg;
+    static Nymph::KTTIRegistrar< KTBasicASCIITypeWriter, KTBasicASCIITypeWriterTS > sBATWReg;
 
     KTBasicASCIITypeWriterTS::KTBasicASCIITypeWriterTS() :
             KTBasicASCIITypeWriter()
@@ -27,7 +27,7 @@ namespace Katydid
                 &KTBasicASCIITypeWriterTS::WriteTimeSeriesData);
     }
 
-    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(KTDataPtr data)
+    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

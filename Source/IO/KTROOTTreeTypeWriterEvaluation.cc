@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterEvaluation");
 
-    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWERegistrar;
+    static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWERegistrar;
 
     KTROOTTreeTypeWriterEvaluation::KTROOTTreeTypeWriterEvaluation() :
             KTROOTTreeTypeWriter(),
@@ -50,7 +50,7 @@ namespace Katydid
     // Meta CC Locust MC
     //*********************
 
-    void KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC(KTDataPtr data)
+    void KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC(Nymph::KTDataPtr data)
     {
         KTCCResults& ccResults = data->Of< KTCCResults >();
 

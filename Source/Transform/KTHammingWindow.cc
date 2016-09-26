@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
+#include "param.hh"
 
 #include <cmath>
 
@@ -30,7 +30,7 @@ namespace Katydid
     {
     }
 
-    bool KTHammingWindow::ConfigureWFSubclass(const KTParamNode*)
+    bool KTHammingWindow::ConfigureWFSubclass(const scarab::param_node*)
     {
         KTDEBUG(windowlog, "Hamming WF configured");
         return true;

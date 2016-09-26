@@ -15,7 +15,6 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
-#include "KTParam.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -62,22 +61,42 @@ namespace Katydid
         if (fForwardPlan != NULL) fftw_destroy_plan(fForwardPlan);
     }
 
-    bool KTForwardFFTW::Configure(const KTParamNode* node)
+    bool KTForwardFFTW::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
+            SetTransformFlag(node->get_value("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
+            SetUseWisdom(node->get_value<bool>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->get_value("wisdom-filename", fWisdomFilename));
 
-            SetComplexAsIQ(node->GetValue("transform-complex-as-iq", fComplexAsIQ));
+            SetComplexAsIQ(node->get_value("transform-complex-as-iq", fComplexAsIQ));
+
+            if( node->has("transform-state") )
+            {
+                string intendedState(node->get_value("transform-state"));
+                if (intendedState == "r2c") fState = kR2C;
+                else if (intendedState == "c2c") fState = kC2C;
+                else if (intendedState == "rasc2c") fState = kRasC2C;
+                else
+                {
+                    KTERROR(fftwlog, "Invalid transform state requested: <" << intendedState << ">");
+                    return false;
+                }
+            }
+            else
+            {
+                if (node->has("transform-complex-as-iq"))
+                {
+                    KTWARN(fftwlog, "Transform-complex-as-iq was requested, but the transform-state was not specified; the former setting will be ignored");
+                }
+            }
         }
 
         if (fUseWisdom)
         {
-            if (! KTCacheDirectory::GetInstance()->Configure())
+            if (! Nymph::KTCacheDirectory::get_instance()->Configure())
             {
                 KTWARN(fftwlog, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;
@@ -198,17 +217,23 @@ namespace Katydid
 
     bool KTForwardFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        if (header.GetTSDataType() == KTEggHeader::kReal)
+        if (fState == kNone)
         {
-            return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
+            if (header.GetTSDataType() == KTEggHeader::kReal)
+            {
+                return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
+            }
+            else // == KTEggHeader::kComplex || KTEggHeader::kIQ
+            {
+                if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
+                else fComplexAsIQ = false;
+                return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
+            }
         }
-        else // == KTEggHeader::kComplex || KTEggHeader::kIQ
+        else
         {
-            if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
-            else fComplexAsIQ = false;
-            return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
+            return InitializeFFT(fState, header.GetChannelHeader(0)->GetSliceSize());
         }
-
     }
 
     bool KTForwardFFTW::TransformRealData(KTTimeSeriesData& tsData)

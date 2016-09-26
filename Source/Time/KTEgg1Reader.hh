@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTEgg1Reader : public KTEggReader
     {
@@ -55,8 +55,8 @@ namespace Katydid
         public:
             virtual bool Configure(const KTEggProcessor& eggProc);
 
-            virtual KTDataPtr BreakEgg(const std::string& filename);
-            virtual KTDataPtr HatchNextSlice();
+            virtual Nymph::KTDataPtr BreakEgg(const std::string& filename);
+            virtual Nymph::KTDataPtr HatchNextSlice();
             virtual bool CloseEgg();
 
             /// Returns the time since the run started in seconds

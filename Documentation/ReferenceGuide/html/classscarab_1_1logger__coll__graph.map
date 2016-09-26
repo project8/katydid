@@ -1,0 +1,5 @@
+<map id="scarab::logger" name="scarab::logger">
+<area shape="rect" id="node2" href="$structscarab_1_1logger_1_1_private.html" title="{scarab::logger::Private\n|+ fLogger\l+ fThreshold\l+ sDateTimeFormat\l+ sRawTime\l+ sProcessedTime\l+ sTimeBuff\l+ fColored\l|+ logCout()\l+ logCerr()\l+ getTimeAbsoluteStr()\l+ level2Str()\l+ level2Color()\l}" alt="" coords="40,207,198,413"/>
+<area shape="rect" id="node3" href="$classscarab_1_1mutex.html" title="{scarab::mutex\n|&#45; f_mutex\l|+ mutex()\l+ ~mutex()\l+ trylock()\l+ lock()\l+ unlock()\l}" alt="" coords="5,5,110,132"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="135,32,229,105"/>
+</map>

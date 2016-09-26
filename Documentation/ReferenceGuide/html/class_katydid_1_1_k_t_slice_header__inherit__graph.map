@@ -1,0 +1,4 @@
+<map id="Katydid::KTSliceHeader" name="Katydid::KTSliceHeader">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTSliceHeader \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="24,220,202,333"/>
+<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTSliceHeader, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,5,220,172"/>
+</map>

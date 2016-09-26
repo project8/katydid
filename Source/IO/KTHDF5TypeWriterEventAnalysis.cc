@@ -20,7 +20,7 @@
 namespace Katydid {
     KTLOGGER(publog, "KTHDF5TypeWriterEventAnalysis");
 
-    static KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
+    static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
     KTHDF5TypeWriterEventAnalysis::KTHDF5TypeWriterEventAnalysis() :
         KTHDF5TypeWriter(),
         fMTEDataBuffer(),
@@ -64,16 +64,16 @@ namespace Katydid {
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data) {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data) {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data) {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "Processing Tracks");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
@@ -109,7 +109,7 @@ namespace Katydid {
         KTDEBUG("Done.");
         return;
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "Processing MTE");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 

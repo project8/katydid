@@ -16,8 +16,8 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTLinearFitResult : public KTExtensibleData< KTLinearFitResult >
+    
+    class KTLinearFitResult : public Nymph::KTExtensibleData< KTLinearFitResult >
     {
         public:
             KTLinearFitResult();
