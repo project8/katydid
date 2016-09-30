@@ -55,7 +55,11 @@ namespace Katydid
         private:
             KTGainVariationData fGVData;
 
+            char fMode;
+            double fThreshold;
+
         public:
+            bool Configure(const scarab::param_node* node);
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
             bool Ratio(KTPowerSpectrumData& data);
             bool ScoreRatio(KTPowerSpectrumData& data, KTGainVariationData& gvData);

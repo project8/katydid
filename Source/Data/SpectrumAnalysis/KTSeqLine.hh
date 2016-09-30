@@ -5,13 +5,13 @@
  *      Author: Christine
  */
 
-#ifndef SOURCE_DATA_TRANSFORM_KTSEQLINE_HH_
-#define SOURCE_DATA_TRANSFORM_KTSEQLINE_HH_
+#ifndef KTSEQLINE_HH_
+#define KTSEQLINE_HH_
 
 
 #include "KTFrequencyDomainArray.hh"
 #include "KTPhysicalArray.hh"
-#include "KTSeqTrackCreator.hh"
+//#include "KTSeqTrackCreator.hh"
 
 
 #include <string>
@@ -19,79 +19,113 @@
 
 namespace Katydid {
 
-class KTPowerSpectrum;
-class KTGainVariationData;
-class KTScoredSpectrum;
-class KTSeqTrackCreator;
 
-using namespace Nymph;
+//using namespace Nymph;
 
 class KTSeqLine
 {
+	struct Point
+	        {
+	        	double fBinInSlice;
+	            double fPointFreq;
+	            double fTimeInAcq;
+	            double fScore;
+	            Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double Score) : fBinInSlice(BinInSclice), fPointFreq(PointFreq), fTimeInAcq(TimeInAcq), fScore(Score) {}
+	        };
 
-public:
-            /// Extend KT2DPoint to include amplitude
-            struct Point : KT2DPoint< double >
-            {
-                typedef KT2DPoint< double >::coord_t coord_t;
-                Point() : fAmplitude(0.), fTimeInAcq(0.), fSliceNumber(0)
-                {
-                    fCoords[0] = 0;
-                    fCoords[1] = 0;
-                }
-                double fAmplitude;
-                double fTimeInAcq;
-                uint64_t fSliceNumber;
-                //uint64_t fAcquisitionID;
-            };
-
-	KTSeqLine(unsigned LineID, double StartTime, double StartFreq, double Score);
-	KTSeqLine(const KTSeqLine& orig);
-	virtual ~KTSeqLine();
-
-	double SetLineID(unsigned) const;
-	double SetStartFreq(double) const;
-	double SetStartTime(double) const;
+	public:
 
 
-	unsigned GetNPoints();
-	double GetStartFreq() const;
-	double GetSlope();
-	double GetStartTime() const;
-	double GetTotalScore();
+		KTSeqLine(unsigned LineID, Point& Point, double& new_trimming_limits);
+		virtual ~KTSeqLine();
+
+
+		unsigned GetNPoints();
+		double GetLength();
+		double GetStartFreq();
+		double GetSlope();
+		double GetStartTime();
+		double GetTotalScore();
+		unsigned GetLineID();
 
 
 
+		bool Configure(double& DeltaT, double& DeltaF);
+		bool InvestigatePoint(Point& Point, double& new_trimming_limits);
+		bool TrimEdges();
+		bool CollectPoint(Point&, double& new_trimming_limits);
 
-	void InvestigatePoint(int& MatchFlag, KTSeqTrackCreator::Parameters& p, KTScoredSpectrum& slice, int point);
-	void TrimEdges(KTSeqTrackCreator::Parameters& p);
+		double GetLineScore();
 
-	//line properties
-	double slope;
-	double startfreq;
-	double LineScore;
+		//investigation parameters
+		double fDeltaT;
+		double fDeltaF;
+		unsigned fLambda;
+		double fLineThreshold;
+		double fMu;
+		int fNu;
 
-	int active;
-	int collectable;
-	int length;
-	int identifier;
 
-	//point lists
-	std::vector<double> scorelist;
-	std::vector<double> timelist;
-	std::vector<double> freqlist;
-	std::vector<double> trimming_limits;
+		//line properties
+		double fLineSlope;
+		double fLineScore;
+		double fLength;
 
-public:
-	KTScoredSpectrum& operator=(const KTScoredSpectrum& rhs);
+		bool fActive;
+		bool fCollectable;
 
-	KTScoredSpectrum& Scale(double scale);
+		unsigned Identifier;
 
+		//point lists
+
+		std::vector<double> trimming_limits;
+		std::vector<Point> fLinePoints;
+
+/*		public:
+			KTScoredSpectrum& operator=(const KTScoredSpectrum& rhs);
+
+			KTScoredSpectrum& Scale(double scale);
+*/
 };
 
 
+	double KTSeqLine::GetTotalScore()
+	{
+		double score;
+		unsigned nPoints = this->GetNPoints;
+		if (nPoints>0)
+		{
+			for(unsigned i=0; i<nPoints;i++)
+			{
+				score+=this->fLinePoints[i].fScore;
+			}
+			score=score/nPoints;
+		}
+		return score;
+	}
 
+	unsigned inline KTSeqLine::GetNPoints()
+	{
+		return fLinePoints.size();
+	}
+	double inline KTSeqLine::GetLength()
+	{
+		return fLength;
+	}
 
+	double inline KTSeqLine::GetStartFreq()
+	{
+		return fLinePoints[0].fPointFreq;
+	}
+
+	double inline KTSeqLine::GetStartTime()
+	{
+		return fLinePoints[0].fTimeInAcq;
+	}
+	double inline KTSeqLine::GetSlope()
+	{
+		return fLineSlope;
+	}
 
 
 

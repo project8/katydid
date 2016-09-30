@@ -1,20 +1,21 @@
 /*
- * KTConsensusThresholding.cc
+ * KTSeqTrackFinder.cc
  *
  *  Created on: Sep 15, 2016
  *      Author: Christine
  */
 
-#include "KTSeqTrackCreator.hh"
+#include "KTSeqTrackFinder.hh"
 
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTScoredSpectrum.hh"
 #include "KTScoredSpectrumData.hh"
 
+
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
+//#include "KTParam.hh"
 
 #include <numeric>
 #include <cmath>;
@@ -24,19 +25,19 @@ using std::string;
 
 namespace Katydid
 {
-	KTLOGGER(sdlog, "KTSeqTrackCreator");
+	KTLOGGER(sdlog, "KTSeqTrackFinder");
 
 /* KTLOGGER(ctlog, "KTConsensusThresholding");
 */
-    KT_REGISTER_PROCESSOR(KTSeqTrackCreator, "seq-clustering");
+    KT_REGISTER_PROCESSOR(KTSeqTrackFinder, "seq-clustering");
 
-    KTSeqTrackCreator::KTSeqTrackCreator(const std::string& name) :
+    KTSeqTrackFinder::KTSeqTrackFinder(const std::string& name) :
             KTProcessor(name),
             fFDelta(5*pow(10,5)),
             fTimeDistance(2),
             fBinDelta(4),
 			fSigma(-3),
-			fScoreThreshold(10.),
+			fScoreThreshold(5.),
 			fMinBin(0),
 			fMaxBin(1),
 			fMinFrequency(0.),
@@ -44,18 +45,18 @@ namespace Katydid
 			fCalculateMinBin(true),
 			fCalculateMaxBin(true),
             fSeqTrackSignal("lines-out", this),
-	//		fSeqTrackSlot("disc-in", this, &KTSeqTrackCreator::PointLineAssignment, &fSeqTrackSignal),
-    		fSeqTrackSlot("scores_in", this, &KTSeqTrackCreator::PointLineAssignment, &fSeqTrackSignal)
+	//		fSeqTrackSlot("disc-in", this, &KTSeqTrackFinder::PointLineAssignment, &fSeqTrackSignal),
+    		fSeqTrackSlot("scores_in", this, &KTSeqTrackFinder::PointLineAssignment, &fSeqTrackSignal)
     {
     }
 
-    KTSeqTrackCreator::~KTSeqTrackCreator()
+    KTSeqTrackFinder::~KTSeqTrackFinder()
     {
     }
 
-    bool KTSeqTrackCreator::Configure(const scarab::param_node* node)
+    bool KTSeqTrackFinder::Configure(const scarab::param_node* node)
     {
-        if (node == NULL) return false;
+        if (node == NULL) return true;
 
         if (node->has("min-frequency"))
         {
@@ -91,7 +92,7 @@ namespace Katydid
     }
 
 
-  /*  bool KTSeqTrackCreator::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& slice,  KTDiscriminatedPoints1DData& discPoints)
+  /*  bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& slice,  KTDiscriminatedPoints1DData& discPoints)
     {
     	KTDEBUG(kdlog, "Is this a new acquisition? fHaveNewData=" << fHaveNewData << " and GetIsNewAcquisition=" << slHeader.GetIsNewAcquisition());
     	// first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
@@ -124,21 +125,22 @@ namespace Katydid
         	const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
         	double new_TimeInAcq = (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
 
-            if (!KTSeqTrackCreator::LoopOverDiscriminatedPoints(incomingPts, slice, new_TimeInAcq, *new_trimming_limits))
+            if (!KTSeqTrackFinder::LoopOverDiscriminatedPoints(incomingPts, slice, new_TimeInAcq, *new_trimming_limits))
             {
             	KTERROR(ctlog, "Sequential track creation failed");
             	return false;
             }
 
-            KTDEBUG(ctlog, "Currently building" << KTLines.size() << " lines");
+            KTDEBUG(ctlog, "Currently building" << KTSeqLines.size() << " lines");
 
         }
         return true;
     }
 */
 
-    bool KTSeqTrackCreator::PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum)
+    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum)
         {
+    		KTLines& new_Lines;
 
             unsigned nComponents = slHeader.GetNComponents();
 
@@ -156,8 +158,9 @@ namespace Katydid
 
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
-            	std::vector<unsigned> CandidateBins;
+            	std::vector<KTSeqLine::Point> CandidatePoints;
             	KTScoredSpectrum slice=spectrum.GetSpectrum(iComponent);
+            	double BinWidth = slice.GetBinWidth();
             	double new_trimming_limits = 0.0;
             	double new_TimeInAcq = (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
 
@@ -168,8 +171,6 @@ namespace Katydid
             	}
 
             	unsigned nBins = fMaxBin - fMinBin + 1;
-            	//double freqMin = slice->GetBinLowEdge(fMinBin);
-            	//double freqMax = slice->GetBinLowEdge(fMaxBin) + slice->GetBinWidth();
 
           	    // loop over bins, checking against the threshold
            	    double threshold, value;
@@ -181,43 +182,54 @@ namespace Katydid
 
             	    if (value >= threshold)
            	        {
-           	        	CandidateBins.push_back(iBin);
+            	    	double PointFreq = BinWidth * ((double)iBin + 0.5);
+            	    	KTSeqLine::Point new_Point(iBin, PointFreq, new_TimeInAcq, value);
+           	        	CandidatePoints.push_back(new_Point);
            	        }
             	}
 
-            	this->LoopOverHighPowerPoints(slice, CandidateBins, new_TimeInAcq, new_trimming_limits);
+            	this->LoopOverHighPowerPoints(slice, CandidatePoints, new_Lines, new_trimming_limits);
             }
             return true;
         }
 
-    bool KTSeqTrackCreator::LoopOverHighPowerPoints(KTScoredSpectrum& slice, std::vector<unsigned>& Points, double& TimeInAcq, double& new_trimming_limits)
+    bool KTSeqTrackFinder::LoopOverHighPowerPoints(KTScoredSpectrum& slice, std::vector<KTSeqLine::Point>& Points, KTLines& new_Lines, double& new_trimming_limits)
      {
     	double freq = 0.0, PointFreq= 0.0, new_score=0.0;
-    	double BinWidth = slice.GetBinWidth();
+    	unsigned PointBin = 0;
 
          for (unsigned iPoint=0; iPoint<Points.size(); iPoint++)
          {
-        	 PointFreq = BinWidth * ((double)Points(iPoint) + 0.5);
+        	 PointFreq = Points[iPoint].fPointFreq;
+        	 PointBin = Points[iPoint].fPointFreq;
 
          	if (PointFreq - freq > fFDelta)
          	{
          		bool match = false;
-         		this->SearchAreaForBetterPoints(Points(iPoint), slice, PointFreq);
+
+         		this->SearchAreaForBetterPoints(PointBin, PointFreq, slice);
 
          		freq = PointFreq;
+         		slice(PointBin) = fSigma; //should be PointBin-BinDelta:PointBin+BinDelta
 
-         		for (KTLines::SetOfLines::const_iterator LineIt =fLines.begin(); LineIt != fLines.end(); ++LineIt)
-         			{
-         			if (LineIt.InvestigatePoint((double)Points(iPoint), TimeInAcq, new_trimming_limits))
+         		unsigned int nLines = new_Lines.GetNLines();
+         		std::vector<KTSeqLine>& fLines = new_Lines.GetLines();
+
+         		for (unsigned iLines=0; iLines>nLines; iLines++)
+         		{
+         			if (fLines[iLines].fActive)
+					{
+         				if (fLines[iLines].InvestigatePoint(Points[PointBin], new_trimming_limits))
          				{
-         				match = true;
-         				break;
+         					match = true;
+         					break;
          				}
-         			}
+					}
+         		}
          		if (!match)
          		{
-         			KTSeqLine new_Line (nLines, Points(iPoint), TimeInAcq, new_freq, SNR(Points(iPoint)), *new_trimming_limits);
-         			nLines=fLines.GetNLines()+1;
+         			KTSeqLine new_Line(nLines, Points(iPoint), new_trimming_limits);
+         			new_Lines.AddLine(new_Line);
 
          		 }
 
@@ -225,7 +237,7 @@ namespace Katydid
          }
      }
 
- /*   bool KTSeqTrackCreator::LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double& TrimmingLimits)
+ /*   bool KTSeqTrackFinder::LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double& TrimmingLimits)
     {
     	double freq = 0.0;
 
@@ -234,10 +246,10 @@ namespace Katydid
                             pIt != incomingPts.end(); ++pIt)
         {
 
-        	if (KTSeqTrackCreator::VetoPoint(pIt, slice, freq))
+        	if (KTSeqTrackFinder::VetoPoint(pIt, slice, freq))
         	{
         		bool match = false;
-        		for (KTLines::SetOfLines::const_iterator LineIt =fLines.begin(); LineIt != fLines.end(); ++LineIt)
+        		for (KTSeqLines::SetOfLines::const_iterator LineIt =fLines.begin(); LineIt != fLines.end(); ++LineIt)
         			{
         			if (LineIt.InvestigatePoint(pIt, TimeInAcq, *new_trimming_limits))
         				{
@@ -257,10 +269,11 @@ namespace Katydid
     }
 */
 
-    void KTSeqTrackCreator::SearchAreaForBetterPoints(unsigned& PointBin, KTScoredSpectrum& slice, double& PointFreq)
+    void KTSeqTrackFinder::SearchAreaForBetterPoints(unsigned& PointBin, double& PointFreq, KTScoredSpectrum& slice)
     {
     	double dF = slice.GetBinWidth();
-    	double LocalDelta = fFDelta+dF;
+    	double LocalDelta = fFDelta+dF; //make sure initially LocalDelta is greater than dF
+
     	int loop_counter = 0;
     	double OldFreq = 0.0;
 
@@ -279,7 +292,7 @@ namespace Katydid
     	}
     }
 
-    inline void KTSeqTrackCreator::WeightedAverage(KTScoredSpectrum& slice, double& PointFreq, unsigned& PointBin)
+    inline void KTSeqTrackFinder::WeightedAverage(KTScoredSpectrum& slice, double& PointFreq, unsigned& PointBin)
     {
     	double BinWidth = slice.GetBinWidth();
 
@@ -301,7 +314,7 @@ namespace Katydid
     	PointFreq = f_average;
     }
 
-/*    bool KTSeqTrackCreator::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq)
+/*    bool KTSeqTrackFinder::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq)
     {
     	double new_freq = Point->second.fAbscissa;
     	double new_Amp = Point->second.fOrdinate;

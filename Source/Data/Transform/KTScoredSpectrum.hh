@@ -38,7 +38,7 @@ public:
 
 	const std::string& GetOrdinateLabel() const;
 
-
+	bool Configure(char& new_Mode, double new_BinDelta, double new_bplus, double new_bminus, double new_Threshold, double new_aminus, double new_aplus);
 	void ConvertToScoredSpectrum();
 	//void CreateScoredSpectrum();
 
@@ -59,6 +59,7 @@ public:
 //	const double Threshhold = 1.5;
 //	const double aminus = -0.3;
 //	const double aplus = 1.0;
+
 
 
 

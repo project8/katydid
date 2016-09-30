@@ -7,92 +7,98 @@
 
 #include <KTSeqLine.hh>
 
-
-#include "KTDiscriminatedPoints1DData.hh"
-
 #include "KTLogger.hh"
 
 #include <iostream>
 #include <cmath>
 
 
-using std::max;
-
-namespace
-{
-	const int BinDelta = 10;
-	const double bplus = 1.5;
-	const double bminus = 1.0;
-	const double Threshhold = 1.5;
-	const double aminus = -0.3;
-	const double aplus = 1.0;
-}
-
 namespace Katydid
 {
 	KTLOGGER(sclog, "KTSeqLine");
 
-	KTSeqLine::KTSeqLine(unsigned LineID, KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, double& TimeInAcq, double* new_trimming_limits)
+	KTSeqLine::KTSeqLine(unsigned LineID, Point& Point, double& new_trimming_limits):
+			Identifier(LineID),
+			fActive(true),
+			fCollectable(false),
+			fLineSlope(0.0),
+			fLength(0.0),
 
-						{
-								SetLineID(LineID);
-								this->CollectPoint(Point, TimeInAcq, *new_trimming_limits);
-						}
+			fDeltaT(1e-4),
+			fDeltaF(2e5),
+			fLambda(10),
+			fMu(0.5),
+			fNu(1),
+			fLineThreshold(15.),
+			fLineScore(0.0)
+			{
+				this->CollectPoint(Point, new_trimming_limits);
+			}
 
-	KTSeqLine::KTSeqLine(const KTSeqLine& orig)
-						{
-						}
 
 	KTSeqLine::~KTSeqLine()
 	{
 	}
 
 
-
-
-	bool KTSeqLine::CollectPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, double& TimeInAcq, double* new_trimming_limits)
+	unsigned KTSeqLine::GetLineID()
 	{
-		scorelist.push_back(Point->second.fOrdinate);
-		timelist.push_back(TimeInAcq);
-		freqlist.push_back(Point->second.fAbscissa);
-		trimming_limits.push_back(*new_trimming_limits);
+		return Identifier;
+	}
+
+	bool KTSeqLine::CollectPoint(Point& Point, double& new_trimming_limits)
+	{
+		fLinePoints.push_back(Point);
+		trimming_limits.push_back(new_trimming_limits);
+		fLineScore+=Point.fScore;
+		fLineSlope = (Point.fPointFreq-fLinePoints[0].fPointFreq)/(Point.fTimeInAcq-fLinePoints[0].fPointFreq);
+
+
+
+
+		/*scorelist.push_back(Point.fScore);
+		timelist.push_back(Point.fTimeInAcq);
+		freqlist.push_back(Point.fPointFreq);
+		trimming_limits.push_back(new_trimming_limits);
+		*/
 		return true;
 	}
 
-	bool KTSeqLine::InvestigatePoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, double& TimeInAcq, double* new_trimming_limits)
+	bool KTSeqLine::Configure(double& DeltaT, double& DeltaF)
+	{
+		fDeltaT(DeltaT);
+		fDeltaF(DeltaF);
+		return true;
+	}
+
+	bool KTSeqLine::InvestigatePoint(Point& Point, double& new_trimming_limits)
 	{
 
 
-			double* NewFreq = Point->second.fAbscissa;
-			double* NewScore = Point->second.fOrdinate;
+			double NewFreq = Point.fPointFreq;
+			double NewScore = Point.fScore;
 
 
 
 
 
-
-			if (TimeInAcq-timelist.back() > DeltaT)
+			if (Point.fTimeInAcq-fLinePoints.back().fTimeInAcq > fDeltaT)
 			{
-				//std::cout << identifier << " time distance" << std::endl;
+				KTINFO(sclog,  "End of Line" << Identifier << " to far in the past");
 				this-> TrimEdges();
 				return false;
 			}
-			else if (int(timelist.size()) > Lambda &&  this->GetLineScore < LineThreshold)
+			else if (fLinePoints.size() > fLambda &&  fLineScore < fLineThreshold)
 			{
-				//std::cout << identifier << " low score" << std::endl;
+				KTINFO(sclog,  "Line" << Identifier << " has fallen below threshold");
 				this -> TrimEdges();
 				return false;
 			}
-			else if (abs(NewFreq-(freqlist[0]+LineSlope*(TimeInAcq-timelist[0]))) < DeltaF)
+			else if (abs(Point.fPointFreq-(fLinePoints[0].fPointFreq+fLineSlope*(Point.fTimeInAcq-fLinePoints[0].fTimeInAcq))) < fDeltaF)
 			{
-				if(this->CollectPoint(Point, TimeInAcq, *new_trimming_limits))
+				if(this->CollectPoint(Point, new_trimming_limits))
 				{
-				LineSlope = (NewFreq-freqlist[0])/(TimeInAcq-timelist[0]);
-				LineScore += NewScore;
-
-
-
-				return true;
+					return true;
 				}
 				else {return false;}
 
@@ -103,7 +109,39 @@ namespace Katydid
 			}
 
 		}
+	bool KTSeqLine::TrimEdges()
+	{
+		return true;
 
+	}
+
+	bool KTSeqLine::TrimEdges()
+	{
+		while (fLinePoints.size()>=fLambda && fLinePoints.back().fScore < fMu*trimming_limits.back())
+		{
+			fLinePoints.erase (fLinePoints.end() - 1);
+			trimming_limits.erase (trimming_limits.end() - 1);
+		}
+
+		while (fLinePoints.size()>=fLambda && fLinePoints.front().fScore < fMu*trimming_limits.front())
+			{
+			fLinePoints.erase (fLinePoints.begin());
+			trimming_limits.erase (trimming_limits.begin());
+			}
+
+		fActive = false;
+		if (fLinePoints.size()> fLambda)
+			{
+			fCollectable = true;
+			fLength = fLinePoints.back().fTimeInAcq-fLinePoints.front().fTimeInAcq;
+			KTINFO(sclog, "Line" << Identifier << " is ready for collection");
+			}
+		else
+		{
+			KTINFO(sclog,  "Line" << Identifier << " was to short and is deleted");
+
+		}
+		}
 	}
 
 } /* namespace Katydid */

@@ -36,6 +36,8 @@ namespace Katydid
     KTScore::KTScore(const std::string& name) :
 
             KTProcessor(name),
+			fMode('Scores'),
+			fThreshold(5.0),
 			fScoredSpectrumSignal("scores-1d", this),
             fPSSlot("ps", this, &KTScore::ScoreRatio, &fScoredSpectrumSignal),
             fPreCalcSlot("gv", this, &KTScore::SetPreCalcGainVar),
@@ -48,19 +50,25 @@ namespace Katydid
     {
     }
 
-    bool KTScore::Configure(const KTParamNode* node)
+    bool KTScore::Configure(const scarab::param_node* node)
     {
-        if (node == NULL) return true;
+    	if (node == NULL) return true;
 
-        // no parameters
-
-        return true;
+    	if (node->has("Mode"))
+    	{
+    		fMode(node->get_value< double >("Mode"));
+    	}
+    	if (node->has("Threshold"))
+    	{
+    		fThreshold(node->get_value< char >("Threshold"));
+    	}
+    	return true;
     }
 
     bool KTScore::SetPreCalcGainVar(KTGainVariationData& gvData)
         {
             fGVData = gvData;
-            std::cout << "background angekommen!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+            KTINFO(sclog, "KtScore processor received Gain Variation Data ");
             return true;
         }
 

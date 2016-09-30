@@ -1,17 +1,21 @@
 /**
- @file KTSeqTrackCreator.hh
- @brief Contains KTSeqTrackCreator
+ @file KTSeqTrackFinder.hh
+ @brief Contains KTSeqTrackFinder
  @details Creates a track
  @author: Christine
  @date: Sep 15, 2016
  */
 
-#ifndef KTSEQTRACKCREATOR_HH_
-#define KTSEQTRACKCREATOR_HH_
+#ifndef KTSEQTRACKFinder_HH_
+#define KTSEQTRACKFinder_HH_
 
 #include "KTProcessor.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
+#include "KTSeqLine.hh"
+#include "KTLines.hh"
+
+#include <iostream>
 
 namespace Nymph
 {
@@ -25,13 +29,16 @@ namespace Katydid
     class KTKDTreeData;
 
 
-    class KTSeqTrackCreator : public Nymph::KTProcessor
+    class KTSeqTrackFinder : public Nymph::KTProcessor
     {
-        public:
-            KTSeqTrackCreator(const std::string& name = "seq-clustering");
-            virtual ~KTSeqTrackCreator();
 
-            bool KTSeqTrackCreator::Configure(const KTParamNode* node);
+        //typedef std::map< unsigned, Point > SetOfPoints;
+
+        public:
+            KTSeqTrackFinder(const std::string& name = "seq-clustering");
+            virtual ~KTSeqTrackFinder();
+
+            bool KTSeqTrackFinder::Configure(const KTParamNode* node);
             void SetFrequencyRadius(double FreqRad);
             void SetTimeDistance(double TimeDistance);
             void SetBinDelta(int BinDelta);
@@ -66,15 +73,14 @@ namespace Katydid
 
 
 
-            bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& slice,  KTDiscriminatedPoints1DData& discPoints);
             bool PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum);
-            bool LoopOverHighPowerPoints(KTScoredSpectrum& slice, std::vector<unsigned>& Points, double& TimeInAcq, double& TrimmingLimits);
-            void SearchAreaForBetterPoints(unsigned& PointBin, KTScoredSpectrum& slice, double& PointFreq);
-            void WeightedAverage(KTScoredSpectrum& slice, double& PointFreq, unsigned& PointBin)
+            bool LoopOverHighPowerPoints(KTScoredSpectrum& slice, std::vector<KTSeqLine::Point>& Points, KTLines& new_Lines, double& new_trimming_limits);
+            void SearchAreaForBetterPoints(unsigned& PointBin, double& PointFreq, KTScoredSpectrum& slice);
+            void WeightedAverage(KTScoredSpectrum& slice, double& PointFreq, unsigned& PointBin);
 
         private:
        //     bool LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double& TrimmingTimits);
-       //     bool KTSeqTrackCreator::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq);
+       //     bool KTSeqTrackFinder::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq);
 
 
 
@@ -94,36 +100,36 @@ namespace Katydid
             Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTScoredSpectrumData > fSeqTrackSlot;
 
     };
-    inline void KTSeqTrackCreator::SetFrequencyRadius(double FreqRad)
+    inline void KTSeqTrackFinder::SetFrequencyRadius(double FreqRad)
     {
        	fFDelta = FreqRad;
     }
-    inline void KTSeqTrackCreator::SetTimeDistance(double TimeDistance)
+    inline void KTSeqTrackFinder::SetTimeDistance(double TimeDistance)
     {
        	fTimeDistance = TimeDistance;
     }
-    inline void KTSeqTrackCreator::SetBinDelta(int BinDelta)
+    inline void KTSeqTrackFinder::SetBinDelta(int BinDelta)
     {
        	fBinDelta = BinDelta;
     }
-    inline unsigned KTSeqTrackCreator::GetMinBin() const
+    inline unsigned KTSeqTrackFinder::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTSeqTrackCreator::SetMinBin(unsigned bin)
+    inline void KTSeqTrackFinder::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline unsigned KTSeqTrackCreator::GetMaxBin() const
+    inline unsigned KTSeqTrackFinder::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTSeqTrackCreator::SetMaxBin(unsigned bin)
+    inline void KTSeqTrackFinder::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;
@@ -131,4 +137,4 @@ namespace Katydid
     }
 
 } /* namespace Katydid */
-#endif /* KTSEQTRACKCREATOR_HH_ */
+#endif /* KTSEQTRACKFinder_HH_ */

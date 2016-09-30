@@ -17,9 +17,10 @@ namespace
 	const int BinDelta = 10;
 	const double bplus = 1.5;
 	const double bminus = 1.0;
-	const double Threshhold = 1.5;
+	const double Threshold = 1.5;
 	const double aminus = -0.3;
 	const double aplus = 1.0;
+	const char Mode = 'Scores';
 }
 
 namespace Katydid
@@ -57,7 +58,17 @@ namespace Katydid
 		(*this) *= scale;
 		return *this;
 	}
-
+	bool KTScoredSpectrum::Configure(char& new_Mode, double new_BinDelta, double new_bplus, double new_bminus, double new_Threshold, double new_aminus, double new_aplus)
+	{
+		Mode = new_Mode;
+		BinDelta = new_BinDelta;
+		bplus = new_bplus;
+		bminus = new_bminus;
+		Threshold = new_Threshold;
+		aminus = new_aminus;
+		aplus = new_aplus;
+		return true;
+	}
 
 
 
@@ -102,14 +113,23 @@ namespace Katydid
 		for (unsigned iBin = 0; iBin < nBins; ++iBin)
 		{
 
-			if ((*newRatios)(iBin) > Threshhold) (*newScores)(iBin) = aplus*pow(((*newRatios)(iBin)-Threshhold),bplus);
-			else (*newScores)(iBin) = aminus*pow(((*newRatios)(iBin)-Threshhold),bminus);
+			if ((*newRatios)(iBin) > Threshold) (*newScores)(iBin) = aplus*pow(((*newRatios)(iBin)-Threshold),bplus);
+			else (*newScores)(iBin) = aminus*pow(((*newRatios)(iBin)-Threshold),bminus);
 
 
 		}
+		if (Mode=='SNR')
+		{
+			delete newScores;
+			return newRatios;
+		}
+		else
+		{
 		delete newRatios;
 		return newScores;
+		}
 	}
+
 
 
 } /* namespace Katydid */
