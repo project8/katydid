@@ -47,12 +47,14 @@ namespace Katydid
         return;
     }
 
-    //************************
-    // Hough Transform Data
-    //************************
+    //**************************
+    // Spectrum Collection Data
+    //**************************
 
     void KTDataTypeDisplayEventAnalysis::DrawPSCollectionData(Nymph::KTDataPtr data)
     {
+
+        //std::cout << "This is a test!" << std::endl;
         if (! data) return;
 
         ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
@@ -62,6 +64,8 @@ namespace Katydid
         if (! fWriter->OpenWindow()) return;
 
         const std::map< double, KTPowerSpectrum* > spectra = psColl.GetSpectra();
+
+        //KTDEBUG(publog, "2");
         if (!spectra.empty())
         {
             stringstream conv;
