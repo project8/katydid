@@ -42,6 +42,7 @@ if (ROOT_FOUND)
         KTBasicROOTTypeWriterTime.hh
         KTBasicROOTTypeWriterTransform.hh
         KTDataDisplay.hh
+	KTDataTypeDisplayEventAnalysis.hh
         KTDataTypeDisplaySpectrumAnalysis.hh
         KTDataTypeDisplayTime.hh
         KTDataTypeDisplayTransform.hh
@@ -68,6 +69,7 @@ if (ROOT_FOUND)
         KTBasicROOTTypeWriterTransform.cc
         KTBasicROOTFileWriter.cc
         KTDisplayWindow.cc
+	KTDataTypeDisplayEventAnalysis.cc
         KTDataTypeDisplaySpectrumAnalysis.cc
         KTDataTypeDisplayTime.cc
         KTDataTypeDisplayTransform.cc
