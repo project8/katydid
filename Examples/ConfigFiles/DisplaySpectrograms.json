@@ -250,6 +250,8 @@
 	"min-frequency": 50e6,
 	"max-frequency": 150e6,
 	"lead-time": 20e-5,
-	"trail-time": 20e-5
+	"trail-time": 20e-5,
+	"lead-freq": 8e6,
+	"trail-freq": 8e6
     }
 }

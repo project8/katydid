@@ -35,6 +35,10 @@ namespace Katydid
             fCalculateMaxBin(true),
             fLeadTime(0.002),
             fTrailTime(0.002),
+            fLeadFreq(5e6),
+            fTrailFreq(5e6),
+            fUseMinFreq(false),
+            fUseMaxFreq(false),
             fWaterfallSignal("waterfall", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack)
     {
@@ -64,6 +68,18 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
+        if (node->has("lead-freq"))
+        {
+            SetLeadFreq(node->get_value< double >("lead-freq"));
+            SetUseMinFreq(true);
+        }
+
+        if (node->has("trail-freq"))
+        {
+            SetTrailFreq(node->get_value< double >("trail-freq"));
+            SetUseMaxFreq(true);
+        }
+
         SetMinBin(node->get_value< unsigned >("min-bin", fMinBin));
         SetMaxBin(node->get_value< unsigned >("max-bin", fMaxBin));
         SetLeadTime(node->get_value< double >("lead-time", fLeadTime));
@@ -88,6 +104,18 @@ namespace Katydid
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
+
+        newWaterfall->SetStartFreq( GetMinFrequency() );
+        newWaterfall->SetEndFreq( GetMaxFrequency() );
+        if( GetUseMinFreq() )
+        {
+            newWaterfall->SetStartFreq( trackData.GetStartFrequency() - GetLeadFreq() );
+        }
+        if( GetUseMaxFreq() )
+        {
+            newWaterfall->SetEndFreq( trackData.GetEndFrequency() + GetTrailFreq() );
+        }
+
         newWaterfall->SetFilling( false );
 
         // Add to fWaterfallSets
