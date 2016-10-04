@@ -181,3 +181,6 @@ spectrogram:
     trail-freq: 8e6
     use-lead-freq: true
     use-trail-freq: true
+
+disp:
+    draw-args: "colz"

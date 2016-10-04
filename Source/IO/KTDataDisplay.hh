@@ -78,9 +78,13 @@ namespace Katydid
             unsigned GetHeight() const;
             void SetHeight(unsigned height);
 
+            std::string GetDrawArgs() const;
+            void SetDrawArgs(std::string args);
+
         private:
             unsigned fWidth;
             unsigned fHeight;
+            std::string fDrawArgs;
 
         public:
             bool Initialize();
@@ -118,6 +122,16 @@ namespace Katydid
         return;
     }
 
+    inline std::string KTDataDisplay::GetDrawArgs() const
+    {
+        return fDrawArgs;
+    }
+    inline void KTDataDisplay::SetDrawArgs(std::string args)
+    {
+        fDrawArgs = args;
+        return;
+    }
+
     template< typename XDrawable >
     void KTDataDisplay::Draw(XDrawable* drawable)
     {
@@ -125,7 +139,7 @@ namespace Katydid
 
         if (! fEventLoop->IsActive()) return;
 
-        fDisplayWindow->Draw(drawable);
+        fDisplayWindow->Draw(drawable, fDrawArgs);
         fDisplayWindow->GetCanvas()->Update();
         // this will allow the user to interact with the window
         // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
