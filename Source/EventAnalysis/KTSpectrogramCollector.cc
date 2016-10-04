@@ -33,12 +33,12 @@ namespace Katydid
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
-            fLeadTime(0.002),
-            fTrailTime(0.002),
-            fLeadFreq(5e6),
-            fTrailFreq(5e6),
-            fUseMinFreq(false),
-            fUseMaxFreq(false),
+            fLeadTime(0.),
+            fTrailTime(0.),
+            fLeadFreq(0.),
+            fTrailFreq(0.),
+            fUseLeadFreq(false),
+            fUseTrailFreq(false),
             fWaterfallSignal("waterfall", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack)
     {
@@ -68,22 +68,14 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        if (node->has("lead-freq"))
-        {
-            SetLeadFreq(node->get_value< double >("lead-freq"));
-            SetUseMinFreq(true);
-        }
-
-        if (node->has("trail-freq"))
-        {
-            SetTrailFreq(node->get_value< double >("trail-freq"));
-            SetUseMaxFreq(true);
-        }
-
         SetMinBin(node->get_value< unsigned >("min-bin", fMinBin));
         SetMaxBin(node->get_value< unsigned >("max-bin", fMaxBin));
         SetLeadTime(node->get_value< double >("lead-time", fLeadTime));
         SetTrailTime(node->get_value< double >("trail-time", fTrailTime));
+        SetLeadFreq(node->get_value< double >("lead-freq", fLeadFreq));
+        SetTrailFreq(node->get_value< double >("trail-freq", fTrailFreq));
+        SetUseLeadFreq(node->get_value< bool >("use-lead-freq", fUseLeadFreq));
+        SetUseTrailFreq(node->get_value< bool >("use-trail-freq", fUseTrailFreq));
 
         return true;
     }
@@ -105,15 +97,22 @@ namespace Katydid
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
 
-        newWaterfall->SetStartFreq( GetMinFrequency() );
-        newWaterfall->SetEndFreq( GetMaxFrequency() );
-        if( GetUseMinFreq() )
+        // Configure PSCollectionData frequency bounds
+        if( GetUseLeadFreq() )
         {
-            newWaterfall->SetStartFreq( trackData.GetStartFrequency() - GetLeadFreq() );
+            newWaterfall->SetMinFreq( trackData.GetStartFrequency() - GetLeadFreq() );
         }
-        if( GetUseMaxFreq() )
+        else
         {
-            newWaterfall->SetEndFreq( trackData.GetEndFrequency() + GetTrailFreq() );
+            newWaterfall->SetMinFreq( GetMinFrequency() );
+        }
+        if( GetUseTrailFreq() )
+        {
+            newWaterfall->SetMaxFreq( trackData.GetEndFrequency() + GetTrailFreq() );
+        }
+        else
+        {
+            newWaterfall->SetMaxFreq( GetMaxFrequency() );
         }
 
         newWaterfall->SetFilling( false );
@@ -200,8 +199,20 @@ namespace Katydid
             KTDEBUG(evlog, "Maximum bin set to " << fMaxBin);
         }
 
-        unsigned nComponents = data.GetNComponents();
-        
+        if( fWaterfallSets.empty() )
+        {
+            KTWARN(evlog, "I have no tracks to receive a spectrum! Did you remember to send me processed tracks first? Continuing anyway...");
+            return true;
+        }
+
+        int nComponents = data.GetNComponents();
+
+        if( nComponents > fWaterfallSets.size() )
+        {
+            KTINFO(evlog, "Receiving spectrum with " << nComponents << " components but limiting to " << fWaterfallSets.size() << " from list of tracks");
+            nComponents = fWaterfallSets.size();
+        }
+
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent, forceEmit))

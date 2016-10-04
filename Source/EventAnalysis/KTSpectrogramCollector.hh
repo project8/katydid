@@ -46,8 +46,10 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
      - "lead-time": double -- time to collect before the beginning of the track
      - "trail-time": double -- time to collect after the end of the track
-     - "lead-freq": double -- frequency below the track to begin collection. Overrides fMinFrequency
-     - "trail-freq": double -- frequency above the track to end collection. Overrides fMaxFrequency
+     - "lead-freq": double -- frequency below the track to begin collection
+     - "trail-freq": double -- frequency above the track to end collection
+     - "use-lead-freq": bool -- if true, the minimum frequency is calculated from the track and the lead frequency; if false, min-frequency is used
+     - "use-trail-freq": bool -- if true, the maximum frequency is calculated from the track and the trail frequency; if false, max-frequency is used
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
@@ -89,11 +91,11 @@ namespace Katydid
             double GetTrailFreq() const;
             void SetTrailFreq(double f);
 
-            bool GetUseMinFreq() const;
-            void SetUseMinFreq(bool b);
+            bool GetUseLeadFreq() const;
+            void SetUseLeadFreq(bool b);
 
-            bool GetUseMaxFreq() const;
-            void SetUseMaxFreq(bool b);
+            bool GetUseTrailFreq() const;
+            void SetUseTrailFreq(bool b);
 
         private:
             double fMinFrequency;
@@ -106,8 +108,8 @@ namespace Katydid
             double fTrailTime;
             double fLeadFreq;
             double fTrailFreq;
-            bool fUseMinFreq;
-            bool fUseMaxFreq;
+            bool fUseLeadFreq;
+            bool fUseTrailFreq;
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
@@ -244,25 +246,25 @@ namespace Katydid
         return;
     }
 
-    inline bool KTSpectrogramCollector::GetUseMinFreq() const
+    inline bool KTSpectrogramCollector::GetUseLeadFreq() const
     {
-        return fUseMinFreq;
+        return fUseLeadFreq;
     }
 
-    inline void KTSpectrogramCollector::SetUseMinFreq(bool b)
+    inline void KTSpectrogramCollector::SetUseLeadFreq(bool b)
     {
-        fUseMinFreq = b;
+        fUseLeadFreq = b;
         return;
     }
 
-    inline bool KTSpectrogramCollector::GetUseMaxFreq() const
+    inline bool KTSpectrogramCollector::GetUseTrailFreq() const
     {
-        return fUseMaxFreq;
+        return fUseTrailFreq;
     }
 
-    inline void KTSpectrogramCollector::SetUseMaxFreq(bool b)
+    inline void KTSpectrogramCollector::SetUseTrailFreq(bool b)
     {
-        fUseMaxFreq = b;
+        fUseTrailFreq = b;
         return;
     }
 
