@@ -164,7 +164,7 @@ tr-proc:
     min-slope: 1.0
 
 egg3:
-    filename": "foo.MAT"
+    filename: "foo.MAT"
     egg-reader: rsamat
     number-of-slices: 0
     slice-size: 8192
