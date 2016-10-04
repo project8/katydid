@@ -78,8 +78,8 @@ namespace Katydid
             unsigned GetHeight() const;
             void SetHeight(unsigned height);
 
-            std::string GetDrawArgs() const;
-            void SetDrawArgs(std::string args);
+            const std::string& GetDrawArgs() const;
+            void SetDrawArgs(const std::string& args);
 
         private:
             unsigned fWidth;
@@ -122,11 +122,11 @@ namespace Katydid
         return;
     }
 
-    inline std::string KTDataDisplay::GetDrawArgs() const
+    inline const std::string& KTDataDisplay::GetDrawArgs() const
     {
         return fDrawArgs;
     }
-    inline void KTDataDisplay::SetDrawArgs(std::string args)
+    inline void KTDataDisplay::SetDrawArgs(const std::string& args)
     {
         fDrawArgs = args;
         return;

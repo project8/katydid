@@ -1,7 +1,7 @@
 {
     "app":
     {
-	"root-app": true
+    "root-app": true
     },
 
     "processor-toolbox":
@@ -25,9 +25,9 @@
             { "type": "throughput-profiler",    "name": "profiler" },
             { "type": "egg-processor",          "name": "egg3" },
             { "type": "forward-fftw",           "name": "fft3" },
-	    { "type": "convert-to-power",	"name": "to-ps3" },
-	    { "type": "spectrogram-collector",	"name": "spectrogram" },
-            { "type": "data-display",		"name": "disp"}
+            { "type": "convert-to-power",       "name": "to-ps3" },
+            { "type": "spectrogram-collector",  "name": "spectrogram" },
+            { "type": "data-display",           "name": "disp"}
         ],
         
         "connections":
@@ -114,10 +114,10 @@
                 "signal": "hough:hough",
                 "slot": "tr-proc:swfc-and-hough"
             },
-	    {
-		"signal": "tr-proc:track",
-		"slot": "spectrogram:track"
-	    },
+            {
+                "signal": "tr-proc:track",
+                "slot": "spectrogram:track"
+            },
 
             {
                 "signal": "egg3:ts",
@@ -127,14 +127,14 @@
                 "signal": "fft3:fft",
                 "slot": "to-ps3:fs-fftw-to-psd"
             },
-	    {
-		"signal": "to-ps3:psd",
-		"slot": "spectrogram:ps"
-	    },
-	    {
-		"signal": "spectrogram:waterfall",
-		"slot": "disp:psColl-data"
-	    },
+            {
+                "signal": "to-ps3:psd",
+                "slot": "spectrogram:ps"
+            },
+            {
+                "signal": "spectrogram:waterfall",
+                "slot": "disp:psColl-data"
+            },
 
             {
                 "signal": "tr-clust:clustering-done",
@@ -247,11 +247,17 @@
 
     "spectrogram":
     {
-	"min-frequency": 50e6,
-	"max-frequency": 150e6,
-	"lead-time": 20e-5,
-	"trail-time": 20e-5,
-	"lead-freq": 8e6,
-	"trail-freq": 8e6
+        "min-frequency": 50e6,
+        "max-frequency": 150e6,
+        "lead-time": 20e-5,
+        "trail-time": 20e-5,
+        "lead-freq": 8e6,
+        "trail-freq": 8e6,
+        "use-track-freqs": true
+    },
+
+    "disp":
+    {
+        "draw-args": "colz"
     }
 }

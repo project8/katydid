@@ -91,11 +91,8 @@ namespace Katydid
             double GetTrailFreq() const;
             void SetTrailFreq(double f);
 
-            bool GetUseLeadFreq() const;
-            void SetUseLeadFreq(bool b);
-
-            bool GetUseTrailFreq() const;
-            void SetUseTrailFreq(bool b);
+            bool GetUseTrackFreqs() const;
+            void SetUseTrackFreqs(bool b);
 
         private:
             double fMinFrequency;
@@ -108,8 +105,7 @@ namespace Katydid
             double fTrailTime;
             double fLeadFreq;
             double fTrailFreq;
-            bool fUseLeadFreq;
-            bool fUseTrailFreq;
+            bool fUseTrackFreqs;
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
@@ -246,25 +242,14 @@ namespace Katydid
         return;
     }
 
-    inline bool KTSpectrogramCollector::GetUseLeadFreq() const
+    inline bool KTSpectrogramCollector::GetUseTrackFreqs() const
     {
-        return fUseLeadFreq;
+        return fUseTrackFreqs;
     }
 
-    inline void KTSpectrogramCollector::SetUseLeadFreq(bool b)
+    inline void KTSpectrogramCollector::SetUseTrackFreqs(bool b)
     {
-        fUseLeadFreq = b;
-        return;
-    }
-
-    inline bool KTSpectrogramCollector::GetUseTrailFreq() const
-    {
-        return fUseTrailFreq;
-    }
-
-    inline void KTSpectrogramCollector::SetUseTrailFreq(bool b)
-    {
-        fUseTrailFreq = b;
+        fUseTrackFreqs = b;
         return;
     }
 

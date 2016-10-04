@@ -179,8 +179,7 @@ spectrogram:
     trail-time: 20e-5
     lead-freq: 8e6
     trail-freq: 8e6
-    use-lead-freq: true
-    use-trail-freq: true
+    use-track-freqs: true
 
 disp:
     draw-args: "colz"

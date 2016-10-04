@@ -2,7 +2,7 @@ processor-toolbox:
     processors:
       - type: egg-processor
         name: egg
-      - type: forward-fftw"
+      - type: forward-fftw
         name: fft
       - type: convert-to-power
         name: to-ps
