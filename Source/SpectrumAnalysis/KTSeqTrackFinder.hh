@@ -73,7 +73,7 @@ namespace Katydid
 
 
 
-            bool PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum);
+            bool PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum, KTPowerSpectrumData& power_spectrum);
             bool LoopOverHighPowerPoints(KTScoredSpectrum& slice, std::vector<KTSeqLine::Point>& Points, KTLines& new_Lines, double& new_trimming_limits);
             void SearchAreaForBetterPoints(unsigned& PointBin, double& PointFreq, KTScoredSpectrum& slice);
             void WeightedAverage(KTScoredSpectrum& slice, double& PointFreq, unsigned& PointBin);
@@ -91,6 +91,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fSeqTrackSignal;
+            Nymph::KTSignalData fSeqTrackFindingDone;
 
             //***************
             // Slots

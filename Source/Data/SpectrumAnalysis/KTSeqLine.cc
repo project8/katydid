@@ -23,6 +23,8 @@ namespace Katydid
 			fCollectable(false),
 			fLineSlope(0.0),
 			fLength(0.0),
+			fComponent(0),
+			fAcquisitionID(0),
 
 			fDeltaT(1e-4),
 			fDeltaF(2e5),

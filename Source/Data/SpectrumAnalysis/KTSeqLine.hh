@@ -29,8 +29,10 @@ class KTSeqLine
 	        	double fBinInSlice;
 	            double fPointFreq;
 	            double fTimeInAcq;
+	            double fTimeInRunC;
 	            double fScore;
-	            Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double Score) : fBinInSlice(BinInSclice), fPointFreq(PointFreq), fTimeInAcq(TimeInAcq), fScore(Score) {}
+	            double fPower;
+	            Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Score, double Power) : fBinInSlice(BinInSclice), fPointFreq(PointFreq), fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fScore(Score), fPower(Power) {}
 	        };
 
 	public:
@@ -45,9 +47,14 @@ class KTSeqLine
 		double GetStartFreq();
 		double GetSlope();
 		double GetStartTime();
+		double GetTimeInRunC();
 		double GetTotalScore();
 		unsigned GetLineID();
-
+		double GetStopTime();
+		double GetEndFreq();
+		unsigned GetComponent();
+		uint64_t GetAcquisitionID();
+		double GetAmplitudeSum();
 
 
 		bool Configure(double& DeltaT, double& DeltaF);
@@ -70,6 +77,9 @@ class KTSeqLine
 		double fLineSlope;
 		double fLineScore;
 		double fLength;
+
+		unsigned fComponent;
+		uint64_t fAcquisitionID;
 
 		bool fActive;
 		bool fCollectable;
@@ -122,11 +132,44 @@ class KTSeqLine
 	{
 		return fLinePoints[0].fTimeInAcq;
 	}
+	double KTSeqLine::GetStopTime()
+	{
+		return fLinePoints.back().fTimeInAcq-this->GetStartTime();
+	}
+	double KTSeqLine::GetTimeInRunC()
+	{
+		return fLinePoints[0].fTimeInRunC;
+	}
+
 	double inline KTSeqLine::GetSlope()
 	{
 		return fLineSlope;
 	}
-
+	double inline KTSeqLine::GetStartFreq()
+	{
+		return fLinePoints[0].fPointFreq;
+	}
+	double inline KTSeqLine::GetEndFreq()
+	{
+		return fLinePoints.back().fPointFreq;
+	}
+	unsigned inline KTSeqLine::GetComponent()
+	{
+		return fComponent;
+	}
+	uint64_t inline KTSeqLine::GetAcquisitionID()
+	{
+		return fAcquisitionID;
+	}
+	double inline KTSeqLine::GetAmplitudeSum()
+	{
+		double sum = 0.0;
+		for (unsigned iPoint = 0; iPoint < fLinePoints.size(); iPoint++)
+		{
+			sum += fLinePoints[iPoint].fPower;
+		}
+		return sum;
+	}
 
 
 

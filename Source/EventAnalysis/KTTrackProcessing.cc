@@ -14,6 +14,9 @@
 #include "KTSmooth.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
+#include "KTLines.hh"
+#include "KTSeqLine.hh"
+
 #include <limits>
 #include <vector>
 
@@ -34,7 +37,8 @@ namespace Katydid
             fSlopeMinimum(-std::numeric_limits< double >::max()),
             fProcTrackMinPoints(0),
             fTrackSignal("track", this),
-            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
+            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal),
+			fSeqTrackSlot("seq-track-slot", this, &KTTrackProcessing::ConvertToKTTrack, &TrackSignal)
     {
     }
 
@@ -241,6 +245,40 @@ namespace Katydid
 
         return true;
     }
+
+        bool KTTrackProcessing::ConvertToKTTrack(KTLines& Lines)
+        {
+        	unsigned nLines = Lines.GetNLines();
+        	unsigned trackID = 0;
+        	vector<KTSeqLine> LineVector = Lines.GetLines();
+
+        	for (unsigned iLine; iLine < nLines; iLine++)
+        	{
+        		trackID = iLine;
+
+        		// Add the new data
+        		KTProcessedTrackData& procTrack = Lines.Of< KTProcessedTrackData >();
+        		procTrack.SetComponent(component);
+        		procTrack.SetAcquisitionID(LineVector[iLine].GetAcquisitionID());
+        		procTrack.SetTrackID(trackID);
+
+
+        		procTrack.SetStartTimeInAcq(LineVector[iLine].GetStartTime());
+        		procTrack.SetStartTimeInRunC(LineVector[iLine].GetTimeInRunC());
+        		procTrack.SetEndTimeInRunC(LineVector[iLine].GetStartTime());
+        		procTrack.SetTimeLength(LineVector[iLine].GetLength());
+        		procTrack.SetStartFrequency(LineVector[iLine].GetStartFreq());
+        		procTrack.SetEndFrequency(LineVector[iLine].GetEndFreq());
+				procTrack.SetFrequencyWidth(LineVector[iLine].GetStartFreq()-LineVector[iLine].GetEndFreq());
+				procTrack.SetSlope(LineVector[iLine].GetSlope());
+				procTrack.SetIntercept(0.0);
+				procTrack.SetTotalPower(LineVector[iLine].GetAmplitudeSum());
+				//TODO: Add calculation of uncertainties
+        	}
+        	return true;
+
+        }
+
 
 
 } /* namespace Katydid */

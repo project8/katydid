@@ -75,6 +75,7 @@ namespace Katydid
 
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            bool ConvertToKTTrack(KTLines& Lines);
 
         private:
             /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0

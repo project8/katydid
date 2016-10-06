@@ -45,6 +45,7 @@ namespace Katydid
 			fCalculateMinBin(true),
 			fCalculateMaxBin(true),
             fSeqTrackSignal("lines-out", this),
+			fSeqTrackFindingDone("seq-track-finding-done", this),
 	//		fSeqTrackSlot("disc-in", this, &KTSeqTrackFinder::PointLineAssignment, &fSeqTrackSignal),
     		fSeqTrackSlot("scores_in", this, &KTSeqTrackFinder::PointLineAssignment, &fSeqTrackSignal)
     {
@@ -138,11 +139,12 @@ namespace Katydid
     }
 */
 
-    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum)
+    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum, KTPowerSpectrumData power_spectrum)
         {
     		KTLines& new_Lines;
 
             unsigned nComponents = slHeader.GetNComponents();
+
 
             if (fCalculateMinBin)
             {
@@ -160,9 +162,11 @@ namespace Katydid
             {
             	std::vector<KTSeqLine::Point> CandidatePoints;
             	KTScoredSpectrum slice=spectrum.GetSpectrum(iComponent);
+            	KTPowerSpectrum power_slice = power_spectrum.GetSpectrum(iComponent);
             	double BinWidth = slice.GetBinWidth();
             	double new_trimming_limits = 0.0;
             	double new_TimeInAcq = (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
+            	double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
 
             	if (slice == NULL)
             	{
@@ -173,17 +177,18 @@ namespace Katydid
             	unsigned nBins = fMaxBin - fMinBin + 1;
 
           	    // loop over bins, checking against the threshold
-           	    double threshold, value;
+           	    double threshold, value, power;
            	    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             	{
             	 	(new_trimming_limits) += slice(iBin)/nBins;
             	   	value = (slice)(iBin);
+            	   	power = (power_slice)(iBin);
             	    threshold = fScoreThreshold;
 
             	    if (value >= threshold)
            	        {
             	    	double PointFreq = BinWidth * ((double)iBin + 0.5);
-            	    	KTSeqLine::Point new_Point(iBin, PointFreq, new_TimeInAcq, value);
+            	    	KTSeqLine::Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, power);
            	        	CandidatePoints.push_back(new_Point);
            	        }
             	}
