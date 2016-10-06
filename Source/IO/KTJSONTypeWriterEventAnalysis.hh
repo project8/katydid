@@ -19,7 +19,7 @@ namespace Katydid
     {
         public:
             KTJSONTypeWriterEventAnalysis();
-            virtual ~KTJSONTypeWriterCandidates();
+            virtual ~KTJSONTypeWriterEventAnalysis();
 
             void RegisterSlots();
 

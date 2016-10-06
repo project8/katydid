@@ -41,6 +41,8 @@ processor-toolbox:
           name: to-ps3
         - type: spectrogram-collector
           name: spectrogram
+        - type: terminal-writer
+          name: term
         - type: data-display
           name: disp
 
@@ -69,8 +71,10 @@ processor-toolbox:
 
         - signal: "egg2:ts"
           slot: "profiler:data"
+          order: 0
         - signal: "egg2:ts"
           slot: "fft2:ts-fftw"
+          order: 1
         - signal: "fft2:fft"
           slot: "to-ps2:fs-fftw-to-psd"
         - signal: "to-ps2:psd"
@@ -97,7 +101,11 @@ processor-toolbox:
         - signal: "to-ps3:psd"
           slot: "spectrogram:ps"
         - signal: "spectrogram:waterfall"
-          slot: "disp:psColl-data"
+          slot: "term:proc-track"
+          order: 0
+        - signal: "spectrogram:waterfall"
+          slot: "disp:ps-coll"
+          order: 1
 
         - signal: "tr-clust:clustering-done"
           slot: "profiler:stop"

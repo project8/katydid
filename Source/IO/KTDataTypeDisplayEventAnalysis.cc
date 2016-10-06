@@ -43,7 +43,7 @@ namespace Katydid
 
     void KTDataTypeDisplayEventAnalysis::RegisterSlots()
     {
-        fWriter->RegisterSlot("psColl-data", this, &KTDataTypeDisplayEventAnalysis::DrawPSCollectionData);
+        fWriter->RegisterSlot("ps-coll", this, &KTDataTypeDisplayEventAnalysis::DrawPSCollectionData);
         return;
     }
 
