@@ -295,7 +295,14 @@ namespace Katydid
         fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinimumFrequency();
         fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
         fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
+
         const KTSparseWaterfallCandidateData::Points& points = swcData.GetPoints();
+        if( points.size() == 0 )
+        {
+            KTWARN(publog, "The Sparse Waterfall Plot has no points! Will not write it");
+            return;
+        }
+
         fSparseWaterfallCandidateData.fPoints = new TGraph2D(points.size());
         unsigned iPoint = 0;
         for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)

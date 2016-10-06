@@ -170,11 +170,18 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::TakeLine(Nymph::KTDataPtr data)
     {
+        KTProcessedTrackData thisLine = data->Of< KTProcessedTrackData >();
+        
+//        if( thisLine.GetIsCut() )
+//        {
+//            KTINFO("The track is cut! Will not add it to the Line Collection");
+//            return;
+//        }
+
         if (fLineCollection == NULL)
         {
             fLineCollection = new TOrdCollection();
         }
-        KTProcessedTrackData thisLine = data->Of< KTProcessedTrackData >();
         TLine* rootLine = new TLine(thisLine.GetStartTimeInRunC(), thisLine.GetStartFrequency(), thisLine.GetEndTimeInRunC(), thisLine.GetEndFrequency());
         fLineCollection->Add(rootLine);
     }
