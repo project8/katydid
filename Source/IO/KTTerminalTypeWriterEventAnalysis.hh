@@ -27,8 +27,6 @@ namespace Katydid
 
         public:
             void WriteProcessedTrackData(Nymph::KTDataPtr data);
-
-            void WriteProcSummary(const KTProcSummary* summary);
     };
 
 } /* namespace Katydid */

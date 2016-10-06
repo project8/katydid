@@ -100,10 +100,10 @@ processor-toolbox:
           slot: "to-ps3:fs-fftw-to-psd"
         - signal: "to-ps3:psd"
           slot: "spectrogram:ps"
-        - signal: "spectrogram:waterfall"
-          slot: "term:proc-track"
+        - signal: "spectrogram:ps-coll"
+          slot: "term:track"
           order: 0
-        - signal: "spectrogram:waterfall"
+        - signal: "spectrogram:ps-coll"
           slot: "disp:ps-coll"
           order: 1
 

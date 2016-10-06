@@ -38,7 +38,7 @@ namespace Katydid
             fLeadFreq(0.),
             fTrailFreq(0.),
             fUseTrackFreqs(false),
-            fWaterfallSignal("waterfall", this),
+            fWaterfallSignal("ps-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack)
     {
         RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunctionPSData );
@@ -86,30 +86,7 @@ namespace Katydid
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
 
         // Configure the track to retain all of the old information
-        newTrack->SetComponent( trackData.GetComponent() );
-        newTrack->SetTrackID( trackData.GetTrackID() );
-        newTrack->SetEventID( trackData.GetEventID() );
-        newTrack->SetEventSequenceID( trackData.GetEventSequenceID() );
-        newTrack->SetIsCut( trackData.GetIsCut() );
-        newTrack->SetStartTimeInAcq( trackData.GetIsCut() );
-        newTrack->SetStartTimeInRunC( trackData.GetStartTimeInRunC() );
-        newTrack->SetEndTimeInRunC( trackData.GetEndTimeInRunC() );
-        newTrack->SetTimeLength( trackData.GetTimeLength() );
-        newTrack->SetStartFrequency( trackData.GetStartFrequency() );
-        newTrack->SetEndFrequency( trackData.GetEndFrequency() );
-        newTrack->SetFrequencyWidth( trackData.GetFrequencyWidth() );
-        newTrack->SetSlope( trackData.GetSlope() );
-        newTrack->SetIntercept( trackData.GetIntercept() );
-        newTrack->SetTotalPower( trackData.GetTotalPower() );
-        newTrack->SetStartTimeInRunCSigma( trackData.GetStartTimeInRunCSigma() );
-        newTrack->SetEndTimeInRunCSigma( trackData.GetEndTimeInRunCSigma() );
-        newTrack->SetTimeLengthSigma( trackData.GetTimeLengthSigma() );
-        newTrack->SetStartFrequencySigma( trackData.GetStartFrequencySigma() );
-        newTrack->SetEndFrequencySigma( trackData.GetEndFrequencySigma() );
-        newTrack->SetFrequencyWidthSigma( trackData.GetFrequencyWidthSigma() );
-        newTrack->SetSlopeSigma( trackData.GetSlopeSigma() );
-        newTrack->SetInterceptSigma( trackData.GetInterceptSigma() );
-        newTrack->SetTotalPowerSigma( trackData.GetTotalPowerSigma() );
+        *newTrack = trackData;
 
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );

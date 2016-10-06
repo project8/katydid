@@ -38,7 +38,7 @@ namespace Katydid
      - "header": void (Nymph::KTDataPtr) -- Print the egg header information
      - "ts": void (Nymph::KTDataPtr) -- Prints information about each slice
      - "dig": void (Nymph::KTDataPtr) -- Prints information about digitizer test results
-     - "proc-track": void (Nymph::KTDataPtr) -- Prints information about a processed track
+     - "track": void (Nymph::KTDataPtr) -- Prints information about a processed track
      - "summary": void (const KTProcSummary*) -- Prints the processor summary information
      
     */

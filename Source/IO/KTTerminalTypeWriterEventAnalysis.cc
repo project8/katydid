@@ -7,14 +7,9 @@
 
 #include "KTTerminalTypeWriterEventAnalysis.hh"
 
-#include "KTTIFactory.hh"
 #include "KTLogger.hh"
-#include "KTMath.hh"
-#include "KTProcSummary.hh"
 #include "KTProcessedTrackData.hh"
 
-#include <algorithm> // for max
-#include <cstdio> // for sprintf
 #include <sstream>
 
 
@@ -38,8 +33,7 @@ namespace Katydid
 
     void KTTerminalTypeWriterEventAnalysis::RegisterSlots()
     {
-        fWriter->RegisterSlot("proc-track", this, &KTTerminalTypeWriterEventAnalysis::WriteProcessedTrackData);
-        fWriter->RegisterSlot("summary", this, &KTTerminalTypeWriterEventAnalysis::WriteProcSummary);
+        fWriter->RegisterSlot("track", this, &KTTerminalTypeWriterEventAnalysis::WriteProcessedTrackData);
         return;
     }
 
@@ -85,24 +79,6 @@ namespace Katydid
 
         return;
     }
-
-
-    //*******************
-    // Processor Summary
-    //*******************
-
-    void KTTerminalTypeWriterEventAnalysis::WriteProcSummary(const KTProcSummary* summary)
-    {
-        if (summary == NULL) return;
-
-        KTPROG(termlog, "Processing Summary:");
-        KTPROG(termlog, "\tNumber of slices processed: " << summary->GetNSlicesProcessed());
-        KTPROG(termlog, "\tNumber of records processed: " << summary->GetNRecordsProcessed());
-        KTPROG(termlog, "\tIntegrated time processed: " << summary->GetIntegratedTime());
-
-        return;
-    }
-
 
 
 } /* namespace Katydid */
