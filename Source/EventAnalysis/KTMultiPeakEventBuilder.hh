@@ -2,7 +2,7 @@
  @file KTMultiPeakEventBuilder.hh
  @brief Contains KTMultiPeakEventBuilder
  @details Groups tracks into events
- @author: N.S. Oblath
+ @author: N.S. Oblath, B.H. LaRoque
  @date: Dec 7, 2015
  */
 
@@ -29,7 +29,7 @@ namespace Katydid
 
     /*!
      @class KTMultiPeakEventBuilder
-     @author N.S. Oblath
+     @author N.S. Oblath, B.H. LaRoque
 
      @brief Builds tracks into events; identifies multi-peak tracks (i.e. tracks with sidebands), and then groups into events.
 
@@ -38,15 +38,15 @@ namespace Katydid
      Configuration name: "multi-peak-event-builder"
 
      Available configuration values:
-     - "sideband-time-tol": 
-     - "jump-time-tol":
+     - "sideband-time-tol": For an existing multi-peak track, a new track has the same start/end if it starts/ends within sideband-time-tol of the existing object.
+     - "jump-time-tol": Given two multi-peak track objects, if the start of the second is within jump-time-tol of the first, they are grouped into an event.
 
      Slots:
      - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
      - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "event": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KT???Data.
+     - "event": void (shared_ptr<KTData>) -- Emitted for each event (set of multi-peak tracks) found; Guarantees KTMultiTrackEventData.
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
