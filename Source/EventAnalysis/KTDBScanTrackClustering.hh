@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    
+
     class KTKDTreeData;
 
     /*!
@@ -43,7 +43,7 @@ namespace Katydid
      Configuration name: "dbscan-track-clustering"
 
      Available configuration values:
-     - "radii": double[2] -- array used to describe the distances that will be used to cluster points together; [time, frequency]
+     - "radius": double -- double used to define the circle around points to cluster together
      - "min-points": unsigned int -- minimum number of points required to have a cluster
 
      Slots:
@@ -71,6 +71,7 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, MinPoints);
+            MEMBERVARIABLE(double_t, Radius);
             //MEMBERVARIABLEREF(Point, Radii);
 
         public:
