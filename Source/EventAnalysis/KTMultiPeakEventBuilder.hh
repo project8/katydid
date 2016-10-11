@@ -45,7 +45,9 @@ namespace Katydid
 
      Available configuration values:
      - "sideband-time-tol": For an existing multi-peak track, a new track has the same start/end if it starts/ends within sideband-time-tol of the existing object.
+        units match the units of start time and end time of the input track object, should be seconds
      - "jump-time-tol": Given two multi-peak track objects, if the start of the second is within jump-time-tol of the first, they are grouped into an event.
+        units match the units of start time and end time of the input track object, should be seconds
 
      Slots:
      - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
