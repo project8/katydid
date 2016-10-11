@@ -34,6 +34,12 @@ namespace Katydid
      @brief Builds tracks into events; identifies multi-peak tracks (i.e. tracks with sidebands), and then groups into events.
 
      @details
+     Iterates over track objects, each with a pre-determined value for the start and stop in both frequency and in time.
+     Tracks which have both a start time and end time in common (within "sideband-time-tol") are grouped into a multi-peak object.
+     Tracks which share a start or stop time, but not both, are also grouped, and the unknown topology attribute is set to true,
+     indicating that reconstruction is suspect.
+     All input tracks are grouped into a multi-peak object (some of which may only contain a single line).
+     Multi-peak tracks are then grouped into events, where two tracks are in the same event if the start of one is within jump-time-tol of the other.
 
      Configuration name: "multi-peak-event-builder"
 
