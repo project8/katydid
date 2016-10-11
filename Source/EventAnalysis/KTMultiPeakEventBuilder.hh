@@ -50,11 +50,11 @@ namespace Katydid
         units match the units of start time and end time of the input track object, should be seconds
 
      Slots:
-     - "track": void (<KTDataPtr>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
+     - "track": void (KTDataPtr) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
      - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "event": void (<KTDataPtr>) -- Emitted for each event (set of multi-peak tracks) found; Guarantees KTMultiTrackEventData.
+     - "event": void (KTDataPtr) -- Emitted for each event (set of multi-peak tracks) found; Guarantees KTMultiTrackEventData.
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
