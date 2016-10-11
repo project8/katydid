@@ -44,17 +44,17 @@ namespace Katydid
      Configuration name: "multi-peak-event-builder"
 
      Available configuration values:
-     - "sideband-time-tol": For an existing multi-peak track, a new track has the same start/end if it starts/ends within sideband-time-tol of the existing object.
+     - "sideband-time-tol": double -- For an existing multi-peak track, a new track has the same start/end if it starts/ends within sideband-time-tol of the existing object.
         units match the units of start time and end time of the input track object, should be seconds
-     - "jump-time-tol": Given two multi-peak track objects, if the start of the second is within jump-time-tol of the first, they are grouped into an event.
+     - "jump-time-tol": double -- Given two multi-peak track objects, if the start of the second is within jump-time-tol of the first, they are grouped into an event.
         units match the units of start time and end time of the input track object, should be seconds
 
      Slots:
-     - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
+     - "track": void (<KTDataPtr>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
      - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "event": void (shared_ptr<KTData>) -- Emitted for each event (set of multi-peak tracks) found; Guarantees KTMultiTrackEventData.
+     - "event": void (<KTDataPtr>) -- Emitted for each event (set of multi-peak tracks) found; Guarantees KTMultiTrackEventData.
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
