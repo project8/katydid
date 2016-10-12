@@ -13,6 +13,8 @@
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 
+#include <cmath>
+
 namespace Katydid
 {
     KTLOGGER(evlog, "KTSidebandCorrection");
@@ -40,7 +42,35 @@ namespace Katydid
 
     bool KTSidebandCorrection::CorrectTrack( KTLinearFitResult& fitData, KTProcessedTrackData& trackData )
     {
+        double startFreq = trackData.GetStartFrequency();
+        double endFreq = trackData.GetEndFrequency();
+        double intercept = trackData.GetIntercept();
 
+        double sidebandIntercept = fitData.GetIntercept( 0 );
+        double signalIntercept = fitData.GetIntercept( 1 );
+        double sep = abs( signalIntercept - sidebandIntercept );
+        double magnetron = fitData.GetFFT_peak( 0 );
+
+        if( sep < 2e6 )
+        {
+            KTINFO(avlog_hh, "Could not distinguish sideband and signal peaks. Cutting track");
+            trackData.SetIsCut( true );
+
+            return true;
+        }
+
+        KTINFO(avlog_hh, "Found an axial frequency of " << sep << " Hz. Correcting track frequency data");
+
+        KTINFO(avlog_hh, "Old starting frequency: " << startFreq);
+        startFreq = sqrt( startFreq * startFreq + sep * sep );
+        KTINFO(avlog_hh, "New starting frequency: " << startFreq);
+        trackData.SetStartFrequency( startFreq );
+
+        endFreq = sqrt( endFreq * endFreq + sep * sep );
+        trackData.SetEndFrequency( endFreq );
+
+        intercept = sqrt( intercept * intercept + sep * sep );
+        trackData.SetIntercept( intercept );
 
         return true;
     }

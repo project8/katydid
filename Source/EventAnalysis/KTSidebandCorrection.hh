@@ -87,6 +87,16 @@ namespace Katydid
             KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
             return;
         }
+
+        // Call function
+        if( !CorrectTrack( data->Of< KTLinearFitResult >(), data->Of< KTProcessedTrackData >() ) )
+        {
+            KTERROR(avlog_hh, "Something went wrong while analyzing data!");
+            return;
+        }
+
+        // Emit signal
+        fTrackSignal( data );
     
         return;
     }
