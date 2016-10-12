@@ -14,7 +14,6 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTHoughData.hh
     SpectrumAnalysis/KTKDTree.hh
     SpectrumAnalysis/KTKDTreeData.hh
-    SpectrumAnalysis/KTLinearFitResult.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
     SpectrumAnalysis/KTPointCloud.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
@@ -23,6 +22,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTWignerVilleData.hh
     EventAnalysis/KTFrequencyCandidate.hh
     EventAnalysis/KTFrequencyCandidateData.hh
+    EventAnalysis/KTLinearFitResult.hh
     EventAnalysis/KTMultiTrackEventData.hh
     EventAnalysis/KTProcessedTrackData.hh
     EventAnalysis/KTSparseWaterfallCandidateData.hh
@@ -70,7 +70,6 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTGainVariationData.cc
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
-    SpectrumAnalysis/KTLinearFitResult.cc
     SpectrumAnalysis/KTNormalizedFSData.cc
     SpectrumAnalysis/KTTimeSeriesDist.cc
     SpectrumAnalysis/KTTimeSeriesDistData.cc
@@ -78,6 +77,7 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTWignerVilleData.cc
     EventAnalysis/KTFrequencyCandidate.cc
     EventAnalysis/KTFrequencyCandidateData.cc
+    EventAnalysis/KTLinearFitResult.cc
     EventAnalysis/KTMultiTrackEventData.cc
     EventAnalysis/KTProcessedTrackData.cc
     EventAnalysis/KTSparseWaterfallCandidateData.cc

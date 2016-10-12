@@ -12,6 +12,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTDBScanEventClustering.hh
     KTDBScanTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
+    KTLinearDensityProbeFit.hh
     KTMultiPeakEventBuilder.hh
     KTMultiSliceClustering.hh
     KTSidebandCorrection.hh
@@ -25,6 +26,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
+    KTLinearDensityProbeFit.cc
     KTMultiPeakEventBuilder.cc
     KTMultiSliceClustering.cc
     KTSidebandCorrection.cc
