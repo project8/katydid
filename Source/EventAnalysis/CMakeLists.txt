@@ -14,6 +14,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTFrequencyCandidateIdentifier.hh
     KTMultiPeakEventBuilder.hh
     KTMultiSliceClustering.hh
+    KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
     KTTrackProcessing.hh
 )
@@ -26,6 +27,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTFrequencyCandidateIdentifier.cc
     KTMultiPeakEventBuilder.cc
     KTMultiSliceClustering.cc
+    KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
     KTTrackProcessing.cc
 )
