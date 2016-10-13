@@ -22,6 +22,7 @@ namespace Katydid
 
     class KTLinearFitResult;
     class KTProcessedTrackData;
+    class KTEggHeader;
 
     /*
      @class KTDataCutter
@@ -353,6 +354,7 @@ namespace Katydid
         }
 
         // Emit signal
+        KTINFO(avlog_hh, "Linear fit passed cut; emitting signal");
         fLinearFitSignal( data );
     
         return;
@@ -376,6 +378,7 @@ namespace Katydid
         }
 
         // Emit signal
+        KTINFO(avlog_hh, "Processed track passed cut; emitting signal");
         fTrackSignal( data );
     
         return;

@@ -12,6 +12,7 @@
 #include "KTSliceHeader.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
+#include "KTEggHeader.hh"
 
 #include <cmath>
 
