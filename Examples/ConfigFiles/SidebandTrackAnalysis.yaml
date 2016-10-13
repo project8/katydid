@@ -1,0 +1,284 @@
+processor-toolbox:
+
+    processors:
+
+        # First pass
+        - type: egg-processor
+          name: egg1
+        - type: forward-fftw
+          name: fft1
+        - type: convert-to-power
+          name: to-ps1
+        - type: gain-variation
+          name: gainvar
+        - type: data-accumulator
+          name: acc
+
+        # Second pass
+        - type: egg-processor
+          name: egg2
+        - type: forward-fftw
+          name: fft2
+        - type: convert-to-power
+          name: to-ps2
+        - type: variable-spectrum-discriminator
+          name: discrim1
+        - type: create-kd-tree
+          name: kd-tree
+        - type: consensus-thresholding
+          name: ct
+        - type: dbscan-track-clustering
+          name: tr-clust
+        - type: hough-transform
+          name: hough
+        - type: track-proc
+          name: tr-proc
+
+        # Third pass
+        - type: egg-processor
+          name: egg3
+        - type: forward-fftw
+          name: fft3
+        - type: convert-to-power
+          name: to-ps3
+        - type: spectrogram-collector
+          name: spectrogram
+        - type: variable-spectrum-discriminator
+          name: discrim2
+        - type: linear-density-fit
+          name: line
+        - type: data-cutter
+          name: cuts1
+        - type: sideband-correction
+          name: gabrielese
+        - type: data-cutter
+          name: cuts2
+
+        # Writers and profiler
+        - type: root-tree-writer
+          name: rootw1
+        - type: root-tree-writer
+          name: rootw2
+        - type: root-tree-writer
+          name: rootw3
+        - type: root-tree-writer
+          name: rootw4
+        - type: throughput-profiler
+          name: profiler
+
+    connections:
+
+        # Egg Headers
+        - signal: "egg1:header"
+          slot: "fft1:header"
+          order: 0
+        - signal: "egg1:header"
+          slot: "profiler:start"
+          order: 1
+        - signal: "egg2:header"
+          slot: "rootw1:header"
+          order: 0
+        - signal: "egg2:header"
+          slot: "fft2:header"
+          order: 1
+        - signal: "egg3:header"
+          slot: "gabrielese:header"
+          order: 0
+        - signal: "egg3:header"
+          slot: "fft3:header"
+          order: 1
+
+        # First pass: gain variation
+        - signal: "egg1:ts"
+          slot: "fft1:ts-fftw"
+        - signal: "fft1:fft"
+          slot: "to-ps1:fs-fftw-to-psd"
+        - signal: "to-ps1:psd"
+          slot: "acc:ps"
+        - signal: "acc:ps-finished"
+          slot: "gainvar:ps"
+        - signal: "gainvar:gain-var"
+          slot: "discrim1:gv"
+          order: 0
+        - signal: "gainvar:gain-var"
+          slot: "discrim2:gv"
+          order: 1
+        - signal: "gainvar:gain-var"
+          slot: "line:gv"
+          order: 2
+
+        # Second pass: track finding
+        - signal: "egg2:ts"
+          slot: "profiler:data"
+        - signal: "egg2:ts"
+          slot: "fft2:ts-fftw"
+        - signal: "fft2:fft"
+          slot: "to-ps2:fs-fftw-to-psd"
+        - signal: "to-ps2:psd"
+          slot: "discrim1:ps-pre"
+        - signal: "discrim1:disc-1d"
+          slot: "kd-tree:disc-1d"
+        - signal: "egg2:egg-done"
+          slot: "kd-tree:make-tree"
+        - signal: "kd-tree:kd-tree"
+          slot: "ct:kd-tree-in"
+        - signal: "ct:kd-tree-out"
+          slot: "tr-clust:kd-tree"
+        - signal: "tr-clust:track"
+          slot: "hough:swf-cand"
+        - signal: "hough:hough"
+          slot: "tr-proc:swfc-and-hough"
+        - signal: "tr-proc:track"
+          slot: "rootw1:processed-track"
+          order: 0
+        - signal: "tr-proc:track"
+          slot: "cuts1:track"
+          order: 1
+        - signal: "cuts1:track"
+          slot: "rootw2:processed-track"
+          order: 0
+        - signal: "cuts1:track"
+          slot: "spectrogram:track"
+          order: 1
+
+        # Third pass: sideband analysis
+        - signal: "egg3:ts"
+          slot: "fft3:ts-fftw"
+        - signal: "fft3:fft"
+          slot: "to-ps3:fs-fftw-to-psd"
+        - signal: "to-ps3:psd"
+          slot: "spectrogram:ps"
+        - signal: "spectrogram:ps-coll"
+          slot: "discrim2:spec-pre"
+        - signal: "discrim2:disc-2d"
+          slot: "line:thresh-points"
+        - signal: "line:fit-result"
+          slot: "rootw3:linear-fit"
+          order: 0
+        - signal: "line:fit-result"
+          slot: "cuts2:fit-result"
+          order: 1
+        - signal: "cuts2:fit-result"
+          slot: "gabrielese:fit-result"
+        - signal: "gabrielese:track"
+          slot: "rootw4:processed-track"
+
+        # Profiler stop
+        - signal: "tr-clust:clustering-done"
+          slot: "profiler:stop"
+
+    run-queue:
+        - egg1
+        - egg2
+        - egg3
+
+egg1:
+    filename: "placeholder.MAT"
+    egg-reader: rsamat
+    number-of-slices: 0
+    slice-size: 8192
+
+fft1:
+    transform-flag: ESTIMATE
+
+acc:
+    number-to-average: 0
+    signal-interval: 0
+
+gainvar:
+    normalize: false
+    min-frequency: 50e6
+    max-frequency: 150e6
+    fit-points: 50
+
+egg2:
+    filename: "placeholder.MAT"
+    egg-reader: rsamat
+    number-of-slices: 0
+    slice-size: 8192
+
+fft2:
+    transform-flag: ESTIMATE
+
+discrim1:
+    min-frequency: 50e6
+    max-frequency: 150e6
+    snr-threshold-power: 6.0
+
+discrim2:
+    min-frequency: 50e6
+    max-frequency: 150e6
+    snr-threshold-power: 4.0
+
+kd-tree:
+    time-radius: 0.0006
+    freq-radius: 0.15e6
+    distance-method: euclidean
+
+ct:
+    membership-radius: 0.5
+    min-number-votes: 6
+
+tr-clust:
+    comment: "radii are now specified in kd-tree"
+    min-points: 4
+
+hough:
+    n-theta-points: 100
+    n-r-points: 150
+
+tr-proc:
+    pl-dist-cut1: 0.07
+    pl-dist-cut2: 0.035
+    min-points: 6
+    min-slope: 1.0
+
+egg3:
+    filename: "placeholder.MAT"
+    egg-reader: rsamat
+    number-of-slices: 0
+    slice-size: 8192
+
+fft3:
+    transform-flag: ESTIMATE
+
+spectrogram:
+    min-frequency: 50e6
+    max-frequency: 150e6
+    lead-time: 20e-5
+    trail-time: 20e-5
+
+line:
+    min-frequency: 50e6
+    max-frequency: 150e6
+    probe-width-big: 1e6
+    probe-width-small: 100e3
+    step-size-big: 20e3
+    step-size-small: 20e3
+
+cuts1:
+    cut-bogus-tracks: true
+    is-cut: false
+
+cuts2:
+    min-sideband-separation: 2e6
+
+rootw1:
+    output-file: "WaterfallData/Sidebands_Out/all-tracks.root"
+    file-flag: update
+    accumulate: true
+
+rootw2:
+    output-file: "WaterfallData/Sidebands_Out/uncut-tracks.root"
+    file-flag: update
+    accumulate: true
+
+rootw3:
+    output-file: "WaterfallData/Sidebands_Out/fit-results.root"
+    file-flag: update
+    accumulate: true
+
+rootw4:
+    output-file: "WaterfallData/Sidebands_Out/corrected-tracks"
+    file-flag: update
+    accumulate: true
