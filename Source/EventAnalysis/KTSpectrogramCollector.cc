@@ -38,7 +38,7 @@ namespace Katydid
             fLeadFreq(0.),
             fTrailFreq(0.),
             fUseTrackFreqs(false),
-            fWaterfallSignal("waterfall", this),
+            fWaterfallSignal("ps-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack)
     {
         RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunctionPSData );

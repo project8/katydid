@@ -56,7 +56,7 @@ namespace Katydid
      - "ps": void (Nymph::KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
 
      Signals:
-     - "waterfall": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
+     - "ps-coll": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
     */
 
     class KTSpectrogramCollector : public Nymph::KTProcessor
