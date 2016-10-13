@@ -24,9 +24,11 @@ namespace Katydid
 
     KTSidebandCorrection::KTSidebandCorrection(const std::string& name) :
             KTProcessor(name),
+            fMixingOffset(0.),
             fTrackSignal("track", this)
     {
         RegisterSlot( "fit-result", this, &KTSidebandCorrection::SlotFunctionFitResult );
+        RegisterSlot( "header", this, &KTSidebandCorrection::SlotFunctionHeader );
     }
 
     KTSidebandCorrection::~KTSidebandCorrection()
@@ -42,35 +44,38 @@ namespace Katydid
 
     bool KTSidebandCorrection::CorrectTrack( KTLinearFitResult& fitData, KTProcessedTrackData& trackData )
     {
-        double startFreq = trackData.GetStartFrequency();
-        double endFreq = trackData.GetEndFrequency();
-        double intercept = trackData.GetIntercept();
+        double startFreq = trackData.GetStartFrequency() + GetMixingOffset();
+        double endFreq = trackData.GetEndFrequency() + GetMixingOffset();
+        double intercept = trackData.GetIntercept() + GetMixingOffset();
 
         double sidebandIntercept = fitData.GetIntercept( 0 );
         double signalIntercept = fitData.GetIntercept( 1 );
         double sep = abs( signalIntercept - sidebandIntercept );
         double magnetron = fitData.GetFFT_peak( 0 );
 
-        if( sep < 2e6 )
-        {
-            KTINFO(avlog_hh, "Could not distinguish sideband and signal peaks. Cutting track");
-            trackData.SetIsCut( true );
-
-            return true;
-        }
-
-        KTINFO(avlog_hh, "Found an axial frequency of " << sep << " Hz. Correcting track frequency data");
+        KTINFO(avlog_hh, "Found an axial frequency of " << sep << " Hz");
+        KTINFO(avlog_hh, "Found a magnetron frequency of " << magnetron << " Hz");
 
         KTINFO(avlog_hh, "Old starting frequency: " << startFreq);
-        startFreq = sqrt( startFreq * startFreq + sep * sep );
+        startFreq = sqrt( startFreq * startFreq + sep * sep + magnetron * magnetron );
         KTINFO(avlog_hh, "New starting frequency: " << startFreq);
-        trackData.SetStartFrequency( startFreq );
+        trackData.SetStartFrequency( startFreq - GetMixingOffset() );
 
-        endFreq = sqrt( endFreq * endFreq + sep * sep );
-        trackData.SetEndFrequency( endFreq );
+        endFreq = sqrt( endFreq * endFreq + sep * sep + magnetron * magnetron );
+        trackData.SetEndFrequency( endFreq - GetMixingOffset() );
 
-        intercept = sqrt( intercept * intercept + sep * sep );
-        trackData.SetIntercept( intercept );
+        intercept = sqrt( intercept * intercept + sep * sep + magnetron * magnetron );
+        trackData.SetIntercept( intercept - GetMixingOffset() );
+
+        return true;
+    }
+
+    bool KTSidebandCorrection::AssignFrequencyOffset( KTEggHeader& header )
+    {
+        double f = 24.2e9 + header.GetMinimumFrequency();
+        SetMixingOffset( f );
+
+        KTINFO(avlog_hh, "Set mixing offset to " << GetMixingOffset());
 
         return true;
     }

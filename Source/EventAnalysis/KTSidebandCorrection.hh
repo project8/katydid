@@ -10,6 +10,7 @@
 
 #include "KTProcessor.hh"
 #include "KTData.hh"
+#include "KTEggHeader.hh"
 
 #include "KTSlot.hh"
 #include "KTLogger.hh"
@@ -41,6 +42,7 @@ namespace Katydid
 
      Slots:
      - "fit-result": void (Nymph::KTDataPtr) -- Adds a track and fit result for analysis; Requires KTLinearFitResult and KTProcessedTrackData; Adds nothing
+     - "header": void (Nymph::KTDataPtr) -- Determines the true cyclotron frequency to correctly adjust for down-mixing from hardware; Requires KTEggHeader; Adds nothing
 
      Signals:
      - "track": void (Nymph::KTDataPtr) -- Emitted upon successful analysis and correction of a track; Guarantees KTProcessedTrackData
@@ -54,8 +56,16 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
+            double GetMixingOffset() const;
+            void SetMixingOffset(double freq);
+
+        private:
+            double fMixingOffset;
+
+
         public:
             bool CorrectTrack( KTLinearFitResult& fitData, KTProcessedTrackData& trackData );
+            bool AssignFrequencyOffset( KTEggHeader& header );
 
             //***************
             // Signals
@@ -70,8 +80,20 @@ namespace Katydid
 
         private:
             void SlotFunctionFitResult( Nymph::KTDataPtr data );
+            void SlotFunctionHeader( Nymph::KTDataPtr data );
 
     };
+
+    inline double KTSidebandCorrection::GetMixingOffset() const
+    {
+        return fMixingOffset;
+    }
+
+    inline void KTSidebandCorrection::SetMixingOffset(double freq)
+    {
+        fMixingOffset = freq;
+        return;
+    }
 
     void KTSidebandCorrection::SlotFunctionFitResult( Nymph::KTDataPtr data )
     {
@@ -91,7 +113,7 @@ namespace Katydid
         // Call function
         if( !CorrectTrack( data->Of< KTLinearFitResult >(), data->Of< KTProcessedTrackData >() ) )
         {
-            KTERROR(avlog_hh, "Something went wrong while analyzing data!");
+            KTERROR(avlog_hh, "Something went wrong while analyzing linear fit data!");
             return;
         }
 
@@ -99,6 +121,23 @@ namespace Katydid
         fTrackSignal( data );
     
         return;
+    }
+
+    void KTSidebandCorrection::SlotFunctionHeader( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTEggHeader >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTEggHeader >!");
+            return;
+        }
+
+        if( !AssignFrequencyOffset( data->Of< KTEggHeader >() ) )
+        {
+            KTERROR(avlog_hh, "Something went wrong finding the mixing offset!");
+            return;
+        }
     }
 }
 
