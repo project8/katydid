@@ -2,6 +2,7 @@
 # Author: N. Oblath
 
 # Tutorial code is optionally built from the Source/SpectrumAnalysis and Source/Data CMakeLists files.
+# Processor template code is built from Source/Utility CMakeLists file.
 
 # Config files
 set (EXAMPLE_CONFIGFILES

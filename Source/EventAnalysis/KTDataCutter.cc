@@ -27,7 +27,7 @@ namespace Katydid
             fMinMagnetronFreq(0.),
             fMaxMagnetronFreq(1e12),
             fMinTrackID(0),
-            fMaxTrackID(1e12),
+            fMaxTrackID(1e9),
             fCutBogusTracks(false),
             fIsCut(false),
             fMinStartTimeInRunC(0.),

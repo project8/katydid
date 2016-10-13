@@ -236,7 +236,7 @@ namespace Katydid
         return;
     }
 
-    inline double KTDataCutter::GetIsCut() const
+    inline bool KTDataCutter::GetIsCut() const
     {
         return fIsCut;
     }
