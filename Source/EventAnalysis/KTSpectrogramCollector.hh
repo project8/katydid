@@ -26,6 +26,7 @@ namespace Katydid
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
     class KTSliceHeader;
+    class KTEggHeader;
 
     /*
      @class KTSpectrogramCollector
@@ -108,9 +109,9 @@ namespace Katydid
             bool fUseTrackFreqs;
 
         public:
-            bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
+            bool AddTrack(KTEggHeader& header, KTProcessedTrackData& trackData, unsigned component);
             bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit = false);
-            bool ReceiveTrack(KTProcessedTrackData& data);
+            bool ReceiveTrack(KTEggHeader& header, KTProcessedTrackData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
             void FinishSC( Nymph::KTDataPtr data );
 
@@ -145,7 +146,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTrackSlot;
+            Nymph::KTSlotDataTwoTypes< KTEggHeader, KTProcessedTrackData > fTrackSlot;
             void SlotFunctionPSData( Nymph::KTDataPtr data );
 
     };

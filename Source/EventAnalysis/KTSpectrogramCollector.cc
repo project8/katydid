@@ -10,6 +10,7 @@
 #include "KTLogger.hh"
 
 #include "KTSliceHeader.hh"
+#include "KTEggHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTPowerSpectrum.hh"
@@ -78,12 +79,16 @@ namespace Katydid
         return true;
     }
 
-    bool KTSpectrogramCollector::AddTrack( KTProcessedTrackData& trackData, unsigned component )
+    bool KTSpectrogramCollector::AddTrack( KTEggHeader& header, KTProcessedTrackData& trackData, unsigned component )
     {
-        // Create new Nymph::KTDataPtr and PSCollectionData
+        // Create new Nymph::KTDataPtr and its contents
         Nymph::KTDataPtr ptr( new Nymph::KTData() );
+        KTEggHeader* newHeader = &ptr->Of< KTEggHeader >();
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
+
+        // Configure the egg header to be the same as the old one
+        *newHeader = header;
 
         // Configure the track to retain only the slope information
         newTrack->SetSlope( trackData.GetSlope() );
@@ -152,7 +157,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
+    bool KTSpectrogramCollector::ReceiveTrack( KTEggHeader& header, KTProcessedTrackData& data )
     {
         if( data.GetIsCut() )
         {
@@ -169,7 +174,7 @@ namespace Katydid
             fWaterfallSets.push_back( blankSet );
 
         // Add track
-        if( !AddTrack( data, iComponent ) )
+        if( !AddTrack( header, data, iComponent ) )
         {
             KTERROR(evlog, "Spectrogram collector could not add track! (component " << iComponent << ")" );
         }
