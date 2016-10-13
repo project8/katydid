@@ -7,6 +7,7 @@
 set (EVENTANALYSIS_HEADERFILES
     KTCandidateCleaner.hh
     KTCandidateTrackFinder.hh
+    KTDataCutter.hh
     KTDBScan.hh
     KTDistanceMatrix.hh
     KTDBScanEventClustering.hh
@@ -23,6 +24,7 @@ set (EVENTANALYSIS_HEADERFILES
 set (EVENTANALYSIS_SOURCEFILES
     KTCandidateCleaner.cc
     KTCandidateTrackFinder.cc
+    KTDataCutter.cc
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
