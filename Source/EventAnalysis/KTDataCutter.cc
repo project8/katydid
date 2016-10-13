@@ -13,6 +13,8 @@
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 
+#include <cmath>
+
 namespace Katydid
 {
     KTLOGGER(evlog, "KTDataCutter");
@@ -75,11 +77,11 @@ namespace Katydid
 
     bool KTDataCutter::CutLinearFitResult( KTLinearFitResult& fitData )
     {
-        if( fitData.GetSidebandSeparation( 0 ) < fMinSidebandSeparation )
+        if( abs( fitData.GetSidebandSeparation( 0 ) ) < fMinSidebandSeparation )
         {
             return false;
         }
-        if( fitData.GetSidebandSeparation( 0 ) > fMaxSidebandSeparation )
+        if( abs( fitData.GetSidebandSeparation( 0 ) ) > fMaxSidebandSeparation )
         {
             return false;
         }
