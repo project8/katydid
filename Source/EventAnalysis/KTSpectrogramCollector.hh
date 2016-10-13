@@ -286,4 +286,4 @@ namespace Katydid
     }
 }
 
-#endif /* KTTRACKSPECTROGRAMCOLLECTOR_HH_ */
+#endif /* KTSPECTROGRAMCOLLECTOR_HH_ */
