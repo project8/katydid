@@ -38,9 +38,11 @@ namespace Katydid
             fMaxStartFreq(1e12),
             fMinSlope(-1e15),
             fMaxSlope(1e15),
-            fLinearFitSignal("fit-result", this)
+            fLinearFitSignal("fit-result", this),
+            fTrackSignal("track", this)
     {
         RegisterSlot( "fit-result", this, &KTDataCutter::SlotFunctionFitResult );
+        RegisterSlot( "track", this, &KTDataCutter::SlotFunctionProcessedTrack );
     }
 
     KTDataCutter::~KTDataCutter()
