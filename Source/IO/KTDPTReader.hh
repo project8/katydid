@@ -33,7 +33,7 @@ namespace Katydid
      Slots:
 
      Signals:
-     - "fs-polar": void (Nymph::KTDataPtr) -- Emitted after reading a DPT file; Guarantees KTFrequencySpectrumDataPolar
+     - "ps": void (Nymph::KTDataPtr) -- Emitted after reading a DPT file; Guarantees KTPowerSpectrumData
     */
     class KTDPTReader : public Nymph::KTReader
     {
