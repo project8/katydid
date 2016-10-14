@@ -85,11 +85,8 @@ namespace Katydid
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
 
-        // Configure the track to retain only the slope information
-        newTrack->SetSlope( trackData.GetSlope() );
-        newTrack->SetStartTimeInRunC( trackData.GetStartTimeInRunC() );
-        newTrack->SetEndTimeInRunC( trackData.GetEndTimeInRunC() );
-        newTrack->SetSlopeSigma( trackData.GetSlopeSigma() );
+        // Configure the track to retain all of the old information
+        *newTrack = trackData;
 
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
