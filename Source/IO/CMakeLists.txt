@@ -10,6 +10,7 @@ set (IO_HEADERFILES
     KTJSONWriter.hh
     #KTMultiFileJSONReader.hh
     KTOfficialCandidatesWriter.hh
+    KTTerminalTypeWriterEventAnalysis.hh
     KTTerminalTypeWriterTime.hh
     KTTerminalWriter.hh
 )
@@ -19,10 +20,11 @@ set (IO_SOURCEFILES
     KTBasicAsciiWriter.cc
     KTJSONTypeWriterTime.cc
     #KTJSONTypeWriterEvaluation.cc
-    KTJSONTypeWriterEventAnalysis.hh
+    KTJSONTypeWriterEventAnalysis.cc
     KTJSONWriter.cc
     #KTMultiFileJSONReader.cc
     KTOfficialCandidatesWriter.cc
+    KTTerminalTypeWriterEventAnalysis.cc
     KTTerminalTypeWriterTime.cc
     KTTerminalWriter.cc
 )
