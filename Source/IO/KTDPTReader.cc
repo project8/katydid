@@ -12,6 +12,7 @@
 #include "KTLogger.hh"
 
 #include "rapidxml.hpp"
+#include "rapidxml_utils.hpp"
 
 #include <cstdlib>
 
@@ -149,6 +150,7 @@ namespace Katydid
                 return false;
             }
             (*newSpectrum)(iBin) = strtod(powerNode->value(), NULL);
+            powerNode = powerNode->next_sibling("y");
         }
 
         // add spectrum to data

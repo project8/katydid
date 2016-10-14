@@ -35,6 +35,7 @@ if (Katydid_ENABLE_TESTING)
     
     set( PROGRAMS
         TestDataDisplay
+        TestDPTReader
         #TestFrequencySpectrumFFTW
         TestJSONWriter
         #TestMultiFileJSONReader

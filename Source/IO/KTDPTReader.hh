@@ -10,6 +10,7 @@
 
 #include "KTMemberVariable.hh"
 #include "KTReader.hh"
+#include "KTSignal.hh"
 
 #include <string>
 
