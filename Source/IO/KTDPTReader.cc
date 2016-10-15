@@ -111,6 +111,22 @@ namespace Katydid
             }
         }
 
+        // verify units
+        rapidxml::xml_node< char >* xUnitsNode = parentNode->first_node("XUnits");
+        if (xUnitsNode == nullptr || strcmp(xUnitsNode->value(), "Hz") != 0)
+        {
+            KTERROR(inlog, "Did not find x-axis units or units were not as expected (Hz)");
+            return false;
+        }
+
+        rapidxml::xml_node< char >* yUnitsNode = parentNode->first_node("YUnits");
+        if (yUnitsNode == nullptr || strcmp(yUnitsNode->value(), "dBm") != 0)
+        {
+            KTERROR(inlog, "Did not find y-axis units or units were not as expected (dBm)");
+            return false;
+        }
+
+        // get spectrum information
         rapidxml::xml_node< char >* nBinsNode = parentNode->first_node("Count");
         if (nBinsNode == nullptr)
         {
@@ -134,6 +150,7 @@ namespace Katydid
             return false;
         }
         double maxFreq = strtod(maxFreqNode->value(), NULL);
+        KTDEBUG(inlog, "DPT power spectrum will have " << nBins << " bins and frequency range " << minFreq << " - " << maxFreq << " Hz");
 
         // create spectrum
         KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >().SetNComponents(1);
@@ -149,7 +166,8 @@ namespace Katydid
                 delete newSpectrum;
                 return false;
             }
-            (*newSpectrum)(iBin) = strtod(powerNode->value(), NULL);
+            // convert dBm to W: P_W = 10^((P_dBm-30)/10)
+            (*newSpectrum)(iBin) = pow(10., 0.1 * (strtod(powerNode->value(), NULL) - 30.));
             powerNode = powerNode->next_sibling("y");
         }
 
