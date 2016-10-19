@@ -39,6 +39,7 @@ namespace Katydid
      - "ts": void (Nymph::KTDataPtr) -- Prints information about each slice
      - "dig": void (Nymph::KTDataPtr) -- Prints information about digitizer test results
      - "track": void (Nymph::KTDataPtr) -- Prints information about a processed track
+     - "fit-result": void (Nymph::KTDataPtr) -- Prints information about a density fit
      - "summary": void (const KTProcSummary*) -- Prints the processor summary information
      
     */

@@ -27,6 +27,7 @@ namespace Katydid
 
         public:
             void WriteProcessedTrackData(Nymph::KTDataPtr data);
+            void WriteLinearFitData(Nymph::KTDataPtr data);
     };
 
 } /* namespace Katydid */
