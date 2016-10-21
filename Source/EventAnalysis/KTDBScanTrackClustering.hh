@@ -71,7 +71,7 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, MinPoints);
-            MEMBERVARIABLE(double_t, Radius);
+            MEMBERVARIABLE(double, Radius);
             //MEMBERVARIABLEREF(Point, Radii);
 
         public:
