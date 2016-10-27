@@ -78,11 +78,11 @@ namespace Katydid
 
     bool KTDataCutter::CutLinearFitResult( KTLinearFitResult& fitData )
     {
-        if( abs( fitData.GetSidebandSeparation( 0 ) ) < fMinSidebandSeparation )
+        if( std::abs( fitData.GetSidebandSeparation( 0 ) ) < fMinSidebandSeparation )
         {
             return false;
         }
-        if( abs( fitData.GetSidebandSeparation( 0 ) ) > fMaxSidebandSeparation )
+        if( std::abs( fitData.GetSidebandSeparation( 0 ) ) > fMaxSidebandSeparation )
         {
             return false;
         }

@@ -50,7 +50,7 @@ namespace Katydid
 
         double sidebandIntercept = fitData.GetIntercept( 0 );
         double signalIntercept = fitData.GetIntercept( 1 );
-        double sep = abs( signalIntercept - sidebandIntercept );
+        double sep = std::abs( signalIntercept - sidebandIntercept );
         double magnetron = fitData.GetFFT_peak( 0 );
 
         KTINFO(avlog_hh, "Found an axial frequency of " << sep << " Hz");
