@@ -26,6 +26,13 @@
 #include <omp.h>
 #endif
 
+#ifdef ROOT_FOUND
+#include "TH1.h"
+#include "TF1.h"
+#include "KT2ROOT.hh"
+#include "TMath.h"
+#endif
+
 using std::string;
 using std::vector;
 
@@ -144,6 +151,56 @@ namespace Katydid
     {
         fGVData = gvData;
         return true;
+    }
+
+    Double_t fitf(Double_t *x, Double_t *par)
+    {
+
+    /*
+        The inputs to this method must be x and par
+        This is the only way root can use the method for fitting
+
+        x is an array containing the arguments of the function
+        In this case, the function is 1D so I will only use x[0]
+
+        par is an array for the parameters in the fit:
+        par[0] = Overall scale
+        par[1] = Overall background
+        par[2] = Overall frequency center
+        par[3] = Curvature
+        par[4] = Width
+    */
+
+        // Control constants
+        double np = 1000.0;        // number of convolution steps
+        double sc =   5.0;         // convolution extends to +-sc Gaussian sigmas
+
+        // Variables
+        double xx;
+        double fSec;
+        double sum = 0.0;
+        double xlow,xupp;
+        double step;
+        double i;
+
+        // Range of convolution integral
+        xlow = x[0] - sc * par[3];
+        xupp = x[0] + sc * par[3];
+
+        step = (xupp-xlow) / np;
+
+        // Convolution integral of Landau and Gaussian by sum
+        for(i=1.0; i<=np/2; i++) {
+          xx = xlow + (i-.5) * step;
+          fSec = TMath::Power( TMath::Cos( par[3] * xx / par[4] ), -2 );
+          sum += fSec * TMath::Gaus(x[0],xx+par[2],par[4]);
+
+          xx = xupp - (i-.5) * step;
+          fSec = TMath::Power( TMath::Cos( par[3] * xx), -2 );
+          sum += fSec * TMath::Gaus(x[0],xx+par[2],par[4]);
+        }
+
+        return par[0] * sum + par[1];
     }
 
     bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
@@ -291,6 +348,51 @@ namespace Katydid
 
     bool KTLinearDensityProbeFit::CalculatePower(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
     {
+        KTPowerFitData& newData = data.Of< KTPowerFitData >();
+        KTPSCollectionData& fullSpectrogram = data.Of< KTPSCollectionData >();
+
+        newData.SetNComponents( 1 );
+
+        double alpha = fMinFrequency;
+        double error;
+        double q = data.GetSlope();
+
+        while( alpha <= fMaxFrequency )
+        {
+            error = 0;
+
+            // Calculate the associated error to the current value of alpha
+            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+            {
+                error -= Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, fProbeWidthBig );
+            }
+            
+            // Add point
+            newData.AddPoint( alpha, KTPowerFitData::Point( alpha, error, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            KTDEBUG(sdlog, "Added point of intercept " << alpha << " and error " << error);
+            
+            // Increment alpha
+            alpha += fStepSizeBig;
+        }
+
+        KTINFO(sdlog, "Sucessfully gathered points for power fit calculation. Creating histogram");
+
+        TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "hPowerMag" );
+        TF1* conv = new TF1( "Power Convolution", fitf, 0, 1e9 );
+
+        fitPoints->Fit( "conv" );
+        
+        double A = conv->GetParameter(0);
+        double B = conv->GetParameter(1);
+        double z0 = conv->GetParameter(2);
+        double k = conv->GetParameter(3);
+        double sigma = conv->GetParameter(4);
+
+        KTINFO(sdlog, "Completed fit! A = " << A << "\nB = " << B << "\nz0 = " << z0 << "\nk = " << k << "\nsigma = " << sigma);
+
+        newData.SetCurvature( k );
+        newData.SetWidth( sigma );
+
         return true;
     }
 
