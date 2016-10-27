@@ -10,6 +10,7 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
+#include "KTPowerFitData.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeries.hh"
@@ -44,7 +45,9 @@ namespace Katydid
             fStepSizeBig(0.2e6),
             fStepSizeSmall(0.004e6),
             fLinearDensityFitSignal("fit-result", this),
+            fPowerFitSignal("power-fit-result", this),
             fThreshPointsSlot("thresh-points", this, &KTLinearDensityProbeFit::Calculate, &fLinearDensityFitSignal),
+            fThreshPointsAltSlot("thresh-points-alt", this, &KTLinearDensityProbeFit::CalculatePower, &fPowerFitSignal),
             fPreCalcSlot("gv", this, &KTLinearDensityProbeFit::SetPreCalcGainVar)
     {
     }
@@ -283,6 +286,11 @@ namespace Katydid
 
         KTINFO(sdlog, "Successfully obtained power modulation. Maximum fourier peak at frequency " << newData.GetFFT_peak( 0 ) << " with SNR " << newData.GetFFT_SNR( 0 ));
 
+        return true;
+    }
+
+    bool KTLinearDensityProbeFit::CalculatePower(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
+    {
         return true;
     }
 
