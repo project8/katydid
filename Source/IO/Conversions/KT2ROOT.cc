@@ -510,7 +510,7 @@ namespace Katydid
         double minFreq, maxFreq;
         unsigned nBins = SetOfPoints.size();
         minFreq = SetOfPoints.begin()->second.fAbscissa;
-        maxFreq = SetOfPoints.end()->second.fAbscissa;
+        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
 
         TH1D* hist = new TH1D(histName.c_str(), histName.c_str(),
                 (int)nBins, minFreq, maxFreq);

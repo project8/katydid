@@ -106,7 +106,7 @@ namespace Katydid
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
         	bool Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
             bool CalculatePower(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
-        	bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
+            bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
         	double findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width );
 
         private:

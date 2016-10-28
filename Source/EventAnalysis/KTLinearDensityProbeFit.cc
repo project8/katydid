@@ -166,9 +166,9 @@ namespace Katydid
         par is an array for the parameters in the fit:
         par[0] = Overall scale
         par[1] = Overall background
-        par[2] = Overall frequency center
+        par[2] = Overall frequency center in MHz
         par[3] = Curvature
-        par[4] = Width
+        par[4] = Width in MHz
     */
 
         // Control constants
@@ -184,20 +184,20 @@ namespace Katydid
         double i;
 
         // Range of convolution integral
-        xlow = x[0] - sc * par[3];
-        xupp = x[0] + sc * par[3];
+        xlow = -0.5*par[4];
+        xupp = 0.5*par[4];
 
         step = (xupp-xlow) / np;
 
         // Convolution integral of Landau and Gaussian by sum
         for(i=1.0; i<=np/2; i++) {
           xx = xlow + (i-.5) * step;
-          fSec = TMath::Power( TMath::Cos( par[3] * xx / par[4] ), -2 );
-          sum += fSec * TMath::Gaus(x[0],xx+par[2],par[4]);
+          fSec = TMath::Power( TMath::Cos( par[3] * xx / (par[4]) ), -2 );
+          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,100000);
 
           xx = xupp - (i-.5) * step;
-          fSec = TMath::Power( TMath::Cos( par[3] * xx), -2 );
-          sum += fSec * TMath::Gaus(x[0],xx+par[2],par[4]);
+          fSec = TMath::Power( TMath::Cos( par[3] * xx / (par[4]) ), -2 );
+          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,100000);
         }
 
         return par[0] * sum + par[1];
@@ -353,11 +353,11 @@ namespace Katydid
 
         newData.SetNComponents( 1 );
 
-        double alpha = fMinFrequency;
+        double alpha = data.GetStartFrequency() - 5e6;
         double error;
         double q = data.GetSlope();
 
-        while( alpha <= fMaxFrequency )
+        while( alpha <= data.GetEndFrequency() + 5e6 )
         {
             error = 0;
 
@@ -368,17 +368,27 @@ namespace Katydid
             }
             
             // Add point
-            newData.AddPoint( alpha, KTPowerFitData::Point( alpha, error, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
-            KTDEBUG(sdlog, "Added point of intercept " << alpha << " and error " << error);
+            newData.AddPoint( alpha - (data.GetStartFrequency() - 5e6), KTPowerFitData::Point( alpha - (data.GetStartFrequency() - 5e6), -1*error, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            KTDEBUG(sdlog, "Added point of intercept " << alpha - (data.GetStartFrequency() - 5e6) << " and error " << -1 * error);
             
             // Increment alpha
             alpha += fStepSizeBig;
         }
 
-        KTINFO(sdlog, "Sucessfully gathered points for power fit calculation. Creating histogram");
+        KTINFO(sdlog, "Sucessfully gathered points for power fit calculation. Performing fit...");
 
         TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "hPowerMag" );
-        TF1* conv = new TF1( "Power Convolution", fitf, 0, 1e9 );
+        TF1* conv = new TF1( "conv", fitf, 0, 1e9, 5 );
+        TF1* gaussian = new TF1( "gaussian", "gaus(0) + [3]", 0, 1e9);
+
+        conv->SetParameter( 0, 1 );
+        conv->SetParameter( 1, 40 );
+        conv->SetParameter( 2, 5 );
+        conv->SetParameter( 3, 0.5 );
+        conv->SetParameter( 4, 100e3 );
+
+        conv->SetParLimits( 3, 0.1, TMath::Pi() );
+        conv->SetParLimits( 4, 0, 10e6 );
 
         fitPoints->Fit( "conv" );
         
@@ -386,12 +396,12 @@ namespace Katydid
         double B = conv->GetParameter(1);
         double z0 = conv->GetParameter(2);
         double k = conv->GetParameter(3);
-        double sigma = conv->GetParameter(4);
+        //double sigma = conv->GetParameter(4);
 
-        KTINFO(sdlog, "Completed fit! A = " << A << "\nB = " << B << "\nz0 = " << z0 << "\nk = " << k << "\nsigma = " << sigma);
+        KTINFO(sdlog, "Completed fit! \nA = " << A << "\nB = " << B << "\nz0 = " << z0 << "\nk = " << k/* << "\nsigma = " << sigma*/);
 
         newData.SetCurvature( k );
-        newData.SetWidth( sigma );
+        //newData.SetWidth( sigma );
 
         return true;
     }

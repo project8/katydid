@@ -151,17 +151,17 @@ processor-toolbox:
         - signal: "spectrogram:ps-coll"
           slot: "discrim2:spec-pre"
         - signal: "discrim2:disc-2d"
-          slot: "line:thresh-points"
-        - signal: "line:fit-result"
-          slot: "rootw3:linear-fit"
-          order: 0
-        - signal: "line:fit-result"
-          slot: "cuts2:fit-result"
-          order: 1
-        - signal: "cuts2:fit-result"
-          slot: "gabrielese:fit-result"
-        - signal: "gabrielese:track"
-          slot: "rootw4:processed-track"
+          slot: "line:thresh-points-alt"
+#        - signal: "line:power-fit-result"
+#          slot: "rootw3:linear-fit"
+#          order: 0
+#        - signal: "line:power-fit-result"
+#          slot: "cuts2:fit-result"
+#          order: 1
+#        - signal: "cuts2:fit-result"
+#          slot: "gabrielese:fit-result"
+#        - signal: "gabrielese:track"
+#          slot: "rootw4:processed-track"
 
         # Profiler stop
         - signal: "tr-clust:clustering-done"
@@ -245,13 +245,16 @@ fft3:
 spectrogram:
     min-frequency: 50e6
     max-frequency: 150e6
-    lead-time: 20e-5
-    trail-time: 20e-5
+    lead-time: 0.
+    trail-time: 0.
+    lead-freq: 2e6
+    trail-freq: 2e6
+    use-track-freqs: false
 
 line:
     min-frequency: 50e6
     max-frequency: 150e6
-    probe-width-big: 1e6
+    probe-width-big: 0.1e6
     probe-width-small: 100e3
     step-size-big: 20e3
     step-size-small: 20e3
@@ -264,21 +267,21 @@ cuts2:
     min-sideband-separation: 2e6
 
 rootw1:
-    output-file: "WaterfallData/Sidebands_Out/all-tracks.root"
+    output-file: "all-tracks.root"
     file-flag: update
     accumulate: true
 
 rootw2:
-    output-file: "WaterfallData/Sidebands_Out/uncut-tracks.root"
+    output-file: "uncut-tracks.root"
     file-flag: update
     accumulate: true
 
 rootw3:
-    output-file: "WaterfallData/Sidebands_Out/fit-results.root"
+    output-file: "fit-results.root"
     file-flag: update
     accumulate: true
 
 rootw4:
-    output-file: "WaterfallData/Sidebands_Out/corrected-tracks"
+    output-file: "corrected-tracks"
     file-flag: update
     accumulate: true
