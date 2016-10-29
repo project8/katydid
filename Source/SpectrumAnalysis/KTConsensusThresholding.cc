@@ -93,7 +93,7 @@ namespace Katydid
     }
 
     bool KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, std::vector< size_t >& noiseIndices)
-    {   
+    {
         unsigned nPoints = kdTree->size();
         noiseIndices.clear();
         double timeDelta, frequencyDelta;
@@ -112,11 +112,13 @@ namespace Katydid
                 bool closeEnough = true;
                 double test_pt[2];
                 std::vector< std::pair< size_t, double > > indicesDist;
-                double k = 2.0;
+                double k = 1.0;
                 while (closeEnough)
                 {
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
+                    KTDEBUG(ctlog, "x = "<< test_pt[0] <<"\t" << "y = "<< test_pt[1]);
+
                     kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
                     if (indicesDist.size() > 0)
                     {
@@ -129,11 +131,14 @@ namespace Katydid
                     }
                 }
                 closeEnough = true;
-                k = -2.0;
+                KTDEBUG(ctlog, "Changing direction");
+
+                k = -1.0;
                 while (closeEnough)
                 {
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
+                    KTDEBUG(ctlog, "x = "<< test_pt[0] <<"\t" << "y = "<< test_pt[1]);
                     kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
                     if (indicesDist.size() > 0)
                     {
@@ -156,6 +161,7 @@ namespace Katydid
 
     void KTConsensusThresholding::FindDeltasNearestNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
     {
+        // Find the nearest neighbor to a given point (#pid) and returns the spacing in time and frequency between these points (signed Deltas -> slope)
         KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByNumber(pid, 2);
         deltaTime = setOfPoints[ne[1]].fCoords[0] - setOfPoints[pid].fCoords[0];
         deltaFreq = setOfPoints[ne[1]].fCoords[1] - setOfPoints[pid].fCoords[1];
@@ -164,6 +170,7 @@ namespace Katydid
 
     void KTConsensusThresholding::FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
     {
+        // Find the neighboors withinin a circle around a given point (#pid), and use them to extract a slope/trend to be returned
         KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(pid, fMembershipRadius);
         unsigned nNeighbors = ne.size();
         double sumX, sumY, sumX2, sumXY;
@@ -174,13 +181,9 @@ namespace Katydid
             sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
             sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
         }
-        //double xMean = sumX / (double)nNeighbors;
-        //double yMean = sumY / (double)nNeighbors;
         double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors);
-        //double intercept = yMean - slope * xMean;
         deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
         deltaFreq = slope * deltaTime;
-        //deltaFreq = deltaTime * (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * deltaTime); // a.k.a. deltaTime * slope
         return;
     }
 
