@@ -35,7 +35,7 @@ namespace Katydid
      Normalization of the axes:
      The DBSCAN algorithm expects expects that all of the dimensions that describe a points will have the same scale,
      such that a single radius parameter can describe a sphere in the parameter space that's used to cluster points together.
-     For track clustering, two radii are specified, one for the time dimension and one for the frequency dimension.
+     For track clustering, one radius is given to define the circle around points to be clustered together.
      For clustering, a scaling factor is calculated for each axis such that the ellipse formed by the two radii is
      scaled to a unit circle.  Those scaling factors are applied to every point before the data is passed to the
      DBSCAN algorithm.
@@ -43,7 +43,7 @@ namespace Katydid
      Configuration name: "dbscan-track-clustering"
 
      Available configuration values:
-     - "radius": double -- double used to define the circle around points to cluster together
+     - "radius": double -- double used to define the circle around points to be clustered together
      - "min-points": unsigned int -- minimum number of points required to have a cluster
 
      Slots:
