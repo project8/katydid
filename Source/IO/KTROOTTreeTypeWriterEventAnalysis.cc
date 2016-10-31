@@ -296,6 +296,13 @@ namespace Katydid
         fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
         fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
         const KTSparseWaterfallCandidateData::Points& points = swcData.GetPoints();
+
+        if (points.size() == 0)
+        {
+            KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
+            return;
+        }
+
         fSparseWaterfallCandidateData.fPoints = new TGraph2D(points.size());
         unsigned iPoint = 0;
         for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
