@@ -4,6 +4,7 @@
 set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
+    KTDPTReader.hh
     KTJSONTypeWriterTime.hh
     #KTJSONTypeWriterEvaluation.hh
     KTJSONTypeWriterEventAnalysis.hh
@@ -17,6 +18,7 @@ set (IO_HEADERFILES
 set (IO_SOURCEFILES
     KTBasicASCIITypeWriterTS.cc
     KTBasicAsciiWriter.cc
+    KTDPTReader.cc
     KTJSONTypeWriterTime.cc
     #KTJSONTypeWriterEvaluation.cc
     KTJSONTypeWriterEventAnalysis.hh
