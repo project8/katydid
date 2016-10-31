@@ -22,6 +22,7 @@ namespace Katydid
             KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >(name),
             fHeight(500),
             fWidth(700),
+            fDrawArgs(""),
             fDisplayWindow(NULL),
             fEventLoop(NULL)
     {
@@ -39,6 +40,7 @@ namespace Katydid
 
         fHeight = node->get_value< unsigned >("window-height", fHeight);
         fWidth = node->get_value< unsigned >("window-width", fWidth);
+        fDrawArgs = node->get_value< std::string >("draw-args", fDrawArgs);
 
         return true;
     }
@@ -47,7 +49,7 @@ namespace Katydid
     {
         if (gClient == NULL)
         {
-            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via Nymph::KTApplication)");
+            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via KTKatydidApp)");
             return false;
         }
 

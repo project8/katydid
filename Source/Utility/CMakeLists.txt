@@ -59,9 +59,7 @@ set (KATYDID_LIBS
 
 if (ROOT_FOUND)
     ROOT_GENERATE_DICTIONARY (UtilityDict ${UTILITY_DICT_HEADERFILES} LINKDEF ${UTILITY_LINKDEF_HEADERFILE})
-    if (Katydid_USE_CPP11)
-        pbuilder_install_files (${LIB_INSTALL_DIR} ${UTILITY_DICT_PCMFILE})
-    endif (Katydid_USE_CPP11)
+    pbuilder_install_files (${LIB_INSTALL_DIR} ${UTILITY_DICT_PCMFILE})
 endif (ROOT_FOUND)
 
 add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})

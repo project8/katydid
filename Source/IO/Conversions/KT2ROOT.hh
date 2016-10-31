@@ -9,6 +9,7 @@
 #define KT2ROOT_HH_
 
 #include <string>
+#include <map>
 
 #include "KTPhysicalArray.hh"
 #include "KTVarTypePhysicalArray.hh"
@@ -74,6 +75,14 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrumPower");
 
             static TH2D* CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName = "hHoughData");
+
+
+            //*********************
+            // Spectrum Collection
+            //*********************
+
+            static TH2D* CreatePowerHistogram(std::map< double, KTPowerSpectrum* > psColl, const std::string& name = "hPSCollectionData");
+
     };
 
 } /* namespace Katydid */

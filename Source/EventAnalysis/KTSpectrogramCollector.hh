@@ -46,6 +46,10 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
      - "lead-time": double -- time to collect before the beginning of the track
      - "trail-time": double -- time to collect after the end of the track
+     - "lead-freq": double -- frequency below the track to begin collection
+     - "trail-freq": double -- frequency above the track to end collection
+     - "use-lead-freq": bool -- if true, the minimum frequency is calculated from the track and the lead frequency; if false, min-frequency is used
+     - "use-trail-freq": bool -- if true, the maximum frequency is calculated from the track and the trail frequency; if false, max-frequency is used
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
@@ -81,6 +85,15 @@ namespace Katydid
             double GetTrailTime() const;
             void SetTrailTime(double t);
 
+            double GetLeadFreq() const;
+            void SetLeadFreq(double f);
+
+            double GetTrailFreq() const;
+            void SetTrailFreq(double f);
+
+            bool GetUseTrackFreqs() const;
+            void SetUseTrackFreqs(bool b);
+
         private:
             double fMinFrequency;
             double fMaxFrequency;
@@ -90,6 +103,9 @@ namespace Katydid
             bool fCalculateMaxBin;
             double fLeadTime;
             double fTrailTime;
+            double fLeadFreq;
+            double fTrailFreq;
+            bool fUseTrackFreqs;
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
@@ -201,6 +217,39 @@ namespace Katydid
     inline void KTSpectrogramCollector::SetTrailTime(double t)
     {
         fTrailTime = t;
+        return;
+    }
+
+    inline double KTSpectrogramCollector::GetLeadFreq() const
+    {
+        return fLeadFreq;
+    }
+
+    inline void KTSpectrogramCollector::SetLeadFreq(double f)
+    {
+        fLeadFreq = f;
+        return;
+    }
+
+    inline double KTSpectrogramCollector::GetTrailFreq() const
+    {
+        return fTrailFreq;
+    }
+
+    inline void KTSpectrogramCollector::SetTrailFreq(double f)
+    {
+        fTrailFreq = f;
+        return;
+    }
+
+    inline bool KTSpectrogramCollector::GetUseTrackFreqs() const
+    {
+        return fUseTrackFreqs;
+    }
+
+    inline void KTSpectrogramCollector::SetUseTrackFreqs(bool b)
+    {
+        fUseTrackFreqs = b;
         return;
     }
 

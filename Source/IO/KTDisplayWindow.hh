@@ -29,7 +29,7 @@ namespace Katydid
             virtual ~KTDisplayWindow();
 
             template< class XDrawable >
-            void Draw(XDrawable* drawable);
+            void Draw(XDrawable* drawable, std::string args);
 
             TCanvas* GetCanvas() const;
 
@@ -60,10 +60,10 @@ namespace Katydid
     };
 
     template< class XDrawable >
-    void KTDisplayWindow::Draw(XDrawable* drawable)
+    void KTDisplayWindow::Draw(XDrawable* drawable, std::string args)
     {
         fEmbeddedCanvas->GetCanvas()->cd();
-        drawable->Draw();
+        drawable->Draw(args.c_str());
         return;
     }
 

@@ -35,6 +35,10 @@ namespace Katydid
             MEMBERVARIABLEREF(double, StartTime);
             MEMBERVARIABLEREF(double, EndTime);
             MEMBERVARIABLEREF(double, DeltaT);
+            MEMBERVARIABLEREF(double, MinFreq);
+            MEMBERVARIABLEREF(double, MaxFreq);
+            MEMBERVARIABLEREF(unsigned, MinBin);
+            MEMBERVARIABLEREF(unsigned, MaxBin);
             MEMBERVARIABLEREF(bool, Filling);
 
         public:

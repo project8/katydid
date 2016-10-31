@@ -458,4 +458,47 @@ namespace Katydid
         return hist;
 
     }
+
+    TH2D* KT2ROOT::CreatePowerHistogram(std::map< double, KTPowerSpectrum* > psColl, const std::string& histName)
+    {
+        std::map< double, KTPowerSpectrum* >::iterator it = psColl.begin();
+        unsigned nBinsX = psColl.size(), nBinsY = it->second->size();
+
+        double minTime = 1, maxTime = 0;
+        double minFreq, maxFreq;
+
+        KTPowerSpectrum* ps = it->second;
+        minFreq = ps->GetRangeMin();
+        maxFreq = ps->GetRangeMax();
+
+        for( std::map< double, KTPowerSpectrum* >::iterator iter = psColl.begin(); it != psColl.end(); ++it)
+        {
+            if( it->first < minTime )
+            {
+                minTime = it->first;
+            }
+            if( it->first > maxTime )
+            {
+                maxTime = it->first;
+            }
+        }
+
+        TH2D* hist = new TH2D(histName.c_str(), histName.c_str(),
+                (int)nBinsX, minTime, maxTime,
+                (int)nBinsY, minFreq, maxFreq);
+
+        int iBinX = 1, iBinY = 1;
+        for (it = psColl.begin(); it != psColl.end(); ++it)
+        {
+            for(iBinY = 1; iBinY <= nBinsY; iBinY++)
+            {
+                hist->SetBinContent(iBinX, iBinY, (*it->second)(iBinY-1));
+            }
+            iBinX++;
+        }
+        
+        return hist;
+
+    }
+
 } /* namespace Katydid */

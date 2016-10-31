@@ -33,8 +33,11 @@ namespace Katydid
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
-            fLeadTime(0.002),
-            fTrailTime(0.002),
+            fLeadTime(0.),
+            fTrailTime(0.),
+            fLeadFreq(0.),
+            fTrailFreq(0.),
+            fUseTrackFreqs(false),
             fWaterfallSignal("waterfall", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack)
     {
@@ -68,6 +71,9 @@ namespace Katydid
         SetMaxBin(node->get_value< unsigned >("max-bin", fMaxBin));
         SetLeadTime(node->get_value< double >("lead-time", fLeadTime));
         SetTrailTime(node->get_value< double >("trail-time", fTrailTime));
+        SetLeadFreq(node->get_value< double >("lead-freq", fLeadFreq));
+        SetTrailFreq(node->get_value< double >("trail-freq", fTrailFreq));
+        SetUseTrackFreqs(node->get_value< bool >("use-track-freqs", fUseTrackFreqs));
 
         return true;
     }
@@ -88,6 +94,19 @@ namespace Katydid
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
+
+        // Configure PSCollectionData frequency bounds
+        if( GetUseTrackFreqs() )
+        {
+            newWaterfall->SetMinFreq( trackData.GetStartFrequency() - GetLeadFreq() );
+            newWaterfall->SetMaxFreq( trackData.GetEndFrequency() + GetTrailFreq() );
+        }
+        else
+        {
+            newWaterfall->SetMinFreq( GetMinFrequency() );
+            newWaterfall->SetMaxFreq( GetMaxFrequency() );
+        }
+
         newWaterfall->SetFilling( false );
 
         // Add to fWaterfallSets
@@ -172,8 +191,20 @@ namespace Katydid
             KTDEBUG(evlog, "Maximum bin set to " << fMaxBin);
         }
 
-        unsigned nComponents = data.GetNComponents();
-        
+        if( fWaterfallSets.empty() )
+        {
+            KTWARN(evlog, "I have no tracks to receive a spectrum! Did you remember to send me processed tracks first? Continuing anyway...");
+            return true;
+        }
+
+        int nComponents = data.GetNComponents();
+
+        if( nComponents > fWaterfallSets.size() )
+        {
+            KTINFO(evlog, "Receiving spectrum with " << nComponents << " components but limiting to " << fWaterfallSets.size() << " from list of tracks");
+            nComponents = fWaterfallSets.size();
+        }
+
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent, forceEmit))
