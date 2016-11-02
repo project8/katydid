@@ -27,6 +27,7 @@ namespace Katydid
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
+    class KTPowerFitData;
 
     class KT2ROOT
     {
@@ -82,6 +83,12 @@ namespace Katydid
             //*********************
 
             static TH2D* CreatePowerHistogram(std::map< double, KTPowerSpectrum* > psColl, const std::string& name = "hPSCollectionData");
+
+            //***************
+            // Set Of Points
+            //***************
+
+            static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName);
 
     };
 

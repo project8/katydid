@@ -50,10 +50,12 @@ namespace Katydid
 
      Slots:
      - "thresh-points": void (Nymph::KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTLinearFitResult
+     - "thresh-points-alt": void (Nymph::KTDataPtr) -- Performs power fit on a set of 2D Points; Requires KTProcessedTrackData and KTDiscriminatedPoints2DData; Adds KTPowerFitData
      - "gv": void (Nymph::KTDataPtr) -- Stores gain variation for later use with spectrogram; Requires KTGainVariationData
      
      Signals:
      - "fit-result": void (Nymph::KTDataPtr) -- Emitted upon minimization; Guarantees KTLinearFitResult
+     - "power-fit-result": void (Nymph::KTDataPtr) -- Emitted upon power fit; Guarantees KTPowerFitData
     */
 
     class KTLinearDensityProbeFit : public Nymph::KTProcessor
@@ -103,7 +105,8 @@ namespace Katydid
         public:
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
         	bool Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
-        	bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
+            bool CalculatePower(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts);
+            bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
         	double findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width );
 
         private:
@@ -115,6 +118,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fLinearDensityFitSignal;
+            Nymph::KTSignalData fPowerFitSignal;
 
             //***************
             // Slots
@@ -122,6 +126,7 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataTwoTypes< KTProcessedTrackData, KTDiscriminatedPoints2DData > fThreshPointsSlot;
+            Nymph::KTSlotDataTwoTypes< KTProcessedTrackData, KTDiscriminatedPoints2DData > fThreshPointsAltSlot;
             Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
     };
 

@@ -24,6 +24,7 @@ set (DATA_HEADERFILES
     EventAnalysis/KTFrequencyCandidateData.hh
     EventAnalysis/KTLinearFitResult.hh
     EventAnalysis/KTMultiTrackEventData.hh
+    EventAnalysis/KTPowerFitData.hh
     EventAnalysis/KTProcessedTrackData.hh
     EventAnalysis/KTSparseWaterfallCandidateData.hh
     EventAnalysis/KTSpectrumCollectionData.hh
@@ -79,6 +80,7 @@ set (DATA_SOURCEFILES
     EventAnalysis/KTFrequencyCandidateData.cc
     EventAnalysis/KTLinearFitResult.cc
     EventAnalysis/KTMultiTrackEventData.cc
+    EventAnalysis/KTPowerFitData.cc
     EventAnalysis/KTProcessedTrackData.cc
     EventAnalysis/KTSparseWaterfallCandidateData.cc
     EventAnalysis/KTSpectrumCollectionData.cc
