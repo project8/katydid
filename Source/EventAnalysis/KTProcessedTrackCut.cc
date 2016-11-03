@@ -16,7 +16,7 @@ namespace Katydid
 
     const std::string KTProcessedTrackCut::Result::sName = "track-cut";
 
-    KT_REGISTER_CUT(KTProcessedTrackCut, KTProcessedTrackCut::Result::sName);
+    KT_REGISTER_CUT(KTProcessedTrackCut);
 
     KTProcessedTrackCut::KTProcessedTrackCut(const std::string& name) :
          KTCut(name)
