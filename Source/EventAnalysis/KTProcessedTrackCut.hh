@@ -31,7 +31,7 @@ namespace Katydid
     {
 
      public:
-         struct Result : Nymph::KTCutResult
+         struct Result : Nymph::KTExtensibleCutResult< Result >
          {
              static const std::string sName;
          };
