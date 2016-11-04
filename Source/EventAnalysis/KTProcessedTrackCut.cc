@@ -19,7 +19,7 @@ namespace Katydid
     KT_REGISTER_CUT(KTProcessedTrackCut);
 
     KTProcessedTrackCut::KTProcessedTrackCut(const std::string& name) :
-         KTCut(name)
+         KTCutOneArg(name)
     {}
 
     KTProcessedTrackCut::~KTProcessedTrackCut()
@@ -32,7 +32,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTProcessedTrackCut::PerformCut( Nymph::KTData& data, KTProcessedTrackData& trackData )
+    bool KTProcessedTrackCut::Apply( Nymph::KTData& data, KTProcessedTrackData& trackData )
     {
         bool isCut = trackData.GetIsCut();
         data.GetCutStatus().AddCutResult< KTProcessedTrackCut::Result >(isCut);
@@ -40,14 +40,4 @@ namespace Katydid
         return isCut;
     }
 
-    bool KTProcessedTrackCut::Apply( Nymph::KTDataPtr dataPtr )
-    {
-        if (! dataPtr->Has< KTProcessedTrackData >())
-        {
-            KTERROR(exlog, "Data type <KTProcessedTrackData> was not present");
-            return false;
-        }
-
-        return PerformCut(dataPtr->Of< Nymph::KTData >(), dataPtr->Of< KTProcessedTrackData >());
-    }
-}
+} // namespace Katydid

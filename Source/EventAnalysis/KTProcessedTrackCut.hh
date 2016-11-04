@@ -27,7 +27,7 @@ namespace Katydid
      Configuration name: "track-cut"
     */
 
-    class KTProcessedTrackCut : public Nymph::KTCut
+    class KTProcessedTrackCut : public Nymph::KTCutOneArg< KTProcessedTrackData >
     {
 
      public:
@@ -43,8 +43,7 @@ namespace Katydid
          bool Configure(const scarab::param_node* node);
 
      public:
-         bool PerformCut(Nymph::KTData& data, KTProcessedTrackData& trackData);
-         bool Apply(Nymph::KTDataPtr dataPtr);
+         bool Apply(Nymph::KTData& data, KTProcessedTrackData& trackData);
 
     };
 } // namespace Katydid
