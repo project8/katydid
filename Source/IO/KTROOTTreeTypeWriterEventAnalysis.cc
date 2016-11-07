@@ -13,6 +13,7 @@
 #include "KTLinearFitResult.hh"
 #include "KTLogger.hh"
 #include "KTMultiTrackEventData.hh"
+#include "KTPowerFitData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -47,12 +48,14 @@ namespace Katydid
             fProcessedTrackTree(NULL),
             fMultiTrackEventTree(NULL),
             fLinearFitResultTree(NULL),
+            fPowerFitDataTree(NULL),
             fFreqCandidateData(),
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
             fProcessedTrackDataPtr(NULL),
             fMultiTrackEventDataPtr(NULL),
-            fLineFitData()
+            fLineFitData(),
+            fPowerFitData()
     {
     }
 
@@ -71,6 +74,7 @@ namespace Katydid
         fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("linear-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
+        fWriter->RegisterSlot("power-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData);
         return;
     }
 
@@ -604,6 +608,106 @@ namespace Katydid
         fLinearFitResultTree->Branch( "WindowBandwidth", &fLineFitData.fFit_width, "fFit_width/d" );
         fLinearFitResultTree->Branch( "NPoints", &fLineFitData.fNPoints, "fNPoints/i" );
         fLinearFitResultTree->Branch( "ProbeWidth", &fLineFitData.fProbeWidth, "fProbeWidth/d" );
+
+        return true;
+    }
+
+    //**************************
+    // Power Fit Data
+    //**************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to power fit data root tree");
+        KTPowerFitData& pfData = data->Of< KTPowerFitData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fPowerFitDataTree == NULL)
+        {
+            if (! SetupPowerFitDataTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the Power Fit Data tree! Nothing was written.");
+                return;
+            }
+        }
+
+        for (fPowerFitData.fComponent = 0; fPowerFitData.fComponent < pfData.GetNComponents(); fPowerFitData.fComponent++)
+        {
+            fPowerFitData.fScale = pfData.GetScale( fPowerFitData.fComponent );
+            fPowerFitData.fBackground = pfData.GetBackground( fPowerFitData.fComponent );
+            fPowerFitData.fCenter = pfData.GetCenter( fPowerFitData.fComponent );
+            fPowerFitData.fCurvature = pfData.GetCurvature( fPowerFitData.fComponent );
+            fPowerFitData.fWidth = pfData.GetWidth( fPowerFitData.fComponent );
+
+            fPowerFitData.fScaleErr = pfData.GetScaleErr( fPowerFitData.fComponent );
+            fPowerFitData.fBackgroundErr = pfData.GetBackgroundErr( fPowerFitData.fComponent );
+            fPowerFitData.fCenterErr = pfData.GetCenterErr( fPowerFitData.fComponent );
+            fPowerFitData.fCurvatureErr = pfData.GetCurvatureErr( fPowerFitData.fComponent );
+            fPowerFitData.fWidthErr = pfData.GetWidthErr( fPowerFitData.fComponent );
+
+            fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
+
+            fPowerFitDataTree->Fill();
+        }
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupPowerFitDataTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "power-fit", fPowerFitDataTree );
+
+            if (fPowerFitDataTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fPowerFitDataTree );
+
+                fPowerFitDataTree->SetBranchAddress( "Component", &fPowerFitData.fComponent );
+
+                fPowerFitDataTree->SetBranchAddress( "Scale", &fPowerFitData.fScale );
+                fPowerFitDataTree->SetBranchAddress( "Background", &fPowerFitData.fBackground );
+                fPowerFitDataTree->SetBranchAddress( "Center", &fPowerFitData.fCenter );
+                fPowerFitDataTree->SetBranchAddress( "Curvature", &fPowerFitData.fCurvature );
+                fPowerFitDataTree->SetBranchAddress( "Width", &fPowerFitData.fWidth );
+
+                fPowerFitDataTree->SetBranchAddress( "ScaleErr", &fPowerFitData.fScaleErr );
+                fPowerFitDataTree->SetBranchAddress( "BackgroundErr", &fPowerFitData.fBackgroundErr );
+                fPowerFitDataTree->SetBranchAddress( "CenterErr", &fPowerFitData.fCenterErr );
+                fPowerFitDataTree->SetBranchAddress( "CurvatureErr", &fPowerFitData.fCurvatureErr );
+                fPowerFitDataTree->SetBranchAddress( "WidthErr", &fPowerFitData.fWidthErr );
+
+                fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
+
+                return true;
+            }
+        }
+
+        fPowerFitDataTree = new TTree("power-fit", "Power Fit Data");
+        if( fPowerFitDataTree == NULL )
+        {
+            KTERROR( publog, "Tree was not created!" );
+            return false;
+        }
+        fWriter->AddTree( fPowerFitDataTree );
+
+        fPowerFitDataTree->Branch( "Component", &fPowerFitData.fComponent, "fComponent/i" );
+
+        fPowerFitDataTree->Branch( "Scale", &fPowerFitData.fScale, "fScale/d" );
+        fPowerFitDataTree->Branch( "Background", &fPowerFitData.fBackground, "fBackground/d" );
+        fPowerFitDataTree->Branch( "Center", &fPowerFitData.fCenter, "fCenter/d" );
+        fPowerFitDataTree->Branch( "Curvature", &fPowerFitData.fCurvature, "fCurvature/d" );
+        fPowerFitDataTree->Branch( "Width", &fPowerFitData.fWidth, "fWidth/d" );
+
+        fPowerFitDataTree->Branch( "ScaleErr", &fPowerFitData.fScaleErr, "fScaleErr/d" );
+        fPowerFitDataTree->Branch( "BackgroundErr", &fPowerFitData.fBackgroundErr, "fBackgroundErr/d" );
+        fPowerFitDataTree->Branch( "CenterErr", &fPowerFitData.fCenterErr, "fCenterErr/d" );
+        fPowerFitDataTree->Branch( "CurvatureErr", &fPowerFitData.fCurvatureErr, "fCurvatureErr/d" );
+        fPowerFitDataTree->Branch( "WidthErr", &fPowerFitData.fWidthErr, "fWidthErr/d" );
+
+        fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/b" );
 
         return true;
     }

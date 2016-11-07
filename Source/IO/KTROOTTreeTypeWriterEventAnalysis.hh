@@ -99,6 +99,25 @@ namespace Katydid
         Double_t fProbeWidth;
     };
 
+    struct TPowerFitData
+    {
+        UInt_t fComponent;
+
+        Double_t fScale;
+        Double_t fBackground;
+        Double_t fCenter;
+        Double_t fCurvature;
+        Double_t fWidth;
+
+        Double_t fScaleErr;
+        Double_t fBackgroundErr;
+        Double_t fCenterErr;
+        Double_t fCurvatureErr;
+        Double_t fWidthErr;
+
+        Bool_t fIsValid;
+    };
+
 
     class KTROOTTreeTypeWriterEventAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterEventAnalysis
     {
@@ -115,6 +134,7 @@ namespace Katydid
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
+            void WritePowerFitData(Nymph::KTDataPtr data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;
@@ -123,6 +143,7 @@ namespace Katydid
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
             TTree* GetLinearFitResultTree() const;
+            TTree* GetPowerFitDataTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
@@ -131,6 +152,7 @@ namespace Katydid
             bool SetupProcessedTrackTree();
             bool SetupMultiTrackEventTree();
             bool SetupLinearFitResultTree();
+            bool SetupPowerFitDataTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
@@ -138,6 +160,7 @@ namespace Katydid
             TTree* fProcessedTrackTree;
             TTree* fMultiTrackEventTree;
             TTree* fLinearFitResultTree;
+            TTree* fPowerFitDataTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
@@ -145,6 +168,7 @@ namespace Katydid
             TProcessedTrackData* fProcessedTrackDataPtr;
             TMultiTrackEventData* fMultiTrackEventDataPtr;
             TLinearFitResult fLineFitData;
+            TPowerFitData fPowerFitData;
 
     };
 
@@ -176,6 +200,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetLinearFitResultTree() const
     {
         return fLinearFitResultTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetPowerFitDataTree() const
+    {
+        return fPowerFitDataTree;
     }
 
 
