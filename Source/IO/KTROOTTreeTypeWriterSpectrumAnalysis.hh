@@ -66,27 +66,6 @@ namespace Katydid
         Double_t fYScale;
     };
 
-    struct TLinearFitResultData
-    {
-        UInt_t fComponent;
-        Double_t fSlope;
-        Double_t fSlopeSigma;
-        Double_t fIntercept;
-        Double_t fIntercept_deviation;
-        Double_t fStartingFrequency;
-        Double_t fTrackDuration;
-        Double_t fSidebandSeparation;
-        Double_t fFineProbe_sigma_1;
-        Double_t fFineProbe_sigma_2;
-        Double_t fFineProbe_SNR_1;
-        Double_t fFineProbe_SNR_2;
-        Double_t fFFT_peak;
-        Double_t fFFT_SNR;
-        Double_t fFit_width;
-        UInt_t fNPoints;
-        Double_t fProbeWidth;
-    };
-
 
     class KTROOTTreeTypeWriterSpectrumAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterSpectrumAnalysis
     {
@@ -101,33 +80,28 @@ namespace Katydid
             void WriteKDTree(Nymph::KTDataPtr data);
             void WriteAmplitudeDistributions(Nymph::KTDataPtr data);
             void WriteHoughData(Nymph::KTDataPtr data);
-            void WriteLinearFitResultData(Nymph::KTDataPtr data);
 
         public:
             TTree* GetDiscriminatedPoints1DTree() const;
             TTree* GetKDTreeTree() const;
             TTree* GetAmplitudeDistributionTree() const;
             TTree* GetHoughTree() const;
-            TTree* GetLinearFitResultTree() const;
 
         private:
             bool SetupDiscriminatedPoints1DTree();
             bool SetupKDTreeTree();
             bool SetupAmplitudeDistributionTree();
             bool SetupHoughTree();
-            bool SetupLinearFitResultTree();
 
             TTree* fDiscPoints1DTree;
             TTree* fKDTreeTree;
             TTree* fAmpDistTree;
             TTree* fHoughTree;
-            TTree* fLinearFitResultTree;
 
             TDiscriminatedPoints1DData fDiscPoints1DData;
             TKDTreePointData fKDTreePointData;
             TAmplitudeDistributionData fAmpDistData;
             THoughData fHoughData;
-            TLinearFitResultData fLineFitData;
 
     };
 
@@ -151,10 +125,6 @@ namespace Katydid
         return fHoughTree;
     }
 
-    inline TTree* KTROOTTreeTypeWriterSpectrumAnalysis::GetLinearFitResultTree() const
-    {
-        return fLinearFitResultTree;
-    }
 
 } /* namespace Katydid */
 

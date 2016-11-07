@@ -10,6 +10,7 @@
 #include "KTFrequencyCandidate.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
+#include "KTLinearFitResult.hh"
 #include "KTLogger.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTProcessedTrackData.hh"
@@ -45,11 +46,13 @@ namespace Katydid
             fSparseWaterfallCandidateTree(NULL),
             fProcessedTrackTree(NULL),
             fMultiTrackEventTree(NULL),
+            fLinearFitResultTree(NULL),
             fFreqCandidateData(),
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
             fProcessedTrackDataPtr(NULL),
-            fMultiTrackEventDataPtr(NULL)
+            fMultiTrackEventDataPtr(NULL),
+            fLineFitData()
     {
     }
 
@@ -67,6 +70,7 @@ namespace Katydid
         fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
+        fWriter->RegisterSlot("linear-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
         return;
     }
 
@@ -496,5 +500,113 @@ namespace Katydid
 
         return true;
     }
+
+    //**************************
+    // Linear Fit Result Data
+    //**************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to linear fit result root tree");
+        KTLinearFitResult& lfData = data->Of< KTLinearFitResult >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fLinearFitResultTree == NULL)
+        {
+            if (! SetupLinearFitResultTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the Linear Fit tree! Nothing was written.");
+                return;
+            }
+        }
+
+        for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
+        {
+            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fComponent );
+            fLineFitData.fSlopeSigma = lfData.GetSlopeSigma( fLineFitData.fComponent );
+            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fComponent );
+            fLineFitData.fIntercept_deviation = lfData.GetIntercept_deviation( fLineFitData.fComponent );
+            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fComponent );
+            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fComponent );
+            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fComponent );
+            fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
+            fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
+            fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
+            fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fComponent );
+            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fComponent );
+            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fComponent );
+            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fComponent );
+            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fComponent );
+            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fComponent );
+
+            fLinearFitResultTree->Fill();
+        }
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupLinearFitResultTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "line", fLinearFitResultTree );
+
+            if (fLinearFitResultTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fLinearFitResultTree );
+
+                fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
+                fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
+                fLinearFitResultTree->SetBranchAddress( "SlopeSigma", &fLineFitData.fSlopeSigma );
+                fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
+                fLinearFitResultTree->SetBranchAddress( "InterceptDev", &fLineFitData.fIntercept_deviation );
+                fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
+                fLinearFitResultTree->SetBranchAddress( "TrackDuration", &fLineFitData.fTrackDuration );
+                fLinearFitResultTree->SetBranchAddress( "SidebandSeparation", &fLineFitData.fSidebandSeparation );
+                fLinearFitResultTree->SetBranchAddress( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1 );
+                fLinearFitResultTree->SetBranchAddress( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2 );
+                fLinearFitResultTree->SetBranchAddress( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1 );
+                fLinearFitResultTree->SetBranchAddress( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2 );
+                fLinearFitResultTree->SetBranchAddress( "FFT_peak", &fLineFitData.fFFT_peak );
+                fLinearFitResultTree->SetBranchAddress( "FFT_SNR", &fLineFitData.fFFT_SNR );
+                fLinearFitResultTree->SetBranchAddress( "WindowBandwidth", &fLineFitData.fFit_width );
+                fLinearFitResultTree->SetBranchAddress( "NPoints", &fLineFitData.fNPoints );
+                fLinearFitResultTree->SetBranchAddress( "ProbeWidth", &fLineFitData.fProbeWidth );
+
+                return true;
+            }
+        }
+
+        fLinearFitResultTree = new TTree("line", "Linear Fit Result");
+        if( fLinearFitResultTree == NULL )
+        {
+            KTERROR( publog, "Tree was not created!" );
+            return false;
+        }
+        fWriter->AddTree( fLinearFitResultTree );
+
+        fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
+        fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
+        fLinearFitResultTree->Branch( "SlopeSigma", &fLineFitData.fSlopeSigma, "fSlopeSigma/d" );
+        fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
+        fLinearFitResultTree->Branch( "InterceptDev", &fLineFitData.fIntercept_deviation, "fIntercept_deviation/d" );
+        fLinearFitResultTree->Branch( "StartingFrequency", &fLineFitData.fStartingFrequency, "fStartingFrequency/d" );
+        fLinearFitResultTree->Branch( "TrackDuration", &fLineFitData.fTrackDuration, "fTrackDuration/d" );
+        fLinearFitResultTree->Branch( "SidebandSeparation", &fLineFitData.fSidebandSeparation, "fSidebandSeparation/d" );
+        fLinearFitResultTree->Branch( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1, "fFineProbe_sigma_1/d" );
+        fLinearFitResultTree->Branch( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2, "fFineProbe_sigma_2/d" );
+        fLinearFitResultTree->Branch( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1, "fFineProbe_SNR_1/d" );
+        fLinearFitResultTree->Branch( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2, "fFineProbe_SNR_2/d" );
+        fLinearFitResultTree->Branch( "FFT_peak", &fLineFitData.fFFT_peak, "fFFT_peak/d" );
+        fLinearFitResultTree->Branch( "FFT_SNR", &fLineFitData.fFFT_SNR, "fFFT_SNR/d" );
+        fLinearFitResultTree->Branch( "WindowBandwidth", &fLineFitData.fFit_width, "fFit_width/d" );
+        fLinearFitResultTree->Branch( "NPoints", &fLineFitData.fNPoints, "fNPoints/i" );
+        fLinearFitResultTree->Branch( "ProbeWidth", &fLineFitData.fProbeWidth, "fProbeWidth/d" );
+
+        return true;
+    }
+
 
 } /* namespace Katydid */
