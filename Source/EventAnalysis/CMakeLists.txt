@@ -12,6 +12,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTDistanceMatrix.hh
     KTDBScanEventClustering.hh
     KTDBScanTrackClustering.hh
+    KTEventTimeCut.hh
     KTFrequencyCandidateIdentifier.hh
     KTLinearDensityProbeFit.hh
     KTMultiPeakEventBuilder.hh
@@ -20,6 +21,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
     KTTrackProcessing.hh
+    KTTrackTimeCut.hh
 )
 
 set (EVENTANALYSIS_SOURCEFILES
@@ -28,6 +30,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTDataCutter.cc
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
+    KTEventTimeCut.cc
     KTFrequencyCandidateIdentifier.cc
     KTLinearDensityProbeFit.cc
     KTMultiPeakEventBuilder.cc
@@ -36,6 +39,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
     KTTrackProcessing.cc
+    KTTrackTimeCut.cc
 )
 
 set (KATYDID_LIBS
