@@ -31,6 +31,7 @@
 #include "TF1.h"
 #include "KT2ROOT.hh"
 #include "TMath.h"
+#include "TFitResult.h"
 #endif
 
 using std::string;
@@ -390,18 +391,43 @@ namespace Katydid
         conv->SetParLimits( 3, 0.1, TMath::Pi() );
         conv->SetParLimits( 4, 0, 10e6 );
 
-        fitPoints->Fit( "conv" );
+        TFitResultPtr fitStatus = fitPoints->Fit( "conv", "S" );
         
-        double A = conv->GetParameter(0);
-        double B = conv->GetParameter(1);
-        double z0 = conv->GetParameter(2);
-        double k = conv->GetParameter(3);
-        //double sigma = conv->GetParameter(4);
+        double a = conv->GetParameter( 0 );
+        double a_err = conv->GetParError( 0 );
 
-        KTINFO(sdlog, "Completed fit! \nA = " << A << "\nB = " << B << "\nz0 = " << z0 << "\nk = " << k/* << "\nsigma = " << sigma*/);
+        double b = conv->GetParameter( 1 );
+        double b_err = conv->GetParError( 1 );
+
+        double z0 = conv->GetParameter( 2 );
+        double z0_err = conv->GetParError( 2 );
+
+        double k = conv->GetParameter( 3 );
+        double k_err = conv->GetParError( 3 );
+
+        double sigma = conv->GetParameter( 4 );
+        double sigma_err = conv->GetParError( 4 );
+
+        bool valid = fitStatus->IsValid();
+
+        KTINFO(sdlog, "Completed fit! Validity = " << fitStatus->IsValid());
+
+        newData.SetScale( a );
+        newData.SetScaleErr( a_err );
+
+        newData.SetBackground( b );
+        newData.SetBackgroundErr( b_err );
+
+        newData.SetCenter( z0 );
+        newData.SetCenterErr( z0_err );
 
         newData.SetCurvature( k );
-        //newData.SetWidth( sigma );
+        newData.SetCurvatureErr( k_err );
+
+        newData.SetWidth( sigma );
+        newData.SetWidthErr( sigma_err );
+
+        newData.SetIsValid( valid == 1 );
 
         return true;
     }

@@ -15,8 +15,6 @@ namespace Katydid
 
     KTPowerFitData::KTPowerFitData() :
             KTExtensibleData< KTPowerFitData >(),
-            fCurvature(0.),
-            fWidth(0.),
             fComponentData(1.)
     {
     }
@@ -24,8 +22,6 @@ namespace Katydid
     KTPowerFitData::KTPowerFitData(const KTPowerFitData& orig) :
             KTExtensibleData< KTPowerFitData >(orig),
             
-            fCurvature(orig.fCurvature),
-            fWidth(orig.fWidth),
             fComponentData(orig.fComponentData)
     {
     }
@@ -37,8 +33,6 @@ namespace Katydid
     KTPowerFitData& KTPowerFitData::operator=(const KTPowerFitData& rhs)
     {
         KTExtensibleData< KTPowerFitData >::operator=(rhs);
-        fCurvature = rhs.fCurvature;
-        fWidth = rhs.fWidth;
         fComponentData = rhs.fComponentData;
         return *this;
     }
