@@ -305,9 +305,10 @@ namespace Katydid
         fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
 
         const KTSparseWaterfallCandidateData::Points& points = swcData.GetPoints();
-        if( points.size() == 0 )
+
+        if (points.size() == 0)
         {
-            KTWARN(publog, "The Sparse Waterfall Plot has no points! Will not write it");
+            KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
             return;
         }
 
