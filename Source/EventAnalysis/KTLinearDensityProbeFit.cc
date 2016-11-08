@@ -194,11 +194,11 @@ namespace Katydid
         for(i=1.0; i<=np/2; i++) {
           xx = xlow + (i-.5) * step;
           fSec = TMath::Power( TMath::Cos( par[3] * xx / (par[4]) ), -2 );
-          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,100000);
+          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,50000);
 
           xx = xupp - (i-.5) * step;
           fSec = TMath::Power( TMath::Cos( par[3] * xx / (par[4]) ), -2 );
-          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,100000);
+          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,50000);
         }
 
         return par[0] * sum + par[1];
@@ -354,11 +354,11 @@ namespace Katydid
 
         newData.SetNComponents( 1 );
 
-        double alpha = data.GetStartFrequency() - 5e6;
+        double alpha = data.GetStartFrequency() - 2e6;
         double error;
         double q = data.GetSlope();
 
-        while( alpha <= data.GetEndFrequency() + 5e6 )
+        while( alpha <= data.GetEndFrequency() + 2e6 )
         {
             error = 0;
 
@@ -388,8 +388,13 @@ namespace Katydid
         conv->SetParameter( 3, 0.5 );
         conv->SetParameter( 4, 100e3 );
 
-        conv->SetParLimits( 3, 0.1, TMath::Pi() );
+        conv->SetParLimits( 0, 0, 100 );
+        conv->SetParLimits( 1, 0, 1000 );
+        conv->SetParLimits( 2, -10, 10 );
+        conv->SetParLimits( 3, 0, TMath::Pi() );
         conv->SetParLimits( 4, 0, 10e6 );
+
+        conv->FixParameter( 3, 0 );
 
         TFitResultPtr fitStatus = fitPoints->Fit( "conv", "S" );
         
@@ -427,7 +432,14 @@ namespace Katydid
         newData.SetWidth( sigma );
         newData.SetWidthErr( sigma_err );
 
-        newData.SetIsValid( valid == 1 );
+        if( valid )
+        {
+            newData.SetIsValid( 1 );
+        }
+        else
+        {
+            newData.SetIsValid( 0 );
+        }
 
         return true;
     }

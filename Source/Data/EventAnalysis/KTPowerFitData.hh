@@ -45,7 +45,7 @@ namespace Katydid
                 double fCurvatureErr;
                 double fWidthErr;
 
-                bool fIsValid;
+                int fIsValid;
                 SetOfPoints fPoints;
             };
 
@@ -92,7 +92,7 @@ namespace Katydid
             void SetWidthErr(double sigma, unsigned component=0);
 
             bool GetIsValid(unsigned component=0) const;
-            void SetIsValid(bool valid, unsigned component=0);
+            void SetIsValid(int valid, unsigned component=0);
 
             const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
 
@@ -234,7 +234,7 @@ namespace Katydid
         return fComponentData[component].fIsValid;
     }
 
-    inline void KTPowerFitData::SetIsValid(bool valid, unsigned component)
+    inline void KTPowerFitData::SetIsValid(int valid, unsigned component)
     {
         fComponentData[component].fIsValid = valid;
         return;
