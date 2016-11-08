@@ -11,9 +11,11 @@
 #include "KTTIFactory.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPowerFitData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph.h"
 
 #include <sstream>
 #include <map>
@@ -44,6 +46,7 @@ namespace Katydid
     void KTDataTypeDisplayEventAnalysis::RegisterSlots()
     {
         fWriter->RegisterSlot("ps-coll", this, &KTDataTypeDisplayEventAnalysis::DrawPSCollectionData);
+        fWriter->RegisterSlot("power-fit", this, &KTDataTypeDisplayEventAnalysis::DrawPowerFitData);
         return;
     }
 
@@ -75,6 +78,38 @@ namespace Katydid
             TH2D* psCollection = KT2ROOT::CreatePowerHistogram(spectra, histName);
             fWriter->Draw(psCollection);
         }
+
+        return;
+    }
+
+    //****************
+    // Power Fit Data
+    //****************
+
+    void KTDataTypeDisplayEventAnalysis::DrawPowerFitData(Nymph::KTDataPtr data)
+    {
+        if( !data ) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTPowerFitData& pfData = data->Of<KTPowerFitData>();
+
+        if (! fWriter->OpenWindow()) return;
+
+        const std::map< unsigned, KTPowerFitData::Point > points = pfData.GetSetOfPoints();
+        Int_t nPoints = points.size();
+
+        Double_t x[nPoints], y[nPoints];
+        int i = 0;
+        for( std::map< unsigned, KTPowerFitData::Point >::const_iterator it = points.begin(); it != points.end(); ++it )
+        {
+            x[i] = it->second.fAbscissa;
+            y[i] = it->second.fOrdinate;
+            ++i;
+        }
+
+        TGraph* g = new TGraph( nPoints, x, y );
+        fWriter->Draw(g);
 
         return;
     }

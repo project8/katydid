@@ -29,6 +29,7 @@ namespace Katydid
             //**************************
         public:
             void DrawPSCollectionData(Nymph::KTDataPtr data);
+            void DrawPowerFitData(Nymph::KTDataPtr data);
 
     };
 
