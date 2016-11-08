@@ -707,7 +707,7 @@ namespace Katydid
         fPowerFitDataTree->Branch( "CurvatureErr", &fPowerFitData.fCurvatureErr, "fCurvatureErr/d" );
         fPowerFitDataTree->Branch( "WidthErr", &fPowerFitData.fWidthErr, "fWidthErr/d" );
 
-        fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/b" );
+        fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
 
         return true;
     }

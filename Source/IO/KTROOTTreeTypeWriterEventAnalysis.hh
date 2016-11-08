@@ -115,7 +115,7 @@ namespace Katydid
         Double_t fCurvatureErr;
         Double_t fWidthErr;
 
-        Bool_t fIsValid;
+        UInt_t fIsValid;
     };
 
 
