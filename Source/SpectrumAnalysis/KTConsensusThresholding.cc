@@ -174,6 +174,10 @@ namespace Katydid
         KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(pid, fMembershipRadius);
         unsigned nNeighbors = ne.size();
         double sumX, sumY, sumX2, sumXY;
+        sumX = 0;
+        sumY = 0;
+        sumX2 = 0;
+        sumXY = 0;
         for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)
         {
             sumX += setOfPoints[ne[iNe]].fCoords[0];
@@ -181,7 +185,8 @@ namespace Katydid
             sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
             sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
         }
-        double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors);
+        if (nNeighbors!=0){ double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
+        else { double slope = 0; }
         deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
         deltaFreq = slope * deltaTime;
         return;
