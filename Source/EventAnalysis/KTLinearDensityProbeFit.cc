@@ -441,6 +441,15 @@ namespace Katydid
             newData.SetIsValid( 0 );
         }
 
+        if( data.GetStartFrequency() > 75e6 && data.GetStartFrequency() < 115e6 )
+        {
+            newData.SetMainPeak( 1 );
+        }
+        else
+        {
+            newData.SetMainPeak( 0 );
+        }
+
         return true;
     }
 

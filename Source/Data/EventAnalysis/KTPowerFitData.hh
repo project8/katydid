@@ -46,6 +46,7 @@ namespace Katydid
                 double fWidthErr;
 
                 int fIsValid;
+                int fMainPeak;
                 SetOfPoints fPoints;
             };
 
@@ -91,8 +92,11 @@ namespace Katydid
             double GetWidthErr(unsigned component=0) const;
             void SetWidthErr(double sigma, unsigned component=0);
 
-            bool GetIsValid(unsigned component=0) const;
+            int GetIsValid(unsigned component=0) const;
             void SetIsValid(int valid, unsigned component=0);
+
+            int GetMainPeak(unsigned component=0) const;
+            void SetMainPeak(int mainPeak, unsigned component=0);            
 
             const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
 
@@ -229,7 +233,7 @@ namespace Katydid
         return;
     }    
 
-    inline bool KTPowerFitData::GetIsValid(unsigned component) const
+    inline int KTPowerFitData::GetIsValid(unsigned component) const
     {
         return fComponentData[component].fIsValid;
     }
@@ -237,6 +241,17 @@ namespace Katydid
     inline void KTPowerFitData::SetIsValid(int valid, unsigned component)
     {
         fComponentData[component].fIsValid = valid;
+        return;
+    }
+
+    inline int KTPowerFitData::GetMainPeak(unsigned component) const
+    {
+        return fComponentData[component].fMainPeak;
+    }
+
+    inline void KTPowerFitData::SetMainPeak(int mainPeak, unsigned component)
+    {
+        fComponentData[component].fMainPeak = mainPeak;
         return;
     }
 
