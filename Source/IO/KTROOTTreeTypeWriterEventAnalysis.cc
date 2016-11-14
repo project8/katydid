@@ -681,6 +681,7 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "WidthErr", &fPowerFitData.fWidthErr );
 
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
+                fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
 
                 return true;
             }
@@ -709,6 +710,7 @@ namespace Katydid
         fPowerFitDataTree->Branch( "WidthErr", &fPowerFitData.fWidthErr, "fWidthErr/d" );
 
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
+        fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
 
         return true;
     }

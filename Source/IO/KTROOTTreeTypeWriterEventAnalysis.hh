@@ -116,6 +116,7 @@ namespace Katydid
         Double_t fWidthErr;
 
         UInt_t fIsValid;
+        UInt_t fMainPeak;
     };
 
 
