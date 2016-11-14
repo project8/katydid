@@ -648,6 +648,7 @@ namespace Katydid
             fPowerFitData.fWidthErr = pfData.GetWidthErr( fPowerFitData.fComponent );
 
             fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
+            fPowerFitData.fMainPeak = pfData.GetMainPeak( fPowerFitData.fComponent );
 
             fPowerFitDataTree->Fill();
         }
