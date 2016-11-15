@@ -18,7 +18,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTLinearFitCut.hh
     KTMultiPeakEventBuilder.hh
     KTMultiSliceClustering.hh
-    KTPowerFitCut.hh
+#    KTPowerFitCut.hh
     KTProcessedTrackCut.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
@@ -39,7 +39,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTLinearFitCut.cc
     KTMultiPeakEventBuilder.cc
     KTMultiSliceClustering.cc
-    KTPowerFitCut.cc
+#    KTPowerFitCut.cc
     KTProcessedTrackCut.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
