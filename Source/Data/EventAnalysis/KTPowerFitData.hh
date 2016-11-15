@@ -45,6 +45,7 @@ namespace Katydid
 
                 int fIsValid;
                 int fMainPeak;
+                int fNPeaks;
                 SetOfPoints fPoints;
             };
 
@@ -88,7 +89,10 @@ namespace Katydid
             void SetIsValid(int valid, unsigned component=0);
 
             int GetMainPeak(unsigned component=0) const;
-            void SetMainPeak(int mainPeak, unsigned component=0);            
+            void SetMainPeak(int mainPeak, unsigned component=0);
+
+            int GetNPeaks(unsigned component=0) const;
+            void SetNPeaks(int n, unsigned component=0); 
 
             const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
 
@@ -222,6 +226,17 @@ namespace Katydid
     inline void KTPowerFitData::SetMainPeak(int mainPeak, unsigned component)
     {
         fComponentData[component].fMainPeak = mainPeak;
+        return;
+    }
+
+    inline int KTPowerFitData::GetNPeaks(unsigned component) const
+    {
+        return fComponentData[component].fNPeaks;
+    }
+
+    inline void KTPowerFitData::SetNPeaks(int n, unsigned component)
+    {
+        fComponentData[component].fNPeaks = n;
         return;
     }
 

@@ -649,15 +649,18 @@ namespace Katydid
             fPowerFitData.fWidthErr = pfData.GetWidthErr( fPowerFitData.fComponent );
 */
 
-            fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
-            fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
-            fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
-            fPowerFitData.fMaximum = pfData.GetMaximum( fPowerFitData.fComponent );
+            //for( int i = 0; i < pfData.GetNPeaks( fPowerFitData.fComponent ); ++i )
+            //{
+                fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
+                fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
+                fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
+                fPowerFitData.fMaximum = pfData.GetMaximum( fPowerFitData.fComponent );
 
-            fPowerFitData.fNormErr = pfData.GetNormErr( fPowerFitData.fComponent );
-            fPowerFitData.fMeanErr = pfData.GetMeanErr( fPowerFitData.fComponent );
-            fPowerFitData.fSigmaErr = pfData.GetSigmaErr( fPowerFitData.fComponent );
-            fPowerFitData.fMaximumErr = pfData.GetMaximumErr( fPowerFitData.fComponent );
+                fPowerFitData.fNormErr = pfData.GetNormErr( fPowerFitData.fComponent );
+                fPowerFitData.fMeanErr = pfData.GetMeanErr( fPowerFitData.fComponent );
+                fPowerFitData.fSigmaErr = pfData.GetSigmaErr( fPowerFitData.fComponent );
+                fPowerFitData.fMaximumErr = pfData.GetMaximumErr( fPowerFitData.fComponent );
+           // }
 
             fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
             fPowerFitData.fMainPeak = pfData.GetMainPeak( fPowerFitData.fComponent );
@@ -711,15 +714,25 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "WidthErr", &fPowerFitData.fWidthErr );
 */
 
-                fPowerFitDataTree->SetBranchAddress( "Norm", &fPowerFitData.fNorm );
-                fPowerFitDataTree->SetBranchAddress( "Mean", &fPowerFitData.fMean );
-                fPowerFitDataTree->SetBranchAddress( "Sigma", &fPowerFitData.fSigma );
-                fPowerFitDataTree->SetBranchAddress( "Maximum", &fPowerFitData.fMaximum );
+                fPowerFitData.fNorm.push_back(0.);
+                fPowerFitData.fMean.push_back(0.);
+                fPowerFitData.fSigma.push_back(0.);
+                fPowerFitData.fMaximum.push_back(0.);
 
-                fPowerFitDataTree->SetBranchAddress( "NormErr", &fPowerFitData.fNormErr );
-                fPowerFitDataTree->SetBranchAddress( "MeanErr", &fPowerFitData.fMeanErr );
-                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &fPowerFitData.fSigmaErr );
-                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &fPowerFitData.fMaximumErr );
+                fPowerFitData.fNormErr.push_back(0.);
+                fPowerFitData.fMeanErr.push_back(0.);
+                fPowerFitData.fSigmaErr.push_back(0.);
+                fPowerFitData.fMaximumErr.push_back(0.);
+                
+                fPowerFitDataTree->SetBranchAddress( "Norm", &fPowerFitData.fNorm.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "Mean", &fPowerFitData.fMean.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "Sigma", &fPowerFitData.fSigma.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "Maximum", &fPowerFitData.fMaximum.at(0) );
+
+                fPowerFitDataTree->SetBranchAddress( "NormErr", &fPowerFitData.fNormErr.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "MeanErr", &fPowerFitData.fMeanErr.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &fPowerFitData.fSigmaErr.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &fPowerFitData.fMaximumErr.at(0) );
 
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
@@ -753,15 +766,25 @@ namespace Katydid
         fPowerFitDataTree->Branch( "WidthErr", &fPowerFitData.fWidthErr, "fWidthErr/d" );
 */
 
-        fPowerFitDataTree->Branch( "Norm", &fPowerFitData.fNorm );
-        fPowerFitDataTree->Branch( "Mean", &fPowerFitData.fMean );
-        fPowerFitDataTree->Branch( "Sigma", &fPowerFitData.fSigma );
-        fPowerFitDataTree->Branch( "Maximmum", &fPowerFitData.fMaximum );
+        fPowerFitData.fNorm.push_back(0.);
+        fPowerFitData.fMean.push_back(0.);
+        fPowerFitData.fSigma.push_back(0.);
+        fPowerFitData.fMaximum.push_back(0.);
 
-        fPowerFitDataTree->Branch( "NormErr", &fPowerFitData.fNormErr );
-        fPowerFitDataTree->Branch( "MeanErr", &fPowerFitData.fMeanErr );
-        fPowerFitDataTree->Branch( "SigmaErr", &fPowerFitData.fSigmaErr );
-        fPowerFitDataTree->Branch( "MaximmumErr", &fPowerFitData.fMaximumErr );
+        fPowerFitData.fNormErr.push_back(0.);
+        fPowerFitData.fMeanErr.push_back(0.);
+        fPowerFitData.fSigmaErr.push_back(0.);
+        fPowerFitData.fMaximumErr.push_back(0.);
+
+        fPowerFitDataTree->Branch( "Norm", &fPowerFitData.fNorm.at(0) );
+        fPowerFitDataTree->Branch( "Mean", &fPowerFitData.fMean.at(0) );
+        fPowerFitDataTree->Branch( "Sigma", &fPowerFitData.fSigma.at(0) );
+        fPowerFitDataTree->Branch( "Maximum", &fPowerFitData.fMaximum.at(0) );
+
+        fPowerFitDataTree->Branch( "NormErr", &fPowerFitData.fNormErr.at(0) );
+        fPowerFitDataTree->Branch( "MeanErr", &fPowerFitData.fMeanErr.at(0) );
+        fPowerFitDataTree->Branch( "SigmaErr", &fPowerFitData.fSigmaErr.at(0) );
+        fPowerFitDataTree->Branch( "MaximumErr", &fPowerFitData.fMaximumErr.at(0) );
 
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
