@@ -48,8 +48,7 @@ namespace Katydid
      - "trail-time": double -- time to collect after the end of the track
      - "lead-freq": double -- frequency below the track to begin collection
      - "trail-freq": double -- frequency above the track to end collection
-     - "use-lead-freq": bool -- if true, the minimum frequency is calculated from the track and the lead frequency; if false, min-frequency is used
-     - "use-trail-freq": bool -- if true, the maximum frequency is calculated from the track and the trail frequency; if false, max-frequency is used
+     - "use-track-freqs": bool -- if true, the min/max frequencies are calculated from the track and the lead/trail frequencies; if false, min/max-frequency is used
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
