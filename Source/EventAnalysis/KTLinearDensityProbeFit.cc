@@ -506,11 +506,11 @@ namespace Katydid
         for (Int_t p=0; p<npeaks; p++ )
         {
             fit->SetParLimits(3*p+2, 0, 1000);
-            fit->SetParLimits(3*p+3, fullSpectrogram.GetMinFreq(), fullSpectrogram.GetMaxFreq());
+            fit->SetParLimits(3*p+3, 0, 50000);
             fit->SetParLimits(3*p+4, 0, 100 );
         }
         fit->SetNpx(1000);
-        TFitResultPtr fitStatus = fitPoints->Fit("fit");
+        TFitResultPtr fitStatus = fitPoints->Fit("fit", "S");
 
         std::vector<double> norms, means, sigmas, maxima;
         std::vector<double> normErrs, meanErrs, sigmaErrs, maximumErrs;
@@ -558,6 +558,8 @@ namespace Katydid
         {
             newData.SetMainPeak( 0 );
         }
+
+        newData.SetNPeaks( npeaks );
 
         return true;
     }
