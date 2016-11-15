@@ -33,17 +33,15 @@ namespace Katydid
         protected:
             struct PerComponentData
             {
-                double fScale;
-                double fBackground;
-                double fCenter;
-                double fCurvature;
-                double fWidth;
+                std::vector<double> fNorm;
+                std::vector<double> fMean;
+                std::vector<double> fSigma;
+                std::vector<double> fMaximum;
 
-                double fScaleErr;
-                double fBackgroundErr;
-                double fCenterErr;
-                double fCurvatureErr;
-                double fWidthErr;
+                std::vector<double> fNormErr;
+                std::vector<double> fMeanErr;
+                std::vector<double> fSigmaErr;
+                std::vector<double> fMaximumErr;
 
                 int fIsValid;
                 int fMainPeak;
@@ -62,35 +60,29 @@ namespace Katydid
             unsigned GetNComponents() const;
             KTPowerFitData& SetNComponents(unsigned channels);
 
-            double GetScale(unsigned component=0) const;
-            void SetScale(double a, unsigned component=0);
+            std::vector<double> GetNorm( unsigned component = 0 ) const;
+            void SetNorm( std::vector<double> norm, unsigned component = 0 );
 
-            double GetBackground(unsigned component=0) const;
-            void SetBackground(double b, unsigned component=0);
+            std::vector<double> GetMean( unsigned component = 0 ) const;
+            void SetMean( std::vector<double> mean, unsigned component = 0 );
 
-            double GetCenter(unsigned component=0) const;
-            void SetCenter(double z0, unsigned component=0);
+            std::vector<double> GetSigma( unsigned component = 0 ) const;
+            void SetSigma( std::vector<double> sigma, unsigned component = 0 );
 
-            double GetCurvature(unsigned component=0) const;
-            void SetCurvature(double k, unsigned component=0);
+            std::vector<double> GetMaximum( unsigned component = 0 ) const;
+            void SetMaximum( std::vector<double> max, unsigned component = 0 );
 
-            double GetWidth(unsigned component=0) const;
-            void SetWidth(double sigma, unsigned component=0);
+            std::vector<double> GetNormErr( unsigned component = 0 ) const;
+            void SetNormErr( std::vector<double> normErr, unsigned component = 0 );
 
-            double GetScaleErr(unsigned component=0) const;
-            void SetScaleErr(double a, unsigned component=0);
+            std::vector<double> GetMeanErr( unsigned component = 0 ) const;
+            void SetMeanErr( std::vector<double> meanErr, unsigned component = 0 );
 
-            double GetBackgroundErr(unsigned component=0) const;
-            void SetBackgroundErr(double b, unsigned component=0);
+            std::vector<double> GetSigmaErr( unsigned component = 0 ) const;
+            void SetSigmaErr( std::vector<double> sigmaErr, unsigned component = 0 );
 
-            double GetCenterErr(unsigned component=0) const;
-            void SetCenterErr(double z0, unsigned component=0);
-
-            double GetCurvatureErr(unsigned component=0) const;
-            void SetCurvatureErr(double k, unsigned component=0);
-
-            double GetWidthErr(unsigned component=0) const;
-            void SetWidthErr(double sigma, unsigned component=0);
+            std::vector<double> GetMaximumErr( unsigned component = 0 ) const;
+            void SetMaximumErr( std::vector<double> maxErr, unsigned component = 0 );
 
             int GetIsValid(unsigned component=0) const;
             void SetIsValid(int valid, unsigned component=0);
@@ -123,115 +115,93 @@ namespace Katydid
         return *this;
     }
 
-    inline double KTPowerFitData::GetScale(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetNorm(unsigned component) const
     {
-        return fComponentData[component].fScale;
+        return fComponentData[component].fNorm;
     }
 
-    inline void KTPowerFitData::SetScale(double a, unsigned component)
+    inline void KTPowerFitData::SetNorm(std::vector<double> norm, unsigned component)
     {
-        fComponentData[component].fScale = a;
+        fComponentData[component].fNorm = norm;
         return;
     }
 
-    inline double KTPowerFitData::GetBackground(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetMean(unsigned component) const
     {
-        return fComponentData[component].fBackground;
+        return fComponentData[component].fMean;
     }
 
-    inline void KTPowerFitData::SetBackground(double b, unsigned component)
+    inline void KTPowerFitData::SetMean(std::vector<double> mean, unsigned component)
     {
-        fComponentData[component].fBackground = b;
+        fComponentData[component].fMean = mean;
         return;
     }
 
-    inline double KTPowerFitData::GetCenter(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetSigma(unsigned component) const
     {
-        return fComponentData[component].fCenter;
+        return fComponentData[component].fSigma;
     }
 
-    inline void KTPowerFitData::SetCenter(double z0, unsigned component)
+    inline void KTPowerFitData::SetSigma(std::vector<double> sigma, unsigned component)
     {
-        fComponentData[component].fCenter = z0;
+        fComponentData[component].fSigma = sigma;
         return;
     }
 
-    inline double KTPowerFitData::GetCurvature(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetMaximum(unsigned component) const
     {
-        return fComponentData[component].fCurvature;
+        return fComponentData[component].fMaximum;
     }
 
-    inline void KTPowerFitData::SetCurvature(double k, unsigned component)
+    inline void KTPowerFitData::SetMaximum(std::vector<double> max, unsigned component)
     {
-        fComponentData[component].fCurvature = k;
+        fComponentData[component].fMaximum = max;
         return;
     }
 
-    inline double KTPowerFitData::GetWidth(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetNormErr(unsigned component) const
     {
-        return fComponentData[component].fWidth;
+        return fComponentData[component].fNormErr;
     }
 
-    inline void KTPowerFitData::SetWidth(double sigma, unsigned component)
+    inline void KTPowerFitData::SetNormErr(std::vector<double> normErr, unsigned component)
     {
-        fComponentData[component].fWidth = sigma;
+        fComponentData[component].fNormErr = normErr;
         return;
     }
 
-    inline double KTPowerFitData::GetScaleErr(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetMeanErr(unsigned component) const
     {
-        return fComponentData[component].fScaleErr;
+        return fComponentData[component].fMeanErr;
     }
 
-    inline void KTPowerFitData::SetScaleErr(double a, unsigned component)
+    inline void KTPowerFitData::SetMeanErr(std::vector<double> meanErr, unsigned component)
     {
-        fComponentData[component].fScaleErr = a;
+        fComponentData[component].fMeanErr = meanErr;
         return;
     }
 
-    inline double KTPowerFitData::GetBackgroundErr(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetSigmaErr(unsigned component) const
     {
-        return fComponentData[component].fBackgroundErr;
+        return fComponentData[component].fSigmaErr;
     }
 
-    inline void KTPowerFitData::SetBackgroundErr(double b, unsigned component)
+    inline void KTPowerFitData::SetSigmaErr(std::vector<double> sigmaErr, unsigned component)
     {
-        fComponentData[component].fBackgroundErr = b;
+        fComponentData[component].fSigmaErr = sigmaErr;
         return;
     }
 
-    inline double KTPowerFitData::GetCenterErr(unsigned component) const
+    inline std::vector<double> KTPowerFitData::GetMaximumErr(unsigned component) const
     {
-        return fComponentData[component].fCenterErr;
+        return fComponentData[component].fMaximumErr;
     }
 
-    inline void KTPowerFitData::SetCenterErr(double z0, unsigned component)
+    inline void KTPowerFitData::SetMaximumErr(std::vector<double> maxErr, unsigned component)
     {
-        fComponentData[component].fCenterErr = z0;
+        fComponentData[component].fMaximumErr = maxErr;
         return;
     }
-
-    inline double KTPowerFitData::GetCurvatureErr(unsigned component) const
-    {
-        return fComponentData[component].fCurvatureErr;
-    }
-
-    inline void KTPowerFitData::SetCurvatureErr(double k, unsigned component)
-    {
-        fComponentData[component].fCurvatureErr = k;
-        return;
-    }
-
-    inline double KTPowerFitData::GetWidthErr(unsigned component) const
-    {
-        return fComponentData[component].fWidthErr;
-    }
-
-    inline void KTPowerFitData::SetWidthErr(double sigma, unsigned component)
-    {
-        fComponentData[component].fWidthErr = sigma;
-        return;
-    }    
 
     inline int KTPowerFitData::GetIsValid(unsigned component) const
     {

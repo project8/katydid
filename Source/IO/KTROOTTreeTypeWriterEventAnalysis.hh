@@ -15,6 +15,8 @@
 
 #include "Rtypes.h"
 
+#include <vector>
+
 class TGraph;
 class TGraph2D;
 class TH2D;
@@ -103,7 +105,7 @@ namespace Katydid
     struct TPowerFitData
     {
         UInt_t fComponent;
-
+/*
         Double_t fScale;
         Double_t fBackground;
         Double_t fCenter;
@@ -115,7 +117,18 @@ namespace Katydid
         Double_t fCenterErr;
         Double_t fCurvatureErr;
         Double_t fWidthErr;
+*/
 
+        std::vector<double> fNorm;
+        std::vector<double> fMean;
+        std::vector<double> fSigma;
+        std::vector<double> fMaximum;
+
+        std::vector<double> fNormErr;
+        std::vector<double> fMeanErr;
+        std::vector<double> fSigmaErr;
+        std::vector<double> fMaximumErr;
+        
         UInt_t fIsValid;
         UInt_t fMainPeak;
 

@@ -32,6 +32,8 @@
 #include "KT2ROOT.hh"
 #include "TMath.h"
 #include "TFitResult.h"
+#include "TSpectrum.h"
+#include "TVirtualFitter.h"
 #endif
 
 using std::string;
@@ -204,6 +206,18 @@ namespace Katydid
         return par[0] * sum + par[1];
     }
 
+    Int_t npeaks;
+    Double_t fpeaks(Double_t *x, Double_t *par) {
+        Double_t result = par[0] + par[1]*x[0]/1e6;
+        for (Int_t p=0;p<npeaks;p++) {
+            Double_t norm  = par[3*p+2];
+            Double_t mean  = par[3*p+3]*1e6;
+            Double_t sigma = par[3*p+4]*1e6;
+            result += norm*TMath::Gaus(x[0],mean,sigma);
+        }
+        return result;
+    }
+
     bool KTLinearDensityProbeFit::Calculate(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts)
     {
         KTLinearFitResult& newData = data.Of< KTLinearFitResult >();
@@ -354,11 +368,16 @@ namespace Katydid
 
         newData.SetNComponents( 1 );
 
-        double alpha = data.GetStartFrequency() - 2e6;
-        double error;
+        double error, alpha;
         double q = data.GetSlope();
 
-        while( alpha <= data.GetEndFrequency() + 2e6 )
+
+        double minAlpha = fullSpectrogram.GetMinFreq() - q * fullSpectrogram.GetStartTime();
+        double maxAlpha = fullSpectrogram.GetMaxFreq() - q * fullSpectrogram.GetEndTime();
+
+        alpha = minAlpha;
+
+        while( alpha <= maxAlpha )
         {
             error = 0;
 
@@ -369,16 +388,17 @@ namespace Katydid
             }
             
             // Add point
-            newData.AddPoint( alpha - (data.GetStartFrequency() - 5e6), KTPowerFitData::Point( alpha - (data.GetStartFrequency() - 5e6), -1*error, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
-            KTDEBUG(sdlog, "Added point of intercept " << alpha - (data.GetStartFrequency() - 5e6) << " and error " << -1 * error);
+            newData.AddPoint( alpha, KTPowerFitData::Point( alpha, -1*error, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            KTDEBUG(sdlog, "Added point of intercept " << alpha << " and error " << -1 * error);
             
             // Increment alpha
             alpha += fStepSizeBig;
         }
 
-        KTINFO(sdlog, "Sucessfully gathered points for power fit calculation. Performing fit...");
+        KTINFO(sdlog, "Sucessfully gathered points for peaking finding.");
 
         TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "hPowerMag" );
+ /*       
         TF1* conv = new TF1( "conv", fitf, 0, 1e9, 5 );
         TF1* gaussian = new TF1( "gaussian", "gaus(0) + [3]", 0, 1e9);
 
@@ -431,6 +451,95 @@ namespace Katydid
 
         newData.SetWidth( sigma );
         newData.SetWidthErr( sigma_err );
+
+        if( valid )
+        {
+            newData.SetIsValid( 1 );
+        }
+        else
+        {
+            newData.SetIsValid( 0 );
+        }
+
+        if( data.GetStartFrequency() > 75e6 && data.GetStartFrequency() < 115e6 )
+        {
+            newData.SetMainPeak( 1 );
+        }
+        else
+        {
+            newData.SetMainPeak( 0 );
+        }
+*/
+
+        TSpectrum *s = new TSpectrum::TSpectrum(10);
+        Int_t nfound = s->Search(fitPoints,5,"",0.4);
+        printf("Found %d candidate peaks to fit\n",nfound);
+        //Estimate background using TSpectrum::Background
+        TH1 *hb = s->Background(fitPoints,20,"same");
+
+        //estimate linear background using a fitting method
+        TF1 *fline = new TF1("fline","pol1",0,1e9);
+        fitPoints->Fit("fline","qn");
+        //Loop on all found peaks. Eliminate peaks at the background level
+        Double_t par[32];
+        par[0] = fline->GetParameter(0);
+        par[1] = fline->GetParameter(1);
+        npeaks = 0;
+        Double_t *xpeaks = s->GetPositionX();
+        for (Int_t p=0;p<nfound;p++) {
+            Double_t xp = xpeaks[p];
+            Int_t bin = fitPoints->GetXaxis()->FindBin(xp);
+            Double_t yp = fitPoints->GetBinContent(bin);
+            KTINFO(sdlog, "Looking at peak (" << xp << ", " << yp << ")");
+            if (yp < 2*fline->Eval(xp)) continue;
+            par[3*npeaks+2] = yp;
+            par[3*npeaks+3] = xp / 1e6;
+            par[3*npeaks+4] = 0.1;
+            npeaks++;
+        }
+        printf("Found %d useful peaks to fit\n",npeaks);
+        printf("Now fitting: Be patient\n");
+        TF1 *fit = new TF1("fit",fpeaks,0,1000,2+3*npeaks);
+        //we may have more than the default 25 parameters
+        TVirtualFitter::Fitter(fitPoints,10+3*npeaks);
+        fit->SetParameters(par);
+        for (Int_t p=0; p<npeaks; p++ )
+        {
+            fit->SetParLimits(3*p+2, 0, 1000);
+            fit->SetParLimits(3*p+3, fullSpectrogram.GetMinFreq(), fullSpectrogram.GetMaxFreq());
+            fit->SetParLimits(3*p+4, 0, 100 );
+        }
+        fit->SetNpx(1000);
+        TFitResultPtr fitStatus = fitPoints->Fit("fit");
+
+        std::vector<double> norms, means, sigmas, maxima;
+        std::vector<double> normErrs, meanErrs, sigmaErrs, maximumErrs;
+
+        double invsqrt2pi = TMath::Power( 2*TMath::Pi(), -0.5 );
+        for( Int_t p=0; p<npeaks; p++ )
+        {
+            norms.push_back( fit->GetParameter(3*p+2) );
+            means.push_back( fit->GetParameter(3*p+3) );
+            sigmas.push_back(fit->GetParameter(3*p+4) );
+            maxima.push_back( invsqrt2pi * fit->GetParameter(3*p+2) / fit->GetParameter(3*p+4) );
+
+            normErrs.push_back( fit->GetParError(3*p+2) );
+            meanErrs.push_back( fit->GetParError(3*p+3) );
+            sigmaErrs.push_back(fit->GetParError(3*p+4) );
+            maximumErrs.push_back( TMath::Sqrt( TMath::Power( invsqrt2pi / fit->GetParameter(3*p+4) * fit->GetParError(3*p+2), 2 ) + TMath::Power( invsqrt2pi * fit->GetParameter(3*p+2) / TMath::Power( fit->GetParameter(3*p+4), 2 ) * fit->GetParError(3*p+4), 2 ) ) );
+        }
+
+        bool valid = fitStatus->IsValid();
+
+        newData.SetNorm( norms );
+        newData.SetMean( means );
+        newData.SetSigma( sigmas );
+        newData.SetMaximum( maxima );
+
+        newData.SetNormErr( normErrs );
+        newData.SetMeanErr( meanErrs );
+        newData.SetSigmaErr( sigmaErrs );
+        newData.SetMaximumErr( maximumErrs );
 
         if( valid )
         {
