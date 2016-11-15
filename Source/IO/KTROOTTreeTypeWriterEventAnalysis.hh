@@ -15,6 +15,7 @@
 
 #include "Rtypes.h"
 
+class TGraph;
 class TGraph2D;
 class TH2D;
 class TTree;
@@ -117,6 +118,8 @@ namespace Katydid
 
         UInt_t fIsValid;
         UInt_t fMainPeak;
+
+        TGraph* fPoints;
     };
 
 

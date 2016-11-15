@@ -22,6 +22,7 @@
 //#include "TFrequencyCandidateData.hh"
 
 #include "TFile.h"
+#include "TGraph.h"
 #include "TGraph2D.h"
 #include "TH2.h"
 #include "TTree.h"
@@ -650,6 +651,23 @@ namespace Katydid
             fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
             fPowerFitData.fMainPeak = pfData.GetMainPeak( fPowerFitData.fComponent );
 
+            const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints( fPowerFitData.fComponent );
+
+            if (points.size() == 0)
+            {
+                KTWARN(publog, "No points in power fit data; nothing written to ROOT file");
+                return;
+            }
+
+            fPowerFitData.fPoints = new TGraph(points.size());
+            unsigned iPoint = 0;
+            for (KTPowerFitData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+            {
+                fPowerFitData.fPoints->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
+                ++iPoint;
+            }
+            //fPowerFitData.fPoints->SetDirectory(NULL);
+
             fPowerFitDataTree->Fill();
         }
 
@@ -684,6 +702,8 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
 
+                fPowerFitDataTree->SetBranchAddress( "Points", &fPowerFitData.fPoints );
+
                 return true;
             }
         }
@@ -712,6 +732,8 @@ namespace Katydid
 
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
+
+        fPowerFitDataTree->Branch( "Points", &fPowerFitData.fPoints, 32000, 0 );
 
         return true;
     }
