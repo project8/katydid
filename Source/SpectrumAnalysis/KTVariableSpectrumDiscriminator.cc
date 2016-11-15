@@ -199,16 +199,18 @@ namespace Katydid
         KTDiscriminatedPoints2DData& newData = data.Of< KTDiscriminatedPoints2DData >();
         KTDiscriminatedPoints1DData newDataSlice; // The 1DData will be used with the discrimination methods already in place to iteratively achieve a 2D discrimination
 
-        if (fCalculateMinBin)
-        {
-            SetMinBin(data.GetSpectra().begin()->second->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
-        }
-        if (fCalculateMaxBin)
-        {
-            SetMaxBin(data.GetSpectra().begin()->second->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
-        }
+        // Min and Max frequency must be set according to the PSCollectionData
+        SetMinFrequency( data.GetMinFreq() );
+        SetMaxFrequency( data.GetMaxFreq() );
+
+        // fCalculateMin(Max)Bin will always be true following these sets
+        // So we will forego the conditional statements and simply recalculate the bins
+        
+        SetMinBin(data.GetSpectra().begin()->second->FindBin(fMinFrequency));
+        KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+    
+        SetMaxBin(data.GetSpectra().begin()->second->FindBin(fMaxFrequency) - 1); // -1 to avoid out-of-range error
+        KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         
         // Parametrize 2D and 1D point objects
 
