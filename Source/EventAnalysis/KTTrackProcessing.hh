@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    
+
     class KTHoughData;
     class KTSparseWaterfallCandidateData;
 
@@ -75,10 +75,15 @@ namespace Katydid
 
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+
 
         private:
             /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
+            typedef bool (KTTrackProcessing::*TrackProcPtr)(KTSparseWaterfallCandidateData& , KTHoughData& );
+            TrackProcPtr fTrackProcPtr;
 
             //***************
             // Signals
@@ -135,7 +140,6 @@ namespace Katydid
         fProcTrackMinPoints = min;
         return;
     }
-
 
     double KTTrackProcessing::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
     {

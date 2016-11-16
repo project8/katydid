@@ -185,7 +185,8 @@ namespace Katydid
             sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
             sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
         }
-        if (nNeighbors!=0){ double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
+        double slope = 0;
+        if (nNeighbors!=0){ slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
         else { double slope = 0; }
         deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
         deltaFreq = slope * deltaTime;
