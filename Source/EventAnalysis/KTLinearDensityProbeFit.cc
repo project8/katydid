@@ -192,57 +192,6 @@ namespace Katydid
         fGVData = gvData;
         return true;
     }
-/*
-    Double_t fitf(Double_t *x, Double_t *par)
-    {
-
-    /*
-        The inputs to this method must be x and par
-        This is the only way root can use the method for fitting
-
-        x is an array containing the arguments of the function
-        In this case, the function is 1D so I will only use x[0]
-
-        par is an array for the parameters in the fit:
-        par[0] = Overall scale
-        par[1] = Overall background
-        par[2] = Overall frequency center in MHz
-        par[3] = Curvature
-        par[4] = Width in MHz
-    */
-/*
-        // Control constants
-        double np = 1000.0;        // number of convolution steps
-        double sc =   5.0;         // convolution extends to +-sc Gaussian sigmas
-
-        // Variables
-        double xx;
-        double fSec;
-        double sum = 0.0;
-        double xlow,xupp;
-        double step;
-        double i;
-
-        // Range of convolution integral
-        xlow = -0.5*par[4];
-        xupp = 0.5*par[4];
-
-        step = (xupp-xlow) / np;
-
-        // Convolution integral of Landau and Gaussian by sum
-        for(i=1.0; i<=np/2; i++) {
-          xx = xlow + (i-.5) * step;
-          fSec = TMath::Power( TMath::Cos( par[3] * xx / (par[4]) ), -2 );
-          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,50000);
-
-          xx = xupp - (i-.5) * step;
-          fSec = TMath::Power( TMath::Cos( par[3] * xx / (par[4]) ), -2 );
-          sum += fSec * TMath::Gaus(x[0]-par[2]*1e6,xx,50000);
-        }
-
-        return par[0] * sum + par[1];
-    }
-*/
 
     // Function to define a TF1
     // Sum of npeaks Gaussian peaks on a linear background
@@ -453,7 +402,7 @@ namespace Katydid
             // Calculate the density associated to the current value of alpha
             for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
             {
-                density += Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, fProbeWidthBig );
+                density += Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, fProbeWidthSmall );
             }
             
             // Add point to the KTPowerFitData
@@ -464,83 +413,11 @@ namespace Katydid
             alpha += fStepSize;
         }
 
-        KTINFO(evlog, "Sucessfully gathered points for peak finding analysis.");
+        KTINFO(evlog, "Sucessfully gathered points for peak finding analysis");
 
         // Create histogram from the sweep results
         TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "hPowerMag" );
- /*       
-        TF1* conv = new TF1( "conv", fitf, 0, 1e9, 5 );
-        TF1* gaussian = new TF1( "gaussian", "gaus(0) + [3]", 0, 1e9);
-
-        conv->SetParameter( 0, 1 );
-        conv->SetParameter( 1, 40 );
-        conv->SetParameter( 2, 5 );
-        conv->SetParameter( 3, 0.5 );
-        conv->SetParameter( 4, 100e3 );
-
-        conv->SetParLimits( 0, 0, 100 );
-        conv->SetParLimits( 1, 0, 1000 );
-        conv->SetParLimits( 2, -10, 10 );
-        conv->SetParLimits( 3, 0, TMath::Pi() );
-        conv->SetParLimits( 4, 0, 10e6 );
-
-        conv->FixParameter( 3, 0 );
-
-        TFitResultPtr fitStatus = fitPoints->Fit( "conv", "S" );
-        
-        double a = conv->GetParameter( 0 );
-        double a_err = conv->GetParError( 0 );
-
-        double b = conv->GetParameter( 1 );
-        double b_err = conv->GetParError( 1 );
-
-        double z0 = conv->GetParameter( 2 );
-        double z0_err = conv->GetParError( 2 );
-
-        double k = conv->GetParameter( 3 );
-        double k_err = conv->GetParError( 3 );
-
-        double sigma = conv->GetParameter( 4 );
-        double sigma_err = conv->GetParError( 4 );
-
-        bool valid = fitStatus->IsValid();
-
-        KTINFO(evlog, "Completed fit! Validity = " << fitStatus->IsValid());
-
-        newData.SetScale( a );
-        newData.SetScaleErr( a_err );
-
-        newData.SetBackground( b );
-        newData.SetBackgroundErr( b_err );
-
-        newData.SetCenter( z0 );
-        newData.SetCenterErr( z0_err );
-
-        newData.SetCurvature( k );
-        newData.SetCurvatureErr( k_err );
-
-        newData.SetWidth( sigma );
-        newData.SetWidthErr( sigma_err );
-
-        if( valid )
-        {
-            newData.SetIsValid( 1 );
-        }
-        else
-        {
-            newData.SetIsValid( 0 );
-        }
-
-        if( data.GetStartFrequency() > 75e6 && data.GetStartFrequency() < 115e6 )
-        {
-            newData.SetMainPeak( 1 );
-        }
-        else
-        {
-            newData.SetMainPeak( 0 );
-        }
-*/
-
+ 
         // The peak finding analysis uses TSpectrum
         // It is adapted from an example script written by Rene Brun: https://root.cern.ch/root/html/tutorials/spectrum/peaks.C.html
         // The search tolerance and threshold are configurable parameters
