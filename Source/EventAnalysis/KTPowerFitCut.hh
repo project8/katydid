@@ -22,15 +22,22 @@ namespace Katydid
      @brief Keeps power fit results with specified fit parameters
 
      @details
-     KTPowerFitData objects must have a parameters `scale` and `width` which fall within the specified ranges to pass the cut
+     Supports cutting on validity, number of peaks, and first four moments
 
      Configuration name: "power-fit-cut"
 
      Available configuration values:
-     - "min-scale": double -- minimum scale to accept
-     - "max-scale": double -- maximum scale to accept
-     - "min-width": double -- minimum width to accept
-     - "max-width": double -- maximum width to accept
+     - "keep-valid": bool -- validity to accept
+     - "min-npeaks": int -- minimum number of peaks to accept
+     - "max-npeaks": int -- maximum number of peaks to accept
+     - "min-mean": double -- minimum mean to accept
+     - "max-mean": double -- maximum mean to accept
+     - "min-variance": double -- minimum variance to accept
+     - "max-variance": double -- maximum variance to accept
+     - "min-skewness": double -- minimum skewness to accept
+     - "max-skewness": double -- maximum skewness to accept
+     - "min-kurtosis": double -- minimum kurtosis to accept
+     - "max-kurtosis": double -- maximum kurtosis to accept
     */
 
     class KTPowerFitCut : public Nymph::KTCutOneArg< KTPowerFitData >
@@ -48,10 +55,17 @@ namespace Katydid
 
         bool Configure(const scarab::param_node* node);
 
-        MEMBERVARIABLE(double, MinScale);
-        MEMBERVARIABLE(double, MaxScale);
-        MEMBERVARIABLE(double, MinWidth);
-        MEMBERVARIABLE(double, MaxWidth);
+        MEMBERVARIABLE(bool, Validity);
+        MEMBERVARIABLE(int, MinNPeaks);
+        MEMBERVARIABLE(int, MaxNPeaks);
+        MEMBERVARIABLE(double, MinMean);
+        MEMBERVARIABLE(double, MaxMean);
+        MEMBERVARIABLE(double, MinVariance);
+        MEMBERVARIABLE(double, MaxVariance);
+        MEMBERVARIABLE(double, MinSkewness);
+        MEMBERVARIABLE(double, MaxSkewness);
+        MEMBERVARIABLE(double, MinKurtosis);
+        MEMBERVARIABLE(double, MaxKurtosis);
 
     public:
         bool Apply(Nymph::KTData& data, KTPowerFitData& fitData);

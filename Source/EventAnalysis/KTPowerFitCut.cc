@@ -20,10 +20,17 @@ namespace Katydid
 
     KTPowerFitCut::KTPowerFitCut(const std::string& name) :
          KTCutOneArg(name),
-         fMinScale(0.),
-         fMaxScale(1000.),
-         fMinWidth(0.),
-         fMaxWidth(10e6)
+         fValidity(true),
+         fMinNPeaks(0),
+         fMaxNPeaks(10),
+         fMinMean(-10e6),
+         fMaxMean(10e6),
+         fMinVariance(-1e14),
+         fMaxVariance(1e14),
+         fMinSkewness(-10e6),
+         fMaxSkewness(10e6),
+         fMinKurtosis(-10e6),
+         fMaxKurtosis(10e6)
     {}
 
     KTPowerFitCut::~KTPowerFitCut()
@@ -33,26 +40,51 @@ namespace Katydid
     {
         if (node == NULL) return true;
 
-        SetMinScale( node->get_value< double >( "min-scale", GetMinScale() ) );
-        SetMaxScale( node->get_value< double >( "max-scale", GetMaxScale() ) );
-        SetMinWidth( node->get_value< double >( "min-width", GetMinWidth() ) );
-        SetMaxWidth( node->get_value< double >( "max-width", GetMaxWidth() ) );
+        SetValidity( node->get_value< bool >( "keep-valid", GetValidity() ) );
+        SetMinNPeaks( node->get_value< int >( "min-npeaks", GetMinNPeaks() ) );
+        SetMaxNPeaks( node->get_value< int >( "max-npeaks", GetMaxNPeaks() ) );
+        SetMinMean( node->get_value< double >( "min-mean", GetMinMean() ) );
+        SetMaxMean( node->get_value< double >( "max-mean", GetMaxMean() ) );
+        SetMinVariance( node->get_value< double >( "min-variance", GetMinVariance() ) );
+        SetMaxVariance( node->get_value< double >( "max-variance", GetMaxVariance() ) );
+        SetMinSkewness( node->get_value< double >( "min-skewness", GetMinSkewness() ) );
+        SetMaxSkewness( node->get_value< double >( "max-skewness", GetMaxSkewness() ) );
+        SetMinKurtosis( node->get_value< double >( "min-kurtosis", GetMinKurtosis() ) );
+        SetMaxKurtosis( node->get_value< double >( "max-kurtosis", GetMaxKurtosis() ) );
 
         return true;
     }
 
     bool KTPowerFitCut::Apply( Nymph::KTData& data, KTPowerFitData& fitData )
     {
-        bool isCut = true;
-
-        if( fitData.GetScale() > GetMinScale() && fitData.GetScale() < GetMaxScale() && fitData.GetWidth() > GetMinWidth() && fitData.GetWidth() < GetMaxWidth() )
+        if( fitData.GetIsValid() != GetValidity() )
         {
-            isCut = false;
+            return false;
         }
 
-        data.GetCutStatus().AddCutResult< KTPowerFitCut::Result >(isCut);
+        if( fitData.GetNPeaks() < GetMinNPeaks() || fitData.GetNPeaks() > GetMaxNPeaks() )
+        {
+            return false;
+        }
 
-        return isCut;
+        if( fitData.GetAverage() < GetMinMean() || fitData.GetAverage() > GetMaxMean() )
+        {
+            return false;
+        }
+        if( fitData.GetVariance() < GetMinVariance() || fitData.GetVariance() > GetMaxVariance() )
+        {
+            return false;
+        }
+        if( fitData.GetSkewness() < GetMinSkewness() || fitData.GetSkewness() > GetMaxSkewness() )
+        {
+            return false;
+        }
+        if( fitData.GetKurtosis() < GetMinKurtosis() || fitData.GetKurtosis() > GetMaxKurtosis() )
+        {
+            return false;
+        }
+
+        return true;
     }
 
 } // namespace Katydid
