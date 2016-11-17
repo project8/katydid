@@ -648,22 +648,24 @@ namespace Katydid
             fPowerFitData.fCurvatureErr = pfData.GetCurvatureErr( fPowerFitData.fComponent );
             fPowerFitData.fWidthErr = pfData.GetWidthErr( fPowerFitData.fComponent );
 */
+            fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
+            fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
+            fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
+            fPowerFitData.fMaximum = pfData.GetMaximum( fPowerFitData.fComponent );
 
-            //for( int i = 0; i < pfData.GetNPeaks( fPowerFitData.fComponent ); ++i )
-            //{
-                fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
-                fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
-                fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
-                fPowerFitData.fMaximum = pfData.GetMaximum( fPowerFitData.fComponent );
-
-                fPowerFitData.fNormErr = pfData.GetNormErr( fPowerFitData.fComponent );
-                fPowerFitData.fMeanErr = pfData.GetMeanErr( fPowerFitData.fComponent );
-                fPowerFitData.fSigmaErr = pfData.GetSigmaErr( fPowerFitData.fComponent );
-                fPowerFitData.fMaximumErr = pfData.GetMaximumErr( fPowerFitData.fComponent );
-           // }
+            fPowerFitData.fNormErr = pfData.GetNormErr( fPowerFitData.fComponent );
+            fPowerFitData.fMeanErr = pfData.GetMeanErr( fPowerFitData.fComponent );
+            fPowerFitData.fSigmaErr = pfData.GetSigmaErr( fPowerFitData.fComponent );
+            fPowerFitData.fMaximumErr = pfData.GetMaximumErr( fPowerFitData.fComponent );
 
             fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
             fPowerFitData.fMainPeak = pfData.GetMainPeak( fPowerFitData.fComponent );
+            fPowerFitData.fNPeaks = pfData.GetNPeaks( fPowerFitData.fComponent );
+
+            fPowerFitData.fAverage = pfData.GetAverage( fPowerFitData.fComponent );
+            fPowerFitData.fVariance = pfData.GetVariance( fPowerFitData.fComponent );
+            fPowerFitData.fSkewness = pfData.GetSkewness( fPowerFitData.fComponent );
+            fPowerFitData.fKurtosis = pfData.GetKurtosis( fPowerFitData.fComponent );
 
             const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints( fPowerFitData.fComponent );
 
@@ -723,7 +725,7 @@ namespace Katydid
                 fPowerFitData.fMeanErr.push_back(0.);
                 fPowerFitData.fSigmaErr.push_back(0.);
                 fPowerFitData.fMaximumErr.push_back(0.);
-                
+
                 fPowerFitDataTree->SetBranchAddress( "Norm", &fPowerFitData.fNorm.at(0) );
                 fPowerFitDataTree->SetBranchAddress( "Mean", &fPowerFitData.fMean.at(0) );
                 fPowerFitDataTree->SetBranchAddress( "Sigma", &fPowerFitData.fSigma.at(0) );
@@ -736,8 +738,14 @@ namespace Katydid
 
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
+                fPowerFitDataTree->SetBranchAddress( "NPeaks", &fPowerFitData.fNPeaks );
 
                 fPowerFitDataTree->SetBranchAddress( "Points", &fPowerFitData.fPoints );
+
+                fPowerFitDataTree->SetBranchAddress( "Average", &fPowerFitData.fAverage );
+                fPowerFitDataTree->SetBranchAddress( "Variance", &fPowerFitData.fVariance );
+                fPowerFitDataTree->SetBranchAddress( "Skewness", &fPowerFitData.fSkewness );
+                fPowerFitDataTree->SetBranchAddress( "Kurtosis", &fPowerFitData.fKurtosis );
 
                 return true;
             }
@@ -788,8 +796,14 @@ namespace Katydid
 
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
+        fPowerFitDataTree->Branch( "NPeaks", &fPowerFitData.fNPeaks, "fNPeaks/i" );
 
         fPowerFitDataTree->Branch( "Points", &fPowerFitData.fPoints, 32000, 0 );
+
+        fPowerFitDataTree->Branch( "Average", &fPowerFitData.fAverage, "fAverage/d" );
+        fPowerFitDataTree->Branch( "Variance", &fPowerFitData.fVariance, "fVariance/d" );
+        fPowerFitDataTree->Branch( "Skewness", &fPowerFitData.fSkewness, "fSkewness/d" );
+        fPowerFitDataTree->Branch( "Kurtosis", &fPowerFitData.fKurtosis, "fKurtosis/d" );
 
         return true;
     }

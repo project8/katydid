@@ -131,8 +131,14 @@ namespace Katydid
         
         UInt_t fIsValid;
         UInt_t fMainPeak;
+        UInt_t fNPeaks;
 
         TGraph* fPoints;
+
+        Double_t fAverage; // fMean is already taken
+        Double_t fVariance;
+        Double_t fSkewness;
+        Double_t fKurtosis;
     };
 
 

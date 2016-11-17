@@ -47,6 +47,11 @@ namespace Katydid
                 int fMainPeak;
                 int fNPeaks;
                 SetOfPoints fPoints;
+
+                double fAverage;
+                double fVariance;
+                double fSkewness;
+                double fKurtosis;
             };
 
         public:
@@ -97,6 +102,18 @@ namespace Katydid
             const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
 
             void AddPoint(unsigned bin, const Point& point, unsigned component = 0);
+
+            double GetAverage( unsigned component = 0 ) const;
+            void SetAverage( double mu1, unsigned component = 0 );
+
+            double GetVariance( unsigned component = 0 ) const;
+            void SetVariance( double mu2, unsigned component = 0 );
+
+            double GetSkewness( unsigned component = 0 ) const;
+            void SetSkewness( double mu3, unsigned component = 0 );
+
+            double GetKurtosis( unsigned component = 0 ) const;
+            void SetKurtosis( double mu4, unsigned component = 0 );
 
         private:
             std::vector< PerComponentData > fComponentData;
@@ -249,6 +266,50 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fPoints.insert(std::make_pair(bin, point));
+    }
+
+    inline double KTPowerFitData::GetAverage(unsigned component) const
+    {
+        return fComponentData[component].fAverage;
+    }
+
+    inline void KTPowerFitData::SetAverage(double mu1, unsigned component)
+    {
+        fComponentData[component].fAverage = mu1;
+        return;
+    }
+
+    inline double KTPowerFitData::GetVariance(unsigned component) const
+    {
+        return fComponentData[component].fVariance;
+    }
+
+    inline void KTPowerFitData::SetVariance(double mu2, unsigned component)
+    {
+        fComponentData[component].fVariance = mu2;
+        return;
+    }
+
+    inline double KTPowerFitData::GetSkewness(unsigned component) const
+    {
+        return fComponentData[component].fSkewness;
+    }
+
+    inline void KTPowerFitData::SetSkewness(double mu3, unsigned component)
+    {
+        fComponentData[component].fSkewness = mu3;
+        return;
+    }
+
+    inline double KTPowerFitData::GetKurtosis(unsigned component) const
+    {
+        return fComponentData[component].fKurtosis;
+    }
+
+    inline void KTPowerFitData::SetKurtosis(double mu4, unsigned component)
+    {
+        fComponentData[component].fKurtosis = mu4;
+        return;
     }
 
 } /* namespace Katydid */
