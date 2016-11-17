@@ -151,12 +151,6 @@ namespace Katydid
 
     bool KTSpectrogramCollector::ReceiveTrack( KTProcessedTrackData& data )
     {
-        if( data.GetIsCut() )
-        {
-            KTINFO(evlog, "Processed track failed cuts, skipping it");
-            return true;
-        }
-
         unsigned iComponent = data.GetComponent();
 
         // Increase size of fWaterfallSets if necessary
