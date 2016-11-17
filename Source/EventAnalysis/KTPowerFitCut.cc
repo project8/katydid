@@ -25,8 +25,8 @@ namespace Katydid
          fMaxNPeaks(10),
          fMinMean(-10e6),
          fMaxMean(10e6),
-         fMinVariance(-1e14),
-         fMaxVariance(1e14),
+         fMinRMS(-10e6),
+         fMaxRMS(10e6),
          fMinSkewness(-10e6),
          fMaxSkewness(10e6),
          fMinKurtosis(-10e6),
@@ -45,8 +45,8 @@ namespace Katydid
         SetMaxNPeaks( node->get_value< int >( "max-npeaks", GetMaxNPeaks() ) );
         SetMinMean( node->get_value< double >( "min-mean", GetMinMean() ) );
         SetMaxMean( node->get_value< double >( "max-mean", GetMaxMean() ) );
-        SetMinVariance( node->get_value< double >( "min-variance", GetMinVariance() ) );
-        SetMaxVariance( node->get_value< double >( "max-variance", GetMaxVariance() ) );
+        SetMinRMS( node->get_value< double >( "min-rms", GetMinRMS() ) );
+        SetMaxRMS( node->get_value< double >( "max-rms", GetMaxRMS() ) );
         SetMinSkewness( node->get_value< double >( "min-skewness", GetMinSkewness() ) );
         SetMaxSkewness( node->get_value< double >( "max-skewness", GetMaxSkewness() ) );
         SetMinKurtosis( node->get_value< double >( "min-kurtosis", GetMinKurtosis() ) );
@@ -71,7 +71,7 @@ namespace Katydid
         {
             return false;
         }
-        if( fitData.GetVariance() < GetMinVariance() || fitData.GetVariance() > GetMaxVariance() )
+        if( fitData.GetRMS() < GetMinRMS() || fitData.GetRMS() > GetMaxRMS() )
         {
             return false;
         }

@@ -136,7 +136,7 @@ namespace Katydid
         TGraph* fPoints;
 
         Double_t fAverage; // fMean is already taken
-        Double_t fVariance;
+        Double_t fRMS;
         Double_t fSkewness;
         Double_t fKurtosis;
     };

@@ -32,8 +32,8 @@ namespace Katydid
      - "max-npeaks": int -- maximum number of peaks to accept
      - "min-mean": double -- minimum mean to accept
      - "max-mean": double -- maximum mean to accept
-     - "min-variance": double -- minimum variance to accept
-     - "max-variance": double -- maximum variance to accept
+     - "min-rms": double -- minimum rms to accept
+     - "max-rms": double -- maximum rms to accept
      - "min-skewness": double -- minimum skewness to accept
      - "max-skewness": double -- maximum skewness to accept
      - "min-kurtosis": double -- minimum kurtosis to accept
@@ -60,8 +60,8 @@ namespace Katydid
         MEMBERVARIABLE(int, MaxNPeaks);
         MEMBERVARIABLE(double, MinMean);
         MEMBERVARIABLE(double, MaxMean);
-        MEMBERVARIABLE(double, MinVariance);
-        MEMBERVARIABLE(double, MaxVariance);
+        MEMBERVARIABLE(double, MinRMS);
+        MEMBERVARIABLE(double, MaxRMS);
         MEMBERVARIABLE(double, MinSkewness);
         MEMBERVARIABLE(double, MaxSkewness);
         MEMBERVARIABLE(double, MinKurtosis);

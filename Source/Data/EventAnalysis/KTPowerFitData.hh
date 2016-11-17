@@ -49,7 +49,7 @@ namespace Katydid
                 SetOfPoints fPoints;
 
                 double fAverage;
-                double fVariance;
+                double fRMS;
                 double fSkewness;
                 double fKurtosis;
             };
@@ -106,8 +106,8 @@ namespace Katydid
             double GetAverage( unsigned component = 0 ) const;
             void SetAverage( double mu1, unsigned component = 0 );
 
-            double GetVariance( unsigned component = 0 ) const;
-            void SetVariance( double mu2, unsigned component = 0 );
+            double GetRMS( unsigned component = 0 ) const;
+            void SetRMS( double mu2, unsigned component = 0 );
 
             double GetSkewness( unsigned component = 0 ) const;
             void SetSkewness( double mu3, unsigned component = 0 );
@@ -279,14 +279,14 @@ namespace Katydid
         return;
     }
 
-    inline double KTPowerFitData::GetVariance(unsigned component) const
+    inline double KTPowerFitData::GetRMS(unsigned component) const
     {
-        return fComponentData[component].fVariance;
+        return fComponentData[component].fRMS;
     }
 
-    inline void KTPowerFitData::SetVariance(double mu2, unsigned component)
+    inline void KTPowerFitData::SetRMS(double mu2, unsigned component)
     {
-        fComponentData[component].fVariance = mu2;
+        fComponentData[component].fRMS = mu2;
         return;
     }
 

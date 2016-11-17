@@ -552,7 +552,7 @@ namespace Katydid
         }
 
         // For post-analysis purposes I've included a frequency cut to identify main peaks and sidebands
-        // This **SHOULD NOT** be used as a meaningful analysis result
+        // This **SHOULD NOT** be used as a meaningful analysis result!!
         // It is also specific to a particular data set, so if you're not me you probably shouldn't use it at all
 
         if( data.GetStartFrequency() > 75e6 && data.GetStartFrequency() < 115e6 )
@@ -566,6 +566,12 @@ namespace Katydid
 
         // npeaks
         newData.SetNPeaks( npeaks );
+
+        // Calculate first four moments from TH1 directly
+        newData.SetAverage( fitPoints->GetMean() );
+        newData.SetRMS( fitPoints->GetRMS() );
+        newData.SetSkewness( fitPoints->GetSkewness() );
+        newData.SetKurtosis( fitPoints->GetKurtosis() );
 
         return true;
     }

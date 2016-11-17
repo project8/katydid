@@ -663,7 +663,7 @@ namespace Katydid
             fPowerFitData.fNPeaks = pfData.GetNPeaks( fPowerFitData.fComponent );
 
             fPowerFitData.fAverage = pfData.GetAverage( fPowerFitData.fComponent );
-            fPowerFitData.fVariance = pfData.GetVariance( fPowerFitData.fComponent );
+            fPowerFitData.fRMS = pfData.GetRMS( fPowerFitData.fComponent );
             fPowerFitData.fSkewness = pfData.GetSkewness( fPowerFitData.fComponent );
             fPowerFitData.fKurtosis = pfData.GetKurtosis( fPowerFitData.fComponent );
 
@@ -743,7 +743,7 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "Points", &fPowerFitData.fPoints );
 
                 fPowerFitDataTree->SetBranchAddress( "Average", &fPowerFitData.fAverage );
-                fPowerFitDataTree->SetBranchAddress( "Variance", &fPowerFitData.fVariance );
+                fPowerFitDataTree->SetBranchAddress( "RMS", &fPowerFitData.fRMS );
                 fPowerFitDataTree->SetBranchAddress( "Skewness", &fPowerFitData.fSkewness );
                 fPowerFitDataTree->SetBranchAddress( "Kurtosis", &fPowerFitData.fKurtosis );
 
@@ -801,7 +801,7 @@ namespace Katydid
         fPowerFitDataTree->Branch( "Points", &fPowerFitData.fPoints, 32000, 0 );
 
         fPowerFitDataTree->Branch( "Average", &fPowerFitData.fAverage, "fAverage/d" );
-        fPowerFitDataTree->Branch( "Variance", &fPowerFitData.fVariance, "fVariance/d" );
+        fPowerFitDataTree->Branch( "RMS", &fPowerFitData.fRMS, "fRMS/d" );
         fPowerFitDataTree->Branch( "Skewness", &fPowerFitData.fSkewness, "fSkewness/d" );
         fPowerFitDataTree->Branch( "Kurtosis", &fPowerFitData.fKurtosis, "fKurtosis/d" );
 
