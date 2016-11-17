@@ -635,19 +635,7 @@ namespace Katydid
         }
 
         for (fPowerFitData.fComponent = 0; fPowerFitData.fComponent < pfData.GetNComponents(); fPowerFitData.fComponent++)
-        { /*
-            fPowerFitData.fScale = pfData.GetScale( fPowerFitData.fComponent );
-            fPowerFitData.fBackground = pfData.GetBackground( fPowerFitData.fComponent );
-            fPowerFitData.fCenter = pfData.GetCenter( fPowerFitData.fComponent );
-            fPowerFitData.fCurvature = pfData.GetCurvature( fPowerFitData.fComponent );
-            fPowerFitData.fWidth = pfData.GetWidth( fPowerFitData.fComponent );
-
-            fPowerFitData.fScaleErr = pfData.GetScaleErr( fPowerFitData.fComponent );
-            fPowerFitData.fBackgroundErr = pfData.GetBackgroundErr( fPowerFitData.fComponent );
-            fPowerFitData.fCenterErr = pfData.GetCenterErr( fPowerFitData.fComponent );
-            fPowerFitData.fCurvatureErr = pfData.GetCurvatureErr( fPowerFitData.fComponent );
-            fPowerFitData.fWidthErr = pfData.GetWidthErr( fPowerFitData.fComponent );
-*/
+        {
             fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
             fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
             fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
@@ -702,19 +690,6 @@ namespace Katydid
                 fWriter->AddTree( fPowerFitDataTree );
 
                 fPowerFitDataTree->SetBranchAddress( "Component", &fPowerFitData.fComponent );
-/*
-                fPowerFitDataTree->SetBranchAddress( "Scale", &fPowerFitData.fScale );
-                fPowerFitDataTree->SetBranchAddress( "Background", &fPowerFitData.fBackground );
-                fPowerFitDataTree->SetBranchAddress( "Center", &fPowerFitData.fCenter );
-                fPowerFitDataTree->SetBranchAddress( "Curvature", &fPowerFitData.fCurvature );
-                fPowerFitDataTree->SetBranchAddress( "Width", &fPowerFitData.fWidth );
-
-                fPowerFitDataTree->SetBranchAddress( "ScaleErr", &fPowerFitData.fScaleErr );
-                fPowerFitDataTree->SetBranchAddress( "BackgroundErr", &fPowerFitData.fBackgroundErr );
-                fPowerFitDataTree->SetBranchAddress( "CenterErr", &fPowerFitData.fCenterErr );
-                fPowerFitDataTree->SetBranchAddress( "CurvatureErr", &fPowerFitData.fCurvatureErr );
-                fPowerFitDataTree->SetBranchAddress( "WidthErr", &fPowerFitData.fWidthErr );
-*/
 
                 fPowerFitData.fNorm.push_back(0.);
                 fPowerFitData.fMean.push_back(0.);
@@ -760,19 +735,6 @@ namespace Katydid
         fWriter->AddTree( fPowerFitDataTree );
 
         fPowerFitDataTree->Branch( "Component", &fPowerFitData.fComponent, "fComponent/i" );
-/*
-        fPowerFitDataTree->Branch( "Scale", &fPowerFitData.fScale, "fScale/d" );
-        fPowerFitDataTree->Branch( "Background", &fPowerFitData.fBackground, "fBackground/d" );
-        fPowerFitDataTree->Branch( "Center", &fPowerFitData.fCenter, "fCenter/d" );
-        fPowerFitDataTree->Branch( "Curvature", &fPowerFitData.fCurvature, "fCurvature/d" );
-        fPowerFitDataTree->Branch( "Width", &fPowerFitData.fWidth, "fWidth/d" );
-
-        fPowerFitDataTree->Branch( "ScaleErr", &fPowerFitData.fScaleErr, "fScaleErr/d" );
-        fPowerFitDataTree->Branch( "BackgroundErr", &fPowerFitData.fBackgroundErr, "fBackgroundErr/d" );
-        fPowerFitDataTree->Branch( "CenterErr", &fPowerFitData.fCenterErr, "fCenterErr/d" );
-        fPowerFitDataTree->Branch( "CurvatureErr", &fPowerFitData.fCurvatureErr, "fCurvatureErr/d" );
-        fPowerFitDataTree->Branch( "WidthErr", &fPowerFitData.fWidthErr, "fWidthErr/d" );
-*/
 
         fPowerFitData.fNorm.push_back(0.);
         fPowerFitData.fMean.push_back(0.);
