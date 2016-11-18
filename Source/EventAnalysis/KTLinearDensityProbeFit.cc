@@ -422,7 +422,7 @@ namespace Katydid
         // It is adapted from an example script written by Rene Brun: https://root.cern.ch/root/html/tutorials/spectrum/peaks.C.html
         // The search tolerance and threshold are configurable parameters
 
-        TSpectrum *s = new TSpectrum::TSpectrum( 10 ); // Maximum number of peaks = 10
+        TSpectrum *s = new TSpectrum( 10 ); // Maximum number of peaks = 10
         Int_t nfound = s->Search( fitPoints, fTolerance, "", fThreshold );
 
         KTINFO(evlog, "Found " << nfound << " candidate peaks to fit");
