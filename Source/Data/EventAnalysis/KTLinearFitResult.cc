@@ -45,12 +45,11 @@ namespace Katydid
             out << "Linear Fit Result Contents:\n" <<
                 "\tSlope: " << hdr.GetSlope(iComponent) << '\n' <<
                 "\tIntercept: " << hdr.GetIntercept(iComponent) << '\n' <<
-                "\tIntercept deviation: " << hdr.GetIntercept_deviation(iComponent) << '\n' <<
-                "\tFirst local min deviation (sigma): " << hdr.GetFineProbe_sigma_1(iComponent) << '\n' <<
+                /*"\tFirst local min deviation (sigma): " << hdr.GetFineProbe_sigma_1(iComponent) << '\n' <<
                 "\tSecond local min deviation (sigma): " << hdr.GetFineProbe_sigma_2(iComponent) << '\n' <<
                 "\tFirst local min deviation (SNR): " << hdr.GetFineProbe_SNR_1(iComponent) << '\n' <<
                 "\tSecond local min deviation (SNR): " << hdr.GetFineProbe_SNR_2(iComponent) << '\n' <<
-                /*"\tMagnetron peak: " << hdr.GetFFT_peak(iComponent) << '\n' <<
+                "\tMagnetron peak: " << hdr.GetFFT_peak(iComponent) << '\n' <<
                 "\tMagnetron peak uncertainty: " << hdr.GetFFT_peak_uncertainty(iComponent) << '\n' <<
                 "\tMagnetron peak significance (sigma): " << hdr.GetFFT_sigma(iComponent) << '\n' <<
                 "\tMagnetron peak significance (SNR): " << hdr.GetFFT_SNR(iComponent) << '\n' <<

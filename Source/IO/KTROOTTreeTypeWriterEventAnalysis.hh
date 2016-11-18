@@ -85,16 +85,14 @@ namespace Katydid
     {
         UInt_t fComponent;
         Double_t fSlope;
-        Double_t fSlopeSigma;
         Double_t fIntercept;
-        Double_t fIntercept_deviation;
         Double_t fStartingFrequency;
         Double_t fTrackDuration;
         Double_t fSidebandSeparation;
-        Double_t fFineProbe_sigma_1;
-        Double_t fFineProbe_sigma_2;
-        Double_t fFineProbe_SNR_1;
-        Double_t fFineProbe_SNR_2;
+        //Double_t fFineProbe_sigma_1;
+        //Double_t fFineProbe_sigma_2;
+        //Double_t fFineProbe_SNR_1;
+        //Double_t fFineProbe_SNR_2;
         Double_t fFFT_peak;
         Double_t fFFT_SNR;
         Double_t fFit_width;

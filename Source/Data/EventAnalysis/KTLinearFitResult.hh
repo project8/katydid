@@ -34,14 +34,8 @@ namespace Katydid
             double GetSlope(unsigned component = 0) const;
             void SetSlope(double slope, unsigned component = 0);
 
-            double GetSlopeSigma(unsigned component = 0) const;
-            void SetSlopeSigma(double sigma, unsigned component = 0);
-
             double GetIntercept(unsigned component = 0) const;
             void SetIntercept(double intercept, unsigned component = 0);
-
-            double GetIntercept_deviation(unsigned component = 0) const;
-            void SetIntercept_deviation(double dev, unsigned component = 0);
 
             double GetStartingFrequency(unsigned component = 0) const;
             void SetStartingFrequency(double freq, unsigned component = 0);
@@ -67,12 +61,6 @@ namespace Katydid
             double GetFFT_peak(unsigned component = 0) const;
             void SetFFT_peak(double amp, unsigned component = 0);
 
-            double GetFFT_peak_uncertainty(unsigned component = 0) const;
-            void SetFFT_peak_uncertainty(double sigma, unsigned component = 0);
-
-            double GetFFT_sigma(unsigned component = 0) const;
-            void SetFFT_sigma(double sigma, unsigned component = 0);
-
             double GetFFT_SNR(unsigned component = 0) const;
             void SetFFT_SNR(double snr, unsigned component = 0);
 
@@ -89,9 +77,7 @@ namespace Katydid
             struct PerComponentData
             {
                 double fSlope;
-                double fSlopeSigma;
                 double fIntercept;
-                double fIntercept_deviation;
                 double fStartingFrequency;
                 double fTrackDuration;
                 double fSidebandSeparation;
@@ -100,8 +86,6 @@ namespace Katydid
                 double fFineProbe_SNR_1;
                 double fFineProbe_SNR_2;
                 double fFFT_peak;
-                double fFFT_peak_uncertainty;
-                double fFFT_sigma;
                 double fFFT_SNR;
                 double fFit_width;
                 uint64_t fNPoints;
@@ -139,18 +123,6 @@ namespace Katydid
         return;
     }
 
-    inline double KTLinearFitResult::GetSlopeSigma(unsigned component) const
-    {
-        return fComponentData[component].fSlopeSigma;
-    }
-
-    inline void KTLinearFitResult::SetSlopeSigma(double sigma, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fSlopeSigma = sigma;
-        return;
-    }
-
     inline double KTLinearFitResult::GetIntercept(unsigned component) const
     {
         return fComponentData[component].fIntercept;
@@ -160,18 +132,6 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fIntercept = intercept;
-        return;
-    }
-
-    inline double KTLinearFitResult::GetIntercept_deviation(unsigned component) const
-    {
-        return fComponentData[component].fIntercept_deviation;
-    }
-
-    inline void KTLinearFitResult::SetIntercept_deviation(double dev, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fIntercept_deviation = dev;
         return;
     }
 
@@ -268,30 +228,6 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fFFT_peak = freq;
-        return;
-    }
-
-    inline double KTLinearFitResult::GetFFT_peak_uncertainty(unsigned component) const
-    {
-        return fComponentData[component].fFFT_peak_uncertainty;
-    }
-
-    inline void KTLinearFitResult::SetFFT_peak_uncertainty(double sigma, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFFT_peak_uncertainty = sigma;
-        return;
-    }
-
-    inline double KTLinearFitResult::GetFFT_sigma(unsigned component) const
-    {
-        return fComponentData[component].fFFT_sigma;
-    }
-
-    inline void KTLinearFitResult::SetFFT_sigma(double sigma, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFFT_sigma = sigma;
         return;
     }
 

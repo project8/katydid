@@ -96,11 +96,9 @@ namespace Katydid
         toTerm << "Printing Linear Fit Result Info" << '\n';
 
         toTerm << "Slope: "                     << fitData.GetSlope(0)                  << '\n';
-//        toTerm << "SlopeSigma: "                << fitData.GetSlopeSigma(0)             << '\n';
         toTerm << "Sideband Intercept: "        << fitData.GetIntercept(0)              << '\n';
         toTerm << "Signal Intercept: "          << fitData.GetIntercept(1)              << '\n';
-//        toTerm << "Intercept_deviation: "       << fitData.GetIntercept_deviation(0)    << '\n';
-//        toTerm << "StartingFrequency: "         << fitData.GetStartingFrequency(0)      << '\n';
+        toTerm << "StartingFrequency: "         << fitData.GetStartingFrequency(0)      << '\n';
         toTerm << "TrackDuration: "             << fitData.GetTrackDuration(0)          << '\n';
         toTerm << "SidebandSeparation: "        << fitData.GetSidebandSeparation(0)     << '\n';
 //        toTerm << "FineProbe_sigma_1: "         << fitData.GetFineProbe_sigma_1(0)      << '\n';
@@ -108,12 +106,11 @@ namespace Katydid
 //        toTerm << "FineProbe_SNR_1: "           << fitData.GetFineProbe_SNR_1(0)        << '\n';
 //        toTerm << "FineProbe_SNR_2: "           << fitData.GetFineProbe_SNR_2(0)        << '\n';
         toTerm << "FFT_peak: "                  << fitData.GetFFT_peak(0)               << '\n';
-//        toTerm << "FFT_peak_uncertainty: "      << fitData.GetFFT_peak_uncertainty(0)   << '\n';
-//        toTerm << "FFT_sigma: "                 << fitData.GetFFT_sigma(0)              << '\n';
         toTerm << "FFT_SNR: "                   << fitData.GetFFT_SNR(0)                << '\n';
         toTerm << "Fit_width: "                 << fitData.GetFit_width(0)              << '\n';
-//        toTerm << "NPoints: "                   << fitData.GetNPoints(0)                << '\n';
-//        toTerm << "ProbeWidth: "                << fitData.GetProbeWidth(0)             << '\n';
+        toTerm << "NPoints: "                   << fitData.GetNPoints(0)                << '\n';
+        toTerm << "CoarseProbeWidth: "          << fitData.GetProbeWidth(0)             << '\n';
+        toTerm << "FineProbeWidth: "            << fitData.GetProbeWidth(1)             << '\n';
 
         KTPROG(termlog, toTerm.str());
 

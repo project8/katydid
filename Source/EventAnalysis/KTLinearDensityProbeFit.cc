@@ -235,9 +235,21 @@ namespace Katydid
         newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 0 );
         newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 1 );
 
+        // Calculate number of points
+        int nPts = 0;
+        for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+        {
+            nPts++;
+        }
+        newData.SetNPoints( nPts, 0 );
+        newData.SetNPoints( nPts, 1 );
+
         // Perform the brute-force intercept sweeps
         PerformTest( pts, newData, fProbeWidthBig, fStepSize, 0 );
         PerformTest( pts, newData, fProbeWidthSmall, fStepSize, 1 );
+
+        newData.SetProbeWidth( fProbeWidthBig, 0 );
+        newData.SetProbeWidth( fProbeWidthSmall, 1 );
 
         double intercept1 = newData.GetIntercept( 0 );
         double intercept2 = newData.GetIntercept( 1 );
@@ -245,9 +257,12 @@ namespace Katydid
         KTDEBUG(evlog, "Signal candidate intercept = " << intercept2 );
         KTDEBUG(evlog, "Sideband candidate intercept = " << intercept1 );
 
-        // Update the result with the separation between intercepts
+        // Update the result with start frequencies and the separation between intercepts
         newData.SetSidebandSeparation( intercept1 - intercept2, 0 );
         newData.SetSidebandSeparation( intercept1 - intercept2, 1 );
+
+        newData.SetStartingFrequency( data.GetStartFrequency() - data.GetIntercept() + intercept1, 0 );
+        newData.SetStartingFrequency( data.GetStartFrequency() - data.GetIntercept() + intercept2, 1 );
 
         KTINFO(evlog, "Found best-fit intercepts. Continuing with fourier analysis of sideband candidate");
 

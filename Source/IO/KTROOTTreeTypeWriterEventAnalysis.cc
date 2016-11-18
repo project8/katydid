@@ -530,16 +530,14 @@ namespace Katydid
         for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
         {
             fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fComponent );
-            fLineFitData.fSlopeSigma = lfData.GetSlopeSigma( fLineFitData.fComponent );
             fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fComponent );
-            fLineFitData.fIntercept_deviation = lfData.GetIntercept_deviation( fLineFitData.fComponent );
             fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fComponent );
             fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fComponent );
             fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fComponent );
-            fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
-            fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
-            fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
-            fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fComponent );
             fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fComponent );
             fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fComponent );
             fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fComponent );
@@ -565,16 +563,14 @@ namespace Katydid
 
                 fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
                 fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
-                fLinearFitResultTree->SetBranchAddress( "SlopeSigma", &fLineFitData.fSlopeSigma );
                 fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
-                fLinearFitResultTree->SetBranchAddress( "InterceptDev", &fLineFitData.fIntercept_deviation );
                 fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
                 fLinearFitResultTree->SetBranchAddress( "TrackDuration", &fLineFitData.fTrackDuration );
                 fLinearFitResultTree->SetBranchAddress( "SidebandSeparation", &fLineFitData.fSidebandSeparation );
-                fLinearFitResultTree->SetBranchAddress( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1 );
-                fLinearFitResultTree->SetBranchAddress( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2 );
-                fLinearFitResultTree->SetBranchAddress( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1 );
-                fLinearFitResultTree->SetBranchAddress( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2 );
+                //fLinearFitResultTree->SetBranchAddress( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1 );
+                //fLinearFitResultTree->SetBranchAddress( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2 );
+                //fLinearFitResultTree->SetBranchAddress( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1 );
+                //fLinearFitResultTree->SetBranchAddress( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2 );
                 fLinearFitResultTree->SetBranchAddress( "FFT_peak", &fLineFitData.fFFT_peak );
                 fLinearFitResultTree->SetBranchAddress( "FFT_SNR", &fLineFitData.fFFT_SNR );
                 fLinearFitResultTree->SetBranchAddress( "WindowBandwidth", &fLineFitData.fFit_width );
@@ -595,16 +591,14 @@ namespace Katydid
 
         fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
         fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
-        fLinearFitResultTree->Branch( "SlopeSigma", &fLineFitData.fSlopeSigma, "fSlopeSigma/d" );
         fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
-        fLinearFitResultTree->Branch( "InterceptDev", &fLineFitData.fIntercept_deviation, "fIntercept_deviation/d" );
         fLinearFitResultTree->Branch( "StartingFrequency", &fLineFitData.fStartingFrequency, "fStartingFrequency/d" );
         fLinearFitResultTree->Branch( "TrackDuration", &fLineFitData.fTrackDuration, "fTrackDuration/d" );
         fLinearFitResultTree->Branch( "SidebandSeparation", &fLineFitData.fSidebandSeparation, "fSidebandSeparation/d" );
-        fLinearFitResultTree->Branch( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1, "fFineProbe_sigma_1/d" );
-        fLinearFitResultTree->Branch( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2, "fFineProbe_sigma_2/d" );
-        fLinearFitResultTree->Branch( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1, "fFineProbe_SNR_1/d" );
-        fLinearFitResultTree->Branch( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2, "fFineProbe_SNR_2/d" );
+        //fLinearFitResultTree->Branch( "Significance1_sigma", &fLineFitData.fFineProbe_sigma_1, "fFineProbe_sigma_1/d" );
+        //fLinearFitResultTree->Branch( "Significance2_sigma", &fLineFitData.fFineProbe_sigma_2, "fFineProbe_sigma_2/d" );
+        //fLinearFitResultTree->Branch( "Significance1_SNR", &fLineFitData.fFineProbe_SNR_1, "fFineProbe_SNR_1/d" );
+        //fLinearFitResultTree->Branch( "Significance2_SNR", &fLineFitData.fFineProbe_SNR_2, "fFineProbe_SNR_2/d" );
         fLinearFitResultTree->Branch( "FFT_peak", &fLineFitData.fFFT_peak, "fFFT_peak/d" );
         fLinearFitResultTree->Branch( "FFT_SNR", &fLineFitData.fFFT_SNR, "fFFT_SNR/d" );
         fLinearFitResultTree->Branch( "WindowBandwidth", &fLineFitData.fFit_width, "fFit_width/d" );
