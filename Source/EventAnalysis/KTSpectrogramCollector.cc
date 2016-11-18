@@ -17,6 +17,7 @@
 #include "KTData.hh"
 
 #include <set>
+#include <algorithm>
 
 namespace Katydid
 {
@@ -95,8 +96,8 @@ namespace Katydid
         // Configure PSCollectionData frequency bounds
         if( GetUseTrackFreqs() )
         {
-            newWaterfall->SetMinFreq( trackData.GetStartFrequency() - GetLeadFreq() );
-            newWaterfall->SetMaxFreq( trackData.GetEndFrequency() + GetTrailFreq() );
+            newWaterfall->SetMinFreq( std::max( trackData.GetStartFrequency() - GetLeadFreq(), GetMinFrequency() ) );
+            newWaterfall->SetMaxFreq( std::min( trackData.GetEndFrequency() + GetTrailFreq(), GetMaxFrequency() ) );
         }
         else
         {
