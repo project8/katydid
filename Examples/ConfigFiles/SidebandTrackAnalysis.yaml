@@ -286,21 +286,21 @@ cuts:
     track-cut:
 
 rootw1:
-    output-file: "WaterfallData/Sidebands_Out/all-tracks.root"
+    output-file: "all-tracks.root"
     file-flag: update
     accumulate: true
 
 rootw2:
-    output-file: "WaterfallData/Sidebands_Out/uncut-tracks.root"
+    output-file: "uncut-tracks.root"
     file-flag: update
     accumulate: true
 
 rootw3:
-    output-file: "WaterfallData/Sidebands_Out/density-fit.root"
+    output-file: "density-fit.root"
     file-flag: update
     accumulate: true
 
 rootw4:
-    output-file: "WaterfallData/Sidebands_Out/power-fit.root"
+    output-file: "power-fit.root"
     file-flag: update
     accumulate: true
