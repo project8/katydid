@@ -377,10 +377,10 @@ namespace Katydid
         procTrack.SetStartFrequency(*std::min_element(TimeBinInRunC.begin(), TimeBinInRunC.end()) * Slope + Intercept);
         procTrack.SetEndFrequency(*std::max_element(TimeBinInRunC.begin(), TimeBinInRunC.end()) * Slope + Intercept);
         procTrack.SetFrequencyWidth((*std::max_element(TimeBinInRunC.begin(), TimeBinInRunC.end())-*std::min_element(TimeBinInRunC.begin(), TimeBinInRunC.end()))*Slope);
-        // if (Slope < fSlopeMinimum || TimeBinInAcq.size() < fProcTrackMinPoints)
-        // {
-        //     procTrack.SetIsCut(true);
-        // }
+        if (Slope < fSlopeMinimum || TimeBinInAcq.size() < fProcTrackMinPoints)
+        {
+            procTrack.SetIsCut(true);
+        }
         procTrack.SetSlope(Slope);
         procTrack.SetIntercept(Intercept);
         procTrack.SetTotalPower(AmplitudeSum);
