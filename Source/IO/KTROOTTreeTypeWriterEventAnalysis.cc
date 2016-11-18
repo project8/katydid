@@ -612,6 +612,16 @@ namespace Katydid
     // Power Fit Data
     //**************************
 
+    std::vector<double> * pNorm;
+    std::vector<double> * pMean;
+    std::vector<double> * pSigma;
+    std::vector<double> * pMaximum;
+    
+    std::vector<double> * pNormErr;
+    std::vector<double> * pMeanErr;
+    std::vector<double> * pSigmaErr;
+    std::vector<double> * pMaximumErr;
+
     void KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to power fit data root tree");
@@ -695,15 +705,25 @@ namespace Katydid
                 fPowerFitData.fSigmaErr.push_back(0.);
                 fPowerFitData.fMaximumErr.push_back(0.);
 
-                fPowerFitDataTree->SetBranchAddress( "Norm", &fPowerFitData.fNorm.at(0) );
-                fPowerFitDataTree->SetBranchAddress( "Mean", &fPowerFitData.fMean.at(0) );
-                fPowerFitDataTree->SetBranchAddress( "Sigma", &fPowerFitData.fSigma.at(0) );
-                fPowerFitDataTree->SetBranchAddress( "Maximum", &fPowerFitData.fMaximum.at(0) );
+                pNorm = &fPowerFitData.fNorm;
+                pMean = &fPowerFitData.fMean;
+                pSigma = &fPowerFitData.fSigma;
+                pMaximum = &fPowerFitData.fMaximum;
+                
+                pNormErr = &fPowerFitData.fNormErr;
+                pMeanErr = &fPowerFitData.fMeanErr;
+                pSigmaErr = &fPowerFitData.fSigmaErr;
+                pMaximumErr = &fPowerFitData.fMaximumErr;
 
-                fPowerFitDataTree->SetBranchAddress( "NormErr", &fPowerFitData.fNormErr.at(0) );
-                fPowerFitDataTree->SetBranchAddress( "MeanErr", &fPowerFitData.fMeanErr.at(0) );
-                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &fPowerFitData.fSigmaErr.at(0) );
-                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &fPowerFitData.fMaximumErr.at(0) );
+                fPowerFitDataTree->SetBranchAddress( "Norm", &pNorm );
+                fPowerFitDataTree->SetBranchAddress( "Mean", &pMean );
+                fPowerFitDataTree->SetBranchAddress( "Sigma", &pSigma );
+                fPowerFitDataTree->SetBranchAddress( "Maximum", &pMaximum );
+
+                fPowerFitDataTree->SetBranchAddress( "NormErr", &pNormErr );
+                fPowerFitDataTree->SetBranchAddress( "MeanErr", &pMeanErr );
+                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &pSigmaErr );
+                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &pMaximumErr);
 
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
@@ -740,16 +760,26 @@ namespace Katydid
         fPowerFitData.fSigmaErr.push_back(0.);
         fPowerFitData.fMaximumErr.push_back(0.);
 
-        fPowerFitDataTree->Branch( "Norm", &fPowerFitData.fNorm.at(0) );
-        fPowerFitDataTree->Branch( "Mean", &fPowerFitData.fMean.at(0) );
-        fPowerFitDataTree->Branch( "Sigma", &fPowerFitData.fSigma.at(0) );
-        fPowerFitDataTree->Branch( "Maximum", &fPowerFitData.fMaximum.at(0) );
+        pNorm = &fPowerFitData.fNorm;
+        pMean = &fPowerFitData.fMean;
+        pSigma = &fPowerFitData.fSigma;
+        pMaximum = &fPowerFitData.fMaximum;
+        
+        pNormErr = &fPowerFitData.fNormErr;
+        pMeanErr = &fPowerFitData.fMeanErr;
+        pSigmaErr = &fPowerFitData.fSigmaErr;
+        pMaximumErr = &fPowerFitData.fMaximumErr;
 
-        fPowerFitDataTree->Branch( "NormErr", &fPowerFitData.fNormErr.at(0) );
-        fPowerFitDataTree->Branch( "MeanErr", &fPowerFitData.fMeanErr.at(0) );
-        fPowerFitDataTree->Branch( "SigmaErr", &fPowerFitData.fSigmaErr.at(0) );
-        fPowerFitDataTree->Branch( "MaximumErr", &fPowerFitData.fMaximumErr.at(0) );
+        fPowerFitDataTree->Branch( "Norm", "std::vector<double>", &pNorm );
+        fPowerFitDataTree->Branch( "Mean", "std::vector<double>", &pMean );
+        fPowerFitDataTree->Branch( "Sigma", "std::vector<double>", &pSigma );
+        fPowerFitDataTree->Branch( "Maximum", "std::vector<double>", &pMaximum );
 
+        fPowerFitDataTree->Branch( "NormErr", "std::vector<double>", &pNormErr );
+        fPowerFitDataTree->Branch( "MeanErr", "std::vector<double>", &pMeanErr );
+        fPowerFitDataTree->Branch( "SigmaErr", "std::vector<double>", &pSigmaErr );
+        fPowerFitDataTree->Branch( "MaximumErr", "std::vector<double>", &pMaximumErr );
+                
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
         fPowerFitDataTree->Branch( "NPeaks", &fPowerFitData.fNPeaks, "fNPeaks/i" );
