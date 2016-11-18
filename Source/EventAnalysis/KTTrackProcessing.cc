@@ -355,21 +355,44 @@ namespace Katydid
         }
         double Slope = (A*E-D*C)/(B*E-C*C);
         double Intercept = D/E-Slope*C/E;
+        double Rho = -C/sqrt(B*E); // correlation coefficient between slope and intercept
         KTDEBUG(tlog, "Weighted average results: \n" <<
                       "\tSlope: " << '\t' << Slope << '\n' <<
                       "\tIntercept: " << '\t' << Intercept);
         KTDEBUG(tlog, "Amplitude of the track: " << AmplitudeSum );
-        // Add error on each point from Chi2 = 1
-        // Calculate error on a and b
-        // Calculate distance to track and see for a possible 95% rejection of noise.
 
+        //Calculating Chi^2_min
+        double Chi2min = 0;
+        for (int i = 0; i<TimeBinInAcq.size(); i++)
+        {
+            Chi2min += pow(Average[i] - Slope*TimeBinInAcq[i] - Intercept,2);
+        }
+        // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
+        double DeltaSlope = 0;
+        double DeltaIntercept = 0;
+        double SigmaStartFreq = 0;
+        double SigmaEndFreq = 0;
 
+        if (TimeBinInAcq.size()>3){ // need at least 3 points to get a non-zero Ndf
+            int Ndf = TimeBinInAcq.size() - 2; // 2: two fitting parameters
+            DeltaSlope = 1.52/sqrt(B*Ndf/Chi2min);
+            DeltaIntercept = 1.52/sqrt(E*Ndf/Chi2min);
+
+            //Calculating error on the starting frequency and the end frequency
+            double startTime = *std::min_element(TimeBinInAcq.begin(), TimeBinInAcq.end());
+            double endTime = *std::max_element(TimeBinInAcq.begin(), TimeBinInAcq.end());
+            SigmaStartFreq = sqrt( pow(startTime,2) *  pow(DeltaSlope,2) + pow(DeltaIntercept,2) + 2 * startTime * Rho * DeltaSlope * DeltaIntercept );
+            SigmaEndFreq = sqrt( pow(endTime,2) *  pow(DeltaSlope,2) + pow(DeltaIntercept,2) + 2 * endTime * Rho * DeltaSlope * DeltaIntercept );
+        }
+
+        // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
+
+        // Adding resuts to ProcessedTrackData object
         KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
         procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
         procTrack.SetTrackID(trackID);
 
-        // KTDEBUG(tlog,*std::min_element(TimeBinInAcq.begin(), TimeBinInAcq.end()));
         procTrack.SetStartTimeInAcq(*std::min_element(TimeBinInAcq.begin(), TimeBinInAcq.end()));
         procTrack.SetStartTimeInRunC(*std::min_element(TimeBinInRunC.begin(), TimeBinInRunC.end()));
         procTrack.SetEndTimeInRunC(*std::max_element(TimeBinInRunC.begin(), TimeBinInRunC.end()));
@@ -377,14 +400,14 @@ namespace Katydid
         procTrack.SetStartFrequency(*std::min_element(TimeBinInRunC.begin(), TimeBinInRunC.end()) * Slope + Intercept);
         procTrack.SetEndFrequency(*std::max_element(TimeBinInRunC.begin(), TimeBinInRunC.end()) * Slope + Intercept);
         procTrack.SetFrequencyWidth((*std::max_element(TimeBinInRunC.begin(), TimeBinInRunC.end())-*std::min_element(TimeBinInRunC.begin(), TimeBinInRunC.end()))*Slope);
-        if (Slope < fSlopeMinimum || TimeBinInAcq.size() < fProcTrackMinPoints)
-        {
-            procTrack.SetIsCut(true);
-        }
         procTrack.SetSlope(Slope);
         procTrack.SetIntercept(Intercept);
         procTrack.SetTotalPower(AmplitudeSum);
-        //TODO: Add calculation of uncertainties
+
+        procTrack.SetSlopeSigma(DeltaSlope);
+        procTrack.SetInterceptSigma(DeltaIntercept);
+        procTrack.SetStartFrequencySigma(SigmaStartFreq);
+        procTrack.SetEndFrequencySigma(SigmaEndFreq);
 
         return true;
     }
