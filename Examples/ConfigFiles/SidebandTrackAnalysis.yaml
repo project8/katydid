@@ -42,17 +42,19 @@ processor-toolbox:
         - type: convert-to-power
           name: to-ps3
         - type: spectrogram-collector
-          name: spectrogram
+          name: spectrogram1
+        - type: spectrogram-collector
+          name: spectrogram2
         - type: variable-spectrum-discriminator
           name: discrim2
+        - type: variable-spectrum-discriminator
+          name: discrim3
         - type: linear-density-fit
-          name: line
-        - type: data-cutter
-          name: cuts1
-        - type: sideband-correction
-          name: gabrielese
-        - type: data-cutter
-          name: cuts2
+          name: line1
+        - type: linear-density-fit
+          name: line2
+        - type: apply-cut
+          name: cuts
 
         # Writers and profiler
         - type: root-tree-writer
@@ -68,7 +70,7 @@ processor-toolbox:
 
     connections:
 
-        # Egg Headers
+        # Egg headers
         - signal: "egg1:header"
           slot: "fft1:header"
           order: 0
@@ -76,17 +78,9 @@ processor-toolbox:
           slot: "profiler:start"
           order: 1
         - signal: "egg2:header"
-          slot: "rootw1:header"
-          order: 0
-        - signal: "egg2:header"
           slot: "fft2:header"
-          order: 1
-        - signal: "egg3:header"
-          slot: "gabrielese:header"
-          order: 0
         - signal: "egg3:header"
           slot: "fft3:header"
-          order: 1
 
         # First pass: gain variation
         - signal: "egg1:ts"
@@ -104,8 +98,14 @@ processor-toolbox:
           slot: "discrim2:gv"
           order: 1
         - signal: "gainvar:gain-var"
-          slot: "line:gv"
+          slot: "discrim3:gv"
           order: 2
+        - signal: "gainvar:gain-var"
+          slot: "line1:gv"
+          order: 3
+        - signal: "gainvar:gain-var"
+          slot: "line2:gv"
+          order: 4
 
         # Second pass: track finding
         - signal: "egg2:ts"
@@ -132,14 +132,16 @@ processor-toolbox:
           slot: "rootw1:processed-track"
           order: 0
         - signal: "tr-proc:track"
-          slot: "cuts1:track"
+          slot: "cuts:apply"
           order: 1
-        - signal: "cuts1:track"
+        - signal: "cuts:pass"
           slot: "rootw2:processed-track"
           order: 0
-        - signal: "cuts1:track"
-          slot: "spectrogram:track"
+        - signal: "cuts:pass"
+          slot: "spectrogram1:track"
           order: 1
+        - signal: "cuts:pass"
+          slot: "spectrogram2:track"
 
         # Third pass: sideband analysis
         - signal: "egg3:ts"
@@ -147,21 +149,23 @@ processor-toolbox:
         - signal: "fft3:fft"
           slot: "to-ps3:fs-fftw-to-psd"
         - signal: "to-ps3:psd"
-          slot: "spectrogram:ps"
-        - signal: "spectrogram:ps-coll"
+          slot: "spectrogram1:ps"
+          order: 0
+        - signal: "to-ps3:psd"
+          slot: "spectrogram2:ps"
+          order: 1
+        - signal: "spectrogram1:ps-coll"
           slot: "discrim2:spec-pre"
         - signal: "discrim2:disc-2d"
-          slot: "line:thresh-points-alt"
-#        - signal: "line:power-fit-result"
-#          slot: "rootw3:linear-fit"
-#          order: 0
-#        - signal: "line:power-fit-result"
-#          slot: "cuts2:fit-result"
-#          order: 1
-#        - signal: "cuts2:fit-result"
-#          slot: "gabrielese:fit-result"
-#        - signal: "gabrielese:track"
-#          slot: "rootw4:processed-track"
+          slot: "line1:thresh-points"
+        - signal: "line1:density-fit"
+          slot: "rootw3:density-fit"
+        - signal: "spectrogram2:ps-coll"
+          slot: "discrim3:spec-pre"
+        - signal: "discrim3:disc-2d"
+          slot: "line2:thresh-points"
+        - signal: "line2:power-fit"
+          slot: "rootw4:power-fit"
 
         # Profiler stop
         - signal: "tr-clust:clustering-done"
@@ -173,7 +177,7 @@ processor-toolbox:
         - egg3
 
 egg1:
-    filename: "placeholder.MAT"
+    filename: "foo.MAT"
     egg-reader: rsamat
     number-of-slices: 0
     slice-size: 8192
@@ -192,7 +196,7 @@ gainvar:
     fit-points: 50
 
 egg2:
-    filename: "placeholder.MAT"
+    filename: "foo.MAT"
     egg-reader: rsamat
     number-of-slices: 0
     slice-size: 8192
@@ -206,6 +210,11 @@ discrim1:
     snr-threshold-power: 6.0
 
 discrim2:
+    min-frequency: 50e6
+    max-frequency: 150e6
+    snr-threshold-power: 4.0
+
+discrim3:
     min-frequency: 50e6
     max-frequency: 150e6
     snr-threshold-power: 4.0
@@ -234,7 +243,7 @@ tr-proc:
     min-slope: 1.0
 
 egg3:
-    filename: "placeholder.MAT"
+    filename: "foo.MAT"
     egg-reader: rsamat
     number-of-slices: 0
     slice-size: 8192
@@ -242,46 +251,56 @@ egg3:
 fft3:
     transform-flag: ESTIMATE
 
-spectrogram:
+spectrogram1:
     min-frequency: 50e6
     max-frequency: 150e6
-    lead-time: 0.
-    trail-time: 0.
-    lead-freq: 2e6
-    trail-freq: 2e6
+    lead-time: 0.0
+    trail-time: 0.0
     use-track-freqs: false
 
-line:
+spectrogram2:
     min-frequency: 50e6
     max-frequency: 150e6
-    probe-width-big: 0.1e6
-    probe-width-small: 100e3
-    step-size-big: 20e3
-    step-size-small: 20e3
+    lead-time: 0.0
+    trail-time: 0.0
+    lead-freq: 4e6
+    trail-freq: 4e6
+    use-track-freqs: true
 
-cuts1:
-    cut-bogus-tracks: true
-    is-cut: false
+line1:
+    min-frequency: 50e6
+    max-frequency: 150e6
+    probe-width-big: 1e6
+    probe-width-small: 50e3
+    step-size: 25e3
+    algorithm: 1
 
-cuts2:
-    min-sideband-separation: 2e6
+line2:
+    probe-width-small: 50e3
+    step-size: 25e3
+    spectrum-tolerance: 5
+    spectrum-threshold: 0.4
+    algorithm: 2
+
+cuts:
+    track-cut:
 
 rootw1:
-    output-file: "all-tracks.root"
+    output-file: "WaterfallData/Sidebands_Out/all-tracks.root"
     file-flag: update
     accumulate: true
 
 rootw2:
-    output-file: "uncut-tracks.root"
+    output-file: "WaterfallData/Sidebands_Out/uncut-tracks.root"
     file-flag: update
     accumulate: true
 
 rootw3:
-    output-file: "fit-results.root"
+    output-file: "WaterfallData/Sidebands_Out/density-fit.root"
     file-flag: update
     accumulate: true
 
 rootw4:
-    output-file: "corrected-tracks"
+    output-file: "WaterfallData/Sidebands_Out/power-fit.root"
     file-flag: update
     accumulate: true

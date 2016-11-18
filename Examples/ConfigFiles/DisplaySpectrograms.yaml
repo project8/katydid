@@ -2,7 +2,10 @@ app:
     root-app: true
 
 processor-toolbox:
+
     processors:
+
+	# First pass
         - type: egg-processor
           name: egg1
         - type: forward-fftw
@@ -13,6 +16,8 @@ processor-toolbox:
           name: gainvar
         - type: data-accumulator
           name: acc
+
+        # Second pass
         - type: egg-processor
           name: egg2
         - type: forward-fftw
@@ -31,8 +36,8 @@ processor-toolbox:
           name: hough
         - type: track-proc
           name: tr-proc
-        - type: throughput-profiler
-          name: profiler
+
+        # Third pass
         - type: egg-processor
           name: egg3
         - type: forward-fftw
@@ -41,12 +46,20 @@ processor-toolbox:
           name: to-ps3
         - type: spectrogram-collector
           name: spectrogram
+        - type: apply-cut
+          name: cuts
+
+        # Display and profiler
         - type: terminal-writer
           name: term
         - type: data-display
           name: disp
+        - type: throughput-profiler
+          name: profiler
 
     connections:
+
+        # Egg headers
         - signal: "egg1:header"
           slot: "fft1:header"
           order: 0
@@ -58,6 +71,7 @@ processor-toolbox:
         - signal: "egg3:header"
           slot: "fft3:header"
 
+        # First pass: gain variation
         - signal: "egg1:ts"
           slot: "fft1:ts-fftw"
         - signal: "fft1:fft"
@@ -69,6 +83,7 @@ processor-toolbox:
         - signal: "gainvar:gain-var"
           slot: "discrim1:gv"
 
+        # Second pass: track finding
         - signal: "egg2:ts"
           slot: "profiler:data"
           order: 0
@@ -92,8 +107,11 @@ processor-toolbox:
         - signal: "hough:hough"
           slot: "tr-proc:swfc-and-hough"
         - signal: "tr-proc:track"
+          slot: "cuts:apply"
+        - signal: "cuts:pass"
           slot: "spectrogram:track"
 
+        # Third pass: collection and display
         - signal: "egg3:ts"
           slot: "fft3:ts-fftw"
         - signal: "fft3:fft"
@@ -107,6 +125,7 @@ processor-toolbox:
           slot: "disp:ps-coll"
           order: 1
 
+        # Profiler stop
         - signal: "tr-clust:clustering-done"
           slot: "profiler:stop"
 
@@ -185,9 +204,12 @@ spectrogram:
     max-frequency: 150e6
     lead-time: 20e-5
     trail-time: 20e-5
-    lead-freq: 8e6
-    trail-freq: 8e6
+    lead-freq: 4e6
+    trail-freq: 4e6
     use-track-freqs: true
+
+cuts:
+    track-cut:
 
 disp:
     draw-args: "colz"
