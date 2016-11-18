@@ -403,7 +403,9 @@ namespace Katydid
         procTrack.SetSlope(Slope);
         procTrack.SetIntercept(Intercept);
         procTrack.SetTotalPower(AmplitudeSum);
-
+        if (lsSlope < fSlopeMinimum){
+            procTrack.SetIsCut(true);
+        }
         procTrack.SetSlopeSigma(DeltaSlope);
         procTrack.SetInterceptSigma(DeltaIntercept);
         procTrack.SetStartFrequencySigma(SigmaStartFreq);
