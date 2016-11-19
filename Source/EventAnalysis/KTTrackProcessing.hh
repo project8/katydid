@@ -65,6 +65,9 @@ namespace Katydid
             unsigned GetProcTrackMinPoints() const;
             void SetProcTrackMinPoints(unsigned min);
 
+            double GetProcTrackAssignedError() const;
+            void SetProcTrackAssignedError(double err);
+
         private:
             double fPointLineDistCut1;
             double fPointLineDistCut2;
@@ -72,6 +75,7 @@ namespace Katydid
             double fSlopeMinimum;
 
             unsigned fProcTrackMinPoints;
+            double fProcTrackAssError;
 
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
@@ -138,6 +142,16 @@ namespace Katydid
     inline void KTTrackProcessing::SetProcTrackMinPoints(unsigned min)
     {
         fProcTrackMinPoints = min;
+        return;
+    }
+
+    inline double KTTrackProcessing::GetProcTrackAssignedError() const
+    {
+        return fProcTrackAssError;
+    }
+    inline void KTTrackProcessing::SetProcTrackAssignedError(double err)
+    {
+        fProcTrackAssError = err;
         return;
     }
 

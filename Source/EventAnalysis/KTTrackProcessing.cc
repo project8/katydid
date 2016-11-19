@@ -54,6 +54,7 @@ namespace Katydid
 
         SetSlopeMinimum(node->get_value("min-slope", GetSlopeMinimum()));
         SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
+        SetProcTrackAssignedError(node->get_value("assigned-error", GetProcTrackAssignedError()));
 
         KTDEBUG(tlog,"Here");
         if (node->has("algorithm"))
@@ -366,6 +367,7 @@ namespace Katydid
         for (int i = 0; i<TimeBinInAcq.size(); i++)
         {
             Chi2min += pow(Average[i] - Slope*TimeBinInAcq[i] - Intercept,2);
+            KTDEBUG(tlog, "Residuals : " << Average[i] - Slope*TimeBinInAcq[i] - Intercept );
         }
         // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
         double DeltaSlope = 0;
@@ -373,11 +375,24 @@ namespace Katydid
         double SigmaStartFreq = 0;
         double SigmaEndFreq = 0;
 
-        if (TimeBinInAcq.size()>3){ // need at least 3 points to get a non-zero Ndf
-            int Ndf = TimeBinInAcq.size() - 2; // 2: two fitting parameters
-            DeltaSlope = 1.52/sqrt(B*Ndf/Chi2min);
-            DeltaIntercept = 1.52/sqrt(E*Ndf/Chi2min);
+        if (TimeBinInAcq.size()>2){ // need at least 3 points to get a non-zero Ndf
+            KTDEBUG(tlog, "Chi2min : " << Chi2min );
 
+            if (Chi2min < 0.1){
+                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssError << ")");
+                DeltaSlope = 1.52/(sqrt(B)/fProcTrackAssError);
+                DeltaIntercept = 1.52/(sqrt(E)/fProcTrackAssError);
+            }
+            else
+            {
+                int Ndf = TimeBinInAcq.size() - 2; // 2: two fitting parameters
+                DeltaSlope = 1.52/sqrt(B*Ndf/Chi2min);
+                DeltaIntercept = 1.52/sqrt(E*Ndf/Chi2min);
+            }
+            KTDEBUG(tlog, "Error calculations results: \n" <<
+                          "\tSlope: " << '\t' << DeltaSlope << '\n' <<
+                          "\tIntercept: " << '\t' << DeltaIntercept << '\n' <<
+                          "\tCorrelation coeffient: " << '\t' << Rho);
             //Calculating error on the starting frequency and the end frequency
             double startTime = *std::min_element(TimeBinInAcq.begin(), TimeBinInAcq.end());
             double endTime = *std::max_element(TimeBinInAcq.begin(), TimeBinInAcq.end());
@@ -403,7 +418,7 @@ namespace Katydid
         procTrack.SetSlope(Slope);
         procTrack.SetIntercept(Intercept);
         procTrack.SetTotalPower(AmplitudeSum);
-        if (lsSlope < fSlopeMinimum){
+        if (Slope < fSlopeMinimum){
             procTrack.SetIsCut(true);
         }
         procTrack.SetSlopeSigma(DeltaSlope);
