@@ -54,7 +54,7 @@ namespace Katydid
                 int fIsValid;   // did the fit converge?
                 int fNPeaks;    // number of peaks in the fit
 
-                // First four moments, all in MHz
+                // First four moments, first two in MHz
                 double fAverage; // adjusted for track intercept, i.e. a perfect track should give 0
                 double fRMS;
                 double fSkewness;

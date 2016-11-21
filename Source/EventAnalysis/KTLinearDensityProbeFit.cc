@@ -585,8 +585,8 @@ namespace Katydid
 
         // Calculate first four moments from TH1 directly
         double meanCorrection = 0.5 * (minAlpha + maxAlpha);
-        newData.SetAverage( fitPoints->GetMean() - meanCorrection );
-        newData.SetRMS( fitPoints->GetRMS() );
+        newData.SetAverage( (fitPoints->GetMean() - meanCorrection)/1e6 );
+        newData.SetRMS( fitPoints->GetRMS()/1e6 );
         newData.SetSkewness( fitPoints->GetSkewness() );
         newData.SetKurtosis( fitPoints->GetKurtosis() );
 
@@ -610,7 +610,7 @@ namespace Katydid
 
         // Set central peak fit parameters
         newData.SetNormCentral( fit->GetParameter( 3*cpIndex+2 ) );
-        newData.SetMeanCentral( fit->GetParameter( 3*cpIndex+3 ) - meanCorrection );
+        newData.SetMeanCentral( fit->GetParameter( 3*cpIndex+3 ) - meanCorrection/1e6 );
         newData.SetSigmaCentral( fit->GetParameter( 3*cpIndex+4) );
         newData.SetMaximumCentral( invsqrt2pi * fit->GetParameter( 3*cpIndex+2 ) / fit->GetParameter( 3*cpIndex+4 ) );
 
@@ -632,7 +632,7 @@ namespace Katydid
         int iBin = 1;
         for( it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it )
         {
-            if( it->second.fAbscissa - meanCorrection >= newData.GetMeanCentral() - 3 * newData.GetSigmaCentral() && it->second.fAbscissa - meanCorrection <= newData.GetMeanCentral() + 3 * newData.GetSigmaCentral() )
+            if( it->second.fAbscissa - meanCorrection >= newData.GetMeanCentral()*1e6 - 3 * newData.GetSigmaCentral()*1e6 && it->second.fAbscissa - meanCorrection <= newData.GetMeanCentral()*1e6 + 3 * newData.GetSigmaCentral()*1e6 )
             {
                 centralPoints.push_back( it->second.fOrdinate );
                 KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to centralPoints vector");
