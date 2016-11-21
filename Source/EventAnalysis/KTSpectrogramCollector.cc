@@ -107,6 +107,16 @@ namespace Katydid
 
         newWaterfall->SetFilling( false );
 
+        // It is possible that from the above logic, the minimum frequency is greater than the maximum
+        // When this is the case, the KTPSCollectionData will be empty and present a high risk for crashes
+        // Since it will never be filled, I will simply avoid adding it in the first place
+
+        if( newWaterfall->GetMinFrequency() > newWaterfall->GetMaxFrequency() )
+        {
+            KTWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
+            return false;
+        }
+
         // Add to fWaterfallSets
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
