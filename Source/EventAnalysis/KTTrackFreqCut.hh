@@ -41,7 +41,7 @@ namespace Katydid
         };
 
     public:
-        KTTrackFreqCut(const std::string& name = "track-freq-cut");
+        KTTrackFreqCut(const std::string& name = "track-frequency-cut");
         ~KTTrackFreqCut();
 
         bool Configure(const scarab::param_node* node);

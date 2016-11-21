@@ -14,7 +14,7 @@ namespace Katydid
 {
     KTLOGGER(exlog, "KTTrackFreqCut");
 
-    const std::string KTTrackFreqCut::Result::sName = "track-freq-cut";
+    const std::string KTTrackFreqCut::Result::sName = "track-frequency-cut";
 
     KT_REGISTER_CUT(KTTrackFreqCut);
 
