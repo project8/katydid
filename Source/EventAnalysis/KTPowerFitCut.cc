@@ -23,14 +23,14 @@ namespace Katydid
          fValidity(true),
          fMinNPeaks(0),
          fMaxNPeaks(10),
-         fMinMean(-10e6),
-         fMaxMean(10e6),
-         fMinRMS(-10e6),
-         fMaxRMS(10e6),
-         fMinSkewness(-10e6),
-         fMaxSkewness(10e6),
-         fMinKurtosis(-10e6),
-         fMaxKurtosis(10e6)
+         fMinAverage(-10),
+         fMaxAverage(10),
+         fMinRMS(0),
+         fMaxRMS(10),
+         fMinSkewness(-1),
+         fMaxSkewness(1),
+         fMinKurtosis(-1),
+         fMaxKurtosis(1)
     {}
 
     KTPowerFitCut::~KTPowerFitCut()
@@ -43,8 +43,8 @@ namespace Katydid
         SetValidity( node->get_value< bool >( "keep-valid", GetValidity() ) );
         SetMinNPeaks( node->get_value< int >( "min-npeaks", GetMinNPeaks() ) );
         SetMaxNPeaks( node->get_value< int >( "max-npeaks", GetMaxNPeaks() ) );
-        SetMinMean( node->get_value< double >( "min-mean", GetMinMean() ) );
-        SetMaxMean( node->get_value< double >( "max-mean", GetMaxMean() ) );
+        SetMinAverage( node->get_value< double >( "min-average", GetMinAverage() ) );
+        SetMaxAverage( node->get_value< double >( "max-average", GetMaxAverage() ) );
         SetMinRMS( node->get_value< double >( "min-rms", GetMinRMS() ) );
         SetMaxRMS( node->get_value< double >( "max-rms", GetMaxRMS() ) );
         SetMinSkewness( node->get_value< double >( "min-skewness", GetMinSkewness() ) );
@@ -67,7 +67,7 @@ namespace Katydid
             return false;
         }
 
-        if( fitData.GetAverage() < GetMinMean() || fitData.GetAverage() > GetMaxMean() )
+        if( fitData.GetAverage() < GetMinAverage() || fitData.GetAverage() > GetMaxAverage() )
         {
             return false;
         }
