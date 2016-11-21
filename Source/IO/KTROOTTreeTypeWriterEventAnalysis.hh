@@ -137,6 +137,16 @@ namespace Katydid
         Double_t fRMS;
         Double_t fSkewness;
         Double_t fKurtosis;
+
+        Double_t fNormCentral;
+        Double_t fMeanCentral;
+        Double_t fSigmaCentral;
+        Double_t fMaximumCentral;
+
+        Double_t fRMSAwayFromCentral;
+        Double_t fCentralPowerRatio;
+
+        Double_t fTrackIntercept;
     };
 
 

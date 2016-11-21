@@ -659,6 +659,16 @@ namespace Katydid
             fPowerFitData.fSkewness = pfData.GetSkewness( fPowerFitData.fComponent );
             fPowerFitData.fKurtosis = pfData.GetKurtosis( fPowerFitData.fComponent );
 
+            fPowerFitData.fNormCentral = pfData.GetNormCentral( fPowerFitData.fComponent );
+            fPowerFitData.fMeanCentral = pfData.GetMeanCentral( fPowerFitData.fComponent );
+            fPowerFitData.fSigmaCentral = pfData.GetSigmaCentral( fPowerFitData.fComponent );
+            fPowerFitData.fMaximumCentral = pfData.GetMaximumCentral( fPowerFitData.fComponent );
+
+            fPowerFitData.fRMSAwayFromCentral = pfData.GetRMSAwayFromCentral( fPowerFitData.fComponent );
+            fPowerFitData.fCentralPowerRatio = pfData.GetCentralPowerRatio( fPowerFitData.fComponent );
+
+            fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept( fPowerFitData.fComponent );
+
             const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints( fPowerFitData.fComponent );
 
             if (points.size() == 0)
@@ -736,6 +746,16 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "Skewness", &fPowerFitData.fSkewness );
                 fPowerFitDataTree->SetBranchAddress( "Kurtosis", &fPowerFitData.fKurtosis );
 
+                fPowerFitDataTree->SetBranchAddress( "NormCentral", &fPowerFitData.fNormCentral );
+                fPowerFitDataTree->SetBranchAddress( "MeanCentral", &fPowerFitData.fMeanCentral );
+                fPowerFitDataTree->SetBranchAddress( "SigmaCentral", &fPowerFitData.fSigmaCentral );
+                fPowerFitDataTree->SetBranchAddress( "MaximumCentral", &fPowerFitData.fMaximumCentral );
+
+                fPowerFitDataTree->SetBranchAddress( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral );
+                fPowerFitDataTree->SetBranchAddress( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio );
+
+                fPowerFitDataTree->SetBranchAddress( "TrackIntercept", &fPowerFitData.fTrackIntercept );
+
                 return true;
             }
         }
@@ -790,6 +810,16 @@ namespace Katydid
         fPowerFitDataTree->Branch( "RMS", &fPowerFitData.fRMS, "fRMS/d" );
         fPowerFitDataTree->Branch( "Skewness", &fPowerFitData.fSkewness, "fSkewness/d" );
         fPowerFitDataTree->Branch( "Kurtosis", &fPowerFitData.fKurtosis, "fKurtosis/d" );
+
+        fPowerFitDataTree->Branch( "NormCentral", &fPowerFitData.fNormCentral, "fNormCentral/d" );
+        fPowerFitDataTree->Branch( "MeanCentral", &fPowerFitData.fMeanCentral, "fMeanCentral/d" );
+        fPowerFitDataTree->Branch( "SigmaCentral", &fPowerFitData.fSigmaCentral, "fSigmaCentral/d" );
+        fPowerFitDataTree->Branch( "MaximumCentral", &fPowerFitData.fMaximumCentral, "fMaximumCentral/d" );
+
+        fPowerFitDataTree->Branch( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral, "fRMSAwayFromCentral/d" );
+        fPowerFitDataTree->Branch( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio, "fCentralPowerRatio/d" );
+
+        fPowerFitDataTree->Branch( "TrackIntercept", &fPowerFitData.fTrackIntercept, "fTrackIntercept/d" );
 
         return true;
     }

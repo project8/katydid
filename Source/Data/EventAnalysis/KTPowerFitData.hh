@@ -33,6 +33,8 @@ namespace Katydid
         protected:
             struct PerComponentData
             {
+                // Vectors to store the fit results and uncertainties
+                // Mean and Sigma are in MHz
                 std::vector<double> fNorm;
                 std::vector<double> fMean;
                 std::vector<double> fSigma;
@@ -43,15 +45,31 @@ namespace Katydid
                 std::vector<double> fSigmaErr;
                 std::vector<double> fMaximumErr;
 
-                int fIsValid;
-                int fMainPeak;
-                int fNPeaks;
-                SetOfPoints fPoints;
+                int fMainPeak;  // classifier for testing purposes
 
-                double fAverage;
+                SetOfPoints fPoints; // raw power spectrum after rotate-and-project
+
+                // Classifers
+
+                int fIsValid;   // did the fit converge?
+                int fNPeaks;    // number of peaks in the fit
+
+                // First four moments, all in MHz
+                double fAverage; // adjusted for track intercept, i.e. a perfect track should give 0
                 double fRMS;
                 double fSkewness;
                 double fKurtosis;
+
+                // Gaussian fit parameters of the peak closest to 0 (central peak)
+                double fNormCentral;
+                double fMeanCentral;
+                double fSigmaCentral;
+                double fMaximumCentral;
+
+                double fRMSAwayFromCentral; // RMS in bins greater than 3 sigma from the central peak
+                double fCentralPowerRatio; // Ratio of average power within 3 sigma of the central peak to average power greater than 3 sigma from the central peak
+
+                double fTrackIntercept; // just so that we don't lose this info, since it is subtracted away
             };
 
         public:
@@ -114,6 +132,27 @@ namespace Katydid
 
             double GetKurtosis( unsigned component = 0 ) const;
             void SetKurtosis( double mu4, unsigned component = 0 );
+
+            double GetNormCentral( unsigned component = 0 ) const;
+            void SetNormCentral( double a, unsigned component = 0 );
+
+            double GetMeanCentral( unsigned component = 0 ) const;
+            void SetMeanCentral( double mu, unsigned component = 0 );
+
+            double GetSigmaCentral( unsigned component = 0 ) const;
+            void SetSigmaCentral( double sigma, unsigned component = 0 );
+
+            double GetMaximumCentral( unsigned component = 0 ) const;
+            void SetMaximumCentral( double max, unsigned component = 0 );
+
+            double GetRMSAwayFromCentral( unsigned component = 0 ) const;
+            void SetRMSAwayFromCentral( double sigma, unsigned component = 0 );
+
+            double GetCentralPowerRatio( unsigned component = 0 ) const;
+            void SetCentralPowerRatio( double r, unsigned component = 0 );
+
+            double GetTrackIntercept( unsigned component = 0 ) const;
+            void SetTrackIntercept( double alpha, unsigned component = 0 );
 
         private:
             std::vector< PerComponentData > fComponentData;
@@ -309,6 +348,83 @@ namespace Katydid
     inline void KTPowerFitData::SetKurtosis(double mu4, unsigned component)
     {
         fComponentData[component].fKurtosis = mu4;
+        return;
+    }
+
+    inline double KTPowerFitData::GetNormCentral(unsigned component) const
+    {
+        return fComponentData[component].fNormCentral;
+    }
+
+    inline void KTPowerFitData::SetNormCentral(double a, unsigned component)
+    {
+        fComponentData[component].fNormCentral = a;
+        return;
+    }
+
+    inline double KTPowerFitData::GetMeanCentral(unsigned component) const
+    {
+        return fComponentData[component].fMeanCentral;
+    }
+
+    inline void KTPowerFitData::SetMeanCentral(double mu, unsigned component)
+    {
+        fComponentData[component].fMeanCentral = mu;
+        return;
+    }
+
+    inline double KTPowerFitData::GetSigmaCentral(unsigned component) const
+    {
+        return fComponentData[component].fSigmaCentral;
+    }
+
+    inline void KTPowerFitData::SetSigmaCentral(double sigma, unsigned component)
+    {
+        fComponentData[component].fSigmaCentral = sigma;
+        return;
+    }
+
+    inline double KTPowerFitData::GetMaximumCentral(unsigned component) const
+    {
+        return fComponentData[component].fMaximumCentral;
+    }
+
+    inline void KTPowerFitData::SetMaximumCentral(double max, unsigned component)
+    {
+        fComponentData[component].fMaximumCentral = max;
+        return;
+    }
+
+    inline double KTPowerFitData::GetRMSAwayFromCentral(unsigned component) const
+    {
+        return fComponentData[component].fRMSAwayFromCentral;
+    }
+
+    inline void KTPowerFitData::SetRMSAwayFromCentral(double sigma, unsigned component)
+    {
+        fComponentData[component].fRMSAwayFromCentral = sigma;
+        return;
+    }
+
+    inline double KTPowerFitData::GetCentralPowerRatio(unsigned component) const
+    {
+        return fComponentData[component].fCentralPowerRatio;
+    }
+
+    inline void KTPowerFitData::SetCentralPowerRatio(double r, unsigned component)
+    {
+        fComponentData[component].fCentralPowerRatio = r;
+        return;
+    }
+
+    inline double KTPowerFitData::GetTrackIntercept(unsigned component) const
+    {
+        return fComponentData[component].fTrackIntercept;
+    }
+
+    inline void KTPowerFitData::SetTrackIntercept(double alpha, unsigned component)
+    {
+        fComponentData[component].fTrackIntercept = alpha;
         return;
     }
 

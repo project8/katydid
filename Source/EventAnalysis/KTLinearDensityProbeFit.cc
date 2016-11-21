@@ -531,7 +531,8 @@ namespace Katydid
             norms.push_back( fit->GetParameter(3*p+2) );
             means.push_back( fit->GetParameter(3*p+3) );
             sigmas.push_back( fit->GetParameter(3*p+4) );
-            maxima.push_back( invsqrt2pi * fit->GetParameter(3*p+2) / fit->GetParameter(3*p+4) );
+            //maxima.push_back( invsqrt2pi * fit->GetParameter(3*p+2) / fit->GetParameter(3*p+4) );
+            maxima.push_back( s->GetPositionY()[p] );
 
             normErrs.push_back( fit->GetParError(3*p+2) );
             meanErrs.push_back( fit->GetParError(3*p+3) );
@@ -583,10 +584,105 @@ namespace Katydid
         newData.SetNPeaks( npeaks );
 
         // Calculate first four moments from TH1 directly
-        newData.SetAverage( fitPoints->GetMean() );
+        double meanCorrection = 0.5 * (minAlpha + maxAlpha);
+        newData.SetAverage( fitPoints->GetMean() - meanCorrection );
         newData.SetRMS( fitPoints->GetRMS() );
         newData.SetSkewness( fitPoints->GetSkewness() );
         newData.SetKurtosis( fitPoints->GetKurtosis() );
+
+        // Calculate classifiers
+        KTINFO(evlog, "Calculating classifiers for KTPowerFitData");
+
+        // First find the most central peak
+        int cpIndex;
+        double cpLocation;
+        for( int p = 0; p < npeaks; p++ )
+        {
+            KTDEBUG(evlog, "Peak " << p << " has location " << xpeaks[p] - meanCorrection);
+            if( p == 0 || std::abs( xpeaks[p] - meanCorrection ) < std::abs( cpLocation ) )
+            {
+                cpIndex = p;
+                cpLocation = xpeaks[p] - meanCorrection;
+            }
+        }
+
+        KTINFO(evlog, "Central peak has index " << cpIndex << " and location " << cpLocation);
+
+        // Set central peak fit parameters
+        newData.SetNormCentral( fit->GetParameter( 3*cpIndex+2 ) );
+        newData.SetMeanCentral( fit->GetParameter( 3*cpIndex+3 ) - meanCorrection );
+        newData.SetSigmaCentral( fit->GetParameter( 3*cpIndex+4) );
+        newData.SetMaximumCentral( invsqrt2pi * fit->GetParameter( 3*cpIndex+2 ) / fit->GetParameter( 3*cpIndex+4 ) );
+
+        // Vectors to calculate statistics near and away from the central peak
+        std::vector<double> centralPoints;
+        std::vector<double> nonCentralPoints;
+
+        // Points and iterator
+        std::map< unsigned, KTPowerFitData::Point >::iterator it;
+        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPoints();
+
+        // Iterate over all points and fill the appropriate vector
+
+        double minFreq, maxFreq;
+        unsigned nBins = SetOfPoints.size();
+        minFreq = SetOfPoints.begin()->second.fAbscissa;
+        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
+
+        int iBin = 1;
+        for( it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it )
+        {
+            if( it->second.fAbscissa - meanCorrection >= newData.GetMeanCentral() - 3 * newData.GetSigmaCentral() && it->second.fAbscissa - meanCorrection <= newData.GetMeanCentral() + 3 * newData.GetSigmaCentral() )
+            {
+                centralPoints.push_back( it->second.fOrdinate );
+                KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to centralPoints vector");
+            }
+            else
+            {
+                nonCentralPoints.push_back( it->second.fOrdinate );
+                KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to nonCentralPoints vector");
+            }
+            iBin++;
+        }
+        
+        // Initialize variables for mean and RMS
+        double centralMean = 0;
+        double centralRMS = 0;
+        double nonCentralMean = 0;
+        double nonCentralRMS = 0;
+
+        // Calculate central mean and RMS
+        for( int i = 0; i < centralPoints.size(); i++ )
+        {
+            centralMean += centralPoints.at(i);
+            centralRMS += TMath::Power( centralPoints.at(i), 2 );
+        }
+        centralMean /= centralPoints.size();
+        centralRMS /= centralPoints.size();
+        centralRMS = TMath::Power( centralRMS - TMath::Power( centralMean, 2 ), 0.5 );
+
+        KTINFO(evlog, "Calculated central mean = " << centralMean << " and RMS = " << centralRMS);
+
+        // Calculate non-central mean and RMS
+        for( int i = 0; i < nonCentralPoints.size(); i++ )
+        {
+            nonCentralMean += nonCentralPoints.at(i);
+            nonCentralRMS += TMath::Power( nonCentralPoints.at(i), 2 );
+        }
+        nonCentralMean /= nonCentralPoints.size();
+        nonCentralRMS /= nonCentralPoints.size();
+        nonCentralRMS = TMath::Power( nonCentralRMS - TMath::Power( nonCentralMean, 2 ), 0.5 );
+
+        KTINFO(evlog, "Calculated non-central mean = " << nonCentralMean << " and RMS = " << nonCentralRMS);
+
+        // Fill data
+        newData.SetRMSAwayFromCentral( nonCentralRMS );
+        newData.SetCentralPowerRatio( centralMean / nonCentralMean );
+
+        // Lastly we copy the track intercept to newData
+        newData.SetTrackIntercept( data.GetIntercept() );
+
+        KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 
         return true;
     }
