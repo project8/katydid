@@ -23,14 +23,14 @@ namespace Katydid
          fValidity(true),
          fMinNPeaks(0),
          fMaxNPeaks(10),
-         fMinAverage(-10),
-         fMaxAverage(10),
-         fMinRMS(0),
-         fMaxRMS(10),
-         fMinSkewness(-1),
-         fMaxSkewness(1),
-         fMinKurtosis(-1),
-         fMaxKurtosis(1)
+         fMinAverage(-10.),
+         fMaxAverage(10.),
+         fMinRMS(0.),
+         fMaxRMS(10.),
+         fMinSkewness(-1000.),
+         fMaxSkewness(1000.),
+         fMinKurtosis(-1000.),
+         fMaxKurtosis(1000.)
     {}
 
     KTPowerFitCut::~KTPowerFitCut()
@@ -57,34 +57,38 @@ namespace Katydid
 
     bool KTPowerFitCut::Apply( Nymph::KTData& data, KTPowerFitData& fitData )
     {
-        if( fitData.GetIsValid() != GetValidity() )
+        bool isCut = false;
+
+        if( (fitData.GetIsValid() == 1 && GetValidity() == false) || (fitData.GetIsValid() == 0 && GetValidity() == true) )
         {
-            return false;
+            isCut = true;
         }
 
         if( fitData.GetNPeaks() < GetMinNPeaks() || fitData.GetNPeaks() > GetMaxNPeaks() )
         {
-            return false;
+            isCut = true;
         }
 
         if( fitData.GetAverage() < GetMinAverage() || fitData.GetAverage() > GetMaxAverage() )
         {
-            return false;
+            isCut = true;
         }
         if( fitData.GetRMS() < GetMinRMS() || fitData.GetRMS() > GetMaxRMS() )
         {
-            return false;
+            isCut = true;
         }
         if( fitData.GetSkewness() < GetMinSkewness() || fitData.GetSkewness() > GetMaxSkewness() )
         {
-            return false;
+            isCut = true;
         }
         if( fitData.GetKurtosis() < GetMinKurtosis() || fitData.GetKurtosis() > GetMaxKurtosis() )
         {
-            return false;
+            isCut = true;
         }
 
-        return true;
+        data.GetCutStatus().AddCutResult< KTPowerFitCut::Result >(isCut);
+
+        return isCut;
     }
 
 } // namespace Katydid
