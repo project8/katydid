@@ -131,6 +131,8 @@ namespace Katydid
             double fThreshold;
             unsigned fAlgorithm;
 
+            int npeaks;
+
         public:
             bool ChooseAlgorithm(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts, KTPSCollectionData& fullSpectrogram);
             bool SetPreCalcGainVar(KTGainVariationData& gvData);

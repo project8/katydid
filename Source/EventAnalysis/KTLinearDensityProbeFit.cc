@@ -17,6 +17,7 @@
 #include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTEggHeader.hh"
+#include "KTMath.hh"
 
 #include <cmath>
 #include <vector>
@@ -26,7 +27,6 @@
 #include <omp.h>
 #endif
 
-#ifdef ROOT_FOUND
 #include "TH1.h"
 #include "TF1.h"
 #include "KT2ROOT.hh"
@@ -34,7 +34,6 @@
 #include "TFitResult.h"
 #include "TSpectrum.h"
 #include "TVirtualFitter.h"
-#endif
 
 using std::string;
 using std::vector;
@@ -103,7 +102,7 @@ namespace Katydid
 
         if( fAlgorithm != 2 )
         {
-            if( !DensityMaximization( data, pts, fullSpectrogram ) )
+            if( ! DensityMaximization( data, pts, fullSpectrogram ) )
             {
                 KTERROR(evlog, "Something went wrong performing the density maximization algorithm!");
                 return false;
@@ -111,7 +110,7 @@ namespace Katydid
         }
         if( fAlgorithm != 1 )
         {
-            if( !ProjectionAnalysis( data, pts, fullSpectrogram ) )
+            if( ! ProjectionAnalysis( data, pts, fullSpectrogram ) )
             {
                 KTERROR(evlog, "Something went wrong performing the projection analysis algorithm!");
                 return false;
@@ -124,7 +123,7 @@ namespace Katydid
     // function to evaluate gaussian function
     double Gaus_Eval( double arg, double sigma )
     {
-        return exp( -1*pow(arg/sigma, 2)/2 );
+        return exp( -0.5*arg*arg/(sigma*sigma) );
     }
 
     // Determines the significance of a 1D peak in Sigma or SNR
@@ -133,6 +132,9 @@ namespace Katydid
     // include is the index of the point to calculate the significance of
     // metric determines whether to return a result in SNR or Sigma
 
+    // This function is pretty terrible and not used, so I'm just going to comment it out
+    // Perhaps at some point it can be made better, and used, and uncommented
+/*
     double Significance( vector<double> x, vector<int> omit, int include, std::string metric )
     {
         double noiseAmp = 0;
@@ -155,7 +157,7 @@ namespace Katydid
         else
             return -1.;
     }
-
+*/
     // Performs brute-force intercept sweep and returns the point of maximum density for specific q, width, and step size
     double KTLinearDensityProbeFit::findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width )
     {
@@ -197,10 +199,9 @@ namespace Katydid
     // Sum of npeaks Gaussian peaks on a linear background
     // Background is specified by par[0] and par[1]
     // Gaussian peaks are specified by all other elements of par
-    // npeaks must be declared here for use in both fpeaks and the ProjectionAnalysis method
+    // npeaks is initialized in the header file
 
-    Int_t npeaks;
-    Double_t fpeaks( Double_t *x, Double_t *par )
+    double SumOfGaussians( double *x, double *par )
     {
         // The frequency domain will be in units of MHz to aid with the fit
         // This makes all of the parameters much closer to O(1) rather than having some O(1e8)
@@ -209,13 +210,15 @@ namespace Katydid
         // Thus it must be divided by 1e6
         // All mean and sigma parameters have units of MHz and thus must be multiplied by 1e6
 
-        Double_t result = par[0] + par[1] * x[0] / 1e6;
+        // We will assume the number of peaks is the maximum npeaks = 10
 
-        for( Int_t p = 0; p < npeaks; p++ )
+        double result = par[0] + par[1] * x[0] * 1e-6;
+
+        for( int peak = 0; peak < 10; ++peak )
         {
-            Double_t norm  = par[3*p+2];
-            Double_t mean  = par[3*p+3] * 1e6;
-            Double_t sigma = par[3*p+4] * 1e6;
+            double norm  = par[3*peak+2];
+            double mean  = par[3*peak+3] * 1e6;
+            double sigma = par[3*peak+4] * 1e6;
 
             result += norm * TMath::Gaus( x[0], mean, sigma );
         }
@@ -236,11 +239,7 @@ namespace Katydid
         newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 1 );
 
         // Calculate number of points
-        int nPts = 0;
-        for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
-        {
-            nPts++;
-        }
+        int nPts = pts.GetSetOfPoints(0).size();
         newData.SetNPoints( nPts, 0 );
         newData.SetNPoints( nPts, 1 );
 
@@ -276,34 +275,35 @@ namespace Katydid
         double alphaBound_lower = intercept1 - 1e6;
 
         // Window and spectrogram parameters
-        int xBinStart, xBinEnd, xWindow, yBinStart, yBinEnd, yWindow;
-        double ps_xmin, ps_xmax, ps_ymin, ps_dx, ps_dy;
-        double q_fit = newData.GetSlope( 0 );
-        double x, y;
-        
-        ps_xmin = fullSpectrogram.GetStartTime();
-        ps_xmax = fullSpectrogram.GetEndTime();
-        ps_ymin = fullSpectrogram.GetSpectra().begin()->second->GetRangeMin();
-        ps_dx   = fullSpectrogram.GetDeltaT();
-        ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
+
+        double ps_xmin = fullSpectrogram.GetStartTime();
+        double ps_xmax = fullSpectrogram.GetEndTime();
+        double ps_ymin = fullSpectrogram.GetSpectra().begin()->second->GetRangeMin();
+        //     ps_ymax will not be necessary
+        double ps_dx   = fullSpectrogram.GetDeltaT();
+        double ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
         
         // We add +1 for the underflow bin
-        xBinStart = floor( (data.GetStartTimeInRunC() - ps_xmin) / ps_dx ) + 1;
-        xBinEnd   = floor( (data.GetEndTimeInRunC() - ps_xmin) / ps_dx ) + 1;
-        xWindow = xBinEnd - xBinStart + 1;
+        int xBinStart = floor( (data.GetStartTimeInRunC() - ps_xmin) / ps_dx ) + 1;
+        int xBinEnd   = floor( (data.GetEndTimeInRunC() - ps_xmin) / ps_dx ) + 1;
+        int xWindow = xBinEnd - xBinStart + 1;
         KTINFO(evlog, "Set xBin range to " << xBinStart << ", " << xBinEnd);
 
+        int yBinStart = 0; // Will be set during the projection calculatinos
+        //  yBinEnd will not be necessary
+        int yWindow = ceil( (alphaBound_upper - alphaBound_lower) / ps_dy ); // The y window this time will be floating, but its size will be consistent
+
+        double q_fit = newData.GetSlope( 0 );
+        
         newData.SetFit_width( xWindow, 0 );
         newData.SetFit_width( xWindow, 1 );
-
-        // The y window this time will be floating, but its size will be consistent
-        yWindow = ceil( (alphaBound_upper - alphaBound_lower) / ps_dy );
 
         // Vectors to hold the unweighted projection, weighted projection, and fourier transform of the weighted projection
         vector< double > unweighted, weighted, fourier;
 
-        double delta_f;
-        int i = 0;
+        double xVal, yVal; // time (x) and frequency (y) values to be incremented in the loops below
+        double delta_f; // used in weighted projection calculated
+        int iSpectrum = 0;
 
         KTDEBUG(evlog, "Computing unweighted projection");
 
@@ -311,24 +311,24 @@ namespace Katydid
         for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
         {
             // Set x value and starting y-bin
-            x = ps_xmin + (i - 1) * ps_dx;
-            yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
+            xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
+            yBinStart = it->second->FindBin( alphaBound_lower + q_fit * xVal );
 
             // Unweighted power = sum of raw power spectrum
             unweighted.push_back( 0 );
-            for( int j = yBinStart; j < yBinStart + yWindow; j++ )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
             {
-                y = ps_ymin + ps_dy * (j - 1);
+                yVal = ps_ymin + ps_dy * (iBin - 1);
 
                 // We reevaluate the spline rather than deal with the appropriate index of power_minus_bkgd
-                unweighted[i] += (*it->second)(j) - fGVData.GetSpline()->Evaluate( y );
+                unweighted[iSpectrum] += (*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal );
             }
-            i++;
+            ++iSpectrum;
         }
 
         KTDEBUG(evlog, "Computing weighted projection");
 
-        i = 0;
+        iSpectrum = 0;
 
         // Weighted projection
         double cumulative;
@@ -336,33 +336,32 @@ namespace Katydid
         {
             cumulative = 0.;
 
-            x = ps_xmin + (i - 1) * ps_dx;
-            yBinStart = it->second->FindBin( alphaBound_lower + q_fit * x );
+            xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
+            yBinStart = it->second->FindBin( alphaBound_lower + q_fit * xVal );
 
-            for( int j = yBinStart; j < yBinStart + yWindow; j++ )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
             {
-                y = ps_ymin + ps_dy * (j - 1);
+                yVal = ps_ymin + ps_dy * (iBin - 1);
 
                 // Calculate delta-f using the fit values
-                delta_f = y - (q_fit * x + newData.GetIntercept(0));
-                cumulative += delta_f * ((*it->second)(j) - fGVData.GetSpline()->Evaluate( y )) / unweighted[i];
+                delta_f = yVal - (q_fit * xVal + newData.GetIntercept(0));
+                cumulative += delta_f * ((*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal )) / unweighted[iSpectrum];
             }
 
             weighted.push_back( cumulative );
-            i++;
+            ++iSpectrum;
         }
 
         // Discrete Cosine Transform (real -> real) of type I
         // Explicit, not fast (i.e. n^2 operations)
 
-        double pi = 3.14159265358979;
-        for( int k = 0; k < xWindow; k++ )
+        for( int xBin = 0; xBin < xWindow; ++xBin )
         {
             cumulative = 0.;
-            for( int n = 1; n <= xWindow - 2; n++ )
-                cumulative += weighted[n] * cos( n * k * pi / (xWindow - 1) );
+            for( int xxBin = 1; xxBin <= xWindow - 2; ++xxBin )
+                cumulative += weighted[xxBin] * cos( xxBin * xBin * KTMath::Pi() / (xWindow - 1) );
 
-            fourier.push_back( pow( 0.5 * (weighted[0] + pow( -1, k ) * weighted[xWindow - 1]) + cumulative, 2 ) );
+            fourier.push_back( pow( 0.5 * (weighted[0] + pow( -1, xBin ) * weighted[xWindow - 1]) + cumulative, 2 ) );
         }
 
         // Evaluate SNR and Sigma significance of the largest fourier peak
@@ -373,19 +372,19 @@ namespace Katydid
         double max_fourier = 0.;
         double freq_step = 1/(2 * (xWindow - 1) * ps_dx);
 
-        for( int k = 0; k < xWindow; k++ )
+        for( int xBin = 0; xBin < xWindow; ++xBin )
         {
-            avg_fourier += fourier[k] / xWindow;
+            avg_fourier += fourier[xBin] / xWindow;
         }
 
-        for( int k = 0; k < xWindow; k++ )
+        for( int xBin = 0; xBin < xWindow; ++xBin )
         {
-            if( fourier[k] > max_fourier )
+            if( fourier[xBin] > max_fourier )
             {
-                max_fourier = fourier[k];
-                newData.SetFFT_peak( double(k) * freq_step, 0 );
+                max_fourier = fourier[xBin];
+                newData.SetFFT_peak( double(xBin) * freq_step, 0 );
                 newData.SetFFT_SNR( max_fourier / avg_fourier, 0 );
-                newData.SetFFT_peak( double(k) * freq_step, 1 );
+                newData.SetFFT_peak( double(xBin) * freq_step, 1 );
                 newData.SetFFT_SNR( max_fourier / avg_fourier, 1 );
             }
         }
@@ -438,7 +437,7 @@ namespace Katydid
         // The search tolerance and threshold are configurable parameters
 
         TSpectrum *s = new TSpectrum( 10 ); // Maximum number of peaks = 10
-        Int_t nfound = s->Search( fitPoints, fTolerance, "", fThreshold );
+        int nfound = s->Search( fitPoints, fTolerance, "", fThreshold );
 
         KTINFO(evlog, "Found " << nfound << " candidate peaks to fit");
 
@@ -450,7 +449,7 @@ namespace Katydid
         fitPoints->Fit( "fline", "qn" );
 
         // Maximum 10 peaks = 32 parameters (3*10 + 2)
-        Double_t par[32];
+        double par[32];
 
         par[0] = fline->GetParameter( 0 );
         par[1] = fline->GetParameter( 1 );
@@ -459,14 +458,14 @@ namespace Katydid
         // Peaks with SNR < 2 will be discarded
 
         npeaks = 0;
-        Double_t *xpeaks = s->GetPositionX();
+        double *xpeaks = s->GetPositionX();
 
-        for( Int_t p = 0; p < nfound; p++ )
+        for( int peak = 0; peak < nfound; ++peak )
         {
             // Acquire peak location and bin
-            Double_t xp = xpeaks[p];
-            Int_t bin = fitPoints->GetXaxis()->FindBin( xp );
-            Double_t yp = fitPoints->GetBinContent( bin );
+            double xp = xpeaks[peak];
+            int bin = fitPoints->GetXaxis()->FindBin( xp );
+            double yp = fitPoints->GetBinContent( bin );
 
             KTINFO(evlog, "Looking at peak (" << xp << ", " << yp << ")");
 
@@ -485,16 +484,16 @@ namespace Katydid
             par[3*npeaks+4] = 0.1; // Arbitrary default guess of 100kHz width
 
             // Increment npeaks
-            npeaks++;
+            ++npeaks;
         }
 
         KTINFO(evlog, "Found " << npeaks << " useful peaks to fit");
         KTINFO(evlog, "Now fitting: Be patient...");
 
         // Next we set up a TF1 to fit the power projection
-        // Recall fpeaks is a sum of npeaks Gaussians
+        // Recall SumOfGaussians is a sum of npeaks Gaussians
 
-        TF1 *fit = new TF1( "fit", fpeaks, 0, 1e9, 2+3*npeaks );
+        TF1 *fit = new TF1( "fit", SumOfGaussians, 0, 1e9, 32 );
 
         // We may have more than the default 25 parameters
         TVirtualFitter::Fitter( fitPoints, 10+3*npeaks );
@@ -504,13 +503,21 @@ namespace Katydid
         // The upper limits are arbitrary but much larger than anything sensible
 
         fit->SetParameters( par );
-        for( Int_t p = 0; p < npeaks; p++ )
+        for( int peak = 0; peak < npeaks; ++peak )
         {
-            fit->SetParLimits( 3*p+2, 0, 1000 );
-            fit->SetParLimits( 3*p+3, 0, 50000 );
-            fit->SetParLimits( 3*p+4, 0, 100 );
+            fit->SetParLimits( 3*peak+2, 0, 1000 );
+            fit->SetParLimits( 3*peak+3, 0, 50000 );
+            fit->SetParLimits( 3*peak+4, 0, 100 );
         }
         fit->SetNpx( 1000 );
+
+        // Fix all parameters which will not be used because npeaks < 10
+        for( int tooManyPeaks = 9; tooManyPeaks >= npeaks; tooManyPeaks-- )
+        {
+            fit->FixParameter( 3*tooManyPeaks+2, 0 ); // norm = 0 should ensure no contribution
+            fit->FixParameter( 3*tooManyPeaks+3, 0 );
+            fit->FixParameter( 3*tooManyPeaks+4, 1 ); // just to avoid 0/0
+        }
 
         // Perform fit
         TFitResultPtr fitStatus = fitPoints->Fit( "fit", "S" );
@@ -523,23 +530,23 @@ namespace Katydid
         std::vector<double> norms, means, sigmas, maxima;
         std::vector<double> normErrs, meanErrs, sigmaErrs, maximumErrs;
 
-        double invsqrt2pi = TMath::Power( 2*TMath::Pi(), -0.5 ); // I could have just written the number but eh
+        double invsqrt2pi = TMath::Power( 2*KTMath::Pi(), -0.5 ); // I could have just written the number but eh
 
         // Loop over found peaks and fill the vectors
-        for( Int_t p = 0; p < npeaks; p++ )
+        for( int peak = 0; peak < npeaks; ++peak )
         {
-            norms.push_back( fit->GetParameter(3*p+2) );
-            means.push_back( fit->GetParameter(3*p+3) );
-            sigmas.push_back( fit->GetParameter(3*p+4) );
+            norms.push_back( fit->GetParameter(3*peak+2) );
+            means.push_back( fit->GetParameter(3*peak+3) );
+            sigmas.push_back( fit->GetParameter(3*peak+4) );
             //maxima.push_back( invsqrt2pi * fit->GetParameter(3*p+2) / fit->GetParameter(3*p+4) );
-            maxima.push_back( s->GetPositionY()[p] );
+            maxima.push_back( s->GetPositionY()[peak] );
 
-            normErrs.push_back( fit->GetParError(3*p+2) );
-            meanErrs.push_back( fit->GetParError(3*p+3) );
-            sigmaErrs.push_back( fit->GetParError(3*p+4) );
+            normErrs.push_back( fit->GetParError(3*peak+2) );
+            meanErrs.push_back( fit->GetParError(3*peak+3) );
+            sigmaErrs.push_back( fit->GetParError(3*peak+4) );
 
             // Really annoying error propagation for this one
-            maximumErrs.push_back( TMath::Sqrt( TMath::Power( invsqrt2pi / fit->GetParameter(3*p+4) * fit->GetParError(3*p+2), 2 ) + TMath::Power( invsqrt2pi * fit->GetParameter(3*p+2) / TMath::Power( fit->GetParameter(3*p+4), 2 ) * fit->GetParError(3*p+4), 2 ) ) );
+            maximumErrs.push_back( TMath::Sqrt( TMath::Power( invsqrt2pi / fit->GetParameter(3*peak+4) * fit->GetParError(3*peak+2), 2 ) + TMath::Power( invsqrt2pi * fit->GetParameter(3*peak+2) / TMath::Power( fit->GetParameter(3*peak+4), 2 ) * fit->GetParError(3*peak+4), 2 ) ) );
         }
 
         // We will also store the validity of the fit
@@ -596,13 +603,13 @@ namespace Katydid
         // First find the most central peak
         int cpIndex;
         double cpLocation;
-        for( int p = 0; p < npeaks; p++ )
+        for( int peak = 0; peak < npeaks; ++peak )
         {
-            KTDEBUG(evlog, "Peak " << p << " has location " << xpeaks[p] - meanCorrection);
-            if( p == 0 || std::abs( xpeaks[p] - meanCorrection ) < std::abs( cpLocation ) )
+            KTDEBUG(evlog, "Peak " << peak << " has location " << xpeaks[peak] - meanCorrection);
+            if( peak == 0 || std::abs( xpeaks[peak] - meanCorrection ) < std::abs( cpLocation ) )
             {
-                cpIndex = p;
-                cpLocation = xpeaks[p] - meanCorrection;
+                cpIndex = peak;
+                cpLocation = xpeaks[peak] - meanCorrection;
             }
         }
 
@@ -642,7 +649,7 @@ namespace Katydid
                 nonCentralPoints.push_back( it->second.fOrdinate );
                 KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to nonCentralPoints vector");
             }
-            iBin++;
+            ++iBin;
         }
         
         // Initialize variables for mean and RMS
@@ -652,25 +659,25 @@ namespace Katydid
         double nonCentralRMS = 0;
 
         // Calculate central mean and RMS
-        for( int i = 0; i < centralPoints.size(); i++ )
+        for( int iPoint = 0; iPoint < centralPoints.size(); ++iPoint )
         {
-            centralMean += centralPoints.at(i);
-            centralRMS += TMath::Power( centralPoints.at(i), 2 );
+            centralMean += centralPoints.at(iPoint);
+            centralRMS += TMath::Power( centralPoints.at(iPoint), 2 );
         }
-        centralMean /= centralPoints.size();
-        centralRMS /= centralPoints.size();
+        centralMean /= (double)(centralPoints.size());
+        centralRMS /= (double)(centralPoints.size());
         centralRMS = TMath::Power( centralRMS - TMath::Power( centralMean, 2 ), 0.5 );
 
         KTINFO(evlog, "Calculated central mean = " << centralMean << " and RMS = " << centralRMS);
 
         // Calculate non-central mean and RMS
-        for( int i = 0; i < nonCentralPoints.size(); i++ )
+        for( int iPoint = 0; iPoint < nonCentralPoints.size(); ++iPoint )
         {
-            nonCentralMean += nonCentralPoints.at(i);
-            nonCentralRMS += TMath::Power( nonCentralPoints.at(i), 2 );
+            nonCentralMean += nonCentralPoints.at(iPoint);
+            nonCentralRMS += TMath::Power( nonCentralPoints.at(iPoint), 2 );
         }
-        nonCentralMean /= nonCentralPoints.size();
-        nonCentralRMS /= nonCentralPoints.size();
+        nonCentralMean /= (double)(nonCentralPoints.size());
+        nonCentralRMS /= (double)(nonCentralPoints.size());
         nonCentralRMS = TMath::Power( nonCentralRMS - TMath::Power( nonCentralMean, 2 ), 0.5 );
 
         KTINFO(evlog, "Calculated non-central mean = " << nonCentralMean << " and RMS = " << nonCentralRMS);
