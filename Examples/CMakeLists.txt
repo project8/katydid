@@ -7,6 +7,7 @@
 # Config files
 set (EXAMPLE_CONFIGFILES
     ConfigFiles/DisplayFFT.json
+    ConfigFiles/DisplaySpectrograms.yaml
     ConfigFiles/EvaluateCandidates.json
     ConfigFiles/FSPeakAnalysisConfig.json
     ConfigFiles/KatydidPSAnalysisTemplate.json
@@ -15,7 +16,7 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/KatydidWVConfig.json
     ConfigFiles/PrintInfo.json
-    ConfigFiles/SidebandTrackAnalysis.json
+    ConfigFiles/SidebandTrackAnalysis.yaml
     ConfigFiles/SpectrogramConfig.json
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
