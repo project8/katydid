@@ -14,7 +14,6 @@ set (EVENTANALYSIS_HEADERFILES
     KTDBScanTrackClustering.hh
     KTEventTimeCut.hh
     KTFrequencyCandidateIdentifier.hh
-    KTLinearDensityProbeFit.hh
     KTLinearFitCut.hh
     KTMultiPeakEventBuilder.hh
     KTMultiSliceClustering.hh
@@ -35,7 +34,6 @@ set (EVENTANALYSIS_SOURCEFILES
     KTDBScanTrackClustering.cc
     KTEventTimeCut.cc
     KTFrequencyCandidateIdentifier.cc
-    KTLinearDensityProbeFit.cc
     KTLinearFitCut.cc
     KTMultiPeakEventBuilder.cc
     KTMultiSliceClustering.cc
@@ -47,6 +45,17 @@ set (EVENTANALYSIS_SOURCEFILES
     KTTrackFreqCut.cc
     KTTrackTimeCut.cc
 )
+
+if (ROOT_FOUND)
+    set (EVENTANALYSIS_HEADERFILES 
+        ${EVENTANALYSIS_HEADERFILES}   
+        KTLinearDensityProbeFit.hh
+    )
+    set (EVENTANALYSIS_SOURCEFILES
+        ${EVENTANALYSIS_SOURCEFILES}
+        KTLinearDensityProbeFit.cc
+    )
+endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
