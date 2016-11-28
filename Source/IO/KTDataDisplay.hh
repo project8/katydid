@@ -105,7 +105,7 @@ namespace Katydid
             bool IsReady();
 
             template< typename XDrawable >
-            void Draw(XDrawable* drawable, std::string title = "untitled");
+            void Draw(XDrawable* drawable, std::string title = "untitled.pdf");
 
         private:
             KTDisplayWindow* fDisplayWindow;
@@ -183,9 +183,6 @@ namespace Katydid
 
         fDisplayWindow->Draw(drawable, fDrawArgs);
         fDisplayWindow->GetCanvas()->Update();
-        // this will allow the user to interact with the window
-        // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
-        fEventLoop->Go();
 
         TString fn = TString::Format("%s_%s", title.c_str(), fSaveAs.c_str());
 
@@ -194,9 +191,15 @@ namespace Katydid
             fDisplayWindow->GetCanvas()->SaveAs( fn );
             fDisplayWindow->Continue();
         }
-        else if( fSaveAll )
+        else
         {
-            fDisplayWindow->GetCanvas()->SaveAs( fn );
+            // this will allow the user to interact with the window
+            // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
+            fEventLoop->Go();
+            if( fSaveAll )
+            {
+                fDisplayWindow->GetCanvas()->SaveAs( fn );
+            }
         }
 
         return;

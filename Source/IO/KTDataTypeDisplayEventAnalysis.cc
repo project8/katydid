@@ -60,9 +60,8 @@ namespace Katydid
         //std::cout << "This is a test!" << std::endl;
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-
         KTPSCollectionData& psColl = data->Of<KTPSCollectionData>();
+        Double_t startFreq = psColl.GetMinFreq();
 
         if (! fWriter->OpenWindow()) return;
 
@@ -72,7 +71,7 @@ namespace Katydid
         if (!spectra.empty())
         {
             stringstream conv;
-            conv << "histPSColl_" << sliceNumber;
+            conv << "histPSColl_" << startFreq;
             string histName;
             conv >> histName;
             TH2D* psCollection = KT2ROOT::CreatePowerHistogram(spectra, histName);
