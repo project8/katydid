@@ -314,6 +314,13 @@ namespace Katydid
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * xVal );
 
+            KTDEBUG(evlog, "yBin range set from " << yBinStart << " to " << yBinStart + yWindow - 1);
+            if( yBinStart < 0 || yBinStart + yWindow > (*it->second).GetNFrequencyBins() )
+            {
+                KTWARN(evlog, "I have noticed that the y-window will fall outside the power spectrum range. Analysis of this spectrogram will be aborted.");
+                return false;
+            }
+
             // Unweighted power = sum of raw power spectrum
             unweighted.push_back( 0 );
             for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
@@ -338,6 +345,12 @@ namespace Katydid
 
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * xVal );
+
+            if( yBinStart < 0 || yBinStart + yWindow > (*it->second).GetNFrequencyBins() )
+            {
+                KTWARN(evlog, "I have noticed that the y-window will fall outside the power spectrum range. Analysis of this spectrogram will be aborted.");
+                return false;
+            }
 
             for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
             {
