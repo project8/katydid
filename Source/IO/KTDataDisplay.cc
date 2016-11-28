@@ -23,6 +23,9 @@ namespace Katydid
             fHeight(500),
             fWidth(700),
             fDrawArgs(""),
+            fSaveAs(""),
+            fSaveAll(false),
+            fSaveAndCloseAll(false),
             fDisplayWindow(NULL),
             fEventLoop(NULL)
     {
@@ -41,6 +44,9 @@ namespace Katydid
         fHeight = node->get_value< unsigned >("window-height", fHeight);
         fWidth = node->get_value< unsigned >("window-width", fWidth);
         fDrawArgs = node->get_value< std::string >("draw-args", fDrawArgs);
+        fSaveAs = node->get_value< std::string >("save-as", fSaveAs);
+        fSaveAll = node->get_value< bool >("save-all", fSaveAll);
+        fSaveAndCloseAll = node->get_value< bool >("save-and-close-all", fSaveAndCloseAll);
 
         return true;
     }

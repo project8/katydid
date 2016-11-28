@@ -76,7 +76,7 @@ namespace Katydid
             string histName;
             conv >> histName;
             TH2D* psCollection = KT2ROOT::CreatePowerHistogram(spectra, histName);
-            fWriter->Draw(psCollection);
+            fWriter->Draw(psCollection, histName);
         }
 
         return;

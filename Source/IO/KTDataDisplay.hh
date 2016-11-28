@@ -81,10 +81,22 @@ namespace Katydid
             const std::string& GetDrawArgs() const;
             void SetDrawArgs(const std::string& args);
 
+            const std::string& GetSaveAs() const;
+            void SetSaveAs(const std::string& args);
+
+            bool GetSaveAll() const;
+            void SetSaveAll(bool saveAll);
+
+            bool GetSaveAndCloseAll() const;
+            void SetSaveAndCloseAll(bool saveAndCloseAll);
+
         private:
             unsigned fWidth;
             unsigned fHeight;
             std::string fDrawArgs;
+            std::string fSaveAs;
+            bool fSaveAll;
+            bool fSaveAndCloseAll;
 
         public:
             bool Initialize();
@@ -93,7 +105,7 @@ namespace Katydid
             bool IsReady();
 
             template< typename XDrawable >
-            void Draw(XDrawable* drawable);
+            void Draw(XDrawable* drawable, std::string title = "untitled");
 
         private:
             KTDisplayWindow* fDisplayWindow;
@@ -132,8 +144,38 @@ namespace Katydid
         return;
     }
 
+    inline const std::string& KTDataDisplay::GetSaveAs() const
+    {
+        return fSaveAs;
+    }
+    inline void KTDataDisplay::SetSaveAs(const std::string& args)
+    {
+        fSaveAs = args;
+        return;
+    }
+
+    inline bool KTDataDisplay::GetSaveAll() const
+    {
+        return fSaveAll;
+    }
+    inline void KTDataDisplay::SetSaveAll(bool saveAll)
+    {
+        fSaveAll = saveAll;
+        return;
+    }
+
+    inline bool KTDataDisplay::GetSaveAndCloseAll() const
+    {
+        return fSaveAndCloseAll;
+    }
+    inline void KTDataDisplay::SetSaveAndCloseAll(bool saveAndCloseAll)
+    {
+        fSaveAndCloseAll = saveAndCloseAll;
+        return;
+    }
+
     template< typename XDrawable >
-    void KTDataDisplay::Draw(XDrawable* drawable)
+    void KTDataDisplay::Draw(XDrawable* drawable, std::string title)
     {
         if (! IsReady()) Initialize();
 
@@ -144,6 +186,18 @@ namespace Katydid
         // this will allow the user to interact with the window
         // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
         fEventLoop->Go();
+
+        TString fn = TString::Format("%s_%s", title.c_str(), fSaveAs.c_str());
+
+        if( fSaveAndCloseAll )
+        {
+            fDisplayWindow->GetCanvas()->SaveAs( fn );
+            fDisplayWindow->Continue();
+        }
+        else if( fSaveAll )
+        {
+            fDisplayWindow->GetCanvas()->SaveAs( fn );
+        }
 
         return;
     }
