@@ -23,7 +23,7 @@ namespace Katydid
             fHeight(500),
             fWidth(700),
             fDrawArgs(""),
-            fSaveAs(""),
+            fSaveAs(".pdf"),
             fSaveAll(false),
             fSaveAndCloseAll(false),
             fDisplayWindow(NULL),

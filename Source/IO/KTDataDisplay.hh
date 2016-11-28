@@ -33,6 +33,10 @@ namespace Katydid
      Configuration name: "data-display"
 
      Available configuration values:
+     - "draw-args": std::string -- string to pass to the Draw() method in ROOT, e.g. "colz" or "A*"
+     - "save-as": std::string -- suffix for saving all canvases. This MUST include a file extension
+     - "save-all": bool -- flag to save all canvases
+     - "save-and-close-all": bool -- flag to circumvent the event loop and save all canvases with no user interaction
 
      Slots:
      - "aa":
@@ -105,7 +109,7 @@ namespace Katydid
             bool IsReady();
 
             template< typename XDrawable >
-            void Draw(XDrawable* drawable, std::string title = "untitled.pdf");
+            void Draw(XDrawable* drawable, std::string title = "untitled");
 
         private:
             KTDisplayWindow* fDisplayWindow;
@@ -184,10 +188,11 @@ namespace Katydid
         fDisplayWindow->Draw(drawable, fDrawArgs);
         fDisplayWindow->GetCanvas()->Update();
 
-        TString fn = TString::Format("%s_%s", title.c_str(), fSaveAs.c_str());
+        TString fn = TString::Format("%s%s", title.c_str(), fSaveAs.c_str());
 
         if( fSaveAndCloseAll )
         {
+            // Save the file and simulate the "continue" button without starting the event loop
             fDisplayWindow->GetCanvas()->SaveAs( fn );
             fDisplayWindow->Continue();
         }
@@ -196,6 +201,8 @@ namespace Katydid
             // this will allow the user to interact with the window
             // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
             fEventLoop->Go();
+
+            // Save the file if specified
             if( fSaveAll )
             {
                 fDisplayWindow->GetCanvas()->SaveAs( fn );
