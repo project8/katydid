@@ -630,12 +630,6 @@ namespace Katydid
         std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPoints();
 
         // Iterate over all points and fill the appropriate vector
-
-        double minFreq, maxFreq;
-        unsigned nBins = SetOfPoints.size();
-        minFreq = SetOfPoints.begin()->second.fAbscissa;
-        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
-
         int iBin = 1;
         for( it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it )
         {
