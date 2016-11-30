@@ -142,6 +142,16 @@ namespace Katydid
         double overallEndFrequency = -1.;
         double overallStartTime = -1.;
         double overallEndTime = -1.;
+
+        // start/end time and frequency for the "track" equivalent to the average in a MPT group
+        // this part is specific for Gray's analysis
+        // we will copy the required quantities into newTrack
+        double averageStartFrequency = 0.;
+        double averageEndFrequency = 0.;
+        double averageIntercept = 0.;
+        double averageSlope = 0.;
+
+        // multiplicity
         int mpt = 0;
 
         if( ! GetFullEvent() )
@@ -175,9 +185,27 @@ namespace Katydid
                     overallEndFrequency = aTrack.GetEndFrequency();
                 }
 
+                // Add to the averages
+                averageStartFrequency += aTrack.GetStartFrequency();
+                averageEndFrequency += aTrack.GetEndFrequency();
+                averageIntercept += aTrack.GetIntercept();
+                averageSlope += aTrack.GetSlope();
+
                 // Increment the track multiplicity
                 ++mpt;
             }
+
+            // Compute averages
+            averageStartFrequency /= (double)mpt;
+            averageEndFrequency /= (double)mpt;
+            averageIntercept /= (double)mpt;
+            averageSlope /= (double)mpt;
+
+            // Fill out newTrack
+            newTrack->SetStartFrequency( averageStartFrequency );
+            newTrack->SetEndFrequency( averageEndFrequency );
+            newTrack->SetIntercept( averageIntercept );
+            newTrack->SetSlope( averageSlope );
         }
         else
         {
