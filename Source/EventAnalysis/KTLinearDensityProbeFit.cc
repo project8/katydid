@@ -747,8 +747,8 @@ namespace Katydid
         KTINFO(evlog, "Calculated non-central mean = " << nonCentralMean << " and RMS = " << nonCentralRMS);
 
         // Fill data
-        newData.SetRMSAwayFromCentral( nonCentralRMS );
-        newData.SetCentralPowerRatio( centralMean / nonCentralMean );
+        newData.SetRMSAwayFromZero( nonCentralRMS );
+        newData.SetZeroPowerRatio( centralMean / nonCentralMean );
 
         return true;
     }
