@@ -691,6 +691,65 @@ namespace Katydid
 
         KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 
+
+        // *****The following is only for Gray's analysis*****
+
+
+        // Vectors to calculate statistics near and away from the central peak
+        centralPoints.clear();
+        nonCentralPoints.clear();
+
+        // Iterate over all points and fill the appropriate vector
+        iBin = 1;
+        for( it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it )
+        {
+            if( it->second.fAbscissa - meanCorrection >= -1e6 && it->second.fAbscissa - meanCorrection <= 1e6 )
+            {
+                centralPoints.push_back( it->second.fOrdinate );
+                KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to centralPoints vector");
+            }
+            else if( it->second.fAbscissa - meanCorrection >= -10e6 && it->second.fAbscissa - meanCorrection <= 10e6 )
+            {
+                nonCentralPoints.push_back( it->second.fOrdinate );
+                KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to nonCentralPoints vector");
+            }
+            ++iBin;
+        }
+        
+        // Reset variables for mean and RMS
+        centralMean = 0;
+        centralRMS = 0;
+        nonCentralMean = 0;
+        nonCentralRMS = 0;
+
+        // Calculate central mean and RMS
+        for( int iPoint = 0; iPoint < centralPoints.size(); ++iPoint )
+        {
+            centralMean += centralPoints.at(iPoint);
+            centralRMS += TMath::Power( centralPoints.at(iPoint), 2 );
+        }
+        centralMean /= (double)(centralPoints.size());
+        centralRMS /= (double)(centralPoints.size());
+        centralRMS = TMath::Power( centralRMS - TMath::Power( centralMean, 2 ), 0.5 );
+
+        KTINFO(evlog, "Calculated central mean = " << centralMean << " and RMS = " << centralRMS);
+
+        // Calculate non-central mean and RMS
+        for( int iPoint = 0; iPoint < nonCentralPoints.size(); ++iPoint )
+        {
+            nonCentralMean += nonCentralPoints.at(iPoint);
+            nonCentralRMS += TMath::Power( nonCentralPoints.at(iPoint), 2 );
+        }
+        nonCentralMean /= (double)(nonCentralPoints.size());
+        nonCentralRMS /= (double)(nonCentralPoints.size());
+        nonCentralRMS = TMath::Power( nonCentralRMS - TMath::Power( nonCentralMean, 2 ), 0.5 );
+
+        KTINFO(evlog, "Calculated non-central mean = " << nonCentralMean << " and RMS = " << nonCentralRMS);
+
+        // Fill data
+        newData.SetRMSAwayFromCentral( nonCentralRMS );
+        newData.SetCentralPowerRatio( centralMean / nonCentralMean );
+
         return true;
     }
 
