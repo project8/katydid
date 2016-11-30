@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTRawTimeSeries : public KTVarTypePhysicalArray< uint64_t >
     {

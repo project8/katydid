@@ -20,7 +20,7 @@
 namespace Katydid {
     KTLOGGER(publog, "KTHDF5TypeWriterEventAnalysis");
 
-    static KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
+    static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
     KTHDF5TypeWriterEventAnalysis::KTHDF5TypeWriterEventAnalysis() :
         KTHDF5TypeWriter(),
         fMTEDataBuffer(),
@@ -33,14 +33,14 @@ namespace Katydid {
              */
             this->fMTEType = new H5::CompType(MTESize);
             // Insert fields into the type
-            for (int f = 0; f < 23; f++) {
+            for (int f = 0; f < MTENFields; f++) {
                 this->fMTEType->insertMember(
                     MTEFieldNames[f],
                     MTEFieldOffsets[f],
                     MTEFieldTypes[f]);
             }
             this->fPTType = new H5::CompType(PTSize);
-            for (int f = 0; f < 23; f++) {
+            for (int f = 0; f < PTNFields; f++) {
                 this->fPTType->insertMember(
                     PTFieldNames[f],
                     PTFieldOffsets[f],
@@ -64,22 +64,25 @@ namespace Katydid {
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data) {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data) {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data) {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "Processing Tracks");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         PTData track;
         track.Component = ptData.GetComponent();
+        track.AcquisitionID = ptData.GetAcquisitionID();
         track.TrackID = ptData.GetTrackID();
+        track.EventID = ptData.GetEventID();
+        track.EventSequenceID = ptData.GetEventSequenceID();
         track.IsCut = ptData.GetIsCut();
         track.StartTimeInAcq = ptData.GetStartTimeInAcq();
         track.StartTimeInRunC = ptData.GetStartTimeInRunC();
@@ -106,14 +109,16 @@ namespace Katydid {
         KTDEBUG("Done.");
         return;
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data) {
         KTDEBUG(publog, "Processing MTE");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         // Write the event information
         MTEData event;
         event.Component = mteData.GetComponent();
+        event.AcquisitionID = mteData.GetAcquisitionID();
         event.EventID = mteData.GetEventID();
+        event.TotalEventSequences = mteData.GetTotalEventSequences();
         event.StartTimeInAcq = mteData.GetStartTimeInAcq();
         event.StartTimeInRunC = mteData.GetStartTimeInRunC();
         event.EndTimeInRunC = mteData.GetEndTimeInRunC();
@@ -135,6 +140,7 @@ namespace Katydid {
         event.FirstTrackSlope = mteData.GetFirstTrackSlope();
         event.FirstTrackIntercept = mteData.GetFirstTrackIntercept();
         event.FirstTrackTotalPower = mteData.GetFirstTrackTotalPower();
+        event.UnknownEventTopology = mteData.GetUnknownEventTopology();
         (this->fMTEDataBuffer).push_back(event);
 
         // Write the tracks that make up this event
@@ -143,8 +149,10 @@ namespace Katydid {
         for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
         {
             track.Component = MTETrackIt->GetComponent();
+            track.AcquisitionID = MTETrackIt->GetAcquisitionID();
             track.TrackID = MTETrackIt->GetTrackID();
-            track.EventID = MTETrackIt->GetEventID();
+            track.EventID = event.EventID; // Get the Event ID from the Event, not from the Track
+            track.EventSequenceID = MTETrackIt->GetEventSequenceID();
             track.IsCut = MTETrackIt->GetIsCut();
             track.StartTimeInAcq = MTETrackIt->GetStartTimeInAcq();
             track.StartTimeInRunC = MTETrackIt->GetStartTimeInRunC();

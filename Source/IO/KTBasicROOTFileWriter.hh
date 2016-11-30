@@ -15,10 +15,10 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTBasicROOTFileWriter;
 
-    typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
 
   /*!
      @class KTBasicROOTFileWriter
@@ -62,13 +62,13 @@ namespace Katydid
      
     */
 
-    class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >//public KTWriter
+    class KTBasicROOTFileWriter : public Nymph::KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >//public KTWriter
     {
         public:
             KTBasicROOTFileWriter(const std::string& name = "basic-root-writer");
             virtual ~KTBasicROOTFileWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);

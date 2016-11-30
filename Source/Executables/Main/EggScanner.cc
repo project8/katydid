@@ -21,21 +21,26 @@
 #include "KTEgg2Reader.hh"
 #endif
 
+#ifdef USE_MONARCH3
+#include "KTEgg3Reader.hh"
+#endif
+
 #include <boost/filesystem.hpp>
 
 #include <iostream>
 #include <string>
 
-
 using namespace std;
 using namespace Katydid;
 
-
-
 KTLOGGER(eggscan, "EggScanner");
 
-static KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
-static KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
+static Nymph::KTCommandLineOption< bool > sUseEgg1("Egg Scanner", "Use the Egg1 reader", "egg1", '1');
+static Nymph::KTCommandLineOption< bool > sUseEgg2("Egg Scanner", "Use the Egg2 reader", "egg2", '2');
+static Nymph::KTCommandLineOption< bool > sUseEgg3("Egg Scanner", "Use the Egg3 reader", "egg3", '3');
+
+static Nymph::KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
+static Nymph::KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
 
 int main(int argc, char** argv)
 {
@@ -43,8 +48,8 @@ int main(int argc, char** argv)
     // Configuration phase
     //**************************
 
-    KTApplication* app = new KTApplication(argc, argv);
-    KTCommandLineHandler* clOpts = app->GetCommandLineHandler();
+    Nymph::KTApplication* app = new Nymph::KTApplication(argc, argv);
+    Nymph::KTCommandLineHandler* clOpts = app->GetCommandLineHandler();
     clOpts->DelayedCommandLineProcessing();
 
     if (! clOpts->IsCommandLineOptSet("egg-file"))
@@ -57,21 +62,40 @@ int main(int argc, char** argv)
     unsigned sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEggReader* reader;
-    if (clOpts->IsCommandLineOptSet("use-egg1-reader"))
+    if (clOpts->IsCommandLineOptSet("egg1"))
     {
-        KTINFO(eggscan, "Using egg1 (2011) reader");
+        KTINFO(eggscan, "Using egg1 reader");
         KTEgg1Reader* reader2011 = new KTEgg1Reader();
         reader = reader2011;
     }
-    else
+    else if (clOpts->IsCommandLineOptSet("egg2"))
     {
 #ifdef USE_MONARCH2
+        KTINFO(eggscan, "Using egg2 reader");
         KTEgg2Reader* readerMonarch = new KTEgg2Reader();
         readerMonarch->SetSliceSize(sliceSize);
         reader = readerMonarch;
 #else
-        KTERROR(eggscan, "Can only use Egg1 reader unless Monarch2 is enabled");
+        KTERROR(eggscan, "Can only use Egg2 reader if Monarch2 is enabled");
+        return 0;
 #endif
+    }
+    else if (clOpts->IsCommandLineOptSet("egg3"))
+    {
+#ifdef USE_MONARCH3
+        KTINFO(eggscan, "Using egg3 reader");
+        KTEgg3Reader* readerMonarch = new KTEgg3Reader();
+        readerMonarch->SetSliceSize(sliceSize);
+        reader = readerMonarch;
+#else
+        KTERROR(eggscan, "Can only use Egg3 reader if Monarch3 is enabled");
+        return 0;
+#endif
+    }
+    else
+    {
+        KTERROR(eggscan, "Please specify the egg reader type");
+        return 0;
     }
 
     bool scanRecords = clOpts->IsCommandLineOptSet("scan-records");
@@ -82,7 +106,7 @@ int main(int argc, char** argv)
 
     uint64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
-    KTDataPtr headerPtr = reader->BreakEgg(filename);
+    Nymph::KTDataPtr headerPtr = reader->BreakEgg(filename);
     if (! headerPtr)
     {
         KTERROR(eggscan, "Egg file was not opened and no header was received");
@@ -122,7 +146,7 @@ int main(int argc, char** argv)
             KTINFO(eggscan, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            KTDataPtr data = reader->HatchNextSlice();
+            Nymph::KTDataPtr data = reader->HatchNextSlice();
             if (data.get() == NULL) break;
 
             KTPROG(eggscan, data->Of< KTSliceHeader >());

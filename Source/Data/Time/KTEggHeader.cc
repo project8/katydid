@@ -183,7 +183,7 @@ namespace Katydid
                 << "\tFilename: " << header.GetFilename() << '\n'
                 << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
-                << "\tRun Duration: " << header.GetRunDuration() << " s\n"
+                << "\tRun Duration: " << header.GetRunDuration() << " ms\n"
                 << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
                 << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n"

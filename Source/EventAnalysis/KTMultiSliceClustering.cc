@@ -8,11 +8,10 @@
 #include "KTMultiSliceClustering.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
+
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
@@ -37,7 +36,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTMultiSliceClustering, "multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering(const std::string& name) :
-            KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),
+            Nymph::KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
             fMaxFreqSepBins(1),
@@ -74,32 +73,32 @@ namespace Katydid
     {
     }
 
-    bool KTMultiSliceClustering::ConfigureSubClass(const KTParamNode* node)
+    bool KTMultiSliceClustering::ConfigureSubClass(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("max-frequency-sep"))
+        if (node->has("max-frequency-sep"))
         {
-            SetMaxFrequencySeparation(node->GetValue< double >("max-frequency-sep"));
+            SetMaxFrequencySeparation(node->get_value< double >("max-frequency-sep"));
         }
-        if (node->Has("max-time-sep"))
+        if (node->has("max-time-sep"))
         {
-            SetMaxTimeSeparation(node->GetValue< double >("max-time-sep"));
-        }
-
-        if (node->Has("max-frequency-sep-bins"))
-        {
-            SetMaxFrequencySeparationBins(node->GetValue< unsigned >("max-frequency-sep-bins"));
-        }
-        if (node->Has("max-time-sep-bins"))
-        {
-            SetMaxTimeSeparationBins(node->GetValue< unsigned >("max-time-sep-bins"));
+            SetMaxTimeSeparation(node->get_value< double >("max-time-sep"));
         }
 
-        SetMinTimeBins(node->GetValue< unsigned >("min-time-bins", fMinTimeBins));
+        if (node->has("max-frequency-sep-bins"))
+        {
+            SetMaxFrequencySeparationBins(node->get_value< unsigned >("max-frequency-sep-bins"));
+        }
+        if (node->has("max-time-sep-bins"))
+        {
+            SetMaxTimeSeparationBins(node->get_value< unsigned >("max-time-sep-bins"));
+        }
 
-        SetNFramingTimeBins(node->GetValue< unsigned >("n-framing-time-bins", fNFramingTimeBins));
-        SetNFramingFreqBins(node->GetValue< unsigned >("n-framing-freq-bins", fNFramingFreqBins));
+        SetMinTimeBins(node->get_value< unsigned >("min-time-bins", fMinTimeBins));
+
+        SetNFramingTimeBins(node->get_value< unsigned >("n-framing-time-bins", fNFramingTimeBins));
+        SetNFramingFreqBins(node->get_value< unsigned >("n-framing-freq-bins", fNFramingFreqBins));
 
         return true;
     }
@@ -579,7 +578,7 @@ namespace Katydid
         return;
     }
 
-    KTDataPtr KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
+    Nymph::KTDataPtr KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
     {
 #ifndef NDEBUG
         // if in debug mode, put together a string to print
@@ -589,7 +588,7 @@ namespace Katydid
 
         ++fDataCount;
 
-        KTDataPtr data(new KTData());
+        Nymph::KTDataPtr data(new Nymph::KTData());
 
         KTWaterfallCandidateData& wfcData = data->Of< KTWaterfallCandidateData >();
         wfcData.SetComponent(cluster.fDataComponent);

@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     namespace KTMath
     {

@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     //*************************
     // Type information
     // Specializations for valid types
@@ -313,7 +313,7 @@ namespace Katydid
         {
             SetInterface( KTVTPATypeInfo< XDataType >::Size(), KTVTPATypeInfo< XDataType >::DataFormat() );
         }
-        catch( KTException& e ) {throw e;}
+        catch( Nymph::KTException& e ) {throw e;}
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
     }
 
@@ -332,7 +332,7 @@ namespace Katydid
         {
             SetInterfaceFunctions( dataTypeSize, dataFormat );
         }
-        catch( KTException& e ) {throw e;}
+        catch( Nymph::KTException& e ) {throw e;}
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
     }
 
@@ -419,7 +419,7 @@ namespace Katydid
             }
             else
             {
-                throw KTException() << "Unable to make a digitized unsigned data interface with data type size " << aDataTypeSize;
+                throw Nymph::KTException() << "Unable to make a digitized unsigned data interface with data type size " << aDataTypeSize;
             }
         }
         else if( aDataFormat == sDigitizedS )
@@ -446,7 +446,7 @@ namespace Katydid
             }
             else
             {
-                throw KTException() << "Unable to make a digitized signed data interface with data type size " << aDataTypeSize;
+                throw Nymph::KTException() << "Unable to make a digitized signed data interface with data type size " << aDataTypeSize;
             }
         }
         else if( aDataFormat == sAnalog )
@@ -463,12 +463,12 @@ namespace Katydid
             }
             else
             {
-                throw KTException() << "Unable to make a analog data interface with data type size " << aDataTypeSize;
+                throw Nymph::KTException() << "Unable to make a analog data interface with data type size " << aDataTypeSize;
             }
         }
         else
         {
-            throw KTException() << "Invalid combination of data format <" << aDataFormat << ">, data type size <" << aDataTypeSize << ">";
+            throw Nymph::KTException() << "Invalid combination of data format <" << aDataFormat << ">, data type size <" << aDataTypeSize << ">";
         }
         return;
     }

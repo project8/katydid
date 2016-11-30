@@ -13,8 +13,8 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
-    class KTCorrelationTSData : public KTTimeSeriesDataCore, public KTExtensibleData< KTCorrelationTSData >
+    
+    class KTCorrelationTSData : public KTTimeSeriesDataCore, public Nymph::KTExtensibleData< KTCorrelationTSData >
     {
         public:
             KTCorrelationTSData();

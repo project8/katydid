@@ -12,7 +12,6 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTParam.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -35,23 +34,24 @@ namespace Katydid
             fFSFFTWSlot("fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal),
             fNormFSFFTWSlot("norm-fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal)
     {
+        fReverseFFT.SetRequestedState(KTReverseFFTW::kC2C);
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
     {
     }
 
-    bool KTAnalyticAssociator::Configure(const KTParamNode* node)
+    bool KTAnalyticAssociator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetSaveFrequencySpectrum(node->GetValue< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
+        SetSaveFrequencySpectrum(node->get_value< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        if (! fForwardFFT.Configure(node->NodeAt("forward-fftw")))
+        if (! fForwardFFT.Configure(node->node_at("forward-fftw")))
         {
             return false;
         }
-        if (! fReverseFFT.Configure(node->NodeAt("reverse-fftw")))
+        if (! fReverseFFT.Configure(node->node_at("reverse-fftw")))
         {
             return false;
         }
@@ -61,7 +61,10 @@ namespace Katydid
 
     bool KTAnalyticAssociator::InitializeWithHeader(KTEggHeader& header)
     {
-        if (! fForwardFFT.InitializeWithHeader(header)) return false;
+        if (! fForwardFFT.InitializeForRealAsComplexTDD(header.GetChannelHeader(0)->GetSliceSize()))
+        {
+            return false;
+        }
         return fReverseFFT.InitializeWithHeader(header);
     }
 

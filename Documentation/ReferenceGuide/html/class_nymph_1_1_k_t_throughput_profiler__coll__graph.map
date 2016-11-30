@@ -1,0 +1,5 @@
+<map id="Nymph::KTThroughputProfiler" name="Nymph::KTThroughputProfiler">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="194,328,359,548"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="85,140,249,267"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="217,5,296,79"/>
+</map>

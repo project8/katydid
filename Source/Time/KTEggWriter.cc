@@ -8,7 +8,7 @@
 #include "KTEggWriter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -54,15 +54,15 @@ namespace Katydid
         delete fMonarch;
     }
 
-    bool KTEggWriter::Configure(const KTParamNode* node)
+    bool KTEggWriter::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetFilename(node->GetValue("output-file", fFilename));
+        SetFilename(node->get_value("output-file", fFilename));
 
-        if (node->Has("format-mode"))
+        if (node->has("format-mode"))
         {
-            string modeStr(node->GetValue("format-mode"));
+            string modeStr(node->get_value("format-mode"));
             if (modeStr == "separate")
             {
                 SetFormatMode(sFormatMultiSeparate);
@@ -78,7 +78,7 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->GetValue<double>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node->get_value<double>("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }
@@ -158,7 +158,7 @@ namespace Katydid
         monarchHeader->SetFilename(fFilename);
         monarchHeader->SetAcquisitionMode(fExpectedNChannels);
         monarchHeader->SetRecordSize(fExpectedRecordSize);
-        monarchHeader->SetRunDuration(header->GetRunDuration());
+        monarchHeader->SetRunDuration(header->GetRunDuration()); // in ms
         monarchHeader->SetAcquisitionRate(header->GetAcquisitionRate() * 1.e-6); // TODO: remove this 1e-6 when switch to MHz is made
         monarchHeader->SetTimestamp(header->GetTimestamp());
         monarchHeader->SetDescription(header->GetDescription());

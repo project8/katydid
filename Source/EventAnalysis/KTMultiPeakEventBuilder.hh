@@ -17,22 +17,16 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTMultiTrackEventData.hh"
-//#include "KTProcessedTrackData.hh"
 
 #include <algorithm>
 #include <set>
 #include <vector>
 #include <list>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-//;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTMultiPeakEventBuilder
      @author N.S. Oblath
@@ -63,13 +57,13 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTMultiPeakEventBuilder : public KTPrimaryProcessor
+    class KTMultiPeakEventBuilder : public Nymph::KTPrimaryProcessor
     {
         public:
             KTMultiPeakEventBuilder(const std::string& name = "multi-peak-event-builder");
             virtual ~KTMultiPeakEventBuilder();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, SidebandTimeTolerance);
 
@@ -87,7 +81,7 @@ namespace Katydid
 
             bool DoClustering();
 
-            const std::set< KTDataPtr >& GetCandidates() const;
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
             unsigned GetDataCount() const;
 
         private:
@@ -101,7 +95,7 @@ namespace Katydid
             std::vector< TrackSet > fCompTracks; // input tracks
             std::vector< std::set< Katydid::MultiPeakTrackRef, MTRComp > > fMPTracks;
 
-            std::set< KTDataPtr > fCandidates;
+            std::set< Nymph::KTDataPtr > fCandidates;
             unsigned fDataCount;
 
             //***************
@@ -109,15 +103,15 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fEventSignal;
-            KTSignalOneArg< void > fEventsDoneSignal;
+            Nymph::KTSignalData fEventSignal;
+            Nymph::KTSignalOneArg< void > fEventsDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
 
             void DoClusteringSlot();
 
@@ -134,7 +128,7 @@ namespace Katydid
         return;
     }
 
-    inline const std::set< KTDataPtr >& KTMultiPeakEventBuilder::GetCandidates() const
+    inline const std::set< Nymph::KTDataPtr >& KTMultiPeakEventBuilder::GetCandidates() const
     {
         return fCandidates;
     }

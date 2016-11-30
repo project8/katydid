@@ -19,13 +19,13 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     struct TEggHeader
     {
         TString* fFilename;
         UInt_t fAcquisitionMode;
         UInt_t fNChannels;
-        UInt_t fRunDuration;
+        UInt_t fRunDuration; /// in ms
         Double_t fAcquisitionRate; /// in Hz
         Double_t fCenterFrequency;
         Double_t fMaximumFrequency;
@@ -63,7 +63,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(KTDataPtr headerPtr);
+            void WriteEggHeader(Nymph::KTDataPtr headerPtr);
 
         public:
             TTree* GetEggHeaderTree() const;

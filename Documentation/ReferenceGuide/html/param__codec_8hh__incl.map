@@ -1,0 +1,8 @@
+<map id="param_codec.hh" name="param_codec.hh">
+<area shape="rect" id="node2" href="$scarab__api_8hh.html" title="scarab_api.hh" alt="" coords="5,299,110,324"/>
+<area shape="rect" id="node3" href="$factory_8hh.html" title="factory.hh" alt="" coords="349,79,428,104"/>
+<area shape="rect" id="node4" href="$singleton_8hh.html" title="singleton.hh" alt="" coords="54,152,147,177"/>
+<area shape="rect" id="node5" href="$mutex_8hh.html" title="mutex.hh" alt="" coords="62,225,139,251"/>
+<area shape="rect" id="node6" href="$lock__guard_8hh.html" title="lock_guard.hh" alt="" coords="221,152,326,177"/>
+<area shape="rect" id="node7" href="$logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="350,152,427,177"/>
+</map>

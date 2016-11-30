@@ -13,21 +13,21 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader.hh"
-#include "KTFactory.hh"
 #include "KTProcSummary.hh"
-#include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
+
+#include "factory.hh"
 
 using std::string;
 
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
-    static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
-    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
+    static Nymph::KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
+    static Nymph::KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
+    static Nymph::KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
 
     KTLOGGER(egglog, "KTEggProcessor");
 
@@ -57,13 +57,13 @@ namespace Katydid
         delete fDAC;
     }
 
-    bool KTEggProcessor::Configure(const KTParamNode* node)
+    bool KTEggProcessor::Configure(const scarab::param_node* node)
     {
         // First determine the egg reader type
         // config file setting
         if (node != NULL)
         {
-            SetEggReaderType( node->GetValue("egg-reader", GetEggReaderType()) );
+            SetEggReaderType( node->get_value("egg-reader", GetEggReaderType()) );
         }
         // command line setting (overrides config file, if used)
         if (fCLHandler->IsCommandLineOptSet("use-egg1-reader"))
@@ -76,16 +76,16 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNSlices(node->GetValue< unsigned >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetValue< unsigned >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->GetValue("filename", fFilename));
+            SetNSlices(node->get_value< unsigned >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->get_value< unsigned >("progress-report-interval", fProgressReportInterval));
+            SetFilename(node->get_value("filename", fFilename));
 
             // specify the length of the time series
-            fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
+            fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->GetValue< unsigned >("stride", fSliceSize);
+            fStride = node->get_value< unsigned >("stride", fSliceSize);
             // specify the time in the run to start
-            fStartTime = node->GetValue< double >("start-time", fStartTime);
+            fStartTime = node->get_value< double >("start-time", fStartTime);
 
             if (fSliceSize == 0)
             {
@@ -93,14 +93,14 @@ namespace Katydid
                 return false;
             }
 
-            const KTParamNode* dacNode = node->NodeAt("dac");
+            const scarab::param_node* dacNode = node->node_at("dac");
             if (dacNode != NULL)
             {
                 fDAC->Configure(dacNode);
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->GetValue< bool >("normalize-voltages", fNormalizeVoltages));
+            SetNormalizeVoltages(node->get_value< bool >("normalize-voltages", fNormalizeVoltages));
         }
 
         // Command-line settings
@@ -114,7 +114,7 @@ namespace Katydid
     bool KTEggProcessor::ProcessEgg()
     {
         // Create egg reader and transfer information
-        KTEggReader* reader = KTFactory< KTEggReader >::GetInstance()->Create(fEggReaderType);
+        KTEggReader* reader = scarab::factory< KTEggReader >::get_instance()->create(fEggReaderType);
         if (reader == NULL)
         {
             KTERROR(egglog, "Invalid egg reader type: " << fEggReaderType);
@@ -124,7 +124,7 @@ namespace Katydid
 
         // ******************************************************************** //
         // Call BreakEgg - this actually opens the file and loads its content
-        KTDataPtr headerPtr = reader->BreakEgg(fFilename);
+        Nymph::KTDataPtr headerPtr = reader->BreakEgg(fFilename);
         if (! headerPtr)
         {
             KTERROR(egglog, "Egg did not break");
@@ -166,7 +166,7 @@ namespace Katydid
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
         unsigned iSlice = 0, iProgress = 0;
-        KTDataPtr data, nextData;
+        Nymph::KTDataPtr data, nextData;
         bool nextSliceIsValid = true;
         if (! HatchNextSlice(reader, data))
         {
@@ -180,7 +180,7 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, nextData))
             {
-                data->Of< KTData >().SetLastData(true);
+                data->Of< Nymph::KTData >().SetLastData(true);
                 nextSliceIsValid = false;
             }
 
@@ -218,7 +218,7 @@ namespace Katydid
     void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
         unsigned iSlice = 0, iProgress = 0;
-        KTDataPtr data;
+        Nymph::KTDataPtr data;
         while (true)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
@@ -232,7 +232,7 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, data)) break;
 
-            if (iSlice == fNSlices - 1) data->Of< KTData >().SetLastData(true);
+            if (iSlice == fNSlices - 1) data->Of< Nymph::KTData >().SetLastData(true);
 
             if (data->Has< KTRawTimeSeriesData >())
             {
@@ -262,7 +262,7 @@ namespace Katydid
         return;
     }
 
-    void KTEggProcessor::NormalizeData(KTDataPtr& data)
+    void KTEggProcessor::NormalizeData(Nymph::KTDataPtr& data)
     {
         if (fNormalizeVoltages)
         {

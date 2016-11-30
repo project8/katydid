@@ -15,13 +15,16 @@
 
 #include "Rtypes.h"
 
+#include <vector>
+
+class TGraph;
 class TGraph2D;
 class TH2D;
 class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     //class KTFrequencyCandidateData;
     //class KTWaterfallCandidateData;
 
@@ -78,6 +81,74 @@ namespace Katydid
 
     };
 
+    struct TLinearFitResult
+    {
+        UInt_t fComponent;
+        Double_t fSlope;
+        Double_t fIntercept;
+        Double_t fStartingFrequency;
+        Double_t fTrackDuration;
+        Double_t fSidebandSeparation;
+        //Double_t fFineProbe_sigma_1;
+        //Double_t fFineProbe_sigma_2;
+        //Double_t fFineProbe_SNR_1;
+        //Double_t fFineProbe_SNR_2;
+        Double_t fFFT_peak;
+        Double_t fFFT_SNR;
+        Double_t fFit_width;
+        UInt_t fNPoints;
+        Double_t fProbeWidth;
+    };
+
+    struct TPowerFitData
+    {
+        UInt_t fComponent;
+/*
+        Double_t fScale;
+        Double_t fBackground;
+        Double_t fCenter;
+        Double_t fCurvature;
+        Double_t fWidth;
+
+        Double_t fScaleErr;
+        Double_t fBackgroundErr;
+        Double_t fCenterErr;
+        Double_t fCurvatureErr;
+        Double_t fWidthErr;
+*/
+
+        std::vector<double> fNorm;
+        std::vector<double> fMean;
+        std::vector<double> fSigma;
+        std::vector<double> fMaximum;
+
+        std::vector<double> fNormErr;
+        std::vector<double> fMeanErr;
+        std::vector<double> fSigmaErr;
+        std::vector<double> fMaximumErr;
+        
+        UInt_t fIsValid;
+        UInt_t fMainPeak;
+        UInt_t fNPeaks;
+
+        TGraph* fPoints;
+
+        Double_t fAverage; // fMean is already taken
+        Double_t fRMS;
+        Double_t fSkewness;
+        Double_t fKurtosis;
+
+        Double_t fNormCentral;
+        Double_t fMeanCentral;
+        Double_t fSigmaCentral;
+        Double_t fMaximumCentral;
+
+        Double_t fRMSAwayFromCentral;
+        Double_t fCentralPowerRatio;
+
+        Double_t fTrackIntercept;
+    };
+
 
     class KTROOTTreeTypeWriterEventAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterEventAnalysis
     {
@@ -88,15 +159,13 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteFrequencyCandidates(KTDataPtr data);
-
-            void WriteWaterfallCandidate(KTDataPtr data);
-
-            void WriteSparseWaterfallCandidate(KTDataPtr data);
-
-            void WriteProcessedTrack(KTDataPtr data);
-
-            void WriteMultiTrackEvent(KTDataPtr data);
+            void WriteFrequencyCandidates(Nymph::KTDataPtr data);
+            void WriteWaterfallCandidate(Nymph::KTDataPtr data);
+            void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+            void WriteProcessedTrack(Nymph::KTDataPtr data);
+            void WriteMultiTrackEvent(Nymph::KTDataPtr data);
+            void WriteLinearFitResultData(Nymph::KTDataPtr data);
+            void WritePowerFitData(Nymph::KTDataPtr data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;
@@ -104,6 +173,8 @@ namespace Katydid
             TTree* GetSparseWaterfallCandidateTree() const;
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
+            TTree* GetLinearFitResultTree() const;
+            TTree* GetPowerFitDataTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
@@ -111,18 +182,24 @@ namespace Katydid
             bool SetupSparseWaterfallCandidateTree();
             bool SetupProcessedTrackTree();
             bool SetupMultiTrackEventTree();
+            bool SetupLinearFitResultTree();
+            bool SetupPowerFitDataTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
             TTree* fProcessedTrackTree;
             TTree* fMultiTrackEventTree;
+            TTree* fLinearFitResultTree;
+            TTree* fPowerFitDataTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
             TProcessedTrackData* fProcessedTrackDataPtr;
             TMultiTrackEventData* fMultiTrackEventDataPtr;
+            TLinearFitResult fLineFitData;
+            TPowerFitData fPowerFitData;
 
     };
 
@@ -149,6 +226,16 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiTrackEventTree() const
     {
         return fMultiTrackEventTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetLinearFitResultTree() const
+    {
+        return fLinearFitResultTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetPowerFitDataTree() const
+    {
+        return fPowerFitDataTree;
     }
 
 

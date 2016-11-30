@@ -1,0 +1,6 @@
+<map id="Katydid::KTMultiTrackEventData" name="Katydid::KTMultiTrackEventData">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTMultiTrackEventData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="5,408,190,521"/>
+<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTMultiTrackEventData,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,153,190,333"/>
+<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_processed_track_data.html" title="{Katydid::KTProcessedTrackData\n||+ KTProcessedTrackData()\l+ KTProcessedTrackData()\l+ ~KTProcessedTrackData()\l+ operator=()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\land 19 more...\l}" alt="" coords="264,140,478,347"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="234,5,313,79"/>
+</map>

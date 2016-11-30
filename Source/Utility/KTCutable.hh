@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    //using namespace Nymph;
+    //
     /*!
      @class KTCutable
      @author N. S. Oblath

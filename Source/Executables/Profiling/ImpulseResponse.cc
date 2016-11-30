@@ -46,7 +46,7 @@ namespace Katydid
             KTImpulseAnalysis(const std::string& name = "impulse-analysis");
             virtual ~KTImpulseAnalysis();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             bool Analyze(KTFrequencySpectrumDataPolar& fsData);
             //bool Analyze(KTFrequencySpectrumDataFFTW& fsData);
@@ -67,10 +67,10 @@ namespace Katydid
 
 int main(int argc, char** argv)
 {
-    KTApplication* app = NULL;
+    Nymph::KTApplication* app = NULL;
     try
     {
-        app = new KTApplication(argc, argv);
+        app = new Nymph::KTApplication(argc, argv);
     }
     catch( std::exception& e )
     {
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    const KTParamNode* parentConfigNode = app->GetConfigurator()->Config();
+    const scarab::param_node* parentConfigNode = app->GetConfigurator()->Config();
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 // Implementation of KTImpulseAnalysis
 //***************************************
 
-static KTNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
+static Nymph::KTNORegistrar< Nymph::KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
 
 KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
         KTProcessor(name),
@@ -122,7 +122,7 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-bool KTImpulseAnalysis::Configure(const KTParamNode*)
+bool KTImpulseAnalysis::Configure(const scarab::param_node*)
 {
     return true;
 }

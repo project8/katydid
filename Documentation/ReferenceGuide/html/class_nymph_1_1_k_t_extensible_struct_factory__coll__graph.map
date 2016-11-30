@@ -1,0 +1,6 @@
+<map id="Nymph::KTExtensibleStructFactory&lt; XBaseType &gt;" name="Nymph::KTExtensibleStructFactory&lt; XBaseType &gt;">
+<area shape="rect" id="node2" href="$classscarab_1_1singleton.html" title="{scarab::singleton\&lt;\l KTExtensibleStructFactory\l\&lt; XBaseType \&gt; \&gt;\n|&#45; f_instance\l|+ get_instance()\l+ kill_instance()\l# singleton()\l# ~singleton()\l&#45; create_instance()\l&#45; delete_instance()\l}" alt="" coords="151,220,334,387"/>
+<area shape="rect" id="node3" href="$classscarab_1_1destroyer.html" title="{scarab::destroyer\&lt;\l KTExtensibleStructFactory\l\&lt; XBaseType \&gt; \&gt;\n|&#45; f_doomed\l|+ destroyer()\l+ ~destroyer()\l+ set_doomed()\l&#45; destroyer()\l&#45; operator=()\l}" alt="" coords="5,5,188,159"/>
+<area shape="rect" id="node4" href="$classscarab_1_1mutex.html" title="{scarab::mutex\n|&#45; f_mutex\l|+ mutex()\l+ ~mutex()\l+ trylock()\l+ lock()\l+ unlock()\l}" alt="" coords="212,19,317,145"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="357,267,476,340"/>
+</map>

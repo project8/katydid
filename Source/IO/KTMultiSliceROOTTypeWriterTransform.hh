@@ -16,7 +16,7 @@ class TH1D;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTMultiSliceROOTTypeWriterTransform : public KTMEROOTTypeWriterBase//, public KTTypeWriterTransform
     {
         public:
@@ -34,8 +34,8 @@ namespace Katydid
 
         public:
 
-            void AddFrequencySpectrumDataPolar(KTDataPtr data);
-            void AddFrequencySpectrumDataFFTW(KTDataPtr data);
+            void AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data);
+            void AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
 
         private:
             std::vector< TH1D* > fFSHists;

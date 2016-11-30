@@ -1,0 +1,7 @@
+<map id="Nymph::KTProcessor" name="Nymph::KTProcessor">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="324,715,487,841"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_command_line_handler.html" title="Parses and stores command&#45;line options. " alt="" coords="361,247,583,653"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="250,39,329,112"/>
+<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_signal_wrapper.html" title="{Nymph::KTSignalWrapper\n||+ KTSignalWrapper()\l+ ~KTSignalWrapper()\l&#45; KTSignalWrapper()\l&#45; GetInternal()\l}" alt="" coords="5,19,181,132"/>
+<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_slot_wrapper.html" title="{Nymph::KTSlotWrapper\n|&#45; fConnection\l|+ KTSlotWrapper()\l+ ~KTSlotWrapper()\l+ SetConnection()\l+ SetConnection()\l+ Disconnect()\l&#45; KTSlotWrapper()\l}" alt="" coords="599,5,761,145"/>
+</map>

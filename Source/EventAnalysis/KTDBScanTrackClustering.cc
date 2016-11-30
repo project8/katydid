@@ -10,8 +10,7 @@
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTTimeFrequencyPolar.hh"
@@ -51,14 +50,14 @@ namespace Katydid
     {
     }
 
-    bool KTDBScanTrackClustering::Configure(const KTParamNode* node)
+    bool KTDBScanTrackClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetMinPoints(node->GetValue("min-points", GetMinPoints()));
+        SetMinPoints(node->get_value("min-points", GetMinPoints()));
 
         /*
-        if (node->Has("radii"))
+        if (node->has("radii"))
         {
             const KTParamArray* radii = node->ArrayAt("radii");
             if (radii->Size() != fNDimensions)
@@ -189,7 +188,7 @@ namespace Katydid
 
                 ++fDataCount;
 
-                KTDataPtr newData(new KTData());
+                Nymph::KTDataPtr newData(new Nymph::KTData());
                 KTSparseWaterfallCandidateData& cand = newData->Of< KTSparseWaterfallCandidateData >();
 
                 DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();
@@ -201,7 +200,7 @@ namespace Katydid
                 double minTime = time;
                 double minTimeInAcq = timeInAcq;
                 double maxTime = minTime;
-                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1., timeInAcq));
+                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, points[*pointIdIt].fAmplitude, timeInAcq));
                 KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
@@ -209,8 +208,8 @@ namespace Katydid
                     time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
                     freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                     timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();;
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1., timeInAcq));
-                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
+                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, points[*pointIdIt].fAmplitude, timeInAcq));
+                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
 
                     if (time > maxTime)
                     {

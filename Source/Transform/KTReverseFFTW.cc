@@ -15,7 +15,6 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
-#include "KTParam.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -60,19 +59,19 @@ namespace Katydid
         if (fReversePlan != NULL) fftw_destroy_plan(fReversePlan);
     }
 
-    bool KTReverseFFTW::Configure(const KTParamNode* node)
+    bool KTReverseFFTW::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
+            SetTransformFlag(node->get_value("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
+            SetUseWisdom(node->get_value<bool>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->get_value("wisdom-filename", fWisdomFilename));
 
-            if (node->Has("transform-to"))
+            if (node->has("transform-to"))
             {
-                string request(node->GetValue("transform-to"));
+                string request(node->get_value("transform-to"));
                 if (request == "real")
                 {
                     SetRequestedState(kC2R);
@@ -91,7 +90,7 @@ namespace Katydid
 
         if (fUseWisdom)
         {
-            if (! KTCacheDirectory::GetInstance()->Configure())
+            if (! Nymph::KTCacheDirectory::get_instance()->Configure())
             {
                 KTWARN(fftwlog, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;

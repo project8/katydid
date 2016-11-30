@@ -14,10 +14,10 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTMultiSliceROOTWriter;
 
-    typedef KTDerivedTypeWriter< KTMultiSliceROOTWriter > KTMultiSliceROOTTypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTMultiSliceROOTWriter > KTMultiSliceROOTTypeWriter;
 
     class KTMEROOTTypeWriterBase : public KTMultiSliceROOTTypeWriter
     {
@@ -31,13 +31,13 @@ namespace Katydid
     };
 
 
-    class KTMultiSliceROOTWriter : public KTWriterWithTypists< KTMultiSliceROOTWriter, KTMultiSliceROOTTypeWriter >//public KTWriter
+    class KTMultiSliceROOTWriter : public Nymph::KTWriterWithTypists< KTMultiSliceROOTWriter, KTMultiSliceROOTTypeWriter >//public KTWriter
     {
         public:
             KTMultiSliceROOTWriter(const std::string& name = "multislice-root-writer");
             virtual ~KTMultiSliceROOTWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);

@@ -17,6 +17,7 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTPowerFitData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -458,4 +459,71 @@ namespace Katydid
         return hist;
 
     }
+
+    TH2D* KT2ROOT::CreatePowerHistogram(std::map< double, KTPowerSpectrum* > psColl, const std::string& histName)
+    {
+        std::map< double, KTPowerSpectrum* >::iterator it = psColl.begin();
+        unsigned nBinsX = psColl.size(), nBinsY = it->second->size();
+
+        double minTime = 1, maxTime = 0;
+        double minFreq, maxFreq;
+
+        KTPowerSpectrum* ps = it->second;
+        minFreq = ps->GetRangeMin();
+        maxFreq = ps->GetRangeMax();
+
+        for( std::map< double, KTPowerSpectrum* >::iterator iter = psColl.begin(); it != psColl.end(); ++it)
+        {
+            if( it->first < minTime )
+            {
+                minTime = it->first;
+            }
+            if( it->first > maxTime )
+            {
+                maxTime = it->first;
+            }
+        }
+
+        TH2D* hist = new TH2D(histName.c_str(), histName.c_str(),
+                (int)nBinsX, minTime, maxTime,
+                (int)nBinsY, minFreq, maxFreq);
+
+        int iBinX = 1, iBinY = 1;
+        for (it = psColl.begin(); it != psColl.end(); ++it)
+        {
+            for(iBinY = 1; iBinY <= nBinsY; iBinY++)
+            {
+                hist->SetBinContent(iBinX, iBinY, (*it->second)(iBinY-1));
+            }
+            iBinX++;
+        }
+        
+        return hist;
+
+    }
+
+    TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName)
+    {
+        std::map< unsigned, KTPowerFitData::Point >::iterator it;
+        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = pf->GetSetOfPoints();
+
+        double minFreq, maxFreq;
+        unsigned nBins = SetOfPoints.size();
+        minFreq = SetOfPoints.begin()->second.fAbscissa;
+        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
+
+        TH1D* hist = new TH1D(histName.c_str(), histName.c_str(),
+                (int)nBins, minFreq, maxFreq);
+
+        int iBin = 1;
+        for (it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it)
+        {
+            hist->SetBinContent(iBin, it->second.fOrdinate);
+            iBin++;
+        }
+        
+        return hist;
+
+    }
+
 } /* namespace Katydid */

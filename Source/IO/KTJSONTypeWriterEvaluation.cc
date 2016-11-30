@@ -19,7 +19,7 @@ namespace Katydid
 {
     //KTLOGGER(publog, "KTJSONTypeWriterEvaluation");
 
-    static KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEvaluation > sJSONTWERegistrar;
+    static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEvaluation > sJSONTWERegistrar;
 
     KTJSONTypeWriterEvaluation::KTJSONTypeWriterEvaluation() :
             KTJSONTypeWriter()
@@ -42,7 +42,7 @@ namespace Katydid
     // Frequency Evaluation
     //*********************
 
-    void KTJSONTypeWriterEvaluation::WriteCCResults(KTDataPtr data)
+    void KTJSONTypeWriterEvaluation::WriteCCResults(Nymph::KTDataPtr data)
     {
         using rapidjson::SizeType;
 

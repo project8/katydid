@@ -14,10 +14,10 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTRawTimeSeries;
 
-    class KTRawTimeSeriesData : public KTExtensibleData< KTRawTimeSeriesData >
+    class KTRawTimeSeriesData : public Nymph::KTExtensibleData< KTRawTimeSeriesData >
     {
         public:
             KTRawTimeSeriesData();

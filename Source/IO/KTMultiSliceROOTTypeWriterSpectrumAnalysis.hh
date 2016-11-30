@@ -16,7 +16,7 @@ class TH1D;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTMultiSliceROOTTypeWriterSpectrumAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterSpectrumAnalysis
     {
 
@@ -35,7 +35,7 @@ namespace Katydid
 
         public:
 
-            void AddCorrelationData(KTDataPtr);
+            void AddCorrelationData(Nymph::KTDataPtr);
 
         private:
             std::vector< TH1D* > fCorrHists;

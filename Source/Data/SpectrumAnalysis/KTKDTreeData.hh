@@ -21,9 +21,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
-    class KTKDTreeData : public KTExtensibleData< KTKDTreeData >
+    class KTKDTreeData : public Nymph::KTExtensibleData< KTKDTreeData >
     {
         public:
             /// Extend KT2DPoint to include amplitude

@@ -25,7 +25,7 @@ using std::string;
 namespace Katydid {
     KTLOGGER(publog, "KTHDF5TypeWriterTime");
 
-    static KTTIRegistrar< KTHDF5TypeWriter, 
+    static Nymph::KTTIRegistrar< KTHDF5TypeWriter, 
                           KTHDF5TypeWriterTime > sHDF5TWEggRegistrar;
 
     KTHDF5TypeWriterTime::KTHDF5TypeWriterTime() :
@@ -124,7 +124,7 @@ namespace Katydid {
     // Raw Time Series Data
     // *****************
 
-    void KTHDF5TypeWriterTime::WriteRawTimeSeriesData(KTDataPtr data) {
+    void KTHDF5TypeWriterTime::WriteRawTimeSeriesData(Nymph::KTDataPtr data) {
         if ( !data ) return;
 
         if ( fWriter->DidParseHeader() ) {
@@ -164,7 +164,7 @@ namespace Katydid {
     // Time Series Data
     // *****************
 
-    void KTHDF5TypeWriterTime::WriteRealTimeSeriesData(KTDataPtr data) {
+    void KTHDF5TypeWriterTime::WriteRealTimeSeriesData(Nymph::KTDataPtr data) {
         if (!data) return;
 
         if ( fWriter->DidParseHeader() ) {

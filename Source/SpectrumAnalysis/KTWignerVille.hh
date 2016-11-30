@@ -15,7 +15,6 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTParam.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -30,7 +29,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(wvlog, "KTWignerVille");
 
     class KTAnalyticAssociateData;
@@ -67,15 +66,15 @@ namespace Katydid
      - "n-windows-to-average": unsigned -- number of windows to average together into a single WV window
 
      Slots:
-     - "header": void (KTDataPtr) -- Initializes the transform using an Egg header; Requires KTEggHeader
-     - "ts": void (KTDataPtr) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
-     - "aa": void (KTDataPtr) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
+     - "header": void (Nymph::KTDataPtr) -- Initializes the transform using an Egg header; Requires KTEggHeader
+     - "ts": void (Nymph::KTDataPtr) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
+     - "aa": void (Nymph::KTDataPtr) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
 
      Signals:
-     - "wv": void (KTDataPtr) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
+     - "wv": void (Nymph::KTDataPtr) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
      */
 
-    class KTWignerVille : public KTProcessor
+    class KTWignerVille : public Nymph::KTProcessor
     {
         public:
             typedef std::pair< unsigned, unsigned > UIntPair;
@@ -88,7 +87,7 @@ namespace Katydid
             KTWignerVille(const std::string& name = "wigner-ville");
             virtual ~KTWignerVille();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
@@ -158,7 +157,7 @@ namespace Katydid
 
             std::vector< KTFrequencySpectrumFFTW* > fOutputArrays;
 
-            KTDataPtr fOutputData;
+            Nymph::KTDataPtr fOutputData;
             KTSliceHeader* fOutputSHData; // pointer to object that is part of fOutputData
             //KTWV2DData* fOutputWVData;
             KTWignerVilleData* fOutputWVData; // pointer to object that is part of fOutputData
@@ -173,19 +172,19 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fWVSignal;
+            Nymph::KTSignalData fWVSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            //KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
-            //KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            //Nymph::KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            //Nymph::KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
 
-            void ProcessTimeSeries(KTDataPtr data);
-            void ProcessAnalyticAssociate(KTDataPtr data);
+            void ProcessTimeSeries(Nymph::KTDataPtr data);
+            void ProcessAnalyticAssociate(Nymph::KTDataPtr data);
 
     };
 

@@ -41,7 +41,7 @@ namespace Katydid
             fMonarch(NULL),
             fM3Stream(NULL),
             fM3StreamHeader(NULL),
-            fHeaderPtr(new KTData()),
+            fHeaderPtr(new Nymph::KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fMasterSliceHeader(),
             fReadState(),
@@ -75,7 +75,7 @@ namespace Katydid
         return true;
     }
 
-    KTDataPtr KTEgg3Reader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTEgg3Reader::BreakEgg(const string& filename)
     {
         if (fStride == 0) fStride = fSliceSize;
 
@@ -93,7 +93,7 @@ namespace Katydid
         catch (M3Exception& e)
         {
             KTERROR(eggreadlog, "Unable to break egg: " << e.what());
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
 
         }
 
@@ -108,7 +108,7 @@ namespace Katydid
                     "Egg breaking aborted.");
             delete fMonarch;
             fMonarch = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         // Temporary assumption: using channel 0 + any other channels in the same stream
@@ -146,7 +146,7 @@ namespace Katydid
             KTERROR(eggreadlog, "Cannot read data with data format <" << stream0Header.GetDataFormat() << "> and sample size <" << stream0Header.GetSampleSize() << ">");
             delete fMonarch;
             fMonarch = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         */
 
@@ -187,17 +187,17 @@ namespace Katydid
     }
 
 
-    inline KTDataPtr KTEgg3Reader::HatchNextSlice()
+    inline Nymph::KTDataPtr KTEgg3Reader::HatchNextSlice()
     {
         if (fMonarch == NULL)
         {
             KTERROR(eggreadlog, "Monarch file has not been opened");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         if (fReadState.fStatus == MonarchReadState::kInvalid)
         {
             KTERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         // Get the number of channels, record size and the number of bytes per sample from the stream
@@ -225,7 +225,7 @@ namespace Katydid
             if (! fM3Stream->ReadRecord(fReadState.fStartOfLastSliceRecord))
             {
                 KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
-                return KTDataPtr();
+                return Nymph::KTDataPtr();
             }
             // and set the read position
             readPos = fReadState.fStartOfLastSliceReadPtr;
@@ -267,7 +267,7 @@ namespace Katydid
                 if (! fM3Stream->ReadRecord(recordShift - 1))  // 1 is subtracted since ReadRecord(0) goes to the next record
                 {
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    return KTDataPtr();
+                    return Nymph::KTDataPtr();
                 }
                 // set the current record according to what's now loaded
                 fReadState.fCurrentRecord = fReadState.fCurrentRecord + recordShift;
@@ -293,7 +293,7 @@ namespace Katydid
         // at this point, the stream is ready for data to be copied from it, and fReadState is up-to-date
 
         // create the new data object
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         // add a slice header, and fill out the slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
@@ -392,7 +392,7 @@ namespace Katydid
                 if (! fM3Stream->ReadRecord())
                 {
                     KTWARN(eggreadlog, "End of file reached before slice was completely read (or something else went wrong)");
-                    return KTDataPtr();
+                    return Nymph::KTDataPtr();
                 }
                 fReadState.fCurrentRecord = fReadState.fCurrentRecord + 1;
 
@@ -471,7 +471,7 @@ namespace Katydid
     {
         fHeader.SetFilename(monarchHeader->GetFilename());
         fHeader.SetAcquisitionMode(fM3StreamHeader->GetNChannels());
-        fHeader.SetRunDuration(monarchHeader->GetRunDuration());
+        fHeader.SetRunDuration(monarchHeader->GetRunDuration()); // in ms
         fHeader.SetAcquisitionRate(fM3StreamHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());

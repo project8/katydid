@@ -19,40 +19,45 @@ if (Katydid_ENABLE_PROFILING)
     #pbuilder_install_headers (${PROFILING_HEADERFILES})
     
     
-    # Executables that do NOT require ROOT
-    add_executable (ImpulseResponse ${CMAKE_CURRENT_SOURCE_DIR}/ImpulseResponse.cc)
-    target_link_libraries (ImpulseResponse Nymph KatydidUtility KatydidData KatydidIO KatydidTime KatydidTransform KatydidSpectrumAnalysis KatydidSimulation ${EXTERNAL_LIBRARIES})
-        
-    add_executable (ProfileDataAccessMethods ${CMAKE_CURRENT_SOURCE_DIR}/ProfileDataAccessMethods.cc)
-    target_link_libraries (ProfileDataAccessMethods Nymph KatydidUtility KatydidData KatydidTime ${EXTERNAL_LIBRARIES})
+    # Executables that do NOT require ROOT, Monarch or FFTW
     
-    pbuilder_install_executables (
-        ImpulseResponse
-        ProfileDataAccessMethods
-    )
+    #set( LIB_DEPENDENCIES
+    #    KatydidUtility
+    #    KatydidData
+    #    KatydidIO
+    #    KatydidTime
+    #    KatydidTransform
+    #    KatydidSpectrumAnalysis
+    #    KatydidSimulation
+    #)
+    
+    #set( PROGRAMS
+        #ImpulseResponse # disabled because it requires the Simulations library and KTSinusoidGenerator
+        #ProfileDataAccessMethods # disabled because it requires the Simulations library and KTSinusoidGenerator
+    #)
+    
+    #pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
              
     
     if (Katydid_USE_MONARCH AND Monarch_BUILD_MONARCH2 AND FFTW_FOUND)
-        add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
-        target_link_libraries (ProfileFFTWandMonarch Nymph KatydidUtility KatydidData KatydidTime KatydidTransform ${EXTERNAL_LIBRARIES})
-
-        add_executable (ProfileManualAnalysis ${CMAKE_CURRENT_SOURCE_DIR}/ProfileManualAnalysis.cc)
-        target_link_libraries (ProfileManualAnalysis Nymph KatydidUtility KatydidData KatydidTime KatydidTransform KatydidSpectrumAnalysis KatydidEventAnalysis ${EXTERNAL_LIBRARIES})
-
-        pbuilder_install_executables (
+    
+        set( LIB_DEPENDENCIES
+            KatydidUtility
+            KatydidData
+            KatydidIO
+            KatydidTime
+            KatydidTransform
+            KatydidSpectrumAnalysis
+            KatydidSimulation
+        )
+        
+        set( PROGRAMS
             ProfileFFTWandMonarch
             ProfileManualAnalysis
         )
+        
+        pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
+
     endif (Katydid_USE_MONARCH AND Monarch_BUILD_MONARCH2 AND FFTW_FOUND)
 
-    # executables that DO require ROOT
-    if (ROOT_FOUND)
-        #add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
-        #target_link_libraries (TestBasicROOTFileWriter Nymph KatydidUtility KatydidData KatydidTime KatydidTransform KatydidIO ${EXTERNAL_LIBRARIES})
-        
-        #pbuilder_install_executables ( 
-        #)
-    
-    endif (ROOT_FOUND)
-        
 endif (Katydid_ENABLE_PROFILING) 

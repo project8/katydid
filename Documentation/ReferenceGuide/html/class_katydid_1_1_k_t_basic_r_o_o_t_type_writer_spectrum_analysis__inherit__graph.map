@@ -1,0 +1,4 @@
+<map id="Katydid::KTBasicROOTTypeWriterSpectrumAnalysis" name="Katydid::KTBasicROOTTypeWriterSpectrumAnalysis">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{KTBasicROOTTypeWriter\n|# fWriter\l|+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="47,153,224,253"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_type_writer.html" title="{Nymph::KTTypeWriter\n||+ KTTypeWriter()\l+ ~KTTypeWriter()\l+ RegisterSlots()\l}" alt="" coords="59,5,211,105"/>
+</map>

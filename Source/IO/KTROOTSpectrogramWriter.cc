@@ -8,7 +8,6 @@
 #include "KTROOTSpectrogramWriter.hh"
 
 #include "KTCommandLineOption.hh"
-#include "KTParam.hh"
 
 #include <algorithm>
 
@@ -23,7 +22,7 @@ namespace Katydid
     KT_REGISTER_WRITER(KTROOTSpectrogramWriter, "root-spectrogram-writer");
     KT_REGISTER_PROCESSOR(KTROOTSpectrogramWriter, "root-spectrogram-writer");
 
-    static KTCommandLineOption< string > sRSWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
+    static Nymph::KTCommandLineOption< string > sRSWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
 
     KTROOTSpectrogramWriter::KTROOTSpectrogramWriter(const std::string& name) :
             KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >(name),
@@ -33,6 +32,8 @@ namespace Katydid
             fMaxTime(0.),
             fMinFreq(0.),
             fMaxFreq(0.),
+            fBufferFreq(0.),
+            fBufferTime(0.),
             fFile(NULL),
             fWriteFileSlot("write-file", this, &KTROOTSpectrogramWriter::WriteFile)
     {
@@ -43,17 +44,19 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTROOTSpectrogramWriter::Configure(const KTParamNode* node)
+    bool KTROOTSpectrogramWriter::Configure(const scarab::param_node* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetFileFlag(node->GetValue("file-flag", fFileFlag));
-            SetMinFreq(node->GetValue("min-freq", fMinFreq));
-            SetMaxFreq(node->GetValue("max-freq", fMaxFreq));
-            SetMinTime(node->GetValue("min-time", fMinTime));
-            SetMaxTime(node->GetValue("max-time", fMaxTime));
+            SetFilename(node->get_value("output-file", fFilename));
+            SetFileFlag(node->get_value("file-flag", fFileFlag));
+            SetMinFreq(node->get_value("min-freq", fMinFreq));
+            SetMaxFreq(node->get_value("max-freq", fMaxFreq));
+            SetMinTime(node->get_value("min-time", fMinTime));
+            SetMaxTime(node->get_value("max-time", fMaxTime));
+            SetBufferFreq(node->get_value("buffer-freq", fBufferFreq));
+            SetBufferTime(node->get_value("buffer-time", fBufferTime));
         }
 
         // Command-line settings

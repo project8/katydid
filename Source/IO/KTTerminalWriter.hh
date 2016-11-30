@@ -15,12 +15,12 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     KTLOGGER(termlog, "KTTerminalWriter");
 
     class KTTerminalWriter;
 
-    typedef KTDerivedTypeWriter< KTTerminalWriter > KTTerminalTypeWriter;
+    typedef Nymph::KTDerivedTypeWriter< KTTerminalWriter > KTTerminalTypeWriter;
 
   /*!
      @class KTTerminalWriter
@@ -35,20 +35,22 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     - "header": void (KTDataPtr) -- Print the egg header information
-     - "ts": void (KTDataPtr) -- Prints information about each slice
-     - "dig": void (KTDataPtr) -- Prints information about digitizer test results
+     - "header": void (Nymph::KTDataPtr) -- Print the egg header information
+     - "ts": void (Nymph::KTDataPtr) -- Prints information about each slice
+     - "dig": void (Nymph::KTDataPtr) -- Prints information about digitizer test results
+     - "track": void (Nymph::KTDataPtr) -- Prints information about a processed track
+     - "fit-result": void (Nymph::KTDataPtr) -- Prints information about a density fit
      - "summary": void (const KTProcSummary*) -- Prints the processor summary information
      
     */
 
-    class KTTerminalWriter : public KTWriterWithTypists< KTTerminalWriter, KTTerminalTypeWriter >
+    class KTTerminalWriter : public Nymph::KTWriterWithTypists< KTTerminalWriter, KTTerminalTypeWriter >
     {
         public:
             KTTerminalWriter(const std::string& name = "terminal-writer");
             virtual ~KTTerminalWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
     };
 

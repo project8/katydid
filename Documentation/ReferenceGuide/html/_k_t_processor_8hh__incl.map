@@ -1,0 +1,13 @@
+<map id="KTProcessor.hh" name="KTProcessor.hh">
+<area shape="rect" id="node2" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="53,79,186,104"/>
+<area shape="rect" id="node7" href="$_k_t_connection_8hh.html" title="KTConnection.hh" alt="" coords="1252,152,1376,177"/>
+<area shape="rect" id="node9" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="233,152,331,177"/>
+<area shape="rect" id="node11" href="$_k_t_signal_wrapper_8hh.html" title="KTSignalWrapper.hh" alt="" coords="1033,152,1177,177"/>
+<area shape="rect" id="node13" href="$_k_t_slot_wrapper_8hh.html" title="KTSlotWrapper.hh" alt="" coords="1040,79,1170,104"/>
+<area shape="rect" id="node15" href="$factory_8hh.html" title="factory.hh" alt="" coords="588,79,667,104"/>
+<area shape="rect" id="node3" href="$param_8hh.html" title="param.hh" alt="" coords="81,152,158,177"/>
+<area shape="rect" id="node16" href="$singleton_8hh.html" title="singleton.hh" alt="" coords="635,152,729,177"/>
+<area shape="rect" id="node17" href="$mutex_8hh.html" title="mutex.hh" alt="" coords="685,225,761,251"/>
+<area shape="rect" id="node18" href="$lock__guard_8hh.html" title="lock_guard.hh" alt="" coords="405,152,511,177"/>
+<area shape="rect" id="node19" href="$logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="535,152,611,177"/>
+</map>

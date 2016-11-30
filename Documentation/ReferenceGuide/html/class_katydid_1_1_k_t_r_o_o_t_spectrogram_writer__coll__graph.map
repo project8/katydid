@@ -1,0 +1,6 @@
+<map id="Katydid::KTROOTSpectrogramWriter" name="Katydid::KTROOTSpectrogramWriter">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_writer_with_typists.html" title="{Nymph::KTWriterWithTypists\l\&lt; KTROOTSpectrogramWriter,\l KTROOTSpectrogramTypeWriter \&gt;\n||+ KTWriterWithTypists()\l+ ~KTWriterWithTypists()\l+ GetTypeWriter()\l}" alt="" coords="152,207,385,333"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_writer.html" title="{Nymph::KTWriter\n||+ KTWriter()\l+ ~KTWriter()\l}" alt="" coords="5,32,129,119"/>
+<area shape="rect" id="node5" href="$class_nymph_1_1_k_t_slot_done.html" title="{Nymph::KTSlotDone\n|# fFunc\l|+ KTSlotDone()\l+ KTSlotDone()\l+ ~KTSlotDone()\l+ operator()()\l}" alt="" coords="416,213,558,327"/>
+<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_signal_one_arg_3_01void_01_4.html" title="{Nymph::KTSignalOneArg\l\&lt; void \&gt;\n|# fSignal\l|+ KTSignalOneArg()\l+ ~KTSignalOneArg()\l+ operator()()\l# KTSignalOneArg()\l# KTSignalOneArg()\l}" alt="" coords="408,5,579,145"/>
+</map>

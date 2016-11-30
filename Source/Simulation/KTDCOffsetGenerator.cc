@@ -7,7 +7,7 @@
 
 #include "KTDCOffsetGenerator.hh"
 
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
 
@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
+    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 

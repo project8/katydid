@@ -1,0 +1,11 @@
+<map id="KTCandidateTrackFinder.cc" name="KTCandidateTrackFinder.cc">
+<area shape="rect" id="node2" href="$_k_t_candidate_track_finder_8hh.html" title="Contains KTCandidateTrackFinder. " alt="" coords="110,79,298,104"/>
+<area shape="rect" id="node4" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="33,239,130,264"/>
+<area shape="rect" id="node8" href="$_k_t_hough_data_8hh.html" title="KTHoughData.hh" alt="" coords="358,79,482,104"/>
+<area shape="rect" id="node11" href="$_k_t_sparse_waterfall_candidate_data_8hh.html" title="KTSparseWaterfallCandidate\lData.hh" alt="" coords="562,152,756,191"/>
+<area shape="rect" id="node3" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="23,159,140,184"/>
+<area shape="rect" id="node5" href="$_k_t_slot_8hh.html" title="KTSlot.hh" alt="" coords="164,159,244,184"/>
+<area shape="rect" id="node6" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="482,239,567,264"/>
+<area shape="rect" id="node7" href="$_k_t_member_variable_8hh.html" title="KTMemberVariable.hh" alt="" coords="487,312,641,337"/>
+<area shape="rect" id="node9" href="$_k_t_physical_array_8hh.html" title="KTPhysicalArray.hh" alt="" coords="267,159,405,184"/>
+</map>

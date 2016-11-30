@@ -9,6 +9,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTCorrelationTSData.hh
     SpectrumAnalysis/KTDiscriminatedPoints1DData.hh
     SpectrumAnalysis/KTDiscriminatedPoints2DData.hh
+    SpectrumAnalysis/KTGainVarChi2Data.hh
     SpectrumAnalysis/KTGainVariationData.hh
     SpectrumAnalysis/KTHoughData.hh
     SpectrumAnalysis/KTKDTree.hh
@@ -21,9 +22,12 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTWignerVilleData.hh
     EventAnalysis/KTFrequencyCandidate.hh
     EventAnalysis/KTFrequencyCandidateData.hh
+    EventAnalysis/KTLinearFitResult.hh
     EventAnalysis/KTMultiTrackEventData.hh
+    EventAnalysis/KTPowerFitData.hh
     EventAnalysis/KTProcessedTrackData.hh
     EventAnalysis/KTSparseWaterfallCandidateData.hh
+    EventAnalysis/KTSpectrumCollectionData.hh
     EventAnalysis/KTWaterfallCandidateData.hh
     Time/KTDigitizerTestData.hh
     Time/KTEggHeader.hh
@@ -47,6 +51,7 @@ set (DATA_HEADERFILES
     Transform/KTFrequencySpectrumPolar.hh
     Transform/KTPowerSpectrum.hh
     Transform/KTPowerSpectrumData.hh
+    Transform/KTPowerSpectrumUncertaintyData.hh
     Transform/KTMultiFSDataFFTW.hh
     Transform/KTMultiFSDataPolar.hh
     Transform/KTTimeFrequency.hh
@@ -62,6 +67,7 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTCorrelationTSData.cc
     SpectrumAnalysis/KTDiscriminatedPoints1DData.cc
     SpectrumAnalysis/KTDiscriminatedPoints2DData.cc
+    SpectrumAnalysis/KTGainVarChi2Data.cc
     SpectrumAnalysis/KTGainVariationData.cc
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
@@ -72,9 +78,12 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTWignerVilleData.cc
     EventAnalysis/KTFrequencyCandidate.cc
     EventAnalysis/KTFrequencyCandidateData.cc
+    EventAnalysis/KTLinearFitResult.cc
     EventAnalysis/KTMultiTrackEventData.cc
+    EventAnalysis/KTPowerFitData.cc
     EventAnalysis/KTProcessedTrackData.cc
     EventAnalysis/KTSparseWaterfallCandidateData.cc
+    EventAnalysis/KTSpectrumCollectionData.cc
     EventAnalysis/KTWaterfallCandidateData.cc
     Time/KTDigitizerTestData.cc
     Time/KTEggHeader.cc
@@ -100,6 +109,7 @@ set (DATA_SOURCEFILES
     Transform/KTMultiFSDataPolar.cc
     Transform/KTPowerSpectrum.cc
     Transform/KTPowerSpectrumData.cc
+    Transform/KTPowerSpectrumUncertaintyData.cc
     Transform/KTTimeFrequency.cc
     Transform/KTTimeFrequencyDataPolar.cc
     Transform/KTTimeFrequencyPolar.cc
@@ -125,7 +135,6 @@ endif (Katydid_ENABLE_TUTORIAL)
 
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
 )
 

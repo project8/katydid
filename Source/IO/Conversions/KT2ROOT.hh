@@ -9,6 +9,7 @@
 #define KT2ROOT_HH_
 
 #include <string>
+#include <map>
 
 #include "KTPhysicalArray.hh"
 #include "KTVarTypePhysicalArray.hh"
@@ -19,13 +20,14 @@ class TH2D;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
+    class KTPowerFitData;
 
     class KT2ROOT
     {
@@ -74,6 +76,20 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrumPower");
 
             static TH2D* CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName = "hHoughData");
+
+
+            //*********************
+            // Spectrum Collection
+            //*********************
+
+            static TH2D* CreatePowerHistogram(std::map< double, KTPowerSpectrum* > psColl, const std::string& name = "hPSCollectionData");
+
+            //***************
+            // Set Of Points
+            //***************
+
+            static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName);
+
     };
 
 } /* namespace Katydid */

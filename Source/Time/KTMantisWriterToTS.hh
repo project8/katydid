@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTMantis;
     class KTRawTimeSeries;
 
@@ -91,7 +91,7 @@ namespace Katydid
             std::vector< monarch::MonarchRecordDataInterface< uint64_t >* > f_record_data_interfaces;
 
             KTEggHeader f_header;
-            KTDataPtr f_data_ptr;
+            Nymph::KTDataPtr f_data_ptr;
             std::vector< KTRawTimeSeries* > f_new_time_series;
 
     };

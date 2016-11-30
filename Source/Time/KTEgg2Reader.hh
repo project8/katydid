@@ -30,7 +30,7 @@ namespace monarch2
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
 
     class KTEgg2Reader : public KTEggReader
@@ -82,9 +82,9 @@ namespace Katydid
             bool Configure(const KTEggProcessor& eggProc);
 
             /// Opens the egg file and returns a new copy of the header information.
-            KTDataPtr BreakEgg(const std::string& filename);
+            Nymph::KTDataPtr BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
-            KTDataPtr HatchNextSlice();
+            Nymph::KTDataPtr HatchNextSlice();
             /// Closes the file.
             bool CloseEgg();
 
@@ -95,7 +95,7 @@ namespace Katydid
             void CopyHeaderInformation(const monarch2::M2Header* monarchHeader);
 
             const monarch2::Monarch2* fMonarch;
-            KTDataPtr fHeaderPtr;
+            Nymph::KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             MonarchReadState fReadState;
 

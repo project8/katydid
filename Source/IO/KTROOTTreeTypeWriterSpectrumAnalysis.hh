@@ -20,7 +20,7 @@ class TTree;
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     struct TDiscriminatedPoints1DData
     {
         UInt_t fSlice;
@@ -76,10 +76,10 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteDiscriminatedPoints1D(KTDataPtr data);
-            void WriteKDTree(KTDataPtr data);
-            void WriteAmplitudeDistributions(KTDataPtr data);
-            void WriteHoughData(KTDataPtr data);
+            void WriteDiscriminatedPoints1D(Nymph::KTDataPtr data);
+            void WriteKDTree(Nymph::KTDataPtr data);
+            void WriteAmplitudeDistributions(Nymph::KTDataPtr data);
+            void WriteHoughData(Nymph::KTDataPtr data);
 
         public:
             TTree* GetDiscriminatedPoints1DTree() const;
@@ -124,6 +124,7 @@ namespace Katydid
     {
         return fHoughTree;
     }
+
 
 } /* namespace Katydid */
 

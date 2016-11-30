@@ -11,7 +11,7 @@
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTProcSummary.hh"
-#include "KTParam.hh"
+#include "param.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -50,25 +50,25 @@ namespace Katydid
     {
     }
 
-    bool KTTSGenerator::Configure(const KTParamNode* node)
+    bool KTTSGenerator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
         // set the number of slices to create
-        fNSlices = node->GetValue< unsigned >("number-of-slices", fNSlices);
+        fNSlices = node->get_value< unsigned >("number-of-slices", fNSlices);
 
         // number of slices
-        fNChannels = node->GetValue< unsigned >("n-channels", fNChannels);
+        fNChannels = node->get_value< unsigned >("n-channels", fNChannels);
 
         // specify the length of the time series
-        fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
+        fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
         // record size, after slice size
-        fRecordSize = node->GetValue< unsigned >("record-size", fSliceSize);
+        fRecordSize = node->get_value< unsigned >("record-size", fSliceSize);
 
-        fBinWidth = node->GetValue< double >("bin-width", fBinWidth);
+        fBinWidth = node->get_value< double >("bin-width", fBinWidth);
 
         // type of time series
-        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
+        string timeSeriesTypeString = node->get_value("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
@@ -96,7 +96,7 @@ namespace Katydid
         // The local copy of the data shared pointer is created and destroyed in each iteration of the loop
         for (fSliceCounter = 0; fSliceCounter < fNSlices; ++fSliceCounter)
         {
-            KTDataPtr newData = CreateNewData();
+            Nymph::KTDataPtr newData = CreateNewData();
 
             if (! AddSliceHeader(*newData.get()))
             {
@@ -140,7 +140,7 @@ namespace Katydid
         newHeader->SetFilename(fConfigName);
         newHeader->SetAcquisitionMode(fNChannels);
         newHeader->SetNChannels(fNChannels);
-        newHeader->SetRunDuration(fSliceSize * fNSlices * fBinWidth);
+        newHeader->SetRunDuration(fSliceSize * fNSlices * fBinWidth * 1000); /// the factor of 1000 is to convert from s to ms; fBinWidth is in seconds, but RunDuration is supposed to be in ms
         newHeader->SetAcquisitionRate(1. / fBinWidth);
         //newHeader->SetDescription();
         //newHeader->SetRunType();
@@ -170,9 +170,9 @@ namespace Katydid
         return newHeader;
     }
 
-    KTDataPtr KTTSGenerator::CreateNewData() const
+    Nymph::KTDataPtr KTTSGenerator::CreateNewData() const
     {
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         newData->SetCounter(fSliceCounter);
 
@@ -182,7 +182,7 @@ namespace Katydid
         return newData;
     }
 
-    bool KTTSGenerator::AddSliceHeader(KTData& data) const
+    bool KTTSGenerator::AddSliceHeader(Nymph::KTData& data) const
     {
         KTSliceHeader& sliceHeader = data.Of< KTSliceHeader >().SetNComponents(1);
         sliceHeader.SetSampleRate(1. / fBinWidth);
@@ -212,7 +212,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTTSGenerator::AddEmptySlice(KTData& data) const
+    bool KTTSGenerator::AddEmptySlice(Nymph::KTData& data) const
     {
         KTTimeSeriesData& tsData = data.Of< KTTimeSeriesData >().SetNComponents(fNChannels);
 

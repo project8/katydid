@@ -21,9 +21,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
-    class KTGainVariationData : public KTExtensibleData< KTGainVariationData >
+    class KTGainVariationData : public Nymph::KTExtensibleData< KTGainVariationData >
     {
         public:
             //typedef KTGainVariationProcessor::GainVariation GainVariation;

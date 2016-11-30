@@ -17,15 +17,9 @@
 #include <string>
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
@@ -50,21 +44,21 @@ namespace Katydid
      - "window-function": subtree -- parent node for the window function configuration
 
      Slots:
-     - "header": void (KTDataPtr) -- Initialize the window function from an Egg header; Requires KTEggHeader
-     - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "header": void (Nymph::KTDataPtr) -- Initialize the window function from an Egg header; Requires KTEggHeader
+     - "ts-real": void (Nymph::KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (Nymph::KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     - "windowed": void (KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (Nymph::KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
-    class KTWindower : public KTProcessor
+    class KTWindower : public Nymph::KTProcessor
     {
         public:
             KTWindower(const std::string& name = "windower");
             virtual ~KTWindower();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             KTWindowFunction* GetWindowFunction() const;
             void SetWindowFunction(KTWindowFunction* wf);
@@ -92,16 +86,16 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fWindowed;
+            Nymph::KTSignalData fWindowed;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
 
     };
 

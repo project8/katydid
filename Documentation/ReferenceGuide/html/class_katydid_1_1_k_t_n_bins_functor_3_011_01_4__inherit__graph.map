@@ -1,0 +1,5 @@
+<map id="Katydid::KTNBinsFunctor&lt; 1 &gt;" name="Katydid::KTNBinsFunctor&lt; 1 &gt;">
+<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_default_n_bins_3_011_01_4.html" title="{Katydid::KTDefaultNBins\&lt; 1 \&gt;\n||+ KTDefaultNBins()\l+ ~KTDefaultNBins()\l+ operator()()\l+ Clone()\l}" alt="" coords="5,180,204,293"/>
+<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_n_bins_in_array_3_011_00_01_fixed_size_01_4.html" title="{Katydid::KTNBinsInArray\l\&lt; 1, FixedSize \&gt;\n|&#45; fNBins\l|+ KTNBinsInArray()\l+ ~KTNBinsInArray()\l+ operator()()\l+ Clone()\l}" alt="" coords="228,173,397,300"/>
+<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_n_bins_in_array_3_011_00_01_x_array_type_01_4.html" title="{Katydid::KTNBinsInArray\l\&lt; 1, XArrayType \&gt;\n|&#45; fPtrToArray\l&#45; fFuncPtr\l|+ KTNBinsInArray()\l+ ~KTNBinsInArray()\l+ operator()()\l+ Clone()\l}" alt="" coords="422,167,590,307"/>
+</map>

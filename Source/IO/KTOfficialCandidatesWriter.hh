@@ -21,7 +21,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
     class KTWaterfallCandidateData;
     class KTProcSummary;
@@ -51,14 +51,14 @@ namespace Katydid
 
      Slots:
      - "header": void (KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
-     - "waterfall-candidate": void (KTDataPtr) -- writes candidate information; starts candidate writing mode if it hasn't started yet
+     - "waterfall-candidate": void (Nymph::KTDataPtr) -- writes candidate information; starts candidate writing mode if it hasn't started yet
      - "summary": void (const KTProcSummary*) -- stops writing candidates, writes the summary information and closes the file
      - "stop": void () -- stops writing candidates and closes the file
      - "summary-after-stop": void (const KTProcSummary*) -- copies the summary information and waits until the "stop-close-after-summary" signal is received to write the summary and close the file.
      - "stop-close-after-summary": void () -- stops writing candidates and waits until the "summary-after-stop" signal is received to write the summary and close the file.
     */
 
-    class KTOfficialCandidatesWriter : public KTWriter
+    class KTOfficialCandidatesWriter : public Nymph::KTWriter
     {
         public:
             typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
@@ -77,7 +77,7 @@ namespace Katydid
             KTOfficialCandidatesWriter(const std::string& name = "official-candidate-writer");
             virtual ~KTOfficialCandidatesWriter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool OpenFile();
@@ -133,12 +133,12 @@ namespace Katydid
             // Slots
             //**************
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
-            KTSlotDataOneType< KTWaterfallCandidateData > fWaterfallCandidateSlot;
-            KTSlotNoArg< void () > fStopWritingSlot;
-            KTSlotOneArg< void (const KTProcSummary*) > fSummarySlot;
-            KTSlotNoArg< void () > fStopCloseAfterSummarySlot;
-            KTSlotOneArg< void (const KTProcSummary*) > fSummaryAfterStopSlot;
+            Nymph::KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTWaterfallCandidateData > fWaterfallCandidateSlot;
+            Nymph::KTSlotNoArg< void () > fStopWritingSlot;
+            Nymph::KTSlotOneArg< void (const KTProcSummary*) > fSummarySlot;
+            Nymph::KTSlotNoArg< void () > fStopCloseAfterSummarySlot;
+            Nymph::KTSlotOneArg< void (const KTProcSummary*) > fSummaryAfterStopSlot;
     };
 
     inline const std::string& KTOfficialCandidatesWriter::GetFilename() const

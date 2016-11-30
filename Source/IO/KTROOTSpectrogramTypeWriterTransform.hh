@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTROOTSpectrogramTypeWriterTransform : public KTROOTSpectrogramTypeWriter//, public KTTypeWriterTransform
     {
         public:
@@ -24,19 +24,21 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void AddFrequencySpectrumDataPolar(KTDataPtr data);
+            void AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data);
             void OutputFrequencySpectrumDataPolar();
 
-            void AddFrequencySpectrumDataFFTW(KTDataPtr data);
+            void AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
             void OutputFrequencySpectrumDataFFTW();
 
-            void AddPowerSpectrumData(KTDataPtr data);
+            void AddPowerSpectrumData(Nymph::KTDataPtr data);
             void OutputPowerSpectrumData();
 
-            void AddPSDData(KTDataPtr data);
+            void AddPSDData(Nymph::KTDataPtr data);
             void OutputPSDData();
 
-            void TakeLine(KTDataPtr data);
+            void AddProcessedTrackData(Nymph::KTDataPtr data);
+
+            void TakeLine(Nymph::KTDataPtr data);
 
 
         private:

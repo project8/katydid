@@ -21,7 +21,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTCorrelationData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
@@ -48,24 +48,24 @@ namespace Katydid
      - "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     - "clusters": void (KTDataPtr) --
+     - "clusters": void (Nymph::KTDataPtr) --
 
      Signals:
-     - "frequency-candidates": void (KTDataPtr) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
+     - "frequency-candidates": void (Nymph::KTDataPtr) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
     */
 
 
 
-    class KTFrequencyCandidateIdentifier : public KTProcessor
+    class KTFrequencyCandidateIdentifier : public Nymph::KTProcessor
     {
         protected:
-            typedef KTSignalConcept< void (KTDataPtr) >::signal FCSignal;
+            typedef Nymph::KTSignalConcept< void (Nymph::KTDataPtr) >::signal FCSignal;
 
         public:
             KTFrequencyCandidateIdentifier(const std::string& name = "frequency-candidate-identifier");
             virtual ~KTFrequencyCandidateIdentifier();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
         public:
             bool IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData);
@@ -86,18 +86,18 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFCSignal;
+            Nymph::KTSignalData fFCSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTCluster1DData, KTFrequencySpectrumDataPolar > fFSDataPolarSlot;
-            KTSlotDataTwoTypes< KTCluster1DData, KTFrequencySpectrumDataFFTW > fFSDataFFTWSlot;
-            KTSlotDataTwoTypes< KTCluster1DData, KTNormalizedFSDataPolar > fFSNormDataPolarSlot;
-            KTSlotDataTwoTypes< KTCluster1DData, KTNormalizedFSDataFFTW > fFSNormDataFFTWSlot;
-            KTSlotDataTwoTypes< KTCluster1DData, KTCorrelationData > fFSCorrelationDataSlot;
+            Nymph::KTSlotDataTwoTypes< KTCluster1DData, KTFrequencySpectrumDataPolar > fFSDataPolarSlot;
+            Nymph::KTSlotDataTwoTypes< KTCluster1DData, KTFrequencySpectrumDataFFTW > fFSDataFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTCluster1DData, KTNormalizedFSDataPolar > fFSNormDataPolarSlot;
+            Nymph::KTSlotDataTwoTypes< KTCluster1DData, KTNormalizedFSDataFFTW > fFSNormDataFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTCluster1DData, KTCorrelationData > fFSCorrelationDataSlot;
 
     };
 

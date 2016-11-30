@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
     class KTProcSummary;
     class KTTimeSeriesData;
@@ -41,15 +41,15 @@ namespace Katydid
        - "record-size": unsigned -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
 
      Slots:
-     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (Nymph::KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals:
      - "header": void (KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
+     - "slice": void (Nymph::KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
      - "summary": void (const KTProcSummary*) -- emitted when the job is complete, after "done"
     */
-    class KTTSGenerator : public KTPrimaryProcessor
+    class KTTSGenerator : public Nymph::KTPrimaryProcessor
     {
         public:
             enum TimeSeriesType
@@ -62,8 +62,8 @@ namespace Katydid
             KTTSGenerator(const std::string& name = "default-ts-generator");
             virtual ~KTTSGenerator();
 
-            virtual bool Configure(const KTParamNode* node);
-            virtual bool ConfigureDerivedGenerator(const KTParamNode* node) = 0;
+            virtual bool Configure(const scarab::param_node* node);
+            virtual bool ConfigureDerivedGenerator(const scarab::param_node* node) = 0;
 
             unsigned GetNSlices() const;
             void SetNSlices(unsigned slices);
@@ -98,11 +98,11 @@ namespace Katydid
 
             KTEggHeader* CreateEggHeader() const;
 
-            KTDataPtr CreateNewData() const;
+            Nymph::KTDataPtr CreateNewData() const;
 
-            bool AddSliceHeader(KTData& data) const;
+            bool AddSliceHeader(Nymph::KTData& data) const;
 
-            bool AddEmptySlice(KTData& data) const;
+            bool AddEmptySlice(Nymph::KTData& data) const;
 
             virtual bool GenerateTS(KTTimeSeriesData& data) = 0;
 
@@ -117,16 +117,16 @@ namespace Katydid
             // Slots
             //***************
         private:
-            KTSlotDataOneType< KTTimeSeriesData > fDataSlot;
+            Nymph::KTSlotDataOneType< KTTimeSeriesData > fDataSlot;
 
             //***************
             // Signals
             //***************
         private:
-            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
-            KTSignalData fDataSignal;
-            KTSignalOneArg< void > fDoneSignal;
-            KTSignalOneArg< const KTProcSummary* > fSummarySignal;
+            Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            Nymph::KTSignalData fDataSignal;
+            Nymph::KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalOneArg< const KTProcSummary* > fSummarySignal;
     };
 
     inline unsigned KTTSGenerator::GetNSlices() const

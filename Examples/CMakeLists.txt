@@ -2,17 +2,21 @@
 # Author: N. Oblath
 
 # Tutorial code is optionally built from the Source/SpectrumAnalysis and Source/Data CMakeLists files.
+# Processor template code is built from Source/Utility CMakeLists file.
 
 # Config files
 set (EXAMPLE_CONFIGFILES
     ConfigFiles/DisplayFFT.json
+    ConfigFiles/DisplaySpectrograms.yaml
     ConfigFiles/EvaluateCandidates.json
     ConfigFiles/FSPeakAnalysisConfig.json
     ConfigFiles/KatydidPSAnalysisTemplate.json
     ConfigFiles/KatydidPSComplexConfig.json
     ConfigFiles/KatydidPSConfig.json
+    ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/KatydidWVConfig.json
     ConfigFiles/PrintInfo.json
+    ConfigFiles/SidebandTrackAnalysis.yaml
     ConfigFiles/SpectrogramConfig.json
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json

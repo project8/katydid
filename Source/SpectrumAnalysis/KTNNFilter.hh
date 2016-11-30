@@ -16,15 +16,9 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTKDTreeData;
 
    /*!
@@ -47,20 +41,20 @@ namespace Katydid
      - "remove-noise": bool -- Flag that determines whether noise points are removed (true) or flagged (false; default)
 
      Slots:
-     - "kdt-nn": void (KTDataPtr) -- Filters k-d tree data based on the maximum nearest-neighbor distance; Requires KTKDTreeData; existing data is modified
-     - "kdt-rad": void (KTDataPtr) -- Filters k-d tree data based on the minimum number of neighbors within a radius; Requires KTKDTreeData; existing data is modified
+     - "kdt-nn": void (Nymph::KTDataPtr) -- Filters k-d tree data based on the maximum nearest-neighbor distance; Requires KTKDTreeData; existing data is modified
+     - "kdt-rad": void (Nymph::KTDataPtr) -- Filters k-d tree data based on the minimum number of neighbors within a radius; Requires KTKDTreeData; existing data is modified
 
      Signals:
-     - "kd-tree-out": void (KTDataPtr) emitted upon completion of the filtering
+     - "kd-tree-out": void (Nymph::KTDataPtr) emitted upon completion of the filtering
     */
 
-    class KTNNFilter : public KTProcessor
+    class KTNNFilter : public Nymph::KTProcessor
     {
         public:
             KTNNFilter(const std::string& name = "nn-filter");
             virtual ~KTNNFilter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, MaxDist);
             MEMBERVARIABLE(double, Radius);
@@ -81,15 +75,15 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fKDTreeSignal;
+            Nymph::KTSignalData fKDTreeSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTKDTreeData > fKDTreeNNSlot;
-            KTSlotDataOneType< KTKDTreeData > fKDTreeRadiusSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeNNSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeRadiusSlot;
 
     };
 

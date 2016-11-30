@@ -1,0 +1,6 @@
+<map id="Katydid::KTCandidateCleaner" name="Katydid::KTCandidateCleaner">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="226,193,391,413"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="5,5,169,132"/>
+<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_slot_data_two_types.html" title="{Nymph::KTSlotDataTwoTypes\l\&lt; Katydid::KTSparseWaterfallCandidate\lData, Katydid::KTHoughData \&gt;\n|# fFunc\l|+ KTSlotDataTwoTypes()\l+ KTSlotDataTwoTypes()\l+ ~KTSlotDataTwoTypes()\l+ operator()()\l}" alt="" coords="676,233,933,373"/>
+<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="585,5,738,132"/>
+</map>

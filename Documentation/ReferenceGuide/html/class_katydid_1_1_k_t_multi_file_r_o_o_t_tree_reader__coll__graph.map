@@ -1,0 +1,9 @@
+<map id="Katydid::KTMultiFileROOTTreeReader" name="Katydid::KTMultiFileROOTTreeReader">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_reader.html" title="{Nymph::KTReader\n||+ KTReader()\l+ ~KTReader()\l}" alt="" coords="36,521,168,608"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="5,207,199,320"/>
+<area shape="rect" id="node5" href="$struct_katydid_1_1_k_t_multi_file_r_o_o_t_tree_reader_1_1_data_type.html" title="{Katydid::KTMultiFileROOTTree\lReader::DataType\n||+ DataType()\l}" alt="" coords="300,220,505,307"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="264,32,343,105"/>
+<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="495,5,648,132"/>
+<area shape="rect" id="node10" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Nymph::Nymph::KTData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="475,344,668,471"/>
+<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_signal_one_arg_3_01void_01_4.html" title="{Nymph::KTSignalOneArg\l\&lt; void \&gt;\n|# fSignal\l|+ KTSignalOneArg()\l+ ~KTSignalOneArg()\l+ operator()()\l# KTSignalOneArg()\l# KTSignalOneArg()\l}" alt="" coords="767,495,938,635"/>
+</map>

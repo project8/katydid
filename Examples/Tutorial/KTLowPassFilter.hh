@@ -16,6 +16,11 @@
 
 #include <cmath>
 
+namespace scarab
+{
+    class param_node;
+}
+
 namespace Katydid
 {
     class KTFrequencySpectrumDataFFTW;
@@ -49,14 +54,13 @@ namespace Katydid
      - "fs-fftw": void (KTDataPtr) -- Emitted upon low-pass filtering; Guarantees KTLowPassFilteredFSDataFFTW.
      - "ps": void (KTDataPtr) -- Emitted upon low-pass filtering; Guarantees KTLowPassFilteredPSData.
     */
-
-    class KTLowPassFilter : public KTProcessor
+    class KTLowPassFilter : public Nymph::KTProcessor
     {
         public:
             KTLowPassFilter(const std::string& name = "low-pass-filter");
             virtual ~KTLowPassFilter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, RC);
 
@@ -75,18 +79,18 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFSPolarSignal;
-            KTSignalData fFSFFTWSignal;
-            KTSignalData fPSSignal;
+            Nymph::KTSignalData fFSPolarSignal;
+            Nymph::KTSignalData fFSFFTWSignal;
+            Nymph::KTSignalData fPSSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
-            KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
 
     };
 

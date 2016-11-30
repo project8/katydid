@@ -1,0 +1,8 @@
+<map id="Katydid::KTMultiFileJSONReader::DataType" name="Katydid::KTMultiFileJSONReader::DataType">
+<area shape="rect" id="node2" title="STL class. " alt="" coords="249,175,328,248"/>
+<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_data.html" title="{Nymph::KTData\n||+ KTData()\l+ KTData()\l+ ~KTData()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLEREF_NOSET()\l+ GetCutStatus()\l}" alt="" coords="5,343,250,496"/>
+<area shape="rect" id="node3" title="STL class. " alt="" coords="226,5,352,92"/>
+<area shape="rect" id="node5" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="39,155,216,268"/>
+<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="373,356,527,483"/>
+<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_signal_one_arg.html" title="{Nymph::KTSignalOneArg\l\&lt; KTDataPtr \&gt;\n|# fSignal\l|+ KTSignalOneArg()\l+ ~KTSignalOneArg()\l+ operator()()\l# KTSignalOneArg()\l# KTSignalOneArg()\l}" alt="" coords="365,141,536,281"/>
+</map>

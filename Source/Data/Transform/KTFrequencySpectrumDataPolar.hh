@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
 
     class KTFrequencySpectrumDataPolarCore : public KTFrequencySpectrumData
     {
@@ -88,7 +88,7 @@ namespace Katydid
     }
 
 
-    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTFrequencySpectrumDataPolar >
+    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataPolar >
     {
         public:
             KTFrequencySpectrumDataPolar();

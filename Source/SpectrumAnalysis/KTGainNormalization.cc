@@ -13,11 +13,8 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTParam.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
-//#include "KTSlidingWindowFSData.hh"
-//#include "KTSlidingWindowFSDataFFTW.hh"
 
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -55,26 +52,26 @@ namespace Katydid
     {
     }
 
-    bool KTGainNormalization::Configure(const KTParamNode* node)
+    bool KTGainNormalization::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        if (node->Has("min-frequency"))
+        if (node->has("min-frequency"))
         {
-            SetMinFrequency(node->GetValue< double >("min-frequency"));
+            SetMinFrequency(node->get_value< double >("min-frequency"));
         }
-        if (node->Has("max-frequency"))
+        if (node->has("max-frequency"))
         {
-            SetMaxFrequency(node->GetValue< double >("max-frequency"));
+            SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        if (node->Has("min-bin"))
+        if (node->has("min-bin"))
         {
-            SetMinBin(node->GetValue< unsigned >("min-bin"));
+            SetMinBin(node->get_value< unsigned >("min-bin"));
         }
-        if (node->Has("max-bin"))
+        if (node->has("max-bin"))
         {
-            SetMaxBin(node->GetValue< unsigned >("max-bin"));
+            SetMaxBin(node->get_value< unsigned >("max-bin"));
         }
 
         return true;

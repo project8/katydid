@@ -10,8 +10,7 @@
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
-#include "KTNOFactory.hh"
-#include "KTParam.hh"
+
 #include "KTProcessedTrackData.hh"
 
 #include <list>
@@ -39,7 +38,7 @@ namespace Katydid
             fCompTracks(1),
             fMPTracks(1),
             fCandidates(),
-            fDataCount(0),
+            fDataCount(-1),
             fEventSignal("event", this),
             fEventsDoneSignal("events-done", this),
             fTakeTrackSlot("track", this, &KTMultiPeakEventBuilder::TakeTrack)
@@ -51,13 +50,12 @@ namespace Katydid
     {
     }
 
-    bool KTMultiPeakEventBuilder::Configure(const KTParamNode* node)
+    bool KTMultiPeakEventBuilder::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetSidebandTimeTolerance(node->GetValue("sideband-time-tol", GetSidebandTimeTolerance()));
-        SetJumpTimeTolerance(node->GetValue("jump-time-tol", GetJumpTimeTolerance()));
-        //SetJumpFreqTolerance(node->GetValue("jump-freq-tol", GetJumpFreqTolerance()));
+        SetSidebandTimeTolerance(node->get_value("sideband-time-tol", GetSidebandTimeTolerance()));
+        SetJumpTimeTolerance(node->get_value("jump-time-tol", GetJumpTimeTolerance()));
 
         return true;
     }
@@ -202,7 +200,7 @@ namespace Katydid
 
         // we're unpacking all components into a unified set of events, so this goes outside the loop
         typedef std::set< double > TrackEndsType;
-        typedef std::pair< KTDataPtr, TrackEndsType > ActiveEventType;
+        typedef std::pair< Nymph::KTDataPtr, TrackEndsType > ActiveEventType;
         std::vector< ActiveEventType > activeEvents;
 
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
@@ -285,11 +283,13 @@ namespace Katydid
                 if (trackAssigned == -1)
                 { // if no event matched then create one
                     KTINFO(tclog, "track not matched, creating new event");
-                    KTDataPtr data(new KTData());
+                    ++fDataCount;
+                    Nymph::KTDataPtr data(new Nymph::KTData());
                     ActiveEventType new_event(data, TrackEndsType());
                     KTMultiTrackEventData& event = new_event.first->Of< KTMultiTrackEventData >();
                     event.SetComponent(iComponent);
                     event.SetAcquisitionID(trackIt->fAcquisitionID);
+                    event.SetEventID(fDataCount);
 
                     event.AddTracks(trackIt->fTrackRefs);
                     if (trackIt->fUnknownEventTopology)
@@ -318,7 +318,7 @@ namespace Katydid
         }
 
         // emit event signals
-        for (std::set< KTDataPtr >::const_iterator dataIt=fCandidates.begin(); dataIt != fCandidates.end(); ++dataIt)
+        for (std::set< Nymph::KTDataPtr >::const_iterator dataIt=fCandidates.begin(); dataIt != fCandidates.end(); ++dataIt)
         {
             fEventSignal(*dataIt);
         }

@@ -4,12 +4,14 @@
 set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
+    KTDPTReader.hh
     KTJSONTypeWriterTime.hh
     #KTJSONTypeWriterEvaluation.hh
     KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.hh
     #KTMultiFileJSONReader.hh
     KTOfficialCandidatesWriter.hh
+    KTTerminalTypeWriterEventAnalysis.hh
     KTTerminalTypeWriterTime.hh
     KTTerminalWriter.hh
 )
@@ -17,12 +19,14 @@ set (IO_HEADERFILES
 set (IO_SOURCEFILES
     KTBasicASCIITypeWriterTS.cc
     KTBasicAsciiWriter.cc
+    KTDPTReader.cc
     KTJSONTypeWriterTime.cc
     #KTJSONTypeWriterEvaluation.cc
-    KTJSONTypeWriterEventAnalysis.hh
+    KTJSONTypeWriterEventAnalysis.cc
     KTJSONWriter.cc
     #KTMultiFileJSONReader.cc
     KTOfficialCandidatesWriter.cc
+    KTTerminalTypeWriterEventAnalysis.cc
     KTTerminalTypeWriterTime.cc
     KTTerminalWriter.cc
 )
@@ -42,6 +46,7 @@ if (ROOT_FOUND)
         KTBasicROOTTypeWriterTime.hh
         KTBasicROOTTypeWriterTransform.hh
         KTDataDisplay.hh
+	KTDataTypeDisplayEventAnalysis.hh
         KTDataTypeDisplaySpectrumAnalysis.hh
         KTDataTypeDisplayTime.hh
         KTDataTypeDisplayTransform.hh
@@ -68,6 +73,7 @@ if (ROOT_FOUND)
         KTBasicROOTTypeWriterTransform.cc
         KTBasicROOTFileWriter.cc
         KTDisplayWindow.cc
+	KTDataTypeDisplayEventAnalysis.cc
         KTDataTypeDisplaySpectrumAnalysis.cc
         KTDataTypeDisplayTime.cc
         KTDataTypeDisplayTransform.cc
@@ -115,7 +121,6 @@ if (HDF5_FOUND)
 endif (HDF5_FOUND)
 
 set (KATYDID_LIBS
-    Nymph
     KatydidUtility
     KatydidData
 )
@@ -124,9 +129,7 @@ set (KATYDID_LIBS
 
 if (ROOT_FOUND)
     ROOT_GENERATE_DICTIONARY (IODict ${IO_DICT_HEADERFILES} LINKDEF ${IO_LINKDEF_HEADERFILE})
-    if (Katydid_USE_CPP11)
-        pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
-    endif (Katydid_USE_CPP11)
+    pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
 endif (ROOT_FOUND)
 
 add_library (KatydidIO ${IO_SOURCEFILES} ${IO_DICT_OUTFILE})

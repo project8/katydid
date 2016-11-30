@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     /*!
      @class KTHoughTransform
      @author N. S. Oblath
@@ -42,15 +42,15 @@ namespace Katydid
      - "n-r-points: unsigned int -- number of points used to divide up the radius axis
 
      Slots:
-     - "swf-cand": void (KTDataPtr) -- Performs a Hough Transform on sparse waterfall candidate data; Requires KTSparseWaterfallCandidateData; Adds KTHoughData
-     - "wf-cand": void (KTDataPtr) -- Performs a Hough Transform on waterfall candidate data; Requires KTWaterfallCandidateData; Adds KTHoughData
-     - "disc": void (KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
+     - "swf-cand": void (Nymph::KTDataPtr) -- Performs a Hough Transform on sparse waterfall candidate data; Requires KTSparseWaterfallCandidateData; Adds KTHoughData
+     - "wf-cand": void (Nymph::KTDataPtr) -- Performs a Hough Transform on waterfall candidate data; Requires KTWaterfallCandidateData; Adds KTHoughData
+     - "disc": void (Nymph::KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
      Signals:
-     - "hough": void (KTDataPtr) Emitted upon performance of a transform; Guarantees KTHoughData
+     - "hough": void (Nymph::KTDataPtr) Emitted upon performance of a transform; Guarantees KTHoughData
     */
 
-    class KTHoughTransform : public KTProcessor
+    class KTHoughTransform : public Nymph::KTProcessor
     {
         public:
             typedef KTDiscriminatedPoints2DData::SetOfPoints SetOfPoints;
@@ -60,7 +60,7 @@ namespace Katydid
             KTHoughTransform(const std::string& name = "hough-transform");
             virtual ~KTHoughTransform();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetNThetaPoints() const;
             void SetNThetaPoints(unsigned nPoints);
@@ -95,16 +95,16 @@ namespace Katydid
              //***************
 
          private:
-             KTSignalData fHTSignal;
+             Nymph::KTSignalData fHTSignal;
 
              //***************
              // Slots
              //***************
 
          private:
-             KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFCandSlot;
-             KTSlotDataOneType< KTWaterfallCandidateData > fWFCandSlot;
-             KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPts2DSlot;
+             Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFCandSlot;
+             Nymph::KTSlotDataOneType< KTWaterfallCandidateData > fWFCandSlot;
+             Nymph::KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPts2DSlot;
 
     };
 

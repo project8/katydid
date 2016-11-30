@@ -9,7 +9,6 @@
 
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
-#include "KTParam.hh"
 
 using std::string;
 
@@ -36,14 +35,14 @@ namespace Katydid
     {
     }
 
-    bool KTNNFilter::Configure(const KTParamNode* node)
+    bool KTNNFilter::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        SetMaxDist(node->GetValue("max-dist", GetMaxDist()));
-        SetRadius(node->GetValue("radius", GetRadius()));
-        SetMinInRadius(node->GetValue("min-in-radius", GetMinInRadius()));
-        SetRemoveNoiseFlag(node->GetValue("remove-noise", GetRemoveNoiseFlag()));
+        SetMaxDist(node->get_value("max-dist", GetMaxDist()));
+        SetRadius(node->get_value("radius", GetRadius()));
+        SetMinInRadius(node->get_value("min-in-radius", GetMinInRadius()));
+        SetRemoveNoiseFlag(node->get_value("remove-noise", GetRemoveNoiseFlag()));
 
         return true;
     }

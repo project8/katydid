@@ -331,7 +331,7 @@ namespace Katydid
             f_new_time_series.resize(nChannels);
 
            // create the new data object
-            f_data_ptr.reset(new KTData());
+            f_data_ptr.reset(new Nymph::KTData());
 
             // Fill out slice header information
             KTSliceHeader& sliceHeader = f_data_ptr->Of< KTSliceHeader >().SetNComponents(f_header.GetNChannels());

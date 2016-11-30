@@ -1,0 +1,7 @@
+<map id="Katydid::KTRQProcessor" name="Katydid::KTRQProcessor">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="232,355,398,575"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="35,140,198,267"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="166,5,245,79"/>
+<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTTimeSeriesData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="576,401,784,528"/>
+<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="572,140,725,267"/>
+</map>

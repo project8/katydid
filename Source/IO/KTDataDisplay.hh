@@ -18,9 +18,9 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTDataDisplay;
-    typedef KTDerivedTypeWriter< KTDataDisplay > KTDataTypeDisplay;
+    typedef Nymph::KTDerivedTypeWriter< KTDataDisplay > KTDataTypeDisplay;
 
   /*!
      @class KTDataDisplay
@@ -63,14 +63,14 @@ namespace Katydid
 
     */
 
-    class KTDataDisplay : public KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >
+    class KTDataDisplay : public Nymph::KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >
     {
 
         public:
             KTDataDisplay(const std::string& name = "data-display");
             virtual ~KTDataDisplay();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetWidth() const;
             void SetWidth(unsigned width);
@@ -78,9 +78,13 @@ namespace Katydid
             unsigned GetHeight() const;
             void SetHeight(unsigned height);
 
+            const std::string& GetDrawArgs() const;
+            void SetDrawArgs(const std::string& args);
+
         private:
             unsigned fWidth;
             unsigned fHeight;
+            std::string fDrawArgs;
 
         public:
             bool Initialize();
@@ -118,6 +122,16 @@ namespace Katydid
         return;
     }
 
+    inline const std::string& KTDataDisplay::GetDrawArgs() const
+    {
+        return fDrawArgs;
+    }
+    inline void KTDataDisplay::SetDrawArgs(const std::string& args)
+    {
+        fDrawArgs = args;
+        return;
+    }
+
     template< typename XDrawable >
     void KTDataDisplay::Draw(XDrawable* drawable)
     {
@@ -125,7 +139,7 @@ namespace Katydid
 
         if (! fEventLoop->IsActive()) return;
 
-        fDisplayWindow->Draw(drawable);
+        fDisplayWindow->Draw(drawable, fDrawArgs);
         fDisplayWindow->GetCanvas()->Update();
         // this will allow the user to interact with the window
         // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)

@@ -1,0 +1,22 @@
+<map id="KTDataAccumulator.cc" name="KTDataAccumulator.cc">
+<area shape="rect" id="node2" href="$_k_t_data_accumulator_8hh.html" title="KTDataAccumulator.hh" alt="" coords="255,79,413,104"/>
+<area shape="rect" id="node14" href="$_k_t_frequency_spectrum_data_f_f_t_w_8hh.html" title="Contains KTFrequencySpectrumDataFFTW. " alt="" coords="1241,79,1482,104"/>
+<area shape="rect" id="node15" href="$_k_t_frequency_spectrum_f_f_t_w_8hh.html" title="Contains KTFrequencySpectrum. " alt="" coords="1454,152,1667,177"/>
+<area shape="rect" id="node18" href="$_k_t_frequency_spectrum_data_polar_8hh.html" title="KTFrequencySpectrumDataPolar.hh" alt="" coords="1093,152,1329,177"/>
+<area shape="rect" id="node19" href="$_k_t_frequency_spectrum_polar_8hh.html" title="KTFrequencySpectrumPolar.hh" alt="" coords="1317,225,1524,251"/>
+<area shape="rect" id="node20" href="$_k_t_power_spectrum_8hh.html" title="KTPowerSpectrum.hh" alt="" coords="1926,152,2078,177"/>
+<area shape="rect" id="node22" href="$_k_t_power_spectrum_data_8hh.html" title="KTPowerSpectrumData.hh" alt="" coords="1506,79,1686,104"/>
+<area shape="rect" id="node23" href="$_k_t_time_series_data_8hh.html" title="Contains KTTimeSeriesData. " alt="" coords="918,152,1070,177"/>
+<area shape="rect" id="node25" href="$_k_t_time_series_f_f_t_w_8hh.html" title="KTTimeSeriesFFTW.hh" alt="" coords="1691,152,1851,177"/>
+<area shape="rect" id="node26" href="$_k_t_time_series_real_8hh.html" title="KTTimeSeriesReal.hh" alt="" coords="2102,152,2253,177"/>
+<area shape="rect" id="node3" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="25,152,141,177"/>
+<area shape="rect" id="node4" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="208,225,305,251"/>
+<area shape="rect" id="node8" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="686,225,771,251"/>
+<area shape="rect" id="node9" href="$_k_t_slot_8hh.html" title="KTSlot.hh" alt="" coords="216,152,296,177"/>
+<area shape="rect" id="node10" href="$_k_t_slice_header_8hh.html" title="KTSliceHeader.hh" alt="" coords="765,152,894,177"/>
+<area shape="rect" id="node12" href="$_k_t_time_series_dist_data_8hh.html" title="KTTimeSeriesDistData.hh" alt="" coords="516,152,691,177"/>
+<area shape="rect" id="node16" href="$_k_t_physical_array_f_f_t_w_8hh.html" title="KTPhysicalArrayFFTW.hh" alt="" coords="1548,225,1722,251"/>
+<area shape="rect" id="node17" href="$_k_t_physical_array_8hh.html" title="KTPhysicalArray.hh" alt="" coords="1765,299,1902,324"/>
+<area shape="rect" id="node21" href="$_k_t_frequency_domain_array_8hh.html" title="KTFrequencyDomainArray.hh" alt="" coords="1798,225,1995,251"/>
+<area shape="rect" id="node24" href="$_k_t_time_series_8hh.html" title="KTTimeSeries.hh" alt="" coords="1169,225,1293,251"/>
+</map>

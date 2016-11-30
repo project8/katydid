@@ -17,15 +17,9 @@
 #include "KTSlot.hh"
 
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
-
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTEggHeader;
 
     /*!
@@ -45,19 +39,19 @@ namespace Katydid
      - "range-max": double -- maximum value for the x-axis of the distribution
 
      Slots:
-     - "raw-ts": void (KTDataPtr) -- Converts a raw time series to a value distribution; Requires KTRawTimeSeriesData; Adds KTTimeSeriesDist; Emits signal "ts-dist"
+     - "raw-ts": void (Nymph::KTDataPtr) -- Converts a raw time series to a value distribution; Requires KTRawTimeSeriesData; Adds KTTimeSeriesDist; Emits signal "ts-dist"
 
      Signals:
-     - "ts-dist": void (KTDataPtr) -- Emitted upon calculation of a time-series distribution; Guarantees KTTimeSeriesDistData
+     - "ts-dist": void (Nymph::KTDataPtr) -- Emitted upon calculation of a time-series distribution; Guarantees KTTimeSeriesDistData
      */
 
-    class KTAmplitudeCounter : public KTProcessor
+    class KTAmplitudeCounter : public Nymph::KTProcessor
     {
         public:
             KTAmplitudeCounter(const std::string& name = "amp-counter");
             virtual ~KTAmplitudeCounter();
 
-            bool Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
 
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);
@@ -84,14 +78,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fTSDistSignal;
+            Nymph::KTSignalData fTSDistSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTRawTimeSeriesData > fTSSlot;
+            Nymph::KTSlotDataOneType< KTRawTimeSeriesData > fTSSlot;
 
     };
 

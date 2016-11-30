@@ -36,7 +36,7 @@ namespace Katydid
     KTLOGGER(publog, "KTBasicROOTTypeWriterTransform");
 
 
-    static KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterTransform > sBRTWFFTRegistrar;
+    static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterTransform > sBRTWFFTRegistrar;
 
     KTBasicROOTTypeWriterTransform::KTBasicROOTTypeWriterTransform() :
             KTBasicROOTTypeWriter()
@@ -77,7 +77,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolar(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -106,7 +106,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTW(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -135,7 +135,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPhase(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -164,7 +164,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -193,7 +193,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPower(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -222,7 +222,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -251,7 +251,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -280,7 +280,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -309,7 +309,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -338,7 +338,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -371,7 +371,7 @@ namespace Katydid
     //********************
     // Power Spectrum Data
     //********************
-    void KTBasicROOTTypeWriterTransform::WritePowerSpectrum(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WritePowerSpectrum(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -401,7 +401,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WritePowerSpectralDensity(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WritePowerSpectralDensity(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -431,7 +431,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WritePowerSpectrumDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WritePowerSpectrumDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -461,7 +461,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WritePowerSpectralDensityDistribution(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -497,7 +497,7 @@ namespace Katydid
     // Time/Frequency Data
     //************************
 
-    void KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolar(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -526,7 +526,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPhase(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -554,7 +554,7 @@ namespace Katydid
         }
         return;
     }
-    void KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPower(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -588,7 +588,7 @@ namespace Katydid
     // Multi-FS Data
     //*****************
 
-    void KTBasicROOTTypeWriterTransform::WriteMultiFSDataPolar(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteMultiFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
 
@@ -613,7 +613,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterTransform::WriteMultiFSDataFFTW(KTDataPtr data)
+    void KTBasicROOTTypeWriterTransform::WriteMultiFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
 

@@ -1,0 +1,7 @@
+<map id="Katydid::KTConsensusThresholding" name="Katydid::KTConsensusThresholding">
+<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="186,213,351,433"/>
+<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="5,5,169,132"/>
+<area shape="rect" id="node6" href="$struct_katydid_1_1_k_t_tree_index.html" title="{Katydid::KTTreeIndex\l\&lt; double \&gt;\n||+ ~KTTreeIndex()\l+ FreeIndex()\l+ BuildIndex()\l+ size()\l+ Veclen()\l+ UsedMemory()\l+ SaveIndex()\l+ LoadIndex()\l+ FindNeighbors()\l+ FindNeighbors()\l+ KNNSearch()\l+ RadiusSearch()\l+ NearestNeighborsByRadius()\l+ NearestNeighborsByNumber()\l}" alt="" coords="376,193,588,453"/>
+<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTKDTreeData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="755,260,948,387"/>
+<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="624,5,777,132"/>
+</map>

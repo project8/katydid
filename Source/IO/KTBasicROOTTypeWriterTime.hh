@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    using namespace Nymph;
+    
     class KTBasicROOTTypeWriterTime : public KTBasicROOTTypeWriter//, public KTTypeWriterTime
     {
         public:
@@ -24,11 +24,11 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteRawTimeSeriesData(KTDataPtr data);
-            //void WriteRawTimeSeriesDataDistribution(KTDataPtr data);
+            void WriteRawTimeSeriesData(Nymph::KTDataPtr data);
+            //void WriteRawTimeSeriesDataDistribution(Nymph::KTDataPtr data);
 
-            void WriteTimeSeriesData(KTDataPtr data);
-            void WriteTimeSeriesDataDistribution(KTDataPtr data);
+            void WriteTimeSeriesData(Nymph::KTDataPtr data);
+            void WriteTimeSeriesDataDistribution(Nymph::KTDataPtr data);
 
     };
 

@@ -34,7 +34,7 @@ namespace Katydid
             KTEggReader(),
             fSliceSize(1024),
             fStride(0),
-            fHeaderPtr(new KTData()),
+            fHeaderPtr(new Nymph::KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(1),
@@ -66,7 +66,7 @@ namespace Katydid
         return true;
     }
 
-    KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
     {
         // Note on reading variables with MatIO:
         // Before each call to Mat_VarRead (or similar), a call should be made to Mat_Rewind, which resets the file-read pointer to the beginning of the file.
@@ -76,7 +76,7 @@ namespace Katydid
         if (fMatFilePtr != NULL || fTSArrayMat != NULL)
         {
             KTERROR(eggreadlog, "Either the file pointer (" << fMatFilePtr << ") or the array data (" << fTSArrayMat << ") is open/allocated");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         // Temporary variable to read time stamps
@@ -87,7 +87,7 @@ namespace Katydid
         if (fStride != fSliceSize)
         {
             KTERROR(eggreadlog, "The RSA matlab reader requires the stride equal the slice size");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         // open the file
@@ -96,7 +96,7 @@ namespace Katydid
         if (fMatFilePtr == NULL)
         {
             KTERROR(eggreadlog, "Unable to open mat file: " << filename);
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         double timeFromFirstToLastRecord = 0.;
@@ -132,7 +132,7 @@ namespace Katydid
             //if (rsaxml_mat == NULL)
             //{
             //    KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
-            //    return KTDataPtr();
+            //    return Nymph::KTDataPtr();
             //}
             for (unsigned iRecord = 0; iRecord < fRecordsPerFile; ++iRecord)
             {
@@ -153,7 +153,7 @@ namespace Katydid
                     Mat_VarFree(fileInfoStruct);
                     Mat_Close(fMatFilePtr);
                     fMatFilePtr = NULL;
-                    return KTDataPtr();
+                    return Nymph::KTDataPtr();
                 }
                 //Mat_VarPrint(rsaxml_mat, 1);
                 size_t buflen = rsaxml_mat->dims[1];  //mxGetN(rsaxml_mat) + 1;
@@ -164,7 +164,7 @@ namespace Katydid
                 //if (status != 0)
                 //{
                 //    KTERROR(eggreadlog, "Unable to read XML Configuration string.");
-                //    return KTDataPtr();
+                //    return Nymph::KTDataPtr();
                 //}
                 KTINFO(eggreadlog, "Read XML metadata for record " << iRecord);
                 //printf("Size of buflen: %d\n",buflen);
@@ -206,7 +206,7 @@ namespace Katydid
         { // For Debugging
             KTINFO(eggreadlog, "Number of Records in File: fRecordsPerFile = " << fRecordsPerFile << " ");
             KTERROR(eggreadlog, "Done for now, we are debugging");
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 #endif
 
@@ -218,7 +218,7 @@ namespace Katydid
             KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         if (rsaxml_mat->class_type != MAT_C_CHAR || rsaxml_mat->data_type != MAT_T_UINT8)
         {
@@ -226,7 +226,7 @@ namespace Katydid
             Mat_VarFree(rsaxml_mat);
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         //Mat_VarPrint(rsaxml_mat, 1);
         size_t buflen = rsaxml_mat->dims[1];  //mxGetN(rsaxml_mat) + 1;
@@ -237,7 +237,7 @@ namespace Katydid
         //if (status != 0)
         //{
         //    KTERROR(eggreadlog, "Unable to read XML Configuration string.");
-        //    return KTDataPtr();
+        //    return Nymph::KTDataPtr();
         //}
         KTINFO(eggreadlog, "Read XML Run Configuration");
         //std::cout << "xml string: \n" << rsaxml_str << std::endl;
@@ -270,7 +270,7 @@ namespace Katydid
         curr_node = data_node->first_node("SamplingFrequency");
         double fAcqBW = atof(curr_node->value());
         fHeader.SetAcquisitionRate(fAcqBW);
-        fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetChannelHeader(0)->GetRecordSize() / fHeader.GetAcquisitionRate());
+        fHeader.SetRunDuration(1000*(timeFromFirstToLastRecord + (double) fHeader.GetChannelHeader(0)->GetRecordSize() / fHeader.GetAcquisitionRate()));  /// the factor of 1000 is to convert from s to ms; timeFromFirstToLastRecord is in seconds, but RunDuration is supposed to be in ms
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
         curr_node = data_node->first_node("NumberFormat");
@@ -306,7 +306,7 @@ namespace Katydid
             KTERROR(eggreadlog, "Unable to find variable \"Y\"");
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         if (fTSArrayMat->data_type != MAT_T_SINGLE)
         {
@@ -315,7 +315,7 @@ namespace Katydid
             fTSArrayMat = NULL;
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         //Mat_VarPrint(fTSArrayMat, 1);
 
@@ -345,7 +345,7 @@ namespace Katydid
             if (spanArray != NULL) Mat_VarFree(spanArray);
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
         //Mat_VarPrint(cfArray, 1);
         //Mat_VarPrint(spanArray, 1);
@@ -361,7 +361,7 @@ namespace Katydid
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
         return fHeaderPtr;
     }
-    KTDataPtr KTRSAMatReader::HatchNextSlice()
+    Nymph::KTDataPtr KTRSAMatReader::HatchNextSlice()
     {
         // IMPORTANT:
         // Updated: KTRSAMatReader::HatchNextSlice is currently capable of reading MAT files containing multiple records, *as long as they have
@@ -369,7 +369,7 @@ namespace Katydid
         //          it still cannot read multiple channels
 
         // Initialize output
-        KTDataPtr newData(new KTData());
+        Nymph::KTDataPtr newData(new Nymph::KTData());
 
         // ********************************************************* //
         // Check whether we still have enough data to fill up slice  //
@@ -389,7 +389,7 @@ namespace Katydid
             KTDEBUG(eggreadlog, "fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
 
             // Return Empty Pointer
-            return KTDataPtr();
+            return Nymph::KTDataPtr();
         }
 
         // Create Slice Header

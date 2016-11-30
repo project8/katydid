@@ -15,9 +15,9 @@
 #include "KTBiasedACM.hh"
 #include "KTProcessor.hh"
 #include "KTLogger.hh"
-#include "KTNOFactory.hh"
 
-#include "KTParam.hh"
+
+#include "param.hh"
 #include "KTSlot.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
@@ -30,7 +30,7 @@ namespace Katydid {
 
   KTLOGGER(nrq_log, "KTRQProcessor");
 
-  class KTRQProcessor : public KTProcessor {
+  class KTRQProcessor : public Nymph::KTProcessor {
 
     /* 
      * Constructors and destructors.
@@ -43,7 +43,7 @@ namespace Katydid {
      * Configuration, setters and getters.
      */
   public:
-    bool Configure(const KTParamNode* node);
+    bool Configure(const scarab::param_node* node);
     unsigned GetChunkSize();
     void SetChunkSize(unsigned newsize);
     std::string GetNoiseDataName();
@@ -61,11 +61,11 @@ namespace Katydid {
 
 
   private:
-    KTSlotDataOneType< KTTimeSeriesData > fNoiseSlot;
+    Nymph::KTSlotDataOneType< KTTimeSeriesData > fNoiseSlot;
     bool ProcessNoiseData(KTTimeSeriesData& noise);
-    KTSlotDataOneType< KTTimeSeriesData > fCandidateSlot;
+    Nymph::KTSlotDataOneType< KTTimeSeriesData > fCandidateSlot;
     bool ProcessCandidateData(KTTimeSeriesData& candidate);
-    KTSignalData fRQSignal;
+    Nymph::KTSignalData fRQSignal;
 
     /*
      * Internal state related to processing
