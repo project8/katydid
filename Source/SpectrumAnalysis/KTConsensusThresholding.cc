@@ -173,11 +173,8 @@ namespace Katydid
         // Find the neighboors withinin a circle around a given point (#pid), and use them to extract a slope/trend to be returned
         KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(pid, fMembershipRadius);
         unsigned nNeighbors = ne.size();
-        double sumX, sumY, sumX2, sumXY;
-        sumX = 0;
-        sumY = 0;
-        sumX2 = 0;
-        sumXY = 0;
+        double sumX = 0 , sumY = 0, sumX2 = 0, sumXY = 0;
+
         for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)
         {
             sumX += setOfPoints[ne[iNe]].fCoords[0];
@@ -185,7 +182,7 @@ namespace Katydid
             sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
             sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
         }
-        
+
         double slope = 0;
         if (nNeighbors!=0){ slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
 

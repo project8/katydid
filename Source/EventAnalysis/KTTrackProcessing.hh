@@ -33,10 +33,12 @@ namespace Katydid
      Configuration name: "track-proc"
 
      Available configuration values:
+     - "algorithm": string -- Select the track processing algorithm: "double-cuts" or "weighted-slope" (default)
      - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
      - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
      - "slope-min": double -- Minimum track slope to keep (Hz/s)
      - "min-points": unsigned -- Minimum number of points required to keep a processed track
+     - "assigned-error": double -- Error assigned to the points in case of perfectly aligned points
 
      Slots:
      - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
