@@ -578,7 +578,7 @@ namespace Katydid
         // This **SHOULD NOT** be used as a meaningful analysis result!!
         // It is also specific to a particular data set, so if you're not me you probably shouldn't use it at all
 
-        if( data.GetStartFrequency() > 100e6 )
+        if( data.GetStartFrequency() > 95e6 )
         {
             newData.SetMainPeak( 1 );
         }

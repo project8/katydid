@@ -78,6 +78,7 @@ namespace Katydid
         SetLeadFreq(node->get_value< double >("lead-freq", fLeadFreq));
         SetTrailFreq(node->get_value< double >("trail-freq", fTrailFreq));
         SetUseTrackFreqs(node->get_value< bool >("use-track-freqs", fUseTrackFreqs));
+        SetFullEvent(node->get_value< bool >("full-event", fFullEvent));
 
         return true;
     }
@@ -132,6 +133,7 @@ namespace Katydid
 
     bool KTSpectrogramCollector::AddMPEvent( KTMultiTrackEventData& mpEventData, unsigned component )
     {
+        KTDEBUG(evlog, "Adding MP Event");
         // Create new Nymph::KTDataPtr and its contents
         Nymph::KTDataPtr ptr( new Nymph::KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
@@ -156,17 +158,31 @@ namespace Katydid
 
         if( ! GetFullEvent() )
         {
+            KTINFO(evlog, "Searching for tracks with fEventSequenceID==0");
+
             // If we are collecting only the first group in the event, we must loop through and find those tracks
-            for( TrackSet::iterator it = mpEventData.GetTracksSet().begin(); it != mpEventData.GetTracksSet().end(); ++it )
+            TrackSet allTracks = mpEventData.GetTracksSet();
+            for( TrackSet::const_iterator it = allTracks.begin(); it != allTracks.end(); ++it )
             {
-                KTProcessedTrackData aTrack = KTProcessedTrackData(*it);
+                KTDEBUG(evlog, "1");
+                KTProcessedTrackData aTrack;// = KTProcessedTrackData(*it);
+                aTrack.SetEventSequenceID( it->GetEventSequenceID() );
+                aTrack.SetStartTimeInRunC( it->GetStartTimeInRunC() );
+                aTrack.SetEndTimeInRunC( it->GetEndTimeInRunC() );
+                aTrack.SetStartFrequency( it->GetStartFrequency() );
+                aTrack.SetEndFrequency( it->GetEndFrequency() );
+                aTrack.SetSlope( it->GetSlope() );
+                aTrack.SetIntercept( it->GetIntercept() );
+                KTDEBUG(evlog, "2");
 
                 // Skip tracks with fEventSequenceID != 0
                 if( aTrack.GetEventSequenceID() != 0 )
                 {
+                    KTDEBUG(evlog, "Event sequence ID = " << aTrack.GetEventSequenceID() << "; skipping this track");
                     continue;
                 }
 
+                KTDEBUG(evlog, "3");
                 // Assign overall start/end time and frequency
                 if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
                 {
@@ -184,6 +200,7 @@ namespace Katydid
                 {
                     overallEndFrequency = aTrack.GetEndFrequency();
                 }
+                KTDEBUG(evlog, "4");
 
                 // Add to the averages
                 averageStartFrequency += aTrack.GetStartFrequency();
@@ -193,6 +210,7 @@ namespace Katydid
 
                 // Increment the track multiplicity
                 ++mpt;
+                KTDEBUG(evlog, "5");
             }
 
             // Compute averages
@@ -206,6 +224,8 @@ namespace Katydid
             newTrack->SetEndFrequency( averageEndFrequency );
             newTrack->SetIntercept( averageIntercept );
             newTrack->SetSlope( averageSlope );
+
+            KTINFO(evlog, "Finished searching track set. MPT = " << mpt);
         }
         else
         {
@@ -246,7 +266,7 @@ namespace Katydid
         }
 
         // Also make sure none of them are still -1
-        if( overallStartTime < 0 || overallEndTime < 0 || overallStartFrequency < 0 || overallEndFrequency || 0 )
+        if( overallStartTime < 0 || overallEndTime < 0 || overallStartFrequency < 0 || overallEndFrequency < 0 )
         {
             KTWARN(evlog, "Could not establish overall time and frequency bounds from multi-peak event! Will not collect this track");
             return false;
