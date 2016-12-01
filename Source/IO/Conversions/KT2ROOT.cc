@@ -502,27 +502,51 @@ namespace Katydid
 
     }
 
-    TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName)
+    TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& whichPoints, const std::string& histName)
     {
         std::map< unsigned, KTPowerFitData::Point >::iterator it;
-        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = pf->GetSetOfPoints();
+        std::map< unsigned, KTPowerFitData::Point > SetOfPointsPX = pf->GetSetOfPointsPX();
+        std::map< unsigned, KTPowerFitData::Point > SetOfPointsPY = pf->GetSetOfPointsPY();
 
-        double minFreq, maxFreq;
-        unsigned nBins = SetOfPoints.size();
-        minFreq = SetOfPoints.begin()->second.fAbscissa;
-        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
+        double minFreqX, maxFreqX, minFreqY, maxFreqY;
+        unsigned nBinsX, nBinsY;
 
-        TH1D* hist = new TH1D(histName.c_str(), histName.c_str(),
-                (int)nBins, minFreq, maxFreq);
+        nBinsX = SetOfPointsPX.size();
+        minFreqX = SetOfPointsPX.begin()->second.fAbscissa;
+        maxFreqX = SetOfPointsPX.rbegin()->second.fAbscissa;
 
-        int iBin = 1;
-        for (it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it)
+        nBinsY = SetOfPointsPY.size();
+        minFreqY = SetOfPointsPY.begin()->second.fAbscissa;
+        maxFreqY = SetOfPointsPY.rbegin()->second.fAbscissa;
+
+        TH1D* histX = new TH1D(histName.c_str(), histName.c_str(), (int)nBinsX, minFreqX, maxFreqX);
+        TH1D* histY = new TH1D(histName.c_str(), histName.c_str(), (int)nBinsY, minFreqY, maxFreqY);
+
+        int iBinX = 1, iBinY = 1;
+        for (it = SetOfPointsPX.begin(); it != SetOfPointsPX.end(); ++it)
         {
-            hist->SetBinContent(iBin, it->second.fOrdinate);
-            iBin++;
+            histX->SetBinContent(iBinX, it->second.fOrdinate);
+            ++iBinX;
         }
-        
-        return hist;
+        for (it = SetOfPointsPY.begin(); it != SetOfPointsPY.end(); ++it)
+        {
+            histY->SetBinContent(iBinY, it->second.fOrdinate);
+            ++iBinY;
+        }
+
+        if( whichPoints == "PX" )
+        {
+            return histX;
+        }
+        else if( whichPoints == "PY" )
+        {
+            return histY;
+        }
+        else
+        {
+            KTWARN(dblog, "Projection axis not properly specified. Defaulting to PX");
+            return histX;
+        }
 
     }
 

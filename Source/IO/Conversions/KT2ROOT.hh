@@ -88,7 +88,7 @@ namespace Katydid
             // Set Of Points
             //***************
 
-            static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName);
+            static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& whichPoints, const std::string& histName);
 
     };
 

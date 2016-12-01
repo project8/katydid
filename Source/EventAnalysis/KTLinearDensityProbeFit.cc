@@ -420,7 +420,7 @@ namespace Katydid
             }
             
             // Add point to the KTPowerFitData
-            newData.AddPoint( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            newData.AddPointPX( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
             KTDEBUG(evlog, "Added point of intercept " << alpha << " and density " << density);
             
             // Increment alpha
@@ -430,7 +430,7 @@ namespace Katydid
         KTINFO(evlog, "Sucessfully gathered points for peak finding analysis");
 
         // Create histogram from the sweep results
-        TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "hPowerMag" );
+        TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "PX", "hPowerMag" );
  
         // The peak finding analysis uses TSpectrum
         // It is adapted from an example script written by Rene Brun: https://root.cern.ch/root/html/tutorials/spectrum/peaks.C.html
@@ -627,7 +627,7 @@ namespace Katydid
 
         // Points and iterator
         std::map< unsigned, KTPowerFitData::Point >::iterator it;
-        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPoints();
+        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPointsPX();
 
         // Iterate over all points and fill the appropriate vector
 
@@ -686,8 +686,36 @@ namespace Katydid
         newData.SetRMSAwayFromCentral( nonCentralRMS );
         newData.SetCentralPowerRatio( centralMean / nonCentralMean );
 
-        // Lastly we copy the track intercept to newData
+        // Copy the track intercept to newData
         newData.SetTrackIntercept( data.GetIntercept() );
+
+        // Begin X-projection analysis
+
+        q = -1. / data.GetSlope();
+
+        // Intercept range is determined by the spectrogram window
+        minAlpha = fullSpectrogram.GetMaxFreq() - q * fullSpectrogram.GetStartTime();
+        maxAlpha = fullSpectrogram.GetMinFreq() - q * fullSpectrogram.GetEndTime();
+
+        // Begin brute-force sweep
+        alpha = minAlpha;
+        while( alpha <= maxAlpha )
+        {
+            density = 0;
+
+            // Calculate the density associated to the current value of alpha
+            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
+            {
+                density += Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, fProbeWidthSmall );
+            }
+            
+            // Add point to the KTPowerFitData
+            newData.AddPointPY( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            KTDEBUG(evlog, "Added point of intercept " << alpha << " and density " << density);
+            
+            // Increment alpha
+            alpha += fStepSize;
+        }
 
         KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 

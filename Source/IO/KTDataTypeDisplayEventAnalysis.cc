@@ -46,7 +46,8 @@ namespace Katydid
     void KTDataTypeDisplayEventAnalysis::RegisterSlots()
     {
         fWriter->RegisterSlot("ps-coll", this, &KTDataTypeDisplayEventAnalysis::DrawPSCollectionData);
-        fWriter->RegisterSlot("power-fit", this, &KTDataTypeDisplayEventAnalysis::DrawPowerFitData);
+        fWriter->RegisterSlot("power-fit-px", this, &KTDataTypeDisplayEventAnalysis::DrawPowerFitDataPX);
+        fWriter->RegisterSlot("power-fit-py", this, &KTDataTypeDisplayEventAnalysis::DrawPowerFitDataPY);
         return;
     }
 
@@ -86,7 +87,7 @@ namespace Katydid
     // Power Fit Data
     //****************
 
-    void KTDataTypeDisplayEventAnalysis::DrawPowerFitData(Nymph::KTDataPtr data)
+    void KTDataTypeDisplayEventAnalysis::DrawPowerFitDataPX(Nymph::KTDataPtr data)
     {
         if( !data ) return;
 
@@ -96,7 +97,35 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        const std::map< unsigned, KTPowerFitData::Point > points = pfData.GetSetOfPoints();
+        const std::map< unsigned, KTPowerFitData::Point > points = pfData.GetSetOfPointsPX();
+        Int_t nPoints = points.size();
+
+        Double_t x[nPoints], y[nPoints];
+        int i = 0;
+        for( std::map< unsigned, KTPowerFitData::Point >::const_iterator it = points.begin(); it != points.end(); ++it )
+        {
+            x[i] = it->second.fAbscissa;
+            y[i] = it->second.fOrdinate;
+            ++i;
+        }
+
+        TGraph* g = new TGraph( nPoints, x, y );
+        fWriter->Draw(g);
+
+        return;
+    }
+
+    void KTDataTypeDisplayEventAnalysis::DrawPowerFitDataPY(Nymph::KTDataPtr data)
+    {
+        if( !data ) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTPowerFitData& pfData = data->Of<KTPowerFitData>();
+
+        if (! fWriter->OpenWindow()) return;
+
+        const std::map< unsigned, KTPowerFitData::Point > points = pfData.GetSetOfPointsPY();
         Int_t nPoints = points.size();
 
         Double_t x[nPoints], y[nPoints];

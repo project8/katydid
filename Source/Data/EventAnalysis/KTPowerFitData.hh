@@ -47,7 +47,8 @@ namespace Katydid
 
                 int fMainPeak;  // classifier for testing purposes
 
-                SetOfPoints fPoints; // raw power spectrum after rotate-and-project
+                SetOfPoints fPointsPX; // rotate-and-project to X-axis (time)
+                SetOfPoints fPointsPY; // rotate-and-project to Y-axis (frequency)
 
                 // Classifers
 
@@ -117,9 +118,11 @@ namespace Katydid
             int GetNPeaks(unsigned component=0) const;
             void SetNPeaks(int n, unsigned component=0); 
 
-            const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
+            const SetOfPoints& GetSetOfPointsPX(unsigned component = 0) const;
+            const SetOfPoints& GetSetOfPointsPY(unsigned component = 0) const;
 
-            void AddPoint(unsigned bin, const Point& point, unsigned component = 0);
+            void AddPointPX(unsigned bin, const Point& point, unsigned component = 0);
+            void AddPointPY(unsigned bin, const Point& point, unsigned component = 0);
 
             double GetAverage( unsigned component = 0 ) const;
             void SetAverage( double mu1, unsigned component = 0 );
@@ -296,15 +299,26 @@ namespace Katydid
         return;
     }
 
-    inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPoints(unsigned component) const
+    inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPointsPX(unsigned component) const
     {
-         return fComponentData[component].fPoints;
+         return fComponentData[component].fPointsPX;
     }
 
-    inline void KTPowerFitData::AddPoint(unsigned bin, const Point& point, unsigned component)
+    inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPointsPY(unsigned component) const
+    {
+         return fComponentData[component].fPointsPY;
+    }
+
+    inline void KTPowerFitData::AddPointPX(unsigned bin, const Point& point, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fPoints.insert(std::make_pair(bin, point));
+        fComponentData[component].fPointsPX.insert(std::make_pair(bin, point));
+    }
+
+    inline void KTPowerFitData::AddPointPY(unsigned bin, const Point& point, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fPointsPY.insert(std::make_pair(bin, point));
     }
 
     inline double KTPowerFitData::GetAverage(unsigned component) const
