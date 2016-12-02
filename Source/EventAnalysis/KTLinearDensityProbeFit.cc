@@ -314,6 +314,13 @@ namespace Katydid
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * xVal );
 
+            KTDEBUG(evlog, "yBin range set from " << yBinStart << " to " << yBinStart + yWindow - 1);
+            if( yBinStart < 0 || yBinStart + yWindow > (*it->second).GetNFrequencyBins() )
+            {
+                KTWARN(evlog, "I have noticed that the y-window will fall outside the power spectrum range. Analysis of this spectrogram will be aborted.");
+                return false;
+            }
+
             // Unweighted power = sum of raw power spectrum
             unweighted.push_back( 0 );
             for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
@@ -338,6 +345,12 @@ namespace Katydid
 
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
             yBinStart = it->second->FindBin( alphaBound_lower + q_fit * xVal );
+
+            if( yBinStart < 0 || yBinStart + yWindow > (*it->second).GetNFrequencyBins() )
+            {
+                KTWARN(evlog, "I have noticed that the y-window will fall outside the power spectrum range. Analysis of this spectrogram will be aborted.");
+                return false;
+            }
 
             for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
             {
@@ -420,17 +433,78 @@ namespace Katydid
             }
             
             // Add point to the KTPowerFitData
-            newData.AddPointPX( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            newData.AddPointPY( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
             KTDEBUG(evlog, "Added point of intercept " << alpha << " and density " << density);
             
             // Increment alpha
             alpha += fStepSize;
         }
 
+        // Window and spectrogram parameters
+
+        double ps_xmin = fullSpectrogram.GetStartTime();
+        double ps_xmax = fullSpectrogram.GetEndTime();
+        double ps_ymin = fullSpectrogram.GetSpectra().begin()->second->GetRangeMin();
+        //     ps_ymax will not be necessary
+        double ps_dx   = fullSpectrogram.GetDeltaT();
+        double ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
+
+        // Vector to hold the unweighted projection
+        vector< double > unweighted;
+
+        double xVal, yVal; // time (x) and frequency (y) values to be incremented in the loops below
+        double delta_f; // used in weighted projection calculated
+        int iSpectrum = 0;
+
+        KTDEBUG(evlog, "Computing unweighted projection");
+
+        // First we compute the unweighted projection
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
+        {
+            // Set x value and starting y-bin
+            xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
+
+            // Unweighted power = sum of raw power spectrum
+            unweighted.push_back( 0 );
+            for( int iBin = 0; iBin < (*it->second).GetNFrequencyBins(); ++iBin )
+            {
+                yVal = ps_ymin + ps_dy * (iBin - 1);
+
+                // We reevaluate the spline rather than deal with the appropriate index of power_minus_bkgd
+                unweighted[iSpectrum] += (*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal );
+            }
+            ++iSpectrum;
+        }
+
+        KTDEBUG(evlog, "Computing weighted projection");
+
+        iSpectrum = 0;
+
+        // Weighted projection
+        double cumulative;
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
+        {
+            cumulative = 0.;
+
+            xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
+
+            for( int iBin = 0; iBin < (*it->second).GetNFrequencyBins(); ++iBin )
+            {
+                yVal = ps_ymin + ps_dy * (iBin - 1);
+
+                // Calculate delta-f using the fit values
+                delta_f = yVal - (data.GetSlope() * xVal + data.GetIntercept());
+                cumulative += delta_f * ((*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal )) / unweighted[iSpectrum];
+            }
+
+            newData.AddPointPX( xVal, KTPowerFitData::Point( xVal, cumulative, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            ++iSpectrum;
+        }
+
         KTINFO(evlog, "Sucessfully gathered points for peak finding analysis");
 
         // Create histogram from the sweep results
-        TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "PX", "hPowerMag" );
+        TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "PY", "hPowerMag" );
  
         // The peak finding analysis uses TSpectrum
         // It is adapted from an example script written by Rene Brun: https://root.cern.ch/root/html/tutorials/spectrum/peaks.C.html
@@ -690,32 +764,6 @@ namespace Katydid
         newData.SetTrackIntercept( data.GetIntercept() );
 
         // Begin X-projection analysis
-
-        q = -1. / data.GetSlope();
-
-        // Intercept range is determined by the spectrogram window
-        minAlpha = fullSpectrogram.GetMaxFreq() - q * fullSpectrogram.GetStartTime();
-        maxAlpha = fullSpectrogram.GetMinFreq() - q * fullSpectrogram.GetEndTime();
-
-        // Begin brute-force sweep
-        alpha = minAlpha;
-        while( alpha <= maxAlpha )
-        {
-            density = 0;
-
-            // Calculate the density associated to the current value of alpha
-            for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
-            {
-                density += Gaus_Eval( it->second.fOrdinate - q * it->second.fAbscissa - alpha, fProbeWidthSmall );
-            }
-            
-            // Add point to the KTPowerFitData
-            newData.AddPointPY( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
-            KTDEBUG(evlog, "Added point of intercept " << alpha << " and density " << density);
-            
-            // Increment alpha
-            alpha += fStepSize;
-        }
 
         KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 
