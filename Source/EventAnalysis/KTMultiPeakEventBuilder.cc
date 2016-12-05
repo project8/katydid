@@ -234,9 +234,10 @@ namespace Katydid
 
     void KTMultiPeakEventBuilder::SetNComponents(unsigned nComps)
     {
-        //TODO: fix this
-        //fCompTracks.resize(nComps, vector< KTProcessedTrackData >());
-        return;
+        int fMPTSize = fMPTracks.size();
+        std::set< MultiPeakTrackRef, MTRComp > blankSet;
+        for( int i = fMPTSize; i <= nComps; ++i )
+            fMPTracks.push_back( blankSet );
     }
 
 } /* namespace Katydid */

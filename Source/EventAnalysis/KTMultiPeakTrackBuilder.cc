@@ -199,9 +199,10 @@ namespace Katydid
 
     void KTMultiPeakTrackBuilder::SetNComponents(unsigned nComps)
     {
-        //TODO: fix this
-        //fCompTracks.resize(nComps, vector< KTProcessedTrackData >());
-        return;
+        int fCTSize = fCompTracks.size();
+        TrackSet blankSet;
+        for( int i = fCTSize; i <= nComps; ++i )
+            fCompTracks.push_back( blankSet );
     }
 
 } /* namespace Katydid */
