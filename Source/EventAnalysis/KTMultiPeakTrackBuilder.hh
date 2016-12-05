@@ -35,19 +35,12 @@ namespace Katydid
      @brief Identifies and groups multi-peak tracks (i.e. tracks with sidebands)
 
      @details
-     Normalization of the axes:
-     The DBSCAN algorithm expects expects that all of the dimensions that describe a points will have the same scale,
-     such that a single radius parameter can describe a sphere in the parameter space that's used to cluster points together.
-     For track clustering, two radii are specified, one for the time dimension and one for the frequency dimension.
-     For clustering, a scaling factor is calculated for each axis such that the ellipse formed by the two radii is
-     scaled to a unit circle.  Those scaling factors are applied to every point before the data is passed to the
-     DBSCAN algorithm.
+     Groups parallel tracks into MPT structures by matching start/end timestamps within a tolerance.
 
      Configuration name: "multi-peak-track-builder"
 
      Available configuration values:
-     - "radii": double[2] -- array used to describe the distances that will be used to cluster tracks together; [time, frequency]
-     - "min-points": unsigned int -- minimum number of tracks required to have a cluster
+     - "sideband-time-tol": maximum difference in timestamps to treat as parallel tracks
 
      Slots:
      - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.

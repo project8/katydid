@@ -32,29 +32,22 @@ namespace Katydid
      @class KTMultiPeakEventBuilder
      @author N.S. Oblath
 
-     @brief Builds tracks into events; identifies multi-peak tracks (i.e. tracks with sidebands), and then groups into events.
+     @brief Builds multi-peak tracks into events.
 
      @details
-     Normalization of the axes:
-     The DBSCAN algorithm expects expects that all of the dimensions that describe a points will have the same scale,
-     such that a single radius parameter can describe a sphere in the parameter space that's used to cluster points together.
-     For track clustering, two radii are specified, one for the time dimension and one for the frequency dimension.
-     For clustering, a scaling factor is calculated for each axis such that the ellipse formed by the two radii is
-     scaled to a unit circle.  Those scaling factors are applied to every point before the data is passed to the
-     DBSCAN algorithm.
+     Groups MPT structures into MPT events by matching head/tail timestamps within a tolerance.
 
      Configuration name: "multi-peak-event-builder"
 
      Available configuration values:
-     - "radii": double[2] -- array used to describe the distances that will be used to cluster tracks together; [time, frequency]
-     - "min-points": unsigned int -- minimum number of tracks required to have a cluster
+     - "jump-time-tol": double -- maximum difference in time between two MPT structures to combine into an event
 
      Slots:
-     - "mpt": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds group of tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
+     - "mpt": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds group of tracks to the internally-stored set of points; Requires KTMultiPeakTrackData; Adds nothing
      - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "event": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KT???Data.
+     - "event": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KTMultiTrackEventData.
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
