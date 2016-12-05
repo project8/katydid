@@ -17,7 +17,6 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTMultiTrackEventData.hh"
-//#include "KTMultiPeakTrackData.hh"
 
 #include <algorithm>
 #include <set>

@@ -108,25 +108,6 @@ namespace Katydid
         return fTracks.size();
     }
 
-/*
-    inline const KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id) const
-    {
-        TrackSetCIt toReturn = fTracks.begin();
-        std::advance(toReturn, id);
-        return *toReturn;
-    }
-
-    inline KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id)
-    {
-        TrackSetIt toReturn = fTracks.begin();
-        std::advance(toReturn, id);
-        KTProcessedTrackData foo = KTProcessedTrackData(*toReturn);
-        return foo;
-        //return *toReturn;
-        //return fTracks.at(id);
-    }
-*/
-
     inline TrackSetCIt KTMultiTrackEventData::GetTracksBegin() const
     {
         return fTracks.begin();
@@ -182,34 +163,6 @@ namespace Katydid
     class KTMultiPeakTrackData : public Nymph::KTExtensibleData< KTMultiPeakTrackData >
     {
 
-        public:
-/*
-            struct MultiPeakTrackRef
-            {
-                std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
-                // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
-                double fMeanStartTimeInRunC;
-                double fSumStartTimeInRunC;
-                double fMeanEndTimeInRunC;
-                double fSumEndTimeInRunC;
-                uint64_t fAcquisitionID;
-                bool fUnknownEventTopology;
-
-                MultiPeakTrackRef() : fTrackRefs(), fMeanStartTimeInRunC(0.), fSumStartTimeInRunC(0.), fMeanEndTimeInRunC(0.), fSumEndTimeInRunC(0.), fAcquisitionID(0), fUnknownEventTopology(true) {}
-                bool InsertTrack(const TrackSetCIt& trackRef);
-                void Clear();
-            };
-
-            struct MTRComp
-            {
-                bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
-                {
-                    if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
-                    return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
-                }
-
-            };
-*/
         private:
 
             MultiPeakTrackRef fMPTrack;

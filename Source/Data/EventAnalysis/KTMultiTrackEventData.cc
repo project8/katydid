@@ -6,7 +6,6 @@
  */
 
 #include "KTMultiTrackEventData.hh"
-//#include "KTMultiPeakTrackData.hh"
 
 #include "KTLogger.hh"
 
