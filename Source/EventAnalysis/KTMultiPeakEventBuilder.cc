@@ -9,9 +9,6 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTMultiTrackEventData.hh"
-
-#include "KTProcessedTrackData.hh"
 
 #include <list>
 
@@ -31,17 +28,15 @@ namespace Katydid
 
     KTMultiPeakEventBuilder::KTMultiPeakEventBuilder(const std::string& name) :
             KTPrimaryProcessor(name),
-            fSidebandTimeTolerance(0.),
             fJumpTimeTolerance(0.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
-            fCompTracks(1),
             fMPTracks(1),
             fCandidates(),
             fDataCount(-1),
             fEventSignal("event", this),
             fEventsDoneSignal("events-done", this),
-            fTakeTrackSlot("track", this, &KTMultiPeakEventBuilder::TakeTrack)
+            fTakeMPTSlot("mpt", this, &KTMultiPeakEventBuilder::TakeMPT)
     {
         RegisterSlot("do-clustering", this, &KTMultiPeakEventBuilder::DoClusteringSlot);
     }
@@ -54,27 +49,22 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetSidebandTimeTolerance(node->get_value("sideband-time-tol", GetSidebandTimeTolerance()));
         SetJumpTimeTolerance(node->get_value("jump-time-tol", GetJumpTimeTolerance()));
 
         return true;
     }
 
-    bool KTMultiPeakEventBuilder::TakeTrack(KTProcessedTrackData& track)
+    bool KTMultiPeakEventBuilder::TakeMPT(KTMultiPeakTrackData& mpt)
     {
-        // ignore the track if it's been cut
-        if (track.GetIsCut()) return true;
-
         // verify that we have the right number of components
-        if (track.GetComponent() >= fCompTracks.size())
+        if (mpt.GetComponent() >= fMPTracks.size())
         {
-            SetNComponents(track.GetComponent() + 1);
+            SetNComponents(mpt.GetComponent() + 1);
         }
 
         // copy the full track data
-        fCompTracks[track.GetComponent()].insert(track);
-
-        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency());
+        MultiPeakTrackRef mptr = mpt.GetMPTrack();
+        fMPTracks[mpt.GetComponent()].insert(mptr);
 
         return true;
     }
@@ -95,11 +85,6 @@ namespace Katydid
 
     bool KTMultiPeakEventBuilder::DoClustering()
     {
-        if (! FindMultiPeakTracks())
-        {
-            KTERROR(tclog, "An error occurred while identifying multipeak tracks");
-            return false;
-        }
 
         if (! FindEvents())
         {
@@ -109,87 +94,6 @@ namespace Katydid
 
         KTDEBUG(tclog, "Event building complete");
         fEventsDoneSignal();
-
-        return true;
-    }
-
-    bool KTMultiPeakEventBuilder::FindMultiPeakTracks()
-    {
-        KTPROG(tclog, "collecting lines into multi-peak tracks");
-        // loop over components
-        unsigned component = 0;
-        for (vector< TrackSet >::const_iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
-        {
-            KTINFO(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
-            fMPTracks[component].clear();
-
-            // loop over individual tracks
-            TrackSetCIt trackIt = compIt->begin();
-            if (trackIt == compIt->end()) continue;
-
-            list< MultiPeakTrackRef > activeTrackRefs;
-
-            int trackCount = 0;
-            while (trackIt != compIt->end())
-            {
-                KTINFO(tclog, "considering track (" << ++trackCount << "/" << compIt->size() << ")");
-                // loop over active track refs
-                list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
-                bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
-                int activeTrackCount = 0;
-                while (mptrIt != activeTrackRefs.end())
-                {
-                    KTINFO(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
-                    double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
-
-                    // check to see if this track ref should no longer be active
-                    if (deltaStartT > fSidebandTimeTolerance)
-                    {
-                        KTDEBUG(tclog, "this track ref should no longer be active");
-                        // there's no way this track, or any following it in the set, will match in time
-                        fMPTracks[component].insert(*mptrIt);
-                        mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
-                        KTDEBUG(tclog, "there are now " << fMPTracks[component].size() << " completed MPTracks");
-                    }
-                    else
-                    {
-                        double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
-                        // check if this track should be added to this track ref
-                        if ( !trackHasBeenAdded &&
-                             (fabs(deltaStartT) <= fSidebandTimeTolerance || fabs(deltaEndT) < fSidebandTimeTolerance)
-                           )
-                        {
-                            // then this track matches this track ref
-                            mptrIt->InsertTrack(trackIt);
-                            trackHasBeenAdded = true;
-                            if (!(fabs(deltaStartT) <= fSidebandTimeTolerance && fabs(deltaEndT) < fSidebandTimeTolerance))
-                            {
-                                mptrIt->fUnknownEventTopology = true;
-                            }
-                        }
-                        ++mptrIt; // only increment if we haven't removed one
-                    }
-                } // while loop over active track refs
-                if (! trackHasBeenAdded) //track didn't match anything, create a new MPTrack
-                {
-                    activeTrackRefs.push_back(MultiPeakTrackRef());
-                    activeTrackRefs.rbegin()->InsertTrack(trackIt);
-                    activeTrackRefs.rbegin()->fAcquisitionID = trackIt->GetAcquisitionID();
-                    trackHasBeenAdded = true;
-                }
-            ++trackIt;
-            } // while loop over tracks
-
-            // now that we're done with tracks, all active track refs are finished as well
-            list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
-            while (mptrIt != activeTrackRefs.end())
-            {
-                fMPTracks[component].insert(*mptrIt);
-                mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
-            }
-
-            ++component;
-        } // for loop over components
 
         return true;
     }
@@ -205,7 +109,7 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
         { // loop over components
-            KTINFO(tclog, "Doing component: (" << iComponent + 1 << "/" << fCompTracks.size() << ")");
+            KTINFO(tclog, "Doing component: (" << iComponent + 1 << "/" << fMPTracks.size() << ")");
             if (fMPTracks[iComponent].empty())
             { // if the component has no tracks, skip it
                 continue;
@@ -324,10 +228,6 @@ namespace Katydid
         }
         // clear everything since we've emitted these events
         fCandidates.clear();
-        for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
-        {
-            fCompTracks[iComponent].clear();
-        }
 
        return true;
     }

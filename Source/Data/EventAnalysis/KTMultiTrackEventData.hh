@@ -103,7 +103,7 @@ namespace Katydid
             static const std::string sName;
     };
 
-    inline unsigned KTMultiTrackEventData::KTMultiTrackEventData::GetNTracks() const
+    inline unsigned KTMultiTrackEventData::GetNTracks() const
     {
         return fTracks.size();
     }
@@ -177,6 +177,85 @@ namespace Katydid
         }
 
     };
+
+
+    class KTMultiPeakTrackData : public Nymph::KTExtensibleData< KTMultiPeakTrackData >
+    {
+
+        public:
+/*
+            struct MultiPeakTrackRef
+            {
+                std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
+                // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
+                double fMeanStartTimeInRunC;
+                double fSumStartTimeInRunC;
+                double fMeanEndTimeInRunC;
+                double fSumEndTimeInRunC;
+                uint64_t fAcquisitionID;
+                bool fUnknownEventTopology;
+
+                MultiPeakTrackRef() : fTrackRefs(), fMeanStartTimeInRunC(0.), fSumStartTimeInRunC(0.), fMeanEndTimeInRunC(0.), fSumEndTimeInRunC(0.), fAcquisitionID(0), fUnknownEventTopology(true) {}
+                bool InsertTrack(const TrackSetCIt& trackRef);
+                void Clear();
+            };
+
+            struct MTRComp
+            {
+                bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+                {
+                    if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
+                    return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
+                }
+
+            };
+*/
+        private:
+
+            MultiPeakTrackRef fMPTrack;
+            unsigned fComponent;
+
+        public:
+            KTMultiPeakTrackData();
+            KTMultiPeakTrackData(const KTMultiPeakTrackData& orig);
+            virtual ~KTMultiPeakTrackData();
+
+            KTMultiPeakTrackData& operator=(const KTMultiPeakTrackData& rhs);
+
+        public:
+
+            unsigned GetComponent() const;
+            void SetComponent(unsigned component);
+
+            MultiPeakTrackRef GetMPTrack() const;
+            void SetMPTrack( const MultiPeakTrackRef& mpt );
+
+
+        public:
+            static const std::string sName;
+    };
+
+    std::ostream& operator<<(std::ostream& out, const KTMultiPeakTrackData& hdr);
+
+    inline unsigned KTMultiPeakTrackData::GetComponent() const
+    {
+        return fComponent;
+    }
+
+    inline void KTMultiPeakTrackData::SetComponent(unsigned component)
+    {
+        fComponent = component;
+    }
+
+    inline MultiPeakTrackRef KTMultiPeakTrackData::GetMPTrack() const
+    {
+        return fMPTrack;
+    }
+
+    inline void KTMultiPeakTrackData::SetMPTrack( const MultiPeakTrackRef& mpt )
+    {
+        fMPTrack = mpt;
+    }
 
 } /* namespace Katydid */
 #endif /* KTMULTITRACKDATA_HH_ */
