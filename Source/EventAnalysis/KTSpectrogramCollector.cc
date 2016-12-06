@@ -43,6 +43,7 @@ namespace Katydid
             fFullEvent(false),
             fWaterfallSignal("ps-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
+            fMPTrackSlot("mp-track", this, &KTSpectrogramCollector::ReceiveMPTrack),
             fMPEventSlot("mp-event", this, &KTSpectrogramCollector::ReceiveMPEvent)
     {
         RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunctionPSData );
@@ -131,6 +132,127 @@ namespace Katydid
         return true;
     }
 
+    bool KTSpectrogramCollector::AddMPTrack( KTMultiPeakTrackData& mpTrackData, unsigned component )
+    {
+        KTDEBUG(evlog, "Adding MP Track");
+        // Create new Nymph::KTDataPtr and its contents
+        Nymph::KTDataPtr ptr( new Nymph::KTData() );
+        KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
+        KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
+
+        // start/end time and frequency for "track" equivalent object to collect
+        double minStartFrequency = -1.;
+        double maxStartFrequency = -1.;
+        double minEndFrequency = -1.;
+        double maxEndFrequency = -1.;
+        double overallStartTime = -1.;
+        double overallEndTime = -1.;
+
+        double averageSlope = 0.;
+        int mpt = 0;
+
+        TrackSetCItSet allTracks = mpTrackData.GetMPTrack().fTrackRefs;
+        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+        {
+            // Get track time and frequency info
+            KTProcessedTrackData aTrack;
+            aTrack.SetEventSequenceID( (**it).GetEventSequenceID() );
+            aTrack.SetStartTimeInRunC( (**it).GetStartTimeInRunC() );
+            aTrack.SetEndTimeInRunC( (**it).GetEndTimeInRunC() );
+            aTrack.SetStartFrequency( (**it).GetStartFrequency() );
+            aTrack.SetEndFrequency( (**it).GetEndFrequency() );
+            aTrack.SetSlope( (**it).GetSlope() );
+            aTrack.SetIntercept( (**it).GetIntercept() );
+
+            // Assign overall start/end time and frequency
+            if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
+            {
+                overallStartTime = aTrack.GetStartTimeInRunC();
+            }
+            if( overallEndTime < 0 || aTrack.GetEndTimeInRunC() > overallEndTime )
+            {
+                overallEndTime = aTrack.GetEndTimeInRunC();
+            }
+
+            if( minStartFrequency < 0 || aTrack.GetStartFrequency() < minStartFrequency )
+            {
+                minStartFrequency = aTrack.GetStartFrequency();
+            }
+            if( maxStartFrequency < 0 || aTrack.GetStartFrequency() > maxStartFrequency )
+            {
+                maxStartFrequency = aTrack.GetStartFrequency();
+            }
+
+            if( minEndFrequency < 0 || aTrack.GetEndFrequency() < minEndFrequency )
+            {
+                minEndFrequency = aTrack.GetEndFrequency();
+            }
+            if( maxEndFrequency < 0 || aTrack.GetEndFrequency() > maxEndFrequency )
+            {
+                maxEndFrequency = aTrack.GetEndFrequency();
+            }
+
+            averageSlope += aTrack.GetSlope();
+            ++mpt;
+        }
+        averageSlope /= (double)mpt;
+
+        // Compute middle frequency values
+        double midStartFrequency = 0.5 * (minStartFrequency + maxStartFrequency);
+        double midEndFrequency = 0.5 * (minEndFrequency + maxEndFrequency);
+
+        // Fill out newTrack
+        newTrack->SetStartFrequency( midStartFrequency );
+        newTrack->SetEndFrequency( midEndFrequency );
+        newTrack->SetIntercept( midStartFrequency - overallStartTime * (midEndFrequency - midStartFrequency)/(overallEndTime - overallStartTime) );
+        newTrack->SetSlope( averageSlope );
+
+        KTINFO(evlog, "Finished searching track set. MPT = " << mpt);
+
+        // Configure PSCollectionData timestamps
+        newWaterfall->SetStartTime( overallStartTime - fLeadTime );
+        newWaterfall->SetEndTime( overallEndTime + fTrailTime );
+
+        // Configure PSCollectionData frequency bounds
+        if( GetUseTrackFreqs() )
+        {
+            newWaterfall->SetMinFreq( std::max( minStartFrequency - GetLeadFreq(), GetMinFrequency() ) );
+            newWaterfall->SetMaxFreq( std::min( maxEndFrequency + GetTrailFreq(), GetMaxFrequency() ) );
+        }
+        else
+        {
+            newWaterfall->SetMinFreq( GetMinFrequency() );
+            newWaterfall->SetMaxFreq( GetMaxFrequency() );
+        }
+
+        newWaterfall->SetFilling( false );
+
+        // It is possible that from the above logic, the minimum frequency is greater than the maximum
+        // When this is the case, the KTPSCollectionData will be empty and present a high risk for crashes
+        // Since it will never be filled, I will simply avoid adding it in the first place
+
+        if( newWaterfall->GetMinFreq() > newWaterfall->GetMaxFreq() )
+        {
+            KTWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
+            return false;
+        }
+
+        // Also make sure none of them are still -1
+        if( overallStartTime < 0 || overallEndTime < 0 || minStartFrequency < 0 || minEndFrequency < 0 || maxStartFrequency < 0 || maxEndFrequency < 0 )
+        {
+            KTWARN(evlog, "Could not establish overall time and frequency bounds from multi-peak event! Will not collect this track");
+            return false;
+        }
+
+        // Add to fWaterfallSets
+        fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
+
+        KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+        KTINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
+
+        return true;   
+    }
+
     bool KTSpectrogramCollector::AddMPEvent( KTMultiTrackEventData& mpEventData, unsigned component )
     {
         KTDEBUG(evlog, "Adding MP Event");
@@ -146,7 +268,6 @@ namespace Katydid
         double overallEndTime = -1.;
 
         // start/end time and frequency for the "track" equivalent to the average in a MPT group
-        // this part is specific for Gray's analysis
         // we will copy the required quantities into newTrack
         double averageStartFrequency = 0.;
         double averageEndFrequency = 0.;
@@ -164,7 +285,6 @@ namespace Katydid
             TrackSet allTracks = mpEventData.GetTracksSet();
             for( TrackSet::const_iterator it = allTracks.begin(); it != allTracks.end(); ++it )
             {
-                KTDEBUG(evlog, "1");
                 KTProcessedTrackData aTrack;// = KTProcessedTrackData(*it);
                 aTrack.SetEventSequenceID( it->GetEventSequenceID() );
                 aTrack.SetStartTimeInRunC( it->GetStartTimeInRunC() );
@@ -173,8 +293,7 @@ namespace Katydid
                 aTrack.SetEndFrequency( it->GetEndFrequency() );
                 aTrack.SetSlope( it->GetSlope() );
                 aTrack.SetIntercept( it->GetIntercept() );
-                KTDEBUG(evlog, "2");
-
+                
                 // Skip tracks with fEventSequenceID != 0
                 if( aTrack.GetEventSequenceID() != 0 )
                 {
@@ -182,7 +301,6 @@ namespace Katydid
                     continue;
                 }
 
-                KTDEBUG(evlog, "3");
                 // Assign overall start/end time and frequency
                 if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
                 {
@@ -200,8 +318,7 @@ namespace Katydid
                 {
                     overallEndFrequency = aTrack.GetEndFrequency();
                 }
-                KTDEBUG(evlog, "4");
-
+                
                 // Add to the averages
                 averageStartFrequency += aTrack.GetStartFrequency();
                 averageEndFrequency += aTrack.GetEndFrequency();
@@ -210,7 +327,6 @@ namespace Katydid
 
                 // Increment the track multiplicity
                 ++mpt;
-                KTDEBUG(evlog, "5");
             }
 
             // Compute averages
@@ -272,21 +388,13 @@ namespace Katydid
             return false;
         }
 
-        // ***** THIS PART TEMPORARY *****
-        // Collect only tracks with MPT = 2
-        if( mpt != 2 )
-        {
-            KTWARN(evlog, "The multiplicity of this event is " << mpt << "; will not collect it");
-            return true;
-        }
-
         // Add to fWaterfallSets
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
         KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
         KTINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
 
-        return true;   
+        return true;
     }
 
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit )
@@ -336,6 +444,25 @@ namespace Katydid
         if( !AddTrack( data, iComponent ) )
         {
             KTERROR(evlog, "Spectrogram collector could not add track! (component " << iComponent << ")" );
+        }
+
+        return true;
+    }
+
+    bool KTSpectrogramCollector::ReceiveMPTrack( KTMultiPeakTrackData& data )
+    {
+        unsigned iComponent = data.GetComponent();
+
+        // Increase size of fWaterfallSets if necessary
+        int fWSsize = fWaterfallSets.size();
+        std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
+        for( int i = fWSsize; i <= iComponent; i++ )
+            fWaterfallSets.push_back( blankSet );
+
+        // Add track
+        if( !AddMPTrack( data, iComponent ) )
+        {
+            KTERROR(evlog, "Spectrogram collector could not add multi-peak event! (component " << iComponent << ")" );
         }
 
         return true;

@@ -25,6 +25,7 @@ namespace Katydid
 
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
+    class KTMultiPeakTrackData;
     class KTMultiTrackEventData;
     class KTSliceHeader;
 
@@ -54,7 +55,8 @@ namespace Katydid
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
-     - "mp-event": void (Nymph::KTDatPtr) -- Adds a multi-peak event to the list of active spectrogram collections; Requires KTMultiPeakEventData; Adds Nothing
+     - "mp-track": void (Nymph::KTDataPtr) -- Adds a multi-peak track to the list of active spectrogram collections; Requires KTMultiPeakTrackData; Adds nothing
+     - "mp-event": void (Nymph::KTDatPtr) -- Adds a multi-peak event to the list of active spectrogram collections; Requires KTMultiTrackEventData; Adds nothing
      - "ps": void (Nymph::KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
 
      Signals:
@@ -115,9 +117,11 @@ namespace Katydid
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
+            bool AddMPTrack(KTMultiPeakTrackData& mpTrackData, unsigned component);
             bool AddMPEvent(KTMultiTrackEventData& mpEventData, unsigned component);
             bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit = false);
             bool ReceiveTrack(KTProcessedTrackData& data);
+            bool ReceiveMPTrack(KTMultiPeakTrackData& data);
             bool ReceiveMPEvent(KTMultiTrackEventData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
             void FinishSC( Nymph::KTDataPtr data );
@@ -154,6 +158,7 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fTrackSlot;
+            Nymph::KTSlotDataOneType< KTMultiPeakTrackData > fMPTrackSlot;
             Nymph::KTSlotDataOneType< KTMultiTrackEventData > fMPEventSlot;
             void SlotFunctionPSData( Nymph::KTDataPtr data );
 
