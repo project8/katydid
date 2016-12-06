@@ -183,6 +183,14 @@ namespace Katydid
             MultiPeakTrackRef GetMPTrack() const;
             void SetMPTrack( const MultiPeakTrackRef& mpt );
 
+            int GetMultiplicity() const;
+            double GetMeanStartTimeInRunC() const;
+            double GetSumStartTimeInRunC() const;
+            double GetMeanEndTimeInRunC() const;
+            double GetSumEndTimeInRunC() const;
+            uint64_t GetAcquisitionID() const;
+            bool GetUnknownEventTopology() const;
+ 
 
         public:
             static const std::string sName;
@@ -208,6 +216,49 @@ namespace Katydid
     inline void KTMultiPeakTrackData::SetMPTrack( const MultiPeakTrackRef& mpt )
     {
         fMPTrack = mpt;
+    }
+
+    inline int KTMultiPeakTrackData::GetMultiplicity() const
+    {
+        TrackSetCItSet allTracks = fMPTrack.fTrackRefs;
+        int m = 0;
+
+        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+        {
+            ++m;
+        }
+        
+        return m;
+    }
+
+    inline double KTMultiPeakTrackData::GetMeanStartTimeInRunC() const
+    {
+        return fMPTrack.fMeanStartTimeInRunC;
+    }
+
+    inline double KTMultiPeakTrackData::GetSumStartTimeInRunC() const
+    {
+        return fMPTrack.fSumStartTimeInRunC;
+    }
+
+    inline double KTMultiPeakTrackData::GetMeanEndTimeInRunC() const
+    {
+        return fMPTrack.fMeanEndTimeInRunC;
+    }
+
+    inline double KTMultiPeakTrackData::GetSumEndTimeInRunC() const
+    {
+        return fMPTrack.fSumEndTimeInRunC;
+    }
+
+    inline uint64_t KTMultiPeakTrackData::GetAcquisitionID() const
+    {
+        return fMPTrack.fAcquisitionID;
+    }
+
+    inline bool KTMultiPeakTrackData::GetUnknownEventTopology() const
+    {
+        return fMPTrack.fUnknownEventTopology;
     }
 
 } /* namespace Katydid */

@@ -47,6 +47,7 @@ namespace Katydid
             fWaterfallCandidateTree(NULL),
             fSparseWaterfallCandidateTree(NULL),
             fProcessedTrackTree(NULL),
+            fMultiPeakTrackTree(NULL),
             fMultiTrackEventTree(NULL),
             fLinearFitResultTree(NULL),
             fPowerFitDataTree(NULL),
@@ -54,6 +55,7 @@ namespace Katydid
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
             fProcessedTrackDataPtr(NULL),
+            fMultiPeakTrackData(),
             fMultiTrackEventDataPtr(NULL),
             fLineFitData(),
             fPowerFitData()
@@ -73,6 +75,7 @@ namespace Katydid
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate);
         fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
+        fWriter->RegisterSlot("multi-peak-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
         fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("density-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
         fWriter->RegisterSlot("power-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData);
@@ -444,6 +447,90 @@ namespace Katydid
         //fProcessedTrackDataPtr = new TProcessedTrackData();
 
         fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
+
+        return true;
+    }
+
+    //**************************
+    // Multi-Peak Track
+    //**************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to multi-peak track root tree");
+        KTMultiPeakTrackData& mptData = data->Of< KTMultiPeakTrackData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fMultiPeakTrackTree == NULL)
+        {
+            if (! SetupMultiPeakTrackTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the multi-peak track tree! Nothing was written.");
+                return;
+            }
+        }
+
+        fMultiPeakTrackData.fComponent = mptData.GetComponent();
+        fMultiPeakTrackData.fMultiplicity = mptData.GetMultiplicity();
+        fMultiPeakTrackData.fMeanStartTimeInRunC = mptData.GetMeanStartTimeInRunC();
+        fMultiPeakTrackData.fSumStartTimeInRunC = mptData.GetSumStartTimeInRunC();
+        fMultiPeakTrackData.fMeanEndTimeInRunC = mptData.GetMeanEndTimeInRunC();
+        fMultiPeakTrackData.fSumEndTimeInRunC = mptData.GetSumEndTimeInRunC();
+        fMultiPeakTrackData.fAcquisitionID = mptData.GetAcquisitionID();
+
+        if( mptData.GetUnknownEventTopology() )
+        {
+            fMultiPeakTrackData.fUnknownEventTopology = 1;
+        }
+        else
+        {
+            fMultiPeakTrackData.fUnknownEventTopology = 0;
+        }
+
+        fMultiPeakTrackTree->Fill();
+        
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupMultiPeakTrackTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "mp-track", fMultiPeakTrackTree );
+
+            if (fMultiPeakTrackTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fMultiPeakTrackTree );
+
+                fMultiPeakTrackTree->SetBranchAddress( "Component", &fMultiPeakTrackData.fComponent );
+                fMultiPeakTrackTree->SetBranchAddress( "MeanStartTimeInRunC", &fMultiPeakTrackData.fMeanStartTimeInRunC );
+                fMultiPeakTrackTree->SetBranchAddress( "SumStartTimeInRunC", &fMultiPeakTrackData.fSumStartTimeInRunC );
+                fMultiPeakTrackTree->SetBranchAddress( "MeanEndTimeInRunC", &fMultiPeakTrackData.fMeanEndTimeInRunC );
+                fMultiPeakTrackTree->SetBranchAddress( "SumEndTimeInRunC", &fMultiPeakTrackData.fSumEndTimeInRunC );
+                fMultiPeakTrackTree->SetBranchAddress( "AcquisitionID", &fMultiPeakTrackData.fAcquisitionID );
+                fMultiPeakTrackTree->SetBranchAddress( "UnknownEventTopology", &fMultiPeakTrackData.fUnknownEventTopology );
+
+                return true;
+            }
+        }
+
+        fMultiPeakTrackTree = new TTree("mp-track", "Multi-Peak Track");
+        if( fMultiPeakTrackTree == NULL )
+        {
+            KTERROR( publog, "Tree was not created!" );
+            return false;
+        }
+        fWriter->AddTree( fMultiPeakTrackTree );
+
+        fMultiPeakTrackTree->Branch( "Component", &fMultiPeakTrackData.fComponent, "fComponent/i" );
+        fMultiPeakTrackTree->Branch( "MeanStartTimeInRunC", &fMultiPeakTrackData.fMeanStartTimeInRunC, "fMeanStartTimeInRunC/d" );
+        fMultiPeakTrackTree->Branch( "SumStartTimeInRunC", &fMultiPeakTrackData.fSumStartTimeInRunC, "fSumStartTimeInRunC/d" );
+        fMultiPeakTrackTree->Branch( "MeanEndTimeInRunC", &fMultiPeakTrackData.fMeanEndTimeInRunC, "fMeanEndTimeInRunC/d" );
+        fMultiPeakTrackTree->Branch( "SumEndTimeInRunC", &fMultiPeakTrackData.fSumEndTimeInRunC, "fSumEndTimeInRunC" );
+        fMultiPeakTrackTree->Branch( "AcquisitionID", &fMultiPeakTrackData.fAcquisitionID, "fAcquisitionID/i" );
+        fMultiPeakTrackTree->Branch( "UnknownEventTopology", &fMultiPeakTrackData.fUnknownEventTopology, "fUnknownEventTopology/i" );
 
         return true;
     }
