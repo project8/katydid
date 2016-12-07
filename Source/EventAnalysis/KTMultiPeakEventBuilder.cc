@@ -35,6 +35,7 @@ namespace Katydid
             fCandidates(),
             fDataCount(-1),
             fEventSignal("event", this),
+            fMPTSignal("mpt", this),
             fEventsDoneSignal("events-done", this),
             fTakeMPTSlot("mpt", this, &KTMultiPeakEventBuilder::TakeMPT)
     {
@@ -225,6 +226,39 @@ namespace Katydid
         for (std::set< Nymph::KTDataPtr >::const_iterator dataIt=fCandidates.begin(); dataIt != fCandidates.end(); ++dataIt)
         {
             fEventSignal(*dataIt);
+
+            // Reconstruct each MPT from the event
+            KTMultiTrackEventData& mpEventData = (*dataIt)->Of< KTMultiTrackEventData >();
+            TrackSet allTracks = mpEventData.GetTracksSet();
+
+            int totalMPT = mpEventData.GetTotalEventSequences(); // total number of MPT structures
+            int currentMPT = 0;
+
+            KTMultiPeakTrackData* allMPTracks[totalMPT]; // array to hold MPTs
+
+            // Iterate through all tracks
+            for( TrackSetCIt it = allTracks.begin(); it != allTracks.end(); ++it )
+            {
+                currentMPT = (*it).GetEventSequenceID();
+
+                // Fill the appropriate MPT
+                allMPTracks[currentMPT]->GetMPTrack().InsertTrack( it );
+                allMPTracks[currentMPT]->SetComponent( mpEventData.GetComponent() );
+                allMPTracks[currentMPT]->SetAcquisitionID( mpEventData.GetAcquisitionID() );
+                allMPTracks[currentMPT]->SetUnknownEventTopology( mpEventData.GetUnknownEventTopology() );
+
+                // Set the event sequence ID
+                allMPTracks[currentMPT]->SetEventSequenceID( currentMPT );
+            }
+
+            // Construct data pointers and emit MPT signals
+            for( int iMPT = 0; iMPT < totalMPT; ++iMPT )
+            {
+                Nymph::KTDataPtr mptData( new Nymph::KTData() );
+                allMPTracks[iMPT] = &mptData->Of< KTMultiPeakTrackData >();
+
+                fMPTSignal( mptData );
+            }
         }
         // clear everything since we've emitted these events
         fCandidates.clear();

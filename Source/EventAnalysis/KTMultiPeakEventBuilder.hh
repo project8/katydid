@@ -47,6 +47,7 @@ namespace Katydid
 
      Signals:
      - "event": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KTMultiTrackEventData.
+     - "mpt": void (shared_ptr<KTData>) -- Emitted for each MPT within an event; Guarantees KTMultiPeakTrackData. Note: fUnknownEventTopology from the original MPT is not preserved in this signal; each MPT will have the same value of fUnknownEventTopology as the multi-peak event.
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
@@ -93,6 +94,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fEventSignal;
+            Nymph::KTSignalData fMPTSignal;
             Nymph::KTSignalOneArg< void > fEventsDoneSignal;
 
             //***************
