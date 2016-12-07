@@ -473,6 +473,7 @@ namespace Katydid
 
         fMultiPeakTrackData.fComponent = mptData.GetComponent();
         fMultiPeakTrackData.fMultiplicity = mptData.GetMultiplicity();
+        fMultiPeakTrackData.fEventSequenceID = mptData.GetEventSequenceID();
         fMultiPeakTrackData.fMeanStartTimeInRunC = mptData.GetMeanStartTimeInRunC();
         fMultiPeakTrackData.fSumStartTimeInRunC = mptData.GetSumStartTimeInRunC();
         fMultiPeakTrackData.fMeanEndTimeInRunC = mptData.GetMeanEndTimeInRunC();
@@ -505,6 +506,8 @@ namespace Katydid
                 fWriter->AddTree( fMultiPeakTrackTree );
 
                 fMultiPeakTrackTree->SetBranchAddress( "Component", &fMultiPeakTrackData.fComponent );
+                fMultiPeakTrackTree->SetBranchAddress( "Multiplicity", &fMultiPeakTrackData.fMultiplicity );
+                fMultiPeakTrackTree->SetBranchAddress( "EventSequenceID", &fMultiPeakTrackData.fEventSequenceID );
                 fMultiPeakTrackTree->SetBranchAddress( "MeanStartTimeInRunC", &fMultiPeakTrackData.fMeanStartTimeInRunC );
                 fMultiPeakTrackTree->SetBranchAddress( "SumStartTimeInRunC", &fMultiPeakTrackData.fSumStartTimeInRunC );
                 fMultiPeakTrackTree->SetBranchAddress( "MeanEndTimeInRunC", &fMultiPeakTrackData.fMeanEndTimeInRunC );
@@ -525,6 +528,8 @@ namespace Katydid
         fWriter->AddTree( fMultiPeakTrackTree );
 
         fMultiPeakTrackTree->Branch( "Component", &fMultiPeakTrackData.fComponent, "fComponent/i" );
+        fMultiPeakTrackTree->Branch( "Multiplicity", &fMultiPeakTrackData.fMultiplicity, "fMultiplicity/i" );
+        fMultiPeakTrackTree->Branch( "EventSequenceID", &fMultiPeakTrackData.fEventSequenceID, "fEventSequenceID/i" );
         fMultiPeakTrackTree->Branch( "MeanStartTimeInRunC", &fMultiPeakTrackData.fMeanStartTimeInRunC, "fMeanStartTimeInRunC/d" );
         fMultiPeakTrackTree->Branch( "SumStartTimeInRunC", &fMultiPeakTrackData.fSumStartTimeInRunC, "fSumStartTimeInRunC/d" );
         fMultiPeakTrackTree->Branch( "MeanEndTimeInRunC", &fMultiPeakTrackData.fMeanEndTimeInRunC, "fMeanEndTimeInRunC/d" );

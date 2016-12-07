@@ -133,6 +133,7 @@ namespace Katydid
     KTMultiPeakTrackData::KTMultiPeakTrackData() :
             KTExtensibleData< KTMultiPeakTrackData >(),
             fComponent(0),
+            fEventSequenceID(-1),
             fMPTrack()
     {
     }
@@ -141,6 +142,7 @@ namespace Katydid
             KTExtensibleData< KTMultiPeakTrackData >(orig),
             
             fComponent(orig.fComponent),
+            fEventSequenceID(orig.fEventSequenceID),
             fMPTrack(orig.fMPTrack)
     {
     }
@@ -153,6 +155,7 @@ namespace Katydid
     {
         KTExtensibleData< KTMultiPeakTrackData >::operator=(rhs);
         fComponent = rhs.fComponent;
+        fEventSequenceID = rhs.fEventSequenceID;
         fMPTrack = rhs.fMPTrack;
         return *this;
     }

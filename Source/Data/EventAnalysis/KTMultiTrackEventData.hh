@@ -167,6 +167,7 @@ namespace Katydid
 
             MultiPeakTrackRef fMPTrack;
             unsigned fComponent;
+            int fEventSequenceID;
 
         public:
             KTMultiPeakTrackData();
@@ -184,14 +185,24 @@ namespace Katydid
             void SetMPTrack( const MultiPeakTrackRef& mpt );
 
             int GetMultiplicity() const;
-            double GetMeanStartTimeInRunC() const;
-            double GetSumStartTimeInRunC() const;
-            double GetMeanEndTimeInRunC() const;
-            double GetSumEndTimeInRunC() const;
-            uint64_t GetAcquisitionID() const;
-            bool GetUnknownEventTopology() const;
- 
 
+            int GetEventSequenceID() const;
+            void SetEventSequenceID( int id );
+
+            double GetMeanStartTimeInRunC() const;
+
+            double GetSumStartTimeInRunC() const;
+
+            double GetMeanEndTimeInRunC() const;
+
+            double GetSumEndTimeInRunC() const;
+
+            uint64_t GetAcquisitionID() const;
+            void SetAcquisitionID(uint64_t acqID);
+
+            bool GetUnknownEventTopology() const;
+            void SetUnknownEventTopology(bool b);
+ 
         public:
             static const std::string sName;
     };
@@ -231,6 +242,16 @@ namespace Katydid
         return m;
     }
 
+    inline int KTMultiPeakTrackData::GetEventSequenceID() const
+    {
+        return fEventSequenceID;
+    }
+
+    inline void KTMultiPeakTrackData::SetEventSequenceID(int id)
+    {
+        fEventSequenceID = id;
+    }
+
     inline double KTMultiPeakTrackData::GetMeanStartTimeInRunC() const
     {
         return fMPTrack.fMeanStartTimeInRunC;
@@ -256,9 +277,19 @@ namespace Katydid
         return fMPTrack.fAcquisitionID;
     }
 
+    inline void KTMultiPeakTrackData::SetAcquisitionID(uint64_t acqID)
+    {
+        fMPTrack.fAcquisitionID = acqID;
+    }
+
     inline bool KTMultiPeakTrackData::GetUnknownEventTopology() const
     {
         return fMPTrack.fUnknownEventTopology;
+    }
+
+    inline void KTMultiPeakTrackData::SetUnknownEventTopology(bool b)
+    {
+        fMPTrack.fUnknownEventTopology = b;
     }
 
 } /* namespace Katydid */

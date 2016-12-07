@@ -85,6 +85,7 @@ namespace Katydid
     {
         UInt_t fComponent;
         UInt_t fMultiplicity;
+        UInt_t fEventSequenceID;
         Double_t fMeanStartTimeInRunC;
         Double_t fSumStartTimeInRunC;
         Double_t fMeanEndTimeInRunC;
