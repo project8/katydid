@@ -267,7 +267,8 @@ namespace Katydid
             for( int iMPT = 0; iMPT < totalMPT; ++iMPT )
             {
                 Nymph::KTDataPtr mptData( new Nymph::KTData() );
-                allMPTracks[iMPT] = mptData->Of< KTMultiPeakTrackData >();
+                KTMultiPeakTrackData& newMPT = mptData->Of< KTMultiPeakTrackData >();
+                newMPT = allMPTracks[currentMPT];
 
                 fMPTSignal( mptData );
             }
