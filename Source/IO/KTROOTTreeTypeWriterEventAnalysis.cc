@@ -533,7 +533,7 @@ namespace Katydid
         fMultiPeakTrackTree->Branch( "MeanStartTimeInRunC", &fMultiPeakTrackData.fMeanStartTimeInRunC, "fMeanStartTimeInRunC/d" );
         fMultiPeakTrackTree->Branch( "SumStartTimeInRunC", &fMultiPeakTrackData.fSumStartTimeInRunC, "fSumStartTimeInRunC/d" );
         fMultiPeakTrackTree->Branch( "MeanEndTimeInRunC", &fMultiPeakTrackData.fMeanEndTimeInRunC, "fMeanEndTimeInRunC/d" );
-        fMultiPeakTrackTree->Branch( "SumEndTimeInRunC", &fMultiPeakTrackData.fSumEndTimeInRunC, "fSumEndTimeInRunC" );
+        fMultiPeakTrackTree->Branch( "SumEndTimeInRunC", &fMultiPeakTrackData.fSumEndTimeInRunC, "fSumEndTimeInRunC/d" );
         fMultiPeakTrackTree->Branch( "AcquisitionID", &fMultiPeakTrackData.fAcquisitionID, "fAcquisitionID/i" );
         fMultiPeakTrackTree->Branch( "UnknownEventTopology", &fMultiPeakTrackData.fUnknownEventTopology, "fUnknownEventTopology/i" );
 
