@@ -216,7 +216,8 @@ namespace Katydid
             double valueHoldNeg = valueHoldPos;
             KTDEBUG( egglog_scdac, "Calculating voltage conversion for signed integers; integer level offset: " << fIntLevelOffset );
             fVoltages[fIntLevelOffset] = valueHoldPos;
-            unsigned levelSkipCounter = 1;
+            unsigned levelSkipCounter = 1; // starting this at 1 is effectively ++levelSkipCounter after filling in the bin at fIntLevelOffset
+            if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             for (int64_t level = 1; level < fIntLevelOffset; ++level)
             {
                 if (levelSkipCounter == 0)
