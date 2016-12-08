@@ -234,28 +234,40 @@ namespace Katydid
             int totalMPT = mpEventData.GetTotalEventSequences(); // total number of MPT structures
             int currentMPT = 0;
 
-            KTMultiPeakTrackData* allMPTracks[totalMPT]; // array to hold MPTs
+            KTDEBUG(tclog, "Total event sequences = " << totalMPT);
+
+            std::vector< KTMultiPeakTrackData > allMPTracks; // vector to hold MPTs
+
+            // initialize each MPTrack
+            KTMultiPeakTrackData blankMPT;
+            for( int i = 0; i < totalMPT; ++i )
+            {
+                KTDEBUG(tclog, "Initializing MPTrack #" << i);
+                allMPTracks.push_back( blankMPT );
+            }
 
             // Iterate through all tracks
             for( TrackSetCIt it = allTracks.begin(); it != allTracks.end(); ++it )
             {
                 currentMPT = (*it).GetEventSequenceID();
-
+                KTDEBUG(tclog, "Current event sequence = " << currentMPT);
                 // Fill the appropriate MPT
-                allMPTracks[currentMPT]->GetMPTrack().InsertTrack( it );
-                allMPTracks[currentMPT]->SetComponent( mpEventData.GetComponent() );
-                allMPTracks[currentMPT]->SetAcquisitionID( mpEventData.GetAcquisitionID() );
-                allMPTracks[currentMPT]->SetUnknownEventTopology( mpEventData.GetUnknownEventTopology() );
+                allMPTracks[currentMPT].GetMPTrack().InsertTrack( it );
+                allMPTracks[currentMPT].SetComponent( mpEventData.GetComponent() );
+                allMPTracks[currentMPT].SetAcquisitionID( mpEventData.GetAcquisitionID() );
+                allMPTracks[currentMPT].SetUnknownEventTopology( mpEventData.GetUnknownEventTopology() );
 
                 // Set the event sequence ID
-                allMPTracks[currentMPT]->SetEventSequenceID( currentMPT );
+                allMPTracks[currentMPT].SetEventSequenceID( currentMPT );
             }
+
+            KTINFO(tclog, "Emitting MPT signals");
 
             // Construct data pointers and emit MPT signals
             for( int iMPT = 0; iMPT < totalMPT; ++iMPT )
             {
                 Nymph::KTDataPtr mptData( new Nymph::KTData() );
-                allMPTracks[iMPT] = &mptData->Of< KTMultiPeakTrackData >();
+                allMPTracks[iMPT] = mptData->Of< KTMultiPeakTrackData >();
 
                 fMPTSignal( mptData );
             }
