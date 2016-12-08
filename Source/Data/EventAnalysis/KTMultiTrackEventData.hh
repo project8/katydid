@@ -183,6 +183,7 @@ namespace Katydid
 
             MultiPeakTrackRef GetMPTrack() const;
             void SetMPTrack( const MultiPeakTrackRef& mpt );
+            void AddToMPTrack( const TrackSetCIt& trackRef );
 
             int GetMultiplicity() const;
 
@@ -227,6 +228,11 @@ namespace Katydid
     inline void KTMultiPeakTrackData::SetMPTrack( const MultiPeakTrackRef& mpt )
     {
         fMPTrack = mpt;
+    }
+
+    inline void KTMultiPeakTrackData::AddToMPTrack( const TrackSetCIt& trackRef )
+    {
+        fMPTrack.InsertTrack( trackRef );
     }
 
     inline int KTMultiPeakTrackData::GetMultiplicity() const

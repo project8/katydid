@@ -252,13 +252,14 @@ namespace Katydid
                 currentMPT = (*it).GetEventSequenceID();
                 KTDEBUG(tclog, "Current event sequence = " << currentMPT);
                 // Fill the appropriate MPT
-                allMPTracks[currentMPT].GetMPTrack().InsertTrack( it );
+                allMPTracks[currentMPT].AddToMPTrack( it );
                 allMPTracks[currentMPT].SetComponent( mpEventData.GetComponent() );
                 allMPTracks[currentMPT].SetAcquisitionID( mpEventData.GetAcquisitionID() );
                 allMPTracks[currentMPT].SetUnknownEventTopology( mpEventData.GetUnknownEventTopology() );
 
                 // Set the event sequence ID
                 allMPTracks[currentMPT].SetEventSequenceID( currentMPT );
+                KTDEBUG(tclog, "MPT now has multiplicity " << allMPTracks[currentMPT].GetMultiplicity());
             }
 
             KTINFO(tclog, "Emitting MPT signals");
@@ -269,6 +270,9 @@ namespace Katydid
                 Nymph::KTDataPtr mptData( new Nymph::KTData() );
                 KTMultiPeakTrackData& newMPT = mptData->Of< KTMultiPeakTrackData >();
                 newMPT = allMPTracks[currentMPT];
+
+                KTDEBUG(tclog, "Emitting MPT signal with multiplicity " << newMPT.GetMultiplicity());
+                KTDEBUG(tclog, "Original MPT had multiplicity " << allMPTracks[currentMPT].GetMultiplicity());
 
                 fMPTSignal( mptData );
             }
