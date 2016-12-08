@@ -1,0 +1,30 @@
+processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: forward-fftw
+        name: fft
+      - type: data-display
+        name: disp
+
+    connections:
+      - signal: "egg:header"
+        slot: "fft:header"
+      - signal: "egg:ts"
+        slot: "fft:ts-real"
+      - signal: "fft:fft"
+        slot: "disp:fs-fftw"
+
+    run-queue:
+      - egg
+
+egg:
+    filename: "/path/to/file.egg"
+    egg-reader: egg3
+    slice-size: 4096
+    number-of-slices: 1
+
+fft:
+    transform-flag: ESTIMATE
+
+disp:
