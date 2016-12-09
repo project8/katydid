@@ -670,10 +670,17 @@ namespace Katydid
             fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept( fPowerFitData.fComponent );
 
             const KTPowerFitData::SetOfPoints& pointsPX = pfData.GetSetOfPointsPX( fPowerFitData.fComponent );
+            const KTPowerFitData::SetOfPoints& pointsPY = pfData.GetSetOfPointsPY( fPowerFitData.fComponent );
 
             if (pointsPX.size() == 0)
             {
                 KTWARN(publog, "No points in power fit data X-projection; nothing written to ROOT file");
+                return;
+            }
+
+            if (pointsPY.size() == 0)
+            {
+                KTWARN(publog, "No points in power fit data Y-projection; nothing written to ROOT file");
                 return;
             }
 
@@ -683,14 +690,6 @@ namespace Katydid
             {
                 fPowerFitData.fPointsPX->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
                 ++iPoint;
-            }
-            
-            const KTPowerFitData::SetOfPoints& pointsPY = pfData.GetSetOfPointsPY( fPowerFitData.fComponent );
-
-            if (pointsPY.size() == 0)
-            {
-                KTWARN(publog, "No points in power fit data Y-projection; nothing written to ROOT file");
-                return;
             }
 
             fPowerFitData.fPointsPY = new TGraph(pointsPY.size());

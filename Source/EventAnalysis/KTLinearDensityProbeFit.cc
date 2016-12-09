@@ -497,7 +497,7 @@ namespace Katydid
                 cumulative += delta_f * ((*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal )) / unweighted[iSpectrum];
             }
 
-            newData.AddPointPX( xVal, KTPowerFitData::Point( xVal, cumulative, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            newData.AddPointPX( xVal*1e6 /*in microseconds because we need the bin value to be an int that isn't zero*/, KTPowerFitData::Point( xVal, cumulative, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
             ++iSpectrum;
         }
 
@@ -701,7 +701,7 @@ namespace Katydid
 
         // Points and iterator
         std::map< unsigned, KTPowerFitData::Point >::iterator it;
-        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPointsPX();
+        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPointsPY();
 
         // Iterate over all points and fill the appropriate vector
 
