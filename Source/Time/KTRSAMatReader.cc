@@ -46,7 +46,8 @@ namespace Katydid
             fRecordsPerFile(1),
             fRecordsTimeStampSeconds(),
             fTSArrayMat(NULL),
-            fMatFilePtr(NULL)
+            fMatFilePtr(NULL),
+            fDataPrecision(0)
     {
     }
 
@@ -308,9 +309,18 @@ namespace Katydid
             fMatFilePtr = NULL;
             return Nymph::KTDataPtr();
         }
-        if (fTSArrayMat->data_type != MAT_T_SINGLE)
+
+        if (fTSArrayMat->data_type == MAT_T_SINGLE)
         {
-            KTERROR(eggreadlog, "Data type is not single-precision floating-point: " << fTSArrayMat->data_type);
+            fDataPrecision = 1;
+        }
+        else if (fTSArrayMat->data_type == MAT_T_DOUBLE)
+        {
+            fDataPrecision = 2;
+        }
+        else
+        {
+            KTERROR(eggreadlog, "Data type is valid (must either be single- or double-precision floating-point: " << fTSArrayMat->data_type);
             Mat_VarFree(fTSArrayMat);
             fTSArrayMat = NULL;
             Mat_Close(fMatFilePtr);
@@ -438,12 +448,29 @@ namespace Katydid
         // ********************************** //
         KTTimeSeriesFFTW* newSliceComplex = new KTTimeSeriesFFTW(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
 
-        float* dataReal = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
-        float* dataImag = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
-        for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
+        if (fDataPrecision == 1)
         {
-            (*newSliceComplex)(iBin)[0] = double(dataReal[iBin + fSamplesRead]);
-            (*newSliceComplex)(iBin)[1] = double(dataImag[iBin + fSamplesRead]);
+            float* dataReal = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
+            float* dataImag = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
+            for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
+            {
+                (*newSliceComplex)(iBin)[0] = double(dataReal[iBin + fSamplesRead]);
+                (*newSliceComplex)(iBin)[1] = double(dataImag[iBin + fSamplesRead]);
+            }
+        }
+        else if (fDataPrecision == 2)
+        {
+            double* dataReal = (double*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
+            double* dataImag = (double*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
+            for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
+            {
+                (*newSliceComplex)(iBin)[0] = dataReal[iBin + fSamplesRead];
+                (*newSliceComplex)(iBin)[1] = dataImag[iBin + fSamplesRead];
+            }
+        }
+        else
+        {
+            KTERROR(eggreadlog, "Invalid data precision: " << fDataPrecision);
         }
         KTTimeSeries* newSlice = newSliceComplex;
         fSamplesRead = fSamplesRead + fSliceSize;

@@ -73,6 +73,7 @@ namespace Katydid
             std::vector< double > fRecordsTimeStampSeconds;
             matvar_t *fTSArrayMat;
             mat_t *fMatFilePtr;
+            unsigned fDataPrecision;
 
 
         public:
