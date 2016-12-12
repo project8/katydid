@@ -334,7 +334,14 @@ namespace Katydid
         fSliceNumber = 0; // Number of Slices saved
         fRecordsRead = 0; // Number of records read from file
         fSamplesRead = 0; // Number of samples read from file (not from record)
+        // Raw files have an array that is [number of samples] x 1
+        // Concatenated files have been both ways, depending on the script used to create them: [number of samples] x 1 OR 1 x [number of samples]
+        // This code is compatible with both, but this is adapted to a very specific case
         fSamplesPerFile = fTSArrayMat->dims[0];
+        if (fSamplesPerFile == 1)
+        {
+            fSamplesPerFile = fTSArrayMat->dims[1];
+        }
 
         // Read center frequency, and derive minimum and maximum frequencies 
         // from the span.
