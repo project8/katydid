@@ -669,10 +669,17 @@ namespace Katydid
 
             fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept( fPowerFitData.fComponent );
 
-            const KTPowerFitData::SetOfPoints& pointsPX = pfData.GetSetOfPointsPX( fPowerFitData.fComponent );
+            const KTPowerFitData::SetOfPoints& pointsPXUnweighted = pfData.GetSetOfPointsPXUnweighted( fPowerFitData.fComponent );
+            const KTPowerFitData::SetOfPoints& pointsPXWeighted = pfData.GetSetOfPointsPXWeighted( fPowerFitData.fComponent );
             const KTPowerFitData::SetOfPoints& pointsPY = pfData.GetSetOfPointsPY( fPowerFitData.fComponent );
 
-            if (pointsPX.size() == 0)
+            if (pointsPXUnweighted.size() == 0)
+            {
+                KTWARN(publog, "No points in power fit data X-projection; nothing written to ROOT file");
+                return;
+            }
+
+            if (pointsPXWeighted.size() == 0)
             {
                 KTWARN(publog, "No points in power fit data X-projection; nothing written to ROOT file");
                 return;
@@ -684,11 +691,19 @@ namespace Katydid
                 return;
             }
 
-            fPowerFitData.fPointsPX = new TGraph(pointsPX.size());
+            fPowerFitData.fPointsPXUnweighted = new TGraph(pointsPXUnweighted.size());
             unsigned iPoint = 0;
-            for (KTPowerFitData::SetOfPoints::const_iterator pIt = pointsPX.begin(); pIt != pointsPX.end(); ++pIt)
+            for (KTPowerFitData::SetOfPoints::const_iterator pIt = pointsPXUnweighted.begin(); pIt != pointsPXUnweighted.end(); ++pIt)
             {
-                fPowerFitData.fPointsPX->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
+                fPowerFitData.fPointsPXUnweighted->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
+                ++iPoint;
+            }
+
+            fPowerFitData.fPointsPXWeighted = new TGraph(pointsPXWeighted.size());
+            iPoint = 0;
+            for (KTPowerFitData::SetOfPoints::const_iterator pIt = pointsPXWeighted.begin(); pIt != pointsPXWeighted.end(); ++pIt)
+            {
+                fPowerFitData.fPointsPXWeighted->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
                 ++iPoint;
             }
 
@@ -753,7 +768,8 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
                 fPowerFitDataTree->SetBranchAddress( "NPeaks", &fPowerFitData.fNPeaks );
 
-                fPowerFitDataTree->SetBranchAddress( "PointsPX", &fPowerFitData.fPointsPX );
+                fPowerFitDataTree->SetBranchAddress( "PointsPXUnweighted", &fPowerFitData.fPointsPXUnweighted );
+                fPowerFitDataTree->SetBranchAddress( "PointsPXWeighted", &fPowerFitData.fPointsPXWeighted );
                 fPowerFitDataTree->SetBranchAddress( "PointsPY", &fPowerFitData.fPointsPY );
 
                 fPowerFitDataTree->SetBranchAddress( "Average", &fPowerFitData.fAverage );
@@ -819,7 +835,8 @@ namespace Katydid
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
         fPowerFitDataTree->Branch( "NPeaks", &fPowerFitData.fNPeaks, "fNPeaks/i" );
 
-        fPowerFitDataTree->Branch( "PointsPX", &fPowerFitData.fPointsPX, 32000, 0 );
+        fPowerFitDataTree->Branch( "PointsPXUnweighted", &fPowerFitData.fPointsPXUnweighted, 32000, 0 );
+        fPowerFitDataTree->Branch( "PointsPXWeighted", &fPowerFitData.fPointsPXWeighted, 32000, 0 );
         fPowerFitDataTree->Branch( "PointsPY", &fPowerFitData.fPointsPY, 32000, 0 );
 
         fPowerFitDataTree->Branch( "Average", &fPowerFitData.fAverage, "fAverage/d" );

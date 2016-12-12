@@ -131,7 +131,8 @@ namespace Katydid
         UInt_t fMainPeak;
         UInt_t fNPeaks;
 
-        TGraph* fPointsPX;
+        TGraph* fPointsPXUnweighted;
+        TGraph* fPointsPXWeighted;
         TGraph* fPointsPY;
 
         Double_t fAverage; // fMean is already taken

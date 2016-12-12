@@ -452,31 +452,48 @@ namespace Katydid
         // Vector to hold the unweighted projection
         vector< double > unweighted;
 
+        double alphaBound_upper = data.GetIntercept() + 1e6;
+        double alphaBound_lower = data.GetIntercept() - 1e6;
+
+        int yBinStart = 0; // Will be set during the projection calculatinos
+        //  yBinEnd will not be necessary
+        int yWindow = ceil( (alphaBound_upper - alphaBound_lower) / ps_dy ); // The y window this time will be floating, but its size will be consistent
+
         double xVal, yVal; // time (x) and frequency (y) values to be incremented in the loops below
         double delta_f; // used in weighted projection calculated
         int iSpectrum = 0;
 
-        KTDEBUG(evlog, "Computing unweighted projection");
+        KTINFO(evlog, "Computing unweighted projection");
 
         // First we compute the unweighted projection
         for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
         {
             // Set x value and starting y-bin
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
+            yBinStart = it->second->FindBin( alphaBound_lower + data.GetSlope() * xVal );
+
+            KTDEBUG(evlog, "yBin range set from " << yBinStart << " to " << yBinStart + yWindow - 1);
+            if( yBinStart < 0 || yBinStart + yWindow > (*it->second).GetNFrequencyBins() )
+            {
+                KTWARN(evlog, "I have noticed that the y-window will fall outside the power spectrum range. Analysis of this spectrogram will be aborted.");
+                return false;
+            }
 
             // Unweighted power = sum of raw power spectrum
             unweighted.push_back( 0 );
-            for( int iBin = 0; iBin < (*it->second).GetNFrequencyBins(); ++iBin )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
             {
                 yVal = ps_ymin + ps_dy * (iBin - 1);
 
-                // We reevaluate the spline rather than deal with the appropriate index of power_minus_bkgd
-                unweighted[iSpectrum] += (*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal );
+                unweighted[iSpectrum] += (*it->second)(iBin);
             }
+
+            KTDEBUG(evlog, "Adding point " << unweighted[iSpectrum] << " to unweighted projection");
+            newData.AddPointPXUnweighted( xVal*1e6, KTPowerFitData::Point( xVal, unweighted[iSpectrum], pts.GetSetOfPoints(0).begin()->second.fThreshold ) );
             ++iSpectrum;
         }
 
-        KTDEBUG(evlog, "Computing weighted projection");
+        KTINFO(evlog, "Computing weighted projection");
 
         iSpectrum = 0;
 
@@ -487,17 +504,27 @@ namespace Katydid
             cumulative = 0.;
 
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
+            yBinStart = it->second->FindBin( alphaBound_lower + data.GetSlope() * xVal );
 
-            for( int iBin = 0; iBin < (*it->second).GetNFrequencyBins(); ++iBin )
+            KTDEBUG(evlog, "yBin range set from " << yBinStart << " to " << yBinStart + yWindow - 1);
+            if( yBinStart < 0 || yBinStart + yWindow > (*it->second).GetNFrequencyBins() )
+            {
+                KTWARN(evlog, "I have noticed that the y-window will fall outside the power spectrum range. Analysis of this spectrogram will be aborted.");
+                return false;
+            }
+
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
             {
                 yVal = ps_ymin + ps_dy * (iBin - 1);
 
                 // Calculate delta-f using the fit values
                 delta_f = yVal - (data.GetSlope() * xVal + data.GetIntercept());
-                cumulative += delta_f * ((*it->second)(iBin) - fGVData.GetSpline()->Evaluate( yVal )) / unweighted[iSpectrum];
+                //KTDEBUG(evlog, "delta-f = " << delta_f);
+                cumulative += delta_f * (*it->second)(iBin) / unweighted[iSpectrum];
             }
 
-            newData.AddPointPX( xVal*1e6 /*in microseconds because we need the bin value to be an int that isn't zero*/, KTPowerFitData::Point( xVal, cumulative, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
+            KTDEBUG(evlog, "Adding point " << cumulative << " to weighted projection");
+            newData.AddPointPXWeighted( xVal*1e6 /*in microseconds because we need the bin value to be an int that isn't zero*/, KTPowerFitData::Point( xVal, cumulative, pts.GetSetOfPoints(0).begin()->second.fThreshold ) );
             ++iSpectrum;
         }
 

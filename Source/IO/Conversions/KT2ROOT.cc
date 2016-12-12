@@ -505,38 +505,52 @@ namespace Katydid
     TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& whichPoints, const std::string& histName)
     {
         std::map< unsigned, KTPowerFitData::Point >::iterator it;
-        std::map< unsigned, KTPowerFitData::Point > SetOfPointsPX = pf->GetSetOfPointsPX();
+        std::map< unsigned, KTPowerFitData::Point > SetOfPointsPXUnweighted = pf->GetSetOfPointsPXUnweighted();
+        std::map< unsigned, KTPowerFitData::Point > SetOfPointsPXWeighted = pf->GetSetOfPointsPXWeighted();
         std::map< unsigned, KTPowerFitData::Point > SetOfPointsPY = pf->GetSetOfPointsPY();
 
         double minFreqX, maxFreqX, minFreqY, maxFreqY;
         unsigned nBinsX, nBinsY;
 
-        nBinsX = SetOfPointsPX.size();
-        minFreqX = SetOfPointsPX.begin()->second.fAbscissa;
-        maxFreqX = SetOfPointsPX.rbegin()->second.fAbscissa;
+        nBinsX = SetOfPointsPXUnweighted.size();
+        minFreqX = SetOfPointsPXUnweighted.begin()->second.fAbscissa;
+        maxFreqX = SetOfPointsPXUnweighted.rbegin()->second.fAbscissa;
 
         nBinsY = SetOfPointsPY.size();
         minFreqY = SetOfPointsPY.begin()->second.fAbscissa;
         maxFreqY = SetOfPointsPY.rbegin()->second.fAbscissa;
 
-        TH1D* histX = new TH1D(histName.c_str(), histName.c_str(), (int)nBinsX, minFreqX, maxFreqX);
+        TH1D* histXUW = new TH1D(histName.c_str(), histName.c_str(), (int)nBinsX, minFreqX, maxFreqX);
+        TH1D* histXW = new TH1D(histName.c_str(), histName.c_str(), (int)nBinsX, minFreqX, maxFreqX);
         TH1D* histY = new TH1D(histName.c_str(), histName.c_str(), (int)nBinsY, minFreqY, maxFreqY);
 
         int iBinX = 1, iBinY = 1;
-        for (it = SetOfPointsPX.begin(); it != SetOfPointsPX.end(); ++it)
+        for (it = SetOfPointsPXUnweighted.begin(); it != SetOfPointsPXUnweighted.end(); ++it)
         {
-            histX->SetBinContent(iBinX, it->second.fOrdinate);
+            histXUW->SetBinContent(iBinX, it->second.fOrdinate);
             ++iBinX;
         }
+
+        iBinX = 1;
+        for (it = SetOfPointsPXWeighted.begin(); it != SetOfPointsPXWeighted.end(); ++it)
+        {
+            histXW->SetBinContent(iBinX, it->second.fOrdinate);
+            ++iBinX;
+        }
+
         for (it = SetOfPointsPY.begin(); it != SetOfPointsPY.end(); ++it)
         {
             histY->SetBinContent(iBinY, it->second.fOrdinate);
             ++iBinY;
         }
 
-        if( whichPoints == "PX" )
+        if( whichPoints == "PX-UW" )
         {
-            return histX;
+            return histXUW;
+        }
+        else if( whichPoints == "PX-W" )
+        {
+            return histXW;
         }
         else if( whichPoints == "PY" )
         {
@@ -544,8 +558,8 @@ namespace Katydid
         }
         else
         {
-            KTWARN(dblog, "Projection axis not properly specified. Defaulting to PX");
-            return histX;
+            KTWARN(dblog, "Projection axis not properly specified. Defaulting to PY");
+            return histY;
         }
 
     }

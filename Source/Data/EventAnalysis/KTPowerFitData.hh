@@ -47,7 +47,8 @@ namespace Katydid
 
                 int fMainPeak;  // classifier for testing purposes
 
-                SetOfPoints fPointsPX; // rotate-and-project to X-axis (time)
+                SetOfPoints fPointsPXUnweighted; // rotate-and-project to X-axis (time)
+                SetOfPoints fPointsPXWeighted; // rotate-and-project to X-axis (time)
                 SetOfPoints fPointsPY; // rotate-and-project to Y-axis (frequency)
 
                 // Classifers
@@ -118,10 +119,12 @@ namespace Katydid
             int GetNPeaks(unsigned component=0) const;
             void SetNPeaks(int n, unsigned component=0); 
 
-            const SetOfPoints& GetSetOfPointsPX(unsigned component = 0) const;
+            const SetOfPoints& GetSetOfPointsPXUnweighted(unsigned component = 0) const;
+            const SetOfPoints& GetSetOfPointsPXWeighted(unsigned component = 0) const;
             const SetOfPoints& GetSetOfPointsPY(unsigned component = 0) const;
 
-            void AddPointPX(unsigned bin, const Point& point, unsigned component = 0);
+            void AddPointPXUnweighted(unsigned bin, const Point& point, unsigned component = 0);
+            void AddPointPXWeighted(unsigned bin, const Point& point, unsigned component = 0);
             void AddPointPY(unsigned bin, const Point& point, unsigned component = 0);
 
             double GetAverage( unsigned component = 0 ) const;
@@ -299,9 +302,14 @@ namespace Katydid
         return;
     }
 
-    inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPointsPX(unsigned component) const
+    inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPointsPXUnweighted(unsigned component) const
     {
-         return fComponentData[component].fPointsPX;
+         return fComponentData[component].fPointsPXUnweighted;
+    }
+
+    inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPointsPXWeighted(unsigned component) const
+    {
+         return fComponentData[component].fPointsPXWeighted;
     }
 
     inline const KTPowerFitData::SetOfPoints& KTPowerFitData::GetSetOfPointsPY(unsigned component) const
@@ -309,10 +317,16 @@ namespace Katydid
          return fComponentData[component].fPointsPY;
     }
 
-    inline void KTPowerFitData::AddPointPX(unsigned bin, const Point& point, unsigned component)
+    inline void KTPowerFitData::AddPointPXUnweighted(unsigned bin, const Point& point, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fPointsPX.insert(std::make_pair(bin, point));
+        fComponentData[component].fPointsPXUnweighted.insert(std::make_pair(bin, point));
+    }
+
+    inline void KTPowerFitData::AddPointPXWeighted(unsigned bin, const Point& point, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fPointsPXWeighted.insert(std::make_pair(bin, point));
     }
 
     inline void KTPowerFitData::AddPointPY(unsigned bin, const Point& point, unsigned component)
