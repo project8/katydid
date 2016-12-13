@@ -269,10 +269,10 @@ namespace Katydid
             {
                 Nymph::KTDataPtr mptData( new Nymph::KTData() );
                 KTMultiPeakTrackData& newMPT = mptData->Of< KTMultiPeakTrackData >();
-                newMPT = allMPTracks[currentMPT];
+                newMPT = allMPTracks[iMPT];
 
                 KTDEBUG(tclog, "Emitting MPT signal with multiplicity " << newMPT.GetMultiplicity());
-                KTDEBUG(tclog, "Original MPT had multiplicity " << allMPTracks[currentMPT].GetMultiplicity());
+                KTDEBUG(tclog, "Original MPT had multiplicity " << allMPTracks[iMPT].GetMultiplicity());
 
                 fMPTSignal( mptData );
             }
