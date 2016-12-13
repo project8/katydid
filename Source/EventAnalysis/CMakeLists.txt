@@ -50,10 +50,12 @@ if (ROOT_FOUND)
     set (EVENTANALYSIS_HEADERFILES 
         ${EVENTANALYSIS_HEADERFILES}   
         KTLinearDensityProbeFit.hh
+        KTTrackClassifier.hh
     )
     set (EVENTANALYSIS_SOURCEFILES
         ${EVENTANALYSIS_SOURCEFILES}
         KTLinearDensityProbeFit.cc
+        KTTrackClassifier.cc
     )
 endif (ROOT_FOUND)
 
