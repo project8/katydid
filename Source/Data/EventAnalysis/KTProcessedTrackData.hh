@@ -33,6 +33,9 @@ namespace Katydid
 
             MEMBERVARIABLE(bool, IsCut);
 
+            MEMBERVARIABLE(double, MVAClassifier);
+            MEMBERVARIABLE(bool, Mainband);
+
             MEMBERVARIABLE(double, StartTimeInAcq);
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);

@@ -19,6 +19,8 @@ namespace Katydid
             fEventID(0),
             fEventSequenceID(-1),
             fIsCut(false),
+            fMVAClassifier(-999.),
+            fMainband(true),
             fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
@@ -49,6 +51,8 @@ namespace Katydid
             fEventID(orig.fEventID),
             fEventSequenceID(orig.fEventSequenceID),
             fIsCut(orig.fIsCut),
+            fMVAClassifier(orig.fMVAClassifier),
+            fMainband(orig.fMainband),
             fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
@@ -82,6 +86,8 @@ namespace Katydid
         fEventID = rhs.fEventID;
         fEventSequenceID = rhs.fEventSequenceID;
         fIsCut = rhs.fIsCut;
+        fMVAClassifier = rhs.fMVAClassifier;
+        fMainband = rhs.fMainband;
         fStartTimeInAcq = rhs.fStartTimeInAcq;
         fStartTimeInRunC = rhs.fStartTimeInRunC;
         fEndTimeInRunC = rhs.fEndTimeInRunC;
