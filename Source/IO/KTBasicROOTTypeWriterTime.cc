@@ -15,6 +15,7 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesDistData.hh"
+#include "KTTimeSeriesFFTW.hh"
 
 #include "TH1.h"
 
@@ -49,6 +50,7 @@ namespace Katydid
         //fWriter->RegisterSlot("raw-ts-dist", this, &KTBasicROOTTypeWriterTime::WriteRawTimeSeriesDataDistribution);
         fWriter->RegisterSlot("ts", this, &KTBasicROOTTypeWriterTime::WriteTimeSeriesData);
         fWriter->RegisterSlot("ts-dist", this, &KTBasicROOTTypeWriterTime::WriteTimeSeriesDataDistribution);
+        fWriter->RegisterSlot("ts-fftw", this, &KTBasicROOTTypeWriterTime::WriteTimeSeriesFFTWData);
         return;
     }
 
@@ -187,5 +189,48 @@ namespace Katydid
         }
         return;
     }
+
+
+    void KTBasicROOTTypeWriterTime::WriteTimeSeriesFFTWData(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
+        unsigned nComponents = tsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTTimeSeries* ts = tsData.GetTimeSeries(iComponent);
+            const KTTimeSeriesFFTW* tsFFTW = NULL;
+            if (ts != NULL) tsFFTW = dynamic_cast< const KTTimeSeriesFFTW* >( ts );
+            if (tsFFTW != NULL)
+            {
+                // Real component
+                stringstream convReal;
+                convReal << "histTSReal_" << sliceNumber << "_" << iComponent;
+                string histNameReal;
+                convReal >> histNameReal;
+                TH1D* tsHistReal = ts->CreateHistogram(histNameReal);
+                tsHistReal->SetDirectory(fWriter->GetFile());
+                tsHistReal->Write();
+
+                // Imaginary component
+                stringstream convImag;
+                convImag << "histTSImag_" << sliceNumber << "_" << iComponent;
+                string histNameImag;
+                convImag >> histNameImag;
+                TH1D* tsHistImag = ts->CreateHistogram(histNameImag);
+                tsHistImag->SetDirectory(fWriter->GetFile());
+                tsHistImag->Write();
+                KTDEBUG(publog, "Histogram <" << tsHistImag << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
 
 } /* namespace Katydid */

@@ -8,7 +8,9 @@
 #include "KTBasicROOTFileWriter.hh"
 
 #include "KTCommandLineOption.hh"
+
 //#include "param.hh"
+#include "path.hh"
 
 using std::string;
 
@@ -54,7 +56,25 @@ namespace Katydid
     {
         if (fFile == NULL)
         {
-            fFile = new TFile(fFilename.c_str(), fFileFlag.c_str());
+            scarab::path filenamePath;
+            // verify that the parent of the filename is an existing directory
+            bool dirCheck = false;
+            try
+            {
+                filenamePath = scarab::expand_path(fFilename);
+                dirCheck = boost::filesystem::is_directory(filenamePath.parent_path());
+            }
+            catch( std::exception& e )
+            {
+                KTDEBUG(publog, "Caught boost::filesystem exception: " << e.what());
+                dirCheck = false;
+            }
+            if (! dirCheck)
+            {
+                KTERROR(publog, "Parent directory of output file <" << fFilename << "> does not exist or is not a directory");
+                return false;
+            }
+            fFile = new TFile(filenamePath.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {

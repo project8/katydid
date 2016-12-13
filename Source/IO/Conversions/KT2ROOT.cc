@@ -139,6 +139,19 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
+            hist->SetBinContent((int)iBin+1, ::sqrt((*ts)(iBin)[0]*(*ts)(iBin)[0] + (*ts)(iBin)[1]*(*ts)(iBin)[1]));
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    static TH1D* CreateHistogramReal(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesReal")
+    {
+        unsigned nBins = ts->GetNBins();
+        TH1D* hist = new TH1D(histName.c_str(), "Time Series (Real)", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin)[0]);
         }
         hist->SetXTitle("Time (s)");
@@ -146,7 +159,20 @@ namespace Katydid
         return hist;
     }
 
-/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
+    static TH1D* CreateHistogramImag(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesImag")
+    {
+        unsigned nBins = ts->GetNBins();
+        TH1D* hist = new TH1D(histName.c_str(), "Time Series (Imag)", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*ts)(iBin)[1]);
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    /*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         double tMaxMag = -DBL_MAX;
         double tMinMag = DBL_MAX;
