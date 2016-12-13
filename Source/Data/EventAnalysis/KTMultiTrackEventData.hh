@@ -237,15 +237,7 @@ namespace Katydid
 
     inline int KTMultiPeakTrackData::GetMultiplicity() const
     {
-        TrackSetCItSet allTracks = fMPTrack.fTrackRefs;
-        int m = 0;
-
-        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
-        {
-            ++m;
-        }
-        
-        return m;
+        return fMPTrack.fTrackRefs.size();
     }
 
     inline int KTMultiPeakTrackData::GetEventSequenceID() const
