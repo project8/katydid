@@ -76,23 +76,68 @@ namespace Katydid
             const KTRawTimeSeries* ts = tsData.GetTimeSeries(iComponent);
             if (ts != NULL)
             {
-                stringstream conv;
-                conv << "histRawTS_" << sliceNumber << "_" << iComponent;
-                string histName;
-                conv >> histName;
-                TH1I* tsHist = NULL;
-                if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                if (ts->GetSampleSize() == 1)
                 {
-                    tsHist = KT2ROOT::CreateHistogram(ts, histName);
+                    stringstream conv;
+                    conv << "histRawTS_" << sliceNumber << "_" << iComponent;
+                    string histName;
+                    conv >> histName;
+                    TH1I* tsHist = NULL;
+                    if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                    {
+                        tsHist = KT2ROOT::CreateHistogram(ts, histName);
+                    }
+                    else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                    {
+                        KTVarTypePhysicalArray< int64_t > array(*ts, false);
+                        tsHist = KT2ROOT::CreateHistogram(&array, histName);
+                    }
+                    tsHist->SetDirectory(fWriter->GetFile());
+                    tsHist->Write();
+                    KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
                 }
-                else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                else if (ts->GetSampleSize() == 2)
                 {
-                    KTVarTypePhysicalArray< int64_t > array(*ts, false);
-                    tsHist = KT2ROOT::CreateHistogram(&array, histName);
+                    stringstream convReal;
+                    convReal << "histRawTSReal_" << sliceNumber << "_" << iComponent;
+                    string histNameReal;
+                    convReal >> histNameReal;
+                    TH1I* tsHistReal = NULL;
+                    if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                    {
+                        tsHistReal = KT2ROOT::CreateHistogram(ts, histNameReal);
+                    }
+                    else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                    {
+                        KTVarTypePhysicalArray< int64_t > array(*ts, false);
+                        tsHistReal = KT2ROOT::CreateHistogram(&array, histNameReal);
+                    }
+                    tsHistReal->SetDirectory(fWriter->GetFile());
+                    tsHistReal->Write();
+                    KTDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
+
+                    stringstream convImag;
+                    convImag << "histRawTSImag_" << sliceNumber << "_" << iComponent;
+                    string histNameImag;
+                    convImag >> histNameImag;
+                    TH1I* tsHistImag = NULL;
+                    if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                    {
+                        tsHistImag = KT2ROOT::CreateHistogram(ts, histNameImag);
+                    }
+                    else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                    {
+                        KTVarTypePhysicalArray< int64_t > array(*ts, false);
+                        tsHistImag = KT2ROOT::CreateHistogram(&array, histNameImag);
+                    }
+                    tsHistImag->SetDirectory(fWriter->GetFile());
+                    tsHistImag->Write();
+                    KTDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
                 }
-                tsHist->SetDirectory(fWriter->GetFile());
-                tsHist->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                else
+                {
+                    KTWARN(publog, "Invalid sample size: " << ts->GetSampleSize());
+                }
             }
         }
         return;

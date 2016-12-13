@@ -190,11 +190,14 @@ namespace Katydid
     {
         if (fShouldRunInitialize) Initialize();
 
-        unsigned nBins = ts.size();
+        // ts.size() is divided by 2 because we have complex samples, and the raw time series sees each sample as 2 bins
+        unsigned nBins = ts.size() / 2;
+        KTWARN(egglog_scdac, "Creating new KTTimeSeriesFFTW with " << nBins << " bins" );
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
         for (unsigned bin = 0; bin < nBins; ++bin)
         {
-            (*newTS)(bin)[0] = Convert((ts)(bin));
+            (*newTS)(bin)[0] = Convert(ts(2 * bin));
+            (*newTS)(bin)[1] = Convert(ts(2 * bin + 1));
         }
         return newTS;
     }
@@ -230,22 +233,26 @@ namespace Katydid
     {
         if (fShouldRunInitialize) Initialize();
 
-        unsigned nBins = ts.size() / fOversamplingBins;
+        // ts.size() is divided by 2 because we have complex samples, and the raw time series sees each sample as 2 bins
+        unsigned nBins = ts.size() / 2 / fOversamplingBins;
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
-        double avgValue;
+        double avgValueReal = 0., avgValueImag = 0.;
         unsigned bin = 0;
         for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
         {
-            avgValue = 0.;
+            avgValueReal = 0.;
+            avgValueImag = 0.;
             for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
             {
-                avgValue += Convert((ts)(bin));
+                avgValueReal += Convert(ts(2 * bin));
+                avgValueImag += Convert(ts(2 * bin + 1));
                 ++bin;
             }
-            (*newTS)(oversampledBin)[0] = avgValue * fOversamplingScaleFactor;
+            (*newTS)(oversampledBin)[0] = avgValueReal * fOversamplingScaleFactor;
+            (*newTS)(oversampledBin)[1] = avgValueImag * fOversamplingScaleFactor;
         }
 #ifndef NDEBUG
-        if (bin != ts.size())
+        if (bin != ts.size() / 2)
         {
             KTWARN(egglog_scdac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
         }

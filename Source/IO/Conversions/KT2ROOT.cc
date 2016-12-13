@@ -43,13 +43,27 @@ namespace Katydid
     {
     }
 
-    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName)
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName, int complexSampleIndex)
     {
         unsigned nBins = ts->size();
         TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        if (complexSampleIndex == -1)
         {
-            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            }
+        }
+        else if (complexSampleIndex == 0 || complexSampleIndex == 1)
+        {
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(2 * iBin + complexSampleIndex));
+            }
+        }
+        else
+        {
+            KTERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
         }
         //**** DEBUG ****//
         /*
@@ -69,13 +83,27 @@ namespace Katydid
 
     }
 
-    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName)
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName, int complexSampleIndex)
     {
         unsigned nBins = ts->size();
         TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        if (complexSampleIndex == -1)
         {
-            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            }
+        }
+        else if (complexSampleIndex == 0 || complexSampleIndex == 1)
+        {
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(2 * iBin + complexSampleIndex));
+            }
+        }
+        else
+        {
+            KTERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
         }
         //**** DEBUG ****//
         /*

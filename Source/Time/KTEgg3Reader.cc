@@ -203,7 +203,8 @@ namespace Katydid
         // Get the number of channels, record size and the number of bytes per sample from the stream
         unsigned nChannels = fM3Stream->GetNChannels();
         unsigned recordSize = fM3Stream->GetChannelRecordSize();
-        unsigned nBytesInSample = fM3Stream->GetDataTypeSize() * fM3Stream->GetSampleSize();
+        unsigned sampleSize = fM3Stream->GetSampleSize();
+        unsigned nBytesInSample = fM3Stream->GetDataTypeSize() * sampleSize;
 
         // the read position in the current record (initialize to 0 for now; will be set correctly below)
         unsigned readPos = 0;
@@ -310,9 +311,11 @@ namespace Katydid
         vector< KTRawTimeSeries* > newSlices(nChannels);
         for (unsigned iChan = 0; iChan < nChannels; ++iChan)
         {
+            // nBins = fSliceSize * sampleSize to allow for real and complex samples
             newSlices[iChan] = new KTRawTimeSeries(fM3Stream->GetDataTypeSize(),
                     ConvertMonarch3DataFormat(fM3StreamHeader->GetDataFormat()),
-                    fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+                    fSliceSize * sampleSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+            newSlices[iChan]->SetSampleSize(sampleSize);
 
             sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
             sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
