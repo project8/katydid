@@ -159,9 +159,6 @@ namespace Katydid
         Double_t fRMSAwayFromCentral;
         Double_t fCentralPowerRatio;
 
-        Double_t fRMSAwayFromZero;
-        Double_t fZeroPowerRatio;
-
         Double_t fTrackIntercept;
     };
 

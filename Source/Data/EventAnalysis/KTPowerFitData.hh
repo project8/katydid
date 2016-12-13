@@ -69,9 +69,6 @@ namespace Katydid
                 double fRMSAwayFromCentral; // RMS in bins greater than 3 sigma from the central peak
                 double fCentralPowerRatio; // Ratio of average power within 3 sigma of the central peak to average power greater than 3 sigma from the central peak
 
-                double fRMSAwayFromZero; // RMS in bins greater than 1MHz from zero
-                double fZeroPowerRatio; // Ratio of average power within 1MHz of zero to average power between 1 and 10 MHz from zero
-
                 double fTrackIntercept; // just so that we don't lose this info, since it is subtracted away
             };
 
@@ -153,12 +150,6 @@ namespace Katydid
 
             double GetCentralPowerRatio( unsigned component = 0 ) const;
             void SetCentralPowerRatio( double r, unsigned component = 0 );
-
-            double GetRMSAwayFromZero( unsigned component = 0 ) const;
-            void SetRMSAwayFromZero( double sigma, unsigned component = 0 );
-
-            double GetZeroPowerRatio( unsigned component = 0 ) const;
-            void SetZeroPowerRatio( double r, unsigned component = 0 );
 
             double GetTrackIntercept( unsigned component = 0 ) const;
             void SetTrackIntercept( double alpha, unsigned component = 0 );
@@ -423,28 +414,6 @@ namespace Katydid
     inline void KTPowerFitData::SetCentralPowerRatio(double r, unsigned component)
     {
         fComponentData[component].fCentralPowerRatio = r;
-        return;
-    }
-
-    inline double KTPowerFitData::GetRMSAwayFromZero(unsigned component) const
-    {
-        return fComponentData[component].fRMSAwayFromZero;
-    }
-
-    inline void KTPowerFitData::SetRMSAwayFromZero(double sigma, unsigned component)
-    {
-        fComponentData[component].fRMSAwayFromZero = sigma;
-        return;
-    }
-
-    inline double KTPowerFitData::GetZeroPowerRatio(unsigned component) const
-    {
-        return fComponentData[component].fZeroPowerRatio;
-    }
-
-    inline void KTPowerFitData::SetZeroPowerRatio(double r, unsigned component)
-    {
-        fComponentData[component].fZeroPowerRatio = r;
         return;
     }
 

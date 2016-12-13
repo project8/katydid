@@ -759,9 +759,6 @@ namespace Katydid
             fPowerFitData.fRMSAwayFromCentral = pfData.GetRMSAwayFromCentral( fPowerFitData.fComponent );
             fPowerFitData.fCentralPowerRatio = pfData.GetCentralPowerRatio( fPowerFitData.fComponent );
 
-            fPowerFitData.fRMSAwayFromZero = pfData.GetRMSAwayFromZero( fPowerFitData.fComponent );
-            fPowerFitData.fZeroPowerRatio = pfData.GetZeroPowerRatio( fPowerFitData.fComponent );
-
             fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept( fPowerFitData.fComponent );
 
             const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints( fPowerFitData.fComponent );
@@ -849,9 +846,6 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral );
                 fPowerFitDataTree->SetBranchAddress( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio );
 
-                fPowerFitDataTree->SetBranchAddress( "RMSAwayFromZero", &fPowerFitData.fRMSAwayFromZero );
-                fPowerFitDataTree->SetBranchAddress( "ZeroPowerRatio", &fPowerFitData.fZeroPowerRatio );
-
                 fPowerFitDataTree->SetBranchAddress( "TrackIntercept", &fPowerFitData.fTrackIntercept );
 
                 return true;
@@ -916,9 +910,6 @@ namespace Katydid
 
         fPowerFitDataTree->Branch( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral, "fRMSAwayFromCentral/d" );
         fPowerFitDataTree->Branch( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio, "fCentralPowerRatio/d" );
-
-        fPowerFitDataTree->Branch( "RMSAwayFromZero", &fPowerFitData.fRMSAwayFromZero, "fRMSAwayFromZero/d" );
-        fPowerFitDataTree->Branch( "ZeroPowerRatio", &fPowerFitData.fZeroPowerRatio, "fZeroPowerRatio/d" );
 
         fPowerFitDataTree->Branch( "TrackIntercept", &fPowerFitData.fTrackIntercept, "fTrackIntercept/d" );
 
