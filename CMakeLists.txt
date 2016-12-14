@@ -115,7 +115,7 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 5.28 COMPONENTS Gui Spectrum)
+    find_package (ROOT 5.28 COMPONENTS Gui Spectrum TMVA)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)
