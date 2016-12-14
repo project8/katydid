@@ -36,7 +36,7 @@ namespace Katydid
      (none)
 
      Slots:
-     - "mpt": void (Nymph::KTDataPtr) -- Analysis a multi-peak track with classified tracks; Requires KTMultiPeakTrackData; Adds nothing
+     - "mpt": void (Nymph::KTDataPtr) -- Analyzes a multi-peak track with classified tracks; Requires KTMultiPeakTrackData; Adds nothing
 
      Signals:
      - "proc-mpt": void (Nymph::KTDataPtr) -- Emitted upon successful determination of the mainband track and axial frequency; Guarantees KTProcessedMPTData

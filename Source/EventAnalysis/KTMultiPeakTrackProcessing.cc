@@ -14,7 +14,7 @@ namespace Katydid
     KTLOGGER(evlog, "KTMultiPeakTrackProcessing");
 
     // Register the processor
-    KT_REGISTER_PROCESSOR(KTMultiPeakTrackProcessing, "track-classifier");
+    KT_REGISTER_PROCESSOR(KTMultiPeakTrackProcessing, "mpt-processing");
 
     KTMultiPeakTrackProcessing::KTMultiPeakTrackProcessing(const std::string& name) :
             KTProcessor(name),
