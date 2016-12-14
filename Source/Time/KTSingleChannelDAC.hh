@@ -192,7 +192,6 @@ namespace Katydid
 
         // ts.size() is divided by 2 because we have complex samples, and the raw time series sees each sample as 2 bins
         unsigned nBins = ts.size() / 2;
-        KTWARN(egglog_scdac, "Creating new KTTimeSeriesFFTW with " << nBins << " bins" );
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
         for (unsigned bin = 0; bin < nBins; ++bin)
         {

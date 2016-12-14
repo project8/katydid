@@ -262,6 +262,7 @@ namespace Katydid
                 TH1D* tsHistReal = ts->CreateHistogram(histNameReal);
                 tsHistReal->SetDirectory(fWriter->GetFile());
                 tsHistReal->Write();
+                KTDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
 
                 // Imaginary component
                 stringstream convImag;
@@ -271,7 +272,7 @@ namespace Katydid
                 TH1D* tsHistImag = ts->CreateHistogram(histNameImag);
                 tsHistImag->SetDirectory(fWriter->GetFile());
                 tsHistImag->Write();
-                KTDEBUG(publog, "Histogram <" << tsHistImag << "> written to ROOT file");
+                KTDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
             }
         }
         return;
