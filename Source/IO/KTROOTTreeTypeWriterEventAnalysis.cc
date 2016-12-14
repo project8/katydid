@@ -46,6 +46,7 @@ namespace Katydid
             fFreqCandidateTree(NULL),
             fWaterfallCandidateTree(NULL),
             fSparseWaterfallCandidateTree(NULL),
+            fProcessedMPTTree(NULL),
             fProcessedTrackTree(NULL),
             fMultiPeakTrackTree(NULL),
             fMultiTrackEventTree(NULL),
@@ -54,6 +55,7 @@ namespace Katydid
             fFreqCandidateData(),
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
+            fProcessedMPTDataPtr(NULL),
             fProcessedTrackDataPtr(NULL),
             fMultiPeakTrackData(),
             fMultiTrackEventDataPtr(NULL),
@@ -64,6 +66,7 @@ namespace Katydid
 
     KTROOTTreeTypeWriterEventAnalysis::~KTROOTTreeTypeWriterEventAnalysis()
     {
+        delete fProcessedMPTDataPtr;
         delete fProcessedTrackDataPtr;
         delete fMultiTrackEventDataPtr;
     }
@@ -74,6 +77,7 @@ namespace Katydid
         fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates);
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate);
         fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
+        fWriter->RegisterSlot("processed-mpt", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT);
         fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("multi-peak-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
         fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
@@ -447,6 +451,73 @@ namespace Katydid
         //fProcessedTrackDataPtr = new TProcessedTrackData();
 
         fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
+
+        return true;
+    }
+
+    //****************************
+    // Processed Multi-Peak Track
+    //****************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to processed multi-peak track root tree");
+        KTProcessedMPTData& pMPTData = data->Of< KTProcessedMPTData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "procMPTs", fProcessedMPTTree );
+
+        if (fProcessedMPTTree == NULL)
+        {
+            if (! SetupProcessedMPTTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the processed multi-peak track tree! Nothing was written.");
+                return;
+            }
+        }
+        else
+        {
+            KTINFO(publog, "Tree already exists!");
+            fWriter->AddTree( fProcessedMPTTree );
+
+            fProcessedMPTTree->SetBranchAddress("MultiPeakTrack", &fProcessedMPTDataPtr);
+        }
+
+        fProcessedMPTDataPtr->Load(pMPTData);
+
+        fProcessedMPTTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupProcessedMPTTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "procMPTs", fProcessedMPTTree );
+
+            if( fProcessedMPTTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fProcessedMPTTree );
+
+                fProcessedMPTTree->SetBranchAddress("MultiPeakTrack", &fProcessedMPTDataPtr);
+
+                return true;
+            }
+        }
+
+        fProcessedMPTTree = new TTree("procMPTs", "Processed Multi-Peak Tracks");
+        if (fProcessedMPTTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fProcessedMPTTree);
+
+        //fProcessedTrackDataPtr = new TProcessedTrackData();
+
+        fProcessedMPTTree->Branch("MultiPeakTrack", "Katydid::TProcessedMPTData", &fProcessedMPTDataPtr);
 
         return true;
     }

@@ -69,6 +69,60 @@ namespace Katydid
             ClassDef(TProcessedTrackData, 1);
     };
 
+    //***********************
+    // TProcessedMPTData
+    //***********************
+
+    class KTProcessedMPTData;
+
+    class TProcessedMPTData : public TObject
+    {
+            MEMBERVARIABLE(UInt_t, Component);
+            MEMBERVARIABLE(Int_t, EventSequenceID);
+            MEMBERVARIABLE(UInt_t, AcquisitionID);
+            MEMBERVARIABLE(UInt_t, TrackID);
+
+            MEMBERVARIABLE(Bool_t, IsCut);
+
+            MEMBERVARIABLE(Double_t, MVAClassifier);
+            MEMBERVARIABLE(Bool_t, Mainband);
+            MEMBERVARIABLE(Double_t, AxialFrequency);
+
+            MEMBERVARIABLE(Double_t, StartTimeInRunC);
+            MEMBERVARIABLE(Double_t, StartTimeInAcq);
+            MEMBERVARIABLE(Double_t, EndTimeInRunC);
+            MEMBERVARIABLE(Double_t, TimeLength);
+            MEMBERVARIABLE(Double_t, StartFrequency);
+            MEMBERVARIABLE(Double_t, EndFrequency);
+            MEMBERVARIABLE(Double_t, FrequencyWidth);
+            MEMBERVARIABLE(Double_t, Slope);
+            MEMBERVARIABLE(Double_t, Intercept);
+            MEMBERVARIABLE(Double_t, TotalPower);
+
+            MEMBERVARIABLE(Double_t, StartTimeInRunCSigma);
+            MEMBERVARIABLE(Double_t, EndTimeInRunCSigma);
+            MEMBERVARIABLE(Double_t, TimeLengthSigma);
+            MEMBERVARIABLE(Double_t, StartFrequencySigma);
+            MEMBERVARIABLE(Double_t, EndFrequencySigma);
+            MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
+            MEMBERVARIABLE(Double_t, SlopeSigma);
+            MEMBERVARIABLE(Double_t, InterceptSigma);
+            MEMBERVARIABLE(Double_t, TotalPowerSigma);
+
+        public:
+            TProcessedMPTData();
+            TProcessedMPTData(const KTProcessedMPTData& data);
+            TProcessedMPTData(const TProcessedMPTData& orig);
+            virtual ~TProcessedMPTData();
+            TObject* Clone(const char* newname="");
+            TProcessedMPTData& operator=(const TProcessedMPTData& rhs);
+
+            void Load(const KTProcessedMPTData& data);
+            void Unload(KTProcessedMPTData& mptData) const;
+
+            ClassDef(TProcessedMPTData, 1);
+    };
+
     //************************
     // TMultiTrackEventData
     //************************

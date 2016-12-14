@@ -16,6 +16,7 @@
 
 #include <iostream>
 
+ClassImp(Katydid::TProcessedMPTData);
 ClassImp(Katydid::TProcessedTrackData);
 ClassImp(Katydid::TMultiTrackEventData);
 
@@ -58,7 +59,7 @@ namespace Katydid
             fComponent(orig.fComponent), fTrackID(orig.fTrackID), fEventSequenceID(orig.fEventSequenceID), fIsCut(orig.fIsCut),
             fMVAClassifier(orig.fMVAClassifier), fMainband(orig.fMainband),
             fAcquisitionID(orig.fAcquisitionID),
-            fStartTimeInRunC(orig.fStartTimeInRunC), fStartTimeInAcq(orig.fStartTimeInAcq), fEndTimeInRunC(orig.fEndTimeInRunC),fTimeLength(orig.fTimeLength),
+            fStartTimeInRunC(orig.fStartTimeInRunC), fStartTimeInAcq(orig.fStartTimeInAcq), fEndTimeInRunC(orig.fEndTimeInRunC), fTimeLength(orig.fTimeLength),
             fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fFrequencyWidth(orig.fFrequencyWidth),
             fSlope(orig.fSlope), fIntercept(orig.fIntercept), fTotalPower(orig.fTotalPower),
             fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma), fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma), fTimeLengthSigma(orig.fTimeLengthSigma),
@@ -80,7 +81,7 @@ namespace Katydid
         fComponent = rhs.fComponent; fTrackID = rhs.fTrackID; fEventSequenceID = rhs.fEventSequenceID; fIsCut = rhs.fIsCut;
         fMVAClassifier = rhs.fMVAClassifier; fMainband = rhs.fMainband;
         fAcquisitionID = rhs.fAcquisitionID;
-        fStartTimeInRunC = rhs.fStartTimeInRunC; fStartTimeInAcq = rhs.fStartTimeInAcq; fEndTimeInRunC = rhs.fEndTimeInRunC;fTimeLength = rhs.fTimeLength;
+        fStartTimeInRunC = rhs.fStartTimeInRunC; fStartTimeInAcq = rhs.fStartTimeInAcq; fEndTimeInRunC = rhs.fEndTimeInRunC; fTimeLength = rhs.fTimeLength;
         fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
         fSlope = rhs.fSlope; fIntercept = rhs.fIntercept; fTotalPower = rhs.fTotalPower;
         fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma; fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma; fTimeLengthSigma = rhs.fTimeLengthSigma;
@@ -116,6 +117,107 @@ namespace Katydid
         return;
     }
 
+
+    //***********************
+    // TProcessedMPTData
+    //***********************
+
+    TProcessedMPTData::TProcessedMPTData() :
+            TObject(),
+            fComponent(0), fTrackID(0), fEventSequenceID(-1), fIsCut(false),
+            fMVAClassifier(-999.), fMainband(true), fAxialFrequency(0.),
+            fAcquisitionID(0),
+            fStartTimeInRunC(0.), fStartTimeInAcq(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
+            fSlope(0.), fIntercept(0.), fTotalPower(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fSlopeSigma(0.), fInterceptSigma(0.), fTotalPowerSigma(0.)
+    {}
+
+    TProcessedMPTData::TProcessedMPTData(const KTProcessedMPTData& orig) :
+            TObject(),
+            fComponent(0), fTrackID(0), fEventSequenceID(-1), fIsCut(false),
+            fMVAClassifier(-999.), fMainband(true), fAxialFrequency(0.),
+            fAcquisitionID(0),
+            fStartTimeInRunC(0.), fStartTimeInAcq(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
+            fSlope(0.), fIntercept(0.), fTotalPower(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fSlopeSigma(0.), fInterceptSigma(0.), fTotalPowerSigma(0.)
+    {
+        Load(orig);
+    }
+
+    TProcessedMPTData::TProcessedMPTData(const TProcessedMPTData& orig) :
+            TObject(orig),
+            fComponent(orig.fComponent), fTrackID(orig.fTrackID), fEventSequenceID(orig.fEventSequenceID), fIsCut(orig.fIsCut),
+            fMVAClassifier(orig.fMVAClassifier), fMainband(orig.fMainband), fAxialFrequency(orig.fAxialFrequency),
+            fAcquisitionID(orig.fAcquisitionID),
+            fStartTimeInRunC(orig.fStartTimeInRunC), fStartTimeInAcq(orig.fStartTimeInAcq), fEndTimeInRunC(orig.fEndTimeInRunC), fTimeLength(orig.fTimeLength),
+            fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fFrequencyWidth(orig.fFrequencyWidth),
+            fSlope(orig.fSlope), fIntercept(orig.fIntercept), fTotalPower(orig.fTotalPower),
+            fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma), fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma), fTimeLengthSigma(orig.fTimeLengthSigma),
+            fStartFrequencySigma(orig.fStartFrequencySigma), fEndFrequencySigma(orig.fEndFrequencySigma), fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
+            fSlopeSigma(orig.fSlopeSigma), fInterceptSigma(orig.fInterceptSigma), fTotalPowerSigma(orig.fTotalPowerSigma)
+    {}
+
+    TProcessedMPTData::~TProcessedMPTData()
+    {}
+
+    TObject* TProcessedMPTData::Clone(const char* newname)
+    {
+        TProcessedMPTData* newData = new TProcessedMPTData(*this);
+        return newData;
+    }
+
+    TProcessedMPTData& TProcessedMPTData::operator=(const TProcessedMPTData& rhs)
+    {
+        fComponent = rhs.fComponent; fTrackID = rhs.fTrackID; fEventSequenceID = rhs.fEventSequenceID; fIsCut = rhs.fIsCut;
+        fMVAClassifier = rhs.fMVAClassifier; fMainband = rhs.fMainband; fAxialFrequency = rhs.fAxialFrequency;
+        fAcquisitionID = rhs.fAcquisitionID;
+        fStartTimeInRunC = rhs.fStartTimeInRunC; fStartTimeInAcq = rhs.fStartTimeInAcq; fEndTimeInRunC = rhs.fEndTimeInRunC; fTimeLength = rhs.fTimeLength;
+        fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
+        fSlope = rhs.fSlope; fIntercept = rhs.fIntercept; fTotalPower = rhs.fTotalPower;
+        fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma; fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma; fTimeLengthSigma = rhs.fTimeLengthSigma;
+        fStartFrequencySigma = rhs.fStartFrequencySigma; fEndFrequencySigma = rhs.fEndFrequencySigma; fFrequencyWidthSigma = rhs.fFrequencyWidthSigma;
+        fSlopeSigma = rhs.fSlopeSigma; fInterceptSigma = rhs.fInterceptSigma; fTotalPowerSigma = rhs.fTotalPowerSigma;
+        return *this;
+    }
+
+    void TProcessedMPTData::Load(const KTProcessedMPTData& data)
+    {
+        fComponent = data.GetComponent(); fTrackID = data.GetMainTrack().GetTrackID(); fEventSequenceID = data.GetMainTrack().GetEventSequenceID(); fIsCut = data.GetMainTrack().GetIsCut();
+        fMVAClassifier = data.GetMainTrack().GetMVAClassifier(); fMainband = data.GetMainTrack().GetMainband(); fAxialFrequency = data.GetAxialFrequency();
+        fAcquisitionID = data.GetMainTrack().GetAcquisitionID();
+        fStartTimeInRunC = data.GetMainTrack().GetStartTimeInRunC(); fStartTimeInAcq = data.GetMainTrack().GetStartTimeInAcq(); fEndTimeInRunC = data.GetMainTrack().GetEndTimeInRunC(); fTimeLength = data.GetMainTrack().GetTimeLength();
+        fStartFrequency = data.GetMainTrack().GetStartFrequency(); fEndFrequency = data.GetMainTrack().GetEndFrequency(); fFrequencyWidth = data.GetMainTrack().GetFrequencyWidth();
+        fSlope = data.GetMainTrack().GetSlope(); fIntercept = data.GetMainTrack().GetIntercept(); fTotalPower = data.GetMainTrack().GetTotalPower();
+        fStartTimeInRunCSigma = data.GetMainTrack().GetStartTimeInRunCSigma(); fEndTimeInRunCSigma = data.GetMainTrack().GetEndTimeInRunCSigma(); fTimeLengthSigma = data.GetMainTrack().GetTimeLengthSigma();
+        fStartFrequencySigma = data.GetMainTrack().GetStartFrequencySigma(); fEndFrequencySigma = data.GetMainTrack().GetEndFrequencySigma(); fFrequencyWidthSigma = data.GetMainTrack().GetFrequencyWidthSigma();
+        fSlopeSigma = data.GetMainTrack().GetSlopeSigma(); fInterceptSigma = data.GetMainTrack().GetInterceptSigma(); fTotalPowerSigma = data.GetMainTrack().GetTotalPowerSigma();
+        return;
+    }
+    void TProcessedMPTData::Unload(KTProcessedMPTData& mptData) const
+    {
+        KTProcessedTrackData* data = new KTProcessedTrackData();
+
+        data->SetComponent(fComponent); data->SetTrackID(fTrackID); data->SetEventSequenceID(fEventSequenceID); data->SetIsCut(fIsCut);
+        data->SetMVAClassifier(fMVAClassifier); data->SetMainband(fMainband);
+        data->SetAcquisitionID(fAcquisitionID);
+        data->SetStartTimeInRunC(fStartTimeInRunC); data->SetStartTimeInAcq(fStartTimeInAcq); data->SetEndTimeInRunC(fEndTimeInRunC); data->SetTimeLength(fTimeLength);
+        data->SetStartFrequency(fStartFrequency); data->SetEndFrequency(fEndFrequency); data->SetFrequencyWidth(fFrequencyWidth);
+        data->SetSlope(fSlope); data->SetIntercept(fIntercept); data->SetTotalPower(fTotalPower);
+        data->SetStartTimeInRunCSigma(fStartTimeInRunCSigma); data->SetEndTimeInRunCSigma(fEndTimeInRunCSigma); data->SetTimeLengthSigma(fTimeLengthSigma);
+        data->SetStartFrequencySigma(fStartFrequencySigma); data->SetEndFrequencySigma(fEndFrequencySigma); data->SetFrequencyWidthSigma(fFrequencyWidthSigma);
+        data->SetSlopeSigma(fSlopeSigma); data->SetInterceptSigma(fInterceptSigma); data->SetTotalPowerSigma(fTotalPowerSigma);
+
+        mptData.SetComponent(fComponent);
+        mptData.SetMainTrack(*data);
+        mptData.SetAxialFrequency(fAxialFrequency);
+        return;
+    }
 
 
     //************************

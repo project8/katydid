@@ -175,6 +175,7 @@ namespace Katydid
             void WriteFrequencyCandidates(Nymph::KTDataPtr data);
             void WriteWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+            void WriteProcessedMPT(Nymph::KTDataPtr data);
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
@@ -185,6 +186,7 @@ namespace Katydid
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
+            TTree* GetProcessedMPTTree() const;
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
@@ -195,6 +197,7 @@ namespace Katydid
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
+            bool SetupProcessedMPTTree();
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
@@ -204,6 +207,7 @@ namespace Katydid
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
+            TTree* fProcessedMPTTree;
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
@@ -213,6 +217,7 @@ namespace Katydid
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
+            TProcessedMPTData* fProcessedMPTDataPtr;
             TProcessedTrackData* fProcessedTrackDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
             TMultiTrackEventData* fMultiTrackEventDataPtr;
@@ -234,6 +239,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetSparseWaterfallCandidateTree() const
     {
         return fSparseWaterfallCandidateTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedMPTTree() const
+    {
+        return fProcessedMPTTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedTrackTree() const
