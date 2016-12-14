@@ -578,7 +578,7 @@ namespace Katydid
         // This **SHOULD NOT** be used as a meaningful analysis result!!
         // It is also specific to a particular data set, so if you're not me you probably shouldn't use it at all
 
-        if( data.GetStartFrequency() > 75e6 && data.GetStartFrequency() < 115e6 )
+        if( data.GetStartFrequency() > 95e6 )
         {
             newData.SetMainPeak( 1 );
         }
@@ -630,12 +630,6 @@ namespace Katydid
         std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPoints();
 
         // Iterate over all points and fill the appropriate vector
-
-        double minFreq, maxFreq;
-        unsigned nBins = SetOfPoints.size();
-        minFreq = SetOfPoints.begin()->second.fAbscissa;
-        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
-
         int iBin = 1;
         for( it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it )
         {

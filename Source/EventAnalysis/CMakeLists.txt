@@ -16,6 +16,9 @@ set (EVENTANALYSIS_HEADERFILES
     KTFrequencyCandidateIdentifier.hh
     KTLinearFitCut.hh
     KTMultiPeakEventBuilder.hh
+    KTMultiPeakTrackBuilder.hh
+    KTMultiPeakTrackEventSequenceIDCut.hh
+    KTMultiPeakTrackMultiplicityCut.hh
     KTMultiSliceClustering.hh
     KTPowerFitCut.hh
     KTProcessedTrackCut.hh
@@ -36,6 +39,9 @@ set (EVENTANALYSIS_SOURCEFILES
     KTFrequencyCandidateIdentifier.cc
     KTLinearFitCut.cc
     KTMultiPeakEventBuilder.cc
+    KTMultiPeakTrackBuilder.cc
+    KTMultiPeakTrackEventSequenceIDCut.cc
+    KTMultiPeakTrackMultiplicityCut.cc
     KTMultiSliceClustering.cc
     KTPowerFitCut.cc
     KTProcessedTrackCut.cc
