@@ -57,24 +57,25 @@ namespace Katydid
         if (fFile == NULL)
         {
             scarab::path filenamePath;
-            // verify that the parent of the filename is an existing directory
-            bool dirCheck = false;
             try
             {
-                filenamePath = scarab::expand_path(fFilename);
-                dirCheck = boost::filesystem::is_directory(filenamePath.parent_path());
+                scarab::path filenamePath(fFilename);
+                scarab::path parentDir = canonical(filenamePath.parent_path());
+                // verify that the parent of the filename is an existing directory
+                if (! boost::filesystem::is_directory(parentDir))
+                {
+                    KTERROR(publog, "Parent directory of output file <" << fFilename << "> does not exist or is not a directory");
+                    return false;
+                }
+
+                filenamePath = parentDir / filenamePath.filename();
+                fFile = new TFile(filenamePath.c_str(), fFileFlag.c_str());
             }
             catch( std::exception& e )
             {
-                KTDEBUG(publog, "Caught boost::filesystem exception: " << e.what());
-                dirCheck = false;
-            }
-            if (! dirCheck)
-            {
-                KTERROR(publog, "Parent directory of output file <" << fFilename << "> does not exist or is not a directory");
+                KTERROR(publog, "Problem processing filename: " << e.what());
                 return false;
             }
-            fFile = new TFile(filenamePath.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {
