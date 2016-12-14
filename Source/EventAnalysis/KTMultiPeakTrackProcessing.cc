@@ -20,7 +20,7 @@ namespace Katydid
             KTProcessor(name),
             fProcessedMPTSignal("proc-mpt", this)
     {
-        RegisterSlot( "mpt", this, &KTMultiPeakTrackProcessing::SlotFunctionMultiPeakTrackData );
+        RegisterSlot( "mpt", this, &KTMultiPeakTrackProcessing::SlotFunctionMPTData );
     }
 
     KTMultiPeakTrackProcessing::~KTMultiPeakTrackProcessing()
@@ -61,8 +61,15 @@ namespace Katydid
         KTProcessedMPTData& procData = mptData.Of< KTProcessedMPTData >();
 
         procData.SetComponent( mptData.GetComponent() );
-        procData.SetMainTrack( mptData );
         procData.SetAxialFrequency( 0. );
+
+        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+        {
+            if( (*it)->GetMainband() )
+            {
+                procData.SetMainTrack( **it );
+            }
+        }
 
         // Determine multiplicity
         int mult = mptData.GetMultiplicity();
