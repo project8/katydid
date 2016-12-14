@@ -86,8 +86,8 @@ namespace Katydid
             return true;
         }
 
-        // At this point the multiplicity must be exactly 1
-        if( mult != 1 )
+        // At this point the multiplicity must be exactly 2
+        if( mult != 2 )
         {
             KTWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
             return false;
