@@ -60,6 +60,7 @@ namespace Katydid
         if( mva <= -999 )
         {
             KTWARN(evlog, "Classifier value is -999; something probably went wrong computing it");
+            return false;
         }
 
         return true;
