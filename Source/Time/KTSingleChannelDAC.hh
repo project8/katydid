@@ -189,6 +189,8 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToFFTW(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw");
+
         if (fShouldRunInitialize)
         {
             if (! Initialize())
@@ -212,6 +214,8 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToReal(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-real");
+
         if (fShouldRunInitialize)
         {
             if (! Initialize())
@@ -245,6 +249,8 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToFFTWOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw with oversampling");
+
         if (fShouldRunInitialize)
         {
             if (! Initialize())
@@ -284,6 +290,8 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToRealOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-real with oversampling");
+
         if (fShouldRunInitialize)
         {
             if (! Initialize())

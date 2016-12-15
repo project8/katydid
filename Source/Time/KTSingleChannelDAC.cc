@@ -130,11 +130,11 @@ namespace Katydid
             if (header->GetTSDataType() == KTChannelHeader::kReal)
             {
                 KTDEBUG(egglog_scdac, "Initializing for real TS data via the egg header");
-                fTimeSeriesType = kFFTWTimeSeries;
+                fTimeSeriesType = kRealTimeSeries;
             } else if (header->GetTSDataType() == KTChannelHeader::kIQ || header->GetTSDataType() == KTChannelHeader::kComplex)
             {
                 KTDEBUG(egglog_scdac, "Initializing for FFTW TS data via the egg header");
-                fTimeSeriesType = kRealTimeSeries;
+                fTimeSeriesType = kFFTWTimeSeries;
             }
         }
         return Initialize();;

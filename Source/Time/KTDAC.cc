@@ -122,6 +122,7 @@ namespace Katydid
             {
                 header.SetSliceSize(fChannelDACs[component].GetOversamplingBins());
             }
+            KTDEBUG(egglog, "Doing DAC for component " << component);
             KTTimeSeries* newTS = fChannelDACs[component].ConvertTimeSeries(rawData.GetTimeSeries(component));
             newData.SetTimeSeries(newTS, component);
         }
