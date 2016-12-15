@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<MethodSetup Method="Likelihood::Likelihood">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.2.1 [262657]"/>
+    <Info name="ROOT Release" value="6.06/04 [394756]"/>
+    <Info name="Creator" value="ezayas"/>
+    <Info name="Date" value="Thu Dec  8 18:13:30 2016"/>
+    <Info name="Host" value="Darwin mavericksvm.local 13.4.0 Darwin Kernel Version 13.4.0: Mon Jan 11 18:17:34 PST 2016; root:xnu-2422.115.15~1/RELEASE_X86_64 x86_64"/>
+    <Info name="Dir" value="/Users/ezayas/Waterfall/WaterfallData/Sidebands_Out"/>
+    <Info name="Training events" value="3543"/>
+    <Info name="TrainingTime" value="3.95839214e-02"/>
+    <Info name="AnalysisType" value="Classification"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="V" modified="No">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="No">None</Option>
+    <Option name="H" modified="No">False</Option>
+    <Option name="CreateMVAPdfs" modified="No">False</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="TransformOutput" modified="No">False</Option>
+  </Options>
+  <Variables NVar="10">
+    <Variable VarIndex="0" Expression="Average" Label="Average" Title="Average" Unit="" Internal="Average" Type="F" Min="-1.03310466e+00" Max="9.60083663e-01"/>
+    <Variable VarIndex="1" Expression="RMS" Label="RMS" Title="RMS" Unit="" Internal="RMS" Type="F" Min="1.10167992e+00" Max="2.48207259e+00"/>
+    <Variable VarIndex="2" Expression="Skewness" Label="Skewness" Title="Skewness" Unit="" Internal="Skewness" Type="F" Min="-9.97018397e-01" Max="9.92494106e-01"/>
+    <Variable VarIndex="3" Expression="Kurtosis" Label="Kurtosis" Title="Kurtosis" Unit="" Internal="Kurtosis" Type="F" Min="-1.46074057e+00" Max="5.18142104e-01"/>
+    <Variable VarIndex="4" Expression="NormCentral" Label="NormCentral" Title="NormCentral" Unit="" Internal="NormCentral" Type="F" Min="4.44089210e-13" Max="7.98090332e+02"/>
+    <Variable VarIndex="5" Expression="MeanCentral" Label="MeanCentral" Title="MeanCentral" Unit="" Internal="MeanCentral" Type="F" Min="-3.88894415e+00" Max="5.51990557e+00"/>
+    <Variable VarIndex="6" Expression="SigmaCentral" Label="SigmaCentral" Title="SigmaCentral" Unit="" Internal="SigmaCentral" Type="F" Min="1.80610083e-03" Max="2.35945773e+00"/>
+    <Variable VarIndex="7" Expression="NPeaks" Label="NPeaks" Title="NPeaks" Unit="" Internal="NPeaks" Type="I" Min="1.00000000e+00" Max="8.00000000e+00"/>
+    <Variable VarIndex="8" Expression="CentralPowerRatio" Label="CentralPowerRatio" Title="CentralPowerRatio" Unit="" Internal="CentralPowerRatio" Type="F" Min="2.06480488e-01" Max="2.10694695e+01"/>
+    <Variable VarIndex="9" Expression="RMSAwayFromCentral" Label="RMSAwayFromCentral" Title="RMSAwayFromCentral" Unit="" Internal="RMSAwayFromCentral" Type="F" Min="6.08224161e-02" Max="1.84615936e+01"/>
+  </Variables>
+  <Spectators NSpec="0"/>
+  <Classes NClass="2">
+    <Class Name="Signal" Index="0"/>
+    <Class Name="Background" Index="1"/>
+  </Classes>
+  <Transformations NTransformations="0"/>
+  <MVAPdfs/>
+  <Weights NVariables="10" NClasses="2">
+    <PDFDescriptor VarIndex="0" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[0]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="Average_sig_original" NBins="33" XMin="-1.0331046581268311e+00" XMax="9.6008366346359253e-01" HasEquidistantBins="1">
+          1.00000000e+00 0.00000000e+00 1.00000000e+00 1.00000000e+00 2.00000000e+00 2.00000000e+00 2.00000000e+00 4.00000000e+00 3.00000000e+00 5.00000000e+00 5.00000000e+00 1.80000000e+01 3.60000000e+01 6.60000000e+01 1.15000000e+02 2.73000000e+02 4.43000000e+02 4.84000000e+02 2.09000000e+02 7.70000000e+01 5.20000000e+01 3.10000000e+01 1.80000000e+01 1.40000000e+01 1.10000000e+01 3.00000000e+00 2.00000000e+00 1.00000000e+00 1.00000000e+00 2.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="0" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[0]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="Average_bgd_original" NBins="33" XMin="-1.0331046581268311e+00" XMax="9.6008366346359253e-01" HasEquidistantBins="1">
+          0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.13305235e+00 5.66526175e+00 4.53220940e+00 1.47296829e+01 2.37941055e+01 2.83263168e+01 4.30560036e+01 7.25153503e+01 9.74424286e+01 1.50695892e+02 1.77889252e+02 2.00550385e+02 2.49271820e+02 2.20945404e+02 1.75623138e+02 1.46163666e+02 9.29102325e+01 5.21204262e+01 4.53221092e+01 2.83263168e+01 2.49271584e+01 9.06441879e+00 5.66526175e+00 1.13305235e+00 3.39915705e+00 4.53220940e+00 1.13305235e+00 0.00000000e+00 1.13305235e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="1" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[1]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="RMS_sig_original" NBins="33" XMin="1.1016799211502075e+00" XMax="2.4820725917816162e+00" HasEquidistantBins="1">
+          0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 3.00000000e+00 2.00000000e+00 0.00000000e+00 3.00000000e+00 1.00000000e+00 7.00000000e+00 1.20000000e+01 2.00000000e+01 1.90000000e+01 2.50000000e+01 5.10000000e+01 6.50000000e+01 1.60000000e+02 3.91000000e+02 5.52000000e+02 3.76000000e+02 1.28000000e+02 4.40000000e+01 6.00000000e+00 7.00000000e+00 5.00000000e+00 1.00000000e+00 3.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="1" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[1]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="RMS_bgd_original" NBins="33" XMin="1.1016799211502075e+00" XMax="2.4820725917816162e+00" HasEquidistantBins="1">
+          2.26610470e+00 0.00000000e+00 5.66526175e+00 7.93136644e+00 9.06441879e+00 1.01974716e+01 9.06441879e+00 1.13305244e+01 1.01974716e+01 1.24635773e+01 1.58627357e+01 1.01974716e+01 5.66526175e+00 1.01974716e+01 6.79831409e+00 2.26610527e+01 2.49271584e+01 4.64551620e+01 9.51763306e+01 1.59760345e+02 1.93752045e+02 2.27743744e+02 2.48138763e+02 2.35675140e+02 1.76756195e+02 1.40498383e+02 8.27127914e+01 5.77856903e+01 2.94593697e+01 1.01974716e+01 2.26610470e+00 1.13305235e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="2" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[2]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="Skewness_sig_original" NBins="33" XMin="-9.9701839685440063e-01" XMax="9.9249410629272461e-01" HasEquidistantBins="1">
+          0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00 1.00000000e+00 3.00000000e+00 1.10000000e+01 1.50000000e+01 3.10000000e+01 9.10000000e+01 3.30000000e+02 8.69000000e+02 3.62000000e+02 1.06000000e+02 3.60000000e+01 1.40000000e+01 4.00000000e+00 3.00000000e+00 0.00000000e+00 2.00000000e+00 3.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="2" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[2]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="Skewness_bgd_original" NBins="33" XMin="-9.9701839685440063e-01" XMax="9.9249410629272461e-01" HasEquidistantBins="1">
+          1.13305235e+00 2.26610470e+00 1.13305235e+00 0.00000000e+00 1.13305235e+00 2.26610470e+00 5.66526175e+00 4.53220940e+00 7.93136644e+00 7.93136644e+00 2.26610527e+01 2.26610527e+01 5.66526375e+01 8.95110855e+01 1.68824799e+02 2.64001556e+02 3.68242767e+02 2.92327972e+02 2.32275970e+02 1.28034760e+02 8.49788895e+01 3.96568451e+01 1.92618942e+01 1.47296829e+01 7.93136644e+00 1.13305244e+01 4.53220940e+00 5.66526175e+00 9.06441879e+00 2.26610470e+00 1.13305235e+00 1.13305235e+00 1.13305235e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="3" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[3]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="Kurtosis_sig_original" NBins="33" XMin="-1.4607405662536621e+00" XMax="5.1814210414886475e-01" HasEquidistantBins="1">
+          1.00000000e+00 0.00000000e+00 2.00000000e+00 6.00000000e+00 7.00000000e+00 1.80000000e+01 2.20000000e+01 5.80000000e+01 1.97000000e+02 3.36000000e+02 4.51000000e+02 3.68000000e+02 1.55000000e+02 6.70000000e+01 4.20000000e+01 3.30000000e+01 2.30000000e+01 1.40000000e+01 2.50000000e+01 1.10000000e+01 6.00000000e+00 8.00000000e+00 2.00000000e+00 5.00000000e+00 4.00000000e+00 4.00000000e+00 1.00000000e+00 3.00000000e+00 6.00000000e+00 2.00000000e+00 1.00000000e+00 2.00000000e+00 2.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="3" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[3]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="Kurtosis_bgd_original" NBins="33" XMin="-1.4607405662536621e+00" XMax="5.1814210414886475e-01" HasEquidistantBins="1">
+          5.66526175e+00 5.66526175e+00 4.53220940e+00 1.13305244e+01 1.13305244e+01 3.17254753e+01 4.75882149e+01 6.11848488e+01 1.07639870e+02 1.41631439e+02 1.58627289e+02 1.56361176e+02 2.03949554e+02 1.92618988e+02 1.66558685e+02 1.54095062e+02 1.46163666e+02 9.97085266e+01 6.79831543e+01 3.62576866e+01 2.60602112e+01 1.13305244e+01 1.13305244e+01 9.06441879e+00 3.39915705e+00 5.66526175e+00 1.13305235e+00 1.13305235e+00 2.26610470e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="4" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[4]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="NormCentral_sig_original" NBins="33" XMin="4.4408920985006262e-13" XMax="7.9809033203125000e+02" HasEquidistantBins="1">
+          2.03000000e+02 1.72000000e+02 1.15000000e+02 9.90000000e+01 8.80000000e+01 8.70000000e+01 7.70000000e+01 7.20000000e+01 1.04000000e+02 1.09000000e+02 1.93000000e+02 2.49000000e+02 1.95000000e+02 4.90000000e+01 2.00000000e+01 9.00000000e+00 1.20000000e+01 1.10000000e+01 1.00000000e+01 7.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="4" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[4]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="NormCentral_bgd_original" NBins="33" XMin="4.4408920985006262e-13" XMax="7.9809033203125000e+02" HasEquidistantBins="1">
+          1.32567554e+03 2.92327972e+02 8.72449875e+01 3.73907394e+01 1.92618942e+01 2.26610527e+01 1.69957886e+01 1.24635773e+01 1.01974716e+01 1.24635773e+01 1.01974716e+01 1.24635773e+01 1.01974716e+01 5.66526175e+00 2.26610470e+00 2.26610470e+00 0.00000000e+00 0.00000000e+00 1.13305235e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.13305235e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="5" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[5]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="MeanCentral_sig_original" NBins="33" XMin="-3.8889441490173340e+00" XMax="5.5199055671691895e+00" HasEquidistantBins="1">
+          0.00000000e+00 1.00000000e+00 0.00000000e+00 1.00000000e+00 2.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 2.00000000e+00 2.00000000e+00 2.00000000e+00 6.00000000e+00 1.83300000e+03 1.70000000e+01 2.00000000e+00 6.00000000e+00 0.00000000e+00 1.00000000e+00 1.00000000e+00 1.00000000e+00 1.00000000e+00 1.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="5" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[5]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="MeanCentral_bgd_original" NBins="33" XMin="-3.8889441490173340e+00" XMax="5.5199055671691895e+00" HasEquidistantBins="1">
+          1.13305235e+00 1.13305235e+00 2.26610470e+00 2.26610470e+00 6.79831409e+00 3.39915705e+00 1.69957886e+01 1.24635773e+01 1.69957886e+01 2.71932640e+01 2.26610527e+01 3.51246338e+01 8.04466934e+01 1.35173584e+03 2.06215668e+02 3.73907394e+01 1.58627357e+01 1.24635773e+01 7.93136644e+00 4.53220940e+00 3.39915705e+00 4.53220940e+00 3.39915705e+00 1.13305235e+00 1.13305235e+00 1.13305235e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 2.26610470e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="6" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[6]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="SigmaCentral_sig_original" NBins="33" XMin="1.8061008304357529e-03" XMax="2.3594577312469482e+00" HasEquidistantBins="1">
+          1.72700000e+03 1.03000000e+02 3.10000000e+01 5.00000000e+00 4.00000000e+00 1.00000000e+00 1.00000000e+00 2.00000000e+00 2.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 2.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="6" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[6]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="SigmaCentral_bgd_original" NBins="33" XMin="1.8061008304357529e-03" XMax="2.3594577312469482e+00" HasEquidistantBins="1">
+          3.77307220e+02 9.14376038e+02 3.27452728e+02 1.45030609e+02 4.07898979e+01 2.37941055e+01 1.35966301e+01 4.53220940e+00 6.79831409e+00 3.39915705e+00 1.13305235e+00 1.13305235e+00 3.39915705e+00 5.66526175e+00 1.13305235e+00 2.26610470e+00 2.26610470e+00 2.26610470e+00 2.26610470e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 2.26610470e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.13305235e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="7" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[7]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="NPeaks_sig_original" NBins="8" XMin="1.0000000000000000e+00" XMax="9.0000000000000000e+00" HasEquidistantBins="1">
+          1.79400000e+03 8.50000000e+01 3.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="7" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[7]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="NPeaks_bgd_original" NBins="8" XMin="1.0000000000000000e+00" XMax="9.0000000000000000e+00" HasEquidistantBins="1">
+          7.56881165e+02 1.05487500e+03 5.89187431e+01 7.93136644e+00 0.00000000e+00 2.26610470e+00 0.00000000e+00 1.13305235e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="8" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[8]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="CentralPowerRatio_sig_original" NBins="33" XMin="2.0648048818111420e-01" XMax="2.1069469451904297e+01" HasEquidistantBins="1">
+          9.00000000e+00 1.20000000e+01 1.10000000e+01 2.30000000e+01 4.30000000e+01 5.30000000e+01 6.20000000e+01 7.80000000e+01 1.44000000e+02 2.80000000e+02 4.09000000e+02 3.88000000e+02 1.48000000e+02 5.30000000e+01 2.50000000e+01 1.90000000e+01 1.60000000e+01 1.50000000e+01 9.00000000e+00 1.20000000e+01 7.00000000e+00 4.00000000e+00 8.00000000e+00 7.00000000e+00 1.00000000e+01 5.00000000e+00 7.00000000e+00 1.00000000e+01 5.00000000e+00 3.00000000e+00 3.00000000e+00 2.00000000e+00 2.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="8" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[8]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="CentralPowerRatio_bgd_original" NBins="33" XMin="2.0648048818111420e-01" XMax="2.1069469451904297e+01" HasEquidistantBins="1">
+          6.34509544e+01 5.32534790e+01 9.40432816e+01 2.86662689e+02 4.65685638e+02 3.78440277e+02 2.57203217e+02 7.81805954e+01 6.11848488e+01 3.51246338e+01 4.75882149e+01 2.60602112e+01 7.93136644e+00 1.24635773e+01 7.93136644e+00 2.26610470e+00 1.13305235e+00 1.13305235e+00 1.13305235e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.13305235e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="9" ClassIndex="0">
+      <PDF Name="Likelihood PDF Sig[9]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="RMSAwayFromCentral_sig_original" NBins="33" XMin="6.0822416096925735e-02" XMax="1.8461593627929688e+01" HasEquidistantBins="1">
+          7.00000000e+00 1.30000000e+02 2.06000000e+02 1.94000000e+02 1.79000000e+02 3.15000000e+02 4.20000000e+02 2.58000000e+02 9.00000000e+01 2.50000000e+01 1.70000000e+01 5.00000000e+00 4.00000000e+00 5.00000000e+00 5.00000000e+00 5.00000000e+00 2.00000000e+00 3.00000000e+00 1.00000000e+00 3.00000000e+00 0.00000000e+00 2.00000000e+00 2.00000000e+00 1.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00 1.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+    <PDFDescriptor VarIndex="9" ClassIndex="1">
+      <PDF Name="Likelihood PDF Bkg[9]" MinNSmooth="0" MaxNSmooth="0" InterpolMethod="2" KDE_type="1" KDE_iter="1" KDE_border="1" KDE_finefactor="1.0000000000000000e+00">
+        <Histogram Name="RMSAwayFromCentral_bgd_original" NBins="33" XMin="6.0822416096925735e-02" XMax="1.8461593627929688e+01" HasEquidistantBins="1">
+          1.13305244e+01 2.87795746e+02 5.47265686e+02 3.26319672e+02 2.30009857e+02 1.51828949e+02 1.16704262e+02 6.11848488e+01 2.94593697e+01 2.83263168e+01 1.69957886e+01 1.35966301e+01 1.24635773e+01 1.01974716e+01 7.93136644e+00 5.66526175e+00 6.79831409e+00 5.66526175e+00 2.26610470e+00 2.26610470e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00 1.13305235e+00 1.13305235e+00 1.13305235e+00 1.13305235e+00 1.13305235e+00 0.00000000e+00 1.13305235e+00 1.13305235e+00 0.00000000e+00 0.00000000e+00 
+        </Histogram>
+      </PDF>
+    </PDFDescriptor>
+  </Weights>
+</MethodSetup>
