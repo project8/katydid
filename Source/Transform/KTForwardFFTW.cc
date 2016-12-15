@@ -219,13 +219,13 @@ namespace Katydid
     {
         if (fState == kNone)
         {
-            if (header.GetTSDataType() == KTEggHeader::kReal)
+            if (header.GetChannelHeader(0)->GetTSDataType() == KTChannelHeader::kReal)
             {
                 return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
             }
-            else // == KTEggHeader::kComplex || KTEggHeader::kIQ
+            else // == KTChannelHeader::kComplex || KTChannelHeader::kIQ
             {
-                if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
+                if (header.GetChannelHeader(0)->GetTSDataType() == KTChannelHeader::kIQ) fComplexAsIQ = true;
                 else fComplexAsIQ = false;
                 return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
             }

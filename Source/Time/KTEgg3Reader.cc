@@ -496,7 +496,8 @@ namespace Katydid
                 newChanHeader->SetSliceSize(fSliceSize);
                 newChanHeader->SetSliceStride(fStride);
                 newChanHeader->SetRecordSize(fM3StreamHeader->GetRecordSize());
-                newChanHeader->SetSampleSize(channelHeader.GetSampleSize());
+                unsigned sampleSize = channelHeader.GetSampleSize();
+                newChanHeader->SetSampleSize(sampleSize);
                 newChanHeader->SetDataTypeSize(channelHeader.GetDataTypeSize());
                 newChanHeader->SetDataFormat(ConvertMonarch3DataFormat(channelHeader.GetDataFormat()));
                 newChanHeader->SetBitDepth(channelHeader.GetBitDepth());
@@ -504,18 +505,18 @@ namespace Katydid
                 newChanHeader->SetVoltageOffset(channelHeader.GetVoltageOffset());
                 newChanHeader->SetVoltageRange(channelHeader.GetVoltageRange());
                 newChanHeader->SetDACGain(channelHeader.GetDACGain());
+                if (sampleSize == 1) newChanHeader->SetTSDataType(KTChannelHeader::kReal);
+                else if (sampleSize == 2) newChanHeader->SetTSDataType(KTChannelHeader::kIQ);
+                else
+                {
+                    KTWARN(eggreadlog, "Sample size <" << sampleSize << "> on channel " << iChanInFile << " may cause problems with downstream processing");
+                }
                 fHeader.SetChannelHeader(newChanHeader, iChanInKatydid);
                 ++iChanInKatydid;
             }
         }
 
         // set the TS data type size based on channel 0 (by Katydid's channel counting)
-        if (fHeader.GetChannelHeader(0)->GetSampleSize() == 1) fHeader.SetTSDataType(KTEggHeader::kReal);
-        else if (fHeader.GetChannelHeader(0)->GetSampleSize() == 2) fHeader.SetTSDataType(KTEggHeader::kIQ);
-        else
-        {
-            KTERROR(eggreadlog, "Cannot handle sample size == " << fHeader.GetChannelHeader(0)->GetSampleSize());
-        }
         return;
     }
 

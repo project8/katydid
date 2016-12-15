@@ -29,7 +29,7 @@ namespace Katydid
             fDACGain(-1.),
             fBitAlignment(sBitsAlignedLeft),
             fDigitizedDataFormat(sInvalidFormat),
-            fTimeSeriesType(kRealTimeSeries),
+            fTimeSeriesType(kUnknownTimeSeries),
             fBitDepthMode(kNoChange),
             fEmulatedNBits(fNBits),
             fShouldRunInitialize(true),
@@ -103,7 +103,7 @@ namespace Katydid
         fNBits = nBits;
         fVoltageOffset = voltageOffset;
         fVoltageRange = voltageRange;
-        fDACGain = -1.;
+        fDACGain = -1.; // will be updated in Initialize()
         fBitAlignment = bitAlignment;
         fShouldRunInitialize = true;
         return;
@@ -121,22 +121,39 @@ namespace Katydid
         return;
     }
 
-    void KTSingleChannelDAC::InitializeWithHeader(KTChannelHeader* header)
+    bool KTSingleChannelDAC::InitializeWithHeader(KTChannelHeader* header)
     {
         SetInputParameters(header->GetDataTypeSize(), header->GetBitDepth(), header->GetVoltageOffset(), header->GetVoltageRange(), header->GetDACGain(), header->GetBitAlignment());
         fDigitizedDataFormat = header->GetDataFormat();
-        Initialize();
-        return;
+        if (fTimeSeriesType == kUnknownTimeSeries)
+        {
+            if (header->GetTSDataType() == KTChannelHeader::kReal)
+            {
+                KTDEBUG(egglog_scdac, "Initializing for real TS data via the egg header");
+                fTimeSeriesType = kFFTWTimeSeries;
+            } else if (header->GetTSDataType() == KTChannelHeader::kIQ || header->GetTSDataType() == KTChannelHeader::kComplex)
+            {
+                KTDEBUG(egglog_scdac, "Initializing for FFTW TS data via the egg header");
+                fTimeSeriesType = kRealTimeSeries;
+            }
+        }
+        return Initialize();;
     }
 
-    void KTSingleChannelDAC::Initialize()
+    bool KTSingleChannelDAC::Initialize()
     {
         if (! fShouldRunInitialize)
         {
-            return;
+            return true;
         }
 
         KTDEBUG(egglog_scdac, "Initializing single-channel DAC");
+
+        if (fTimeSeriesType == kUnknownTimeSeries)
+        {
+            KTERROR(egglog_scdac, "Time series type is not set; cannot initialize DAC");
+            return false;
+        }
 
         if (! fVoltages.empty())
         {
@@ -182,7 +199,7 @@ namespace Katydid
             if (fNBits >= fEmulatedNBits)
             {
                 KTERROR(egglog_scdac, "Increasing-bit-depth mode was indicated, but emulated bits (" << fEmulatedNBits << ") <= actual bits (" << fNBits << ")");
-                return;
+                return false;
             }
             unsigned additionalBits = fEmulatedNBits - fNBits;
             fOversamplingBins = pow(2, 2 * additionalBits);
@@ -314,9 +331,8 @@ namespace Katydid
             }
         }
 
-
         fShouldRunInitialize = false;
-        return;
+        return true;
     }
 
     bool KTSingleChannelDAC::SetEmulatedNBits(unsigned nBits)
