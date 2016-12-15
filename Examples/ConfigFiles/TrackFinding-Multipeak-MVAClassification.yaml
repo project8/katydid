@@ -331,9 +331,9 @@ processor-toolbox:
         # axial frequency
 
         - signal: "mpeb:mpt"
-          slot: "mpt-event-sequence-cut:apply"
+          slot: "mpt-event-seq-cut:apply"
 
-        - signal: "mpt-event-sequence-cut:pass"
+        - signal: "mpt-event-seq-cut:pass"
           slot: "mpt-multiplicity-cut:apply"
 
         - signal: "mpt-multiplicity-cut:pass"
