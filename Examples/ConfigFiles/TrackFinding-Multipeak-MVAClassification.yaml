@@ -493,7 +493,7 @@ mptb:
 mpeb:
     jump-time-tol: 0.2e-3
 
-mpt-event-sequence-cut:
+mpt-event-seq-cut:
     mpt-event-sequence-cut:
         min-id: 0
         max-id: 0
