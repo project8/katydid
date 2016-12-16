@@ -49,10 +49,28 @@ namespace Katydid
         }
         KTDEBUG(evlog, "Determined number of mainband tracks = " << nMainband);
 
-        // If there is not exactly 1 mainband track, abort
-        if( nMainband != 1 )
+        // Determine multiplicity
+        int mult = mptData.GetMultiplicity();
+        KTDEBUG(evlog, "Determined multiplicity = " << mult);
+
+        // If there are fewer than 2 tracks, abort
+        if( mult < 2 )
         {
-            KTWARN(evlog, "This MPT has 0 or more than 1 track identified as mainband; I cannot analyze this. Aborting");
+            KTWARN(evlog, "MPT only has one track; I cannot analyze this. Aborting");
+            return false;
+        }
+
+        // If there is more than 1 mainband track, abort
+        if( nMainband > 1 )
+        {
+            KTWARN(evlog, "This MPT has more than 1 track identified as mainband; I cannot analyze this. Aborting");
+            return false;
+        }
+
+        // If there are more than 2 sidebands, abort
+        if( mult - nMainband > 2 )
+        {
+            KTWARN(evlog, "This MPT has more than 2 tracks identified as sidebands; I cannot analyze this. Aborting");
             return false;
         }
 
@@ -63,64 +81,60 @@ namespace Katydid
         procData.SetComponent( mptData.GetComponent() );
         procData.SetAxialFrequency( 0. );
 
-        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+        double axialFreq = 0.;
+
+        if( nMainband > 0 )
         {
-            if( (*it)->GetMainband() )
+            if( nMainband != 1 )
             {
-                procData.SetMainTrack( **it );
+                KTWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
+                return false;
             }
-        }
 
-        // Determine multiplicity
-        int mult = mptData.GetMultiplicity();
-        KTDEBUG(evlog, "Determined multiplicity = " << mult);
-
-        if( mult > 2 )
-        {
-            KTWARN(evlog, "I don't yet have the logic to deal with 3+ multiplicity events; the axial frequency will be zero");
-            return true;
-        }
-        if( mult == 1 )
-        {
-            KTWARN(evlog, "MPT only has one track, and it is mainband; the axial frequency will be zero");
-            return true;
-        }
-
-        // At this point the multiplicity must be exactly 2
-        if( mult != 2 )
-        {
-            KTWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
-            return false;
-        }
-
-        // Determine mainband and sideband frequencies
-        double mainbandFreq = 0.;
-        double sidebandFreq = 0.;
-        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
-        {
-            if( (*it)->GetMainband() )
+            // We have a mainband track, let's find it
+            for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
             {
-                mainbandFreq = (*it)->GetStartFrequency();
-                KTDEBUG(evlog, "Set mainband frequency to " << mainbandFreq);
+                if( (*it)->GetMainband() )
+                {
+                    procData.SetMainTrack( **it );
+                }
             }
-            else
-            {
-                sidebandFreq = (*it)->GetStartFrequency();
-                KTDEBUG(evlog, "Set sideband frequency to " << sidebandFreq);
-            }
-        }
 
-        if( mainbandFreq == 0. || sidebandFreq == 0. )
+            // And calculate the axial frequency
+            double avgAxialFrequency = 0.;
+            for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+            {
+                if( ! (*it)->GetMainband() )
+                {
+                    avgAxialFrequency += std::abs( (*it)->GetStartFrequency() - procData.GetMainTrack().GetStartFrequency() );
+                }
+            }
+            avgAxialFrequency /= (double)(mult - nMainband);
+            axialFreq = avgAxialFrequency;
+        }
+        else
         {
-            KTERROR(evlog, "Could not determine mainband and sideband frequencies");
-            return false;
+            if( mult != 2 )
+            {
+                KTWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
+                return false;
+            }
+
+            double startFreqOne = (*allTracks.begin())->GetStartFrequency();
+            double startFreqTwo = (*allTracks.rbegin())->GetStartFrequency();
+
+            // Create a new track to represent the absent mainband
+            // For now I will only set the start frequency
+
+            KTProcessedTrackData* hiddenMainband;
+            hiddenMainband->SetStartFrequency( 0.5*(startFreqOne + startFreqTwo) );
+            procData.SetMainTrack( *hiddenMainband );
+
+            axialFreq = 0.5 * std::abs( startFreqOne - startFreqTwo );
         }
 
         // Set axial frequency
-
-        double axialFreq = std::abs( mainbandFreq - sidebandFreq );
         KTINFO(evlog, "Found axial frequency: " << axialFreq);
-
         procData.SetAxialFrequency( axialFreq );
 
         return true;
