@@ -126,7 +126,7 @@ namespace Katydid
             // Create a new track to represent the absent mainband
             // For now I will only set the start frequency
 
-            KTProcessedTrackData* hiddenMainband;
+            KTProcessedTrackData* hiddenMainband = new KTProcessedTrackData();
             hiddenMainband->SetStartFrequency( 0.5*(startFreqOne + startFreqTwo) );
             procData.SetMainTrack( *hiddenMainband );
 
