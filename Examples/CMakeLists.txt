@@ -6,15 +6,12 @@
 
 # Config files
 set (EXAMPLE_CONFIGFILES
-    ConfigFiles/DisplayFFT.json
     ConfigFiles/EvaluateCandidates.json
     ConfigFiles/FSPeakAnalysisConfig.json
     ConfigFiles/KatydidPSAnalysisTemplate.json
     ConfigFiles/KatydidPSComplexConfig.json
-    ConfigFiles/KatydidPSConfig.json
     ConfigFiles/KatydidWVConfig.json
     ConfigFiles/PrintInfo.json
-    ConfigFiles/SpectrogramConfig.json
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
     ConfigFiles/HDF5/AverageFFT.json
@@ -25,6 +22,7 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/DisplaySpectrograms.yaml
     ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/SidebandTrackAnalysis.yaml    
+    ConfigFiles/SpectrogramConfig.yaml
 )
 
 pbuilder_install_config (${EXAMPLE_CONFIGFILES})
