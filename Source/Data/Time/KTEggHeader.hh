@@ -21,6 +21,15 @@ namespace Katydid
     class KTChannelHeader
     {
         public:
+            enum TimeSeriesDataType
+            {
+                kUnknown,
+                kReal,
+                kComplex,
+                kIQ
+            };
+
+        public:
             KTChannelHeader();
             KTChannelHeader(const KTChannelHeader& orig);
             ~KTChannelHeader();
@@ -41,19 +50,12 @@ namespace Katydid
             MEMBERVARIABLE( double, VoltageOffset );
             MEMBERVARIABLE( double, VoltageRange );
             MEMBERVARIABLE( double, DACGain );
+            MEMBERVARIABLE(TimeSeriesDataType, TSDataType );
     };
 
 
     class KTEggHeader : public Nymph::KTExtensibleData< KTEggHeader >
     {
-        public:
-            enum TimeSeriesDataType
-            {
-                kReal,
-                kComplex,
-                kIQ
-            };
-
         public:
             KTEggHeader();
             KTEggHeader(const KTEggHeader& orig);
@@ -70,7 +72,6 @@ namespace Katydid
             MEMBERVARIABLE(double, MaximumFrequency); /// in Hz
             MEMBERVARIABLEREF(std::string, Timestamp);
             MEMBERVARIABLEREF(std::string, Description);
-            MEMBERVARIABLE(TimeSeriesDataType, TSDataType );
 
             unsigned GetNChannels() const;
             KTEggHeader& SetNChannels(unsigned nChannels);

@@ -55,8 +55,16 @@ namespace Katydid
      - "multi-fs-polar":
      - "norm-fs-fftw":
      - "norm-fs-polar":
-     - "ts":
+     - "ps":
+     - "psd":
+     - "ps-dist":
+     - "psd-dist":
+     - "tf-polar":
+     - "tf-polar-phase":
+     - "tf-polar-power":
+     - "ts": Works for ts-real and ts-fftw; for ts-fftw, outputs sqrt(real*real + imag*imag)
      - "ts-dist":
+     - "ts-fftw": Separate histograms for real and imaginary components
      - "wv":
      - "wv-2d":
      

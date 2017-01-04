@@ -157,8 +157,6 @@ namespace Katydid
 
         fSliceNumber = 0;
 
-        fHeader.SetTSDataType(KTEggHeader::kReal);
-
         return fHeaderPtr;
     }
 
@@ -441,6 +439,7 @@ namespace Katydid
             newChanHeader->SetVoltageOffset(monarchHeader->GetVoltageMin());
             newChanHeader->SetVoltageRange(monarchHeader->GetVoltageRange());
             newChanHeader->SetDACGain(monarchHeader->GetVoltageRange() / (double)(1 << monarchHeader->GetBitDepth()));
+            newChanHeader->SetTSDataType(KTChannelHeader::kReal);
             fHeader.SetChannelHeader(newChanHeader, iChannel);
         }
         return;

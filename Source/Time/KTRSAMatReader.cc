@@ -254,12 +254,12 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
-        fHeader.SetTSDataType(KTEggHeader::kIQ);
         fHeader.SetFilename(filename);
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");
         fHeader.GetChannelHeader(0)->SetRecordSize((size_t) atoi(curr_node->value()));
+        fHeader.GetChannelHeader(0)->SetTSDataType(KTChannelHeader::kIQ);
         if (fSliceSize == 0)
         {
             fSliceSize = fHeader.GetChannelHeader(0)->GetRecordSize();

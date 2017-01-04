@@ -79,7 +79,7 @@ namespace Katydid
         OutputASpectrogramSet(fPowerSpectrograms);
         OutputASpectrogramSet(fPSDSpectrograms);
 
-        KTINFO("calling output lines")
+        KTDEBUG("calling output lines")
         OutputLines();
 
         return;
@@ -87,7 +87,7 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::OutputLines()
     {
-        KTINFO("grab file and cd")
+        KTDEBUG("grab file and cd")
         fWriter->GetFile()->WriteTObject(fLineCollection, "AllLines", "SingleKey");
         fLineCollection = NULL;
         return;

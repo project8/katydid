@@ -219,7 +219,6 @@ namespace Katydid
 
         Nymph::KTDataPtr eggHeaderPtr(new Nymph::KTData());
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
-        eggHeader.SetTSDataType(KTEggHeader::kReal);
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * 1000); // conversion from s to ms
@@ -245,6 +244,7 @@ namespace Katydid
         newChanHeader->SetVoltageOffset(-0.25);
         newChanHeader->SetVoltageRange(0.5);
         newChanHeader->SetDACGain(newChanHeader->GetVoltageRange() / (double)(1 << newChanHeader->GetBitDepth()));
+        newChanHeader->SetTSDataType(KTChannelHeader::kReal);
         eggHeader.SetChannelHeader(newChanHeader, iChannel);
 
         return eggHeaderPtr;

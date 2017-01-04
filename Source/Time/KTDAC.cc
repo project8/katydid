@@ -12,10 +12,13 @@
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
+#include "KTLogger.hh"
+
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(egglog, "KTDAC");
 
     KT_REGISTER_PROCESSOR(KTDAC, "dac");
 
@@ -24,8 +27,8 @@ namespace Katydid
             fChannelDACs(1),
             fHeaderSignal("header", this),
             fTimeSeriesSignal("ts", this),
-            fHeaderSlot("header", this, &KTDAC::InitializeWithHeader),
-            fNoInitHeaderSlot("header-no-init", this, &KTDAC::UpdateEggHeader),
+            fHeaderSlot("header", this, &KTDAC::InitializeWithHeader, &fHeaderSignal),
+            fNoInitHeaderSlot("header-no-init", this, &KTDAC::UpdateEggHeader, &fHeaderSignal),
             fRawTSSlot("raw-ts", this, &KTDAC::ConvertData, &fTimeSeriesSignal)
     {
     }
@@ -61,47 +64,52 @@ namespace Katydid
         return true;
     }
 
-    void KTDAC::Initialize()
+    bool KTDAC::Initialize()
     {
         for (std::vector< KTSingleChannelDAC >::iterator scDACIt = fChannelDACs.begin(); scDACIt != fChannelDACs.end(); ++scDACIt)
         {
-            scDACIt->Initialize();
+            if (! scDACIt->Initialize())
+            {
+                KTERROR(egglog, "Failed to initialize single-channel DAC for channel " << scDACIt - fChannelDACs.begin());
+                return false;
+            }
         }
 
-        return;
+        return true;
     }
 
-    void KTDAC::InitializeWithHeader(KTEggHeader* header)
+    bool KTDAC::InitializeWithHeader(KTEggHeader& header)
     {
         // setup each channel DAC with header info
-        unsigned nComponents = header->GetNChannels();
+        unsigned nComponents = header.GetNChannels();
         for (unsigned component = 0; component < nComponents; ++component)
         {
-            fChannelDACs[component].InitializeWithHeader(header->GetChannelHeader(component));
+            if (! fChannelDACs[component].InitializeWithHeader(header.GetChannelHeader(component)))
+            {
+                KTERROR(egglog, "Failed to initialize single-channel DAC for channel " << component);
+                return false;
+            }
         }
 
-        UpdateEggHeader(header);
-
-        return;
+        return UpdateEggHeader(header);
     }
 
-    void KTDAC::UpdateEggHeader(KTEggHeader* header)
+    bool KTDAC::UpdateEggHeader(KTEggHeader& header)
     {
-        unsigned nComponents = header->GetNChannels();
+        unsigned nComponents = header.GetNChannels();
         for (unsigned component = 0; component < nComponents; ++component)
         {
             if (fChannelDACs[component].GetBitDepthMode() == KTSingleChannelDAC::kIncreasing)
             {
-                header->GetChannelHeader(component)->SetSliceSize(
-                        header->GetChannelHeader(component)->GetRawSliceSize() / fChannelDACs[component].GetOversamplingBins());
+                header.GetChannelHeader(component)->SetSliceSize(
+                        header.GetChannelHeader(component)->GetRawSliceSize() / fChannelDACs[component].GetOversamplingBins());
             }
             if (fChannelDACs[component].GetBitDepthMode() != KTSingleChannelDAC::kNoChange)
             {
-                header->GetChannelHeader(component)->SetBitDepth(fChannelDACs[component].GetEmulatedNBits());
+                header.GetChannelHeader(component)->SetBitDepth(fChannelDACs[component].GetEmulatedNBits());
             }
         }
-        fHeaderSignal(header);
-        return;
+        return true;
     }
 
     bool KTDAC::ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData)
@@ -114,6 +122,7 @@ namespace Katydid
             {
                 header.SetSliceSize(fChannelDACs[component].GetOversamplingBins());
             }
+            KTDEBUG(egglog, "Doing DAC for component " << component);
             KTTimeSeries* newTS = fChannelDACs[component].ConvertTimeSeries(rawData.GetTimeSeries(component));
             newData.SetTimeSeries(newTS, component);
         }

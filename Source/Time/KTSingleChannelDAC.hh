@@ -36,6 +36,7 @@ namespace Katydid
         public:
             enum TimeSeriesType
             {
+                kUnknownTimeSeries, // if this type is set, DAC initialization will fail
                 kRealTimeSeries,
                 kFFTWTimeSeries
             };
@@ -77,8 +78,8 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(unsigned, BitAlignment);
 
         public:
-            void InitializeWithHeader(KTChannelHeader* header);
-            void Initialize();
+            bool InitializeWithHeader(KTChannelHeader* header);
+            bool Initialize();
             bool GetShouldRunInitialize();
 
             KTTimeSeries* ConvertTimeSeries(KTRawTimeSeries* ts);
@@ -188,13 +189,24 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToFFTW(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        if (fShouldRunInitialize) Initialize();
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw");
 
-        unsigned nBins = ts.size();
+        if (fShouldRunInitialize)
+        {
+            if (! Initialize())
+            {
+                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                return NULL;
+            }
+        }
+
+        // ts.size() is divided by 2 because we have complex samples, and the raw time series sees each sample as 2 bins
+        unsigned nBins = ts.size() / 2;
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
         for (unsigned bin = 0; bin < nBins; ++bin)
         {
-            (*newTS)(bin)[0] = Convert((ts)(bin));
+            (*newTS)(bin)[0] = Convert(ts(2 * bin));
+            (*newTS)(bin)[1] = Convert(ts(2 * bin + 1));
         }
         return newTS;
     }
@@ -202,7 +214,16 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToReal(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        if (fShouldRunInitialize) Initialize();
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-real");
+
+        if (fShouldRunInitialize)
+        {
+            if (! Initialize())
+            {
+                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                return NULL;
+            }
+        }
 
         unsigned nBins = ts.size();
         KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts.GetRangeMin(), ts.GetRangeMax());
@@ -228,24 +249,37 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToFFTWOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        if (fShouldRunInitialize) Initialize();
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw with oversampling");
 
-        unsigned nBins = ts.size() / fOversamplingBins;
+        if (fShouldRunInitialize)
+        {
+            if (! Initialize())
+            {
+                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                return NULL;
+            }
+        }
+
+        // ts.size() is divided by 2 because we have complex samples, and the raw time series sees each sample as 2 bins
+        unsigned nBins = ts.size() / 2 / fOversamplingBins;
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
-        double avgValue;
+        double avgValueReal = 0., avgValueImag = 0.;
         unsigned bin = 0;
         for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
         {
-            avgValue = 0.;
+            avgValueReal = 0.;
+            avgValueImag = 0.;
             for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
             {
-                avgValue += Convert((ts)(bin));
+                avgValueReal += Convert(ts(2 * bin));
+                avgValueImag += Convert(ts(2 * bin + 1));
                 ++bin;
             }
-            (*newTS)(oversampledBin)[0] = avgValue * fOversamplingScaleFactor;
+            (*newTS)(oversampledBin)[0] = avgValueReal * fOversamplingScaleFactor;
+            (*newTS)(oversampledBin)[1] = avgValueImag * fOversamplingScaleFactor;
         }
 #ifndef NDEBUG
-        if (bin != ts.size())
+        if (bin != ts.size() / 2)
         {
             KTWARN(egglog_scdac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
         }
@@ -256,7 +290,16 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToRealOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        if (fShouldRunInitialize) Initialize();
+        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-real with oversampling");
+
+        if (fShouldRunInitialize)
+        {
+            if (! Initialize())
+            {
+                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                return NULL;
+            }
+        }
 
         unsigned nBins = ts.size() / fOversamplingBins;
         KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts.GetRangeMin(), ts.GetRangeMax());
