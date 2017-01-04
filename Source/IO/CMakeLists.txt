@@ -46,7 +46,7 @@ if (ROOT_FOUND)
         KTBasicROOTTypeWriterTime.hh
         KTBasicROOTTypeWriterTransform.hh
         KTDataDisplay.hh
-	KTDataTypeDisplayEventAnalysis.hh
+        KTDataTypeDisplayEventAnalysis.hh
         KTDataTypeDisplaySpectrumAnalysis.hh
         KTDataTypeDisplayTime.hh
         KTDataTypeDisplayTransform.hh
@@ -62,6 +62,7 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterTime.hh
         #KTROOTTreeTypeWriterEvaluation.hh
         KTROOTTreeWriter.hh
+        KTROOTWriterFileManager.hh
         Conversions/KT2ROOT.hh
     )
 
@@ -73,7 +74,7 @@ if (ROOT_FOUND)
         KTBasicROOTTypeWriterTransform.cc
         KTBasicROOTFileWriter.cc
         KTDisplayWindow.cc
-	KTDataTypeDisplayEventAnalysis.cc
+        KTDataTypeDisplayEventAnalysis.cc
         KTDataTypeDisplaySpectrumAnalysis.cc
         KTDataTypeDisplayTime.cc
         KTDataTypeDisplayTransform.cc
@@ -90,6 +91,7 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterTime.cc
         #KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
+        KTROOTWriterFileManager.cc
         Conversions/KT2ROOT.cc
         Conversions/KTROOTData.cc
     )

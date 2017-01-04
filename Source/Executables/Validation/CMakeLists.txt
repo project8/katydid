@@ -120,6 +120,7 @@ if (Katydid_ENABLE_TESTING)
            TestBasicROOTFileWriter
            TestGainVariation
            TestROOTDictionary
+           TestROOTWriterFileManager
         )
         
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
