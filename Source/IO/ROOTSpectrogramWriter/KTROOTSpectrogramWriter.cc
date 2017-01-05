@@ -7,6 +7,8 @@
 
 #include "KTROOTSpectrogramWriter.hh"
 
+#include "KTROOTWriterFileManager.hh"
+
 #include "KTCommandLineOption.hh"
 
 #include <algorithm>
@@ -35,6 +37,7 @@ namespace Katydid
             fBufferFreq(0.),
             fBufferTime(0.),
             fFile(NULL),
+            fFileManager(KTROOTWriterFileManager::get_instance()),
             fWriteFileSlot("write-file", this, &KTROOTSpectrogramWriter::WriteFile)
     {
     }
@@ -65,15 +68,32 @@ namespace Katydid
         return true;
     }
 
+    TFile* KTROOTSpectrogramWriter::OpenFile(const std::string& filename, const std::string& flag)
+    {
+        CloseFile();
+        fFile = fFileManager->OpenFile(this, filename.c_str(), flag.c_str());
+        return fFile;
+    }
+
+    void KTROOTSpectrogramWriter::CloseFile()
+    {
+        if (fFile != NULL)
+        {
+            fFileManager->FinishFile(this, fFilename);
+            fFile = NULL;
+        }
+        return;
+    }
+
     bool KTROOTSpectrogramWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {
-            fFile = new TFile(fFilename.c_str(), fFileFlag.c_str());
+            fFile = fFileManager->OpenFile(this, fFilename.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {
-            delete fFile;
+            fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
             KTERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;

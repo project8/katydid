@@ -16,6 +16,7 @@ namespace Katydid
 {
     
     class KTMultiSliceROOTWriter;
+    class KTROOTWriterFileManager;
 
     typedef Nymph::KTDerivedTypeWriter< KTMultiSliceROOTWriter > KTMultiSliceROOTTypeWriter;
 
@@ -80,6 +81,8 @@ namespace Katydid
 
             TFile* fFile;
 
+            KTROOTWriterFileManager* fFileManager;
+
             //***********
             // Slots
             //***********
@@ -90,23 +93,6 @@ namespace Katydid
             void Finish();
 
     };
-
-    inline TFile* KTMultiSliceROOTWriter::OpenFile(const std::string& filename, const std::string& flag)
-    {
-        CloseFile();
-        fFile = new TFile(filename.c_str(), flag.c_str());
-        return fFile;
-    }
-    inline void KTMultiSliceROOTWriter::CloseFile()
-    {
-        if (fFile != NULL)
-        {
-            fFile->Close();
-            delete fFile;
-            fFile = NULL;
-        }
-        return;
-    }
 
     inline bool KTMultiSliceROOTWriter::GetUseTFile() const
     {

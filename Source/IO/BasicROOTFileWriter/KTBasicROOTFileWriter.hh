@@ -17,6 +17,7 @@ namespace Katydid
 {
     
     class KTBasicROOTFileWriter;
+    class KTROOTWriterFileManager;
 
     typedef Nymph::KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
 
@@ -98,24 +99,9 @@ namespace Katydid
 
             TFile* fFile;
 
-    };
+            KTROOTWriterFileManager* fFileManager;
 
-    inline TFile* KTBasicROOTFileWriter::OpenFile(const std::string& filename, const std::string& flag)
-    {
-        CloseFile();
-        fFile = new TFile(filename.c_str(), flag.c_str());
-        return fFile;
-    }
-    inline void KTBasicROOTFileWriter::CloseFile()
-    {
-        if (fFile != NULL)
-        {
-            fFile->Close();
-            delete fFile;
-            fFile = NULL;
-        }
-        return;
-    }
+    };
 
     inline const std::string& KTBasicROOTFileWriter::GetFilename() const
     {

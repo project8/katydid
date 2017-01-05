@@ -7,6 +7,8 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include "KTROOTWriterFileManager.hh"
+
 #include "KTCommandLineOption.hh"
 
 //#include "param.hh"
@@ -28,7 +30,8 @@ namespace Katydid
             KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >(name),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
-            fFile(NULL)
+            fFile(NULL),
+            fFileManager(KTROOTWriterFileManager::get_instance())
     {
     }
 
@@ -52,34 +55,32 @@ namespace Katydid
         return true;
     }
 
+    TFile* KTBasicROOTFileWriter::OpenFile(const std::string& filename, const std::string& flag)
+    {
+        CloseFile();
+        fFile = fFileManager->OpenFile(this, filename.c_str(), flag.c_str());
+        return fFile;
+    }
+
+    void KTBasicROOTFileWriter::CloseFile()
+    {
+        if (fFile != NULL)
+        {
+            fFileManager->FinishFile(this, fFilename);
+            fFile = NULL;
+        }
+        return;
+    }
+
     bool KTBasicROOTFileWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {
-            scarab::path filenamePath;
-            try
-            {
-                scarab::path filenamePath(fFilename);
-                scarab::path parentDir = canonical(filenamePath.parent_path());
-                // verify that the parent of the filename is an existing directory
-                if (! boost::filesystem::is_directory(parentDir))
-                {
-                    KTERROR(publog, "Parent directory of output file <" << fFilename << "> does not exist or is not a directory");
-                    return false;
-                }
-
-                filenamePath = parentDir / filenamePath.filename();
-                fFile = new TFile(filenamePath.c_str(), fFileFlag.c_str());
-            }
-            catch( std::exception& e )
-            {
-                KTERROR(publog, "Problem processing filename: " << e.what());
-                return false;
-            }
+            fFile = fFileManager->OpenFile(this, fFilename.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {
-            delete fFile;
+            fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
             KTERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;
