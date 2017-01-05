@@ -228,7 +228,7 @@ namespace Katydid
         KTDEBUG(publog, "Opening file <" << absFilepath << "> for parent <" << aParent << ">");
 
         // find/create the file construct
-        FileConstMapIt tThisFileConst = fFiles.find(aFilename);
+        FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
         if (tThisFileConst == fFiles.end())
         {
             auto insertion = fFiles.insert(FileConstMap::value_type(absFilepath.native(), FileConstruct()));
