@@ -69,7 +69,7 @@ if (Katydid_ENABLE_TESTING)
         #TestHoughTransform  # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
         TestKDTree
         TestKDTreeData
-        TestLinearDensityProbe
+        #TestLinearDensityProbe
         TestMultiSliceClustering
         TestNanoflann
         #TestSimpleClustering # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
