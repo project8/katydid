@@ -42,9 +42,10 @@ namespace Katydid
         try
         {
             std::string option = aOption;
+            std::transform(option.begin(), option.end(), option.begin(), ::toupper);
 
             // deal with / verify the file option
-            if (option.empty() || option == "NEW" || option == "CREATE")
+            if (option == "NEW" || option == "CREATE")
             {
                 option = "CREATE";
                 if (scarab::fs::exists(aFilename))
