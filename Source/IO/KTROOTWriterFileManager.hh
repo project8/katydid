@@ -10,7 +10,7 @@
 
 #include "singleton.hh"
 
-#include <boost/filesystem.hpp>
+#include "path.hh"
 
 #include <map>
 #include <mutex>
@@ -37,6 +37,8 @@ namespace Katydid
 
             bool FinishFile(const Nymph::KTWriter* aParent, const std::string& aFilename);
 
+            bool DiscardFile(const Nymph::KTWriter* aParent, const std::string& aFilename);
+
         private:
             friend class scarab::singleton< KTROOTWriterFileManager >;
             friend class scarab::destroyer< KTROOTWriterFileManager >;
@@ -50,7 +52,7 @@ namespace Katydid
                 FileMap fOpenFiles;
                 FileMap fFinishedFiles;
                 std::string fOption;
-                boost::filesystem::path fDir;
+                scarab::path fDir;
             };
 
             typedef std::map< std::string, FileConstruct > FileConstMap;

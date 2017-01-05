@@ -35,6 +35,171 @@ namespace Katydid
         lock.unlock();
     }
 
+    TFile* KTROOTWriterFileManager::OpenFile(const Nymph::KTWriter* aParent, const std::string& aFilename, const std::string& aOption, bool aInMemory)
+    {
+        std::unique_lock< std::mutex > lock(fMutex);
+
+        try
+        {
+            std::string option = aOption;
+
+            // deal with / verify the file option
+            if (option.empty() || option == "NEW" || option == "CREATE")
+            {
+                option = "CREATE";
+                if (scarab::fs::exists(aFilename))
+                {
+                    KTERROR(publog, "File already exists and the option specified prevents overwriting: <" << aFilename << ">");
+                    return nullptr;
+                }
+            }
+            else if (option != "RECREATE" && option != "UPDATE")
+            {
+                KTERROR(publog, "Invalid file option: " << option);
+                return nullptr;
+            }
+
+            // determine the absolute path and parent directory
+            scarab::path absFilepath = scarab::fs::absolute(aFilename);
+            scarab::path fileDir = absFilepath.parent_path();
+
+            if (! scarab::fs::is_directory(fileDir))
+            {
+                KTERROR(publog, "Parent directory of output file <" << fileDir << "> does not exist or is not a directory");
+                return nullptr;
+            }
+
+            KTDEBUG(publog, "Opening file <" << absFilepath << "> for parent <" << aParent << ">");
+
+            // find/create the file construct
+            FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
+            if (tThisFileConst == fFiles.end())
+            {
+                auto insertion = fFiles.insert(FileConstMap::value_type(absFilepath.native(), FileConstruct()));
+                if (! insertion.second)
+                {
+                    KTERROR(publog, "Unable to add file construct for <" << absFilepath << ">");
+                    return nullptr;
+                }
+                tThisFileConst = insertion.first;
+                tThisFileConst->second.fOption = option;
+                tThisFileConst->second.fDir = fileDir;
+            }
+
+            // construct the unique filename that will be used for this particular contribution to the eventual file
+            scarab::path filePath = fileDir / scarab::fs::unique_path();
+            filePath += ".root";
+            KTDEBUG(publog, "Temporary file path for file <" << absFilepath << "> with parent <" << aParent << "> is <" << filePath << ">");
+
+            // create the file object that will be written to
+            TFile* newFile = nullptr;
+            if (aInMemory)
+            {
+                newFile = new TMemFile(filePath.native().c_str(), "RECREATE");
+            }
+            else
+            {
+                newFile = new TFile(filePath.native().c_str(), "RECREATE");
+            }
+
+            if (newFile == nullptr)
+            {
+                KTERROR(publog, "File <" << absFilepath << "> was not created for parent <" << aParent << ">!");
+                return nullptr;
+            }
+
+            // insert file object into the file construct
+            tThisFileConst->second.fOpenFiles.insert(FileMap::value_type(aParent, newFile));
+
+            KTINFO(publog, "Created file <" << absFilepath << "> for parent <" << aParent << ">");
+
+            return newFile;
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(publog, "Exception caught while trying to open file <" << aFilename << "> for parent <" << aParent << ">: " << e.what());
+            return nullptr;
+        }
+    }
+
+    bool KTROOTWriterFileManager::FinishFile(const Nymph::KTWriter* aParent, const std::string& aFilename)
+    {
+        std::unique_lock< std::mutex > lock(fMutex);
+
+        try
+        {
+            // determine the absolute path and parent directory
+            scarab::path absFilepath = scarab::fs::absolute(aFilename);
+            KTDEBUG(publog, "Finishing file <" << absFilepath << "> for parent <" << aParent << ">");
+
+            FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
+            if (tThisFileConst == fFiles.end())
+            {
+                KTWARN(publog, "Did not find file construct for <" << absFilepath << ">; no action taken");
+                return true;
+            }
+
+            if (! MoveToFinished(tThisFileConst, aParent))
+            {
+                KTERROR(publog, "Unable to finish file <" << absFilepath << "> for parent <" << aParent << ">");
+                return false;
+            }
+
+            if (tThisFileConst->second.fOpenFiles.size() == 0)
+            {
+                return CloseFile(tThisFileConst);
+            }
+
+            return true;
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(publog, "Exception caught while trying to finish file <" << aFilename << "> for parent <" << aParent << ">: " << e.what());
+            return false;
+        }
+    }
+
+    bool KTROOTWriterFileManager::DiscardFile(const Nymph::KTWriter* aParent, const std::string& aFilename)
+    {
+        std::unique_lock< std::mutex > lock(fMutex);
+
+        try
+        {
+            // determine the absolute path and parent directory
+            scarab::path absFilepath = scarab::fs::absolute(aFilename);
+            KTDEBUG(publog, "Discarding file <" << absFilepath << "> for parent <" << aParent << ">");
+
+            FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
+            if (tThisFileConst == fFiles.end())
+            {
+                KTWARN(publog, "Did not find file construct for <" << absFilepath << ">; no action taken");
+                return true;
+            }
+
+            FileMapIt tThisFileIt = tThisFileConst->second.fOpenFiles.find(aParent);
+            if (tThisFileIt == tThisFileConst->second.fOpenFiles.end())
+            {
+                KTWARN(publog, "File <" << tThisFileConst->first << "> was not open for parent <" << aParent << ">; no action taken");
+                return true;
+            }
+
+            delete tThisFileIt->second;
+            tThisFileConst->second.fOpenFiles.erase(tThisFileIt);
+
+            if (tThisFileConst->second.fOpenFiles.size() == 0)
+            {
+                return CloseFile(tThisFileConst);
+            }
+
+            return true;
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(publog, "Exception caught while trying to discard file <" << aFilename << "> for parent <" << aParent << ">: " << e.what());
+            return false;
+        }
+    }
+
     bool KTROOTWriterFileManager::MoveToFinished(const FileConstMapIt& aFileConst, const Nymph::KTWriter* aParent)
     {
         FileMapIt tThisFileIt = aFileConst->second.fOpenFiles.find(aParent);
@@ -88,11 +253,11 @@ namespace Katydid
         }
 
         // if we'll be adding to an existing file, add it to the finished-files map
-        if (aFileConst->second.fOption == "UPDATE" && boost::filesystem::exists(aFileConst->first))
+        if (aFileConst->second.fOption == "UPDATE" && scarab::fs::exists(aFileConst->first))
         {
-            boost::filesystem::path newPath = aFileConst->second.fDir / boost::filesystem::unique_path();
+            scarab::path newPath = aFileConst->second.fDir / scarab::fs::unique_path();
             newPath += ".root";
-            boost::filesystem::rename(aFileConst->first, newPath);
+            scarab::fs::rename(aFileConst->first, newPath);
             TFile* existingFile = new TFile(newPath.native().c_str(), "READ");
             Nymph::KTWriter* tempWriter = FindTempPointer(aFileConst->second.fFinishedFiles);
             aFileConst->second.fFinishedFiles.insert(FileMap::value_type(tempWriter, existingFile));
@@ -137,12 +302,12 @@ namespace Katydid
             KTDEBUG(publog, "Removing temporary files");
             for (FileMapIt tFileIt = aFileConst->second.fFinishedFiles.begin(); tFileIt != aFileConst->second.fFinishedFiles.end(); ++tFileIt)
             {
-                boost::filesystem::path tempFilePath = tFileIt->second->GetName();
+                scarab::path tempFilePath = tFileIt->second->GetName();
                 KTDEBUG(publog, "Removing file <" << tempFilePath << ">");
                 tFileIt->second->Close();
                 delete tFileIt->second;
                 tFileIt->second = nullptr;
-                if (! boost::filesystem::remove(tempFilePath))
+                if (! scarab::fs::remove(tempFilePath))
                 {
                     KTWARN(publog, "Unable to remove temporary file <" << tempFilePath << ">");
                 }
@@ -154,12 +319,12 @@ namespace Katydid
         {
             KTDEBUG(publog, "Closing single file <" << aFileConst->first << ">");
             TFile* tFile = aFileConst->second.fFinishedFiles.begin()->second;
-            boost::filesystem::path tempFilePath = tFile->GetName();
+            scarab::path tempFilePath = tFile->GetName();
             tFile->Close();
             delete tFile;
 
             KTDEBUG(publog, "Moving file from <" << tempFilePath << "> to <" << aFileConst->first << ">");
-            boost::filesystem::rename(tempFilePath, aFileConst->first);
+            scarab::fs::rename(tempFilePath, aFileConst->first);
             aFileConst->second.fFinishedFiles.clear();
         }
 
@@ -168,108 +333,6 @@ namespace Katydid
         fFiles.erase(aFileConst);
 
         return true;
-    }
-
-    bool KTROOTWriterFileManager::FinishFile(const Nymph::KTWriter* aParent, const std::string& aFilename)
-    {
-        std::unique_lock< std::mutex > lock(fMutex);
-
-        // determine the absolute path and parent directory
-        boost::filesystem::path absFilepath = boost::filesystem::absolute(aFilename);
-        KTDEBUG(publog, "Finishing file <" << absFilepath << "> for parent <" << aParent << ">");
-
-        FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
-        if (tThisFileConst == fFiles.end())
-        {
-            KTWARN(publog, "Did not find file construct for <" << absFilepath << ">; no action taken");
-            return true;
-        }
-
-        if (! MoveToFinished(tThisFileConst, aParent))
-        {
-            KTERROR(publog, "Unable to finish file <" << absFilepath << "> for parent <" << aParent << ">");
-            return false;
-        }
-
-        if (tThisFileConst->second.fOpenFiles.size() == 0)
-        {
-            return CloseFile(tThisFileConst);
-        }
-
-        return true;
-    }
-
-
-    TFile* KTROOTWriterFileManager::OpenFile(const Nymph::KTWriter* aParent, const std::string& aFilename, const std::string& aOption, bool aInMemory)
-    {
-        std::unique_lock< std::mutex > lock(fMutex);
-
-        std::string option = aOption;
-
-        // deal with / verify the file option
-        if (option.empty() || option == "NEW" || option == "CREATE")
-        {
-            option = "CREATE";
-            if (boost::filesystem::exists(aFilename))
-            {
-                KTERROR(publog, "File already exists and the option specified prevents overwriting: <" << aFilename << ">");
-                return nullptr;
-            }
-        }
-        else if (option != "RECREATE" && option != "UPDATE")
-        {
-            KTERROR(publog, "Invalid file option: " << option);
-            return nullptr;
-        }
-
-        // determine the absolute path and parent directory
-        boost::filesystem::path absFilepath = boost::filesystem::absolute(aFilename);
-        boost::filesystem::path fileDir = absFilepath.parent_path();
-        KTDEBUG(publog, "Opening file <" << absFilepath << "> for parent <" << aParent << ">");
-
-        // find/create the file construct
-        FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
-        if (tThisFileConst == fFiles.end())
-        {
-            auto insertion = fFiles.insert(FileConstMap::value_type(absFilepath.native(), FileConstruct()));
-            if (! insertion.second)
-            {
-                KTERROR(publog, "Unable to add file construct for <" << absFilepath << ">");
-                return nullptr;
-            }
-            tThisFileConst = insertion.first;
-            tThisFileConst->second.fOption = option;
-            tThisFileConst->second.fDir = fileDir;
-        }
-
-        // construct the unique filename that will be used for this particular contribution to the eventual file
-        boost::filesystem::path filePath = fileDir / boost::filesystem::unique_path();
-        filePath += ".root";
-        KTDEBUG(publog, "Temporary file path for file <" << absFilepath << "> with parent <" << aParent << "> is <" << filePath << ">");
-
-        // create the file object that will be written to
-        TFile* newFile = nullptr;
-        if (aInMemory)
-        {
-            newFile = new TMemFile(filePath.native().c_str(), "RECREATE");
-        }
-        else
-        {
-            newFile = new TFile(filePath.native().c_str(), "RECREATE");
-        }
-
-        if (newFile == nullptr)
-        {
-            KTERROR(publog, "File <" << absFilepath << "> was not created for parent <" << aParent << ">!");
-            return nullptr;
-        }
-
-        // insert file object into the file construct
-        tThisFileConst->second.fOpenFiles.insert(FileMap::value_type(aParent, newFile));
-
-        KTINFO(publog, "Created file <" << absFilepath << "> for parent <" << aParent << ">");
-
-        return newFile;
     }
 
     Nymph::KTWriter* KTROOTWriterFileManager::FindTempPointer(const FileMap& aMap) const
