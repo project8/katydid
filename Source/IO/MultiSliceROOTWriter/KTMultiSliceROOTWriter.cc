@@ -7,6 +7,8 @@
 
 #include "KTMultiSliceROOTWriter.hh"
 
+#include "KTROOTWriterFileManager.hh"
+
 using std::string;
 
 namespace Katydid
@@ -26,7 +28,8 @@ namespace Katydid
             fGraphicsFilePath(),
             fGraphicsFilenameBase("slice"),
             fGraphicsFileType("png"),
-            fFile(NULL)
+            fFile(NULL),
+            fFileManager(KTROOTWriterFileManager::get_instance())
     {
         RegisterSlot("start", this, &KTMultiSliceROOTWriter::Start);
         RegisterSlot("finish", this, &KTMultiSliceROOTWriter::Finish);
@@ -34,11 +37,7 @@ namespace Katydid
 
     KTMultiSliceROOTWriter::~KTMultiSliceROOTWriter()
     {
-        if (fFile != NULL)
-        {
-            fFile->Close();
-        }
-        delete fFile;
+        CloseFile();
     }
 
     bool KTMultiSliceROOTWriter::Configure(const scarab::param_node* node)
@@ -59,17 +58,34 @@ namespace Katydid
         return true;
     }
 
+    TFile* KTMultiSliceROOTWriter::OpenFile(const std::string& filename, const std::string& flag)
+    {
+        CloseFile();
+        fFile = fFileManager->OpenFile(this, filename.c_str(), flag.c_str());
+        return fFile;
+    }
+
+    void KTMultiSliceROOTWriter::CloseFile()
+    {
+        if (fFile != NULL)
+        {
+            fFileManager->FinishFile(this, fTFilename);
+            fFile = NULL;
+        }
+        return;
+    }
+
     bool KTMultiSliceROOTWriter::OpenAndVerifyFile()
     {
         if (fUseTFile)
         {
             if (fFile == NULL)
             {
-                fFile = new TFile(fTFilename.c_str(), fTFileFlag.c_str());
+                fFile = fFileManager->OpenFile(this, fTFilename.c_str(), fTFileFlag.c_str());
             }
             if (! fFile->IsOpen())
             {
-                delete fFile;
+                fFileManager->DiscardFile(this, fTFilename);
                 fFile = NULL;
                 KTERROR(publog, "Output file <" << fTFilename << "> did not open!");
                 return false;

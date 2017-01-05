@@ -19,6 +19,7 @@ namespace Katydid
 {
     
     class KTROOTTreeWriter;
+    class KTROOTWriterFileManager;
 
     typedef Nymph::KTDerivedTypeWriter< KTROOTTreeWriter > KTROOTTreeTypeWriter;
 
@@ -58,6 +59,8 @@ namespace Katydid
             bool fAccumulate;
 
             TFile* fFile;
+
+            KTROOTWriterFileManager* fFileManager;
 
             std::set< TTree* > fTrees; // Trees are not owned by this writer; they're owned by their respective TypeWriters.
 

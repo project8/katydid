@@ -21,10 +21,11 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
-#include "TFile.h"
 #include "TH2.h"
+#include "TFile.h"
 
 #include <vector>
+
 
 namespace Katydid
 {
@@ -58,6 +59,9 @@ namespace Katydid
             template< typename XDataType >
             void AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
     };
+
+
+    class KTROOTWriterFileManager;
 
   /*!
      @class KTROOTSpectrogramWriter
@@ -124,27 +128,12 @@ namespace Katydid
             void WriteFile();
 
         private:
+            KTROOTWriterFileManager* fFileManager;
+
             Nymph::KTSlotDone fWriteFileSlot;
 
     };
 
-    inline TFile* KTROOTSpectrogramWriter::OpenFile(const std::string& filename, const std::string& flag)
-    {
-        CloseFile();
-        fFile = new TFile(filename.c_str(), flag.c_str());
-        return fFile;
-    }
-
-    inline void KTROOTSpectrogramWriter::CloseFile()
-    {
-        if (fFile != NULL)
-        {
-            fFile->Close();
-            delete fFile;
-            fFile = NULL;
-        }
-        return;
-    }
 
 
 
