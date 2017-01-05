@@ -37,28 +37,31 @@ namespace Katydid
 
     bool KTROOTWriterFileManager::MoveToFinished(const FileConstMapIt& aFileConst, const Nymph::KTWriter* aParent)
     {
-        FileMapIt tThisFile = aFileConst->second.fOpenFiles.find(aParent);
-        if (tThisFile == aFileConst->second.fOpenFiles.end())
+        FileMapIt tThisFileIt = aFileConst->second.fOpenFiles.find(aParent);
+        if (tThisFileIt == aFileConst->second.fOpenFiles.end())
         {
             KTWARN(publog, "File <" << aFileConst->first << "> was not open for parent <" << aParent << ">; no action taken");
             return true;
         }
 
-        return MoveToFinished(aFileConst, tThisFile);
+        return MoveToFinished(aFileConst, tThisFileIt);
     }
 
-    bool KTROOTWriterFileManager::MoveToFinished(const FileConstMapIt& aFileConst, const FileMapIt& aFile)
+    bool KTROOTWriterFileManager::MoveToFinished(const FileConstMapIt& aFileConst, const FileMapIt& aFileIt)
     {
-        auto insertion = aFileConst->second.fFinishedFiles.insert(FileMap::value_type(aFile->first, aFile->second));
+        auto insertion = aFileConst->second.fFinishedFiles.insert(FileMap::value_type(aFileIt->first, aFileIt->second));
         if (! insertion.second)
         {
-            KTERROR(publog, "Unable to move file <" << aFileConst->first << "> for parent <" << aFile->first << "> from \"open\" to \"finished\"");
+            KTERROR(publog, "Unable to move file <" << aFileConst->first << "> for parent <" << aFileIt->first << "> from \"open\" to \"finished\"");
             return false;
         }
 
-        aFileConst->second.fOpenFiles.erase(aFile);
+        aFileConst->second.fOpenFiles.erase(aFileIt);
 
-        KTDEBUG(publog, "File <" << aFileConst->first << "> for parent <" << aFile->first << "> transferred from \"open\" to \"finished\"");
+        KTDEBUG(publog, "File <" << aFileConst->first << "> for parent <" << insertion.first->first << "> transferred from \"open\" to \"finished\"");
+
+        KTDEBUG(publog, "Writing contents of the ROOT file");
+        insertion.first->second->Write();
 
         return true;
 
@@ -74,6 +77,7 @@ namespace Katydid
             {
                 if (! MoveToFinished(aFileConst, tFileIt))
                 {
+                    // if the move failed, then tFileIt should still be valid
                     KTERROR(publog, "Due to an error moving a file to finished, file <" << aFileConst->first << "> will be incomplete!");
                     KTWARN(publog, "Writing partial file at <" << tFileIt->second->GetName() << ">");
                     tFileIt->second->Write();
@@ -87,12 +91,16 @@ namespace Katydid
         if (aFileConst->second.fOption == "UPDATE" && boost::filesystem::exists(aFileConst->first))
         {
             boost::filesystem::path newPath = aFileConst->second.fDir / boost::filesystem::unique_path();
+            newPath += ".root";
             boost::filesystem::rename(aFileConst->first, newPath);
-            TFile* existingFile = new TFile(newPath.native().c_str(), "UPDATE");
-            aFileConst->second.fFinishedFiles.insert(FileMap::value_type(FindTempPointer(aFileConst->second.fFinishedFiles), existingFile));
+            TFile* existingFile = new TFile(newPath.native().c_str(), "READ");
+            Nymph::KTWriter* tempWriter = FindTempPointer(aFileConst->second.fFinishedFiles);
+            aFileConst->second.fFinishedFiles.insert(FileMap::value_type(tempWriter, existingFile));
             aFileConst->second.fOption = "CREATE";
+            KTDEBUG(publog, "Writing file in \"update\" mode, and file already exists; moving existing file to temporary location <" << newPath << "> and identifying it with temp writer pointer <" << tempWriter << ">");
         }
 
+        // move/merge data from temporary file(s) to final destination
         if (aFileConst->second.fFinishedFiles.size() > 1)
         {
             KTDEBUG(publog, "Merging files into <" << aFileConst->first << ">");
@@ -106,39 +114,58 @@ namespace Katydid
 
             for (FileMapIt tFileIt = aFileConst->second.fFinishedFiles.begin(); tFileIt != aFileConst->second.fFinishedFiles.end(); ++tFileIt)
             {
-                if (! merger.AddAdoptFile(tFileIt->second))
+                KTDEBUG(publog, "Adding file <" << tFileIt->second->GetName() << "> to the merge");
+                if (! merger.AddFile(tFileIt->second))
                 {
                     KTERROR(publog, "Unable to add file from parent <" << tFileIt->first << "> for <" << aFileConst->first << ">; output will be incomplete!");
                     KTWARN(publog, "Writing partial file at <" << tFileIt->second->GetName() << ">");
                     tFileIt->second->Write();
+                    tFileIt->second->Close();
                     delete tFileIt->second;
                     tFileIt = (aFileConst->second.fOpenFiles.erase(tFileIt))--;
                 }
             }
-            aFileConst->second.fFinishedFiles.clear();
 
+            KTDEBUG(publog, "Merging files now");
             if (! merger.Merge())
             {
                 KTERROR(publog, "File merge failed for <" << aFileConst->first << ">. Output data was lost!");
                 fFiles.erase(aFileConst);
                 return false;
             }
+
+            KTDEBUG(publog, "Removing temporary files");
+            for (FileMapIt tFileIt = aFileConst->second.fFinishedFiles.begin(); tFileIt != aFileConst->second.fFinishedFiles.end(); ++tFileIt)
+            {
+                boost::filesystem::path tempFilePath = tFileIt->second->GetName();
+                KTDEBUG(publog, "Removing file <" << tempFilePath << ">");
+                tFileIt->second->Close();
+                delete tFileIt->second;
+                tFileIt->second = nullptr;
+                if (! boost::filesystem::remove(tempFilePath))
+                {
+                    KTWARN(publog, "Unable to remove temporary file <" << tempFilePath << ">");
+                }
+            }
+            aFileConst->second.fFinishedFiles.clear();
+
         }
         else
         {
             KTDEBUG(publog, "Closing single file <" << aFileConst->first << ">");
             TFile* tFile = aFileConst->second.fFinishedFiles.begin()->second;
-            tFile->Write();
-
-            KTDEBUG(publog, "Moving file from <" << tFile->GetName() << "> to <" << aFileConst->first << ">");
-            boost::filesystem::rename(tFile->GetName(), aFileConst->first);
+            boost::filesystem::path tempFilePath = tFile->GetName();
+            tFile->Close();
             delete tFile;
+
+            KTDEBUG(publog, "Moving file from <" << tempFilePath << "> to <" << aFileConst->first << ">");
+            boost::filesystem::rename(tempFilePath, aFileConst->first);
             aFileConst->second.fFinishedFiles.clear();
         }
 
-        fFiles.erase(aFileConst);
-
         KTINFO(publog, "File <" << aFileConst->first << "> has been written and closed");
+
+        fFiles.erase(aFileConst);
 
         return true;
     }
@@ -147,16 +174,20 @@ namespace Katydid
     {
         std::unique_lock< std::mutex > lock(fMutex);
 
-        FileConstMapIt tThisFileConst = fFiles.find(aFilename);
+        // determine the absolute path and parent directory
+        boost::filesystem::path absFilepath = boost::filesystem::absolute(aFilename);
+        KTDEBUG(publog, "Finishing file <" << absFilepath << "> for parent <" << aParent << ">");
+
+        FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
         if (tThisFileConst == fFiles.end())
         {
-            KTWARN(publog, "Did not find file construct for <" << aFilename << ">; no action taken");
+            KTWARN(publog, "Did not find file construct for <" << absFilepath << ">; no action taken");
             return true;
         }
 
         if (! MoveToFinished(tThisFileConst, aParent))
         {
-            KTERROR(publog, "Unable to finish file <" << aFilename << "> for parent <" << aParent << ">");
+            KTERROR(publog, "Unable to finish file <" << absFilepath << "> for parent <" << aParent << ">");
             return false;
         }
 
@@ -203,7 +234,7 @@ namespace Katydid
             auto insertion = fFiles.insert(FileConstMap::value_type(absFilepath.native(), FileConstruct()));
             if (! insertion.second)
             {
-                KTERROR(publog, "Unable to add file construct for <" << aFilename << ">");
+                KTERROR(publog, "Unable to add file construct for <" << absFilepath << ">");
                 return nullptr;
             }
             tThisFileConst = insertion.first;
@@ -213,7 +244,8 @@ namespace Katydid
 
         // construct the unique filename that will be used for this particular contribution to the eventual file
         boost::filesystem::path filePath = fileDir / boost::filesystem::unique_path();
-        KTDEBUG(publog, "Temporary file path for file <" << aFilename << "> with parent <" << aParent << "> is <" << filePath << ">");
+        filePath += ".root";
+        KTDEBUG(publog, "Temporary file path for file <" << absFilepath << "> with parent <" << aParent << "> is <" << filePath << ">");
 
         // create the file object that will be written to
         TFile* newFile = nullptr;
@@ -228,14 +260,14 @@ namespace Katydid
 
         if (newFile == nullptr)
         {
-            KTERROR(publog, "File <" << aFilename << "> was not created for parent <" << aParent << ">!");
+            KTERROR(publog, "File <" << absFilepath << "> was not created for parent <" << aParent << ">!");
             return nullptr;
         }
 
         // insert file object into the file construct
         tThisFileConst->second.fOpenFiles.insert(FileMap::value_type(aParent, newFile));
 
-        KTINFO(publog, "Created file <" << aFilename << "> for parent <" << aParent << ">");
+        KTINFO(publog, "Created file <" << absFilepath << "> for parent <" << aParent << ">");
 
         return newFile;
     }
@@ -245,8 +277,9 @@ namespace Katydid
         Nymph::KTWriter* tempWriter = 0x0;
         while (aMap.find(tempWriter) != aMap.end())
         {
-            ++tempWriter;
+            tempWriter += 0x1;
         }
+        KTDEBUG(publog, "Returning temp pointer <" << tempWriter << ">");
         return tempWriter;
     }
 
