@@ -84,7 +84,7 @@ namespace Katydid
 
     void KTROOTSpectrogramWriter::WriteFile()
     {
-        KTINFO("In write-file slot")
+        KTDEBUG("In write-file slot")
         for (TypeWriterMap::iterator thisTypeWriter = fTypeWriters.begin(); thisTypeWriter != fTypeWriters.end(); ++thisTypeWriter)
         {
             thisTypeWriter->second->OutputSpectrograms();
