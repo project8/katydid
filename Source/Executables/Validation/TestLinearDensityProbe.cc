@@ -9,7 +9,6 @@
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
-#include "KTFrequencySpectrumPolar.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 #include "KTLogger.hh"
@@ -81,9 +80,6 @@ int main()
     tr.SetSlope( 18e6/55e-5 );
     
     KTDiscriminatedPoints2DData threshPts;
-    KTPSCollectionData psColl;
-    KTFrequencySpectrumPolar* fftw;
-    KTPowerSpectrum* ps;
 
     KTINFO(testlog, "Creating 2D thresholded points");
     int iBin = 0, jBin = 0;
@@ -151,17 +147,19 @@ int main()
     // Make a stupid PS collection data
     // All that matters are the time range and the frequency range of the spectrum
     
-    fftw = new KTFrequencySpectrumPolar( 100, 50e6, 150e6 );
-    ps = fftw->CreatePowerSpectrum();
-    ps->ConvertToPowerSpectrum();
+    KTPowerSpectrum* ps = new KTPowerSpectrum(100, 50e6, 150e6);
 
-    psColl = new KTPSCollectionData();
+    KTPSCollectionData psColl;
     psColl.SetStartTime(0.);
     psColl.SetEndTime(0.001);
-    psColl.AddSpectrum( 0.0005, *s );
+    psColl.SetMinFreq(55.e6);
+    psColl.SetMaxFreq(145.e6);
+    psColl.AddSpectrum( 0.0005, ps );
     
     if( !lineFitter.DensityMaximization( tr, threshPts, psColl ) )
+    {
         KTERROR(testlog, "Something went wrong in the fit");
+    }
 
     KTLinearFitResult& result = tr.Of< KTLinearFitResult >();
 
@@ -169,11 +167,11 @@ int main()
     double fitStartFrequency = result.GetIntercept(1) + tr.GetStartTimeInRunC() * result.GetSlope(1);
     double fitSidebandSeparation = abs(result.GetIntercept(1) - result.GetIntercept(0));
 
-    double q = (tr.GetEndFrequency() - tr.GetStartFrequency())/(tr.GetEndTimeInRunC() - tr.GetStartTimeInRunC());
+    double actualSlope = (tr.GetEndFrequency() - tr.GetStartFrequency())/(tr.GetEndTimeInRunC() - tr.GetStartTimeInRunC());
 
-    cout << "Actual slope: " << q << "\nFit slope: " << fitSlope << endl;
-    cout << "Actual starting frequency: " << tr.GetStartFrequency() << "\nFit starting frequency: " << fitStartFrequency << endl;
-    cout << "Actual sideband separation: " << sideband_separation << "\nFit sideband separation: " << fitSidebandSeparation << endl;
+    KTINFO(testlog, "Actual slope: " << actualSlope << "\nFit slope: " << fitSlope);
+    KTINFO(testlog, "Actual starting frequency: " << tr.GetStartFrequency() << "\nFit starting frequency: " << fitStartFrequency);
+    KTINFO(testlog, "Actual sideband separation: " << sideband_separation << "\nFit sideband separation: " << fitSidebandSeparation);
 
     return 0;
 }
