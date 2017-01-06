@@ -137,12 +137,12 @@ int main()
     lineFitter.SetMaxFrequency( 140e6 );
     lineFitter.SetProbeWidthBig( 1e6 );
     lineFitter.SetProbeWidthSmall( 0.02e6 );
-    lineFitter.SetStepSizeBig( 0.2e6 );
-    lineFitter.SetStepSizeSmall( 0.004e6 );
+    lineFitter.SetStepSize( 0.2e6 );
+    lineFitter.SetStepSize( 0.004e6 );
 
     KTINFO(testlog, "Performing density fit");
     
-    if( !lineFitter.Calculate( tr, threshPts ) )
+    if( !lineFitter.DensityMaximization( tr, threshPts ) )
         KTERROR(testlog, "Something went wrong in the fit");
 
     KTLinearFitResult& result = tr.Of< KTLinearFitResult >();
