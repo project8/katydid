@@ -7,6 +7,9 @@
 
 #include "KTLinearDensityProbeFit.hh"
 #include "KTDiscriminatedPoints2DData.hh"
+#include "KTSpectrumCollectionData.hh"
+#include "KTPowerSpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 #include "KTLogger.hh"
@@ -78,6 +81,9 @@ int main()
     tr.SetSlope( 18e6/55e-5 );
     
     KTDiscriminatedPoints2DData threshPts;
+    KTPSCollectionData psColl;
+    KTFrequencySpectrumPolar* fftw;
+    KTPowerSpectrum* ps;
 
     KTINFO(testlog, "Creating 2D thresholded points");
     int iBin = 0, jBin = 0;
@@ -142,7 +148,19 @@ int main()
 
     KTINFO(testlog, "Performing density fit");
     
-    if( !lineFitter.DensityMaximization( tr, threshPts ) )
+    // Make a stupid PS collection data
+    // All that matters are the time range and the frequency range of the spectrum
+    
+    fftw = new KTFrequencySpectrumPolar( 100, 50e6, 150e6 );
+    ps = fftw->CreatePowerSpectrum();
+    ps->ConvertToPowerSpectrum();
+
+    psColl = new KTPSCollectionData();
+    psColl.SetStartTime(0.);
+    psColl.SetEndTime(0.001);
+    psColl.AddSpectrum( 0.0005, *s );
+    
+    if( !lineFitter.DensityMaximization( tr, threshPts, psColl ) )
         KTERROR(testlog, "Something went wrong in the fit");
 
     KTLinearFitResult& result = tr.Of< KTLinearFitResult >();
