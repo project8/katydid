@@ -10,7 +10,6 @@
 #define KTLINEARDENSITYPROBEFIT_HH
 
 #include "KTGainVariationData.hh"
-#include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTProcessor.hh"
 
@@ -26,6 +25,7 @@ namespace Katydid
     class KTProcessedTrackData;
     class KTDiscriminatedPoints2DData;
     class KTLinearFitResult;
+    class KTPSCollectionData;
 
     /*!
      @class KTLinearDensityProbeFit
