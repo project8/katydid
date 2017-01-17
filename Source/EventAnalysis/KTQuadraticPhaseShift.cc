@@ -76,7 +76,7 @@ namespace Katydid
                 phase = atan2( (*tsFromData)(iBin)[1], (*tsFromData)(iBin)[0] );
 
                 // Shift phase
-                phase += q * t * t;
+                phase -= q * t * t;
 
                 // Assign components from norm and new phase
                 (*ts)(iBin)[0] = norm * cos( phase );
