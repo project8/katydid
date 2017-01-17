@@ -23,6 +23,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTMultiSliceClustering.hh
     KTPowerFitCut.hh
     KTProcessedTrackCut.hh
+    KTQuadraticPhaseShift.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
     KTTrackMainbandCut.hh
@@ -49,6 +50,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTMultiSliceClustering.cc
     KTPowerFitCut.cc
     KTProcessedTrackCut.cc
+    KTQuadraticPhaseShift.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
     KTTrackMainbandCut.cc
