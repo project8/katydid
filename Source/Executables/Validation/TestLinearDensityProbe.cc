@@ -147,14 +147,39 @@ int main()
     // Make a stupid PS collection data
     // All that matters are the time range and the frequency range of the spectrum
     
-    KTPowerSpectrum* ps = new KTPowerSpectrum(100, 50e6, 150e6);
+    KTPowerSpectrum* ps;
 
     KTPSCollectionData psColl;
     psColl.SetStartTime(0.);
     psColl.SetEndTime(0.001);
     psColl.SetMinFreq(55.e6);
     psColl.SetMaxFreq(145.e6);
-    psColl.AddSpectrum( 0.0005, ps );
+
+    for( double j = 0; j <= 1e-3; j += t_bin )
+    {
+        ps = new KTPowerSpectrum(100, 50e6, 150e6);
+        for( int iBin = 0; iBin < 100; ++iBin )
+        {
+            if( lineIntersects( tr.GetStartTimeInRunC(), tr.GetStartFrequency(), tr.GetEndTimeInRunC(), tr.GetEndFrequency(), j - 0.5 * t_bin, 50e6 + 0.1e6*iBin - 0.05e6, j + 0.5 * t_bin, 50e6 + 0.1e6*iBin + 0.05e6 ) )
+            {
+                (*ps)(iBin) = 1e-11;
+            }
+            else if( lineIntersects( tr.GetStartTimeInRunC(), tr.GetStartFrequency(), tr.GetEndTimeInRunC(), tr.GetEndFrequency(), j - 0.5 * t_bin, 50e6 + 0.1e6*iBin + sideband_separation - sideband_width / 2, j + 0.5 * t_bin, 50e6 + 0.1e6*iBin + sideband_separation + sideband_width / 2 ) ||
+                lineIntersects( tr.GetStartTimeInRunC(), tr.GetStartFrequency(), tr.GetEndTimeInRunC(), tr.GetEndFrequency(), j - 0.5 * t_bin, 50e6 + 0.1e6*iBin - sideband_separation - sideband_width / 2, j + 0.5 * t_bin, 50e6 + 0.1e6*iBin - sideband_separation + sideband_width / 2 ) )
+            {
+                if( rand.Uniform( 1 ) < sideband_pwrFraction )
+                {
+                    (*ps)(iBin) = 1e-11;
+                }
+            }
+            else if( rand.Uniform( 1 ) < 0.01 )
+                (*ps)(iBin) = 1e-11;
+            else
+                (*ps)(iBin) = 1e-12;
+        }
+
+        psColl.AddSpectrum( j, ps );
+    }
     
     if( !lineFitter.DensityMaximization( tr, threshPts, psColl ) )
     {
