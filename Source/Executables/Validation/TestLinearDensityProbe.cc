@@ -11,6 +11,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
+#include "KTGainVariationData.hh"
 #include "KTLogger.hh"
 #include <vector>
 
@@ -180,6 +181,15 @@ int main()
 
         psColl.AddSpectrum( j, ps );
     }
+
+    double xVals[3] = {50e6, 100e6, 150e6};
+    double yVals[3] = {1e-11, 1e-11, 1e-11};
+    KTSpline* bkgd = new KTSpline( xVals, yVals, 3 );
+
+    KTGainVariationData gvData;
+    gvData.SetSpline( bkgd );
+
+    lineFitter.SetPreCalcGainVar( gvData );
     
     if( !lineFitter.DensityMaximization( tr, threshPts, psColl ) )
     {
