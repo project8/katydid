@@ -13,6 +13,7 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTMath.hh"
 
 #include <cmath>
 
@@ -47,9 +48,11 @@ namespace Katydid
 
     bool KTQuadraticPhaseShift::ProcessTimeSeries( KTTimeSeriesData& tsData, KTSliceHeader& slice )
     {
+        KTDEBUG(evlog, "Receiving time series for quadratic phase shift");
+
         // Make new KTDataPtr which will contain the processed KTTimeSeries
-        Nymph::KTDataPtr newData( new Nymph::KTData() );
-        KTTimeSeriesData* newTSData = &newData->Of< KTTimeSeriesData >();
+//        Nymph::KTDataPtr newData( new Nymph::KTData() );
+//        KTTimeSeriesData* newTSData = &newData->Of< KTTimeSeriesData >();
 
         KTTimeSeriesFFTW* ts;           // time series after phase shift
         KTTimeSeriesFFTW* tsFromData;   // time series from data, before phase shift
@@ -61,9 +64,16 @@ namespace Katydid
         double norm = 0.;                   // norm of the current TS value
         double phase = 0.;                  // argument of current TS value
         double q = GetSlope();              // q-value to determine phase shift
+
+        KTINFO(evlog, "Set up time series and slice parameters.");
+        KTDEBUG(evlog, "Initial t = " << t);
+        KTDEBUG(evlog, "Time step = " << dt);
+        KTDEBUG(evlog, "Slope = " << q);
         
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
+            KTDEBUG(evlog, "Processing component: " << iComponent);
+
             // get TS from data object and make the new TS
             tsFromData = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
             ts = new KTTimeSeriesFFTW( tsFromData->GetNTimeBins(), slice.GetTimeInAcq(), slice.GetTimeInAcq() + slice.GetSliceLength() );
@@ -79,30 +89,30 @@ namespace Katydid
                 phase -= q * t * t;
 
                 // Assign components from norm and new phase
-                (*ts)(iBin)[0] = norm * cos( phase );
-                (*ts)(iBin)[1] = norm * sin( phase );
+                (*tsFromData)(iBin)[0] = norm * cos( phase );
+                (*tsFromData)(iBin)[1] = norm * sin( phase );
 
                 // Increment time value
                 t += dt;
             }
 
             // Fill KTTimeSeriesData object with the new TS
-            newTSData->SetTimeSeries( ts, iComponent );
+//            newTSData->SetTimeSeries( ts, iComponent );
         }
 
         // We should also preserve the slice header in the new KTDataPtr
-        KTSliceHeader* newSlice = &newData->Of< KTSliceHeader >();
-        *newSlice = slice;
+//        KTSliceHeader* newSlice = &newData->Of< KTSliceHeader >();
+//        *newSlice = slice;
 
         // Emit signal
-        fTSSignal( newData );
+//        fTSSignal( newData );
 
         return true;
     }
 
     bool KTQuadraticPhaseShift::AssignPhase( KTProcessedTrackData& trackData )
     {
-        SetSlope( trackData.GetSlope() );
+        SetSlope( trackData.GetSlope() * KTMath::Pi() );
         KTINFO(evlog, "Set q-value: " << GetSlope());
 
         return true;
