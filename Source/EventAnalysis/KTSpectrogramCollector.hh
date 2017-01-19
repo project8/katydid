@@ -24,6 +24,7 @@ namespace Katydid
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     class KTPowerSpectrumData;
+    class KTTimeSeriesData;
     class KTProcessedTrackData;
     class KTMultiPeakTrackData;
     class KTMultiTrackEventData;
@@ -58,9 +59,11 @@ namespace Katydid
      - "mp-track": void (Nymph::KTDataPtr) -- Adds a multi-peak track to the list of active spectrogram collections; Requires KTMultiPeakTrackData; Adds nothing
      - "mp-event": void (Nymph::KTDatPtr) -- Adds a multi-peak event to the list of active spectrogram collections; Requires KTMultiTrackEventData; Adds nothing
      - "ps": void (Nymph::KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
+     - "ts": void (Nymph::KTDataPtr) -- Adds a time serires to the appropriate collection(s), if any; Requires KTTimeSeriesData and KTSliceHeader; Adds nothing
 
      Signals:
      - "ps-coll": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
+     - "ts-coll": void (Nymph::KTDataPtr) -- Emitted upon completion of a time series collection; Guarantees KTTSCollectionData
     */
 
     class KTSpectrogramCollector : public Nymph::KTProcessor
@@ -120,15 +123,21 @@ namespace Katydid
             bool AddMPTrack(KTMultiPeakTrackData& mpTrackData, unsigned component);
             bool AddMPEvent(KTMultiTrackEventData& mpEventData, unsigned component);
             bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit = false);
+            bool ConsiderTimeSeries(KTTimeSeriesFFTW& ts, KTSliceHeader& slice, unsigned component, bool forceEmit = false);
             bool ReceiveTrack(KTProcessedTrackData& data);
             bool ReceiveMPTrack(KTMultiPeakTrackData& data);
             bool ReceiveMPEvent(KTMultiTrackEventData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
-            void FinishSC( Nymph::KTDataPtr data );
-
+            bool ReceiveTimeSeries(KTTimeSeriesData& data, KTSliceHeader& sliceData, bool forceEmit = false);
+            
             struct KTTrackCompare
             {
                 bool operator() (const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > rhs) const
+                {
+                    return lhs.second->GetStartTime() < rhs.second->GetStartTime();
+                }
+
+                bool operator() (const std::pair< Nymph::KTDataPtr, KTTSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTTSCollectionData* > rhs) const
                 {
                     return lhs.second->GetStartTime() < rhs.second->GetStartTime();
                 }
@@ -142,6 +151,7 @@ namespace Katydid
             // unique associated Nymph::KTDataPtr
 
             std::vector< std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
+            std::vector< std::set< std::pair< Nymph::KTDataPtr, KTTSCollectionData* >, KTTrackCompare > > fTimeSeriesSets;
 
         private:
 
@@ -151,6 +161,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fWaterfallSignal;
+            Nymph::KTSignalData fTimeSeriesSignal;
 
             //***************
             // Slots
@@ -161,6 +172,7 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTMultiPeakTrackData > fMPTrackSlot;
             Nymph::KTSlotDataOneType< KTMultiTrackEventData > fMPEventSlot;
             void SlotFunctionPSData( Nymph::KTDataPtr data );
+            void SlotFunctionTSData( Nymph::KTDataPtr data );
 
     };
 
@@ -304,6 +316,38 @@ namespace Katydid
         if (! ReceiveSpectrum(data->Of< KTPowerSpectrumData >(), data->Of< KTSliceHeader >(), force))
         {
             KTERROR(avlog_hh, "Something went wrong while analyzing data with type < KTPSCollectionData >");
+            return;
+        }
+    
+        return;
+    }
+
+    void KTSpectrogramCollector::SlotFunctionTSData( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTTimeSeriesData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTTimeSeriesData >!");
+            return;
+        }
+        if (! data->Has< KTSliceHeader >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
+            return;
+        }
+
+        // If the slice is the last, set a flag to force a signal emit
+        bool force = data->GetLastData();
+        if (force)
+        {
+            KTDEBUG(avlog_hh, "Reached last-data, forcing emit");
+        }
+
+        // Call the function
+        if (! ReceiveTimeSeries(data->Of< KTTimeSeriesData >(), data->Of< KTSliceHeader >(), force))
+        {
+            KTERROR(avlog_hh, "Something went wrong while analyzing data with type < KTTimeSeriesData >");
             return;
         }
     

@@ -15,6 +15,8 @@
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesFFTW.hh"
 #include "KTData.hh"
 
 #include <set>
@@ -42,21 +44,17 @@ namespace Katydid
             fUseTrackFreqs(false),
             fFullEvent(false),
             fWaterfallSignal("ps-coll", this),
+            fTimeSeriesSignal("ts-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
             fMPTrackSlot("mp-track", this, &KTSpectrogramCollector::ReceiveMPTrack),
             fMPEventSlot("mp-event", this, &KTSpectrogramCollector::ReceiveMPEvent)
     {
         RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunctionPSData );
+        RegisterSlot( "ts", this, &KTSpectrogramCollector::SlotFunctionTSData );
     }
 
     KTSpectrogramCollector::~KTSpectrogramCollector()
     {
-    }
-
-    // Emit Signal
-    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data )
-    {
-        fWaterfallSignal( data );
     }
 
     bool KTSpectrogramCollector::Configure(const scarab::param_node* node)
@@ -420,7 +418,40 @@ namespace Katydid
 
                     // Emit signal
                     KTINFO(evlog, "Finished a track; emitting signal");
-                    FinishSC( it->first );
+                    fWaterfallSignal( it->first );
+                }
+                else
+                    it->second->SetFilling( false );
+            }
+        }
+
+        return true;
+    }
+
+    bool KTSpectrogramCollector::ConsiderTimeSeries( KTTimeSeriesFFTW& ts, KTSliceHeader& slice, unsigned component, bool forceEmit )
+    {
+        // Iterate through each track which has been added
+        for( std::set< std::pair< Nymph::KTDataPtr, KTTSCollectionData* >, KTTrackCompare >::const_iterator it = fTimeSeriesSets[component].begin(); it != fTimeSeriesSets[component].end(); ++it )
+        {
+            // If the slice time coincides with the track time window, add the spectrum
+            // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
+            if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
+            {
+                it->second->AddTimeSeries( &slice, &ts );
+                it->second->SetDeltaT( slice.GetSliceLength() );
+                it->second->SetFilling( true );
+            }
+            else
+            {
+                // If GetFilling() is true, we've reached the end of the track time window
+                // forceEmit=true sends all tracks to this clause, and those still filling will be closed & signals emitted
+                if( it->second->GetFilling() )
+                {
+                    it->second->SetFilling( false );
+
+                    // Emit signal
+                    KTINFO(evlog, "Finished a track; emitting signal");
+                    fTimeSeriesSignal( it->first );
                 }
                 else
                     it->second->SetFilling( false );
@@ -527,4 +558,39 @@ namespace Katydid
 
         return true;
     }
+
+    bool KTSpectrogramCollector::ReceiveTimeSeries( KTTimeSeriesData& data, KTSliceHeader& sliceData, bool forceEmit )
+    {
+        KTDEBUG(evlog, "Receiving Time Series");
+       
+        if( fTimeSeriesSets.empty() )
+        {
+            KTWARN(evlog, "I have no tracks to receive a time series! Did you remember to send me processed tracks first? Continuing anyway...");
+            return true;
+        }
+
+        int nComponents = data.GetNComponents();
+
+        if( nComponents > fTimeSeriesSets.size() )
+        {
+            KTINFO(evlog, "Receiving time series with " << nComponents << " components but limiting to " << fTimeSeriesSets.size() << " from list of tracks");
+            nComponents = fTimeSeriesSets.size();
+        }
+
+        KTTimeSeriesFFTW* tsFFTW;
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            tsFFTW = dynamic_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
+            
+            if (! ConsiderTimeSeries(*tsFFTW, sliceData, iComponent, forceEmit))
+            {
+                KTERROR(evlog, "Spectrogram collector could not receive time series! (component " << iComponent << ")");
+                return false;
+            }
+        }
+        KTINFO(evlog, "Time series finished processing. Awaiting next slice");
+
+        return true;
+    }
+
 } // namespace Katydid
