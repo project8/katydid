@@ -50,12 +50,7 @@ namespace Katydid
     {
         KTDEBUG(evlog, "Receiving time series for quadratic phase shift");
 
-        // Make new KTDataPtr which will contain the processed KTTimeSeries
-//        Nymph::KTDataPtr newData( new Nymph::KTData() );
-//        KTTimeSeriesData* newTSData = &newData->Of< KTTimeSeriesData >();
-
-        KTTimeSeriesFFTW* ts;           // time series after phase shift
-        KTTimeSeriesFFTW* tsFromData;   // time series from data, before phase shift
+        KTTimeSeriesFFTW* ts;   // time series from data
 
         // Slice and TS parameters
 
@@ -75,37 +70,26 @@ namespace Katydid
             KTDEBUG(evlog, "Processing component: " << iComponent);
 
             // get TS from data object and make the new TS
-            tsFromData = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
-            ts = new KTTimeSeriesFFTW( tsFromData->GetNTimeBins(), slice.GetTimeInAcq(), slice.GetTimeInAcq() + slice.GetSliceLength() );
-
+            ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
+            
             // Loop through all bins
-            for( unsigned iBin = 0; iBin < tsFromData->GetNTimeBins(); ++iBin )
+            for( unsigned iBin = 0; iBin < ts->GetNTimeBins(); ++iBin )
             {
                 // Obtain norm and phase from components
-                norm = sqrt( (*tsFromData)(iBin)[0] * (*tsFromData)(iBin)[0] + (*tsFromData)(iBin)[1] * (*tsFromData)(iBin)[1] );
-                phase = atan2( (*tsFromData)(iBin)[1], (*tsFromData)(iBin)[0] );
+                norm = sqrt( (*ts)(iBin)[0] * (*ts)(iBin)[0] + (*ts)(iBin)[1] * (*ts)(iBin)[1] );
+                phase = atan2( (*ts)(iBin)[1], (*ts)(iBin)[0] );
 
                 // Shift phase
                 phase -= q * t * t;
 
                 // Assign components from norm and new phase
-                (*tsFromData)(iBin)[0] = norm * cos( phase );
-                (*tsFromData)(iBin)[1] = norm * sin( phase );
+                (*ts)(iBin)[0] = norm * cos( phase );
+                (*ts)(iBin)[1] = norm * sin( phase );
 
                 // Increment time value
                 t += dt;
             }
-
-            // Fill KTTimeSeriesData object with the new TS
-//            newTSData->SetTimeSeries( ts, iComponent );
         }
-
-        // We should also preserve the slice header in the new KTDataPtr
-//        KTSliceHeader* newSlice = &newData->Of< KTSliceHeader >();
-//        *newSlice = slice;
-
-        // Emit signal
-//        fTSSignal( newData );
 
         return true;
     }

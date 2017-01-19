@@ -110,15 +110,17 @@ namespace Katydid
             return;
         }
 
+        // Use a copy of the original data pointer rather than alter it
         Nymph::KTDataPtr newData = data;
 
         // Call function
         if(! ProcessTimeSeries( newData->Of< KTTimeSeriesData >(), newData->Of< KTSliceHeader >() ))
         {
-            KTERROR(avlog_hh, "Something went wrong while analyzing time seris data!");
+            KTERROR(avlog_hh, "Something went wrong while analyzing time series data!");
             return;
         }
 
+        // Emit signal
         fTSSignal( newData );
     
         return;
