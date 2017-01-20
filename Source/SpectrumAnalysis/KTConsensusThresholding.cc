@@ -184,7 +184,7 @@ namespace Katydid
         }
 
         double slope = 0;
-        if (nNeighbors!=0){ slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
+        if (nNeighbors!=0 & (sumX2-sumX*sumX/(double)nNeighbors)!=0){ slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
 
         deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
         deltaFreq = slope * deltaTime;
