@@ -221,7 +221,7 @@ namespace Katydid
                     {
                         minTime = time;
                         minTimeInAcq = timeInAcq;
-			KTDEBUG(ctlog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
+                        KTDEBUG(tclog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
                     }
 
                     if (freq > maxFreq)
