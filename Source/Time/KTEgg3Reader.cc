@@ -47,6 +47,7 @@ namespace Katydid
             fReadState(),
             fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFirstCall),
             fT0Offset(0),
+            fAcqTimeInRun(0),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(0),
             fBinWidth(0.),
@@ -239,6 +240,8 @@ namespace Katydid
             // but we need to set fReadState.fStartOfSliceAcquisitionId
             fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
 
+            fAcqTimeInRun = GetTimeInRun();
+
             fSliceNumber = 0;
         }
         else
@@ -301,10 +304,10 @@ namespace Katydid
         sliceHeader = fMasterSliceHeader;
         sliceHeader.SetIsNewAcquisition(isNewAcquisition);
         sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetTimeInAcq(sliceHeader.GetTimeInRun() - fAcqTimeInRun);
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
         sliceHeader.SetStartSampleNumber(readPos);
-        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // create the raw time series objects that will contain the new copies of slices
         // and set some channel-specific slice header info
@@ -322,6 +325,8 @@ namespace Katydid
             sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
             sliceHeader.SetRawDataFormatType(fHeader.GetChannelHeader( iChan )->GetDataFormat(), iChan);
         }
+
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // the write position on the new slice
         unsigned writePos = 0;
@@ -427,6 +432,7 @@ namespace Katydid
                         sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
                     }
                     sliceHeader.SetTimeInRun(GetTimeInRun());
+                    fAcqTimeInRun = sliceHeader.GetTimeInRun();
                     KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
                             "\tCurent record = " << fReadState.fCurrentRecord << '\n' <<
                             "\tSlice start sample in record = " << readPos);
