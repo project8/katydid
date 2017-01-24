@@ -170,24 +170,36 @@ namespace Katydid
 
     void KTConsensusThresholding::FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
     {
-        // Find the neighboors withinin a circle around a given point (#pid), and use them to extract a slope/trend to be returned
+        // Find the neighbors within a circle around a given point (#pid), and use them to extract a slope/trend to be returned
         KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(pid, fMembershipRadius);
         unsigned nNeighbors = ne.size();
-        double sumX = 0 , sumY = 0, sumX2 = 0, sumXY = 0;
 
-        for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)
+        if (nNeighbors > 1)
         {
-            sumX += setOfPoints[ne[iNe]].fCoords[0];
-            sumY += setOfPoints[ne[iNe]].fCoords[1];
-            sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
-            sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
+            double sumX = 0 , sumY = 0, sumX2 = 0, sumXY = 0;
+            for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)
+            {
+                sumX += setOfPoints[ne[iNe]].fCoords[0];
+                sumY += setOfPoints[ne[iNe]].fCoords[1];
+                sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
+                sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
+            }
+            double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors);
+            deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
+            deltaFreq = slope * deltaTime;
+        }
+        else if (nNeighbors == 1)
+        {
+            // in this case there isn't a group of neighbors to use to get a trend, so we'll use the same method as in FindDeltasNearestNeighbor
+            deltaTime = setOfPoints[ne[0]].fCoords[0] - setOfPoints[pid].fCoords[0];
+            deltaFreq = setOfPoints[ne[0]].fCoords[1] - setOfPoints[pid].fCoords[1];
+        }
+        else // nNeighbors = 0
+        {
+            deltaTime = 0;
+            deltaFreq = 0;
         }
 
-        double slope = 0;
-        if (nNeighbors!=0 & (sumX2-sumX*sumX/(double)nNeighbors)!=0){ slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors); }
-
-        deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
-        deltaFreq = slope * deltaTime;
         return;
     }
 
