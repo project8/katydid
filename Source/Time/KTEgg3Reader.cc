@@ -282,6 +282,10 @@ namespace Katydid
                     isNewAcquisition = true;
                     // then we need to start reading at the start of this record
                     readPos = 0;
+                    // update these now (even though they're done just below) so we can accurately get the time in run
+                    fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
+                    fReadState.fStartOfLastSliceReadPtr = readPos;
+                    fAcqTimeInRun = GetTimeInRun();
                 }
             }
 
