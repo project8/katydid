@@ -22,6 +22,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTSmooth.hh
     KTSpline.hh
     KTVarTypePhysicalArray.hh
+    ../../Examples/KTProcessorTemplate.hh
 )
 
 set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
@@ -39,6 +40,7 @@ set (UTILITY_SOURCEFILES
     KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
+    ../../Examples/KTProcessorTemplate.cc
 )
 
 if (ROOT_FOUND)

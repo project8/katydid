@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -199,16 +200,18 @@ namespace Katydid
         KTDiscriminatedPoints2DData& newData = data.Of< KTDiscriminatedPoints2DData >();
         KTDiscriminatedPoints1DData newDataSlice; // The 1DData will be used with the discrimination methods already in place to iteratively achieve a 2D discrimination
 
-        if (fCalculateMinBin)
-        {
-            SetMinBin(data.GetSpectra().begin()->second->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
-        }
-        if (fCalculateMaxBin)
-        {
-            SetMaxBin(data.GetSpectra().begin()->second->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
-        }
+        // Min and Max frequency must be set according to the PSCollectionData
+        // We use temporary variables to avoid overwriting the global fMin(Max)Frequency specified in the config
+
+        double tempMinFrequency = std::max( data.GetMinFreq(), fMinFrequency );
+        double tempMaxFrequency = std::min( data.GetMaxFreq(), fMaxFrequency );
+
+        // Min and Max bins must be recalculated with these temp frequencies
+        SetMinBin(data.GetSpectra().begin()->second->FindBin(tempMinFrequency));
+        KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+    
+        SetMaxBin(data.GetSpectra().begin()->second->FindBin(tempMaxFrequency) - 1); // -1 to avoid out-of-range error
+        KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         
         // Parametrize 2D and 1D point objects
 

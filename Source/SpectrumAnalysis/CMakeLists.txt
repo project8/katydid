@@ -12,7 +12,6 @@ set (SPECTRUMANALYSIS_HEADERFILES
 #    KTGainVarChi2Test.hh
     KTGainVariationProcessor.hh
     KTHoughTransform.hh
-    KTLinearDensityProbeFit.hh
     KTMergeKDTree.hh
     KTNNFilter.hh
     KTSpectrumDiscriminator.hh
@@ -32,7 +31,6 @@ set (SPECTRUMANALYSIS_SOURCEFILES
 #    KTGainVarChi2Test.cc
     KTGainVariationProcessor.cc
     KTHoughTransform.cc
-    KTLinearDensityProbeFit.cc
     KTMergeKDTree.cc
     KTNNFilter.cc
     KTSpectrumDiscriminator.cc

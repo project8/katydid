@@ -17,6 +17,7 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTPowerFitData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -42,13 +43,27 @@ namespace Katydid
     {
     }
 
-    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName)
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName, int complexSampleIndex)
     {
         unsigned nBins = ts->size();
         TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        if (complexSampleIndex == -1)
         {
-            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            }
+        }
+        else if (complexSampleIndex == 0 || complexSampleIndex == 1)
+        {
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(2 * iBin + complexSampleIndex));
+            }
+        }
+        else
+        {
+            KTERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
         }
         //**** DEBUG ****//
         /*
@@ -68,13 +83,27 @@ namespace Katydid
 
     }
 
-    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName)
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName, int complexSampleIndex)
     {
         unsigned nBins = ts->size();
         TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        if (complexSampleIndex == -1)
         {
-            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            }
+        }
+        else if (complexSampleIndex == 0 || complexSampleIndex == 1)
+        {
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
+            {
+                hist->SetBinContent((int)iBin+1, (*ts)(2 * iBin + complexSampleIndex));
+            }
+        }
+        else
+        {
+            KTERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
         }
         //**** DEBUG ****//
         /*
@@ -138,6 +167,19 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
+            hist->SetBinContent((int)iBin+1, ::sqrt((*ts)(iBin)[0]*(*ts)(iBin)[0] + (*ts)(iBin)[1]*(*ts)(iBin)[1]));
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    static TH1D* CreateHistogramReal(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesReal")
+    {
+        unsigned nBins = ts->GetNBins();
+        TH1D* hist = new TH1D(histName.c_str(), "Time Series (Real)", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin)[0]);
         }
         hist->SetXTitle("Time (s)");
@@ -145,7 +187,20 @@ namespace Katydid
         return hist;
     }
 
-/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
+    static TH1D* CreateHistogramImag(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesImag")
+    {
+        unsigned nBins = ts->GetNBins();
+        TH1D* hist = new TH1D(histName.c_str(), "Time Series (Imag)", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*ts)(iBin)[1]);
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    /*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         double tMaxMag = -DBL_MAX;
         double tMinMag = DBL_MAX;
@@ -495,6 +550,30 @@ namespace Katydid
                 hist->SetBinContent(iBinX, iBinY, (*it->second)(iBinY-1));
             }
             iBinX++;
+        }
+        
+        return hist;
+
+    }
+
+    TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName)
+    {
+        std::map< unsigned, KTPowerFitData::Point >::iterator it;
+        std::map< unsigned, KTPowerFitData::Point > SetOfPoints = pf->GetSetOfPoints();
+
+        double minFreq, maxFreq;
+        unsigned nBins = SetOfPoints.size();
+        minFreq = SetOfPoints.begin()->second.fAbscissa;
+        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
+
+        TH1D* hist = new TH1D(histName.c_str(), histName.c_str(),
+                (int)nBins, minFreq, maxFreq);
+
+        int iBin = 1;
+        for (it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it)
+        {
+            hist->SetBinContent(iBin, it->second.fOrdinate);
+            iBin++;
         }
         
         return hist;

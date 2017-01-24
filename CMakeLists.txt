@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.6.4)
+project (Katydid VERSION 2.6.5)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -115,7 +115,7 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 5.28 COMPONENTS Gui)
+    find_package (ROOT 5.28 COMPONENTS Gui Spectrum)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)
@@ -216,7 +216,17 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Data/Transform
     #${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/IO
+    ${PROJECT_SOURCE_DIR}/Source/IO/BasicAsciiWriter
+    ${PROJECT_SOURCE_DIR}/Source/IO/BasicROOTFileWriter
     ${PROJECT_SOURCE_DIR}/Source/IO/Conversions
+    ${PROJECT_SOURCE_DIR}/Source/IO/DataDisplay
+    ${PROJECT_SOURCE_DIR}/Source/IO/HDF5Writer
+    ${PROJECT_SOURCE_DIR}/Source/IO/JSONWriter
+    ${PROJECT_SOURCE_DIR}/Source/IO/MultiSliceROOTWriter
+    ${PROJECT_SOURCE_DIR}/Source/IO/OfficialCandidatesWriter
+    ${PROJECT_SOURCE_DIR}/Source/IO/ROOTSpectrogramWriter
+    ${PROJECT_SOURCE_DIR}/Source/IO/ROOTTreeWriter
+    ${PROJECT_SOURCE_DIR}/Source/IO/TerminalWriter
     ${PROJECT_SOURCE_DIR}/Source/Time
     #${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation

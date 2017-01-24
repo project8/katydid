@@ -103,29 +103,10 @@ namespace Katydid
             static const std::string sName;
     };
 
-    inline unsigned KTMultiTrackEventData::KTMultiTrackEventData::GetNTracks() const
+    inline unsigned KTMultiTrackEventData::GetNTracks() const
     {
         return fTracks.size();
     }
-
-/*
-    inline const KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id) const
-    {
-        TrackSetCIt toReturn = fTracks.begin();
-        std::advance(toReturn, id);
-        return *toReturn;
-    }
-
-    inline KTProcessedTrackData& KTMultiTrackEventData::GetTrack(unsigned id)
-    {
-        TrackSetIt toReturn = fTracks.begin();
-        std::advance(toReturn, id);
-        KTProcessedTrackData foo = KTProcessedTrackData(*toReturn);
-        return foo;
-        //return *toReturn;
-        //return fTracks.at(id);
-    }
-*/
 
     inline TrackSetCIt KTMultiTrackEventData::GetTracksBegin() const
     {
@@ -177,6 +158,137 @@ namespace Katydid
         }
 
     };
+
+
+    class KTMultiPeakTrackData : public Nymph::KTExtensibleData< KTMultiPeakTrackData >
+    {
+
+        private:
+
+            MultiPeakTrackRef fMPTrack;
+            unsigned fComponent;
+            int fEventSequenceID;
+
+        public:
+            KTMultiPeakTrackData();
+            KTMultiPeakTrackData(const KTMultiPeakTrackData& orig);
+            virtual ~KTMultiPeakTrackData();
+
+            KTMultiPeakTrackData& operator=(const KTMultiPeakTrackData& rhs);
+
+        public:
+
+            unsigned GetComponent() const;
+            void SetComponent(unsigned component);
+
+            MultiPeakTrackRef GetMPTrack() const;
+            void SetMPTrack( const MultiPeakTrackRef& mpt );
+            void AddToMPTrack( const TrackSetCIt& trackRef );
+
+            int GetMultiplicity() const;
+
+            int GetEventSequenceID() const;
+            void SetEventSequenceID( int id );
+
+            double GetMeanStartTimeInRunC() const;
+
+            double GetSumStartTimeInRunC() const;
+
+            double GetMeanEndTimeInRunC() const;
+
+            double GetSumEndTimeInRunC() const;
+
+            uint64_t GetAcquisitionID() const;
+            void SetAcquisitionID(uint64_t acqID);
+
+            bool GetUnknownEventTopology() const;
+            void SetUnknownEventTopology(bool b);
+ 
+        public:
+            static const std::string sName;
+    };
+
+    std::ostream& operator<<(std::ostream& out, const KTMultiPeakTrackData& hdr);
+
+    inline unsigned KTMultiPeakTrackData::GetComponent() const
+    {
+        return fComponent;
+    }
+
+    inline void KTMultiPeakTrackData::SetComponent(unsigned component)
+    {
+        fComponent = component;
+    }
+
+    inline MultiPeakTrackRef KTMultiPeakTrackData::GetMPTrack() const
+    {
+        return fMPTrack;
+    }
+
+    inline void KTMultiPeakTrackData::SetMPTrack( const MultiPeakTrackRef& mpt )
+    {
+        fMPTrack = mpt;
+    }
+
+    inline void KTMultiPeakTrackData::AddToMPTrack( const TrackSetCIt& trackRef )
+    {
+        fMPTrack.InsertTrack( trackRef );
+    }
+
+    inline int KTMultiPeakTrackData::GetMultiplicity() const
+    {
+        return fMPTrack.fTrackRefs.size();
+    }
+
+    inline int KTMultiPeakTrackData::GetEventSequenceID() const
+    {
+        return fEventSequenceID;
+    }
+
+    inline void KTMultiPeakTrackData::SetEventSequenceID(int id)
+    {
+        fEventSequenceID = id;
+    }
+
+    inline double KTMultiPeakTrackData::GetMeanStartTimeInRunC() const
+    {
+        return fMPTrack.fMeanStartTimeInRunC;
+    }
+
+    inline double KTMultiPeakTrackData::GetSumStartTimeInRunC() const
+    {
+        return fMPTrack.fSumStartTimeInRunC;
+    }
+
+    inline double KTMultiPeakTrackData::GetMeanEndTimeInRunC() const
+    {
+        return fMPTrack.fMeanEndTimeInRunC;
+    }
+
+    inline double KTMultiPeakTrackData::GetSumEndTimeInRunC() const
+    {
+        return fMPTrack.fSumEndTimeInRunC;
+    }
+
+    inline uint64_t KTMultiPeakTrackData::GetAcquisitionID() const
+    {
+        return fMPTrack.fAcquisitionID;
+    }
+
+    inline void KTMultiPeakTrackData::SetAcquisitionID(uint64_t acqID)
+    {
+        fMPTrack.fAcquisitionID = acqID;
+    }
+
+    inline bool KTMultiPeakTrackData::GetUnknownEventTopology() const
+    {
+        return fMPTrack.fUnknownEventTopology;
+    }
+
+    inline void KTMultiPeakTrackData::SetUnknownEventTopology(bool b)
+    {
+        fMPTrack.fUnknownEventTopology = b;
+    }
 
 } /* namespace Katydid */
 #endif /* KTMULTITRACKDATA_HH_ */
