@@ -135,12 +135,16 @@ namespace Katydid
 
             const MonarchReadState& GetReadState() const;
 
+            /// Returns the time since the run started in seconds of the current acquisition
+            double GetAcqTimeInRun() const;
+
         private:
             mutable GetTIRFunction fGetTimeInRun;
             double GetTimeInRunFirstCall() const;
             double GetTimeInRunFromMonarch() const;
             double GetTimeInRunManually() const;
             mutable monarch3::TimeType fT0Offset; /// Time of the first record
+            mutable double fAcqTimeInRun; /// Time-in-run of the current acquisition
 
             double fSampleRateUnitsInHz;
 
@@ -237,7 +241,10 @@ namespace Katydid
         return fReadState;
     }
 
-
+    inline double KTEgg3Reader::GetAcqTimeInRun() const
+    {
+        return fAcqTimeInRun;
+    }
 
 
 
