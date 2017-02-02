@@ -138,8 +138,13 @@ namespace Katydid
                     }
                     for (TrackEndsType::iterator endTimeIt=eventIt->second.begin(); endTimeIt != eventIt->second.end();)
                     { // loop over track ends to test against
-                        if ( trackIt->fMeanEndTimeInRunC - *endTimeIt < fJumpTimeTolerance )
+                        if ( std::abs( trackIt->fMeanStartTimeInRunC - *endTimeIt ) < fJumpTimeTolerance )
                         { // if this track head matches the tail of a track in this event, add it
+
+                            // The comparison logic here allows a "gap" or an "overlap" up to the
+                            // tolerance; we could make this more specific (i.e. allow only gap OR
+                            // overlap, or have different tolerances for each) if the need arises
+
                             KTDEBUG(tclog, "track matched this active event");
                             if (trackAssigned == -1)
                             { // If this track hasn't been added to any event, add to this one
