@@ -290,5 +290,102 @@ namespace Katydid
         fMPTrack.fUnknownEventTopology = b;
     }
 
+    class KTMultiTrackComparisonData : public Nymph::KTExtensibleData< KTMultiTrackComparisonData >
+    {
+
+        private:
+
+            MultiPeakTrackRef fMPTrack;
+            KTProcessedTrackData fSingleTrack;
+            unsigned fComponent;
+
+        public:
+            KTMultiTrackComparisonData();
+            KTMultiTrackComparisonData(const KTMultiTrackComparisonData& orig);
+            virtual ~KTMultiTrackComparisonData();
+
+            KTMultiTrackComparisonData& operator=(const KTMultiTrackComparisonData& rhs);
+
+        public:
+
+            unsigned GetComponent() const;
+            void SetComponent(unsigned component);
+
+            MultiPeakTrackRef GetMPTrack() const;
+            void SetMPTrack( const MultiPeakTrackRef& mpt );
+            void AddToMPTrack( const TrackSetCIt& trackRef );
+
+            KTProcessedTrackData GetSingleTrack() const;
+            void SetSingleTrack( const KTProcessedTrackData& track );
+
+            int GetMultiplicity() const;
+
+            MEMBERVARIABLE( double, MinDeltaFRatio );
+            MEMBERVARIABLE( double, MaxDeltaFRatio );
+
+            MEMBERVARIABLE( double, MeanPowerOld );
+            MEMBERVARIABLE( double, MinPowerOld );
+            MEMBERVARIABLE( double, MaxPowerOld );
+
+            MEMBERVARIABLE( double, PowerNew );
+
+            MEMBERVARIABLE( double, MeanDeltaQ );
+            MEMBERVARIABLE( double, MinDeltaQ );
+            MEMBERVARIABLE( double, MaxDeltaQ );
+
+            MEMBERVARIABLE( double, MeanDeltaTHead );
+            MEMBERVARIABLE( double, MinDeltaTHead );
+            MEMBERVARIABLE( double, MaxDeltaTHead );
+
+            MEMBERVARIABLE( double, MeanDeltaTTail );
+            MEMBERVARIABLE( double, MinDeltaTTail );
+            MEMBERVARIABLE( double, MaxDeltaTTail );
+ 
+        public:
+            static const std::string sName;
+    };
+
+    std::ostream& operator<<(std::ostream& out, const KTMultiPeakTrackData& hdr);
+
+    inline unsigned KTMultiTrackComparisonData::GetComponent() const
+    {
+        return fComponent;
+    }
+
+    inline void KTMultiTrackComparisonData::SetComponent(unsigned component)
+    {
+        fComponent = component;
+    }
+
+    inline MultiPeakTrackRef KTMultiTrackComparisonData::GetMPTrack() const
+    {
+        return fMPTrack;
+    }
+
+    inline void KTMultiTrackComparisonData::SetMPTrack( const MultiPeakTrackRef& mpt )
+    {
+        fMPTrack = mpt;
+    }
+
+    inline void KTMultiTrackComparisonData::AddToMPTrack( const TrackSetCIt& trackRef )
+    {
+        fMPTrack.InsertTrack( trackRef );
+    }
+
+    inline KTProcessedTrackData KTMultiTrackComparisonData::GetSingleTrack() const
+    {
+        return fSingleTrack;
+    }
+
+    inline void KTMultiTrackComparisonData::SetSingleTrack( const KTProcessedTrackData& track )
+    {
+        fSingleTrack = KTProcessedTrackData( track );
+    }
+
+    inline int KTMultiTrackComparisonData::GetMultiplicity() const
+    {
+        return fMPTrack.fTrackRefs.size();
+    }
+
 } /* namespace Katydid */
 #endif /* KTMULTITRACKDATA_HH_ */

@@ -160,6 +160,83 @@ namespace Katydid
         return *this;
     }
 
+    const std::string KTMultiTrackComparisonData::sName("mt-comp-data");
+
+    KTMultiTrackComparisonData::KTMultiTrackComparisonData() :
+            KTExtensibleData< KTMultiTrackComparisonData >(),
+            fComponent(0),
+            fMPTrack(),
+            fSingleTrack(),
+            fMinDeltaFRatio(0.),
+            fMaxDeltaFRatio(0.),
+            fMeanPowerOld(0.),
+            fMinPowerOld(0.),
+            fMaxPowerOld(0.),
+            fPowerNew(0.),
+            fMeanDeltaQ(0.),
+            fMinDeltaQ(0.),
+            fMaxDeltaQ(0.),
+            fMeanDeltaTHead(0.),
+            fMinDeltaTHead(0.),
+            fMaxDeltaTHead(0.),
+            fMeanDeltaTTail(0.),
+            fMinDeltaTTail(0.),
+            fMaxDeltaTTail(0.)
+    {
+    }
+
+    KTMultiTrackComparisonData::KTMultiTrackComparisonData(const KTMultiTrackComparisonData& orig) :
+            KTExtensibleData< KTMultiTrackComparisonData >(orig),
+            
+            fComponent(orig.fComponent),
+            fMPTrack(orig.fMPTrack),
+            fSingleTrack(orig.fSingleTrack),
+            fMinDeltaFRatio(orig.fMinDeltaFRatio),
+            fMaxDeltaFRatio(orig.fMaxDeltaFRatio),
+            fMeanPowerOld(orig.fMeanPowerOld),
+            fMinPowerOld(orig.fMinPowerOld),
+            fMaxPowerOld(orig.fMaxPowerOld),
+            fPowerNew(orig.fPowerNew),
+            fMeanDeltaQ(orig.fMeanDeltaQ),
+            fMinDeltaQ(orig.fMinDeltaQ),
+            fMaxDeltaQ(orig.fMaxDeltaQ),
+            fMeanDeltaTHead(orig.fMeanDeltaTHead),
+            fMinDeltaTHead(orig.fMinDeltaTHead),
+            fMaxDeltaTHead(orig.fMaxDeltaTHead),
+            fMeanDeltaTTail(orig.fMeanDeltaTTail),
+            fMinDeltaTTail(orig.fMinDeltaTTail),
+            fMaxDeltaTTail(orig.fMaxDeltaTTail)
+    {
+    }
+
+    KTMultiTrackComparisonData::~KTMultiTrackComparisonData()
+    {
+    }
+
+    KTMultiTrackComparisonData& KTMultiTrackComparisonData::operator=(const KTMultiTrackComparisonData& rhs)
+    {
+        KTExtensibleData< KTMultiTrackComparisonData >::operator=(rhs);
+        fComponent = rhs.fComponent;
+        fMPTrack = rhs.fMPTrack;
+        fSingleTrack = rhs.fSingleTrack;
+        fMinDeltaFRatio = rhs.fMinDeltaFRatio;
+        fMaxDeltaFRatio = rhs.fMaxDeltaFRatio;
+        fMeanPowerOld = rhs.fMeanPowerOld;
+        fMinPowerOld = rhs.fMinPowerOld;
+        fMaxPowerOld = rhs.fMaxPowerOld;
+        fPowerNew = rhs.fPowerNew;
+        fMeanDeltaQ = rhs.fMeanDeltaQ;
+        fMinDeltaQ = rhs.fMinDeltaQ;
+        fMaxDeltaQ = rhs.fMaxDeltaQ;
+        fMeanDeltaTHead = rhs.fMeanDeltaTHead;
+        fMinDeltaTHead = rhs.fMinDeltaTHead;
+        fMaxDeltaTHead = rhs.fMaxDeltaTHead;
+        fMeanDeltaTTail = rhs.fMeanDeltaTTail;
+        fMinDeltaTTail = rhs.fMinDeltaTTail;
+        fMaxDeltaTTail = rhs.fMaxDeltaTTail;
+        return *this;
+    }
+
     void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
     {
         //fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
