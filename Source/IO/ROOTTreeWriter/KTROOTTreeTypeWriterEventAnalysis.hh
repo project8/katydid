@@ -162,6 +162,34 @@ namespace Katydid
         Double_t fTrackIntercept;
     };
 
+    struct TMultiTrackComparisonData
+    {
+        UInt_t fComponent;
+
+        Int_t fMultiplicity;
+
+        Double_t fMinDeltaFRatio;
+        Double_t fMaxDeltaFRatio;
+
+        Double_t fMeanPowerOld;
+        Double_t fMinPowerOld;
+        Double_t fMaxPowerOld;
+
+        Double_t fPowerNew;
+
+        Double_t fMeanDeltaQ;
+        Double_t fMinDeltaQ;
+        Double_t fMaxDeltaQ;
+
+        Double_t fMeanDeltaTHead;
+        Double_t fMinDeltaTHead;
+        Double_t fMaxDeltaTHead;
+
+        Double_t fMeanDeltaTTail;
+        Double_t fMinDeltaTTail;
+        Double_t fMaxDeltaTTail;
+    };
+
 
     class KTROOTTreeTypeWriterEventAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterEventAnalysis
     {
@@ -180,6 +208,7 @@ namespace Katydid
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
             void WritePowerFitData(Nymph::KTDataPtr data);
+            void WriteMultiTrackComparisonData(Nymph::KTDataPtr data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;
@@ -190,6 +219,7 @@ namespace Katydid
             TTree* GetMultiTrackEventTree() const;
             TTree* GetLinearFitResultTree() const;
             TTree* GetPowerFitDataTree() const;
+            TTree* GetMultiTrackComparisonTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
@@ -200,6 +230,7 @@ namespace Katydid
             bool SetupMultiTrackEventTree();
             bool SetupLinearFitResultTree();
             bool SetupPowerFitDataTree();
+            bool SetupMultiTrackComparisonTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
@@ -209,6 +240,7 @@ namespace Katydid
             TTree* fMultiTrackEventTree;
             TTree* fLinearFitResultTree;
             TTree* fPowerFitDataTree;
+            TTree* fMultiTrackComparisonTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
@@ -218,6 +250,7 @@ namespace Katydid
             TMultiTrackEventData* fMultiTrackEventDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
+            TMultiTrackComparisonData fMultiTrackCompData;
 
     };
 
@@ -259,6 +292,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetPowerFitDataTree() const
     {
         return fPowerFitDataTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiTrackComparisonTree() const
+    {
+        return fMultiTrackComparisonTree;
     }
 
 

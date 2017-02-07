@@ -79,6 +79,7 @@ namespace Katydid
         fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("density-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
         fWriter->RegisterSlot("power-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData);
+        fWriter->RegisterSlot("mt-comp", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackComparisonData);
         return;
     }
 
@@ -912,6 +913,132 @@ namespace Katydid
         fPowerFitDataTree->Branch( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio, "fCentralPowerRatio/d" );
 
         fPowerFitDataTree->Branch( "TrackIntercept", &fPowerFitData.fTrackIntercept, "fTrackIntercept/d" );
+
+        return true;
+    }
+
+    //*****************************
+    // Multi Track Comparison Data
+    //*****************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackComparisonData(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to multi-track comparison data to root tree");
+        KTMultiTrackComparisonData& mtCompData = data->Of< KTMultiTrackComparisonData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fMultiTrackComparisonTree == NULL)
+        {
+            if (! SetupMultiTrackComparisonTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the track comparison tree! Nothing was written.");
+                return;
+            }
+        }
+
+        fMultiTrackCompData.fComponent = mtCompData.GetComponent();
+
+        fMultiTrackCompData.fMultiplicity = mtCompData.GetMultiplicity();
+
+        fMultiTrackCompData.fMinDeltaFRatio = mtCompData.GetMinDeltaFRatio();
+        fMultiTrackCompData.fMaxDeltaFRatio = mtCompData.GetMaxDeltaFRatio();
+
+        fMultiTrackCompData.fMeanPowerOld = mtCompData.GetMeanPowerOld();
+        fMultiTrackCompData.fMinPowerOld = mtCompData.GetMinPowerOld();
+        fMultiTrackCompData.fMaxPowerOld = mtCompData.GetMaxPowerOld();
+
+        fMultiTrackCompData.fPowerNew = mtCompData.GetPowerNew();
+
+        fMultiTrackCompData.fMeanDeltaQ = mtCompData.GetMeanDeltaQ();
+        fMultiTrackCompData.fMinDeltaQ = mtCompData.GetMinDeltaQ();
+        fMultiTrackCompData.fMaxDeltaQ = mtCompData.GetMaxDeltaQ();
+
+        fMultiTrackCompData.fMeanDeltaTHead = mtCompData.GetMeanDeltaTHead();
+        fMultiTrackCompData.fMinDeltaTHead = mtCompData.GetMinDeltaTHead();
+        fMultiTrackCompData.fMaxDeltaTHead = mtCompData.GetMaxDeltaTHead();
+
+        fMultiTrackCompData.fMeanDeltaTTail = mtCompData.GetMeanDeltaTTail();
+        fMultiTrackCompData.fMinDeltaTTail = mtCompData.GetMinDeltaTTail();
+        fMultiTrackCompData.fMaxDeltaTTail = mtCompData.GetMaxDeltaTTail();
+
+        fMultiTrackComparisonTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupMultiTrackComparisonTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "mt-comp", fMultiTrackComparisonTree );
+
+            if (fMultiTrackComparisonTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fMultiTrackComparisonTree );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "Component", &fMultiTrackCompData.fComponent );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "Multiplicity", &fMultiTrackCompData.fMultiplicity );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "MinDeltaFRatio", &fMultiTrackCompData.fMinDeltaFRatio );
+                fMultiTrackComparisonTree->SetBranchAddress( "MaxDeltaFRatio", &fMultiTrackCompData.fMaxDeltaFRatio );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "MeanPowerOld", &fMultiTrackCompData.fMeanPowerOld );
+                fMultiTrackComparisonTree->SetBranchAddress( "MinPowerOld", &fMultiTrackCompData.fMinPowerOld );
+                fMultiTrackComparisonTree->SetBranchAddress( "MaxPowerOld", &fMultiTrackCompData.fMaxPowerOld );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "PowerNew", &fMultiTrackCompData.fPowerNew );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "MeanDeltaQ", &fMultiTrackCompData.fMeanDeltaQ );
+                fMultiTrackComparisonTree->SetBranchAddress( "MinDeltaQ", &fMultiTrackCompData.fMinDeltaQ );
+                fMultiTrackComparisonTree->SetBranchAddress( "MaxDeltaQ", &fMultiTrackCompData.fMaxDeltaQ );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "MeanDeltaTHead", &fMultiTrackCompData.fMeanDeltaTHead );
+                fMultiTrackComparisonTree->SetBranchAddress( "MinDeltaTHead", &fMultiTrackCompData.fMinDeltaTHead );
+                fMultiTrackComparisonTree->SetBranchAddress( "MaxDeltaTHead", &fMultiTrackCompData.fMaxDeltaTHead );
+
+                fMultiTrackComparisonTree->SetBranchAddress( "MeanDeltaTTail", &fMultiTrackCompData.fMeanDeltaTTail );
+                fMultiTrackComparisonTree->SetBranchAddress( "MinDeltaTTail", &fMultiTrackCompData.fMinDeltaTTail );
+                fMultiTrackComparisonTree->SetBranchAddress( "MaxDeltaTTail", &fMultiTrackCompData.fMaxDeltaTTail );
+
+                return true;
+            }
+        }
+
+        fMultiTrackComparisonTree = new TTree("mt-comp", "Multi-Track Comparison");
+        if( fMultiTrackComparisonTree == NULL )
+        {
+            KTERROR( publog, "Tree was not created!" );
+            return false;
+        }
+        fWriter->AddTree( fMultiTrackComparisonTree );
+
+        fMultiTrackComparisonTree->Branch( "Component", &fMultiTrackCompData.fComponent, "fComponent/i" );
+
+        fMultiTrackComparisonTree->Branch( "Multiplicity", &fMultiTrackCompData.fMultiplicity, "fMultiplicity/i" );
+
+        fMultiTrackComparisonTree->Branch( "MinDeltaFRatio", &fMultiTrackCompData.fMinDeltaFRatio, "fMinDeltaFRatio/d" );
+        fMultiTrackComparisonTree->Branch( "MaxDeltaFRatio", &fMultiTrackCompData.fMaxDeltaFRatio, "fMaxDeltaFRatio/d" );
+
+        fMultiTrackComparisonTree->Branch( "MeanPowerOld", &fMultiTrackCompData.fMeanPowerOld, "fMeanPowerOld/d" );
+        fMultiTrackComparisonTree->Branch( "MinPowerOld", &fMultiTrackCompData.fMinPowerOld, "fMinPowerOld/d" );
+        fMultiTrackComparisonTree->Branch( "MaxPowerOld", &fMultiTrackCompData.fMaxPowerOld, "fMaxPowerOld/d" );
+
+        fMultiTrackComparisonTree->Branch( "PowerNew", &fMultiTrackCompData.fPowerNew, "fPowerNew/d" );
+
+        fMultiTrackComparisonTree->Branch( "MeanDeltaQ", &fMultiTrackCompData.fMeanDeltaQ, "fMeanDeltaQ/d" );
+        fMultiTrackComparisonTree->Branch( "MinDeltaQ", &fMultiTrackCompData.fMinDeltaQ, "fMinDeltaQ/d" );
+        fMultiTrackComparisonTree->Branch( "MaxDeltaQ", &fMultiTrackCompData.fMaxDeltaQ, "fMaxDeltaQ/d" );
+
+        fMultiTrackComparisonTree->Branch( "MeanDeltaTHead", &fMultiTrackCompData.fMeanDeltaTHead, "fMeanDeltaTHead/d" );
+        fMultiTrackComparisonTree->Branch( "MinDeltaTHead", &fMultiTrackCompData.fMinDeltaTHead, "fMinDeltaTHead/d" );
+        fMultiTrackComparisonTree->Branch( "MaxDeltaTHead", &fMultiTrackCompData.fMaxDeltaTHead, "fMaxDeltaTHead/d" );
+
+        fMultiTrackComparisonTree->Branch( "MeanDeltaTTail", &fMultiTrackCompData.fMeanDeltaTTail, "fMeanDeltaTHead/d" );
+        fMultiTrackComparisonTree->Branch( "MinDeltaTTail", &fMultiTrackCompData.fMinDeltaTTail, "fMeanDeltaTTail/d" );
+        fMultiTrackComparisonTree->Branch( "MaxDeltaTTail", &fMultiTrackCompData.fMaxDeltaTTail, "fMeanDeltaTTail/d" );
 
         return true;
     }
