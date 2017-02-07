@@ -99,6 +99,8 @@ namespace Katydid
 
     bool KTTrackPairComparer::CompareTracks()
     {
+        KTINFO(tclog, "Beginning pair-wise track comparison");
+
         int trackIndex1 = 0, trackIndex2 = 0; // indices of a track in a loop through the set
 
         // parameters to calculate
@@ -113,25 +115,35 @@ namespace Katydid
         for( int iComponent = 0; iComponent < fCompTracks.size(); ++iComponent )
         {   // loop over components
 
+            KTDEBUG(tclog, "Component: " << iComponent);
+
             trackIndex1 = 0;
             for( TrackSetCIt trackIt = fCompTracks[iComponent].begin(); trackIt != fCompTracks[iComponent].end(); ++trackIt )
             {
                 trackIndex2 = 0;
                 for( TrackSetCIt secondTrackIt = fCompTracks[iComponent].begin(); secondTrackIt != fCompTracks[iComponent].end(); ++secondTrackIt )
                 {
+                    KTDEBUG(tclog, "trackIndex1 = " << trackIndex1);
+                    KTDEBUG(tclog, "trackIndex2 = " << trackIndex2);
+
                     // now we can do a pair-wise comparison
 
                     // no need to compare a track with itself
                     if( trackIndex1 == trackIndex2 )
                     {
+                        KTDEBUG(tclog, "Encountered self-comparison at index " << trackIndex2 << "; skipping it");
+
                         ++trackIndex2;
                         ++secondTrackIt;
                         continue;
                     }
 
+                    KTINFO(tclog, "Comparing tracks " << trackIndex1 << " and " << trackIndex2);
+
                     // create data object
                     Nymph::KTDataPtr data( new Nymph::KTData() );
                     KTMultiTrackComparisonData& newData = data->Of< KTMultiTrackComparisonData >();
+                    KTDEBUG(tclog, "Created data object");
 
                     // fill component and tracks
                     newData.SetComponent( iComponent );
@@ -140,19 +152,27 @@ namespace Katydid
 
                     // calculate frequency difference
                     deltaF = secondTrackIt->GetStartFrequency() - trackIt->GetStartFrequency();
+                    KTDEBUG(tclog, "Calculated deltaF = " << deltaF);
 
                     // calculate powers
                     oldPower = trackIt->GetTotalPower();
                     newPower = secondTrackIt->GetTotalPower();
+                    KTDEBUG(tclog, "Calculated oldPower = " << oldPower);
+                    KTDEBUG(tclog, "Calculated newPower = " << newPower);
 
                     // calculate slope difference
                     deltaQ = secondTrackIt->GetSlope() - trackIt->GetSlope();
+                    KTDEBUG(tclog, "Calculated deltaQ = " << deltaQ);
 
                     // calculate track start/end differences
                     deltaTHead = secondTrackIt->GetStartTimeInRunC() - trackIt->GetStartTimeInRunC();
                     deltaTTail = secondTrackIt->GetEndTimeInRunC() - trackIt->GetEndTimeInRunC();
+                    KTDEBUG(tclog, "Calculated deltaTHead = " << deltaTHead);
+                    KTDEBUG(tclog, "Calculated deltaTTail = " << deltaTTail);
 
                     // fill calculations into data object
+
+                    KTINFO(tclog, "All calculations done. Filling data object");
 
                     newData.SetMinDeltaFRatio( deltaF );
                     newData.SetMaxDeltaFRatio( deltaF );
@@ -175,6 +195,8 @@ namespace Katydid
                     newData.SetMinDeltaTTail( deltaTTail );
                     newData.SetMaxDeltaTTail( deltaTTail );
 
+                    KTINFO(tclog, "Finished comparison of these tracks. Emitting MTComp signal");
+
                     // Emit signal
                     fMTCompSignal( data );
 
@@ -189,6 +211,8 @@ namespace Katydid
             } // end loop over trackIt
 
         }  // end loop over components
+
+        KTINFO(tclog, "All comparisons finished! Emitting done signal");
 
         // Emit done signal
         fDoneSignal();
