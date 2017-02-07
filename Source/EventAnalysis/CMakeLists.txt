@@ -24,6 +24,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTProcessedTrackCut.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
+    KTTrackPairComparer.hh
     KTTrackProcessing.hh
     KTTrackFreqCut.hh
     KTTrackTimeCut.hh
@@ -47,6 +48,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTProcessedTrackCut.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
+    KTTrackPairComparer.cc
     KTTrackProcessing.cc
     KTTrackFreqCut.cc
     KTTrackTimeCut.cc
