@@ -51,6 +51,7 @@ namespace Katydid
             fMultiTrackEventTree(NULL),
             fLinearFitResultTree(NULL),
             fPowerFitDataTree(NULL),
+            fMultiTrackComparisonTree(NULL),
             fFreqCandidateData(),
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
@@ -58,7 +59,8 @@ namespace Katydid
             fMultiPeakTrackData(),
             fMultiTrackEventDataPtr(NULL),
             fLineFitData(),
-            fPowerFitData()
+            fPowerFitData(),
+            fMultiTrackCompData()
     {
     }
 
@@ -1036,9 +1038,9 @@ namespace Katydid
         fMultiTrackComparisonTree->Branch( "MinDeltaTHead", &fMultiTrackCompData.fMinDeltaTHead, "fMinDeltaTHead/d" );
         fMultiTrackComparisonTree->Branch( "MaxDeltaTHead", &fMultiTrackCompData.fMaxDeltaTHead, "fMaxDeltaTHead/d" );
 
-        fMultiTrackComparisonTree->Branch( "MeanDeltaTTail", &fMultiTrackCompData.fMeanDeltaTTail, "fMeanDeltaTHead/d" );
-        fMultiTrackComparisonTree->Branch( "MinDeltaTTail", &fMultiTrackCompData.fMinDeltaTTail, "fMeanDeltaTTail/d" );
-        fMultiTrackComparisonTree->Branch( "MaxDeltaTTail", &fMultiTrackCompData.fMaxDeltaTTail, "fMeanDeltaTTail/d" );
+        fMultiTrackComparisonTree->Branch( "MeanDeltaTTail", &fMultiTrackCompData.fMeanDeltaTTail, "fMeanDeltaTTail/d" );
+        fMultiTrackComparisonTree->Branch( "MinDeltaTTail", &fMultiTrackCompData.fMinDeltaTTail, "fMinDeltaTTail/d" );
+        fMultiTrackComparisonTree->Branch( "MaxDeltaTTail", &fMultiTrackCompData.fMaxDeltaTTail, "fMaxDeltaTTail/d" );
 
         return true;
     }

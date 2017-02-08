@@ -134,7 +134,6 @@ namespace Katydid
                         KTDEBUG(tclog, "Encountered self-comparison at index " << trackIndex2 << "; skipping it");
 
                         ++trackIndex2;
-                        ++secondTrackIt;
                         continue;
                     }
 

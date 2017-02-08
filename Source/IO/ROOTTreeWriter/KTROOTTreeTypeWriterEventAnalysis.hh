@@ -166,7 +166,7 @@ namespace Katydid
     {
         UInt_t fComponent;
 
-        Int_t fMultiplicity;
+        UInt_t fMultiplicity;
 
         Double_t fMinDeltaFRatio;
         Double_t fMaxDeltaFRatio;
