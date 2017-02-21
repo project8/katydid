@@ -591,7 +591,7 @@ namespace Katydid
         // This **SHOULD NOT** be used as a meaningful analysis result!!
         // It is also specific to a particular data set, so if you're not me you probably shouldn't use it at all
 
-        if( data.GetStartFrequency() > 75e6 && data.GetStartFrequency() < 115e6 )
+        if( data.GetStartFrequency() > 95e6 )
         {
             newData.SetMainPeak( 1 );
         }
@@ -643,12 +643,6 @@ namespace Katydid
         std::map< unsigned, KTPowerFitData::Point > SetOfPoints = newData.GetSetOfPoints();
 
         // Iterate over all points and fill the appropriate vector
-
-        double minFreq, maxFreq;
-        unsigned nBins = SetOfPoints.size();
-        minFreq = SetOfPoints.begin()->second.fAbscissa;
-        maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
-
         int iBin = 1;
         for( it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it )
         {
@@ -719,5 +713,46 @@ namespace Katydid
         return true;
     }
     
+    void KTLinearDensityProbeFit::SlotFunctionThreshPoints( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTProcessedTrackData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
+            return;
+        }
+        if (! data->Has< KTDiscriminatedPoints2DData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTDiscriminatedPoints2DData >!");
+            return;
+        }
+        if (! data->Has< KTPSCollectionData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTPSCollectionData >!");
+            return;
+        }
+
+        // Call the function
+        if( !ChooseAlgorithm( data->Of< KTProcessedTrackData >(), data->Of< KTDiscriminatedPoints2DData >(), data->Of< KTPSCollectionData >() ) )
+        {
+            KTERROR(avlog_hh, "Density probe analysis failed.");
+            return;
+        }
+
+        // Emit appropriate signal
+        if( fAlgorithm != 2 )
+        {
+            fLinearDensityFitSignal( data );
+        }
+        if( fAlgorithm != 1 )
+        {
+            fPowerFitSignal( data );
+        }
+
+        return;
+    }
+
+
 
 } /* namespace Katydid */

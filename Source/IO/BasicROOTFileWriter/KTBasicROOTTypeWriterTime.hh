@@ -30,6 +30,8 @@ namespace Katydid
             void WriteTimeSeriesData(Nymph::KTDataPtr data);
             void WriteTimeSeriesDataDistribution(Nymph::KTDataPtr data);
 
+            void WriteTimeSeriesFFTWData(Nymph::KTDataPtr data);
+
     };
 
 } /* namespace Katydid */

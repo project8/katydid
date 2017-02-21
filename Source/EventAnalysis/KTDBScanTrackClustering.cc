@@ -30,6 +30,7 @@ namespace Katydid
             KTProcessor(name),
             //fRadii(fNDimensions),
             fMinPoints(3),
+            fRadius(1.),
             //fTimeBinWidth(1),
             //fFreqBinWidth(1.),
             //fCompPoints(1, Points()),
@@ -55,6 +56,7 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetMinPoints(node->get_value("min-points", GetMinPoints()));
+        SetRadius(node->get_value("radius", GetRadius()));
 
         /*
         if (node->has("radii"))
@@ -154,7 +156,7 @@ namespace Katydid
 
         DBSCAN dbScan;
 
-        dbScan.SetRadius(1.);
+        dbScan.SetRadius(fRadius);
         dbScan.SetMinPoints(fMinPoints);
         KTINFO(tclog, "DBScan configured");
 
@@ -219,6 +221,7 @@ namespace Katydid
                     {
                         minTime = time;
                         minTimeInAcq = timeInAcq;
+                        KTDEBUG(tclog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
                     }
 
                     if (freq > maxFreq)

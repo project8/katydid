@@ -59,26 +59,39 @@ namespace Katydid
     // commented-out fields match fields not yet implemented in KTSparseWaterfallCandidateData
     struct TSparseWaterfallCandidateData
     {
-            TGraph2D* fPoints;
-            UInt_t fComponent;
-            UInt_t fAcquisitionID;
-            UInt_t fCandidateID;
-            //Double_t fTimeBinWidth;
-            //Double_t fFreqBinWidth;
-            Double_t fTimeInRunC;
-            Double_t fTimeLength;
-            //ULong64_t fFirstSliceNumber;
-            //ULong64_t fLastSliceNumber;
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
-            //Double_t fMeanStartFrequency;
-            //Double_t fMeanEndFrequency;
-            Double_t fFrequencyWidth;
-            //UInt_t fStartRecordNumber;
-            //UInt_t fStartSampleNumber;
-            //UInt_t fEndRecordNumber;
-            //UInt_t fEndSampleNumber;
+        TGraph2D* fPoints;
+        UInt_t fComponent;
+        UInt_t fAcquisitionID;
+        UInt_t fCandidateID;
+        //Double_t fTimeBinWidth;
+        //Double_t fFreqBinWidth;
+        Double_t fTimeInRunC;
+        Double_t fTimeLength;
+        //ULong64_t fFirstSliceNumber;
+        //ULong64_t fLastSliceNumber;
+        Double_t fMinFrequency;
+        Double_t fMaxFrequency;
+        //Double_t fMeanStartFrequency;
+        //Double_t fMeanEndFrequency;
+        Double_t fFrequencyWidth;
+        //UInt_t fStartRecordNumber;
+        //UInt_t fStartSampleNumber;
+        //UInt_t fEndRecordNumber;
+        //UInt_t fEndSampleNumber;
 
+    };
+
+    struct TMultiPeakTrackData
+    {
+        UInt_t fComponent;
+        UInt_t fMultiplicity;
+        UInt_t fEventSequenceID;
+        Double_t fMeanStartTimeInRunC;
+        Double_t fSumStartTimeInRunC;
+        Double_t fMeanEndTimeInRunC;
+        Double_t fSumEndTimeInRunC;
+        UInt_t fAcquisitionID;
+        UInt_t fUnknownEventTopology;
     };
 
     struct TLinearFitResult
@@ -163,6 +176,7 @@ namespace Katydid
             void WriteWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteProcessedTrack(Nymph::KTDataPtr data);
+            void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
             void WritePowerFitData(Nymph::KTDataPtr data);
@@ -172,6 +186,7 @@ namespace Katydid
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
             TTree* GetProcessedTrackTree() const;
+            TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
             TTree* GetLinearFitResultTree() const;
             TTree* GetPowerFitDataTree() const;
@@ -181,6 +196,7 @@ namespace Katydid
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
             bool SetupProcessedTrackTree();
+            bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
             bool SetupLinearFitResultTree();
             bool SetupPowerFitDataTree();
@@ -189,6 +205,7 @@ namespace Katydid
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
             TTree* fProcessedTrackTree;
+            TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
             TTree* fLinearFitResultTree;
             TTree* fPowerFitDataTree;
@@ -197,6 +214,7 @@ namespace Katydid
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
             TProcessedTrackData* fProcessedTrackDataPtr;
+            TMultiPeakTrackData fMultiPeakTrackData;
             TMultiTrackEventData* fMultiTrackEventDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
@@ -221,6 +239,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedTrackTree() const
     {
         return fProcessedTrackTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiPeakTrackTree() const
+    {
+        return fMultiPeakTrackTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiTrackEventTree() const

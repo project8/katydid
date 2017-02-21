@@ -7,8 +7,12 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include "KTROOTWriterFileManager.hh"
+
 #include "KTCommandLineOption.hh"
+
 //#include "param.hh"
+#include "path.hh"
 
 using std::string;
 
@@ -26,7 +30,8 @@ namespace Katydid
             KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >(name),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
-            fFile(NULL)
+            fFile(NULL),
+            fFileManager(KTROOTWriterFileManager::get_instance())
     {
     }
 
@@ -50,15 +55,32 @@ namespace Katydid
         return true;
     }
 
+    TFile* KTBasicROOTFileWriter::OpenFile(const std::string& filename, const std::string& flag)
+    {
+        CloseFile();
+        fFile = fFileManager->OpenFile(this, filename.c_str(), flag.c_str());
+        return fFile;
+    }
+
+    void KTBasicROOTFileWriter::CloseFile()
+    {
+        if (fFile != NULL)
+        {
+            fFileManager->FinishFile(this, fFilename);
+            fFile = NULL;
+        }
+        return;
+    }
+
     bool KTBasicROOTFileWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {
-            fFile = new TFile(fFilename.c_str(), fFileFlag.c_str());
+            fFile = fFileManager->OpenFile(this, fFilename.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {
-            delete fFile;
+            fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
             KTERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;

@@ -135,8 +135,11 @@ namespace Katydid
         KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
         // pass the digitizer parameters from the egg header to the DAC
-        fDAC->InitializeWithHeader(&header);
-
+        if (! fDAC->InitializeWithHeader(header))
+        {
+            KTERROR(egglog, "Unable to initialize the DAC");
+            return false;
+        }
 
         fHeaderSignal(headerPtr);
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");

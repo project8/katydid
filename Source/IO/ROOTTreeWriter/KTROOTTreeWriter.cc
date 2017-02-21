@@ -7,6 +7,8 @@
 
 #include "KTROOTTreeWriter.hh"
 
+#include "KTROOTWriterFileManager.hh"
+
 #include "KTCommandLineOption.hh"
 
 #include "TFile.h"
@@ -31,6 +33,7 @@ namespace Katydid
             fFileFlag("recreate"),
             fAccumulate(false),
             fFile(NULL),
+            fFileManager(KTROOTWriterFileManager::get_instance()),
             fTrees()
     {
         RegisterSlot("close-file", this, &KTROOTTreeWriter::CloseFile);
@@ -38,11 +41,7 @@ namespace Katydid
 
     KTROOTTreeWriter::~KTROOTTreeWriter()
     {
-        if (fFile != NULL)
-        {
-            CloseFile();
-        }
-        delete fFile;
+        CloseFile();
     }
 
     bool KTROOTTreeWriter::Configure(const scarab::param_node* node)
@@ -66,11 +65,11 @@ namespace Katydid
         if (fFile == NULL)
         {
             KTINFO(publog, "Opening ROOT file <" << fFilename << "> with file flag <" << fFileFlag << ">");
-            fFile = new TFile(fFilename.c_str(), fFileFlag.c_str());
+            fFile = fFileManager->OpenFile(this, fFilename.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {
-            delete fFile;
+            fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
             KTERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;
@@ -90,7 +89,7 @@ namespace Katydid
     TFile* KTROOTTreeWriter::OpenFile(const std::string& filename, const std::string& flag)
     {
         CloseFile();
-        fFile = new TFile(filename.c_str(), flag.c_str());
+        fFile = fFileManager->OpenFile(this, filename.c_str(), flag.c_str());
         return fFile;
     }
 
@@ -118,6 +117,8 @@ namespace Katydid
         }
 
         fTrees.clear();
+
+        KTINFO(publog, "Trees written to file <" << fFile->GetName() << ">; closing file");
         return;
     }
 
@@ -127,10 +128,7 @@ namespace Katydid
         {
             WriteTrees();
 
-            KTINFO(publog, "Trees written to file <" << fFile->GetName() << ">; closing file");
-
-            fFile->Close();
-            delete fFile;
+            fFileManager->FinishFile(this, fFilename);
             fFile = NULL;
         }
         return;

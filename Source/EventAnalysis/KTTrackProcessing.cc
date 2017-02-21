@@ -16,9 +16,11 @@
 
 #include <limits>
 #include <vector>
+#include <algorithm>
 
 using boost::shared_ptr;
 using std::vector;
+using std::string;
 
 namespace Katydid
 {
@@ -34,6 +36,7 @@ namespace Katydid
             fSlopeMinimum(-std::numeric_limits< double >::max()),
             fProcTrackMinPoints(0),
             fTrackSignal("track", this),
+            fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
             fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
     {
     }
@@ -50,13 +53,41 @@ namespace Katydid
         SetPointLineDistCut2(node->get_value("pl-dist-cut2", GetPointLineDistCut2()));
 
         SetSlopeMinimum(node->get_value("min-slope", GetSlopeMinimum()));
-
         SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
+        SetProcTrackAssignedError(node->get_value("assigned-error", GetProcTrackAssignedError()));
+
+        if (node->has("algorithm"))
+        {
+            KTDEBUG(tlog, "Making track reconstruction");
+
+            string procTrackAlgorithm(node->get_value("algorithm"));
+            if (procTrackAlgorithm == "double-cuts")
+            {
+                KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
+                fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
+            }
+            else if (procTrackAlgorithm == "weighted-slope")
+            {
+                KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+                fTrackProcPtr = &KTTrackProcessing::ProcessTrackWeightedSlope;
+            }
+            else
+            {
+                KTERROR(tlog, "Invalid value for \"track-slope\": <" << procTrackAlgorithm << ">");
+                return false;
+            }
+        }
 
         return true;
     }
 
     bool KTTrackProcessing::ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
+    {
+        KTDEBUG(tlog, "Track processing");
+        return (this->*fTrackProcPtr)(swfData,htData);
+    }
+
+    bool KTTrackProcessing::ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
     {
         unsigned component = swfData.GetComponent();
         unsigned trackID = swfData.GetCandidateID();
@@ -242,5 +273,152 @@ namespace Katydid
         return true;
     }
 
+    bool KTTrackProcessing::ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
+    {
+        unsigned component = swfData.GetComponent();
+        unsigned trackID = swfData.GetCandidateID();
+
+        typedef KTSparseWaterfallCandidateData::Points Points;
+        // not const because points will be removed later
+        Points& points = swfData.GetPoints();
+
+        // Makes a first loop over the points to calculate the weighted average in one time slice
+        vector< double > timeBinInAcq;
+        vector< double > timeBinInRunC;
+        vector< double > sumPf;
+        vector< double > sumP;
+        vector< double > average;
+
+        for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+        {
+            bool addToList = true;
+            for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+            {
+                if (pIt->fTimeInAcq == timeBinInAcq[iTimeBin])
+                {
+                  addToList = false;
+                  KTDEBUG(tlog, "Duplicate time: " << pIt->fTimeInAcq << '\t' << pIt->fTimeInRunC);
+                  break;
+                }
+            }
+            if (addToList)
+            {
+                KTDEBUG(tlog, "Adding Time: " << pIt->fTimeInAcq << '\t' << pIt->fTimeInRunC);
+                timeBinInAcq.push_back(pIt->fTimeInAcq);
+                timeBinInRunC.push_back(pIt->fTimeInRunC);
+            }
+        }
+
+        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        {
+            sumPf.push_back(0.);
+            sumP.push_back(0.);
+        }
+
+        for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+        {
+            for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+            {
+                if (pIt->fTimeInAcq == timeBinInAcq[iTimeBin])
+                {
+                  sumPf[iTimeBin] += pIt->fFrequency * pIt->fAmplitude;
+                  sumP[iTimeBin] += pIt->fAmplitude;
+                }
+            }
+        }
+
+        KTDEBUG(tlog, "Averaging");
+        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        {
+            average.push_back(sumPf[iTimeBin]/sumP[iTimeBin]);
+            KTDEBUG(tlog, timeBinInAcq[iTimeBin] << '\t' << average[iTimeBin]);
+        }
+
+        // Determining the slope and intercept from Chi-2 minimization
+        double sumXY = 0, sumXX=0, sumX=0, sumY=0, sumOne = 0, amplitudeSum = 0;
+
+        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        {
+            sumXY += average[iTimeBin] * timeBinInAcq[iTimeBin];
+            sumXX += timeBinInAcq[iTimeBin] * timeBinInAcq[iTimeBin];
+            sumX += timeBinInAcq[iTimeBin];
+            sumY += average[iTimeBin];
+            sumOne += 1.;
+            amplitudeSum += sumP[iTimeBin];
+        }
+        double slope = (sumXY*sumOne-sumY*sumX)/(sumXX*sumOne-sumX*sumX);
+        double intercept = sumY/sumOne-slope*sumX/sumOne;
+        double rho = -sumX/sqrt(sumXX*sumOne); // correlation coefficient between slope and intercept
+        KTDEBUG(tlog, "Weighted average results: \n" <<
+                      "\tSlope: " << '\t' << slope << '\n' <<
+                      "\tIntercept: " << '\t' << intercept);
+        KTDEBUG(tlog, "Amplitude of the track: " << amplitudeSum );
+
+        //Calculating Chi^2_min
+        double chi2min = 0;
+        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        {
+            chi2min += pow(average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept,2);
+            KTDEBUG(tlog, "Residuals : " << average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept );
+        }
+        // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
+        double deltaSlope = 0;
+        double deltaIntercept = 0;
+        double sigmaStartFreq = 0;
+        double sigmaEndFreq = 0;
+
+        if (timeBinInAcq.size()>2){ // need at least 3 points to get a non-zero Ndf
+            KTDEBUG(tlog, "Chi2min : " << chi2min );
+
+            if (chi2min < 0.1){
+                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssError << ")");
+                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
+                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
+            }
+            else
+            {
+                int ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
+                deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
+                deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
+            }
+            KTDEBUG(tlog, "Error calculations results: \n" <<
+                          "\tSlope: " << '\t' << deltaSlope << '\n' <<
+                          "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
+                          "\tCorrelation coeffient: " << '\t' << rho);
+            //Calculating error on the starting frequency and the end frequency
+            double startTime = *std::min_element(timeBinInAcq.begin(), timeBinInAcq.end());
+            double endTime = *std::max_element(timeBinInAcq.begin(), timeBinInAcq.end());
+            sigmaStartFreq = sqrt( pow(startTime,2) *  pow(deltaSlope,2) + pow(deltaIntercept,2) + 2 * startTime * rho * deltaSlope * deltaIntercept );
+            sigmaEndFreq = sqrt( pow(endTime,2) *  pow(deltaSlope,2) + pow(deltaIntercept,2) + 2 * endTime * rho * deltaSlope * deltaIntercept );
+        }
+
+        // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
+
+        // Adding resuts to ProcessedTrackData object
+        KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
+        procTrack.SetComponent(component);
+        procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
+        procTrack.SetTrackID(trackID);
+
+        procTrack.SetStartTimeInAcq(*std::min_element(timeBinInAcq.begin(), timeBinInAcq.end()));
+        procTrack.SetStartTimeInRunC(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
+        procTrack.SetEndTimeInRunC(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()));
+        procTrack.SetTimeLength(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()) - *std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
+        procTrack.SetStartFrequency(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()) * slope + intercept);
+        procTrack.SetEndFrequency(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()) * slope + intercept);
+        procTrack.SetFrequencyWidth((*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end())-*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()))*slope);
+        procTrack.SetSlope(slope);
+        procTrack.SetIntercept(intercept);
+        procTrack.SetTotalPower(amplitudeSum);
+        if (!slope > fSlopeMinimum){
+            procTrack.SetIsCut(true);
+        }
+        procTrack.SetSlopeSigma(deltaSlope);
+        procTrack.SetInterceptSigma(deltaIntercept);
+        procTrack.SetStartFrequencySigma(sigmaStartFreq);
+        procTrack.SetEndFrequencySigma(sigmaEndFreq);
+
+        return true;
+    }
 
 } /* namespace Katydid */

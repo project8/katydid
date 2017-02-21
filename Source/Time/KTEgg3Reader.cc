@@ -47,6 +47,7 @@ namespace Katydid
             fReadState(),
             fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFirstCall),
             fT0Offset(0),
+            fAcqTimeInRun(0),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(0),
             fBinWidth(0.),
@@ -203,7 +204,8 @@ namespace Katydid
         // Get the number of channels, record size and the number of bytes per sample from the stream
         unsigned nChannels = fM3Stream->GetNChannels();
         unsigned recordSize = fM3Stream->GetChannelRecordSize();
-        unsigned nBytesInSample = fM3Stream->GetDataTypeSize() * fM3Stream->GetSampleSize();
+        unsigned sampleSize = fM3Stream->GetSampleSize();
+        unsigned nBytesInSample = fM3Stream->GetDataTypeSize() * sampleSize;
 
         // the read position in the current record (initialize to 0 for now; will be set correctly below)
         unsigned readPos = 0;
@@ -237,6 +239,8 @@ namespace Katydid
             // for the slice that will follow this one.
             // but we need to set fReadState.fStartOfSliceAcquisitionId
             fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
+
+            fAcqTimeInRun = GetTimeInRun();
 
             fSliceNumber = 0;
         }
@@ -278,6 +282,10 @@ namespace Katydid
                     isNewAcquisition = true;
                     // then we need to start reading at the start of this record
                     readPos = 0;
+                    // update these now (even though they're done just below) so we can accurately get the time in run
+                    fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
+                    fReadState.fStartOfLastSliceReadPtr = readPos;
+                    fAcqTimeInRun = GetTimeInRun();
                 }
             }
 
@@ -300,25 +308,29 @@ namespace Katydid
         sliceHeader = fMasterSliceHeader;
         sliceHeader.SetIsNewAcquisition(isNewAcquisition);
         sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetTimeInAcq(sliceHeader.GetTimeInRun() - fAcqTimeInRun);
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
         sliceHeader.SetStartSampleNumber(readPos);
-        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // create the raw time series objects that will contain the new copies of slices
         // and set some channel-specific slice header info
         vector< KTRawTimeSeries* > newSlices(nChannels);
         for (unsigned iChan = 0; iChan < nChannels; ++iChan)
         {
+            // nBins = fSliceSize * sampleSize to allow for real and complex samples
             newSlices[iChan] = new KTRawTimeSeries(fM3Stream->GetDataTypeSize(),
                     ConvertMonarch3DataFormat(fM3StreamHeader->GetDataFormat()),
-                    fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+                    fSliceSize * sampleSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+            newSlices[iChan]->SetSampleSize(sampleSize);
 
             sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
             sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
             sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
             sliceHeader.SetRawDataFormatType(fHeader.GetChannelHeader( iChan )->GetDataFormat(), iChan);
         }
+
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // the write position on the new slice
         unsigned writePos = 0;
@@ -424,6 +436,7 @@ namespace Katydid
                         sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
                     }
                     sliceHeader.SetTimeInRun(GetTimeInRun());
+                    fAcqTimeInRun = sliceHeader.GetTimeInRun();
                     KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
                             "\tCurent record = " << fReadState.fCurrentRecord << '\n' <<
                             "\tSlice start sample in record = " << readPos);
@@ -493,7 +506,8 @@ namespace Katydid
                 newChanHeader->SetSliceSize(fSliceSize);
                 newChanHeader->SetSliceStride(fStride);
                 newChanHeader->SetRecordSize(fM3StreamHeader->GetRecordSize());
-                newChanHeader->SetSampleSize(channelHeader.GetSampleSize());
+                unsigned sampleSize = channelHeader.GetSampleSize();
+                newChanHeader->SetSampleSize(sampleSize);
                 newChanHeader->SetDataTypeSize(channelHeader.GetDataTypeSize());
                 newChanHeader->SetDataFormat(ConvertMonarch3DataFormat(channelHeader.GetDataFormat()));
                 newChanHeader->SetBitDepth(channelHeader.GetBitDepth());
@@ -501,18 +515,18 @@ namespace Katydid
                 newChanHeader->SetVoltageOffset(channelHeader.GetVoltageOffset());
                 newChanHeader->SetVoltageRange(channelHeader.GetVoltageRange());
                 newChanHeader->SetDACGain(channelHeader.GetDACGain());
+                if (sampleSize == 1) newChanHeader->SetTSDataType(KTChannelHeader::kReal);
+                else if (sampleSize == 2) newChanHeader->SetTSDataType(KTChannelHeader::kIQ);
+                else
+                {
+                    KTWARN(eggreadlog, "Sample size <" << sampleSize << "> on channel " << iChanInFile << " may cause problems with downstream processing");
+                }
                 fHeader.SetChannelHeader(newChanHeader, iChanInKatydid);
                 ++iChanInKatydid;
             }
         }
 
         // set the TS data type size based on channel 0 (by Katydid's channel counting)
-        if (fHeader.GetChannelHeader(0)->GetSampleSize() == 1) fHeader.SetTSDataType(KTEggHeader::kReal);
-        else if (fHeader.GetChannelHeader(0)->GetSampleSize() == 2) fHeader.SetTSDataType(KTEggHeader::kComplex);
-        else
-        {
-            KTERROR(eggreadlog, "Cannot handle sample size == " << fHeader.GetChannelHeader(0)->GetSampleSize());
-        }
         return;
     }
 
