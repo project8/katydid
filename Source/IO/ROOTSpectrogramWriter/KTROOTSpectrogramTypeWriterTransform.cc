@@ -110,7 +110,7 @@ namespace Katydid
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
-        fWriter->RegisterSlot("track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
+        fWriter->RegisterSlot("proc-track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
         return;
     }

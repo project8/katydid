@@ -17,7 +17,8 @@
 #include <string>
 #include "KTHDF5TypeWriterEventAnalysis.hh"
 
-namespace Katydid {
+namespace Katydid
+{
     KTLOGGER(publog, "KTHDF5TypeWriterEventAnalysis");
 
     static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
@@ -27,20 +28,23 @@ namespace Katydid {
         fMTETracksDataBuffer(),
         fPTDataBuffer(),
         fFlushMTEIdx(0),
-        fFlushPTIdx(0) {
+        fFlushPTIdx(0)
+    {
             /*
              * First we build the appropriate compound datatype for MTE events
              */
             this->fMTEType = new H5::CompType(MTESize);
             // Insert fields into the type
-            for (int f = 0; f < MTENFields; f++) {
+            for (int f = 0; f < MTENFields; f++)
+            {
                 this->fMTEType->insertMember(
                     MTEFieldNames[f],
                     MTEFieldOffsets[f],
                     MTEFieldTypes[f]);
             }
             this->fPTType = new H5::CompType(PTSize);
-            for (int f = 0; f < PTNFields; f++) {
+            for (int f = 0; f < PTNFields; f++)
+            {
                 this->fPTType->insertMember(
                     PTFieldNames[f],
                     PTFieldOffsets[f],
@@ -48,32 +52,40 @@ namespace Katydid {
             }
         }
 
-    KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis() {
+    KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis()
+    {
         if(fMTEType) delete fMTEType;
         if(fPTType) delete fPTType;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::RegisterSlots() {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates);
-        fWriter->RegisterSlot("waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate);
-        fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
-        fWriter->RegisterSlot("processed-track", this, &KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack);
+    void KTHDF5TypeWriterEventAnalysis::RegisterSlots()
+    {
+        //fWriter->RegisterSlot("frequency-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates);
+        //fWriter->RegisterSlot("waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate);
+        //fWriter->RegisterSlot("swfc", this, &KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
+        fWriter->RegisterSlot("proc-track", this, &KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("final-write-tracks",this, &KTHDF5TypeWriterEventAnalysis::WritePTBuffer);
-        fWriter->RegisterSlot("multi-track-event", this, &KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent);
+        fWriter->RegisterSlot("mt-event", this, &KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("final-write-events",this, &KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer);
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data) {
+    /*
+    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data)
+    {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data)
+    {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
+    {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data) {
+    */
+    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data)
+    {
         KTDEBUG(publog, "Processing Tracks");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
@@ -109,7 +121,8 @@ namespace Katydid {
         KTDEBUG("Done.");
         return;
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data)
+    {
         KTDEBUG(publog, "Processing MTE");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
@@ -146,7 +159,7 @@ namespace Katydid {
         // Write the tracks that make up this event
         KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         PTData track;
-        for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
+        for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); ++MTETrackIt)
         {
             track.Component = MTETrackIt->GetComponent();
             track.AcquisitionID = MTETrackIt->GetAcquisitionID();
@@ -182,7 +195,8 @@ namespace Katydid {
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer() {
+    void KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer()
+    {
         KTDEBUG("writing MTE buffer.");
         // Now create the dataspace we need
         hsize_t* dims_cands = new hsize_t(this->fMTEDataBuffer.size());
@@ -223,7 +237,8 @@ namespace Katydid {
         this->fFlushMTEIdx++;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WritePTBuffer() {
+    void KTHDF5TypeWriterEventAnalysis::WritePTBuffer()
+    {
         KTDEBUG("writing PT buffer.");
         // Now create the dataspace we need
         hsize_t* dims = new hsize_t(this->fPTDataBuffer.size());

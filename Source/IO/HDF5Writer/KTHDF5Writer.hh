@@ -17,11 +17,13 @@
 #include "KTSlot.hh"
 #include "H5Cpp.h"
 
-namespace Katydid {
+namespace Katydid
+{
     class KTHDF5Writer;
     typedef Nymph::KTDerivedTypeWriter< KTHDF5Writer > KTHDF5TypeWriter;
 
-    class KTHDF5Writer : public Nymph::KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter > {
+    class KTHDF5Writer : public Nymph::KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter >
+    {
         public:
             explicit KTHDF5Writer(const std::string& name = "hdf5-writer");
             virtual ~KTHDF5Writer();
@@ -33,8 +35,7 @@ namespace Katydid {
             Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
 
         public:
-            H5::H5File* OpenFile(const std::string& filename, 
-                                 const std::string& flag);
+            H5::H5File* OpenFile(const std::string& filename);
             void CloseFile();
 
             MEMBERVARIABLEREF(std::string, Filename);
@@ -49,14 +50,15 @@ namespace Katydid {
             H5::Group* AddGroup(const std::string& groupname);
 
             /*
-             Adds metadata to the HDF5 file.  This data goes into the /metadata
+             Adds scalar values to the HDF5 file.  This data goes into the top-level of the file.
              group.  
 
-             TODO: Creating groups within this function can happen if the 
-             name contains slashes - e.g. AddMetadata("foo/bar", "baz") will
-             create a scalar datatype at /metadata/foo/bar with the value "baz".
+             Creating groups within this function can happen if the
+             name contains slashes - e.g. AddScalar("foo/bar", "baz") will
+             create a scalar datatype at /foo/bar with the value "baz".
             */
-            template <typename T> void AddMetadata(std::string name, T value);
+            template <typename T>
+            void AddScalar(std::string name, T value);
 
             // Header related
             bool DidParseHeader();
@@ -69,24 +71,32 @@ namespace Katydid {
             KTEggHeader fHeader;
             bool fHeaderParsed;
             std::map<std::string, H5::Group*> fGroups;
-            void WriteMetadata(std::string name, H5::DataType type, const void* value);
+            void WriteScalar(std::string name, H5::DataType type, const void* value);
     };
 
-    template<> inline void KTHDF5Writer::AddMetadata<unsigned>(std::string name, unsigned value) {
-        this->WriteMetadata(name, H5::PredType::NATIVE_UINT, &value);
+    template<>
+    inline void KTHDF5Writer::AddScalar<unsigned>(std::string name, unsigned value)
+    {
+        this->WriteScalar(name, H5::PredType::NATIVE_UINT, &value);
     };
 
-    template<> inline void KTHDF5Writer::AddMetadata<double>(std::string name, double value) {
-        this->WriteMetadata(name, H5::PredType::NATIVE_DOUBLE, &value);
+    template<>
+    inline void KTHDF5Writer::AddScalar<double>(std::string name, double value)
+    {
+        this->WriteScalar(name, H5::PredType::NATIVE_DOUBLE, &value);
     };
 
-    template<> inline void KTHDF5Writer::AddMetadata<unsigned long>(std::string name, unsigned long value) {
-        this->WriteMetadata(name, H5::PredType::NATIVE_ULONG, &value);
+    template<>
+    inline void KTHDF5Writer::AddScalar<unsigned long>(std::string name, unsigned long value)
+    {
+        this->WriteScalar(name, H5::PredType::NATIVE_ULONG, &value);
     };
 
-    template<> inline void KTHDF5Writer::AddMetadata<std::string>(std::string name, std::string value) {
+    template<>
+    inline void KTHDF5Writer::AddScalar<std::string>(std::string name, std::string value)
+    {
         H5::StrType h5type(H5::PredType::C_S1, value.length() + 1);
-        this->WriteMetadata(name, h5type, value.c_str());
+        this->WriteScalar(name, h5type, value.c_str());
     };
 } /* namespace Katydid */
 #endif /* KTHDF5WRITER_HH_ */

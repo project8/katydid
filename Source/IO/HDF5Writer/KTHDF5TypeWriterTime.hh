@@ -11,6 +11,9 @@
 #include "KTHDF5Writer.hh"
 #include "KTData.hh"
 
+// NOTE (NSO): as of 3/2/17, the raw time series and time series functions are only valid for real data, not IQ data!
+//             they do not, however, protect against attempting to use the functions on data that has a sample > 1.
+
 namespace Katydid {
     class KTEggHeader;
 
@@ -29,11 +32,7 @@ namespace Katydid {
         private:
             H5::DataSpace* fRawTSliceDSpace; //raw_time_slice_dspace
             H5::DataSpace* fRealTSliceDSpace; // real_time_slice_dspace
-            unsigned fSliceSize; // slice_size
-            unsigned fRawSliceSize;
-            unsigned fNComponents;
 
-            void CreateDataspaces();
             H5::DataSet* CreateRawTSDSet(const std::string &name);
             H5::DataSet* CreateRealTSDSet(const std::string &name);
             H5::Group* fRawDataGroup;
@@ -42,9 +41,6 @@ namespace Katydid {
 
             unsigned* fRawTimeBuffer;
             double* fRealTimeBuffer;
-
-            void ProcessEggHeader();
-            bool fHeaderProcessed;
 
     };
 

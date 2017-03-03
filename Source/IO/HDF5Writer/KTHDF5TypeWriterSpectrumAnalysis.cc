@@ -27,14 +27,16 @@ namespace Katydid {
 		KTHDF5TypeWriter(),
 		fDiscPointBuffer(),
 		fFlushIdx(0),
-		fDiscPointType(NULL) {
+		fDiscPointType(NULL)
+	{
 			/*
 			 * We need to build the DiscPoint type for HDF5.
 			 */
 			this->fDiscPointType = new H5::CompType(DiscPointSize);
 
 			// Now we just insert fields.
-			for (int f = 0; f < 7; f++) {
+			for (int f = 0; f < 7; f++)
+			{
 				this->fDiscPointType->insertMember(
 					DiscPointFieldName[f],
 					DiscPointFieldOffset[f],
@@ -42,16 +44,19 @@ namespace Katydid {
 			}
 		}
 
-	KTHDF5TypeWriterSpectrumAnalysis::~KTHDF5TypeWriterSpectrumAnalysis() {
+	KTHDF5TypeWriterSpectrumAnalysis::~KTHDF5TypeWriterSpectrumAnalysis()
+	{
 		if(fDiscPointType) delete fDiscPointType;
 	}
 
-	void KTHDF5TypeWriterSpectrumAnalysis::RegisterSlots() {
+	void KTHDF5TypeWriterSpectrumAnalysis::RegisterSlots()
+	{
 		fWriter->RegisterSlot("disc-1d", this, &KTHDF5TypeWriterSpectrumAnalysis::WriteDiscriminatedPoints);
 		fWriter->RegisterSlot("final-write-points", this, &KTHDF5TypeWriterSpectrumAnalysis::FlushDiscPointBuffer);
 	}
 
-	void KTHDF5TypeWriterSpectrumAnalysis::WriteDiscriminatedPoints(Nymph::KTDataPtr data) {
+	void KTHDF5TypeWriterSpectrumAnalysis::WriteDiscriminatedPoints(Nymph::KTDataPtr data)
+	{
 		KTDiscriminatedPoints1DData& fcData = data->Of<KTDiscriminatedPoints1DData>();
 		KTSliceHeader& header = data->Of<KTSliceHeader>();
 
@@ -60,9 +65,11 @@ namespace Katydid {
 		DiscPoint point;
 		point.fSlice = header.GetSliceNumber();
 		point.fTimeInRunCenter = header.GetTimeInRun();
-		for (point.fComponent = 0; point.fComponent < fcData.GetNComponents(); point.fComponent++ ) {
+		for (point.fComponent = 0; point.fComponent < fcData.GetNComponents(); point.fComponent++ )
+		{
 			const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(point.fComponent);
-            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it) {
+            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
+            {
                 point.fBin = it->first;
                 point.fAbscissa = it->second.fAbscissa;
                 point.fOrdinate = it->second.fOrdinate;
@@ -72,7 +79,8 @@ namespace Katydid {
 		}
 	}
 
-	void KTHDF5TypeWriterSpectrumAnalysis::FlushDiscPointBuffer() {
+	void KTHDF5TypeWriterSpectrumAnalysis::FlushDiscPointBuffer()
+	{
 		KTDEBUG("Writing DiscPoints buffer");
 
 		//Create the necessary dataspace

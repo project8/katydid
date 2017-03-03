@@ -73,10 +73,10 @@ namespace Katydid
     {
         fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates);
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate);
-        fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
-        fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
-        fWriter->RegisterSlot("multi-peak-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
-        fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
+        fWriter->RegisterSlot("swfc", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
+        fWriter->RegisterSlot("proc-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
+        fWriter->RegisterSlot("mp-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
+        fWriter->RegisterSlot("mt-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("density-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
         fWriter->RegisterSlot("power-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData);
         return;
@@ -111,7 +111,7 @@ namespace Katydid
         {
             fFreqCandidateData.fThreshold = fcData.GetThreshold(fFreqCandidateData.fComponent);
             const KTFrequencyCandidateData::Candidates& candidates = fcData.GetCandidates(fFreqCandidateData.fComponent);
-            for (KTFrequencyCandidateData::Candidates::const_iterator it = candidates.begin(); it != candidates.end(); it++)
+            for (KTFrequencyCandidateData::Candidates::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
             {
                 fFreqCandidateData.fFirstBin = it->GetFirstBin();
                 fFreqCandidateData.fLastBin = it->GetLastBin();
