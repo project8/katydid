@@ -80,10 +80,10 @@ namespace Katydid
             SetNComponents(track.GetComponent() + 1);
         }
 
+        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
+
         // copy the full track data
         fCompTracks[track.GetComponent()].insert(track);
-
-        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         return true;
     }

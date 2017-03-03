@@ -293,7 +293,7 @@ namespace Katydid
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             bool addToList = true;
-            for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+            for (unsigned iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
             {
                 if (pIt->fTimeInAcq == timeBinInAcq[iTimeBin])
                 {
@@ -310,7 +310,7 @@ namespace Katydid
             }
         }
 
-        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
         {
             sumPf.push_back(0.);
             sumP.push_back(0.);
@@ -329,7 +329,7 @@ namespace Katydid
         }
 
         KTDEBUG(tlog, "Averaging");
-        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
         {
             average.push_back(sumPf[iTimeBin]/sumP[iTimeBin]);
             KTDEBUG(tlog, timeBinInAcq[iTimeBin] << '\t' << average[iTimeBin]);
@@ -338,7 +338,7 @@ namespace Katydid
         // Determining the slope and intercept from Chi-2 minimization
         double sumXY = 0, sumXX=0, sumX=0, sumY=0, sumOne = 0, amplitudeSum = 0;
 
-        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
         {
             sumXY += average[iTimeBin] * timeBinInAcq[iTimeBin];
             sumXX += timeBinInAcq[iTimeBin] * timeBinInAcq[iTimeBin];
@@ -357,10 +357,12 @@ namespace Katydid
 
         //Calculating Chi^2_min
         double chi2min = 0;
-        for (int iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        double residual = 0;
+        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
         {
-            chi2min += pow(average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept,2);
-            KTDEBUG(tlog, "Residuals : " << average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept );
+            residual = average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
+            chi2min += residual * residual;
+            KTDEBUG(tlog, "Residuals : " << residual );
         }
         // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
         double deltaSlope = 0;
@@ -381,7 +383,7 @@ namespace Katydid
             }
             else
             {
-                int ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
+                double ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
                 deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
                 deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
             }
@@ -408,8 +410,8 @@ namespace Katydid
         procTrack.SetStartTimeInRunC(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
         procTrack.SetEndTimeInRunC(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()));
         procTrack.SetTimeLength(procTrack.GetEndTimeInRunC() - procTrack.GetStartTimeInRunC());
-        procTrack.SetStartFrequency(procTrack.GetStartTimeInRunC() * slope + intercept);
-        procTrack.SetEndFrequency(procTrack.GetEndTimeInRunC() * slope + intercept);
+        procTrack.SetStartFrequency(procTrack.GetStartTimeInAcq() * slope + intercept);
+        procTrack.SetEndFrequency((procTrack.GetStartTimeInAcq() + procTrack.GetTimeLength()) * slope + intercept);
         procTrack.SetFrequencyWidth(std::abs(procTrack.GetEndFrequency() - procTrack.GetStartFrequency()));
         procTrack.SetSlope(slope);
         procTrack.SetIntercept(intercept);

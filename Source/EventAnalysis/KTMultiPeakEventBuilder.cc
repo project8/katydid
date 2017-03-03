@@ -76,6 +76,8 @@ namespace Katydid
             SetNComponents(mpt.GetComponent() + 1);
         }
 
+        KTDEBUG(tclog, "Taking MPT: (" << mpt.GetMeanStartTimeInRunC() << ", " << mpt.GetMeanEndTimeInRunC() << ")");
+
         // copy the full track data
         MultiPeakTrackRef mptr = mpt.GetMPTrack();
         fMPTracks[mpt.GetComponent()].insert(mptr);
