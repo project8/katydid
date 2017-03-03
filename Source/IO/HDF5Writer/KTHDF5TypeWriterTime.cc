@@ -40,8 +40,8 @@ namespace Katydid {
 
     KTHDF5TypeWriterTime::~KTHDF5TypeWriterTime()
     {
-            if(fRawTimeBuffer) delete fRawTimeBuffer;
-            if(fRealTimeBuffer) delete fRealTimeBuffer;
+            delete [] fRawTimeBuffer;
+            delete [] fRealTimeBuffer;
     }
 
 
@@ -55,27 +55,21 @@ namespace Katydid {
 
     H5::DataSet* KTHDF5TypeWriterTime::CreateRawTSDSet(const std::string& name)
     {
-        H5::Group* grp = this->fRawDataGroup;
+        H5::Group* grp = fRawDataGroup;
         H5::DSetCreatPropList plist;
         unsigned default_value = 0;
         plist.setFillValue(H5::PredType::NATIVE_UINT, &default_value);
-        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
-                                                               H5::PredType::NATIVE_INT,
-                                                               *(this->fRawTSliceDSpace),
-                                                               plist));
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(), H5::PredType::NATIVE_INT, *fRawTSliceDSpace, plist));
         return dset;
     }
 
     H5::DataSet* KTHDF5TypeWriterTime::CreateRealTSDSet(const std::string& name)
     {
-        H5::Group* grp = this->fRealDataGroup;
+        H5::Group* grp = fRealDataGroup;
         H5::DSetCreatPropList plist;
         double default_value = 0.0;
         plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
-        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
-                                                               H5::PredType::NATIVE_DOUBLE,
-                                                               *(this->fRealTSliceDSpace),
-                                                               plist));
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(), H5::PredType::NATIVE_DOUBLE, *fRealTSliceDSpace, plist));
         return dset;
     }
 
@@ -91,11 +85,12 @@ namespace Katydid {
         unsigned nComponents = tsData.GetNComponents();
         unsigned sliceSize = header.GetRawSliceSize();
 
-        if (this->fRawTSliceDSpace == NULL)
+        if (fRawTSliceDSpace == NULL)
         {
             hsize_t dims[] = {nComponents, sliceSize};
-            this->fRawTSliceDSpace = new H5::DataSpace(2, dims);
-            this->fRawDataGroup = fWriter->AddGroup("/raw_ts");
+            fRawTSliceDSpace = new H5::DataSpace(2, dims);
+            fRawDataGroup = fWriter->AddGroup("/raw_ts");
+            fRawTimeBuffer = new unsigned(header.GetRawSliceSize());
         }
 
         uint64_t sliceNumber = header.GetSliceNumber();
@@ -103,7 +98,7 @@ namespace Katydid {
         ss << "slice_" << sliceNumber;
         std::string slice_name;
         ss >> slice_name;      
-        H5::DataSet* dset = this->CreateRawTSDSet(slice_name);
+        H5::DataSet* dset = CreateRawTSDSet(slice_name);
 
         if ( fWriter->OpenAndVerifyFile() )
         {
@@ -115,7 +110,7 @@ namespace Katydid {
                     for (int i = 0; i < sliceSize; ++i)
                     {
                         // TODO(kofron): wat
-                        this->fRawTimeBuffer[i] = spectrum[0](i);
+                        fRawTimeBuffer[i] = spectrum[0](i);
                     }
                     dset->write(fRawTimeBuffer, H5::PredType::NATIVE_UINT);
                 } // if spectrum is not NULL
@@ -136,11 +131,12 @@ namespace Katydid {
         unsigned nComponents = tsData.GetNComponents();
         unsigned sliceSize = header.GetSliceSize();
 
-        if (this->fRealTSliceDSpace == NULL)
+        if (fRealTSliceDSpace == NULL)
         {
             hsize_t dims[] = {nComponents, sliceSize};
-            this->fRealTSliceDSpace = new H5::DataSpace(2, dims);
-            this->fRealDataGroup = fWriter->AddGroup("/real_ts");
+            fRealTSliceDSpace = new H5::DataSpace(2, dims);
+            fRealDataGroup = fWriter->AddGroup("/real_ts");
+            fRealTimeBuffer = new double(header.GetSliceSize());
         }
 
         uint64_t sliceNumber = header.GetSliceNumber();
@@ -148,7 +144,7 @@ namespace Katydid {
         ss << "slice_" << sliceNumber;
         std::string slice_name;
         ss >> slice_name;
-        H5::DataSet* dset = this->CreateRealTSDSet(slice_name);
+        H5::DataSet* dset = CreateRealTSDSet(slice_name);
 
         if ( !fWriter->OpenAndVerifyFile()) return;
 
@@ -159,9 +155,9 @@ namespace Katydid {
                 for (int i = 0; i < sliceSize; ++i)
                 {
                     // TODO(kofron): wat
-                    this->fRealTimeBuffer[i] = spectrum->GetValue(i);
+                    fRealTimeBuffer[i] = spectrum->GetValue(i);
                 }
-                dset->write(this->fRealTimeBuffer, H5::PredType::NATIVE_DOUBLE);
+                dset->write(fRealTimeBuffer, H5::PredType::NATIVE_DOUBLE);
             }
         }
         return;

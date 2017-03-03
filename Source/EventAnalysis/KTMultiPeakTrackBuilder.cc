@@ -34,6 +34,7 @@ namespace Katydid
             fSidebandTimeTolerance(0.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
+            fCurrentAcquisitionID(std::numeric_limits<uint64_t>::max()),
             fCompTracks(1),
             fMPTracks(1),
             fMPTSignal("mpt", this),
@@ -58,6 +59,18 @@ namespace Katydid
 
     bool KTMultiPeakTrackBuilder::TakeTrack(KTProcessedTrackData& track)
     {
+        if (track.GetAcquisitionID() != fCurrentAcquisitionID)
+        {
+            KTINFO(tclog, "Incoming track has a new acquisition ID (new: " << track.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
+            if (! DoClustering())
+            {
+                KTERROR(tclog, "An error occurred while running the event clustering");
+                return false;
+            }
+            fCurrentAcquisitionID = track.GetAcquisitionID();
+            KTDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
+        }
+
         // ignore the track if it's been cut
         if (track.GetIsCut()) return true;
 
@@ -70,7 +83,7 @@ namespace Katydid
         // copy the full track data
         fCompTracks[track.GetComponent()].insert(track);
 
-        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency());
+        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         return true;
     }
@@ -100,37 +113,47 @@ namespace Katydid
         KTDEBUG(tclog, "MPT building complete");
         fDoneSignal();
 
+        fMPTracks.clear();
+        fMPTracks.resize(1);
+
+        fCompTracks.clear();
+        fCompTracks.resize(1);
+
         return true;
     }
 
     bool KTMultiPeakTrackBuilder::FindMultiPeakTracks()
     {
-        KTPROG(tclog, "collecting lines into multi-peak tracks");
+        KTINFO(tclog, "Collecting lines into multi-peak tracks");
 
         // loop over components
         unsigned component = 0;
         for (vector< TrackSet >::const_iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
         {
-            KTINFO(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
+            KTDEBUG(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
             fMPTracks[component].clear();
 
             // loop over individual tracks
             TrackSetCIt trackIt = compIt->begin();
-            if (trackIt == compIt->end()) continue;
+            if (trackIt == compIt->end())
+            {
+                KTDEBUG(tclog, "No tracks to see here, moving right along");
+                continue;
+            }
 
             list< MultiPeakTrackRef > activeTrackRefs;
 
             int trackCount = 0;
             while (trackIt != compIt->end())
             {
-                KTINFO(tclog, "considering track (" << ++trackCount << "/" << compIt->size() << ")");
+                KTDEBUG(tclog, "considering track (" << ++trackCount << "/" << compIt->size() << ")");
                 // loop over active track refs
                 list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
                 bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
                 int activeTrackCount = 0;
                 while (mptrIt != activeTrackRefs.end())
                 {
-                    KTINFO(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
+                    KTDEBUG(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
                     double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
 
                     // check to see if this track ref should no longer be active
@@ -168,7 +191,7 @@ namespace Katydid
                     activeTrackRefs.rbegin()->fAcquisitionID = trackIt->GetAcquisitionID();
                     trackHasBeenAdded = true;
                 }
-            ++trackIt;
+                ++trackIt;
             } // while loop over tracks
 
             // now that we're done with tracks, all active track refs are finished as well

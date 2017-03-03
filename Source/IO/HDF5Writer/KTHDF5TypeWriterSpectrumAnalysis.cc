@@ -24,24 +24,21 @@ namespace Katydid {
 	static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterSpectrumAnalysis> sH5TWALYSrg;
 
 	KTHDF5TypeWriterSpectrumAnalysis::KTHDF5TypeWriterSpectrumAnalysis() :
-		KTHDF5TypeWriter(),
-		fDiscPointBuffer(),
-		fFlushIdx(0),
-		fDiscPointType(NULL)
+            KTHDF5TypeWriter(),
+            fDiscPointBuffer(),
+            fFlushIdx(0),
+            fDiscPointType(NULL)
 	{
-			/*
-			 * We need to build the DiscPoint type for HDF5.
-			 */
-			this->fDiscPointType = new H5::CompType(DiscPointSize);
+        /*
+         * We need to build the DiscPoint type for HDF5.
+         */
+        fDiscPointType = new H5::CompType(DiscPointSize);
 
-			// Now we just insert fields.
-			for (int f = 0; f < 7; f++)
-			{
-				this->fDiscPointType->insertMember(
-					DiscPointFieldName[f],
-					DiscPointFieldOffset[f],
-					DiscPointFieldType[f]);
-			}
+        // Now we just insert fields.
+        for (int f = 0; f < 7; ++f)
+        {
+            fDiscPointType->insertMember(DiscPointFieldName[f], DiscPointFieldOffset[f], DiscPointFieldType[f]);
+        }
 		}
 
 	KTHDF5TypeWriterSpectrumAnalysis::~KTHDF5TypeWriterSpectrumAnalysis()
@@ -65,7 +62,7 @@ namespace Katydid {
 		DiscPoint point;
 		point.fSlice = header.GetSliceNumber();
 		point.fTimeInRunCenter = header.GetTimeInRun();
-		for (point.fComponent = 0; point.fComponent < fcData.GetNComponents(); point.fComponent++ )
+		for (point.fComponent = 0; point.fComponent < fcData.GetNComponents(); ++(point.fComponent) )
 		{
 			const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(point.fComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
@@ -74,17 +71,23 @@ namespace Katydid {
                 point.fAbscissa = it->second.fAbscissa;
                 point.fOrdinate = it->second.fOrdinate;
                 point.fThreshold = it->second.fThreshold;
-                this->fDiscPointBuffer.push_back(point);
+                fDiscPointBuffer.push_back(point);
            }
 		}
 	}
 
 	void KTHDF5TypeWriterSpectrumAnalysis::FlushDiscPointBuffer()
 	{
+	    if (fDiscPointBuffer.empty())
+	    {
+	        KTDEBUG("DiscPoints buffer is empty; nothing written to the file");
+	        return;
+	    }
+
 		KTDEBUG("Writing DiscPoints buffer");
 
 		//Create the necessary dataspace
-		hsize_t* dims = new hsize_t(this->fDiscPointBuffer.size());
+		hsize_t* dims = new hsize_t(fDiscPointBuffer.size());
 		H5::DataSpace dspace(1, dims);
 
 		if (fWriter->OpenAndVerifyFile() == false) return;
@@ -95,16 +98,14 @@ namespace Katydid {
 		// Ok, create the dataset and write it down.
 		std::stringstream namestream;
         std::string dsetname;
-        namestream << "sparsewf_" << this->fFlushIdx;
+        namestream << "sparsewf_" << fFlushIdx;
         namestream >> dsetname;
-        H5::DataSet* dset = new H5::DataSet(swfGroup->createDataSet(dsetname.c_str(),
-                                                                    *(this->fDiscPointType),
-                                                                    dspace));
+        H5::DataSet* dset = new H5::DataSet(swfGroup->createDataSet(dsetname.c_str(), *fDiscPointType, dspace));
 
-        dset->write((this->fDiscPointBuffer).data(), *(this->fDiscPointType));
-        this->fDiscPointBuffer.clear();
+        dset->write(fDiscPointBuffer.data(), *fDiscPointType);
+        fDiscPointBuffer.clear();
 
-        this->fFlushIdx++;
+        fFlushIdx++;
         delete dset;
 		delete dims;
 	}
