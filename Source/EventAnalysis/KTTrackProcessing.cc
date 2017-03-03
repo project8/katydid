@@ -35,6 +35,7 @@ namespace Katydid
             fPointLineDistCut2(0.05),
             fSlopeMinimum(-std::numeric_limits< double >::max()),
             fProcTrackMinPoints(0),
+            fProcTrackAssError(0.),
             fTrackSignal("track", this),
             fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
             fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
@@ -264,7 +265,7 @@ namespace Katydid
         procTrack.SetTimeLength(stopTime - startTime);
         procTrack.SetStartFrequency(startFreq);
         procTrack.SetEndFrequency(stopFreq);
-        procTrack.SetFrequencyWidth(stopFreq - startFreq);
+        procTrack.SetFrequencyWidth(std::abs(stopFreq - startFreq));
         procTrack.SetSlope(lsSlope);
         procTrack.SetIntercept(lsIntercept);
         procTrack.SetTotalPower(amplitudeSum);
@@ -367,10 +368,13 @@ namespace Katydid
         double sigmaStartFreq = 0;
         double sigmaEndFreq = 0;
 
-        if (timeBinInAcq.size()>2){ // need at least 3 points to get a non-zero Ndf
+        // need at least 3 points to get a non-zero Ndf
+        if (timeBinInAcq.size()>2)
+        {
             KTDEBUG(tlog, "Chi2min : " << chi2min );
 
-            if (chi2min < 0.1){
+            if (chi2min < 0.1)
+            {
                 KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssError << ")");
                 deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
                 deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
@@ -384,12 +388,12 @@ namespace Katydid
             KTDEBUG(tlog, "Error calculations results: \n" <<
                           "\tSlope: " << '\t' << deltaSlope << '\n' <<
                           "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
-                          "\tCorrelation coeffient: " << '\t' << rho);
+                          "\tCorrelation coefficifent: " << '\t' << rho);
             //Calculating error on the starting frequency and the end frequency
             double startTime = *std::min_element(timeBinInAcq.begin(), timeBinInAcq.end());
             double endTime = *std::max_element(timeBinInAcq.begin(), timeBinInAcq.end());
-            sigmaStartFreq = sqrt( pow(startTime,2) *  pow(deltaSlope,2) + pow(deltaIntercept,2) + 2 * startTime * rho * deltaSlope * deltaIntercept );
-            sigmaEndFreq = sqrt( pow(endTime,2) *  pow(deltaSlope,2) + pow(deltaIntercept,2) + 2 * endTime * rho * deltaSlope * deltaIntercept );
+            sigmaStartFreq = sqrt( startTime*startTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * startTime * rho * deltaSlope * deltaIntercept );
+            sigmaEndFreq = sqrt( endTime*endTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * endTime * rho * deltaSlope * deltaIntercept );
         }
 
         // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
@@ -403,14 +407,15 @@ namespace Katydid
         procTrack.SetStartTimeInAcq(*std::min_element(timeBinInAcq.begin(), timeBinInAcq.end()));
         procTrack.SetStartTimeInRunC(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
         procTrack.SetEndTimeInRunC(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()));
-        procTrack.SetTimeLength(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()) - *std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
-        procTrack.SetStartFrequency(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()) * slope + intercept);
-        procTrack.SetEndFrequency(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()) * slope + intercept);
-        procTrack.SetFrequencyWidth((*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end())-*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()))*slope);
+        procTrack.SetTimeLength(procTrack.GetEndTimeInRunC() - procTrack.GetStartTimeInRunC());
+        procTrack.SetStartFrequency(procTrack.GetStartTimeInRunC() * slope + intercept);
+        procTrack.SetEndFrequency(procTrack.GetEndTimeInRunC() * slope + intercept);
+        procTrack.SetFrequencyWidth(std::abs(procTrack.GetEndFrequency() - procTrack.GetStartFrequency()));
         procTrack.SetSlope(slope);
         procTrack.SetIntercept(intercept);
         procTrack.SetTotalPower(amplitudeSum);
-        if (!(slope > fSlopeMinimum)){
+        if (!(slope > fSlopeMinimum))
+        {
             procTrack.SetIsCut(true);
         }
         procTrack.SetSlopeSigma(deltaSlope);
