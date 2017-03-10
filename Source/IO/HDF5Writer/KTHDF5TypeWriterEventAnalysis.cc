@@ -8,6 +8,7 @@
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTMultiTrackEventData.hh"
+#include "KTPowerFitData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -26,8 +27,10 @@ namespace Katydid {
         fMTEDataBuffer(),
         fMTETracksDataBuffer(),
         fPTDataBuffer(),
+        fPFDataBuffer(),
         fFlushMTEIdx(0),
-        fFlushPTIdx(0) {
+        fFlushPTIdx(0),
+        fFlushPFIdx(0) {
             /*
              * First we build the appropriate compound datatype for MTE events
              */
@@ -46,11 +49,19 @@ namespace Katydid {
                     PTFieldOffsets[f],
                     PTFieldTypes[f]);
             }
+            this->fPFType = new H5::CompType(PFSize);
+            for (int f = 0; f < PFNFields; f++) {
+                this->fPFType->insertMember(
+                    PFFieldNames[f],
+                    PFFieldOffsets[f],
+                    PFFieldTypes[f]);
+            }
         }
 
     KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis() {
         if(fMTEType) delete fMTEType;
         if(fPTType) delete fPTType;
+        if(fPFType) delete fPFType;
     }
 
     void KTHDF5TypeWriterEventAnalysis::RegisterSlots() {
@@ -58,9 +69,10 @@ namespace Katydid {
         fWriter->RegisterSlot("waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate);
         fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("processed-track", this, &KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack);
-        fWriter->RegisterSlot("final-write-tracks",this, &KTHDF5TypeWriterEventAnalysis::WritePTBuffer);
+        fWriter->RegisterSlot("final-write-tracks", this, &KTHDF5TypeWriterEventAnalysis::WritePTBuffer);
         fWriter->RegisterSlot("multi-track-event", this, &KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent);
-        fWriter->RegisterSlot("final-write-events",this, &KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer);
+        fWriter->RegisterSlot("final-write-events", this, &KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer);
+        fWriter->RegisterSlot("power-fit", this, &KTHDF5TypeWriterEventAnalysis::WritePowerFitData);
         return;
     }
 
@@ -244,6 +256,47 @@ namespace Katydid {
         dset->write((this->fPTDataBuffer).data(),*(this->fPTType));
         this->fPTDataBuffer.clear();
         this->fFlushPTIdx++;
+    }
+
+    void KTHDF5TypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data) {
+        KTDEBUG(publog, "Processing Power Fit Data");
+        KTPowerFitData& pfData = data->Of< KTPowerFitData >();
+
+        PFData powerFit;
+        powerFit.Average = pfData.GetAverage();
+        powerFit.RMS = pfData.GetRMS();
+        powerFit.Skewness = pfData.GetSkewness();
+        powerFit.Kurtosis = pfData.GetKurtosis();
+        powerFit.NormCentral = pfData.GetNormCentral();
+        powerFit.MeanCentral = pfData.GetMeanCentral();
+        powerFit.SigmaCentral = pfData.GetSigmaCentral();
+        powerFit.MaximumCentral = pfData.GetMaximumCentral();
+        powerFit.RMSAwayFromCentral = pfData.GetRMSAwayFromCentral();
+        powerFit.CentralPowerRatio = pfData.GetCentralPowerRatio();
+
+        (this->fPFDataBuffer).push_back(powerFit);
+
+        KTDEBUG(publog, "Done.");
+        return;
+    }
+
+    void KTHDF5TypeWriterEventAnalysis::WritePFBuffer() {
+        KTDEBUG(publog, "Writing PF Data Buffer");
+
+        hsize_t* dims = new hsize_t(this->fPFDataBuffer.size());
+        H5::DataSpace dspace(1, dims);
+
+        if( !fWriter->OpenAndVerifyFile() ) return;
+        H5::Group* pfGroup = fWriter->AddGroup("pf-data");
+
+        std::stringstream namestream;
+        std::string dsetname;
+        namestream << "pf-data_" << this->fFlushPFIdx;
+        namestream >> dsetname;
+        H5::DataSet* dset = new H5::DataSet(pfGroup->createDataSet(dsetname.c_str(), *(this->fPFType), dspace));
+        dset->write((this->fPFDataBuffer).data(),*(this->fPFType));
+        this->fPFDataBuffer.clear();
+        this->fFlushPFIdx++;
     }
 
 }  //  namespace Katydid

@@ -266,6 +266,60 @@ namespace Katydid {
         H5::PredType::NATIVE_DOUBLE
     };
 
+    // Now the same for KTPowerFitData
+
+    typedef struct {
+        double Average;
+        double RMS;
+        double Skewness;
+        double Kurtosis;
+        double NormCentral;
+        double MeanCentral;
+        double SigmaCentral;
+        double MaximumCentral;
+        double RMSAwayFromCentral;
+        double CentralPowerRatio;
+    } PFData;
+
+    const size_t PFNFields = 10;
+    size_t PFSize = sizeof(PFData);
+    const char* PFFieldNames[PFNFields] = {
+        "Average",
+        "RMS",
+        "Skewness",
+        "Kurtosis",
+        "NormCentral",
+        "MeanCentral",
+        "SigmaCentral",
+        "MaximumCentral",
+        "RMSAwayFromCentral",
+        "CentralPowerRatio"
+    };
+    size_t PFFieldOffsets[PFNFields] = {
+        HOFFSET(PFData, Average),
+        HOFFSET(PFData, RMS),
+        HOFFSET(PFData, Skewness),
+        HOFFSET(PFData, Kurtosis),
+        HOFFSET(PFData, NormCentral),
+        HOFFSET(PFData, MeanCentral),
+        HOFFSET(PFData, SigmaCentral),
+        HOFFSET(PFData, MaximumCentral),
+        HOFFSET(PFData, RMSAwayFromCentral),
+        HOFFSET(PFData, CentralPowerRatio)
+    };
+    H5::PredType PFFieldTypes[PFNFields] = {
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE
+    };
+
     class KTHDF5TypeWriterEventAnalysis: public KTHDF5TypeWriter {
         /*
         * The usual constructor/destructor/slot boilerplate
@@ -284,8 +338,10 @@ namespace Katydid {
         void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
         void WriteProcessedTrack(Nymph::KTDataPtr data);
         void WriteMultiTrackEvent(Nymph::KTDataPtr data);
+        void WritePowerFitData(Nymph::KTDataPtr data);
         void WriteMTEBuffer();
         void WritePTBuffer();
+        void WritePFBuffer();
 
     private:
         std::vector<MTEData> fMTEDataBuffer;
@@ -293,9 +349,12 @@ namespace Katydid {
         std::vector<PTData> fMTETracksDataBuffer;
         std::vector<PTData> fPTDataBuffer;
         H5::CompType* fPTType;
+        std::vector<PFData> fPFDataBuffer;
+        H5::CompType* fPFType;
 
         unsigned fFlushMTEIdx;
         unsigned fFlushPTIdx;
+        unsigned fFlushPFIdx;
     };
 };
 
