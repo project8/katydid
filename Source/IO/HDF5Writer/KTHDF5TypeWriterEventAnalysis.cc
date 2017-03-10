@@ -73,6 +73,7 @@ namespace Katydid {
         fWriter->RegisterSlot("multi-track-event", this, &KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("final-write-events", this, &KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer);
         fWriter->RegisterSlot("power-fit", this, &KTHDF5TypeWriterEventAnalysis::WritePowerFitData);
+        fWriter->RegisterSlot("final-write-pf", this, &KTHDF5TypeWriterEventAnalysis::WritePFBuffer);
         return;
     }
 
