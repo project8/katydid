@@ -80,6 +80,8 @@ namespace Katydid
             double fTimeBinWidth;
             double fFreqBinWidth;
 
+            uint64_t fCurrentAcquisitionID;
+
             std::vector< TrackSet > fCompTracks; // input tracks
             std::vector< std::set< MultiPeakTrackRef, MTRComp > > fMPTracks;
 

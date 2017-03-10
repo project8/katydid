@@ -61,7 +61,7 @@ namespace Katydid
             }
 
             // determine the absolute path and parent directory
-            scarab::path absFilepath = scarab::fs::absolute(aFilename);
+            scarab::path absFilepath = scarab::expand_path(aFilename);
             scarab::path fileDir = absFilepath.parent_path();
 
             if (! scarab::fs::is_directory(fileDir))
@@ -130,7 +130,7 @@ namespace Katydid
         try
         {
             // determine the absolute path and parent directory
-            scarab::path absFilepath = scarab::fs::absolute(aFilename);
+            scarab::path absFilepath = scarab::expand_path(aFilename);
             KTDEBUG(publog, "Finishing file <" << absFilepath << "> for parent <" << aParent << ">");
 
             FileConstMapIt tThisFileConst = fFiles.find(absFilepath.native());
