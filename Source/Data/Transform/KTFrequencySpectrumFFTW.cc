@@ -201,7 +201,7 @@ namespace Katydid
             firstPosFreqBin = 0; // lastPosFreqBin = size();
             firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
         }
-        KTWARN( fslog, "firstPosFreqBin = " << firstPosFreqBin << "; lastPosFreqBin = " << lastPosFreqBin << "; firstNegFreqBin = " << firstNegFreqBin << "; lastNegFreqBin = " << lastNegFreqBin);
+        //KTWARN( fslog, "firstPosFreqBin = " << firstPosFreqBin << "; lastPosFreqBin = " << lastPosFreqBin << "; firstNegFreqBin = " << firstNegFreqBin << "; lastNegFreqBin = " << lastNegFreqBin);
 
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 

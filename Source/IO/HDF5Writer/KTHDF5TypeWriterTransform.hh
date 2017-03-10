@@ -56,14 +56,17 @@ Example:
 
 #include "boost/multi_array.hpp"
 
-namespace Katydid {
+namespace Katydid
+{
+
 	class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTMultiFSDataPolar;
     class KTMultiFSDataFFTW;
     class KTPowerSpectrumData;
 
-    class KTHDF5TypeWriterTransform: public KTHDF5TypeWriter {
+    class KTHDF5TypeWriterTransform: public KTHDF5TypeWriter
+    {
     /*
      * Constructors and Destructors
      */
@@ -88,38 +91,37 @@ namespace Katydid {
 	public:
         void WriteFrequencySpectrumDataPolar(Nymph::KTDataPtr data);
         void WriteFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
-        void WriteFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data);
-        void WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data);
+        //void WriteFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data);
+        //void WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data);
         void WriteFrequencySpectrumDataPolarPower(Nymph::KTDataPtr data);
         void WriteFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data);
-        void WriteFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data);
-        void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data);
-        void WriteFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data);
-        void WriteFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data);
+        //void WriteFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data);
+        //void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data);
+        //void WriteFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data);
+        //void WriteFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data);
 
         /*
          * Power Spectrum Data
          */
         void WritePowerSpectrum(Nymph::KTDataPtr data);
         void WritePowerSpectralDensity(Nymph::KTDataPtr data);
-        void WritePowerSpectrumDistribution(Nymph::KTDataPtr data);
-        void WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data);
+        //void WritePowerSpectrumDistribution(Nymph::KTDataPtr data);
+        //void WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data);
 
 
         /*
          * TF Data
          */
-        void WriteTimeFrequencyDataPolar(Nymph::KTDataPtr data);
-        void WriteTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data);
-        void WriteTimeFrequencyDataPolarPower(Nymph::KTDataPtr data);
+        //void WriteTimeFrequencyDataPolar(Nymph::KTDataPtr data);
+        //void WriteTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data);
+        //void WriteTimeFrequencyDataPolarPower(Nymph::KTDataPtr data);
 
 
         /*
 		 * Multispectral data
          */
-    public:
-        void WriteMultiFSDataPolar(Nymph::KTDataPtr data);
-        void WriteMultiFSDataFFTW(Nymph::KTDataPtr data);
+        //void WriteMultiFSDataPolar(Nymph::KTDataPtr data);
+        //void WriteMultiFSDataFFTW(Nymph::KTDataPtr data);
 
     /*
      * Internal data members
@@ -127,9 +129,7 @@ namespace Katydid {
     private:
     	typedef boost::multi_array<double, 4> fft_buffer;
         typedef boost::multi_array<double, 1> freq_buffer;
-    	H5::DataSet* CreateDSet(const std::string& name,
-    							const H5::Group* grp,
-    							const H5::DataSpace& ds);
+    	H5::DataSet* CreateDSet(const std::string& name, const H5::Group* grp, const H5::DataSpace& ds);
 
     	unsigned fNChannels;
         unsigned fNParts;

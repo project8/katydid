@@ -425,6 +425,7 @@ namespace Katydid
             ++fRecordsRead;
             fSamplesRead = fRecordsRead * fRecordSize;
             sliceHeader.SetIsNewAcquisition(true);
+            KTDEBUG(eggreadlog, "Changing to new acquisition; ID: " << fRecordsRead); // fRecordsRead is used for the AcqID; see below in slice header information
         }
 
         // ********************************** //
