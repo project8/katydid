@@ -18,7 +18,8 @@
 #include <string>
 #include "KTHDF5TypeWriterEventAnalysis.hh"
 
-namespace Katydid {
+namespace Katydid
+{
     KTLOGGER(publog, "KTHDF5TypeWriterEventAnalysis");
 
     static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
@@ -58,35 +59,43 @@ namespace Katydid {
             }
         }
 
-    KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis() {
+    KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis()
+    {
         if(fMTEType) delete fMTEType;
         if(fPTType) delete fPTType;
         if(fPFType) delete fPFType;
     }
 
     void KTHDF5TypeWriterEventAnalysis::RegisterSlots() {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates);
-        fWriter->RegisterSlot("waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate);
-        fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
+        //fWriter->RegisterSlot("frequency-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates);
+        //fWriter->RegisterSlot("waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate);
+        //fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("processed-track", this, &KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("final-write-tracks", this, &KTHDF5TypeWriterEventAnalysis::WritePTBuffer);
         fWriter->RegisterSlot("multi-track-event", this, &KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent);
         fWriter->RegisterSlot("final-write-events", this, &KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer);
         fWriter->RegisterSlot("power-fit", this, &KTHDF5TypeWriterEventAnalysis::WritePowerFitData);
         fWriter->RegisterSlot("final-write-pf", this, &KTHDF5TypeWriterEventAnalysis::WritePFBuffer);
+
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data) {
+    /*
+    void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data)
+    {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data)
+    {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
+    {
         KTDEBUG("NOT IMPLEMENTED");
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data) {
+    */
+    void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data)
+    {
         KTDEBUG(publog, "Processing Tracks");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
@@ -117,12 +126,13 @@ namespace Katydid {
         track.InterceptSigma = ptData.GetInterceptSigma();
         track.TotalPowerSigma = ptData.GetTotalPowerSigma();
 
-        (this->fPTDataBuffer).push_back(track);
+        (fPTDataBuffer).push_back(track);
 
         KTDEBUG("Done.");
         return;
     }
-    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data)
+    {
         KTDEBUG(publog, "Processing MTE");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
@@ -154,12 +164,12 @@ namespace Katydid {
         event.FirstTrackIntercept = mteData.GetFirstTrackIntercept();
         event.FirstTrackTotalPower = mteData.GetFirstTrackTotalPower();
         event.UnknownEventTopology = mteData.GetUnknownEventTopology();
-        (this->fMTEDataBuffer).push_back(event);
+        fMTEDataBuffer.push_back(event);
 
         // Write the tracks that make up this event
         KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         PTData track;
-        for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
+        for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); ++MTETrackIt)
         {
             track.Component = MTETrackIt->GetComponent();
             track.AcquisitionID = MTETrackIt->GetAcquisitionID();
@@ -186,7 +196,7 @@ namespace Katydid {
             track.SlopeSigma = MTETrackIt->GetSlopeSigma();
             track.InterceptSigma = MTETrackIt->GetInterceptSigma();
             track.TotalPowerSigma = MTETrackIt->GetTotalPowerSigma();
-            (this->fMTETracksDataBuffer).push_back(track);
+            fMTETracksDataBuffer.push_back(track);
             KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }
 
@@ -195,11 +205,18 @@ namespace Katydid {
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer() {
-        KTDEBUG("writing MTE buffer.");
+    void KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer()
+    {
+        if (fMTEDataBuffer.empty())
+        {
+            KTDEBUG("MTE buffer is empty; no multi-track events written");
+            return;
+        }
+
+        KTDEBUG("Writing MTE buffer.");
         // Now create the dataspace we need
-        hsize_t* dims_cands = new hsize_t(this->fMTEDataBuffer.size());
-        hsize_t* dims_tracks = new hsize_t(this->fMTETracksDataBuffer.size());
+        hsize_t* dims_cands = new hsize_t(fMTEDataBuffer.size());
+        hsize_t* dims_tracks = new hsize_t(fMTETracksDataBuffer.size());
         H5::DataSpace dspace_cands(1, dims_cands);
         H5::DataSpace dspace_tracks(1, dims_tracks);
 
@@ -212,34 +229,37 @@ namespace Katydid {
         // Write the event information
         std::stringstream namestream;
         std::string dsetname;
-        namestream << "candidates_" << this->fFlushMTEIdx;
+        namestream << "candidates_" << fFlushMTEIdx;
         namestream >> dsetname;
-        H5::DataSet* dset_cands = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(),
-                                                                           *(this->fMTEType),
-                                                                           dspace_cands));
-        dset_cands->write((this->fMTEDataBuffer).data(),*(this->fMTEType));
+        H5::DataSet* dset_cands = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(), *fMTEType, dspace_cands));
+        dset_cands->write(fMTEDataBuffer.data(), *fMTEType);
 
         // Write the tracks that belong to the current events
         //dsetname.clear();
         //namestream.str(std::string());
         std::stringstream namestream2;
         std::string dsetname2;
-        namestream2 << "candidate_tracks_" << this->fFlushMTEIdx;
+        namestream2 << "candidate_tracks_" << fFlushMTEIdx;
         namestream2 >> dsetname2;
-        H5::DataSet* dset_tracks = new H5::DataSet(candidateTracksGroup->createDataSet(dsetname2.c_str(),
-                                                                           *(this->fPTType),
-                                                                           dspace_tracks));
-        dset_tracks->write((this->fMTETracksDataBuffer).data(),*(this->fPTType));
+        H5::DataSet* dset_tracks = new H5::DataSet(candidateTracksGroup->createDataSet(dsetname2.c_str(), *fPTType, dspace_tracks));
+        dset_tracks->write(fMTETracksDataBuffer.data(), *fPTType);
 
-        this->fMTETracksDataBuffer.clear();
-        this->fMTEDataBuffer.clear();
-        this->fFlushMTEIdx++;
+        fMTETracksDataBuffer.clear();
+        fMTEDataBuffer.clear();
+        fFlushMTEIdx++;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WritePTBuffer() {
-        KTDEBUG("writing PT buffer.");
+    void KTHDF5TypeWriterEventAnalysis::WritePTBuffer()
+    {
+        if (fPTDataBuffer.empty())
+        {
+            KTDEBUG("PT buffer is empty; no tracks written");
+            return;
+        }
+
+        KTDEBUG("Writing PT buffer.");
         // Now create the dataspace we need
-        hsize_t* dims = new hsize_t(this->fPTDataBuffer.size());
+        hsize_t* dims = new hsize_t(fPTDataBuffer.size());
         H5::DataSpace dspace(1, dims);
 
         if( !fWriter->OpenAndVerifyFile() ) return;
@@ -249,14 +269,12 @@ namespace Katydid {
         // OK, create the dataset and write it down.
         std::stringstream namestream;
         std::string dsetname;
-        namestream << "tracks_" << this->fFlushPTIdx;
+        namestream << "tracks_" << fFlushPTIdx;
         namestream >> dsetname;
-        H5::DataSet* dset = new H5::DataSet(tracksGroup->createDataSet(dsetname.c_str(),
-                                                                           *(this->fPTType),
-                                                                           dspace));
-        dset->write((this->fPTDataBuffer).data(),*(this->fPTType));
-        this->fPTDataBuffer.clear();
-        this->fFlushPTIdx++;
+        H5::DataSet* dset = new H5::DataSet(tracksGroup->createDataSet(dsetname.c_str(), *fPTType, dspace));
+        dset->write(fPTDataBuffer.data(), *fPTType);
+        fPTDataBuffer.clear();
+        fFlushPTIdx++;
     }
 
     void KTHDF5TypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data) {

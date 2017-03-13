@@ -19,6 +19,7 @@
 #include "KTSliceHeader.hh"
 
 #include "factory.hh"
+#include "path.hh"
 
 using std::string;
 
@@ -124,7 +125,7 @@ namespace Katydid
 
         // ******************************************************************** //
         // Call BreakEgg - this actually opens the file and loads its content
-        Nymph::KTDataPtr headerPtr = reader->BreakEgg(fFilename);
+        Nymph::KTDataPtr headerPtr = reader->BreakEgg(scarab::expand_path(fFilename).native());
         if (! headerPtr)
         {
             KTERROR(egglog, "Egg did not break");

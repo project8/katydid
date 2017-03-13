@@ -8,7 +8,8 @@
 #ifndef __KTHDF5TYPEWRITEREVENTANALYSIS_HH
 #define __KTHDF5TYPEWRITEREVENTANALYSIS_HH
 
-extern "C" {
+extern "C"
+{
     #include "hdf5.h"
     #include "hdf5_hl.h"
 }
@@ -17,13 +18,15 @@ extern "C" {
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 
-namespace Katydid {
+namespace Katydid
+{
 
     /*
      * These are the records we will be writing to the 
      * data table.
      */
-    typedef struct {
+    typedef struct
+    {
         unsigned Component;
         uint64_t AcquisitionID;
         unsigned EventID;
@@ -62,7 +65,8 @@ namespace Katydid {
      */
     const size_t MTENFields = 26;
     size_t MTESize = sizeof(MTEData);
-    const char* MTEFieldNames[MTENFields] = {
+    const char* MTEFieldNames[MTENFields] =
+    {
         "Component",
         "AcquisitionID",
         "EventID",
@@ -90,7 +94,8 @@ namespace Katydid {
         "FirstTrackTotalPower",
         "UnknownEventTopology"
     };
-    size_t MTEFieldOffsets[MTENFields] = {
+    size_t MTEFieldOffsets[MTENFields] =
+    {
         HOFFSET(MTEData, Component),
         HOFFSET(MTEData, AcquisitionID),
         HOFFSET(MTEData, EventID),
@@ -120,7 +125,8 @@ namespace Katydid {
     };
 
 
-    H5::PredType MTEFieldTypes[MTENFields] = {
+    H5::PredType MTEFieldTypes[MTENFields] =
+    {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT64,
         H5::PredType::NATIVE_UINT,
@@ -154,7 +160,8 @@ namespace Katydid {
      * Keep an eye on KTProcessedTrackData.hh - if that changes, you need to change the definitions here too
      */ 
 
-    typedef struct {
+    typedef struct
+    {
         unsigned Component;
         uint64_t AcquisitionID;
         unsigned TrackID;
@@ -184,7 +191,8 @@ namespace Katydid {
 
     const size_t PTNFields = 25;
     size_t PTSize = sizeof(PTData);
-    const char* PTFieldNames[PTNFields] = {
+    const char* PTFieldNames[PTNFields] =
+    {
         "Component",
         "AcquisitionID",
         "TrackID",
@@ -211,7 +219,8 @@ namespace Katydid {
         "InterceptSigma",
         "TotalPowerSigma"
     };
-    size_t PTFieldOffsets[PTNFields] = {
+    size_t PTFieldOffsets[PTNFields] =
+    {
         HOFFSET(PTData, Component),
         HOFFSET(PTData, AcquisitionID),
         HOFFSET(PTData, TrackID),
@@ -238,7 +247,8 @@ namespace Katydid {
         HOFFSET(PTData, InterceptSigma),
         HOFFSET(PTData, TotalPowerSigma)
     };
-    H5::PredType PTFieldTypes[PTNFields] = {
+    H5::PredType PTFieldTypes[PTNFields] =
+    {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT64,
         H5::PredType::NATIVE_UINT,
@@ -320,7 +330,8 @@ namespace Katydid {
         H5::PredType::NATIVE_DOUBLE
     };
 
-    class KTHDF5TypeWriterEventAnalysis: public KTHDF5TypeWriter {
+    class KTHDF5TypeWriterEventAnalysis: public KTHDF5TypeWriter
+    {
         /*
         * The usual constructor/destructor/slot boilerplate
         */
@@ -333,9 +344,9 @@ namespace Katydid {
     public:
         void ProcessEggHeader(KTEggHeader* header);
 
-        void WriteFrequencyCandidates(Nymph::KTDataPtr data);
-        void WriteWaterfallCandidate(Nymph::KTDataPtr data);
-        void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+        //void WriteFrequencyCandidates(Nymph::KTDataPtr data);
+        //void WriteWaterfallCandidate(Nymph::KTDataPtr data);
+        //void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
         void WriteProcessedTrack(Nymph::KTDataPtr data);
         void WriteMultiTrackEvent(Nymph::KTDataPtr data);
         void WritePowerFitData(Nymph::KTDataPtr data);
