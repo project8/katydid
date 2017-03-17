@@ -91,9 +91,11 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTDummyDataObject1 > fSlotOne;
-            Nymph::KTSlotDataOneType< KTDummyDataObject2 > fSlotTwo;
-            Nymph::KTSlotDataOneType< KTDummyDataObject3 > fSlotThree;
+            // These are commented out because slots with dummy objects prevents Katydid from building successfully
+
+            // Nymph::KTSlotDataOneType< KTDummyDataObject1 > fSlotOne;
+            // Nymph::KTSlotDataOneType< KTDummyDataObject2 > fSlotTwo;
+            // Nymph::KTSlotDataOneType< KTDummyDataObject3 > fSlotThree;
     };
 
     inline double KTProcessorTemplate::GetMemberVariable1() const
