@@ -23,11 +23,11 @@ namespace Katydid
             fMemberVariable3(0.),
             fDummySignal1("dummy-signal-1", this),
             fDummySignal2("dummy-signal-2", this),
-            fDummySignal3("dummy-signal-3", this)
+            fDummySignal3("dummy-signal-3", this),
+            fSlotOne("dummy-slot-1", this, &KTProcessorTemplate::AnalyzeDummyObject1),
+            fSlotTwo("dummy-slot-2", this, &KTProcessorTemplate::AnalyzeDummyObject2),
+            fSlotThree("dummy-slot-3", this, &KTProcessedTemplate::AnalyzeDummyObject3)
     {
-        RegisterSlot( "dummy-slot-1", this, &KTProcessorTemplate::SlotFunctionDummyObject1 );
-        RegisterSlot( "dummy-slot-2", this, &KTProcessorTemplate::SlotFunctionDummyObject2 );
-        RegisterSlot( "dummy-slot-3", this, &KTProcessorTemplate::SlotFunctionDummyObject3 );
     }
 
     KTProcessorTemplate::~KTProcessorTemplate()
