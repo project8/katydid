@@ -91,11 +91,10 @@ namespace Katydid
             //***************
 
         private:
-            // These are commented out because slots with dummy objects prevents Katydid from building successfully
-
-            // Nymph::KTSlotDataOneType< KTDummyDataObject1 > fSlotOne;
-            // Nymph::KTSlotDataOneType< KTDummyDataObject2 > fSlotTwo;
-            // Nymph::KTSlotDataOneType< KTDummyDataObject3 > fSlotThree;
+            // If you would like to build this template as-is, you must comment out the following slot initializations because they use made-up data types
+            Nymph::KTSlotDataOneType< KTDummyDataObject1 > fSlotOne;
+            Nymph::KTSlotDataOneType< KTDummyDataObject2 > fSlotTwo;
+            Nymph::KTSlotDataOneType< KTDummyDataObject3 > fSlotThree;
     };
 
     inline double KTProcessorTemplate::GetMemberVariable1() const
