@@ -11,6 +11,7 @@
 #include "KTData.hh"
 
 #include "factory.hh"
+#include "path.hh"
 
 #include <string>
 
@@ -22,13 +23,16 @@ namespace Katydid
     class KTEggReader
     {
         public:
+            typedef std::vector< scarab::path > path_vec;
+
+        public:
             KTEggReader();
             virtual ~KTEggReader();
 
         public:
             virtual bool Configure(const KTEggProcessor& eggProc) = 0;
 
-            virtual Nymph::KTDataPtr BreakEgg(const std::string&) = 0;
+            virtual Nymph::KTDataPtr BreakEgg(const path_vec&) = 0;
             virtual Nymph::KTDataPtr HatchNextSlice() = 0;
             virtual bool CloseEgg() = 0;
 

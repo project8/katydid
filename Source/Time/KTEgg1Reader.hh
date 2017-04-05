@@ -55,7 +55,7 @@ namespace Katydid
         public:
             virtual bool Configure(const KTEggProcessor& eggProc);
 
-            virtual Nymph::KTDataPtr BreakEgg(const std::string& filename);
+            virtual Nymph::KTDataPtr BreakEgg(const path_vec& filenames);
             virtual Nymph::KTDataPtr HatchNextSlice();
             virtual bool CloseEgg();
 
