@@ -38,9 +38,10 @@ namespace Katydid
             fStride(0),
             fStartTime(0.),
             //fHatchNextSlicePtr(NULL),
-            fMonarch(NULL),
-            fM3Stream(NULL),
-            fM3StreamHeader(NULL),
+            fFilenames(),
+            fMonarch(nullptr),
+            fM3Stream(nullptr),
+            fM3StreamHeader(nullptr),
             fHeaderPtr(new Nymph::KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fMasterSliceHeader(),
@@ -76,7 +77,7 @@ namespace Katydid
         return true;
     }
 
-    Nymph::KTDataPtr KTEgg3Reader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTEgg3Reader::BreakEgg(const path_vec& filenames)
     {
         if (fStride == 0) fStride = fSliceSize;
 
@@ -85,11 +86,14 @@ namespace Katydid
             delete fMonarch;
         }
 
+        // copy the vector of filenames
+        fFilenames = filenames;
+
         // open the file
-        KTINFO(eggreadlog, "Opening egg file <" << filename << ">");
+        KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0] << ">");
         try
         {
-            fMonarch = Monarch3::OpenForReading(filename);
+            fMonarch = Monarch3::OpenForReading(fFilenames[0].native());
         }
         catch (M3Exception& e)
         {
@@ -213,254 +217,262 @@ namespace Katydid
         // flag to use later, which indicates if this new slice is in a new acquisition
         bool isNewAcquisition = false;
 
-        if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
+        try
         {
-            // Assumed values in fReadState:
-            // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr are at the intended starting position in the run.
-            //   They may be (0,0), or they may specify some offset into the run.
-            // - fCurrentRecord is 0
-
-            KTDEBUG(eggreadlog, "Reading first record");
-            isNewAcquisition = true;
-
-            // if we're at the beginning of the run, load the first record
-            if (! fM3Stream->ReadRecord(fReadState.fStartOfLastSliceRecord))
+            if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
             {
-                KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
-                return Nymph::KTDataPtr();
-            }
-            // and set the read position
-            readPos = fReadState.fStartOfLastSliceReadPtr;
+                // Assumed values in fReadState:
+                // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr are at the intended starting position in the run.
+                //   They may be (0,0), or they may specify some offset into the run.
+                // - fCurrentRecord is 0
 
-            // the current record is the one we just loaded
-            fReadState.fCurrentRecord = fReadState.fStartOfLastSliceRecord;
+                KTDEBUG(eggreadlog, "Reading first record");
+                isNewAcquisition = true;
 
-            // at this point, fReadState.fStartOfLastSliceRecord and fReadState.fStartOfLastSliceReadPtr are where they need to be
-            // for the slice that will follow this one.
-            // but we need to set fReadState.fStartOfSliceAcquisitionId
-            fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
-
-            fAcqTimeInRun = GetTimeInRun();
-
-            fSliceNumber = 0;
-        }
-        else
-        {
-            // Assumed values in fReadState:
-            // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr were left at the beginning of the last slice
-            // - fCurrentRecord is the record # (from the start of the run) currently loaded in fStream0
-
-            // determine the initial shift in records required to get to the start of the last slice from the current record
-            int recordShift = (int)fReadState.fCurrentRecord - (int)fReadState.fStartOfLastSliceRecord;
-
-            // advance the read position from the last slice by the stride
-            readPos = fReadState.fStartOfLastSliceReadPtr + fStride;
-
-            // check whether we have to advance to a new record
-            while (readPos >= recordSize)
-            {
-                readPos -= recordSize;
-                ++recordShift;
-            }
-            KTDEBUG(eggreadlog, "Preparing to read next slice; Record shift: " << recordShift << "; Read position (in record): " << readPos);
-            // readPos is now the read position in the new record that will be loaded (or the current record, if we stay on this record)
-
-            // if necessary, move to a new record
-            if( recordShift != 0 )
-            {
-                if (! fM3Stream->ReadRecord(recordShift - 1))  // 1 is subtracted since ReadRecord(0) goes to the next record
+                // if we're at the beginning of the run, load the first record
+                if (! fM3Stream->ReadRecord(fReadState.fStartOfLastSliceRecord))
                 {
-                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                    KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();
                 }
-                // set the current record according to what's now loaded
-                fReadState.fCurrentRecord = fReadState.fCurrentRecord + recordShift;
-                // check if we're in a new acquisition
-                if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
+                // and set the read position
+                readPos = fReadState.fStartOfLastSliceReadPtr;
+
+                // the current record is the one we just loaded
+                fReadState.fCurrentRecord = fReadState.fStartOfLastSliceRecord;
+
+                // at this point, fReadState.fStartOfLastSliceRecord and fReadState.fStartOfLastSliceReadPtr are where they need to be
+                // for the slice that will follow this one.
+                // but we need to set fReadState.fStartOfSliceAcquisitionId
+                fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
+
+                fAcqTimeInRun = GetTimeInRun();
+
+                fSliceNumber = 0;
+            }
+            else
+            {
+                // Assumed values in fReadState:
+                // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr were left at the beginning of the last slice
+                // - fCurrentRecord is the record # (from the start of the run) currently loaded in fStream0
+
+                // determine the initial shift in records required to get to the start of the last slice from the current record
+                int recordShift = (int)fReadState.fCurrentRecord - (int)fReadState.fStartOfLastSliceRecord;
+
+                // advance the read position from the last slice by the stride
+                readPos = fReadState.fStartOfLastSliceReadPtr + fStride;
+
+                // check whether we have to advance to a new record
+                while (readPos >= recordSize)
                 {
-                    KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId());
-                    isNewAcquisition = true;
-                    // then we need to start reading at the start of this record
-                    readPos = 0;
-                    // update these now (even though they're done just below) so we can accurately get the time in run
-                    fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
-                    fReadState.fStartOfLastSliceReadPtr = readPos;
-                    fAcqTimeInRun = GetTimeInRun();
+                    readPos -= recordSize;
+                    ++recordShift;
                 }
-            }
+                KTDEBUG(eggreadlog, "Preparing to read next slice; Record shift: " << recordShift << "; Read position (in record): " << readPos);
+                // readPos is now the read position in the new record that will be loaded (or the current record, if we stay on this record)
 
-            // now set fStartOfLastSliceRecord and fStartOfLastSliceReadPtr for this slice (they'll be used next time around)
-            fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
-            fReadState.fStartOfLastSliceReadPtr = readPos;
-            // also set fStartOfSliceAcquisitionId
-            fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
-
-            ++fSliceNumber;
-        }
-
-        // at this point, the stream is ready for data to be copied from it, and fReadState is up-to-date
-
-        // create the new data object
-        Nymph::KTDataPtr newData(new Nymph::KTData());
-
-        // add a slice header, and fill out the slice header information
-        KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
-        sliceHeader = fMasterSliceHeader;
-        sliceHeader.SetIsNewAcquisition(isNewAcquisition);
-        sliceHeader.SetTimeInRun(GetTimeInRun());
-        sliceHeader.SetTimeInAcq(sliceHeader.GetTimeInRun() - fAcqTimeInRun);
-        sliceHeader.SetSliceNumber(fSliceNumber);
-        sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
-        sliceHeader.SetStartSampleNumber(readPos);
-
-        // create the raw time series objects that will contain the new copies of slices
-        // and set some channel-specific slice header info
-        vector< KTRawTimeSeries* > newSlices(nChannels);
-        for (unsigned iChan = 0; iChan < nChannels; ++iChan)
-        {
-            // nBins = fSliceSize * sampleSize to allow for real and complex samples
-            newSlices[iChan] = new KTRawTimeSeries(fM3Stream->GetDataTypeSize(),
-                    ConvertMonarch3DataFormat(fM3StreamHeader->GetDataFormat()),
-                    fSliceSize * sampleSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
-            newSlices[iChan]->SetSampleSize(sampleSize);
-
-            sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
-            sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
-            sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
-            sliceHeader.SetRawDataFormatType(fHeader.GetChannelHeader( iChan )->GetDataFormat(), iChan);
-        }
-
-        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
-
-        // the write position on the new slice
-        unsigned writePos = 0;
-
-        // the number of samples still to copy to the new slice
-        unsigned samplesRemainingToCopy = fSliceSize;
-
-        // the last sample that will be copied in a record, for each copy
-        // the motivation for calculating this (at least initially) is to know the last (record, sample) pair for the slice
-        unsigned lastSampleCopied = 0;
-
-        fReadState.fStatus = MonarchReadState::kContinueReading;
-
-        //****************************************
-        // loop until all samples have been copied
-        //****************************************
-        while( samplesRemainingToCopy > 0 )
-        {
-            // calculate the end-of-slice position
-            unsigned endOfSlicePos = readPos + samplesRemainingToCopy; // this is 1 past the last sample in the slice
-
-            // calculate the number of samples to copy from this record
-            unsigned samplesToCopyFromThisRecord = samplesRemainingToCopy;
-            // check if the slice goes beyond the end of the record, and if so, reduce the number of samples to copy from this record
-            if( endOfSlicePos > recordSize )
-            {
-                // samplesBeyondRecord = endOfSlicePos - recordSize;
-                samplesToCopyFromThisRecord -= endOfSlicePos - recordSize;
-            }
-            lastSampleCopied = readPos + samplesToCopyFromThisRecord - 1;
-
-            // number of bytes to copy from this record
-            unsigned bytesToCopy = samplesToCopyFromThisRecord * nBytesInSample;
-
-            // write position in bytes
-            unsigned writePosBytes = writePos * nBytesInSample;
-            unsigned readPosBytes = readPos * nBytesInSample;
-
-            // copy the samples from this record for each channel
-            KTDEBUG(eggreadlog, "Copying data to slice; " << bytesToCopy << " bytes in " << samplesToCopyFromThisRecord << " samples");
-            for( unsigned iChan = 0; iChan < nChannels; ++iChan )
-            {
-                memcpy( newSlices[iChan]->GetStorage() + writePosBytes,
-                        fM3Stream->GetChannelRecord( iChan )->GetData() + readPosBytes,
-                        bytesToCopy );
-            }
-
-            //*** DEBUG ***//
-            /*
-            std::stringstream readstream, writestream;
-            M3DataReader< int64_t > readIfc(fM3Stream->GetChannelRecord( 0 )->GetData(), fHeader.GetChannelHeader(0)->GetDataTypeSize(), fHeader.GetChannelHeader(0)->GetDataFormat());
-            KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
-            for (unsigned iBin = 0; iBin < 30; ++iBin)
-            {
-                std::cout << "read at " << readPos + iBin << " = " << readPos << " + " << iBin << ";    write at " << writePos + iBin << " = " << writePos << " + " << iBin << std::endl;
-                readstream << readIfc.at( readPos + iBin ) << "  ";
-                writestream << writeIfc( writePos + iBin ) << "  ";
-            }
-            KTWARN(eggreadlog, "Reading:  " << readstream.str());
-            KTWARN(eggreadlog, "Writing:  " << writestream.str());
-            */
-            //*** DEBUG ***//
-
-            // update samplesRemainingToCopy
-            samplesRemainingToCopy -= samplesToCopyFromThisRecord;
-
-            // check if there's still more to do
-            if( samplesRemainingToCopy > 0 )
-            {
-                // move to the next record
-                if (! fM3Stream->ReadRecord())
+                // if necessary, move to a new record
+                if( recordShift != 0 )
                 {
-                    KTWARN(eggreadlog, "End of file reached before slice was completely read (or something else went wrong)");
-                    return Nymph::KTDataPtr();
-                }
-                fReadState.fCurrentRecord = fReadState.fCurrentRecord + 1;
-
-                readPos = 0; // reset the read position, which is now at the beginning of the new record
-
-                // check if we've moved to a new acquisition
-                if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
-                {
-                    KTDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
-                            "\tUnused samples: " << writePos + samplesToCopyFromThisRecord);
-                    // now we need to start the slice over with the now-current record
-                    writePos = 0;
-                    samplesRemainingToCopy = fSliceSize;
-
-                    // reset fStartOfLastSliceRecord and fStartOfLastSliceReadPtr for this slice (they'll be used next time around)
-                    fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
-                    fReadState.fStartOfLastSliceReadPtr = 0;
-                    // also reset fStartOfSliceAcquisitionId
-                    fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
-
-                    // reset slice data
-                    sliceHeader.SetIsNewAcquisition(true);
-                    sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
-                    sliceHeader.SetStartSampleNumber(readPos);
-                    for (unsigned iChan = 0; iChan < nChannels; ++iChan)
+                    if (! fM3Stream->ReadRecord(recordShift - 1))  // 1 is subtracted since ReadRecord(0) goes to the next record
                     {
-                        sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
-                        sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
-                        sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
+                        KTINFO(eggreadlog, "End of egg file reached after reading new records");
+                        return Nymph::KTDataPtr();
                     }
-                    sliceHeader.SetTimeInRun(GetTimeInRun());
-                    fAcqTimeInRun = sliceHeader.GetTimeInRun();
-                    KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
-                            "\tCurent record = " << fReadState.fCurrentRecord << '\n' <<
-                            "\tSlice start sample in record = " << readPos);
-                } // end if-block dealing with new acquisitions
+                    // set the current record according to what's now loaded
+                    fReadState.fCurrentRecord = fReadState.fCurrentRecord + recordShift;
+                    // check if we're in a new acquisition
+                    if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
+                    {
+                        KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId());
+                        isNewAcquisition = true;
+                        // then we need to start reading at the start of this record
+                        readPos = 0;
+                        // update these now (even though they're done just below) so we can accurately get the time in run
+                        fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
+                        fReadState.fStartOfLastSliceReadPtr = readPos;
+                        fAcqTimeInRun = GetTimeInRun();
+                    }
+                }
 
-                // and now we're ready to loop back to copy samples from the new record
-            } // end if-block used when there are still samples left to copy for this slice
+                // now set fStartOfLastSliceRecord and fStartOfLastSliceReadPtr for this slice (they'll be used next time around)
+                fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
+                fReadState.fStartOfLastSliceReadPtr = readPos;
+                // also set fStartOfSliceAcquisitionId
+                fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
 
-        } // end while-loop responsible for copying samples to the slice
+                ++fSliceNumber;
+            }
 
-        // at this point, all of the samples have been copied into the new slice
+            // at this point, the stream is ready for data to be copied from it, and fReadState is up-to-date
 
-        // the slice header gets information about where the slice ended
-        sliceHeader.SetEndRecordNumber(fReadState.fCurrentRecord);
-        sliceHeader.SetEndSampleNumber(lastSampleCopied);
+            // create the new data object
+            Nymph::KTDataPtr newData(new Nymph::KTData());
 
-        // finally, set the records in the new data object
-        KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(nChannels);
-        for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
-        {
-            tsData.SetTimeSeries(newSlices[iChannel], iChannel);
+            // add a slice header, and fill out the slice header information
+            KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
+            sliceHeader = fMasterSliceHeader;
+            sliceHeader.SetIsNewAcquisition(isNewAcquisition);
+            sliceHeader.SetTimeInRun(GetTimeInRun());
+            sliceHeader.SetTimeInAcq(sliceHeader.GetTimeInRun() - fAcqTimeInRun);
+            sliceHeader.SetSliceNumber(fSliceNumber);
+            sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
+            sliceHeader.SetStartSampleNumber(readPos);
+
+            // create the raw time series objects that will contain the new copies of slices
+            // and set some channel-specific slice header info
+            vector< KTRawTimeSeries* > newSlices(nChannels);
+            for (unsigned iChan = 0; iChan < nChannels; ++iChan)
+            {
+                // nBins = fSliceSize * sampleSize to allow for real and complex samples
+                newSlices[iChan] = new KTRawTimeSeries(fM3Stream->GetDataTypeSize(),
+                        ConvertMonarch3DataFormat(fM3StreamHeader->GetDataFormat()),
+                        fSliceSize * sampleSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+                newSlices[iChan]->SetSampleSize(sampleSize);
+
+                sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
+                sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
+                sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
+                sliceHeader.SetRawDataFormatType(fHeader.GetChannelHeader( iChan )->GetDataFormat(), iChan);
+            }
+
+            KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
+
+            // the write position on the new slice
+            unsigned writePos = 0;
+
+            // the number of samples still to copy to the new slice
+            unsigned samplesRemainingToCopy = fSliceSize;
+
+            // the last sample that will be copied in a record, for each copy
+            // the motivation for calculating this (at least initially) is to know the last (record, sample) pair for the slice
+            unsigned lastSampleCopied = 0;
+
+            fReadState.fStatus = MonarchReadState::kContinueReading;
+
+            //****************************************
+            // loop until all samples have been copied
+            //****************************************
+            while( samplesRemainingToCopy > 0 )
+            {
+                // calculate the end-of-slice position
+                unsigned endOfSlicePos = readPos + samplesRemainingToCopy; // this is 1 past the last sample in the slice
+
+                // calculate the number of samples to copy from this record
+                unsigned samplesToCopyFromThisRecord = samplesRemainingToCopy;
+                // check if the slice goes beyond the end of the record, and if so, reduce the number of samples to copy from this record
+                if( endOfSlicePos > recordSize )
+                {
+                    // samplesBeyondRecord = endOfSlicePos - recordSize;
+                    samplesToCopyFromThisRecord -= endOfSlicePos - recordSize;
+                }
+                lastSampleCopied = readPos + samplesToCopyFromThisRecord - 1;
+
+                // number of bytes to copy from this record
+                unsigned bytesToCopy = samplesToCopyFromThisRecord * nBytesInSample;
+
+                // write position in bytes
+                unsigned writePosBytes = writePos * nBytesInSample;
+                unsigned readPosBytes = readPos * nBytesInSample;
+
+                // copy the samples from this record for each channel
+                KTDEBUG(eggreadlog, "Copying data to slice; " << bytesToCopy << " bytes in " << samplesToCopyFromThisRecord << " samples");
+                for( unsigned iChan = 0; iChan < nChannels; ++iChan )
+                {
+                    memcpy( newSlices[iChan]->GetStorage() + writePosBytes,
+                            fM3Stream->GetChannelRecord( iChan )->GetData() + readPosBytes,
+                            bytesToCopy );
+                }
+
+                //*** DEBUG ***//
+                /*
+                std::stringstream readstream, writestream;
+                M3DataReader< int64_t > readIfc(fM3Stream->GetChannelRecord( 0 )->GetData(), fHeader.GetChannelHeader(0)->GetDataTypeSize(), fHeader.GetChannelHeader(0)->GetDataFormat());
+                KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
+                for (unsigned iBin = 0; iBin < 30; ++iBin)
+                {
+                    std::cout << "read at " << readPos + iBin << " = " << readPos << " + " << iBin << ";    write at " << writePos + iBin << " = " << writePos << " + " << iBin << std::endl;
+                    readstream << readIfc.at( readPos + iBin ) << "  ";
+                    writestream << writeIfc( writePos + iBin ) << "  ";
+                }
+                KTWARN(eggreadlog, "Reading:  " << readstream.str());
+                KTWARN(eggreadlog, "Writing:  " << writestream.str());
+                */
+                //*** DEBUG ***//
+
+                // update samplesRemainingToCopy
+                samplesRemainingToCopy -= samplesToCopyFromThisRecord;
+
+                // check if there's still more to do
+                if( samplesRemainingToCopy > 0 )
+                {
+                    // move to the next record
+                    if (! fM3Stream->ReadRecord())
+                    {
+                        KTINFO(eggreadlog, "End of file reached in the middle of reading out a slice");
+                        return Nymph::KTDataPtr();
+                    }
+                    fReadState.fCurrentRecord = fReadState.fCurrentRecord + 1;
+
+                    readPos = 0; // reset the read position, which is now at the beginning of the new record
+
+                    // check if we've moved to a new acquisition
+                    if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
+                    {
+                        KTDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
+                                "\tUnused samples: " << writePos + samplesToCopyFromThisRecord);
+                        // now we need to start the slice over with the now-current record
+                        writePos = 0;
+                        samplesRemainingToCopy = fSliceSize;
+
+                        // reset fStartOfLastSliceRecord and fStartOfLastSliceReadPtr for this slice (they'll be used next time around)
+                        fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
+                        fReadState.fStartOfLastSliceReadPtr = 0;
+                        // also reset fStartOfSliceAcquisitionId
+                        fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
+
+                        // reset slice data
+                        sliceHeader.SetIsNewAcquisition(true);
+                        sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
+                        sliceHeader.SetStartSampleNumber(readPos);
+                        for (unsigned iChan = 0; iChan < nChannels; ++iChan)
+                        {
+                            sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
+                            sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
+                            sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
+                        }
+                        sliceHeader.SetTimeInRun(GetTimeInRun());
+                        fAcqTimeInRun = sliceHeader.GetTimeInRun();
+                        KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
+                                "\tCurent record = " << fReadState.fCurrentRecord << '\n' <<
+                                "\tSlice start sample in record = " << readPos);
+                    } // end if-block dealing with new acquisitions
+
+                    // and now we're ready to loop back to copy samples from the new record
+                } // end if-block used when there are still samples left to copy for this slice
+
+            } // end while-loop responsible for copying samples to the slice
+
+            // at this point, all of the samples have been copied into the new slice
+
+            // the slice header gets information about where the slice ended
+            sliceHeader.SetEndRecordNumber(fReadState.fCurrentRecord);
+            sliceHeader.SetEndSampleNumber(lastSampleCopied);
+
+            // finally, set the records in the new data object
+            KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(nChannels);
+            for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
+            {
+                tsData.SetTimeSeries(newSlices[iChannel], iChannel);
+            }
+
+            return newData;
         }
-
-        return newData;
+        catch (M3Exception& e)
+        {
+            KTERROR(eggreadlog, "Error while hatching a slice: " << e.what());
+            return Nymph::KTDataPtr();
+        }
     }
 
 
