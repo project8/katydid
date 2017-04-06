@@ -258,7 +258,7 @@ namespace Katydid
                 // - fCurrentRecord is the record # (from the start of the run) currently loaded in fStream0
 
                 // determine the initial shift in records required to get to the start of the last slice from the current record
-                int recordShift = (int)fReadState.fCurrentRecord - (int)fReadState.fStartOfLastSliceRecord;
+                int recordShift = (int)fReadState.fStartOfLastSliceRecord - (int)fReadState.fCurrentRecord;
 
                 // advance the read position from the last slice by the stride
                 readPos = fReadState.fStartOfLastSliceReadPtr + fStride;
