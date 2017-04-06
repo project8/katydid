@@ -233,7 +233,7 @@ namespace Katydid
 
     inline unsigned KTEgg3Reader::GetNSlicesProcessed() const
     {
-        return (unsigned)fSliceNumber;
+        return (unsigned)fSliceNumber + 1;
     }
 
     inline unsigned KTEgg3Reader::GetNRecordsProcessed() const
