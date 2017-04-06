@@ -98,12 +98,15 @@ namespace Katydid
             /// Copy header information from the M3Header object
             void CopyHeader(const monarch3::M3Header* monarchHeader);
 
+            bool LoadNextFile();
+
             //Nymph::KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
             //Nymph::KTDataPtr HatchNextSliceRealUnsigned();
             //Nymph::KTDataPtr HatchNextSliceRealSigned();
             //Nymph::KTDataPtr HatchNextSliceComplex();
 
             KTEggReader::path_vec fFilenames;
+            KTEggReader::path_vec::const_iterator fCurrentFileIt;
 
             const monarch3::Monarch3* fMonarch;
             const monarch3::M3Stream* fM3Stream;

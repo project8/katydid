@@ -39,6 +39,7 @@ namespace Katydid
             fStartTime(0.),
             //fHatchNextSlicePtr(NULL),
             fFilenames(),
+            fCurrentFileIt(),
             fMonarch(nullptr),
             fM3Stream(nullptr),
             fM3StreamHeader(nullptr),
@@ -88,6 +89,7 @@ namespace Katydid
 
         // copy the vector of filenames
         fFilenames = filenames;
+        fCurrentFileIt = fFilenames.begin();
 
         // open the file
         KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0] << ">");
@@ -99,7 +101,6 @@ namespace Katydid
         {
             KTERROR(eggreadlog, "Unable to break egg: " << e.what());
             return Nymph::KTDataPtr();
-
         }
 
         KTDEBUG(eggreadlog, "File open; reading header");
@@ -274,17 +275,23 @@ namespace Katydid
                 // if necessary, move to a new record
                 if( recordShift != 0 )
                 {
+                    bool inNewFile = false; // use this in addition to checking for an acquisition ID change below since the ID won't change if the entire file just finished has one acquisition
                     if (! fM3Stream->ReadRecord(recordShift - 1))  // 1 is subtracted since ReadRecord(0) goes to the next record
                     {
-                        KTINFO(eggreadlog, "End of egg file reached after reading new records");
-                        return Nymph::KTDataPtr();
+                        // we've reached the end of the file
+                        if (! LoadNextFile())
+                        {
+                            KTINFO(eggreadlog, "End of egg file reached after reading new records");
+                            return Nymph::KTDataPtr();
+                        }
+                        inNewFile = true;
                     }
                     // set the current record according to what's now loaded
-                    fReadState.fCurrentRecord = fReadState.fCurrentRecord + recordShift;
+                    fReadState.fCurrentRecord = fM3Stream->GetRecordCountInFile();
                     // check if we're in a new acquisition
-                    if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
+                    if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId() || inNewFile)
                     {
-                        KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId());
+                        KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId() << "; is a new file? " << inNewFile);
                         isNewAcquisition = true;
                         // then we need to start reading at the start of this record
                         readPos = 0;
@@ -406,18 +413,23 @@ namespace Katydid
                 // check if there's still more to do
                 if( samplesRemainingToCopy > 0 )
                 {
+                    bool inNewFile = false; // use this in addition to checking for an acquisition ID change below since the ID won't change if the entire file just finished has one acquisition
                     // move to the next record
                     if (! fM3Stream->ReadRecord())
                     {
-                        KTINFO(eggreadlog, "End of file reached in the middle of reading out a slice");
-                        return Nymph::KTDataPtr();
+                        if (! LoadNextFile())
+                        {
+                            KTINFO(eggreadlog, "End of file reached in the middle of reading out a slice");
+                            return Nymph::KTDataPtr();
+                        }
+                        inNewFile = true;
                     }
-                    fReadState.fCurrentRecord = fReadState.fCurrentRecord + 1;
+                    fReadState.fCurrentRecord = fM3Stream->GetRecordCountInFile();
 
                     readPos = 0; // reset the read position, which is now at the beginning of the new record
 
                     // check if we've moved to a new acquisition
-                    if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
+                    if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId() || inNewFile)
                     {
                         KTDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
                                 "\tUnused samples: " << writePos + samplesToCopyFromThisRecord);
@@ -427,7 +439,7 @@ namespace Katydid
 
                         // reset fStartOfLastSliceRecord and fStartOfLastSliceReadPtr for this slice (they'll be used next time around)
                         fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
-                        fReadState.fStartOfLastSliceReadPtr = 0;
+                        fReadState.fStartOfLastSliceReadPtr = readPos;
                         // also reset fStartOfSliceAcquisitionId
                         fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
 
@@ -473,6 +485,66 @@ namespace Katydid
             KTERROR(eggreadlog, "Error while hatching a slice: " << e.what());
             return Nymph::KTDataPtr();
         }
+    }
+
+    bool KTEgg3Reader::LoadNextFile()
+    {
+        KTDEBUG(eggreadlog, "Attempting to load next file");
+
+        // advance the iterator and check if we're done with the list of files
+        ++fCurrentFileIt;
+        if (fCurrentFileIt == fFilenames.end())
+        {
+            KTINFO(eggreadlog, "There are no more files to open");
+            return false;
+        }
+
+        // close the last file
+        if (! CloseEgg())
+        {
+            return false;
+        }
+
+        // open the next file
+        KTINFO(eggreadlog, "Opening next egg file <" << *fCurrentFileIt << ">");
+        try
+        {
+            fMonarch = Monarch3::OpenForReading(fCurrentFileIt->native());
+        }
+        catch (M3Exception& e)
+        {
+            KTERROR(eggreadlog, "Unable to open the file: " << e.what());
+            return false;
+        }
+
+        KTDEBUG(eggreadlog, "File open; reading header");
+        try
+        {
+            fMonarch->ReadHeader();
+        }
+        catch (M3Exception& e)
+        {
+            KTERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
+                    "file-opening aborted.");
+            delete fMonarch;
+            fMonarch = nullptr;
+            return false;
+        }
+
+        // Temporary assumption: using channel 0 + any other channels in the same stream
+        unsigned streamNum = fMonarch->GetHeader()->GetChannelStreams()[0];
+        // set the stream pointer to stream 0
+        fM3Stream = fMonarch->GetStream(streamNum);
+        fM3StreamHeader = &(fMonarch->GetHeader()->GetStreamHeaders()[streamNum]);
+
+        // by default, start the read state at the beginning of the file
+        fReadState.fStatus = MonarchReadState::kAtStartOfRun;
+        fReadState.fStartOfLastSliceRecord = 0;
+        fReadState.fStartOfLastSliceReadPtr = 0;
+        fReadState.fStartOfSliceAcquisitionId = 0;
+        fReadState.fCurrentRecord = 0;
+
+        return true;
     }
 
 
