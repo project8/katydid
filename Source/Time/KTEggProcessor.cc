@@ -186,6 +186,12 @@ namespace Katydid
                 "\tSlices processed: " << summary->GetNSlicesProcessed() << '\n' <<
                 "\tRecords processed: " << summary->GetNRecordsProcessed() << '\n' <<
                 "\tIntegrated time: " << summary->GetIntegratedTime() << " s");
+        if(fNSlices != 0 && summary->GetNSlicesProcessed() != fNSlices)
+        {
+            KTWARN(egglog, "Could not process the requested number of slices because there was not enough data in the file(s):\n" <<
+                    "\tSlices requested: " << fNSlices << '\n' <<
+                    "\tSlices processed: " << summary->GetNSlicesProcessed());
+        }
         fSummarySignal(summary);
         delete summary;
 
