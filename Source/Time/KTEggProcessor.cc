@@ -95,7 +95,6 @@ namespace Katydid
                     KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
                 }
             }
-            SetFilename(node->get_value("filename", fFilename));
 
             // specify the length of the time series
             fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
@@ -129,7 +128,6 @@ namespace Katydid
             fFilenames.push_back( std::move(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("egg-file"))));
             KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
         }
-        SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
 
         return true;
     }

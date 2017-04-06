@@ -67,7 +67,7 @@ namespace Katydid
         return true;
     }
 
-    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const path_vec& filenames)
     {
         // Note on reading variables with MatIO:
         // Before each call to Mat_VarRead (or similar), a call should be made to Mat_Rewind, which resets the file-read pointer to the beginning of the file.
@@ -92,11 +92,15 @@ namespace Katydid
         }
 
         // open the file
-        KTINFO(eggreadlog, "Opening mat file <" << filename << ">");
-        fMatFilePtr = Mat_Open(filename.c_str(), MAT_ACC_RDONLY);
+        if (filenames.size() > 1)
+        {
+            KTWARN(eggreadlog, "RSAMAT reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+        }
+        KTINFO(eggreadlog, "Opening mat file <" << filenames[0] << ">");
+        fMatFilePtr = Mat_Open(filenames[0].c_str(), MAT_ACC_RDONLY);
         if (fMatFilePtr == NULL)
         {
-            KTERROR(eggreadlog, "Unable to open mat file: " << filename);
+            KTERROR(eggreadlog, "Unable to open mat file: " << filenames[0]);
             return Nymph::KTDataPtr();
         }
 
@@ -254,7 +258,7 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
-        fHeader.SetFilename(filename);
+        fHeader.SetFilename(filenames[0].native());
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");
