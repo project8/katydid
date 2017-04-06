@@ -284,6 +284,11 @@ namespace Katydid
                             KTINFO(eggreadlog, "End of egg file reached after reading new records");
                             return Nymph::KTDataPtr();
                         }
+                        if (! fM3Stream->ReadRecord())
+                        {
+                            KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
+                            return Nymph::KTDataPtr();
+                        }
                         inNewFile = true;
                     }
                     // set the current record according to what's now loaded
@@ -291,7 +296,7 @@ namespace Katydid
                     // check if we're in a new acquisition
                     if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId() || inNewFile)
                     {
-                        KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId() << "; is a new file? " << inNewFile);
+                        KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId() << "; is a new file? " << inNewFile << "; Starting at record << " << fReadState.fCurrentRecord);
                         isNewAcquisition = true;
                         // then we need to start reading at the start of this record
                         readPos = 0;
@@ -420,6 +425,11 @@ namespace Katydid
                         if (! LoadNextFile())
                         {
                             KTINFO(eggreadlog, "End of file reached in the middle of reading out a slice");
+                            return Nymph::KTDataPtr();
+                        }
+                        if (! fM3Stream->ReadRecord())
+                        {
+                            KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
                             return Nymph::KTDataPtr();
                         }
                         inNewFile = true;
