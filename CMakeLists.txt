@@ -31,6 +31,7 @@ option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake test
 option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
 option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
 option (Katydid_USE_MONARCH "Flag to optionally use Monarch" ON)
+option (Katydid_USE_PYTHON "Flag to optionally build python bindings" OFF)
 option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
 option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
@@ -73,6 +74,15 @@ find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_opti
 add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
+
+## TODO Lots of convention questions... BHL
+# python stuff is all here, maybe should not be?
+if (Katydid_USE_PYTHON)
+    find_package(PythonLibs 2.7 REQUIRED) # is this the version we want?
+    include_directories(${PYTHON_INCLUDE_DIRS})
+    # can the next line be modified in the find_package for boost above?
+    find_package(Boost COMPONENTS python REQUIRED)
+endif (Katydid_USE_PYTHON)
 
 # FFTW
 if (Katydid_USE_FFTW)
