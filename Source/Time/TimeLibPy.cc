@@ -17,5 +17,5 @@ void export_time()
 BOOST_PYTHON_MODULE(katydidPy)
 {
     export_KTEggReaderPy();
-    //export_KTEgg3ReaderPy();
+    export_KTEgg3ReaderPy();
 }

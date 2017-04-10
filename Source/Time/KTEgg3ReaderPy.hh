@@ -12,9 +12,15 @@
 
 void export_KTEgg3ReaderPy()
 {
+    using namespace Katydid;
     using namespace boost::python;
     class_<Katydid::KTEgg3Reader>("KTEgg3Reader",init<>())
-        //.def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file by name")
+        // use .add_property for getters and setters
+        .add_property("SliceSize", &KTEgg3Reader::GetSliceSize, &KTEgg3Reader::SetSliceSize)
+        .add_property("Stride", &KTEgg3Reader::GetStride, &KTEgg3Reader::SetStride)
+
+        // public methods
+        .def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file by name")
         ;
 }
 
