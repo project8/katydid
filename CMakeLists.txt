@@ -69,7 +69,13 @@ if (Katydid_USE_MANTIS)
 endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
-find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+list (APPEND Boost_COMPONENTS date_time filesystem program_options system thread)
+# python optional
+if (Katydid_USE_PYTHON)
+    list(APPEND Boost_COMPONENTS python)
+endif (Katydid_USE_PYTHON)
+#find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+find_package (Boost 1.46.0 REQUIRED COMPONENTS ${Boost_COMPONENTS})
 # make sure dynamic linking is assumed for all boost libraries
 add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
@@ -80,8 +86,10 @@ pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 if (Katydid_USE_PYTHON)
     find_package(PythonLibs 2.7 REQUIRED) # is this the version we want?
     include_directories(${PYTHON_INCLUDE_DIRS})
+    pbuilder_add_ext_libraries (${PYTHON_LIBRARIES})
     # can the next line be modified in the find_package for boost above?
-    find_package(Boost COMPONENTS python REQUIRED)
+    #find_package(Boost COMPONENTS python REQUIRED)
+
 endif (Katydid_USE_PYTHON)
 
 # FFTW

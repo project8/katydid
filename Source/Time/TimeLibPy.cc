@@ -1,7 +1,9 @@
 #include <boost/python.hpp>
+#include <Python.h>
 
 // include the *Py.hh here
-
+#include "KTEggReaderPy.hh"
+#include "KTEgg3ReaderPy.hh"
 
 // I'm creating a module, but should probably actuall do:
 /*
@@ -14,5 +16,6 @@ void export_time()
 */
 BOOST_PYTHON_MODULE(katydidPy)
 {
-    export_
+    export_KTEggReaderPy();
+    //export_KTEgg3ReaderPy();
 }

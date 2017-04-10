@@ -19,6 +19,10 @@ set (TIME_SOURCEFILES
     KTSingleChannelDAC.cc
 )
 
+set (TIME_PY_HEADERFILES
+    KTEgg3ReaderPy.hh
+)
+
 if (Katydid_USE_MONARCH)
     add_definitions(-DUSE_MONARCH)
 
@@ -91,4 +95,11 @@ target_link_libraries (KatydidTime ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES} ${EXTER
 
 pbuilder_install_headers (${TIME_HEADERFILES})
 pbuilder_install_libraries (KatydidTime)
-         
+
+if (Katydid_USE_PYTHON)
+    add_library (katydidPy SHARED TimeLibPy.cc)
+    target_link_libraries (katydidPy ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES} ${EXTERNAL_LIBRARIES_MATLAB})
+    set_target_properties (katydidPy PROPERTIES PREFIX "")
+    pbuilder_install_headers (${TIME_PY_HEADERFILES})
+    pbuilder_install_libraries (katydidPy)
+endif (Katydid_USE_PYTHON)

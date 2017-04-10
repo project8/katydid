@@ -1,19 +1,19 @@
 /*
- * KTEggReaderPy.hh
+ * KTEgg3ReaderPy.hh
  *
  *  Created on: April 07, 2017
  *      Author: laroque
  */
 
-#ifndef KTEGGREADERPY_HH_
-#define KTEGGREADERPY_HH_
+#ifndef KTEGG3READERPY_HH_
+#define KTEGG3READERPY_HH_
 
-#include "KTEggReader.hh"
+#include "KTEgg3Reader.hh"
 
-void export_KTEggReaderPy()
+void export_KTEgg3ReaderPy()
 {
     using namespace boost::python;
-    class_<Katydid::KTEggReader, boost::noncopyable>("KTEggReader", no_init)
+    class_<Katydid::KTEgg3Reader>("KTEgg3Reader",init<>())
         //.def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file by name")
         ;
 }
@@ -51,4 +51,4 @@ void export_KTEggReaderPy()
         return BreakEgg(filenameVec);
     }
 */
-#endif /* KTEGGREADERPY_HH_ */
+#endif /* KTEGG3READERPY_HH_ */
