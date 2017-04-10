@@ -289,9 +289,10 @@ namespace Katydid
         double MaximumCentral;
         double RMSAwayFromCentral;
         double CentralPowerRatio;
+        unsigned TrackID;
     } PFData;
 
-    const size_t PFNFields = 10;
+    const size_t PFNFields = 11;
     size_t PFSize = sizeof(PFData);
     const char* PFFieldNames[PFNFields] = {
         "Average",
@@ -303,7 +304,8 @@ namespace Katydid
         "SigmaCentral",
         "MaximumCentral",
         "RMSAwayFromCentral",
-        "CentralPowerRatio"
+        "CentralPowerRatio",
+        "TrackID"
     };
     size_t PFFieldOffsets[PFNFields] = {
         HOFFSET(PFData, Average),
@@ -315,7 +317,8 @@ namespace Katydid
         HOFFSET(PFData, SigmaCentral),
         HOFFSET(PFData, MaximumCentral),
         HOFFSET(PFData, RMSAwayFromCentral),
-        HOFFSET(PFData, CentralPowerRatio)
+        HOFFSET(PFData, CentralPowerRatio),
+        HOFFSET(PFData, TrackID)
     };
     H5::PredType PFFieldTypes[PFNFields] = {
         H5::PredType::NATIVE_DOUBLE,
@@ -327,7 +330,8 @@ namespace Katydid
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
-        H5::PredType::NATIVE_DOUBLE
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_UINT
     };
 
     class KTHDF5TypeWriterEventAnalysis: public KTHDF5TypeWriter
