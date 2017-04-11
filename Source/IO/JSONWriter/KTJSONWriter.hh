@@ -46,7 +46,7 @@ namespace Katydid
     class KTJSONWriter : public Nymph::KTWriterWithTypists< KTJSONWriter, KTJSONTypeWriter >
     {
         public:
-            typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
+            typedef KTJSONMaker< rapidjson::FileWriteStream > JSONMaker;
 
         public:
             KTJSONWriter(const std::string& name = "json-writer");
@@ -69,7 +69,7 @@ namespace Katydid
             bool GetPrettyJSONFlag() const;
             void SetPrettyJSONFlag(bool flag);
 
-            KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
+            KTJSONMaker< rapidjson::FileWriteStream >* GetJSONMaker() const;
 
         protected:
             std::string fFilename;
@@ -78,8 +78,8 @@ namespace Katydid
             bool fPrettyJSONFlag;
 
             FILE* fFile;
-            rapidjson::FileStream* fFileStream;
-            KTJSONMaker< rapidjson::FileStream >* fJSONMaker;
+            rapidjson::FileWriteStream* fFileStream;
+            KTJSONMaker< rapidjson::FileWriteStream >* fJSONMaker;
 
     };
 
@@ -116,7 +116,7 @@ namespace Katydid
         return;
     }
 
-    inline KTJSONMaker< rapidjson::FileStream >* KTJSONWriter::GetJSONMaker() const
+    inline KTJSONMaker< rapidjson::FileWriteStream >* KTJSONWriter::GetJSONMaker() const
     {
         return fJSONMaker;
     }

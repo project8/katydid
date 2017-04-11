@@ -47,10 +47,10 @@ set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 # Dependencies
 ##############
 
-# Midge
+# Nymph
 pbuilder_add_submodule( Nymph Nymph )
 nymph_process_options()
-
+add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
 # Mantis
 if (Katydid_USE_MANTIS)
     set (Mantis_PREFIX "" CACHE PATH "Mantis install prefix")
