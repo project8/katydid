@@ -23,8 +23,7 @@ void export_KTEgg3ReaderPy()
         .add_property("Stride", &KTEgg3Reader::GetStride, &KTEgg3Reader::SetStride)
 
         // public methods
-        //.def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file by name")
-        //.def("BreakAnEgg", &KTEggReader::BreakAnEgg, return_internal_reference<>())
+        .def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file from a path")
         ;
 }
 
