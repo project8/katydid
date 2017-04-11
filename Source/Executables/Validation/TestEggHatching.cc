@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
 
     KTINFO(testegg, "Opening file");
-    Nymph::KTDataPtr headerPtr = reader->BreakEgg(filename);
+    Nymph::KTDataPtr headerPtr = reader->BreakAnEgg(filename);
     if (headerPtr)
     {
         KTINFO(testegg, "Egg opened successfully");
