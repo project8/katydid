@@ -7,6 +7,7 @@
 #include "KTEggReaderPy.hh"
 #include "KTEgg3ReaderPy.hh"
 #include "KTRSAMatReaderPy.hh"
+#include "KTEggProcessorPy.hh"
 
 // I'm creating a module, but should probably actuall do:
 /*
@@ -23,4 +24,5 @@ BOOST_PYTHON_MODULE(katydidPy)
     export_KTEggReaderPy();
     export_KTEgg3ReaderPy();
     export_KTRSAMatReaderPy();
+    export_KTEggProcessorPy();
 }
