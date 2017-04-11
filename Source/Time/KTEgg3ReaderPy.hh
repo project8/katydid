@@ -8,19 +8,23 @@
 #ifndef KTEGG3READERPY_HH_
 #define KTEGG3READERPY_HH_
 
+//#include <boost/python/return_value_policy.hpp>
+//#include <boost/python/copy_const_reference.hpp>
+
 #include "KTEgg3Reader.hh"
 
 void export_KTEgg3ReaderPy()
 {
     using namespace Katydid;
     using namespace boost::python;
-    class_<Katydid::KTEgg3Reader>("KTEgg3Reader",init<>())
+    class_<Katydid::KTEgg3Reader, boost::noncopyable>("KTEgg3Reader",init<>())
         // use .add_property for getters and setters
         .add_property("SliceSize", &KTEgg3Reader::GetSliceSize, &KTEgg3Reader::SetSliceSize)
         .add_property("Stride", &KTEgg3Reader::GetStride, &KTEgg3Reader::SetStride)
 
         // public methods
-        .def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file by name")
+        //.def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file by name")
+        //.def("BreakAnEgg", &KTEggReader::BreakAnEgg, return_internal_reference<>())
         ;
 }
 

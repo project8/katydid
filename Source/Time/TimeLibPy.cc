@@ -2,6 +2,8 @@
 #include <Python.h>
 
 // include the *Py.hh here
+#include "KTDataPy.hh"
+
 #include "KTEggReaderPy.hh"
 #include "KTEgg3ReaderPy.hh"
 
@@ -16,6 +18,7 @@ void export_time()
 */
 BOOST_PYTHON_MODULE(katydidPy)
 {
+    export_KTDataPy();
     export_KTEggReaderPy();
     export_KTEgg3ReaderPy();
 }
