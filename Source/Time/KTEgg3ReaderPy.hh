@@ -23,41 +23,26 @@ void export_KTEgg3ReaderPy()
         .add_property("Stride", &KTEgg3Reader::GetStride, &KTEgg3Reader::SetStride)
 
         // public methods
-        .def("BreakAnEgg", &KTEggReader::BreakAnEgg, "Open an egg file from a path")
+        .def("BreakAnEgg", &KTEgg3Reader::BreakAnEgg, "Open an egg file from a path")
+        .def("HatchNextSlice", &KTEgg3Reader::HatchNextSlice, "Retrieves the next time slice")
+        .def("CloseEgg", &KTEgg3Reader::CloseEgg, "close the file")
+        //TODO does the following exist?
+        //.def("GetMaxChannels", &KTEgg3Reader::GetMaxChannels, "Get the number of channels")
+        .def("GetSampleRateUnitsInHz", &KTEgg3Reader::GetSampleRateUnitsInHz, "return the number of samples per second")
+        //TODO do these exist?
+        //.def("GetFullVoltageScale", &KTEgg3Reader::GetFullVoltageScale, "return dynamic range in volts")
+        //.def("GetNADCLevels", &KTEgg3Reader::GetNADCLevels, "return the digitizer bit depth")
+        .def("GetRecordSize", &KTEgg3Reader::GetRecordSize, "Get the number of samples per record in the egg file")
+        //Come back and fill in these doc strings TODO!!!
+        .def("GetBinWidth", &KTEgg3Reader::GetBinWidth)
+        .def("GetTimeInRun", &KTEgg3Reader::GetTimeInRun)
+        .def("GetIntegratedTime", &KTEgg3Reader::GetIntegratedTime)
+        .def("GetNSlicesProcessed", &KTEgg3Reader::GetNSlicesProcessed)
+        .def("GetNRecordsProcessed", &KTEgg3Reader::GetNRecordsProcessed)
+        //TODO the following requires wrapping MonarchReadState
+        //.def("GetReadState", &KTEgg3Reader::GetReadState)
+        .def("GetAcqTimeInRun", &KTEgg3Reader::GetAcqTimeInRun)
         ;
 }
 
-/*
-    class KTEggProcessor;
-
-    class KTEggReader
-    {
-        public:
-            typedef std::vector< scarab::path > path_vec;
-
-        public:
-            KTEggReader();
-            virtual ~KTEggReader();
-
-        public:
-            virtual bool Configure(const KTEggProcessor& eggProc) = 0;
-
-            Nymph::KTDataPtr BreakAnEgg(const std::string& filename);
-            virtual Nymph::KTDataPtr BreakEgg(const path_vec&) = 0;
-            virtual Nymph::KTDataPtr HatchNextSlice() = 0;
-            virtual bool CloseEgg() = 0;
-
-            virtual unsigned GetNSlicesProcessed() const = 0;
-            virtual unsigned GetNRecordsProcessed() const = 0;
-            virtual double GetIntegratedTime() const = 0;
-
-    };
-
-    inline Nymph::KTDataPtr KTEggReader::BreakAnEgg(const std::string& filename)
-    {
-        path_vec filenameVec;
-        filenameVec.emplace_back(filename);
-        return BreakEgg(filenameVec);
-    }
-*/
 #endif /* KTEGG3READERPY_HH_ */
