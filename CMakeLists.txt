@@ -226,6 +226,7 @@ endif (Katydid_USE_MONARCH)
 # Subdirectories
 include_directories (BEFORE 
     ${PROJECT_SOURCE_DIR}/Source/Utility
+    ${PROJECT_SOURCE_DIR}/Source/Data
     ${PROJECT_SOURCE_DIR}/Source/Data/SpectrumAnalysis
     ${PROJECT_SOURCE_DIR}/Source/Data/EventAnalysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Time

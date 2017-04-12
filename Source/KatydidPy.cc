@@ -2,10 +2,11 @@
 #include <Python.h>
 
 /* include each library here */
-//#include "KTDataLibPy.hh"
+#include "KTDataLibPy.hh"
 #include "KTEvaluationLibPy.hh"
 #include "KTEventAnalysisLibPy.hh"
 #include "KTIOLibPy.hh"
+//Simulation is commented out the the top-level CMakeLists.txt, is it still valid?
 //#include "KTSimulationLibPy.hh"
 #include "KTSpectrumAnalysisLibPy.hh"
 #include "KTTimeLibPy.hh"
@@ -50,10 +51,12 @@ BOOST_PYTHON_MODULE(katydidPy)
         export_KTIOPy();
     }
 
+    /*
     {
-        //scope Simulation = class_<katydidPySimulation>("Simulation");
-        //export_Simulation();
+        scope Simulation = class_<katydidPySimulation>("Simulation");
+        export_Simulation();
     }
+    */
 
     {
         scope SpectrumAnalysis = class_<katydidPySpectrumAnalysis>("SpectrumAnalysis");
@@ -79,7 +82,7 @@ BOOST_PYTHON_MODULE(katydidPy)
     // These should go into a dedicated nymph python module
     {
         scope Externals = class_<externals>("Externals");
-        export_KTDataPy();
+        export_DataPy();
     }
 
 }
