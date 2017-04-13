@@ -146,6 +146,7 @@ else (MATIO_FOUND)
     remove_definitions(-DUSE_MATLAB)
 endif (MATIO_FOUND)
 
+# GraphicsMagic & Magick++
 if (Katydid_USE_MAGICKPP)
     find_package(GraphicsMagick REQUIRED)
 endif (Katydid_USE_MAGICKPP)
