@@ -11,7 +11,7 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/KatydidPSAnalysisTemplate.json
     ConfigFiles/KatydidPSComplexConfig.json
     ConfigFiles/KatydidWVConfig.json
-    ConfigFiles/PrintInfo.json
+    ConfigFiles/PrintInfo.yaml
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
     ConfigFiles/HDF5/AverageFFT.json
