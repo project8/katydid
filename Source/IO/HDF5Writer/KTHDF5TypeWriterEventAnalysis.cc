@@ -24,40 +24,45 @@ namespace Katydid
 
     static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
     KTHDF5TypeWriterEventAnalysis::KTHDF5TypeWriterEventAnalysis() :
-        KTHDF5TypeWriter(),
-        fMTEDataBuffer(),
-        fMTETracksDataBuffer(),
-        fPTDataBuffer(),
-        fPFDataBuffer(),
-        fFlushMTEIdx(0),
-        fFlushPTIdx(0),
-        fFlushPFIdx(0) {
-            /*
-             * First we build the appropriate compound datatype for MTE events
-             */
-            this->fMTEType = new H5::CompType(MTESize);
-            // Insert fields into the type
-            for (int f = 0; f < MTENFields; f++) {
-                this->fMTEType->insertMember(
-                    MTEFieldNames[f],
-                    MTEFieldOffsets[f],
-                    MTEFieldTypes[f]);
-            }
-            this->fPTType = new H5::CompType(PTSize);
-            for (int f = 0; f < PTNFields; f++) {
-                this->fPTType->insertMember(
-                    PTFieldNames[f],
-                    PTFieldOffsets[f],
-                    PTFieldTypes[f]);
-            }
-            this->fPFType = new H5::CompType(PFSize);
-            for (int f = 0; f < PFNFields; f++) {
-                this->fPFType->insertMember(
-                    PFFieldNames[f],
-                    PFFieldOffsets[f],
-                    PFFieldTypes[f]);
-            }
+            KTHDF5TypeWriter(),
+            fMTEDataBuffer(),
+            fMTETracksDataBuffer(),
+            fPTDataBuffer(),
+            fPFDataBuffer(),
+            fFlushMTEIdx(0),
+            fFlushPTIdx(0),
+            fFlushPFIdx(0) 
+
+    {
+        /*
+         * First we build the appropriate compound datatype for MTE events
+         */
+        this->fMTEType = new H5::CompType(MTESize);
+        // Insert fields into the type
+        for (int f = 0; f < MTENFields; f++) 
+        {
+            this->fMTEType->insertMember(
+                MTEFieldNames[f],
+                MTEFieldOffsets[f],
+                MTEFieldTypes[f]);
         }
+        this->fPTType = new H5::CompType(PTSize);
+        for (int f = 0; f < PTNFields; f++) 
+        {
+            this->fPTType->insertMember(
+                PTFieldNames[f],
+                PTFieldOffsets[f],
+                PTFieldTypes[f]);
+        }
+        this->fPFType = new H5::CompType(PFSize);
+        for (int f = 0; f < PFNFields; f++) 
+        {
+            this->fPFType->insertMember(
+                PFFieldNames[f],
+                PFFieldOffsets[f],
+                PFFieldTypes[f]);
+        }
+    }
 
     KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis()
     {
@@ -66,7 +71,8 @@ namespace Katydid
         if(fPFType) delete fPFType;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::RegisterSlots() {
+    void KTHDF5TypeWriterEventAnalysis::RegisterSlots() 
+    {
         //fWriter->RegisterSlot("frequency-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates);
         //fWriter->RegisterSlot("waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate);
         //fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
@@ -277,7 +283,8 @@ namespace Katydid
         fFlushPTIdx++;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data) {
+    void KTHDF5TypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data) 
+    {
         KTDEBUG(publog, "Processing Power Fit Data");
         KTPowerFitData& pfData = data->Of< KTPowerFitData >();
 
@@ -300,7 +307,8 @@ namespace Katydid
         return;
     }
 
-    void KTHDF5TypeWriterEventAnalysis::WritePFBuffer() {
+    void KTHDF5TypeWriterEventAnalysis::WritePFBuffer() 
+    {
         KTDEBUG(publog, "Writing PF Data Buffer");
 
         hsize_t* dims = new hsize_t(this->fPFDataBuffer.size());

@@ -278,7 +278,8 @@ namespace Katydid
 
     // Now the same for KTPowerFitData
 
-    typedef struct {
+    typedef struct 
+    {
         double Average;
         double RMS;
         double Skewness;
@@ -294,7 +295,8 @@ namespace Katydid
 
     const size_t PFNFields = 11;
     size_t PFSize = sizeof(PFData);
-    const char* PFFieldNames[PFNFields] = {
+    const char* PFFieldNames[PFNFields] = 
+    {
         "Average",
         "RMS",
         "Skewness",
@@ -307,7 +309,8 @@ namespace Katydid
         "CentralPowerRatio",
         "TrackID"
     };
-    size_t PFFieldOffsets[PFNFields] = {
+    size_t PFFieldOffsets[PFNFields] = 
+    {
         HOFFSET(PFData, Average),
         HOFFSET(PFData, RMS),
         HOFFSET(PFData, Skewness),
@@ -320,7 +323,8 @@ namespace Katydid
         HOFFSET(PFData, CentralPowerRatio),
         HOFFSET(PFData, TrackID)
     };
-    H5::PredType PFFieldTypes[PFNFields] = {
+    H5::PredType PFFieldTypes[PFNFields] = 
+    {
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
