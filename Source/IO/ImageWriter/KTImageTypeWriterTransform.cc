@@ -42,7 +42,7 @@ namespace Katydid
 
     void KTImageTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet, const std::string& aDataTypeIndicator)
     {
-        // this function does not check the root file; it's assumed to be opened and verified already
+        KTDEBUG(publog, "Outputting spectrograms for type <" << aDataTypeIndicator << ">");
         while (! aSpectrogramSet.empty())
         {
             std::stringstream filenameStream;
@@ -66,7 +66,7 @@ namespace Katydid
 
     void KTImageTypeWriterTransform::OutputSpectrograms()
     {
-        KTDEBUG(publog, "calling output each spectrogram set")
+        KTINFO(publog, "Outputting Transform spectrograms")
         OutputASpectrogramSet(fFSPolarSpectrograms, fFSPolarIndicator);
         OutputASpectrogramSet(fFSFFTWSpectrograms, fFSFFTWIndicator);
         OutputASpectrogramSet(fPowerSpectrograms, fPowerIndicator);
@@ -100,13 +100,13 @@ namespace Katydid
 
     void KTImageTypeWriterTransform::AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
-        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarSpectrograms, "FSPolarSpectrogram_");
+        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarSpectrograms);
         return;
     }
 
     void KTImageTypeWriterTransform::AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
-        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWSpectrograms, "FSFFTWSpectrogram_");
+        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWSpectrograms);
         return;
     }
 
@@ -116,13 +116,13 @@ namespace Katydid
 
     void KTImageTypeWriterTransform::AddPowerSpectrumData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerSpectrograms, "PowerSpectrogram_");
+        AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerSpectrograms);
         return;
     }
 
     void KTImageTypeWriterTransform::AddPSDData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
+        AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms);
         return;
     }
 

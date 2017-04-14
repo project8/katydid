@@ -21,7 +21,11 @@ namespace Katydid
     KT_REGISTER_WRITER(KTImageWriter, "image-writer");
     KT_REGISTER_PROCESSOR(KTImageWriter, "image-writer");
 
-    // TODO: InitializeMagick();
+    struct InitializeMagickRunner
+    {
+        InitializeMagickRunner() {Magick::InitializeMagick(nullptr);}
+    };
+    static InitializeMagickRunner imr;
 
     KTImageWriter::KTImageWriter(const std::string& name) :
             KTWriterWithTypists< KTImageWriter, KTImageTypeWriter >(name),
@@ -71,8 +75,7 @@ namespace Katydid
 
     void KTImageWriter::WriteFiles()
     {
-        KTDEBUG(publog, "In write-files slot");
-
+        KTINFO(publog, "Writing images");
         for (TypeWriterMap::iterator thisTypeWriter = fTypeWriters.begin(); thisTypeWriter != fTypeWriters.end(); ++thisTypeWriter)
         {
             thisTypeWriter->second->OutputSpectrograms();
@@ -94,7 +97,7 @@ namespace Katydid
     {
     }
 
-    void KTImageTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, string histNameBase)
+    void KTImageTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms)
     {
         if (spectrograms.size() < nComponents)
         {
@@ -132,13 +135,21 @@ namespace Katydid
 
     Magick::Image KTImageTypeWriter::SpectrogramData::CreateSpectrogram()
     {
-        unsigned nTimeBins = fSpectrogram->GetNBins(0);
-        unsigned nFreqBins = fSpectrogram->GetNBins(1);
+        KTDEBUG(publog, "Creating a spectrogram image");
+        unsigned nTimeBins = fSpectrogram->GetNBins(1);
+        unsigned nFreqBins = fSpectrogram->GetNBins(2);
 
+        KTWARN(publog, "Making the actual image; nTimeBins: " << nTimeBins << "; nFreqBins: " << nFreqBins);
         Magick::Image image(Magick::Geometry(nTimeBins, nFreqBins), "white");
         image.modifyImage();
-        Magick::PixelPacket* pixels = image.getPixels(0, 0, nFreqBins, nTimeBins);
+        //Magick::PixelPacket* pixels = image.getPixels(0, 0, 0, 0);
+        //if (pixels == nullptr)
+        //{
+        //    KTERROR(publog, "PixelPacket pointer is null");
+        //    raise(SIGINT);
+        //}
 
+        KTWARN(publog, "Getting max and min bins");
         unsigned xBin, yBin;
         double minValue = fSpectrogram->GetMaximumBin(xBin, yBin);
         double maxValue = fSpectrogram->GetMinimumBin(xBin, yBin);
@@ -146,11 +157,13 @@ namespace Katydid
         double scaling = 1. / (maxValue - minValue);
         double newValue = 0.;
 
+        KTDEBUG(publog, "Transferring spectrogram from KTPhysicalArray to image");
         for (unsigned iTime = 0; iTime < nTimeBins; ++iTime)
         {
-            for (unsigned iFreq = 0; iFreq < nFreqBins; ++iTime)
+            for (unsigned iFreq = 0; iFreq < nFreqBins; ++iFreq)
             {
-                *(pixels + iFreq * nTimeBins + iTime) = fColorTranslator->SetColor( ((*fSpectrogram)(iTime, iFreq) - minValue) * scaling );
+                //*(pixels + iFreq * nTimeBins + iTime) = fColorTranslator->SetColor( ((*fSpectrogram)(iTime, iFreq) - minValue) * scaling );
+                image.pixelColor(iTime, nFreqBins - iFreq - 1, fColorTranslator->SetColor( ((*fSpectrogram)(iTime, iFreq) - minValue) * scaling ));
             }
         }
 

@@ -70,15 +70,15 @@ namespace Katydid
             };
 
             /// Checks to see if new spectrograms are needed, and creates them if so
-            void CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms);
 
             template< typename XDataType >
-            void AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms);
 
             template< typename XDataType >
-            void AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms);
             template< typename XDataType >
-            void AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            void AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms);
     };
 
 
@@ -164,7 +164,7 @@ namespace Katydid
     //****************************
 
      template< class XDataType >
-     void KTImageTypeWriter::AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     void KTImageTypeWriter::AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms)
      {
          KTDEBUG( publog_rsw, "Adding frequency-spectrum-type data" );
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
@@ -179,15 +179,15 @@ namespace Katydid
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             KTImageTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms, histNameBase);
+             KTImageTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms);
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
              {
                  const KTFrequencySpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  unsigned iSpectFreqBin = 0;
-                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->FindBin(0, timeInRun + 0.5*sliceLength);
-                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNBins(0)) continue;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->FindBin(1, timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNBins(1)) continue;
                  //std::cout << "spectrum size: " << spectrum->GetNFrequencyBins() << std::endl;
                  //std::cout << "first freq bin: " << spectrograms[iComponent].fFirstFreqBin << "; last freq bin: " << spectrograms[iComponent].fLastFreqBin << std::endl;
                  for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
@@ -203,7 +203,7 @@ namespace Katydid
      }
 
      template< class XDataType >
-     void KTImageTypeWriter::AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     void KTImageTypeWriter::AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms)
      {
          KTDEBUG( publog_rsw, "Adding power-spectrum-type data" );
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
@@ -218,7 +218,7 @@ namespace Katydid
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             KTImageTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms, histNameBase);
+             KTImageTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms);
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -226,8 +226,8 @@ namespace Katydid
                  KTPowerSpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  spectrum->ConvertToPowerSpectrum();
                  unsigned iSpectFreqBin = 0;
-                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->FindBin(0, timeInRun + 0.5*sliceLength);
-                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNBins(0)) continue;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->FindBin(1, timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNBins(1)) continue;
                  for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
@@ -241,7 +241,7 @@ namespace Katydid
      }
 
      template< class XDataType >
-     void KTImageTypeWriter::AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase)
+     void KTImageTypeWriter::AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms)
      {
          KTDEBUG( publog_rsw, "Adding power-spectral-density-type data" );
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
@@ -256,7 +256,7 @@ namespace Katydid
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             KTImageTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms, histNameBase);
+             KTImageTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms);
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -264,8 +264,8 @@ namespace Katydid
                  KTPowerSpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  spectrum->ConvertToPowerSpectralDensity();
                  unsigned iSpectFreqBin = 0;
-                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->FindBin(0, timeInRun + 0.5*sliceLength);
-                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNBins(0)) continue;
+                 int iSpectTimeBin = spectrograms[iComponent].fSpectrogram->FindBin(1, timeInRun + 0.5*sliceLength);
+                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrograms[iComponent].fSpectrogram->GetNBins(1)) continue;
                  for (unsigned iFreqBin = spectrograms[iComponent].fFirstFreqBin; iFreqBin <= spectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;

@@ -11,7 +11,6 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/KatydidPSAnalysisTemplate.json
     ConfigFiles/KatydidPSComplexConfig.json
     ConfigFiles/KatydidWVConfig.json
-    ConfigFiles/PrintInfo.yaml
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
     ConfigFiles/HDF5/AverageFFT.json
@@ -21,8 +20,10 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/DisplayFFT.yaml
     ConfigFiles/DisplaySpectrograms.yaml
     ConfigFiles/KatydidPSConfig.yaml
+    ConfigFiles/PrintInfo.yaml
     ConfigFiles/SidebandTrackAnalysis.yaml    
     ConfigFiles/SpectrogramConfig.yaml
+    ConfigFiles/SpectrogramImageConfig.yaml
 )
 
 pbuilder_install_config (${EXAMPLE_CONFIGFILES})
