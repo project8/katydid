@@ -606,6 +606,8 @@ namespace Katydid
         public:
             value_type GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const;
             value_type GetMinimumBin(unsigned& minXBin, unsigned& minYBin) const;
+            /// Returns the pair (min value, max value)
+            std::pair< value_type, value_type > GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin);
     };
 
     template< typename XDataType >
@@ -996,6 +998,39 @@ namespace Katydid
             }
         }
         return minYValue;
+    }
+
+    template< typename XDataType >
+    std::pair< XDataType, XDataType > KTPhysicalArray< 2, XDataType >::GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin)
+    {
+        typename KTPhysicalArray< 2, XDataType >::const_iterator1 xBinIt = fData.begin1();
+        std::pair< typename KTPhysicalArray< 2, XDataType >::const_iterator2, typename KTPhysicalArray< 2, XDataType >::const_iterator2 > yBinIts = std::minmax_element(xBinIt.begin(), xBinIt.end());
+        minXBin = 0;
+        minYBin = yBinIts.first.index2();
+        maxXBin = 0;
+        maxYBin = yBinIts.second.index2();
+        double minYValue = *yBinIts.first;
+        double maxYValue = *yBinIts.second;
+        double value;
+        for (; xBinIt != fData.end1(); ++xBinIt)
+        {
+            yBinIts = std::minmax_element(xBinIt.begin(), xBinIt.end());
+            value = *yBinIts.first;
+            if (value < minYValue)
+            {
+                minXBin = xBinIt.index1();
+                minYBin = yBinIts.first.index2();
+                minYValue = value;
+            }
+            value = *yBinIts.second;
+            if (value > maxYValue)
+            {
+                maxXBin = xBinIt.index1();
+                maxYBin = yBinIts.second.index2();
+                maxYValue = value;
+            }
+        }
+        return std::make_pair(minYValue, maxYValue);
     }
 
 
