@@ -150,11 +150,13 @@ namespace Katydid
         //}
 
         KTWARN(publog, "Getting max and min bins");
-        unsigned xBin, yBin;
-        double minValue = fSpectrogram->GetMaximumBin(xBin, yBin);
-        double maxValue = fSpectrogram->GetMinimumBin(xBin, yBin);
+        unsigned minXBin, minYBin, maxXBin, maxYBin;
+        std::pair< double, double > minMaxValues = fSpectrogram->GetMinMaxBin(minXBin, minYBin, maxXBin, maxYBin);
+        //KTWARN(publog, "MinX: " << minXBin << ", MinY: " << minYBin << ", minVal: " << minMaxValues.first << ", MaxX: " << maxXBin << ", MaxY: " << maxYBin << ", maxVal: " << minMaxValues.second);
+        //double minValue = fSpectrogram->GetMinimumBin(minXBin, minYBin);
+        //double maxValue = fSpectrogram->GetMaximumBin(maxXBin, maxYBin);
 
-        double scaling = 1. / (maxValue - minValue);
+        double scaling = 1. / (minMaxValues.second - minMaxValues.first);
         double newValue = 0.;
 
         KTDEBUG(publog, "Transferring spectrogram from KTPhysicalArray to image");
@@ -163,7 +165,7 @@ namespace Katydid
             for (unsigned iFreq = 0; iFreq < nFreqBins; ++iFreq)
             {
                 //*(pixels + iFreq * nTimeBins + iTime) = fColorTranslator->SetColor( ((*fSpectrogram)(iTime, iFreq) - minValue) * scaling );
-                image.pixelColor(iTime, nFreqBins - iFreq - 1, fColorTranslator->SetColor( ((*fSpectrogram)(iTime, iFreq) - minValue) * scaling ));
+                image.pixelColor(iTime, nFreqBins - iFreq - 1, fColorTranslator->SetColor( ((*fSpectrogram)(iTime, iFreq) - minMaxValues.first) * scaling ));
             }
         }
 
