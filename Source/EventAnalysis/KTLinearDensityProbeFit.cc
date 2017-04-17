@@ -680,8 +680,11 @@ namespace Katydid
         newData.SetRMSAwayFromCentral( nonCentralRMS );
         newData.SetCentralPowerRatio( centralMean / nonCentralMean );
 
-        // Lastly we copy the track intercept to newData
+        // We copy the track intercept to newData
         newData.SetTrackIntercept( data.GetIntercept() );
+
+        // Lastly we copy the track ID to newData
+        newData.SetTrackID( data.GetTrackID() );
 
         KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 
