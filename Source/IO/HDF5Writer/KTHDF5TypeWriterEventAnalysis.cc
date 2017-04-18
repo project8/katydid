@@ -289,6 +289,8 @@ namespace Katydid
         KTPowerFitData& pfData = data->Of< KTPowerFitData >();
 
         PFData powerFit;
+        powerfit.IsValid = pfData.GetIsValid();
+        powerfit.NPeaks = pfData.GetNPeaks();
         powerFit.Average = pfData.GetAverage();
         powerFit.RMS = pfData.GetRMS();
         powerFit.Skewness = pfData.GetSkewness();

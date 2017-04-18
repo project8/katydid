@@ -280,6 +280,8 @@ namespace Katydid
 
     typedef struct 
     {
+        int IsValid;
+        int NPeaks;
         double Average;
         double RMS;
         double Skewness;
@@ -293,10 +295,12 @@ namespace Katydid
         unsigned TrackID;
     } PFData;
 
-    const size_t PFNFields = 11;
+    const size_t PFNFields = 13;
     size_t PFSize = sizeof(PFData);
     const char* PFFieldNames[PFNFields] = 
     {
+        "IsValid",
+        "NPeaks",
         "Average",
         "RMS",
         "Skewness",
@@ -311,6 +315,8 @@ namespace Katydid
     };
     size_t PFFieldOffsets[PFNFields] = 
     {
+        HOFFSET(PFData, IsValid),
+        HOFFSET(PFData, NPeaks),
         HOFFSET(PFData, Average),
         HOFFSET(PFData, RMS),
         HOFFSET(PFData, Skewness),
@@ -325,6 +331,8 @@ namespace Katydid
     };
     H5::PredType PFFieldTypes[PFNFields] = 
     {
+        H5::PredType::NATIVE_INT,
+        H5::PredType::NATIVE_INT,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
