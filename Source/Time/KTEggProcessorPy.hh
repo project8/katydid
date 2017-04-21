@@ -16,7 +16,7 @@ void export_KTEggProcessorPy()
 {
     using namespace Katydid;
     using namespace boost::python;
-    class_<Katydid::KTEggProcessor, boost::noncopyable>("KTEggProcessor")
+    class_< Katydid::KTEggProcessor, boost::noncopyable, bases<Nymph::KTProcessor> >("KTEggProcessor")
         .add_property("NSlices", &KTEggProcessor::GetNSlices, &KTEggProcessor::SetNSlices)
         .add_property("ProgressReportInterval", &KTEggProcessor::GetProgressReportInterval, &KTEggProcessor::SetProgressReportInterval)
 

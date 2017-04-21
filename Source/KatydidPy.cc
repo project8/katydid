@@ -25,8 +25,8 @@ class katydidPyTransform{};
 class katydidPyUtility{};
 
 // This should not be here, nymph should have its own python module
-#include "KTDataPy.hh"
-class externals{};
+//#include "KTDataPy.hh"
+//class externals{};
 
 BOOST_PYTHON_MODULE(katydidPy)
 {
@@ -80,9 +80,9 @@ BOOST_PYTHON_MODULE(katydidPy)
 
     /**********************/
     // These should go into a dedicated nymph python module
-    {
+    /*{
         scope Externals = class_<externals>("Externals");
         export_DataPy();
-    }
+    }*/
 
 }
