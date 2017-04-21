@@ -281,6 +281,7 @@ if (Katydid_USE_PYTHON)
     #pbuilder_install_headers (${TIME_PY_HEADERFILES})
     pbuilder_install_libraries (katydidPy)
 endif (Katydid_USE_PYTHON)
+MESSAGE("extern are: ${EXTERNAL_LIBRARIES}")
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
