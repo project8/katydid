@@ -276,12 +276,6 @@ nymph_build_executables()
 
 if (Katydid_USE_PYTHON)
     python_package_add_module( Source/KatydidPy.cc )
-    add_library(katydidPy SHARED Source/KatydidPy.cc)
-    #target_link_libraries(katydidPy, KatydidData KatydidEvaluation KatydidEventAnalysis KatydidIO KatydidSimulation KatydidSpectrumAnalysis KatydidTime KatydidTransform KatydidUtility ${EXTERNAL_LIBRARIES} ${EXTERNAL_LIBRARIES_MATLAB})
-    target_link_libraries(katydidPy KatydidTime KatydidData ${EXTERNAL_LIBRARIES} ${EXTERNAL_LIBRARIES_MATLAB})
-    set_target_properties (katydidPy PROPERTIES PREFIX "")
-    #pbuilder_install_headers (${TIME_PY_HEADERFILES})
-    pbuilder_install_libraries (katydidPy)
 endif (Katydid_USE_PYTHON)
 MESSAGE("extern are: ${EXTERNAL_LIBRARIES}")
 
