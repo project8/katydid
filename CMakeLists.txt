@@ -14,6 +14,8 @@ include( PackageBuilder )
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/cmake )
 include( Nymph )
 
+include( PythonPackage )
+
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
@@ -84,11 +86,7 @@ pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 ## TODO Lots of convention questions... BHL
 # python stuff is all here, maybe should not be?
 if (Katydid_USE_PYTHON)
-    find_package(PythonLibs 2.7 REQUIRED) # is this the version we want?
-    include_directories(${PYTHON_INCLUDE_DIRS})
-    pbuilder_add_ext_libraries (${PYTHON_LIBRARIES})
-    # can the next line be modified in the find_package for boost above?
-    #find_package(Boost COMPONENTS python REQUIRED)
+    python_package_find_python( 2.7 )
 endif (Katydid_USE_PYTHON)
 
 # FFTW
@@ -274,6 +272,7 @@ nymph_build_executables()
 # Python
 
 if (Katydid_USE_PYTHON)
+    python_package_add_module( Source/KatydidPy.cc )
     add_library(katydidPy SHARED Source/KatydidPy.cc)
     #target_link_libraries(katydidPy, KatydidData KatydidEvaluation KatydidEventAnalysis KatydidIO KatydidSimulation KatydidSpectrumAnalysis KatydidTime KatydidTransform KatydidUtility ${EXTERNAL_LIBRARIES} ${EXTERNAL_LIBRARIES_MATLAB})
     target_link_libraries(katydidPy KatydidTime KatydidData ${EXTERNAL_LIBRARIES} ${EXTERNAL_LIBRARIES_MATLAB})
