@@ -23,12 +23,6 @@ struct BoostFilesystemPath_to_python_str
             return boost::python::incref(
                 boost::python::object(
                     s.native()).ptr());
-            /*
-            std::string* s1 = &s.generic_string();
-            PyObject* bpo = boost::python::object(s1);
-            boost::python::incref(bpo);
-            return bpo;
-            */
         }
 };
 struct BoostFilesystemPath_from_python_str
@@ -57,6 +51,8 @@ struct BoostFilesystemPath_from_python_str
     }
 };
 
+//KTEggReader::path_vev (Katydid::KTEggProcessorPy::*GetFilenames_var)(
+
 // namespace exports
 void export_KTEggProcessorPy()
 {
@@ -74,8 +70,9 @@ void export_KTEggProcessorPy()
         .add_property("ProgressReportInterval", &KTEggProcessor::GetProgressReportInterval, &KTEggProcessor::SetProgressReportInterval)
 
         //TODO The Filenames type is an std::vector which i don't have a way to deal with yet
-        .add_property("Filenames", make_function( &KTEggProcessor::GetFilenames, return_value_policy<copy_const_reference>()), &KTEggProcessor::SetFilenames)
+        //.add_property("Filenames", make_function( &KTEggProcessor::GetFilenames, return_value_policy<copy_const_reference>()), &KTEggProcessor::SetFilenames)
         //.add_property("Filenames", &KTEggProcessor::GetFilenames, &KTEggProcessor::SetFilenames)
+        .add_property("Filenames", make_function( &KTEggProcessor::GetFilenames, return_value_policy<reference_existing_object>()), &KTEggProcessor::SetFilenames)
 
         .add_property("EggReaderType", make_function( &KTEggProcessor::GetEggReaderType, return_value_policy<copy_const_reference>()), &KTEggProcessor::SetEggReaderType)
 

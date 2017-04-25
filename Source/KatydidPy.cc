@@ -28,7 +28,7 @@ class katydidPyUtility{};
 //#include "KTDataPy.hh"
 //class externals{};
 
-BOOST_PYTHON_MODULE(katydidPy)
+BOOST_PYTHON_MODULE(KatydidPy)
 {
     using namespace boost::python;
 
