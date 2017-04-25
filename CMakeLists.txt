@@ -87,6 +87,9 @@ pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 # python stuff is all here, maybe should not be?
 if (Katydid_USE_PYTHON)
     python_package_find_python( 2.7 )
+    set( Nymph_ENABLE_PYTHON ON )
+else (Katydid_USE_PYTHON)
+    set( Nymph_ENABLE_PYTHON OFF )
 endif (Katydid_USE_PYTHON)
 
 # FFTW
