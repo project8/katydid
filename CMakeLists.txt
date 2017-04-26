@@ -277,7 +277,6 @@ nymph_build_executables()
 if (Katydid_USE_PYTHON)
     python_package_add_module( Source/KatydidPy.cc )
 endif (Katydid_USE_PYTHON)
-MESSAGE("extern are: ${EXTERNAL_LIBRARIES}")
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
