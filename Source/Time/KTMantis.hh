@@ -111,7 +111,7 @@ namespace Katydid
         private:
             Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal;
             Nymph::KTSignalData fSliceSignal;
-            Nymph::KTSignalOneArg< void > fMantisDoneSignal;
+            Nymph::KTSignalDone fMantisDoneSignal;
 
             //***************
             // Slots

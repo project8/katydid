@@ -182,7 +182,7 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTCorrelationData > fCorrSlot;
             Nymph::KTSlotDataOneType< KTWignerVilleData > fWVSlot;
 
-            Nymph::KTSlotNoArg< void () > fCompleteDistributions;
+            Nymph::KTSlotDone fCompleteDistributions;
 
     };
 

@@ -138,7 +138,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fEventSignal;
-            Nymph::KTSignalOneArg< void > fClusterDoneSignal;
+            Nymph::KTSignalDone fClusterDoneSignal;
 
             //***************
             // Slots

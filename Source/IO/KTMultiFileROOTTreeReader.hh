@@ -107,7 +107,7 @@ namespace Katydid
             //**************
         private:
             Nymph::KTSignalData fAmpDistSignal;
-            Nymph::KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalDone fDoneSignal;
 
             //**************
             // Slots

@@ -2,13 +2,13 @@
 # Author: N. Oblath
 
 set (IO_HEADERFILES
-    BasicAsciiWriter/KTBasicASCIITypeWriterTS.hh
-    BasicAsciiWriter/KTBasicAsciiWriter.hh
-    JSONWriter/KTJSONTypeWriterTime.hh
+    #BasicAsciiWriter/KTBasicASCIITypeWriterTS.hh
+    #BasicAsciiWriter/KTBasicAsciiWriter.hh
+    #JSONWriter/KTJSONTypeWriterTime.hh
     #JSONWriter/KTJSONTypeWriterEvaluation.hh
-    JSONWriter/KTJSONTypeWriterEventAnalysis.hh
-    JSONWriter/KTJSONWriter.hh
-    OfficialCandidatesWriter/KTOfficialCandidatesWriter.hh
+    #JSONWriter/KTJSONTypeWriterEventAnalysis.hh
+    #JSONWriter/KTJSONWriter.hh
+    #OfficialCandidatesWriter/KTOfficialCandidatesWriter.hh
     TerminalWriter/KTTerminalTypeWriterEventAnalysis.hh
     TerminalWriter/KTTerminalTypeWriterTime.hh
     TerminalWriter/KTTerminalWriter.hh
@@ -17,13 +17,13 @@ set (IO_HEADERFILES
 )
 
 set (IO_SOURCEFILES
-    BasicAsciiWriter/KTBasicASCIITypeWriterTS.cc
-    BasicAsciiWriter/KTBasicAsciiWriter.cc
-    JSONWriter/KTJSONTypeWriterTime.cc
+    #BasicAsciiWriter/KTBasicASCIITypeWriterTS.cc
+    #BasicAsciiWriter/KTBasicAsciiWriter.cc
+    #JSONWriter/KTJSONTypeWriterTime.cc
     #JSONWriter/KTJSONTypeWriterEvaluation.cc
-    JSONWriter/KTJSONTypeWriterEventAnalysis.cc
-    JSONWriter/KTJSONWriter.cc
-    OfficialCandidatesWriter/KTOfficialCandidatesWriter.cc
+    #JSONWriter/KTJSONTypeWriterEventAnalysis.cc
+    #JSONWriter/KTJSONWriter.cc
+    #OfficialCandidatesWriter/KTOfficialCandidatesWriter.cc
     TerminalWriter/KTTerminalTypeWriterEventAnalysis.cc
     TerminalWriter/KTTerminalTypeWriterTime.cc
     TerminalWriter/KTTerminalWriter.cc
@@ -51,10 +51,10 @@ if (ROOT_FOUND)
         DataDisplay/KTDataTypeDisplaySpectrumAnalysis.hh
         DataDisplay/KTDataTypeDisplayTime.hh
         DataDisplay/KTDataTypeDisplayTransform.hh
-        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterSpectrumAnalysis.hh
-        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.hh
-        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.hh
-        MultiSliceROOTWriter/KTMultiSliceROOTWriter.hh
+        #MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterSpectrumAnalysis.hh
+        #MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.hh
+        #MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.hh
+        #MultiSliceROOTWriter/KTMultiSliceROOTWriter.hh
         ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.hh
         ROOTSpectrogramWriter/KTROOTSpectrogramWriter.hh
         ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.hh
@@ -81,10 +81,10 @@ if (ROOT_FOUND)
         DataDisplay/KTDataTypeDisplayTransform.cc
         DataDisplay/KTDataDisplay.cc
         DataDisplay/KTDisplayWindow.cc
-        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterSpectrumAnalysis.cc
-        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.cc
-        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.cc
-        MultiSliceROOTWriter/KTMultiSliceROOTWriter.cc
+        #MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterSpectrumAnalysis.cc
+        #MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.cc
+        #MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.cc
+        #MultiSliceROOTWriter/KTMultiSliceROOTWriter.cc
         ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.cc
         ROOTSpectrogramWriter/KTROOTSpectrogramWriter.cc
         ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.cc

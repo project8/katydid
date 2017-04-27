@@ -124,7 +124,7 @@ namespace Katydid
             Nymph::KTSignalData fHeaderSignal;
             Nymph::KTSignalData fRawDataSignal;
             Nymph::KTSignalData fDataSignal;
-            Nymph::KTSignalOneArg< void > fEggDoneSignal;
+            Nymph::KTSignalDone fEggDoneSignal;
             Nymph::KTSignalOneArg< const KTProcSummary* > fSummarySignal;
 
     };

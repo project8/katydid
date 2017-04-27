@@ -110,7 +110,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTrackSignal;
-            Nymph::KTSignalOneArg< void > fClusterDoneSignal;
+            Nymph::KTSignalDone fClusterDoneSignal;
 
             //***************
             // Slots

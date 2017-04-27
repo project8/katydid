@@ -117,7 +117,7 @@ namespace Katydid
             Nymph::KTSignalData fMCTruthEventsSignal;
             Nymph::KTSignalData fAnalysisCandidatesSignal;
             Nymph::KTSignalData fCCResultsSignal;
-            Nymph::KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalDone fDoneSignal;
 
             //**************
             // Slots
