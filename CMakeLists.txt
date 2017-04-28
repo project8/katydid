@@ -85,16 +85,12 @@ pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
 ## TODO Lots of convention questions... BHL
 # python stuff is all here, maybe should not be?
-MESSAGE(">>>>>Nymph python is: ${Nymph_ENABLE_PYTHON}")
 if (Katydid_USE_PYTHON)
     python_package_find_python( 2.7 )
-    MESSAGE(">>>>>set Nymph py to on")
     SET( Nymph_ENABLE_PYTHON ON CACHE BOOL "" FORCE)
 else (Katydid_USE_PYTHON)
-    MESSAGE(">>>>>set Nymph py to off")
     set( Nymph_ENABLE_PYTHON OFF CACHE BOOL "" FORCE)
 endif (Katydid_USE_PYTHON)
-MESSAGE(">>>>>Nymph python is: ${Nymph_ENABLE_PYTHON}")
 
 # FFTW
 if (Katydid_USE_FFTW)
