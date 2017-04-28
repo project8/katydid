@@ -11,6 +11,8 @@
 
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
+#include "KTPythonMacros.hh"
+
 #include "KTEggProcessor.hh"
 
 // Wrappers etc.
@@ -66,21 +68,18 @@ void export_KTEggProcessorPy()
         ;
 
     class_< Katydid::KTEggProcessor, boost::noncopyable, bases<Nymph::KTProcessor> >("KTEggProcessor")
-        .add_property("NSlices", &KTEggProcessor::GetNSlices, &KTEggProcessor::SetNSlices)
-        .add_property("ProgressReportInterval", &KTEggProcessor::GetProgressReportInterval, &KTEggProcessor::SetProgressReportInterval)
+        PROPERTYMEMBER(KTEggProcessor, NSlices)
+        PROPERTYMEMBER(KTEggProcessor, ProgressReportInterval)
 
-        //TODO The Filenames type is an std::vector which i don't have a way to deal with yet
-        //.add_property("Filenames", make_function( &KTEggProcessor::GetFilenames, return_value_policy<copy_const_reference>()), &KTEggProcessor::SetFilenames)
-        //.add_property("Filenames", &KTEggProcessor::GetFilenames, &KTEggProcessor::SetFilenames)
-        .add_property("Filenames", make_function( &KTEggProcessor::GetFilenames, return_value_policy<reference_existing_object>()), &KTEggProcessor::SetFilenames)
+        PROPERTYMEMBER_RETPOLICY( KTEggProcessor, Filenames, reference_existing_object )
 
-        .add_property("EggReaderType", make_function( &KTEggProcessor::GetEggReaderType, return_value_policy<copy_const_reference>()), &KTEggProcessor::SetEggReaderType)
+        PROPERTYMEMBER_RETPOLICY( KTEggProcessor, EggReaderType, copy_const_reference )
 
-        .add_property("SliceSize", &KTEggProcessor::GetSliceSize, &KTEggProcessor::SetSliceSize)
-        .add_property("Stride", &KTEggProcessor::GetStride, &KTEggProcessor::SetStride)
-        .add_property("StartTime", &KTEggProcessor::GetStartTime, &KTEggProcessor::SetStartTime)
+        PROPERTYMEMBER(KTEggProcessor, SliceSize)
+        PROPERTYMEMBER(KTEggProcessor, Stride)
+        PROPERTYMEMBER(KTEggProcessor, StartTime)
 
-        .add_property("NormalizeVoltages", &KTEggProcessor::GetNormalizeVoltages, &KTEggProcessor::SetNormalizeVoltages)
+        PROPERTYMEMBER(KTEggProcessor, NormalizeVoltages)
         ;
 }
 
