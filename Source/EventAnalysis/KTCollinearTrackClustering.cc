@@ -138,40 +138,52 @@ namespace Katydid
                 KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
                 newTrack.SetComponent( component );
 
-                KTProcessedTrackData* oldTrack;
+                KTDEBUG(tclog, "Initalized new track");
 
                 TrackSetCIt trackIt = compIt->begin();
 
                 // Loop through tracks in the cluster
                 for( int i = 0; i < newCluster.size(); ++i )
                 {
+                    KTDEBUG(tclog, "Advancing to position " << newCluster[i] );
                     // Get this track from the iterator
-                    std::advance( trackIt, newCluster[i] );
-                    oldTrack = new KTProcessedTrackData( *trackIt );
+
+                    if( i == 0 )
+                    {
+                        std::advance( trackIt, newCluster[i] );
+                    }
+                    else
+                    {
+                        std::advance( trackIt, newCluster[i] - newCluster[i-1] );
+                    }
 
                     // Assign start and end time/frequency
 
-                    if( i == 0 || oldTrack->GetStartTimeInRunC() < newTrack.GetStartTimeInRunC() )
+                    if( i == 0 || trackIt->GetStartTimeInRunC() < newTrack.GetStartTimeInRunC() )
                     {
-                        newTrack.SetStartTimeInRunC( oldTrack->GetStartTimeInRunC() );
+                        newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC() );
                     }
-                    if( i == 0 || oldTrack->GetEndTimeInRunC() > newTrack.GetEndTimeInRunC() )
+                    if( i == 0 || trackIt->GetEndTimeInRunC() > newTrack.GetEndTimeInRunC() )
                     {
-                        newTrack.SetEndTimeInRunC( oldTrack->GetEndTimeInRunC() );
+                        newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC() );
                     }
-                    if( i == 0 || oldTrack->GetStartFrequency() < newTrack.GetStartFrequency() )
+                    if( i == 0 || trackIt->GetStartFrequency() < newTrack.GetStartFrequency() )
                     {
-                        newTrack.SetStartFrequency( oldTrack->GetStartFrequency() );
+                        newTrack.SetStartFrequency( trackIt->GetStartFrequency() );
                     }
-                    if( i == 0 || oldTrack->GetEndFrequency() > newTrack.GetEndFrequency() )
+                    if( i == 0 || trackIt->GetEndFrequency() > newTrack.GetEndFrequency() )
                     {
-                        newTrack.SetEndFrequency( oldTrack->GetEndFrequency() );
+                        newTrack.SetEndFrequency( trackIt->GetEndFrequency() );
                     }
+
+                    KTDEBUG(tclog, "Assigned time and frequency");
 
                     // Set tracks in this cluster to GROUPED
                     // They will no longer be considered for future clusters
 
                     fGroupingStatuses[newCluster[i]] = fGROUPED;
+
+                    KTDEBUG(tclog, "Assigned GROUPED status");
                 }
 
                 // Process & emit new track
@@ -204,7 +216,7 @@ namespace Katydid
         double totalVariance;
 
         // Stuff for finding the worst track
-        double delta, bestDelta = 0.;
+        double delta, bestDelta = 1e9;
         int worstTrack = -1.;
 
         // Having nUngrouped will be handy without calling the thing all the time
@@ -270,10 +282,10 @@ namespace Katydid
                 }
                 
                 // Maximum delta = worst track
-                delta = std::pow( fSlopeRadius, -2 ) * ( (2. - nUngrouped) * std::pow( fSlopes[i], 2 ) + 2. * nUngrouped * avgQ * fSlopes[i] ) + std::pow( fFrequencyRadius, -2 ) * ( (2. - nUngrouped) * std::pow( fIntercepts[i], 2 ) + 2. * nUngrouped * avgF * fIntercepts[i] ); 
+                delta = std::pow( (fSlopes[i] - avgQ) / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) / fFrequencyRadius, 2 ); 
                 
                 // Compare to the current maximum delta
-                if( i == 0 || delta > bestDelta )
+                if( delta > bestDelta )
                 {
                     bestDelta = delta;
                     worstTrack = i;
@@ -281,6 +293,7 @@ namespace Katydid
             }
 
             KTDEBUG(tclog, "Worst track index = " << worstTrack);
+            KTDEBUG(tclog, "Best delta = " << bestDelta);
 
             // Set this one's status to REMOVED.
             fGroupingStatuses[worstTrack] = fREMOVED;
