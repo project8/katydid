@@ -79,6 +79,7 @@ namespace Katydid
 
             std::vector< double > fSlopes;
             std::vector< double > fIntercepts;
+            std::vector< double > fTimeLengths;
             std::vector< int > fGroupingStatuses;
 
             int fUNGROUPED = 0;
