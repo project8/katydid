@@ -34,6 +34,7 @@ namespace Katydid
             fSlopes(1),
             fIntercepts(1),
             fTimeLengths(1),
+            fStartTimes(1),
             fTrackSignal("track", this),
             fDoneSignal("tracks-done", this),
             fTakeTrackSlot("track", this, &KTCollinearTrackClustering::TakeTrack)
@@ -115,6 +116,7 @@ namespace Katydid
             fSlopes.clear();
             fIntercepts.clear();
             fTimeLengths.clear();
+            fStartTimes.clear();
             fGroupingStatuses.clear();
 
             KTDEBUG(tclog, "Filling vectors with slope and intercept");
@@ -123,6 +125,7 @@ namespace Katydid
                 fSlopes.push_back( trackIt->GetSlope() );
                 fIntercepts.push_back( trackIt->GetIntercept() );
                 fTimeLengths.push_back( trackIt->GetTimeLength() );
+                fStartTimes.push_back( trackIt->GetStartTimeInRunC() );
                 fGroupingStatuses.push_back( fUNGROUPED );
             }
 
@@ -214,8 +217,8 @@ namespace Katydid
     std::vector< int > KTCollinearTrackClustering::FindCluster()
     {
         // Initialize variables for variance and mean
-        double avgQ = 0., avgQ2 = 0., varQ = 0.;
-        double avgF = 0., avgF2 = 0., varF = 0.;
+        double avgQ = 0., varQ = 0.;
+        double avgF = 0., varF = 0.;
         double totalVariance;
 
         // Stuff for finding the worst track
@@ -241,9 +244,7 @@ namespace Katydid
             // Add to <q> and <q^2>, same for frequency
 
             avgQ += fSlopes[i];
-
             avgF += fIntercepts[i];
-            avgF2 += std::pow( fIntercepts[i], 2 );
 
             // Add this index to the cluster
             cluster.push_back( i );
@@ -253,9 +254,7 @@ namespace Katydid
         // Normalize expectation values and compure variances
 
         avgQ /= nUngrouped;
-
         avgF /= nUngrouped;
-        avgF2 /= nUngrouped;
 
         for( int i = 0; i < nTracks; ++i )
         {
@@ -266,10 +265,11 @@ namespace Katydid
             }
 
             varQ += std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i], 2 );
+            varF += std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / fStartTimes[i], 2 );
         }
 
         varQ /= nUngrouped;
-        varF = avgF2 - std::pow( avgF, 2 );
+        varF /= nUngrouped;
 
         KTDEBUG(tclog, "Slope variance = " << varQ);
         KTDEBUG(tclog, "Frequency variance = " << varF);
@@ -295,7 +295,7 @@ namespace Katydid
                 }
                 
                 // Maximum delta = worst track
-                delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) / fFrequencyRadius, 2 ); 
+                delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / (fStartTimes[i] * fFrequencyRadius), 2 ); 
                 
                 // Compare to the current maximum delta
                 if( delta > bestDelta )
@@ -314,7 +314,7 @@ namespace Katydid
             // Now we will recursively repeat this calculation. The track which has just been set to REMOVED will now be skipped
             // Note that if there is only 1 track which is ungrouped, the variances will be zero and necessarily below the threshold
 
-            KTDEBUG(tclog, "Removed worst track. Recursively continuing the cluster search");
+            KTDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[worstTrack] << ". Recursively continuing the cluster search");
             return FindCluster();
         }
         else
