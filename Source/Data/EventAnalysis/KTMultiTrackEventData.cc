@@ -330,8 +330,29 @@ namespace Katydid
             fMeanEndTimeInRunC(0.),
             fSumEndTimeInRunC(0.),
             fAcquisitionID(0),
-            fUnknownEventTopology(false)
+            fUnknownEventTopology(false),
+            fFirstStartFreq(0.),
+            fLastEndFreq(0.),
+
+            fFirstStartTimeInRunC(0.),
+            fLastEndTimeInRunC(0.),
+            fSumSlopes(0.),
+            fMeanSlope(0.)
     {}
+
+    /*MultiTrackTrackRef::MultiTrackTrackRef() :
+            fTrackRefs(),
+            fFirstStartTimeInRunC(0.),
+            fLastEndTimeInRunC(0.),
+            fMeanStartTimeInRunC(0.),
+            fMeanEndTimeInRunC(0.),
+            fFirstStartFreq(0.),
+            fLastEndFreq(0.),
+            fSumSlopes(0.),
+            fMeanSlope(0.),
+            fAcquisitionID(0),
+            fUnknownEventTopology(false)
+    {}*/
 
     bool MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)
     {
@@ -343,6 +364,35 @@ namespace Katydid
         double currentSize = (double)fTrackRefs.size();
         fMeanStartTimeInRunC = fSumStartTimeInRunC / currentSize;
         fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
+        return true;
+    }
+
+    bool MultiPeakTrackRef::AttachTrack(const TrackSetCIt& trackRef)
+    {
+        if (fTrackRefs.find(trackRef) != fTrackRefs.end())  return false;
+
+        fTrackRefs.insert(trackRef);
+        double trackStart = trackRef->GetStartTimeInRunC();
+        double trackEnd = trackRef->GetEndTimeInRunC();
+        double trackSlope = trackRef->GetSlope();
+
+        if (trackStart < fFirstStartTimeInRunC)
+        {
+            fFirstStartTimeInRunC = trackStart;
+            fFirstStartFreq = trackRef->GetStartFrequency();
+        }
+        else if (trackEnd > fLastEndTimeInRunC)
+        {
+            fLastEndTimeInRunC = trackEnd;
+            fLastEndFreq = trackRef->GetEndFrequency();
+        }
+        fSumSlopes += trackSlope;
+        double currentSize = (double)fTrackRefs.size();
+        fMeanSlope = fSumSlopes / currentSize;
+
+        fMeanStartTimeInRunC = fFirstStartTimeInRunC;
+        fMeanEndTimeInRunC = fLastEndTimeInRunC;
+
         return true;
     }
 

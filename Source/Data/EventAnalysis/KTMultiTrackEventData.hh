@@ -144,10 +144,38 @@ namespace Katydid
         uint64_t fAcquisitionID;
         bool fUnknownEventTopology;
 
+        double fFirstStartTimeInRunC;
+        double fLastEndTimeInRunC;
+        double fFirstStartFreq;
+        double fLastEndFreq;
+        double fSumSlopes;
+        double fMeanSlope;
+
         MultiPeakTrackRef();
         bool InsertTrack(const TrackSetCIt& trackRef);
+        bool AttachTrack(const TrackSetCIt& trackRef);
         void Clear();
     };
+
+    /*struct MultiTrackTrackRef
+    {
+        std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
+        // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
+        double fFirstStartTimeInRunC;
+        double fLastEndTimeInRunC;
+        double fMeanStartTimeInRunC;
+        double	fMeanEndTimeInRunC;
+        double fSumSlopes;
+        double fMeanSlope;
+        double fFirstStartFreq;
+        double fLastEndFreq;
+        uint64_t fAcquisitionID;
+        bool fUnknownEventTopology;
+
+        MultiTrackTrackRef();
+        bool AttachTrack(const TrackSetCIt& trackRef);
+        void Clear();
+    };*/
 
     struct MTRComp
     {

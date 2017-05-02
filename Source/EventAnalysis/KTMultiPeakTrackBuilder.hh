@@ -59,6 +59,8 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, SidebandTimeTolerance);
+            MEMBERVARIABLE(double, TimeGapTolerance);
+            MEMBERVARIABLE(double, FreqTolerance);
 
         public:
             // Store point information locally
@@ -69,13 +71,16 @@ namespace Katydid
             void SetFreqBinWidth(double bw);
 
             bool DoClustering();
+            bool DoDirectionalClustering();
 
             bool Run();
+            bool RunRecovery();
 
             unsigned GetDataCount() const;
 
         private:
             bool FindMultiPeakTracks();
+            bool FindMultiTrackTracks();
 
             double fTimeBinWidth;
             double fFreqBinWidth;
@@ -101,6 +106,7 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
 
             void DoClusteringSlot();
+            void DoTrackRecoverySlot();
 
     };
 
