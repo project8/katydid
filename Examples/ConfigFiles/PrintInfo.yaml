@@ -1,0 +1,20 @@
+processor-toolbox:
+    processors:
+        - { type: egg-processor,   name: egg }
+        - { type: terminal-writer, name: writer }
+
+    connections:
+        - { signal: "egg:header", slot: "writer:header" }
+        - { signal: "egg:summary", slot: "writer:summary" }
+
+    run-queue:
+        - egg
+
+egg:
+#    filename: /path/to/file.egg
+    filenames:
+        - /path/to/file_0.egg
+        - /path/to/file_1.egg
+    egg-reader: egg3
+    slice-size: 8192
+    number-of-slices: 500

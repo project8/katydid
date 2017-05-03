@@ -119,8 +119,21 @@ if (HDF5_FOUND)
         HDF5Writer/KTHDF5TypeWriterSpectrumAnalysis.cc
         HDF5Writer/KTHDF5Writer.cc
     )
-    
 endif (HDF5_FOUND)
+
+if (MAGICK++_FOUND)
+    set (IO_HEADERFILES
+        ${IO_HEADERFILES}
+        ImageWriter/KTImageTypeWriterTransform.hh
+        ImageWriter/KTImageWriter.hh
+    )
+
+    set (IO_SOURCEFILES
+        ${IO_SOURCEFILES}
+        ImageWriter/KTImageTypeWriterTransform.cc
+        ImageWriter/KTImageWriter.cc
+    )
+endif (MAGICK++_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility

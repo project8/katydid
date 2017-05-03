@@ -70,6 +70,8 @@ namespace Katydid
                 double fCentralPowerRatio; // Ratio of average power within 3 sigma of the central peak to average power greater than 3 sigma from the central peak
 
                 double fTrackIntercept; // just so that we don't lose this info, since it is subtracted away
+
+                unsigned fTrackID; // TrackID from KTProcessedTrackData
             };
 
         public:
@@ -153,6 +155,9 @@ namespace Katydid
 
             double GetTrackIntercept( unsigned component = 0 ) const;
             void SetTrackIntercept( double alpha, unsigned component = 0 );
+
+            unsigned GetTrackID( unsigned component = 0 ) const;
+            void SetTrackID(unsigned trackID, unsigned component = 0);
 
         private:
             std::vector< PerComponentData > fComponentData;
@@ -427,6 +432,18 @@ namespace Katydid
         fComponentData[component].fTrackIntercept = alpha;
         return;
     }
+
+    inline unsigned KTPowerFitData::GetTrackID(unsigned component) const
+    {
+        return fComponentData[component].fTrackID;
+    }
+
+    inline void KTPowerFitData::SetTrackID(unsigned trackID, unsigned component)
+    {
+        fComponentData[component].fTrackID = trackID;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTPOWERFITDATA_HH */
