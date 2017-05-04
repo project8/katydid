@@ -129,13 +129,18 @@ namespace Katydid
                 fGroupingStatuses.push_back( fUNGROUPED );
             }
 
-            std::vector< int > newCluster;
             while( GetNUngrouped() > 0 )
             {
                 // Find a new cluster of tracks
-                newCluster = FindCluster();
+                fClusterFlag = false;
+                fTerminateFlag = false;
 
-                KTINFO(tclog, "New cluster has size " << newCluster.size());
+                while( ! fTerminateFlag )
+                {
+                    FindCluster();
+                }
+
+                KTINFO(tclog, "New cluster has size " << fCluster.size());
 
                 KTDEBUG(tclog, "Setting up new KTProcessedTrackData");
 
@@ -149,18 +154,18 @@ namespace Katydid
                 TrackSetCIt trackIt = compIt->begin();
 
                 // Loop through tracks in the cluster
-                for( int i = 0; i < newCluster.size(); ++i )
+                for( int i = 0; i < fCluster.size(); ++i )
                 {
-                    KTDEBUG(tclog, "Advancing to position " << newCluster[i] );
+                    KTDEBUG(tclog, "Advancing to position " << fCluster[i] );
                     // Get this track from the iterator
 
                     if( i == 0 )
                     {
-                        std::advance( trackIt, newCluster[i] );
+                        std::advance( trackIt, fCluster[i] );
                     }
                     else
                     {
-                        std::advance( trackIt, newCluster[i] - newCluster[i-1] );
+                        std::advance( trackIt, fCluster[i] - fCluster[i-1] );
                     }
 
                     // Assign start and end time/frequency
@@ -187,7 +192,7 @@ namespace Katydid
                     // Set tracks in this cluster to GROUPED
                     // They will no longer be considered for future clusters
 
-                    fGroupingStatuses[newCluster[i]] = fGROUPED;
+                    fGroupingStatuses[fCluster[i]] = fGROUPED;
 
                     KTDEBUG(tclog, "Assigned GROUPED status");
                 }
@@ -214,22 +219,23 @@ namespace Katydid
         return true;
     }
 
-    std::vector< int > KTCollinearTrackClustering::FindCluster()
+    void KTCollinearTrackClustering::FindCluster()
     {
+        KTDEBUG(tclog, "Beginning cluster determination");
         // Initialize variables for variance and mean
-        double avgQ = 0., varQ = 0.;
-        double avgF = 0., varF = 0.;
-        double totalVariance;
+        avgQ = 0.;
+        varQ = 0.;
+        avgF = 0.;
+        varF = 0.;
+        totalVariance = 0.;
 
         // Stuff for finding the worst track
-        double delta, bestDelta = 0.;
-        int worstTrack = -1.;
+        delta = 0.;
+        bestDelta = 0.;
 
         // Having nUngrouped will be handy without calling the thing all the time
-        double nUngrouped = (double)GetNUngrouped();
-
-        // Vector of positions to describe the cluster
-        std::vector< int > cluster;
+        nUngrouped = (double)GetNUngrouped();
+        fCluster.clear();
 
         int nTracks = fSlopes.size();
 
@@ -247,7 +253,7 @@ namespace Katydid
             avgF += fIntercepts[i];
 
             // Add this index to the cluster
-            cluster.push_back( i );
+            fCluster.push_back( i );
         }
 
 
@@ -279,62 +285,133 @@ namespace Katydid
 
         KTINFO(tclog, "Computed total weighted variance = " << totalVariance);
 
-        // Variance ~ Sqrt(N), so the threshold should as well
-        if( totalVariance > nUngrouped )
+        // Variance ~ N, so the threshold should as well
+        if( totalVariance <= nUngrouped )
         {
-            // Variance is too big
-            KTDEBUG(tclog, "Tracks not yet clustered. Finding worst track");
+            // Variance is small enough to consider these tracks collinear
+            KTDEBUG(tclog, "Found a cluster! Trying to reinstate REMOVED tracks");
 
-            // Find the track which is contributing the most to the variance
+            fClusterFlag = true;
+            bestDelta = 1.0e9;
+            worstTrack = -1;
+
             for( int i = 0; i < nTracks; ++i )
             {
                 // Again only ungrouped tracks
-                if( fGroupingStatuses[i] != fUNGROUPED )
+                if( fGroupingStatuses[i] != fREMOVED )
                 {
                     continue;
                 }
                 
-                // Maximum delta = worst track
+                // This time maximum delta = best track because minus sign
                 delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / (fStartTimes[i] * fFrequencyRadius), 2 ); 
-                
+
                 // Compare to the current maximum delta
-                if( delta > bestDelta )
+                if( delta < bestDelta )
                 {
                     bestDelta = delta;
-                    worstTrack = i;
+                    worstTrack = i; // best track
                 }
             }
 
-            KTDEBUG(tclog, "Worst track index = " << worstTrack);
-            KTDEBUG(tclog, "Best delta = " << bestDelta);
+            if( worstTrack == -1 )
+            {
+                KTDEBUG(tclog, "Didn't find any REMOVED tracks. Terminating cluster search");
 
-            // Set this one's status to REMOVED.
-            fGroupingStatuses[worstTrack] = fREMOVED;
+                // Reset all REMOVED tracks to UNGROUPED. They will be considered for future clusters
+                for( int i = 0; i < nTracks; ++i )
+                {
+                    if( fGroupingStatuses[i] == fREMOVED )
+                    {
+                        fGroupingStatuses[i] = fUNGROUPED;
+                    }
+                }
 
-            // Now we will recursively repeat this calculation. The track which has just been set to REMOVED will now be skipped
-            // Note that if there is only 1 track which is ungrouped, the variances will be zero and necessarily below the threshold
+                fTerminateFlag = true;
+            }
+            else
+            {
+                KTDEBUG(tclog, "Best track index = " << worstTrack);
+                KTDEBUG(tclog, "Best delta = " << bestDelta);
 
-            KTDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[worstTrack] << ". Recursively continuing the cluster search");
-            return FindCluster();
+                // Reinstate this track
+                fGroupingStatuses[worstTrack] = fUNGROUPED;
+
+                KTDEBUG(tclog, "Added best track, with intercept " << fIntercepts[worstTrack] << ". Recursively continuing the cluster search");
+                fTerminateFlag = false;
+            }
         }
         else
         {
-            // Variance is small enough to consider these tracks collinear
-            KTDEBUG(tclog, "Found a cluster! Reverting all removed tracks to UNGROUPED");
-
-            // Reset all REMOVED tracks to UNGROUPED. They will be considered for future clusters
-            for( int i = 0; i < nTracks; ++i )
+            if( ! fClusterFlag )
             {
-                if( fGroupingStatuses[i] == fREMOVED )
-                {
-                    fGroupingStatuses[i] = fUNGROUPED;
-                }
-            }
+                // Variance is too big
+                KTDEBUG(tclog, "Tracks not yet clustered. Finding worst track");
 
-            // Return this cluster
-            return cluster;
-        }
-    }
+                // Find the track which is contributing the most to the variance
+                for( int i = 0; i < nTracks; ++i )
+                {
+                    // Again only ungrouped tracks
+                    if( fGroupingStatuses[i] != fUNGROUPED )
+                    {
+                        continue;
+                    }
+                    
+                    // Maximum delta = worst track
+                    delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / (fStartTimes[i] * fFrequencyRadius), 2 ); 
+                    
+                    // Compare to the current maximum delta
+                    if( delta > bestDelta )
+                    {
+                        bestDelta = delta;
+                        worstTrack = i;
+                    }
+                }
+
+                KTDEBUG(tclog, "Worst track index = " << worstTrack);
+                KTDEBUG(tclog, "Best delta = " << bestDelta);
+
+                // Set this one's status to REMOVED.
+                fGroupingStatuses[worstTrack] = fREMOVED;
+
+                // Now we will recursively repeat this calculation. The track which has just been set to REMOVED will now be skipped
+                // Note that if there is only 1 track which is ungrouped, the variances will be zero and necessarily below the threshold
+
+                KTDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[worstTrack] << ". Recursively continuing the cluster search");
+                fTerminateFlag = false;
+            }
+            else
+            {
+                KTDEBUG(tclog, "Variance exceeded limit; removing most recent track and terminating cluster search");
+
+                fGroupingStatuses[worstTrack] = fREMOVED;
+                
+                for( std::vector< int >::iterator it = fCluster.begin(); it != fCluster.end(); ++it )
+                {
+                    if( *it == worstTrack )
+                    {
+                        KTDEBUG(tclog, "Found worst track. Removing it now");
+                        fCluster.erase( it );
+
+                        --it;
+                    }
+                }
+
+                // Reset all REMOVED tracks to UNGROUPED. They will be considered for future clusters
+                for( int i = 0; i < nTracks; ++i )
+                {
+                    if( fGroupingStatuses[i] == fREMOVED )
+                    {
+                        fGroupingStatuses[i] = fUNGROUPED;
+                    }
+                }
+
+                // Return this cluster
+                fTerminateFlag = true;
+
+            }   // end fClusterFlag conditional
+        }       // end totalVariance conditional
+    }           // end method
 
     void KTCollinearTrackClustering::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
     {
@@ -346,6 +423,8 @@ namespace Katydid
 
     int KTCollinearTrackClustering::GetNUngrouped()
     {
+        KTDEBUG(tclog, "Determining number of ungrouped tracks");
+
         int nUngrouped = 0;
         for( int i = 0; i < fSlopes.size(); ++i )
         {

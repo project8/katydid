@@ -71,7 +71,7 @@ namespace Katydid
 
         private:
             bool FindCollinearTracks();
-            std::vector< int > FindCluster();
+            void FindCluster();
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             int GetNUngrouped();
 
@@ -86,6 +86,22 @@ namespace Katydid
             int fUNGROUPED = 0;
             int fGROUPED = 1;
             int fREMOVED = -1;
+
+            bool fClusterFlag = false;
+            bool fTerminateFlag = false;
+
+            // Initialize variables for variance and mean
+            double avgQ = 0., varQ = 0.;
+            double avgF = 0., varF = 0.;
+            double totalVariance = 0.;
+
+            // Stuff for finding the worst track
+            double delta = 0., bestDelta = 0.;
+            int worstTrack = -1.;
+
+            double nUngrouped;
+
+            std::vector< int > fCluster;
 
             //***************
             // Signals
