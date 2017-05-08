@@ -334,7 +334,7 @@ namespace Katydid
             fFirstStartFreq(0.),
             fLastEndFreq(0.),
 
-            fFirstStartTimeInRunC(0.),
+            fFirstStartTimeInRunC(1.),
             fLastEndTimeInRunC(0.),
             fSumSlopes(0.),
             fMeanSlope(0.)
@@ -381,7 +381,7 @@ namespace Katydid
             fFirstStartTimeInRunC = trackStart;
             fFirstStartFreq = trackRef->GetStartFrequency();
         }
-        else if (trackEnd > fLastEndTimeInRunC)
+        if (trackEnd > fLastEndTimeInRunC)
         {
             fLastEndTimeInRunC = trackEnd;
             fLastEndFreq = trackRef->GetEndFrequency();

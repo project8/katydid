@@ -304,8 +304,7 @@ namespace Katydid
 					}
 					else
 					{
-					    KTDEBUG(tclog, "frequency bin width" << fFreqBinWidth);
-						bool cond1 = abs((mptrIt->fLastEndFreq + mptrIt->fMeanSlope*deltaT) - trackIt->GetStartFrequency()) < fFreqTolerance;
+						bool cond1 = abs((mptrIt->fLastEndFreq + mptrIt->fMeanSlope*deltaT) - trackIt->GetStartFrequency()) < fFreqTolerance/1.0e-3*deltaT;
 						bool cond2 = abs(1-(mptrIt->fMeanSlope / trackIt->GetSlope()))<0.05;
 						// check if this track should be added to this track ref
 						if ( !trackHasBeenAdded && cond1)
@@ -313,7 +312,7 @@ namespace Katydid
 							// then this track matches this track ref
 							mptrIt->AttachTrack(trackIt);
 							trackHasBeenAdded = true;
-							mptrIt->fUnknownEventTopology = true;
+							mptrIt->fUnknownEventTopology = false;
 						}
 						++mptrIt; // only increment if we haven't removed one
 					}
