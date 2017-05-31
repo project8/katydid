@@ -124,6 +124,7 @@ namespace Katydid
 
             MEMBERVARIABLE_NOSET(TFile*, File);
 
+        public:
             bool OpenAndVerifyFile();
             void WriteFile();
 

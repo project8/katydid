@@ -66,7 +66,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        const std::map< double, KTPowerSpectrum* > spectra = psColl.GetSpectra();
+        const std::map< double, KTPowerSpectrum* >& spectra = psColl.Spectra();
 
         //KTDEBUG(publog, "2");
         if (!spectra.empty())
@@ -96,7 +96,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        const std::map< unsigned, KTPowerFitData::Point > points = pfData.GetSetOfPoints();
+        const std::map< unsigned, KTPowerFitData::Point >& points = pfData.GetSetOfPoints();
         Int_t nPoints = points.size();
 
         Double_t x[nPoints], y[nPoints];

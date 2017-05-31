@@ -45,6 +45,8 @@ namespace Katydid
             const Points& GetPoints() const;
             Points& GetPoints();
 
+            void AddPoint(const Point& point);
+
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, CandidateID);
@@ -70,8 +72,6 @@ namespace Katydid
             //MEMBERVARIABLE(unsigned, StartSampleNumber);
             //MEMBERVARIABLE(unsigned, EndRecordNumber);
             //MEMBERVARIABLE(unsigned, EndSampleNumber);
-
-            void AddPoint(const Point& point);
 
         private:
             Points fPoints;

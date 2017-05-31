@@ -35,7 +35,7 @@ namespace Katydid
     {
         if (node == nullptr) return false;
 
-        SetFilename(node->get_value("filename", GetFilename()));
+        Filename() = node->get_value("filename", Filename());
 
         return true;
     }

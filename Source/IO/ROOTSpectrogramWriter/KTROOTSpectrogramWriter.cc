@@ -52,8 +52,8 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->get_value("output-file", fFilename));
-            SetFileFlag(node->get_value("file-flag", fFileFlag));
+            Filename() = node->get_value("output-file", fFilename);
+            FileFlag() = node->get_value("file-flag", fFileFlag);
             SetMinFreq(node->get_value("min-freq", fMinFreq));
             SetMaxFreq(node->get_value("max-freq", fMaxFreq));
             SetMinTime(node->get_value("min-time", fMinTime));
@@ -63,7 +63,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetFilename(fCLHandler->GetCommandLineValue< string >("rsw-file", fFilename));
+        Filename() = fCLHandler->GetCommandLineValue< string >("rsw-file", fFilename);
 
         return true;
     }
