@@ -47,11 +47,11 @@ namespace Katydid
 
         SetSaveFrequencySpectrum(node->get_value< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        if (! fForwardFFT.Configure(node->node_at("forward-fftw")))
+        if (! fForwardFFT.Configure(&node->node_at("forward-fftw")))
         {
             return false;
         }
-        if (! fReverseFFT.Configure(node->node_at("reverse-fftw")))
+        if (! fReverseFFT.Configure(&node->node_at("reverse-fftw")))
         {
             return false;
         }

@@ -70,19 +70,18 @@ namespace Katydid
 
     bool KTWignerVille::Configure(const scarab::param_node* node)
     {
-        fFFT->Configure(node->node_at("forward-fftw"));
+        fFFT->Configure(&node->node_at("forward-fftw"));
 
-        const scarab::param_node* windowerNode = node->node_at("windower");
-        if (windowerNode != NULL)
+        if (node->has("windower"))
         {
             fUseWindowFunction = true;
-            fWindower->Configure(windowerNode);
+            fWindower->Configure(&node->node_at("windower"));
         }
 
-        const scarab::param_array* wvPairs = node->array_at("wv-pairs");
-        if (wvPairs != NULL)
+        if (node->has("wv-pairs"))
         {
-            for (scarab::param_array::const_iterator pairIt = wvPairs->begin(); pairIt != wvPairs->end(); ++pairIt)
+            const scarab::param_array& wvPairs = node->array_at("wv-pairs");
+            for (scarab::param_array::const_iterator pairIt = wvPairs.begin(); pairIt != wvPairs.end(); ++pairIt)
             {
                 if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {

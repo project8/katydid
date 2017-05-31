@@ -207,39 +207,39 @@ namespace Katydid
         double tempMaxFrequency = std::min( data.GetMaxFreq(), fMaxFrequency );
 
         // Min and Max bins must be recalculated with these temp frequencies
-        SetMinBin(data.GetSpectra().begin()->second->FindBin(tempMinFrequency));
+        SetMinBin(data.Spectra().begin()->second->FindBin(tempMinFrequency));
         KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
     
-        SetMaxBin(data.GetSpectra().begin()->second->FindBin(tempMaxFrequency) - 1); // -1 to avoid out-of-range error
+        SetMaxBin(data.Spectra().begin()->second->FindBin(tempMaxFrequency) - 1); // -1 to avoid out-of-range error
         KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         
         // Parametrize 2D and 1D point objects
 
-        newData.SetNBinsX( data.GetSpectra().size() );
-        newData.SetNBinsY( data.GetSpectra().begin()->second->GetNFrequencyBins() );
+        newData.SetNBinsX( data.Spectra().size() );
+        newData.SetNBinsY( data.Spectra().begin()->second->GetNFrequencyBins() );
         newData.SetBinWidthX( data.GetDeltaT() );
-        newData.SetBinWidthY( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
+        newData.SetBinWidthY( data.Spectra().begin()->second->GetFrequencyBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
-        newDataSlice.SetNBins( data.GetSpectra().begin()->second->GetNFrequencyBins() );
-        newDataSlice.SetBinWidth( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
+        newDataSlice.SetNBins( data.Spectra().begin()->second->GetNFrequencyBins() );
+        newDataSlice.SetBinWidth( data.Spectra().begin()->second->GetFrequencyBinWidth() );
 
         // X and Y bin width for the 2D points
         double XbinWidth = data.GetDeltaT();
-        double YbinWidth = data.GetSpectra().begin()->second->GetFrequencyBinWidth();
+        double YbinWidth = data.Spectra().begin()->second->GetFrequencyBinWidth();
 
         // X and Y of first bin
         double Xmin = data.GetStartTime();
-        double Ymin = data.GetSpectra().begin()->second->GetRangeMin();
+        double Ymin = data.Spectra().begin()->second->GetRangeMin();
 
         KTDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
 
-        unsigned nSpectra = data.GetSpectra().size();   // Number of time slices in the spectrogram collection
+        unsigned nSpectra = data.Spectra().size();   // Number of time slices in the spectrogram collection
         unsigned nPoints = 0;                           // Number of points above threshold in one slice
         unsigned sliceNumber = 0;                       // Slice counter
 
         // Iterate through the power spectra
-        for( std::map< double, KTPowerSpectrum* >::const_iterator it = data.GetSpectra().begin(); it != data.GetSpectra().end(); ++it )
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = data.Spectra().begin(); it != data.Spectra().end(); ++it )
         {
             // To avoid confusion using newDataSlice in a loop, each time slice with be associated to a new component
             newDataSlice.SetNComponents( sliceNumber + 1 );

@@ -42,10 +42,10 @@ namespace Katydid
 
     bool KTCorrelator::Configure(const scarab::param_node* node)
     {
-        const scarab::param_array* corrPairs = node->array_at("corr-pairs");
-        if (corrPairs != NULL)
+        if (node->has("corr-pairs"))
         {
-            for (scarab::param_array::const_iterator pairIt = corrPairs->begin(); pairIt != corrPairs->end(); ++pairIt)
+            const scarab::param_array& corrPairs = node->array_at("corr-pairs");
+            for (scarab::param_array::const_iterator pairIt = corrPairs.begin(); pairIt != corrPairs.end(); ++pairIt)
             {
                 if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
