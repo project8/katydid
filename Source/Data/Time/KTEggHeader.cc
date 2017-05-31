@@ -161,7 +161,7 @@ namespace Katydid
     {
         out << "Channel header:\n"
                 << "\tNumber: " << header.GetNumber() << '\n'
-                << "\tSource: " << header.GetSource() << '\n'
+                << "\tSource: " << header.Source() << '\n'
                 << "\tRaw Slice Size: " << header.GetRawSliceSize() << '\n'
                 << "\tSlice Size: " << header.GetSliceSize() << '\n'
                 << "\tSlice Stride: " << header.GetSliceStride() << '\n'

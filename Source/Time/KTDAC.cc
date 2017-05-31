@@ -43,11 +43,11 @@ namespace Katydid
 
         if (node->has("channels"))
         {
-            const scarab::param_array* channelsArray = node->array_at("channels");
-            SetNChannels(channelsArray->size());
+            const scarab::param_array& channelsArray = node->array_at("channels");
+            SetNChannels(channelsArray.size());
             for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)
             {
-                fChannelDACs[iChannel].Configure(&(*channelsArray)[iChannel].as_node());
+                fChannelDACs[iChannel].Configure(&channelsArray[iChannel].as_node());
             }
         }
         else

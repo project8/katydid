@@ -258,7 +258,7 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
-        fHeader.SetFilename(filenames[0].native());
+        fHeader.Filename() = filenames[0].native();
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");
@@ -277,7 +277,7 @@ namespace Katydid
         fHeader.SetAcquisitionRate(fAcqBW);
         fHeader.SetRunDuration(1000*(timeFromFirstToLastRecord + (double) fHeader.GetChannelHeader(0)->GetRecordSize() / fHeader.GetAcquisitionRate()));  /// the factor of 1000 is to convert from s to ms; timeFromFirstToLastRecord is in seconds, but RunDuration is supposed to be in ms
         curr_node = data_node->first_node("DateTime");
-        fHeader.SetTimestamp(curr_node->value());
+        fHeader.Timestamp() = curr_node->value();
         curr_node = data_node->first_node("NumberFormat");
         if (strcmp(curr_node->value(), "Int32") == 0)
         {

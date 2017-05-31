@@ -223,7 +223,7 @@ namespace Katydid
 
         Nymph::KTDataPtr eggHeaderPtr(new Nymph::KTData());
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
-        eggHeader.SetFilename(filenames[0].native());
+        eggHeader.Filename() = filenames[0].native();
         eggHeader.SetAcquisitionMode(1);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * 1000); // conversion from s to ms
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
@@ -235,7 +235,7 @@ namespace Katydid
         //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
         KTChannelHeader* newChanHeader = new KTChannelHeader();
         newChanHeader->SetNumber(iChannel);
-        newChanHeader->SetSource("Monarch1");
+        newChanHeader->Source() = "Monarch1";
         newChanHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
         newChanHeader->SetSliceSize(fHeaderInfo.fRecordSize);
         newChanHeader->SetSliceStride(fHeaderInfo.fRecordSize);

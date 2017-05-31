@@ -32,7 +32,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTEggProcessor, "egg-processor");
 
     KTEggProcessor::KTEggProcessor(const std::string& name) :
-            KTPrimaryProcessor(name),
+            KTPrimaryProcessor({"header", "raw-ts", "ts", "egg-done", "summary"}, name),
             fNSlices(0),
             fProgressReportInterval(1),
             fFilenames(),
@@ -61,12 +61,12 @@ namespace Katydid
         // config file setting
         if (node != NULL)
         {
-            SetEggReaderType( node->get_value("egg-reader", GetEggReaderType()) );
+            EggReaderType() = node->get_value("egg-reader", EggReaderType());
         }
         // command line setting (overrides config file, if used)
         if (fCLHandler->IsCommandLineOptSet("use-egg1-reader"))
         {
-            SetEggReaderType("egg1");
+            EggReaderType() = "egg1";
         }
 
         // Other settings
@@ -88,8 +88,8 @@ namespace Katydid
             {
                 KTDEBUG(egglog, "Adding multiple files to egg processor");
                 fFilenames.clear();
-                const scarab::param_array* t_filenames = node->array_at("filenames");
-                for(scarab::param_array::const_iterator t_file_it = t_filenames->begin(); t_file_it != t_filenames->end(); ++t_file_it)
+                const scarab::param_array& t_filenames = node->array_at("filenames");
+                for(scarab::param_array::const_iterator t_file_it = t_filenames.begin(); t_file_it != t_filenames.end(); ++t_file_it)
                 {
                     fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)->as_value().as_string())) );
                     KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
@@ -109,10 +109,9 @@ namespace Katydid
                 return false;
             }
 
-            const scarab::param_node* dacNode = node->node_at("dac");
-            if (dacNode != NULL)
+            if (node->has("dac"))
             {
-                fDAC->Configure(dacNode);
+                fDAC->Configure(&node->node_at("dac"));
             }
 
             // whether or not to normalize voltage values, and what the normalization is

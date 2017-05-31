@@ -104,7 +104,7 @@ namespace Katydid
         {
             KTChannelHeader* chanHeader = header.GetChannelHeader(iChan);
             fChannelHeaderData.fNumber = chanHeader->GetNumber();
-            *fChannelHeaderData.fSource = chanHeader->GetSource();
+            *fChannelHeaderData.fSource = chanHeader->Source();
             fChannelHeaderData.fRawSliceSize = chanHeader->GetRawSliceSize();
             fChannelHeaderData.fSliceSize = chanHeader->GetSliceSize();
             fChannelHeaderData.fSliceStride = chanHeader->GetSliceStride();

@@ -118,10 +118,10 @@ namespace Katydid
         }
 
         // Temporary assumption: using channel 0 + any other channels in the same stream
-        unsigned streamNum = fMonarch->GetHeader()->GetChannelStreams()[0];
+        unsigned streamNum = fMonarch->GetHeader()->ChannelStreams()[0];
         // set the stream pointer to stream 0
         fM3Stream = fMonarch->GetStream(streamNum);
-        fM3StreamHeader = &(fMonarch->GetHeader()->GetStreamHeaders()[streamNum]);
+        fM3StreamHeader = &(fMonarch->GetHeader()->StreamHeaders()[streamNum]);
 
         CopyHeader(fMonarch->GetHeader());
 
@@ -542,10 +542,10 @@ namespace Katydid
         }
 
         // Temporary assumption: using channel 0 + any other channels in the same stream
-        unsigned streamNum = fMonarch->GetHeader()->GetChannelStreams()[0];
+        unsigned streamNum = fMonarch->GetHeader()->ChannelStreams()[0];
         // set the stream pointer to stream 0
         fM3Stream = fMonarch->GetStream(streamNum);
-        fM3StreamHeader = &(fMonarch->GetHeader()->GetStreamHeaders()[streamNum]);
+        fM3StreamHeader = &(fMonarch->GetHeader()->StreamHeaders()[streamNum]);
 
         // by default, start the read state at the beginning of the file
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
@@ -576,12 +576,12 @@ namespace Katydid
 
     void KTEgg3Reader::CopyHeader(const M3Header* monarchHeader)
     {
-        fHeader.SetFilename(monarchHeader->GetFilename());
+        fHeader.Filename() = monarchHeader->Filename();
         fHeader.SetAcquisitionMode(fM3StreamHeader->GetNChannels());
         fHeader.SetRunDuration(monarchHeader->GetRunDuration()); // in ms
         fHeader.SetAcquisitionRate(fM3StreamHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
-        fHeader.SetTimestamp(monarchHeader->GetTimestamp());
-        fHeader.SetDescription(monarchHeader->GetDescription());
+        fHeader.Timestamp() = monarchHeader->Timestamp();
+        fHeader.Description() = monarchHeader->Description();
 
         fHeader.SetNChannels(fM3StreamHeader->GetNChannels());
         unsigned streamNum = fM3StreamHeader->GetNumber();
@@ -589,13 +589,13 @@ namespace Katydid
         // loop over all of the channels in the file, and use the map of channel # to stream # to find the channels in this stream
         for (unsigned iChanInFile = 0; iChanInFile < monarchHeader->GetNChannels(); ++iChanInFile)
         {
-            if (monarchHeader->GetChannelStreams()[iChanInFile] == streamNum)
+            if (monarchHeader->ChannelStreams()[iChanInFile] == streamNum)
             {
                 KTDEBUG(eggreadlog, "Adding channel " << iChanInFile << " in the egg file");
-                const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
+                const M3ChannelHeader& channelHeader = monarchHeader->ChannelHeaders()[iChanInFile];
                 KTChannelHeader* newChanHeader = new KTChannelHeader();
                 newChanHeader->SetNumber(iChanInKatydid);
-                newChanHeader->SetSource(channelHeader.GetSource());
+                newChanHeader->Source() = channelHeader.Source();
                 newChanHeader->SetRawSliceSize(fSliceSize);
                 newChanHeader->SetSliceSize(fSliceSize);
                 newChanHeader->SetSliceStride(fStride);

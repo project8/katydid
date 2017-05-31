@@ -37,7 +37,7 @@ namespace Katydid
             KTChannelHeader& operator=(const KTChannelHeader& rhs);
 
             MEMBERVARIABLE( unsigned, Number );
-            MEMBERVARIABLE( std::string, Source );
+            MEMBERVARIABLE_REF( std::string, Source );
             MEMBERVARIABLE(std::size_t, RawSliceSize); /// Number of bins per slice before any modification
             MEMBERVARIABLE(std::size_t, SliceSize); /// Number of bins per slice after any initial modification (e.g. by the DAC)
             MEMBERVARIABLE(std::size_t, SliceStride); /// Number of bins between slices
