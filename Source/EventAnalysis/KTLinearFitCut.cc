@@ -48,7 +48,7 @@ namespace Katydid
             isCut = false;
         }
 
-        data.GetCutStatus().AddCutResult< KTLinearFitCut::Result >(isCut);
+        data.CutStatus().template AddCutResult< KTLinearFitCut::Result >(isCut);
 
         return isCut;
     }

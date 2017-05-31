@@ -35,7 +35,7 @@ namespace Katydid
     bool KTProcessedTrackCut::Apply( Nymph::KTData& data, KTProcessedTrackData& trackData )
     {
         bool isCut = trackData.GetIsCut();
-        data.GetCutStatus().AddCutResult< KTProcessedTrackCut::Result >(isCut);
+        data.CutStatus().template AddCutResult< KTProcessedTrackCut::Result >(isCut);
 
         return isCut;
     }

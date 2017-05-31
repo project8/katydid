@@ -86,7 +86,7 @@ namespace Katydid
             isCut = true;
         }
 
-        data.GetCutStatus().AddCutResult< KTPowerFitCut::Result >(isCut);
+        data.CutStatus().template AddCutResult< KTPowerFitCut::Result >(isCut);
 
         return isCut;
     }

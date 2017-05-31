@@ -27,7 +27,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTMultiPeakEventBuilder, "multi-peak-event-builder");
 
     KTMultiPeakEventBuilder::KTMultiPeakEventBuilder(const std::string& name) :
-            KTPrimaryProcessor(name),
+            KTPrimaryProcessor({"event", "mpt", "events-done"}, name),
             fJumpTimeTolerance(0.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),

@@ -50,7 +50,7 @@ namespace Katydid
             isCut = true;
         }
 
-        data.GetCutStatus().AddCutResult< KTMultiPeakTrackMultiplicityCut::Result >(isCut);
+        data.CutStatus().template AddCutResult< KTMultiPeakTrackMultiplicityCut::Result >(isCut);
 
         return isCut;
     }

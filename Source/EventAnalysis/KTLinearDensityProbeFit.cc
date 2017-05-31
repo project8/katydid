@@ -278,10 +278,10 @@ namespace Katydid
 
         double ps_xmin = fullSpectrogram.GetStartTime();
         double ps_xmax = fullSpectrogram.GetEndTime();
-        double ps_ymin = fullSpectrogram.GetSpectra().begin()->second->GetRangeMin();
+        double ps_ymin = fullSpectrogram.Spectra().begin()->second->GetRangeMin();
         //     ps_ymax will not be necessary
         double ps_dx   = fullSpectrogram.GetDeltaT();
-        double ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
+        double ps_dy   = fullSpectrogram.Spectra().begin()->second->GetFrequencyBinWidth();
         
         // We add +1 for the underflow bin
         int xBinStart = floor( (data.GetStartTimeInRunC() - ps_xmin) / ps_dx ) + 1;
@@ -308,7 +308,7 @@ namespace Katydid
         KTDEBUG(evlog, "Computing unweighted projection");
 
         // First we compute the unweighted projection
-        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.Spectra().begin(); it != fullSpectrogram.Spectra().end(); ++it )
         {
             // Set x value and starting y-bin
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
@@ -332,7 +332,7 @@ namespace Katydid
 
         // Weighted projection
         double cumulative;
-        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.GetSpectra().begin(); it != fullSpectrogram.GetSpectra().end(); ++it )
+        for( std::map< double, KTPowerSpectrum* >::const_iterator it = fullSpectrogram.Spectra().begin(); it != fullSpectrogram.Spectra().end(); ++it )
         {
             cumulative = 0.;
 

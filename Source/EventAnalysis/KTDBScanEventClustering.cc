@@ -31,7 +31,7 @@ namespace Katydid
     const unsigned KTDBScanEventClustering::fNPointsPerTrack = 2;
 
     KTDBScanEventClustering::KTDBScanEventClustering(const std::string& name) :
-            KTPrimaryProcessor(name),
+            KTPrimaryProcessor({"event", "clustering-done"}, name),
             fRadii(fNDimensions / fNPointsPerTrack),
             fMinPoints(3),
             fTimeBinWidth(1),
@@ -61,14 +61,14 @@ namespace Katydid
 
         if (node->has("radii"))
         {
-            const scarab::param_array* radii = node->array_at("radii");
-            if (radii->size() != fNDimensions / fNPointsPerTrack)
+            const scarab::param_array& radii = node->array_at("radii");
+            if (radii.size() != fNDimensions / fNPointsPerTrack)
             {
-                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
+                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii.size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
                 return false;
             }
-            fRadii(0) = radii->get_value< double >(0);
-            fRadii(1) = radii->get_value< double >(1);
+            fRadii(0) = radii.get_value< double >(0);
+            fRadii(1) = radii.get_value< double >(1);
         }
 
         return true;

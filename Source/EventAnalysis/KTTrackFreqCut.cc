@@ -50,7 +50,7 @@ namespace Katydid
             isCut = true;
         }
 
-        data.GetCutStatus().AddCutResult< KTTrackFreqCut::Result >(isCut);
+        data.CutStatus().template AddCutResult< KTTrackFreqCut::Result >(isCut);
 
         return isCut;
     }

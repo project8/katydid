@@ -30,7 +30,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTMultiPeakTrackBuilder, "multi-peak-track-builder");
 
     KTMultiPeakTrackBuilder::KTMultiPeakTrackBuilder(const std::string& name) :
-            KTPrimaryProcessor(name),
+            KTPrimaryProcessor({"mpt", "mpt-done"}, name),
             fSidebandTimeTolerance(0.),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
