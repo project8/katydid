@@ -44,7 +44,7 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            MEMBERVARIABLEREF( std::string, Filename );
+            MEMBERVARIABLE_REF( std::string, Filename );
 
         public:
             virtual bool Run();

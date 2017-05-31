@@ -104,7 +104,7 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(unsigned, MinPoints);
-            MEMBERVARIABLEREF(Point, Radii);
+            MEMBERVARIABLE_REF(Point, Radii);
 
         public:
             // Store point information locally

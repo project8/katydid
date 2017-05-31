@@ -72,7 +72,7 @@ namespace Katydid
 
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, Radius);
-            //MEMBERVARIABLEREF(Point, Radii);
+            //MEMBERVARIABLE_REF(Point, Radii);
 
         public:
             bool DoClustering(KTKDTreeData& data);

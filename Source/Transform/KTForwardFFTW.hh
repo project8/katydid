@@ -110,14 +110,14 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(bool, UseWisdom);
-            MEMBERVARIABLEREF(std::string, WisdomFilename);
+            MEMBERVARIABLE_REF(std::string, WisdomFilename);
 
             MEMBERVARIABLE(bool, ComplexAsIQ);
 
             MEMBERVARIABLE_NOSET(unsigned, TimeSize);
             MEMBERVARIABLE_NOSET(unsigned, FrequencySize);
 
-            MEMBERVARIABLEREF_NOSET(std::string, TransformFlag);
+            MEMBERVARIABLE_REF_CONST(std::string, TransformFlag);
 
         public:
             /// Set the number of time bins; FFT must be initialized after calling this.

@@ -110,8 +110,8 @@ namespace Katydid
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
 
-            MEMBERVARIABLEREF(std::string, Filename);
-            MEMBERVARIABLEREF(std::string, FileFlag);
+            MEMBERVARIABLE_REF(std::string, Filename);
+            MEMBERVARIABLE_REF(std::string, FileFlag);
 
             MEMBERVARIABLE(double, MinTime); // in sec
             MEMBERVARIABLE(double, MaxTime); // in sec

@@ -63,16 +63,17 @@ namespace Katydid
 
             KTEggHeader& operator=(const KTEggHeader& rhs);
 
-            MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLE_REF(std::string, Filename);
             MEMBERVARIABLE(unsigned, AcquisitionMode);
             MEMBERVARIABLE(unsigned, RunDuration);  /// in ms
             MEMBERVARIABLE(double, AcquisitionRate); /// in Hz
             MEMBERVARIABLE(double, CenterFrequency); /// in Hz
             MEMBERVARIABLE(double, MinimumFrequency); /// in Hz
             MEMBERVARIABLE(double, MaximumFrequency); /// in Hz
-            MEMBERVARIABLEREF(std::string, Timestamp);
-            MEMBERVARIABLEREF(std::string, Description);
+            MEMBERVARIABLE_REF(std::string, Timestamp);
+            MEMBERVARIABLE_REF(std::string, Description);
 
+        public:
             unsigned GetNChannels() const;
             KTEggHeader& SetNChannels(unsigned nChannels);
 

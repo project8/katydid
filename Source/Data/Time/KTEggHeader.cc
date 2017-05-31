@@ -181,15 +181,15 @@ namespace Katydid
     std::ostream& operator<<(std::ostream& out, const KTEggHeader& header)
     {
         out << "File header:\n"
-                << "\tFilename: " << header.GetFilename() << '\n'
+                << "\tFilename: " << header.Filename() << '\n'
                 << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " ms\n"
                 << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
                 << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n"
-                << "\tTimestamp: " << header.GetTimestamp() << '\n'
-                << "\tDescription: " << header.GetDescription() << '\n';
+                << "\tTimestamp: " << header.Timestamp() << '\n'
+                << "\tDescription: " << header.Description() << '\n';
         for (unsigned iChan = 0; iChan < header.GetNChannels(); ++iChan)
         {
             out << *header.GetChannelHeader(iChan);

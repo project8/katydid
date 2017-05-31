@@ -38,8 +38,8 @@ namespace Katydid
             H5::H5File* OpenFile(const std::string& filename);
             void CloseFile();
 
-            MEMBERVARIABLEREF(std::string, Filename);
-            MEMBERVARIABLEREF(bool, UseCompressionFlag);
+            MEMBERVARIABLE_REF(std::string, Filename);
+            MEMBERVARIABLE_REF(bool, UseCompressionFlag);
 
             bool OpenAndVerifyFile();
 

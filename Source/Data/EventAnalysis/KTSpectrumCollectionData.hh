@@ -31,15 +31,15 @@ namespace Katydid
             KTPSCollectionData& operator=(const KTPSCollectionData& rhs);
 
             void AddSpectrum(double t, KTPowerSpectrum* spectrum);
-            MEMBERVARIABLEREF_NOSET(collection, Spectra);
-            MEMBERVARIABLEREF(double, StartTime);
-            MEMBERVARIABLEREF(double, EndTime);
-            MEMBERVARIABLEREF(double, DeltaT);
-            MEMBERVARIABLEREF(double, MinFreq);
-            MEMBERVARIABLEREF(double, MaxFreq);
-            MEMBERVARIABLEREF(unsigned, MinBin);
-            MEMBERVARIABLEREF(unsigned, MaxBin);
-            MEMBERVARIABLEREF(bool, Filling);
+            MEMBERVARIABLE_REF_CONST(collection, Spectra);
+            MEMBERVARIABLE(double, StartTime);
+            MEMBERVARIABLE(double, EndTime);
+            MEMBERVARIABLE(double, DeltaT);
+            MEMBERVARIABLE(double, MinFreq);
+            MEMBERVARIABLE(double, MaxFreq);
+            MEMBERVARIABLE(unsigned, MinBin);
+            MEMBERVARIABLE(unsigned, MaxBin);
+            MEMBERVARIABLE(bool, Filling);
 
         public:
             static const std::string sName;

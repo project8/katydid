@@ -91,8 +91,8 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, NSlices);
             MEMBERVARIABLE(unsigned, ProgressReportInterval);
 
-            MEMBERVARIABLEREF(KTEggReader::path_vec, Filenames);
-            MEMBERVARIABLEREF(std::string, EggReaderType);
+            MEMBERVARIABLE_REF(KTEggReader::path_vec, Filenames);
+            MEMBERVARIABLE_REF(std::string, EggReaderType);
 
             MEMBERVARIABLE(unsigned, SliceSize);
             MEMBERVARIABLE(unsigned, Stride);
