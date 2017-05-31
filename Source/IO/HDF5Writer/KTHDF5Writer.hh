@@ -39,8 +39,9 @@ namespace Katydid
             void CloseFile();
 
             MEMBERVARIABLE_REF(std::string, Filename);
-            MEMBERVARIABLE_REF(bool, UseCompressionFlag);
+            MEMBERVARIABLE(bool, UseCompressionFlag);
 
+        public:
             bool OpenAndVerifyFile();
 
             /*

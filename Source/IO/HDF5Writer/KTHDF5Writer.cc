@@ -45,12 +45,12 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->get_value("output-file", fFilename));
+            Filename() = node->get_value("output-file", fFilename);
             SetUseCompressionFlag(node->get_value("use-compression", fUseCompressionFlag));
         }
 
         // Command-line settings
-        SetFilename(fCLHandler->GetCommandLineValue< string >("hdf5-file", fFilename));
+        Filename() = fCLHandler->GetCommandLineValue< string >("hdf5-file", fFilename);
 
         return true;
     }
@@ -131,8 +131,8 @@ namespace Katydid
         //H5::Group* header_grp = AddGroup("/metadata");
 
         // Write the header.
-        AddScalar("egg-header/mantis_timestamp",fHeader.GetTimestamp());
-        AddScalar("egg-header/description", fHeader.GetDescription());
+        AddScalar("egg-header/mantis_timestamp",fHeader.Timestamp());
+        AddScalar("egg-header/description", fHeader.Description());
         AddScalar("egg-header/acquisition_mode", fHeader.GetAcquisitionMode());
         AddScalar("egg-header/n_channels", fHeader.GetNChannels());
         AddScalar("egg-header/raw_slice_size",fHeader.GetChannelHeader(0)->GetRawSliceSize()); // in number of bins

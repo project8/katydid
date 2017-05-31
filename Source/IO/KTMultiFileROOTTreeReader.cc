@@ -52,20 +52,20 @@ namespace Katydid
         // Config-file settings
         if (node == NULL) return false;
 
-        const scarab::param_array* inputFileArray = node->array_at("input-files");
-        if (inputFileArray != NULL)
+        if (node->has("input-files"))
         {
-            for (scarab::param_array::const_iterator ifIt = inputFileArray->begin(); ifIt != inputFileArray->end(); ++ifIt)
+            const scarab::param_array& inputFileArray = node->array_at("input-files");
+            for (scarab::param_array::const_iterator ifIt = inputFileArray.begin(); ifIt != inputFileArray.end(); ++ifIt)
             {
                 AddFilename((*ifIt)->as_value().as_string());
                 KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
             }
         }
 
-        const scarab::param_array* dataTypeArray = node->array_at("data-types");
-        if (inputFileArray != NULL)
+        if (node->has("data-types"))
         {
-            for (scarab::param_array::const_iterator dtIt = dataTypeArray->begin(); dtIt != dataTypeArray->end(); ++dtIt)
+            const scarab::param_array& dataTypeArray = node->array_at("data-types");
+            for (scarab::param_array::const_iterator dtIt = dataTypeArray.begin(); dtIt != dataTypeArray.end(); ++dtIt)
             {
                 AddDataType((*dtIt)->as_array().get_value(0), (*dtIt)->as_array().get_value(1));
                 KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");

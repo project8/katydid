@@ -77,6 +77,7 @@ namespace Katydid
             MEMBERVARIABLE(double, XScaling);
             MEMBERVARIABLE(double, YScaling);
 
+        public:
             const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
             SetOfPoints& GetSetOfPoints(unsigned component = 0);
             const TreeIndex* GetTreeIndex(unsigned component = 0) const;

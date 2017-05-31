@@ -86,7 +86,7 @@ namespace Katydid
 
         KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
-        *fEggHeaderData.fFilename = header.GetFilename();
+        *fEggHeaderData.fFilename = header.Filename();
         KTDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
         fEggHeaderData.fCenterFrequency = header.GetCenterFrequency();
         fEggHeaderData.fMaximumFrequency = header.GetMaximumFrequency();
@@ -95,8 +95,8 @@ namespace Katydid
         fEggHeaderData.fNChannels = header.GetNChannels();
         fEggHeaderData.fRunDuration = header.GetRunDuration();
         fEggHeaderData.fAcquisitionRate = header.GetAcquisitionRate();
-        *fEggHeaderData.fTimestamp = header.GetTimestamp();
-        *fEggHeaderData.fDescription = header.GetDescription();
+        *fEggHeaderData.fTimestamp = header.Timestamp();
+        *fEggHeaderData.fDescription = header.Description();
 
         fEggHeaderTree->Fill();
 
