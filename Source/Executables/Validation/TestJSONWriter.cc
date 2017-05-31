@@ -22,7 +22,7 @@ int main()
     // Setup a dummy header to print
     Nymph::KTDataPtr headerPtr(new Nymph::KTData());
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
-    header.SetFilename("awesome_data.egg");
+    header.Filename() = "awesome_data.egg";
     header.SetAcquisitionMode(1);
     header.SetNChannels(2);
     header.SetRunDuration(203985);

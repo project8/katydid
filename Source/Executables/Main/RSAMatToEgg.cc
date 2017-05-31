@@ -118,15 +118,15 @@ int main(int argc, char** argv)
     }
 
     monarch3::M3Header* header = monarch->GetHeader();
-    header->SetFilename(outputFilename.string());
+    header->Filename() = outputFilename.string();
     header->SetRunDuration(eggHeader.GetRunDuration()); // in ms
-    header->SetTimestamp(eggHeader.GetTimestamp());
-    header->SetDescription(eggHeader.GetDescription());
+    header->Timestamp() = eggHeader.Timestamp();
+    header->Description() = eggHeader.Description();
 
     header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, eggHeader.GetChannelHeader(0)->GetDataTypeSize(), monarch3::sAnalog, 14, sBitsAlignedLeft);
 
     // Setup the remaining details in the channel header
-    monarch3::M3ChannelHeader& chHeader = header->GetChannelHeaders()[0];
+    monarch3::M3ChannelHeader& chHeader = header->ChannelHeaders()[0];
     chHeader.SetVoltageOffset(eggHeader.GetChannelHeader(0)->GetVoltageOffset());
     chHeader.SetVoltageRange(eggHeader.GetChannelHeader(0)->GetVoltageRange());
     chHeader.SetFrequencyMin(eggHeader.GetMinimumFrequency());

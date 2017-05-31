@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     KTINFO(testlog, "Testing DPT reader with file <" << filename << ">");
 
     KTDPTReader reader;
-    reader.SetFilename(filename);
+    reader.Filename() = filename;
 
     KTINFO(testlog, "Reading the file");
     Nymph::KTData data;

@@ -148,7 +148,7 @@ int main()
 
         // Set up the signal and attach to the slot
         Nymph::KTSignalData dataSignal;
-        display.ConnectSignalToSlot( new KTSignalWrapper(dataSignal.Signal()), display.GetSlot("fs-polar"));
+        KTProcessor::ConnectSignalToSlot( new KTSignalWrapper(dataSignal.Signal()), display.GetSlot("fs-polar"));
 
         // Publish the data
         dataSignal(data);

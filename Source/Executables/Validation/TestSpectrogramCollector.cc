@@ -250,11 +250,11 @@ int main()
     for( int i = 0; i < nPlots; i++ )
     {
         plot->Reset();  // Clear histogram
-        for (collection::const_iterator it = result[i].GetSpectra().begin(); it != result[i].GetSpectra().end(); ++it)
+        for (collection::const_iterator it = result[i].Spectra().begin(); it != result[i].Spectra().end(); ++it)
         {
             for( int j = 0; j < it->second->GetNFrequencyBins(); j++)
             {
-                plot->Fill( it->first, j * it->second->GetFrequencyBinWidth() + result[i].GetSpectra().begin()->second->GetRangeMin(), (*it->second)(j) );
+                plot->Fill( it->first, j * it->second->GetFrequencyBinWidth() + result[i].Spectra().begin()->second->GetRangeMin(), (*it->second)(j) );
             }
         }
 

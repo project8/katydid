@@ -32,7 +32,6 @@
 #include <unistd.h>
 
 using namespace std;
-using namespace Nymph;
 
 KTLOGGER(tclog, "Truncate");
 

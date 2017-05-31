@@ -37,7 +37,7 @@ if (Katydid_ENABLE_TESTING)
         TestDataDisplay
         TestDPTReader
         #TestFrequencySpectrumFFTW
-        TestJSONWriter
+        #TestJSONWriter
         #TestMultiFileJSONReader
         TestSmoothing
         #TestASCIIFileWriter

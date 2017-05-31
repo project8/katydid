@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     KTINFO(testegg, "Some header information:\n"
-           << "\tFilename: " << header.GetFilename() << '\n'
+           << "\tFilename: " << header.Filename() << '\n'
            << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
            << "\tSlice Size: " << header.GetChannelHeader(0)->GetSliceSize() << '\n'
            << "\tRecord Size: " << header.GetChannelHeader(0)->GetRecordSize());
