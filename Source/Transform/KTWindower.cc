@@ -50,7 +50,7 @@ namespace Katydid
             return false;
         }
 
-        if (! fWindowFunction->Configure(node->node_at("window-function")))
+        if (! fWindowFunction->Configure(&node->node_at("window-function")))
         {
             return false;
         }

@@ -69,7 +69,7 @@ namespace Katydid
             SetTransformFlag(node->get_value("transform-flag", fTransformFlag));
 
             SetUseWisdom(node->get_value<bool>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->get_value("wisdom-filename", fWisdomFilename));
+            fWisdomFilename = node->get_value("wisdom-filename", fWisdomFilename);
 
             SetComplexAsIQ(node->get_value("transform-complex-as-iq", fComplexAsIQ));
 
