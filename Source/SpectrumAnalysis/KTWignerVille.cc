@@ -83,12 +83,12 @@ namespace Katydid
             const scarab::param_array& wvPairs = node->array_at("wv-pairs");
             for (scarab::param_array::const_iterator pairIt = wvPairs.begin(); pairIt != wvPairs.end(); ++pairIt)
             {
-                if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
+                if (! (pairIt->is_array() && pairIt->as_array().size() == 2))
                 {
-                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->to_string());
+                    KTERROR(wvlog, "Invalid pair: " << pairIt->to_string());
                     return false;
                 }
-                UIntPair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< unsigned >(1));
+                UIntPair pair((*pairIt)[0]().as_uint(), (*pairIt)[1]().as_uint());
                 KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
                 this->AddPair(pair);
             }

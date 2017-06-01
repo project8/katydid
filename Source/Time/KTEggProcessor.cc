@@ -91,7 +91,7 @@ namespace Katydid
                 const scarab::param_array& t_filenames = node->array_at("filenames");
                 for(scarab::param_array::const_iterator t_file_it = t_filenames.begin(); t_file_it != t_filenames.end(); ++t_file_it)
                 {
-                    fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)->as_value().as_string())) );
+                    fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)().as_string())) );
                     KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
                 }
             }

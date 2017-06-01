@@ -57,7 +57,7 @@ namespace Katydid
             const scarab::param_array& inputFileArray = node->array_at("input-files");
             for (scarab::param_array::const_iterator ifIt = inputFileArray.begin(); ifIt != inputFileArray.end(); ++ifIt)
             {
-                AddFilename((*ifIt)->as_value().as_string());
+                AddFilename((*ifIt)().as_string());
                 KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
             }
         }
@@ -67,7 +67,7 @@ namespace Katydid
             const scarab::param_array& dataTypeArray = node->array_at("data-types");
             for (scarab::param_array::const_iterator dtIt = dataTypeArray.begin(); dtIt != dataTypeArray.end(); ++dtIt)
             {
-                AddDataType((*dtIt)->as_array().get_value(0), (*dtIt)->as_array().get_value(1));
+                AddDataType((*dtIt)[0]().as_string(), (*dtIt)[1]().as_string());
                 KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
             }
         }
