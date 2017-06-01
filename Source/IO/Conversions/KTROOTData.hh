@@ -25,9 +25,10 @@ namespace Katydid
     class TProcessedTrackData : public TObject
     {
             MEMBERVARIABLE(UInt_t, Component);
-            MEMBERVARIABLE(Int_t, EventSequenceID);
             MEMBERVARIABLE(UInt_t, AcquisitionID);
             MEMBERVARIABLE(UInt_t, TrackID);
+            MEMBERVARIABLE(UInt_t, EventID);
+            MEMBERVARIABLE(Int_t, EventSequenceID);
 
             MEMBERVARIABLE(Bool_t, IsCut);
 
@@ -77,6 +78,7 @@ namespace Katydid
         MEMBERVARIABLE(UInt_t, Component);
         MEMBERVARIABLE(UInt_t, AcquisitionID);
         MEMBERVARIABLE(UInt_t, EventID);
+        MEMBERVARIABLE(UInt_t, TotalEventSequences);
 
         MEMBERVARIABLE(Double_t, StartTimeInRunC);
         MEMBERVARIABLE(Double_t, StartTimeInAcq);
@@ -95,11 +97,13 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, EndFrequencySigma);
         MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
 
+        MEMBERVARIABLE(UInt_t, FirstTrackID);
         MEMBERVARIABLE(Double_t, FirstTrackTimeLength);
         MEMBERVARIABLE(Double_t, FirstTrackFrequencyWidth);
         MEMBERVARIABLE(Double_t, FirstTrackSlope);
         MEMBERVARIABLE(Double_t, FirstTrackIntercept);
         MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+
         MEMBERVARIABLE(Double_t, UnknownEventTopology);
 
         public:
