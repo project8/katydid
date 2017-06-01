@@ -271,7 +271,7 @@ namespace Katydid
             }
 
             varQ += std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i], 2 );
-            varF += std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / fStartTimes[i], 2 );
+            varF += std::pow( fIntercepts[i] - avgF, 2 );
         }
 
         varQ /= nUngrouped;
@@ -304,7 +304,7 @@ namespace Katydid
                 }
                 
                 // This time maximum delta = best track because minus sign
-                delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / (fStartTimes[i] * fFrequencyRadius), 2 ); 
+                delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) / fFrequencyRadius, 2 ); 
 
                 // Compare to the current maximum delta
                 if( delta < bestDelta )
@@ -358,7 +358,7 @@ namespace Katydid
                     }
                     
                     // Maximum delta = worst track
-                    delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) * fTimeLengths[i] / (fStartTimes[i] * fFrequencyRadius), 2 ); 
+                    delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) / fFrequencyRadius, 2 ); 
                     
                     // Compare to the current maximum delta
                     if( delta > bestDelta )
