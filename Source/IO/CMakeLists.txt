@@ -2,90 +2,98 @@
 # Author: N. Oblath
 
 set (IO_HEADERFILES
-    KTBasicASCIITypeWriterTS.hh
-    KTBasicAsciiWriter.hh
-    KTJSONTypeWriterTime.hh
-    #KTJSONTypeWriterEvaluation.hh
-    KTJSONTypeWriterEventAnalysis.hh
-    KTJSONWriter.hh
+    BasicAsciiWriter/KTBasicASCIITypeWriterTS.hh
+    BasicAsciiWriter/KTBasicAsciiWriter.hh
+    JSONWriter/KTJSONTypeWriterTime.hh
+    #JSONWriter/KTJSONTypeWriterEvaluation.hh
+    JSONWriter/KTJSONTypeWriterEventAnalysis.hh
+    JSONWriter/KTJSONWriter.hh
+    OfficialCandidatesWriter/KTOfficialCandidatesWriter.hh
+    TerminalWriter/KTTerminalTypeWriterEventAnalysis.hh
+    TerminalWriter/KTTerminalTypeWriterTime.hh
+    TerminalWriter/KTTerminalWriter.hh
+    KTDPTReader.hh
     #KTMultiFileJSONReader.hh
-    KTOfficialCandidatesWriter.hh
-    KTTerminalTypeWriterTime.hh
-    KTTerminalWriter.hh
 )
 
 set (IO_SOURCEFILES
-    KTBasicASCIITypeWriterTS.cc
-    KTBasicAsciiWriter.cc
-    KTJSONTypeWriterTime.cc
-    #KTJSONTypeWriterEvaluation.cc
-    KTJSONTypeWriterEventAnalysis.hh
-    KTJSONWriter.cc
+    BasicAsciiWriter/KTBasicASCIITypeWriterTS.cc
+    BasicAsciiWriter/KTBasicAsciiWriter.cc
+    JSONWriter/KTJSONTypeWriterTime.cc
+    #JSONWriter/KTJSONTypeWriterEvaluation.cc
+    JSONWriter/KTJSONTypeWriterEventAnalysis.cc
+    JSONWriter/KTJSONWriter.cc
+    OfficialCandidatesWriter/KTOfficialCandidatesWriter.cc
+    TerminalWriter/KTTerminalTypeWriterEventAnalysis.cc
+    TerminalWriter/KTTerminalTypeWriterTime.cc
+    TerminalWriter/KTTerminalWriter.cc
+    KTDPTReader.cc
     #KTMultiFileJSONReader.cc
-    KTOfficialCandidatesWriter.cc
-    KTTerminalTypeWriterTime.cc
-    KTTerminalWriter.cc
 )
 
 if (ROOT_FOUND)
     set (IO_DICT_HEADERFILES
-        KTDisplayWindow.hh
+        DataDisplay/KTDisplayWindow.hh
         Conversions/KTROOTData.hh
     )
     
     set (IO_HEADERFILES
         ${IO_HEADERFILES}
         ${IO_DICT_HEADERFILES}
-        KTBasicROOTFileWriter.hh
-        KTBasicROOTTypeWriterSpectrumAnalysis.hh
-        KTBasicROOTTypeWriterEventAnalysis.hh
-        KTBasicROOTTypeWriterTime.hh
-        KTBasicROOTTypeWriterTransform.hh
-        KTDataDisplay.hh
-        KTDataTypeDisplaySpectrumAnalysis.hh
-        KTDataTypeDisplayTime.hh
-        KTDataTypeDisplayTransform.hh
-        KTMultiFileROOTTreeReader.hh
-        KTMultiSliceROOTTypeWriterSpectrumAnalysis.hh
-        KTMultiSliceROOTTypeWriterTime.hh
-        KTMultiSliceROOTTypeWriterTransform.hh
-        KTMultiSliceROOTWriter.hh
-        KTROOTSpectrogramTypeWriterTransform.hh
-        KTROOTSpectrogramWriter.hh
-        KTROOTTreeTypeWriterSpectrumAnalysis.hh
-        KTROOTTreeTypeWriterEventAnalysis.hh
-        KTROOTTreeTypeWriterTime.hh
-        #KTROOTTreeTypeWriterEvaluation.hh
-        KTROOTTreeWriter.hh
         Conversions/KT2ROOT.hh
+        BasicROOTFileWriter/KTBasicROOTFileWriter.hh
+        BasicROOTFileWriter/KTBasicROOTTypeWriterSpectrumAnalysis.hh
+        BasicROOTFileWriter/KTBasicROOTTypeWriterEventAnalysis.hh
+        BasicROOTFileWriter/KTBasicROOTTypeWriterTime.hh
+        BasicROOTFileWriter/KTBasicROOTTypeWriterTransform.hh
+        DataDisplay/KTDataDisplay.hh
+        DataDisplay/KTDataTypeDisplayEventAnalysis.hh
+        DataDisplay/KTDataTypeDisplaySpectrumAnalysis.hh
+        DataDisplay/KTDataTypeDisplayTime.hh
+        DataDisplay/KTDataTypeDisplayTransform.hh
+        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterSpectrumAnalysis.hh
+        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.hh
+        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.hh
+        MultiSliceROOTWriter/KTMultiSliceROOTWriter.hh
+        ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.hh
+        ROOTSpectrogramWriter/KTROOTSpectrogramWriter.hh
+        ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.hh
+        ROOTTreeWriter/KTROOTTreeTypeWriterEventAnalysis.hh
+        ROOTTreeWriter/KTROOTTreeTypeWriterTime.hh
+        #ROOTTreeWriter/KTROOTTreeTypeWriterEvaluation.hh
+        ROOTTreeWriter/KTROOTTreeWriter.hh
+        KTROOTWriterFileManager.hh
+        KTMultiFileROOTTreeReader.hh
     )
 
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
-        KTBasicROOTTypeWriterSpectrumAnalysis.cc
-        KTBasicROOTTypeWriterEventAnalysis.cc
-        KTBasicROOTTypeWriterTime.cc
-        KTBasicROOTTypeWriterTransform.cc
-        KTBasicROOTFileWriter.cc
-        KTDisplayWindow.cc
-        KTDataTypeDisplaySpectrumAnalysis.cc
-        KTDataTypeDisplayTime.cc
-        KTDataTypeDisplayTransform.cc
-        KTDataDisplay.cc
-        KTMultiFileROOTTreeReader.cc
-        KTMultiSliceROOTTypeWriterSpectrumAnalysis.cc
-        KTMultiSliceROOTTypeWriterTime.cc
-        KTMultiSliceROOTTypeWriterTransform.cc
-        KTMultiSliceROOTWriter.cc
-        KTROOTSpectrogramTypeWriterTransform.cc
-        KTROOTSpectrogramWriter.cc
-        KTROOTTreeTypeWriterSpectrumAnalysis.cc
-        KTROOTTreeTypeWriterEventAnalysis.cc
-        KTROOTTreeTypeWriterTime.cc
-        #KTROOTTreeTypeWriterEvaluation.cc
-        KTROOTTreeWriter.cc
         Conversions/KT2ROOT.cc
         Conversions/KTROOTData.cc
+        BasicROOTFileWriter/KTBasicROOTTypeWriterSpectrumAnalysis.cc
+        BasicROOTFileWriter/KTBasicROOTTypeWriterEventAnalysis.cc
+        BasicROOTFileWriter/KTBasicROOTTypeWriterTime.cc
+        BasicROOTFileWriter/KTBasicROOTTypeWriterTransform.cc
+        BasicROOTFileWriter/KTBasicROOTFileWriter.cc
+        DataDisplay/KTDataTypeDisplayEventAnalysis.cc
+        DataDisplay/KTDataTypeDisplaySpectrumAnalysis.cc
+        DataDisplay/KTDataTypeDisplayTime.cc
+        DataDisplay/KTDataTypeDisplayTransform.cc
+        DataDisplay/KTDataDisplay.cc
+        DataDisplay/KTDisplayWindow.cc
+        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterSpectrumAnalysis.cc
+        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.cc
+        MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.cc
+        MultiSliceROOTWriter/KTMultiSliceROOTWriter.cc
+        ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.cc
+        ROOTSpectrogramWriter/KTROOTSpectrogramWriter.cc
+        ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.cc
+        ROOTTreeWriter/KTROOTTreeTypeWriterEventAnalysis.cc
+        ROOTTreeWriter/KTROOTTreeTypeWriterTime.cc
+        #ROOTTreeWriter/KTROOTTreeTypeWriterEvaluation.cc
+        ROOTTreeWriter/KTROOTTreeWriter.cc
+        KTROOTWriterFileManager.cc
+        KTMultiFileROOTTreeReader.cc
     )
 
     set (IO_LINKDEF_HEADERFILE LinkDef/IOLinkDef.hh)
@@ -96,23 +104,36 @@ endif (ROOT_FOUND)
 if (HDF5_FOUND)
     set (IO_HEADERFILES
         ${IO_HEADERFILES}
-        KTHDF5TypeWriterTransform.hh
-        KTHDF5TypeWriterTime.hh
-        KTHDF5TypeWriterEventAnalysis.hh
-        KTHDF5TypeWriterSpectrumAnalysis.hh
-        KTHDF5Writer.hh
+        HDF5Writer/KTHDF5TypeWriterTransform.hh
+        HDF5Writer/KTHDF5TypeWriterTime.hh
+        HDF5Writer/KTHDF5TypeWriterEventAnalysis.hh
+        HDF5Writer/KTHDF5TypeWriterSpectrumAnalysis.hh
+        HDF5Writer/KTHDF5Writer.hh
     )
     
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
-        KTHDF5TypeWriterTransform.cc
-        KTHDF5TypeWriterTime.cc
-        KTHDF5TypeWriterEventAnalysis.cc
-        KTHDF5TypeWriterSpectrumAnalysis.cc
-        KTHDF5Writer.cc
+        HDF5Writer/KTHDF5TypeWriterTransform.cc
+        HDF5Writer/KTHDF5TypeWriterTime.cc
+        HDF5Writer/KTHDF5TypeWriterEventAnalysis.cc
+        HDF5Writer/KTHDF5TypeWriterSpectrumAnalysis.cc
+        HDF5Writer/KTHDF5Writer.cc
     )
-    
 endif (HDF5_FOUND)
+
+if (MAGICK++_FOUND)
+    set (IO_HEADERFILES
+        ${IO_HEADERFILES}
+        ImageWriter/KTImageTypeWriterTransform.hh
+        ImageWriter/KTImageWriter.hh
+    )
+
+    set (IO_SOURCEFILES
+        ${IO_SOURCEFILES}
+        ImageWriter/KTImageTypeWriterTransform.cc
+        ImageWriter/KTImageWriter.cc
+    )
+endif (MAGICK++_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
@@ -123,9 +144,7 @@ set (KATYDID_LIBS
 
 if (ROOT_FOUND)
     ROOT_GENERATE_DICTIONARY (IODict ${IO_DICT_HEADERFILES} LINKDEF ${IO_LINKDEF_HEADERFILE})
-    if (Katydid_USE_CPP11)
-        pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
-    endif (Katydid_USE_CPP11)
+    pbuilder_install_files (${LIB_INSTALL_DIR} ${IO_DICT_PCMFILE})
 endif (ROOT_FOUND)
 
 add_library (KatydidIO ${IO_SOURCEFILES} ${IO_DICT_OUTFILE})

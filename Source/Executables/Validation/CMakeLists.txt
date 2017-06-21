@@ -35,6 +35,7 @@ if (Katydid_ENABLE_TESTING)
     
     set( PROGRAMS
         TestDataDisplay
+        TestDPTReader
         #TestFrequencySpectrumFFTW
         TestJSONWriter
         #TestMultiFileJSONReader
@@ -119,6 +120,8 @@ if (Katydid_ENABLE_TESTING)
            TestBasicROOTFileWriter
            TestGainVariation
            TestROOTDictionary
+           TestROOTWriterFileManager
+           TestROOTWritingToSameFile
         )
         
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )

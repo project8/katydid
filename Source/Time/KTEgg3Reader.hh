@@ -86,7 +86,7 @@ namespace Katydid
             bool Configure(const KTEggProcessor& eggProc);
 
             /// Opens the egg file and returns a new copy of the header information.
-            Nymph::KTDataPtr BreakEgg(const std::string& filename);
+            Nymph::KTDataPtr BreakEgg(const path_vec& filenames);
             /// Returns the next slice's time series data.
             Nymph::KTDataPtr HatchNextSlice();
             /// Closes the file.
@@ -98,10 +98,15 @@ namespace Katydid
             /// Copy header information from the M3Header object
             void CopyHeader(const monarch3::M3Header* monarchHeader);
 
+            bool LoadNextFile();
+
             //Nymph::KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
             //Nymph::KTDataPtr HatchNextSliceRealUnsigned();
             //Nymph::KTDataPtr HatchNextSliceRealSigned();
             //Nymph::KTDataPtr HatchNextSliceComplex();
+
+            KTEggReader::path_vec fFilenames;
+            KTEggReader::path_vec::const_iterator fCurrentFileIt;
 
             const monarch3::Monarch3* fMonarch;
             const monarch3::M3Stream* fM3Stream;
@@ -135,12 +140,16 @@ namespace Katydid
 
             const MonarchReadState& GetReadState() const;
 
+            /// Returns the time since the run started in seconds of the current acquisition
+            double GetAcqTimeInRun() const;
+
         private:
             mutable GetTIRFunction fGetTimeInRun;
             double GetTimeInRunFirstCall() const;
             double GetTimeInRunFromMonarch() const;
             double GetTimeInRunManually() const;
             mutable monarch3::TimeType fT0Offset; /// Time of the first record
+            mutable double fAcqTimeInRun; /// Time-in-run of the current acquisition
 
             double fSampleRateUnitsInHz;
 
@@ -224,7 +233,7 @@ namespace Katydid
 
     inline unsigned KTEgg3Reader::GetNSlicesProcessed() const
     {
-        return (unsigned)fSliceNumber;
+        return (unsigned)fSliceNumber + 1;
     }
 
     inline unsigned KTEgg3Reader::GetNRecordsProcessed() const
@@ -237,7 +246,10 @@ namespace Katydid
         return fReadState;
     }
 
-
+    inline double KTEgg3Reader::GetAcqTimeInRun() const
+    {
+        return fAcqTimeInRun;
+    }
 
 
 

@@ -53,6 +53,7 @@ namespace Katydid
     KTMultiTrackEventData::KTMultiTrackEventData(const KTMultiTrackEventData& orig) :
             KTExtensibleData< KTMultiTrackEventData >(orig),
             fComponent(orig.fComponent),
+            fAcquisitionID(orig.fAcquisitionID),
             fEventID(orig.fEventID),
             fTotalEventSequences(orig.fTotalEventSequences),
             fStartTimeInAcq(orig.fStartTimeInAcq),
@@ -76,6 +77,7 @@ namespace Katydid
             fFirstTrackSlope(orig.fFirstTrackSlope),
             fFirstTrackIntercept(orig.fFirstTrackIntercept),
             fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
+            fUnknownEventTopology(orig.fUnknownEventTopology),
             fTracks()
     {
         for (TrackSetCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
@@ -94,6 +96,11 @@ namespace Katydid
         ClearTracks();
 
         fComponent = rhs.fComponent;
+
+        fAcquisitionID = rhs.fAcquisitionID;
+        fEventID = rhs.fEventID;
+
+        fTotalEventSequences = rhs.fTotalEventSequences;
 
         fStartTimeInAcq = rhs.fStartTimeInAcq;
         fStartTimeInRunC = rhs.fStartTimeInRunC;
@@ -119,12 +126,46 @@ namespace Katydid
         fFirstTrackIntercept = rhs.fFirstTrackIntercept;
         fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
 
+        fUnknownEventTopology = rhs.fUnknownEventTopology;
+
         for (TrackSetCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
             //fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
             fTracks.insert(*trackIt);
         }
 
+        return *this;
+    }
+
+    const std::string KTMultiPeakTrackData::sName("mpt-data");
+
+    KTMultiPeakTrackData::KTMultiPeakTrackData() :
+            KTExtensibleData< KTMultiPeakTrackData >(),
+            fComponent(0),
+            fEventSequenceID(-1),
+            fMPTrack()
+    {
+    }
+
+    KTMultiPeakTrackData::KTMultiPeakTrackData(const KTMultiPeakTrackData& orig) :
+            KTExtensibleData< KTMultiPeakTrackData >(orig),
+            
+            fComponent(orig.fComponent),
+            fEventSequenceID(orig.fEventSequenceID),
+            fMPTrack(orig.fMPTrack)
+    {
+    }
+
+    KTMultiPeakTrackData::~KTMultiPeakTrackData()
+    {
+    }
+
+    KTMultiPeakTrackData& KTMultiPeakTrackData::operator=(const KTMultiPeakTrackData& rhs)
+    {
+        KTExtensibleData< KTMultiPeakTrackData >::operator=(rhs);
+        fComponent = rhs.fComponent;
+        fEventSequenceID = rhs.fEventSequenceID;
+        fMPTrack = rhs.fMPTrack;
         return *this;
     }
 
@@ -248,8 +289,8 @@ namespace Katydid
         fTimeLength = fEndTimeInRunC - fStartTimeInRunC;
         fTimeLengthSigma = sqrt(fEndTimeInRunCSigma * fEndTimeInRunCSigma + fStartTimeInRunCSigma * fStartTimeInRunCSigma);
 
-        fFrequencyWidth = fEndFrequency - fStartFrequency;
-        fFrequencyWidthSigma = sqrt(fEndFrequencySigma * fEndFrequencySigma + fStartFrequencySigma * fStartFrequencySigma);
+        fFrequencyWidth = fMaximumFrequency - fMinimumFrequency;
+        fFrequencyWidthSigma = sqrt(fMaximumFrequency * fEndFrequencySigma + fMinimumFrequency * fMinimumFrequency);
 
         return;
     }
@@ -293,16 +334,16 @@ namespace Katydid
     {}
 
     bool MultiPeakTrackRef::InsertTrack(const TrackSetCIt& trackRef)
-        {
-            if (fTrackRefs.find(trackRef) != fTrackRefs.end())  return false;
+    {
+        if (fTrackRefs.find(trackRef) != fTrackRefs.end())  return false;
 
-            fTrackRefs.insert(trackRef);
-            fSumStartTimeInRunC += trackRef->GetStartTimeInRunC();
-            fSumEndTimeInRunC += trackRef->GetEndTimeInRunC();
-            double currentSize = (double)fTrackRefs.size();
-            fMeanStartTimeInRunC = fSumStartTimeInRunC / currentSize;
-            fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
-            return true;
-        }
+        fTrackRefs.insert(trackRef);
+        fSumStartTimeInRunC += trackRef->GetStartTimeInRunC();
+        fSumEndTimeInRunC += trackRef->GetEndTimeInRunC();
+        double currentSize = (double)fTrackRefs.size();
+        fMeanStartTimeInRunC = fSumStartTimeInRunC / currentSize;
+        fMeanEndTimeInRunC = fSumEndTimeInRunC / currentSize;
+        return true;
+    }
 
 } /* namespace Katydid */

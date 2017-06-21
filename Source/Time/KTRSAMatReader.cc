@@ -46,7 +46,8 @@ namespace Katydid
             fRecordsPerFile(1),
             fRecordsTimeStampSeconds(),
             fTSArrayMat(NULL),
-            fMatFilePtr(NULL)
+            fMatFilePtr(NULL),
+            fDataPrecision(0)
     {
     }
 
@@ -66,7 +67,7 @@ namespace Katydid
         return true;
     }
 
-    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const path_vec& filenames)
     {
         // Note on reading variables with MatIO:
         // Before each call to Mat_VarRead (or similar), a call should be made to Mat_Rewind, which resets the file-read pointer to the beginning of the file.
@@ -91,11 +92,15 @@ namespace Katydid
         }
 
         // open the file
-        KTINFO(eggreadlog, "Opening mat file <" << filename << ">");
-        fMatFilePtr = Mat_Open(filename.c_str(), MAT_ACC_RDONLY);
+        if (filenames.size() > 1)
+        {
+            KTWARN(eggreadlog, "RSAMAT reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+        }
+        KTINFO(eggreadlog, "Opening mat file <" << filenames[0] << ">");
+        fMatFilePtr = Mat_Open(filenames[0].c_str(), MAT_ACC_RDONLY);
         if (fMatFilePtr == NULL)
         {
-            KTERROR(eggreadlog, "Unable to open mat file: " << filename);
+            KTERROR(eggreadlog, "Unable to open mat file: " << filenames[0]);
             return Nymph::KTDataPtr();
         }
 
@@ -253,12 +258,12 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
-        fHeader.SetTSDataType(KTEggHeader::kIQ);
-        fHeader.SetFilename(filename);
+        fHeader.SetFilename(filenames[0].native());
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");
         fHeader.GetChannelHeader(0)->SetRecordSize((size_t) atoi(curr_node->value()));
+        fHeader.GetChannelHeader(0)->SetTSDataType(KTChannelHeader::kIQ);
         if (fSliceSize == 0)
         {
             fSliceSize = fHeader.GetChannelHeader(0)->GetRecordSize();
@@ -308,9 +313,18 @@ namespace Katydid
             fMatFilePtr = NULL;
             return Nymph::KTDataPtr();
         }
-        if (fTSArrayMat->data_type != MAT_T_SINGLE)
+
+        if (fTSArrayMat->data_type == MAT_T_SINGLE)
         {
-            KTERROR(eggreadlog, "Data type is not single-precision floating-point: " << fTSArrayMat->data_type);
+            fDataPrecision = 1;
+        }
+        else if (fTSArrayMat->data_type == MAT_T_DOUBLE)
+        {
+            fDataPrecision = 2;
+        }
+        else
+        {
+            KTERROR(eggreadlog, "Data type is valid (must either be single- or double-precision floating-point: " << fTSArrayMat->data_type);
             Mat_VarFree(fTSArrayMat);
             fTSArrayMat = NULL;
             Mat_Close(fMatFilePtr);
@@ -324,7 +338,14 @@ namespace Katydid
         fSliceNumber = 0; // Number of Slices saved
         fRecordsRead = 0; // Number of records read from file
         fSamplesRead = 0; // Number of samples read from file (not from record)
+        // Raw files have an array that is [number of samples] x 1
+        // Concatenated files have been both ways, depending on the script used to create them: [number of samples] x 1 OR 1 x [number of samples]
+        // This code is compatible with both, but this is adapted to a very specific case
         fSamplesPerFile = fTSArrayMat->dims[0];
+        if (fSamplesPerFile == 1)
+        {
+            fSamplesPerFile = fTSArrayMat->dims[1];
+        }
 
         // Read center frequency, and derive minimum and maximum frequencies 
         // from the span.
@@ -408,6 +429,7 @@ namespace Katydid
             ++fRecordsRead;
             fSamplesRead = fRecordsRead * fRecordSize;
             sliceHeader.SetIsNewAcquisition(true);
+            KTDEBUG(eggreadlog, "Changing to new acquisition; ID: " << fRecordsRead); // fRecordsRead is used for the AcqID; see below in slice header information
         }
 
         // ********************************** //
@@ -438,12 +460,29 @@ namespace Katydid
         // ********************************** //
         KTTimeSeriesFFTW* newSliceComplex = new KTTimeSeriesFFTW(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
 
-        float* dataReal = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
-        float* dataImag = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
-        for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
+        if (fDataPrecision == 1)
         {
-            (*newSliceComplex)(iBin)[0] = double(dataReal[iBin + fSamplesRead]);
-            (*newSliceComplex)(iBin)[1] = double(dataImag[iBin + fSamplesRead]);
+            float* dataReal = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
+            float* dataImag = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
+            for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
+            {
+                (*newSliceComplex)(iBin)[0] = double(dataReal[iBin + fSamplesRead]);
+                (*newSliceComplex)(iBin)[1] = double(dataImag[iBin + fSamplesRead]);
+            }
+        }
+        else if (fDataPrecision == 2)
+        {
+            double* dataReal = (double*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
+            double* dataImag = (double*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
+            for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
+            {
+                (*newSliceComplex)(iBin)[0] = dataReal[iBin + fSamplesRead];
+                (*newSliceComplex)(iBin)[1] = dataImag[iBin + fSamplesRead];
+            }
+        }
+        else
+        {
+            KTERROR(eggreadlog, "Invalid data precision: " << fDataPrecision);
         }
         KTTimeSeries* newSlice = newSliceComplex;
         fSamplesRead = fSamplesRead + fSliceSize;

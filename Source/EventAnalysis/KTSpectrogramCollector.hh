@@ -25,6 +25,8 @@ namespace Katydid
 
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
+    class KTMultiPeakTrackData;
+    class KTMultiTrackEventData;
     class KTSliceHeader;
 
     /*
@@ -46,13 +48,19 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
      - "lead-time": double -- time to collect before the beginning of the track
      - "trail-time": double -- time to collect after the end of the track
+     - "lead-freq": double -- frequency below the track to begin collection
+     - "trail-freq": double -- frequency above the track to end collection
+     - "use-track-freqs": bool -- if true, the min/max frequencies are calculated from the track and the lead/trail frequencies; if false, min/max-frequency is used
+     - "full-event": bool -- if true, collect the full spectrogram of an MP-event. If false, collect only the first track grouping (fEventSequenceID==0)
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
+     - "mp-track": void (Nymph::KTDataPtr) -- Adds a multi-peak track to the list of active spectrogram collections; Requires KTMultiPeakTrackData; Adds nothing
+     - "mp-event": void (Nymph::KTDatPtr) -- Adds a multi-peak event to the list of active spectrogram collections; Requires KTMultiTrackEventData; Adds nothing
      - "ps": void (Nymph::KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
 
      Signals:
-     - "waterfall": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
+     - "ps-coll": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
     */
 
     class KTSpectrogramCollector : public Nymph::KTProcessor
@@ -81,6 +89,18 @@ namespace Katydid
             double GetTrailTime() const;
             void SetTrailTime(double t);
 
+            double GetLeadFreq() const;
+            void SetLeadFreq(double f);
+
+            double GetTrailFreq() const;
+            void SetTrailFreq(double f);
+
+            bool GetUseTrackFreqs() const;
+            void SetUseTrackFreqs(bool b);
+
+            bool GetFullEvent() const;
+            void SetFullEvent(bool b);
+
         private:
             double fMinFrequency;
             double fMaxFrequency;
@@ -90,11 +110,19 @@ namespace Katydid
             bool fCalculateMaxBin;
             double fLeadTime;
             double fTrailTime;
+            double fLeadFreq;
+            double fTrailFreq;
+            bool fUseTrackFreqs;
+            bool fFullEvent;
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
+            bool AddMPTrack(KTMultiPeakTrackData& mpTrackData, unsigned component);
+            bool AddMPEvent(KTMultiTrackEventData& mpEventData, unsigned component);
             bool ConsiderSpectrum(KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit = false);
             bool ReceiveTrack(KTProcessedTrackData& data);
+            bool ReceiveMPTrack(KTMultiPeakTrackData& data);
+            bool ReceiveMPEvent(KTMultiTrackEventData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
             void FinishSC( Nymph::KTDataPtr data );
 
@@ -130,6 +158,8 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fTrackSlot;
+            Nymph::KTSlotDataOneType< KTMultiPeakTrackData > fMPTrackSlot;
+            Nymph::KTSlotDataOneType< KTMultiTrackEventData > fMPEventSlot;
             void SlotFunctionPSData( Nymph::KTDataPtr data );
 
     };
@@ -204,6 +234,50 @@ namespace Katydid
         return;
     }
 
+    inline double KTSpectrogramCollector::GetLeadFreq() const
+    {
+        return fLeadFreq;
+    }
+
+    inline void KTSpectrogramCollector::SetLeadFreq(double f)
+    {
+        fLeadFreq = f;
+        return;
+    }
+
+    inline double KTSpectrogramCollector::GetTrailFreq() const
+    {
+        return fTrailFreq;
+    }
+
+    inline void KTSpectrogramCollector::SetTrailFreq(double f)
+    {
+        fTrailFreq = f;
+        return;
+    }
+
+    inline bool KTSpectrogramCollector::GetUseTrackFreqs() const
+    {
+        return fUseTrackFreqs;
+    }
+
+    inline void KTSpectrogramCollector::SetUseTrackFreqs(bool b)
+    {
+        fUseTrackFreqs = b;
+        return;
+    }
+
+    inline bool KTSpectrogramCollector::GetFullEvent() const
+    {
+        return fFullEvent;
+    }
+
+    inline void KTSpectrogramCollector::SetFullEvent(bool b)
+    {
+        fFullEvent = b;
+        return;
+    }
+
     void KTSpectrogramCollector::SlotFunctionPSData( Nymph::KTDataPtr data )
     {
         // Standard data slot pattern:
@@ -237,4 +311,4 @@ namespace Katydid
     }
 }
 
-#endif /* KTTRACKSPECTROGRAMCOLLECTOR_HH_ */
+#endif /* KTSPECTROGRAMCOLLECTOR_HH_ */

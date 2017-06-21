@@ -30,6 +30,7 @@ namespace Katydid
             KTProcessor(name),
             //fRadii(fNDimensions),
             fMinPoints(3),
+            fRadius(1.),
             //fTimeBinWidth(1),
             //fFreqBinWidth(1.),
             //fCompPoints(1, Points()),
@@ -55,6 +56,7 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetMinPoints(node->get_value("min-points", GetMinPoints()));
+        SetRadius(node->get_value("radius", GetRadius()));
 
         /*
         if (node->has("radii"))
@@ -154,7 +156,7 @@ namespace Katydid
 
         DBSCAN dbScan;
 
-        dbScan.SetRadius(1.);
+        dbScan.SetRadius(fRadius);
         dbScan.SetMinPoints(fMinPoints);
         KTINFO(tclog, "DBScan configured");
 
@@ -200,7 +202,7 @@ namespace Katydid
                 double minTime = time;
                 double minTimeInAcq = timeInAcq;
                 double maxTime = minTime;
-                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1., timeInAcq));
+                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, points[*pointIdIt].fAmplitude, timeInAcq));
                 KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
@@ -208,8 +210,8 @@ namespace Katydid
                     time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
                     freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                     timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();;
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1., timeInAcq));
-                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
+                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, points[*pointIdIt].fAmplitude, timeInAcq));
+                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
 
                     if (time > maxTime)
                     {
@@ -219,6 +221,7 @@ namespace Katydid
                     {
                         minTime = time;
                         minTimeInAcq = timeInAcq;
+                        KTDEBUG(tclog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
                     }
 
                     if (freq > maxFreq)

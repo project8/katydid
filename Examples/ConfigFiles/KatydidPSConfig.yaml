@@ -2,7 +2,7 @@ processor-toolbox:
     processors:
       - type: egg-processor
         name: egg
-      - type: forward-fftw"
+      - type: forward-fftw
         name: fft
       - type: convert-to-power
         name: to-ps
@@ -13,9 +13,9 @@ processor-toolbox:
       - signal: "egg:header"
         slot: "fft:header"
       - signal: "egg:ts"
-        slot: "fft:ts-real"
+        slot: "fft:ts-fftw"
       - signal: "fft:fft"
-        slot: "to-ps:fs-polar-to-psd"
+        slot: "to-ps:fs-fftw-to-psd"
       - signal: "to-ps:psd"
         slot: "writer:ps"
 
