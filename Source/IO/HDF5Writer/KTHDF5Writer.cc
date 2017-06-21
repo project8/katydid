@@ -155,7 +155,7 @@ namespace Katydid
         std::string group_name;
         std::stringstream group_name_builder;
         group_name_builder << "/";
-        H5::CommonFG* grp = fFile; // *(AddGroup(group_name));
+        H5::Group* grp = fFile; // *(AddGroup(group_name));
         std::string delimiter = "/";
         size_t pos = 0;
         std::string token;
