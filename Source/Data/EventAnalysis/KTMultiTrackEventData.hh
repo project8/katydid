@@ -67,6 +67,8 @@ namespace Katydid
 
             // this member variable is set by event building
             MEMBERVARIABLE(bool, UnknownEventTopology);
+
+        public:
             unsigned GetNTracks() const;
 
             bool HasTrack(unsigned id) const;
