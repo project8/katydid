@@ -21,6 +21,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
     SpectrumAnalysis/KTWignerVilleData.hh
+    SpectrumAnalysis/KTSeqLine.hh
     EventAnalysis/KTFrequencyCandidate.hh
     EventAnalysis/KTFrequencyCandidateData.hh
     EventAnalysis/KTMultiTrackEventData.hh
@@ -78,6 +79,7 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
     SpectrumAnalysis/KTWignerVilleData.cc
+    SpectrumAnalysis/KTSeqLine.cc
     EventAnalysis/KTFrequencyCandidate.cc
     EventAnalysis/KTFrequencyCandidateData.cc
     EventAnalysis/KTMultiTrackEventData.cc

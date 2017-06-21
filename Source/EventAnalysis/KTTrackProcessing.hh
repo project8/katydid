@@ -73,9 +73,11 @@ namespace Katydid
 
             unsigned fProcTrackMinPoints;
 
+            unsigned ftrackID;
+
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ConvertToKTTrack(KTLines& Lines);
+            bool ConvertLineToKTTrack(KTSeqLine& Line);
 
         private:
             /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0
@@ -94,6 +96,7 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
+            Nymph::KTSlotDataOneType< KTSeqLine> fSeqTrackSlot;
 
     };
 

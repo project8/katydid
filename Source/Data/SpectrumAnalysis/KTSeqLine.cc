@@ -17,8 +17,8 @@ namespace Katydid
 {
 	KTLOGGER(sclog, "KTSeqLine");
 
-	KTSeqLine::KTSeqLine(unsigned LineID, Point& Point, double& new_trimming_limits):
-			Identifier(LineID),
+	KTSeqLine::KTSeqLine():
+			fIdentifier(0),
 			fActive(true),
 			fCollectable(false),
 			fLineSlope(0.0),
@@ -34,7 +34,7 @@ namespace Katydid
 			fLineThreshold(15.),
 			fLineScore(0.0)
 			{
-				this->CollectPoint(Point, new_trimming_limits);
+
 			}
 
 
@@ -43,10 +43,6 @@ namespace Katydid
 	}
 
 
-	unsigned KTSeqLine::GetLineID()
-	{
-		return Identifier;
-	}
 
 	bool KTSeqLine::CollectPoint(Point& Point, double& new_trimming_limits)
 	{
@@ -86,13 +82,13 @@ namespace Katydid
 
 			if (Point.fTimeInAcq-fLinePoints.back().fTimeInAcq > fDeltaT)
 			{
-				KTINFO(sclog,  "End of Line" << Identifier << " to far in the past");
+				KTINFO(sclog,  "End of Line" << fIdentifier << " to far in the past");
 				this-> TrimEdges();
 				return false;
 			}
 			else if (fLinePoints.size() > fLambda &&  fLineScore < fLineThreshold)
 			{
-				KTINFO(sclog,  "Line" << Identifier << " has fallen below threshold");
+				KTINFO(sclog,  "Line" << fIdentifier << " has fallen below threshold");
 				this -> TrimEdges();
 				return false;
 			}
@@ -111,12 +107,12 @@ namespace Katydid
 			}
 
 		}
-	bool KTSeqLine::TrimEdges()
+/*	bool KTSeqLine::TrimEdges()
 	{
 		return true;
 
 	}
-
+*/
 	bool KTSeqLine::TrimEdges()
 	{
 		while (fLinePoints.size()>=fLambda && fLinePoints.back().fScore < fMu*trimming_limits.back())
@@ -136,11 +132,13 @@ namespace Katydid
 			{
 			fCollectable = true;
 			fLength = fLinePoints.back().fTimeInAcq-fLinePoints.front().fTimeInAcq;
-			KTINFO(sclog, "Line" << Identifier << " is ready for collection");
+			KTINFO(sclog, "Line" << fIdentifier << " is ready for collection");
+			fAcquisitionID = fLinePoints[0].fAcquisitionID;
+			fComponent = fLinePoints[0].fComponent;
 			}
 		else
 		{
-			KTINFO(sclog,  "Line" << Identifier << " was to short and is deleted");
+			KTINFO(sclog,  "Line" << fIdentifier << " was to short and is deleted");
 
 		}
 		}

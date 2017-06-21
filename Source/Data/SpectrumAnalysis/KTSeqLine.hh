@@ -11,6 +11,7 @@
 
 #include "KTFrequencyDomainArray.hh"
 #include "KTPhysicalArray.hh"
+#include "KTMemberVariable.hh"
 //#include "KTSeqTrackCreator.hh"
 
 
@@ -22,7 +23,7 @@ namespace Katydid {
 
 //using namespace Nymph;
 
-class KTSeqLine
+class KTSeqLine : public Nymph::KTExtensibleData< KTHoughData >
 {
 	struct Point
 	        {
@@ -31,29 +32,32 @@ class KTSeqLine
 	            double fTimeInAcq;
 	            double fTimeInRunC;
 	            double fScore;
-	            double fPower;
-	            Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Score, double Power) : fBinInSlice(BinInSclice), fPointFreq(PointFreq), fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fScore(Score), fPower(Power) {}
+	            double fAcquisitionID;
+	            double fComponent;
+
+	            Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Score, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
+	            		fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fScore(Score), fAcquisitionID(AcqID), fComponent(iComponent) {}
 	        };
 
 	public:
 
 
-		KTSeqLine(unsigned LineID, Point& Point, double& new_trimming_limits);
+		KTSeqLine();
 		virtual ~KTSeqLine();
 
 
 		unsigned GetNPoints();
-		double GetLength();
+		//double GetLength();
 		double GetStartFreq();
-		double GetSlope();
+		//double GetSlope();
 		double GetStartTime();
 		double GetTimeInRunC();
 		double GetTotalScore();
-		unsigned GetLineID();
+		//unsigned GetLineID();
 		double GetStopTime();
 		double GetEndFreq();
-		unsigned GetComponent();
-		uint64_t GetAcquisitionID();
+		//unsigned GetComponent();
+		//uint64_t GetAcquisitionID();
 		double GetAmplitudeSum();
 
 
@@ -64,27 +68,28 @@ class KTSeqLine
 
 		double GetLineScore();
 
+	private:
 		//investigation parameters
-		double fDeltaT;
-		double fDeltaF;
-		unsigned fLambda;
-		double fLineThreshold;
-		double fMu;
-		int fNu;
+		MEMBERVARIABLE(double, DeltaT);
+		MEMBERVARIABLE(double, DeltaF);
+		MEMBERVARIABLE(unsigned, Lambda);
+		MEMBERVARIABLE(double, LineThreshold);
+		MEMBERVARIABLE(double, Mu);
+		MEMBERVARIABLE(int, Nu);
 
-
+	public:
 		//line properties
-		double fLineSlope;
-		double fLineScore;
-		double fLength;
+		MEMBERVARIABLE(double, LineSlope);
+		MEMBERVARIABLE(double, LineScore);
+		MEMBERVARIABLE(double, Length);
 
-		unsigned fComponent;
-		uint64_t fAcquisitionID;
+		MEMBERVARIABLE(unsigned, Component);
+		MEMBERVARIABLE(uint64_t, AcquisitionID);
 
-		bool fActive;
-		bool fCollectable;
+		MEMBERVARIABLE(bool, Active);
+		MEMBERVARIABLE(bool, Collectable);
 
-		unsigned Identifier;
+		MEMBERVARIABLE(unsigned, Identifier);
 
 		//point lists
 
@@ -118,10 +123,10 @@ class KTSeqLine
 	{
 		return fLinePoints.size();
 	}
-	double inline KTSeqLine::GetLength()
+	/*double inline KTSeqLine::GetLength()
 	{
 		return fLength;
-	}
+	}*/
 
 	double inline KTSeqLine::GetStartFreq()
 	{
@@ -141,26 +146,24 @@ class KTSeqLine
 		return fLinePoints[0].fTimeInRunC;
 	}
 
-	double inline KTSeqLine::GetSlope()
+	/*double inline KTSeqLine::GetSlope()
 	{
 		return fLineSlope;
 	}
-	double inline KTSeqLine::GetStartFreq()
-	{
-		return fLinePoints[0].fPointFreq;
-	}
+
+	*/
 	double inline KTSeqLine::GetEndFreq()
 	{
 		return fLinePoints.back().fPointFreq;
 	}
-	unsigned inline KTSeqLine::GetComponent()
+	/*unsigned inline KTSeqLine::GetComponent()
 	{
 		return fComponent;
 	}
 	uint64_t inline KTSeqLine::GetAcquisitionID()
 	{
 		return fAcquisitionID;
-	}
+	}*/
 	double inline KTSeqLine::GetAmplitudeSum()
 	{
 		double sum = 0.0;

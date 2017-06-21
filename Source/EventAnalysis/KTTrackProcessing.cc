@@ -36,9 +36,10 @@ namespace Katydid
             fPointLineDistCut2(0.05),
             fSlopeMinimum(-std::numeric_limits< double >::max()),
             fProcTrackMinPoints(0),
+			ftrackID(0),
             fTrackSignal("track", this),
             fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal),
-			fSeqTrackSlot("seq-track-slot", this, &KTTrackProcessing::ConvertToKTTrack, &TrackSignal)
+			fSeqTrackSlot("line", this, &KTTrackProcessing::ConvertLineToKTTrack, &fTrackSignal)
     {
     }
 
@@ -246,35 +247,33 @@ namespace Katydid
         return true;
     }
 
-        bool KTTrackProcessing::ConvertToKTTrack(KTLines& Lines)
+        bool KTTrackProcessing::ConvertLineToKTTrack(KTSeqLine& Line)
         {
-        	unsigned nLines = Lines.GetNLines();
-        	unsigned trackID = 0;
-        	vector<KTSeqLine> LineVector = Lines.GetLines();
-
-        	for (unsigned iLine; iLine < nLines; iLine++)
-        	{
-        		trackID = iLine;
-
-        		// Add the new data
-        		KTProcessedTrackData& procTrack = Lines.Of< KTProcessedTrackData >();
-        		procTrack.SetComponent(component);
-        		procTrack.SetAcquisitionID(LineVector[iLine].GetAcquisitionID());
-        		procTrack.SetTrackID(trackID);
 
 
-        		procTrack.SetStartTimeInAcq(LineVector[iLine].GetStartTime());
-        		procTrack.SetStartTimeInRunC(LineVector[iLine].GetTimeInRunC());
-        		procTrack.SetEndTimeInRunC(LineVector[iLine].GetStartTime());
-        		procTrack.SetTimeLength(LineVector[iLine].GetLength());
-        		procTrack.SetStartFrequency(LineVector[iLine].GetStartFreq());
-        		procTrack.SetEndFrequency(LineVector[iLine].GetEndFreq());
-				procTrack.SetFrequencyWidth(LineVector[iLine].GetStartFreq()-LineVector[iLine].GetEndFreq());
-				procTrack.SetSlope(LineVector[iLine].GetSlope());
-				procTrack.SetIntercept(0.0);
-				procTrack.SetTotalPower(LineVector[iLine].GetAmplitudeSum());
+
+
+        	// Add the new data
+        	KTProcessedTrackData& procTrack = Line.Of< KTProcessedTrackData >();
+        	procTrack.SetComponent(ftrackID);
+        	procTrack.SetAcquisitionID(Line.GetAcquisitionID());
+        	procTrack.SetTrackID(Line.GetIdentifier());
+
+
+        	procTrack.SetStartTimeInAcq(Line.GetStartTime());
+        	procTrack.SetStartTimeInRunC(Line.GetTimeInRunC());
+        	procTrack.SetEndTimeInRunC(Line.GetStartTime());
+        	procTrack.SetTimeLength(Line.GetLength());
+        	procTrack.SetStartFrequency(Line.GetStartFreq());
+        	procTrack.SetEndFrequency(Line.GetEndFreq());
+        	procTrack.SetFrequencyWidth(Line.GetStartFreq()-Line.GetEndFreq());
+        	procTrack.SetSlope(Line.GetLineSlope());
+        	procTrack.SetIntercept(0.0);
+        	procTrack.SetTotalPower(Line.GetAmplitudeSum());
+
+        	ftrackID +=1;
 				//TODO: Add calculation of uncertainties
-        	}
+
         	return true;
 
         }
