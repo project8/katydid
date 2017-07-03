@@ -20,7 +20,7 @@ processor-toolbox:
 
 egg:
     filename: "/path/to/file.egg"
-    egg-reader: egg3
+    eggreader: "rsamat"
     slice-size: 4096
     number-of-slices: 1
 

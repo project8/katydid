@@ -4,11 +4,11 @@
         "processors":
         [
             { "type": "egg-processor",     "name": "egg" },
-            { "type": "wigner-ville"       "name": "wv" },
+            { "type": "wigner-ville",       "name": "wv" },
             { "type": "hough-transform",   "name": "hough" },
             { "type": "basic-root-writer", "name": "writer" }
         ],
-        
+
         "connections":
         [
 	        {
@@ -38,13 +38,13 @@
 	            "slot": "writer:write-data"
 	        }
         ],
-        
+
         "run-queue":
         [
             "egg"
         ]
     },
-    
+
 
     "egg":
     {
@@ -57,7 +57,7 @@
             "time-series-type": "fftw"
         }
     },
-    
+
     "wv":
     {
         "wv-pairs": [ [0, 1] ],
@@ -66,13 +66,13 @@
             "transform-flag": "ESTIMATE"
         }
     },
-    
+
     "hough":
     {
         "n-theta-points": 100,
         "n-r-points": 100
     },
-    
+
     "writer":
     {
         "output-file": "/path/to/file.root",
