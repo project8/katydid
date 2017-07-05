@@ -164,7 +164,7 @@ namespace Katydid
             name.erase(0, 1);
         }
         // create nested groups if necessary
-        H5::H5Location* loc = fFile;
+        HAS_GRP_IFC* loc = fFile;
         while ((pos = name.find(delimiter)) != std::string::npos)
         {
             token = name.substr(0, pos);
