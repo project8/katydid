@@ -36,7 +36,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, EventID);
-            MEMBERVARIABLE(unsigned, TotalEventSequences);
+            MEMBERVARIABLE(unsigned, TotalEventSequences); // a sequence is a collection of lines with common start and end time, TotalEventSequences should be exactly the number of scatters plus one
 
             // this group of member variables is set by ProcessTracks()
             MEMBERVARIABLE(double, StartTimeInAcq);
@@ -66,7 +66,7 @@ namespace Katydid
             MEMBERVARIABLE(double, FirstTrackTotalPower);
 
             // this member variable is set by event building
-            MEMBERVARIABLE(bool, UnknownEventTopology);
+            MEMBERVARIABLE(bool, UnknownEventTopology); // if True, indicates that the reconstruction was unable to deal with the event
 
         public:
             unsigned GetNTracks() const;
