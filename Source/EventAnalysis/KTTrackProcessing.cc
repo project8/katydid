@@ -189,7 +189,7 @@ namespace Katydid
         double lsInterceptScaled = yMean - lsSlopeScaled * xMean;
         double lsSlope = lsSlopeScaled * yScale / xScale;
         double lsIntercept = lsInterceptScaled * yScale + yOffset - lsSlope * xOffset;
-        KTDEBUG(tlog, "Lease-squares fit result\n"
+        KTDEBUG(tlog, "Least-squares fit result\n"
             << "\tSlope: " << lsSlope << " Hz/s\n"
             << "\tIntercept: " << lsIntercept << " Hz");
 
