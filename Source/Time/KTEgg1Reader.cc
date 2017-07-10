@@ -57,18 +57,22 @@ namespace Katydid
         return true;
     }
 
-    Nymph::KTDataPtr KTEgg1Reader::BreakEgg(const std::string& filename)
+    Nymph::KTDataPtr KTEgg1Reader::BreakEgg(const path_vec& filenames)
     {
         // First, read all of the information from the file and put it in the right places
         if (fEggStream.is_open()) fEggStream.close();
 
         // open the file stream
-        KTINFO(eggreadlog, "Opening egg file <" << filename << ">")
-        fEggStream.open(filename.c_str(), ifstream::in|ifstream::binary);
+        if (filenames.size() > 1)
+        {
+            KTWARN(eggreadlog, "Egg1 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+        }
+        KTINFO(eggreadlog, "Opening egg file <" << filenames[0] << ">")
+        fEggStream.open(filenames[0].c_str(), ifstream::in|ifstream::binary);
 
         if (! fEggStream.is_open())
         {
-            KTERROR(eggreadlog, "Egg filestream did not open (file: " << filename << ")");
+            KTERROR(eggreadlog, "Egg filestream did not open (file: " << filenames[0] << ")");
             return Nymph::KTDataPtr();
         }
 
@@ -219,7 +223,7 @@ namespace Katydid
 
         Nymph::KTDataPtr eggHeaderPtr(new Nymph::KTData());
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
-        eggHeader.SetFilename(filename);
+        eggHeader.SetFilename(filenames[0].native());
         eggHeader.SetAcquisitionMode(1);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * 1000); // conversion from s to ms
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);

@@ -67,7 +67,7 @@ namespace Katydid
         return true;
     }
 
-    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTRSAMatReader::BreakEgg(const path_vec& filenames)
     {
         // Note on reading variables with MatIO:
         // Before each call to Mat_VarRead (or similar), a call should be made to Mat_Rewind, which resets the file-read pointer to the beginning of the file.
@@ -92,11 +92,15 @@ namespace Katydid
         }
 
         // open the file
-        KTINFO(eggreadlog, "Opening mat file <" << filename << ">");
-        fMatFilePtr = Mat_Open(filename.c_str(), MAT_ACC_RDONLY);
+        if (filenames.size() > 1)
+        {
+            KTWARN(eggreadlog, "RSAMAT reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+        }
+        KTINFO(eggreadlog, "Opening mat file <" << filenames[0] << ">");
+        fMatFilePtr = Mat_Open(filenames[0].c_str(), MAT_ACC_RDONLY);
         if (fMatFilePtr == NULL)
         {
-            KTERROR(eggreadlog, "Unable to open mat file: " << filename);
+            KTERROR(eggreadlog, "Unable to open mat file: " << filenames[0]);
             return Nymph::KTDataPtr();
         }
 
@@ -125,7 +129,16 @@ namespace Katydid
             //  then create an array to save the timestamps
             //Mat_VarPrint(fileInfoStruct, 1);
 
-            fRecordsPerFile = fileInfoStruct->dims[1];
+            fRecordsPerFile = fileInfoStruct->dims[0];
+            if (fRecordsPerFile == 1)
+            {
+                KTDEBUG(eggreadlog, "Orientation of the fileinfo variable is 1xN");
+                fRecordsPerFile = fileInfoStruct->dims[1];
+            }
+            else
+            {
+                KTDEBUG(eggreadlog, "Orientation of the fileinfo variable is Nx1");
+            }
             KTINFO(eggreadlog, "Number of Records in File: " << fRecordsPerFile << " ");
             fRecordsTimeStampSeconds.resize(fRecordsPerFile);
             // Read the timestamps into a string, then convert the string to Epoch seconds
@@ -187,6 +200,7 @@ namespace Katydid
                 if (iRecord == 0) ptime1temp_1st = ptime1temp;
                 tdur1temp = ptime1temp - ptime1temp_1st;
                 fRecordsTimeStampSeconds[iRecord] = ((double) tdur1temp.total_nanoseconds()) * SEC_PER_NSEC;
+                KTDEBUG(eggreadlog, "Timestamp: " << recordsTimeStampStr << ", or " << fRecordsTimeStampSeconds[iRecord] << " sec after record 0");
                 // For Debugging: // fRecordsTimeStampSeconds[ii] = 0;
                 delete [] recordsTimeStampStr;
                 delete [] rsaxml_str;
@@ -254,7 +268,7 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
-        fHeader.SetFilename(filename);
+        fHeader.SetFilename(filenames[0].native());
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");
@@ -340,7 +354,12 @@ namespace Katydid
         fSamplesPerFile = fTSArrayMat->dims[0];
         if (fSamplesPerFile == 1)
         {
+            KTDEBUG(eggreadlog, "Orientation of the Y variable is 1xN");
             fSamplesPerFile = fTSArrayMat->dims[1];
+        }
+        else
+        {
+            KTDEBUG(eggreadlog, "Orientation of the Y variable is Nx1");
         }
 
         // Read center frequency, and derive minimum and maximum frequencies 
@@ -402,7 +421,7 @@ namespace Katydid
         // Check if you still have enough data in the file
         if (fSamplesRead + fSliceSize > fSamplesPerFile)
         {
-            KTWARN(eggreadlog, "End of mat file reached");
+            KTPROG(eggreadlog, "End of mat file reached");
             KTDEBUG(eggreadlog, "fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
 
             // Return Empty Pointer
@@ -426,6 +445,15 @@ namespace Katydid
             fSamplesRead = fRecordsRead * fRecordSize;
             sliceHeader.SetIsNewAcquisition(true);
             KTDEBUG(eggreadlog, "Changing to new acquisition; ID: " << fRecordsRead); // fRecordsRead is used for the AcqID; see below in slice header information
+        }
+
+        if (fRecordsRead > fRecordsPerFile)
+        {
+            KTWARN(eggreadlog, "Last (expected) record finished, but samples still remain; this is unexpected");
+            KTDEBUG(eggreadlog, "fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
+
+            // Return Empty Pointer
+            return Nymph::KTDataPtr();
         }
 
         // ********************************** //

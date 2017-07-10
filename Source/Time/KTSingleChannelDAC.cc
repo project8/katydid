@@ -244,8 +244,8 @@ namespace Katydid
                 }
                 fVoltages[fIntLevelOffset + level] = valueHoldPos;
                 fVoltages[fIntLevelOffset - level] = valueHoldNeg;
-                KTWARN( egglog_scdac, "level <" << fIntLevelOffset + level << "> = " << fVoltages[fIntLevelOffset + level] );
-                KTWARN( egglog_scdac, "level <" << fIntLevelOffset - level << "> = " << fVoltages[fIntLevelOffset - level] );
+                KTTRACE( egglog_scdac, "level <" << fIntLevelOffset + level << "> = " << fVoltages[fIntLevelOffset + level] );
+                KTTRACE( egglog_scdac, "level <" << fIntLevelOffset - level << "> = " << fVoltages[fIntLevelOffset - level] );
                 ++levelSkipCounter;
                 if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             }
@@ -265,7 +265,7 @@ namespace Katydid
             {
                 if (levelSkipCounter == 0) valueHold = scarab::d2a< uint64_t, double >(level, &params);
                 fVoltages[level] = valueHold;
-                KTWARN(egglog_scdac, "level <" << level << "> = voltage " << fVoltages[level]);
+                KTTRACE(egglog_scdac, "level <" << level << "> = voltage " << fVoltages[level]);
                 ++levelSkipCounter;
                 if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             }

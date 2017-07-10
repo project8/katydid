@@ -12,8 +12,6 @@
 #include "KTData.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
-
 
 namespace Katydid
 {
@@ -93,10 +91,10 @@ namespace Katydid
             //***************
 
         private:
-            void SlotFunctionDummyObject1( Nymph::KTDataPtr data );
-            void SlotFunctionDummyObject2( Nymph::KTDataPtr data );
-            void SlotFunctionDummyObject3( Nymph::KTDataPtr data );
-
+            // If you would like to build this template as-is, you must comment out the following slot initializations because they use made-up data types
+            Nymph::KTSlotDataOneType< KTDummyDataObject1 > fSlotOne;
+            Nymph::KTSlotDataOneType< KTDummyDataObject2 > fSlotTwo;
+            Nymph::KTSlotDataOneType< KTDummyDataObject3 > fSlotThree;
     };
 
     inline double KTProcessorTemplate::GetMemberVariable1() const
@@ -132,83 +130,6 @@ namespace Katydid
         return;
     }
 
-    void KTProcessorTemplate::SlotFunctionDummyObject1( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-
-/*
-        if (! data->Has< KTDummyDataObject1 >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTDummyDataObject1 >!");
-            return;
-        }
-
-        // Call function
-        if( !AnalyzeDummyObject1( data->Of< KTDummyDataObject1 >() ) )
-        {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTDummyDataObject1 >");
-            return;
-        }
-*/
-
-        // Emit signal
-        fDummySignal1( data );
-    
-        return;
-    }
-
-    void KTProcessorTemplate::SlotFunctionDummyObject2( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-
-/*        
-        if (! data->Has< KTDummyDataObject2 >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTDummyDataObject2 >!");
-            return;
-        }
-
-        // Call function
-        if( !AnalyzeDummyObject2( data->Of< KTDummyDataObject2 >() ) )
-        {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTDummyDataObject2 >");
-            return;
-        }
-*/
-
-        // Emit signal
-        fDummySignal2( data );
-    
-        return;
-    }
-
-    void KTProcessorTemplate::SlotFunctionDummyObject3( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-
-/*
-        if (! data->Has< KTDummyDataObject3 >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTDummyDataObject3 >!");
-            return;
-        }
-
-        // Call function
-        if( !AnalyzeDummyObject3( data->Of< KTDummyDataObject3 >() ) )
-        {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTDummyDataObject3 >");
-            return;
-        }
-*/
-
-        // Emit signal
-        fDummySignal3( data );
-    
-        return;
-    }
 }
 
 #endif /* KTPROCESSORTEMPLATE_HH_ */

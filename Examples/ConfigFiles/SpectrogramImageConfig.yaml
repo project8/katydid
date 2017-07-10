@@ -4,7 +4,7 @@ processor-toolbox:
         name: egg
       - type: forward-fftw
         name: fft
-      - type: root-spectrogram-writer
+      - type: image-writer
         name: writer
 
     connections:
@@ -15,13 +15,13 @@ processor-toolbox:
       - signal: "fft:fft"
         slot: "writer:fs-fftw"
       - signal: "egg:egg-done"
-        slot: "writer:write-file"
+        slot: "writer:write-files"
 
     run-queue:
       - egg
 
 egg:
-    filename: "test_input.egg"
+    filename: test_input.egg
     egg-reader: egg3
     slice-size: 4096
     number-of-slices: 0
@@ -30,10 +30,9 @@ fft:
     transform-flag: ESTIMATE
 
 writer:
-    output-file: "test_output.root"
-    file-flag: recreate
+    filename-base: test_output
+    file-extension: png
     min-time: 0.0
-    max-time: 0.1
+    max-time: 1.0
     min-freq: 0.0
     max-freq: 100.0e6
-    

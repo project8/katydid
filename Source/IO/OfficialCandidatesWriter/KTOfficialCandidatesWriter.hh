@@ -14,6 +14,8 @@
 #include "KTJSONMaker.hh"
 #include "KTSlot.hh"
 
+#include "param_json.hh" // for JSON_FILE_BUFFER_SIZE
+
 #include <boost/thread.hpp>
 
 #include <cstdio>
@@ -61,7 +63,7 @@ namespace Katydid
     class KTOfficialCandidatesWriter : public Nymph::KTWriter
     {
         public:
-            typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
+            typedef KTJSONMaker< rapidjson::FileWriteStream > JSONMaker;
 
             enum Status
             {
@@ -94,7 +96,7 @@ namespace Katydid
             bool GetPrettyJSONFlag() const;
             void SetPrettyJSONFlag(bool flag);
 
-            KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
+            KTJSONMaker< rapidjson::FileWriteStream >* GetJSONMaker() const;
 
             Status GetStatus() const;
 
@@ -105,8 +107,8 @@ namespace Katydid
             bool fPrettyJSONFlag;
 
             FILE* fFile;
-            rapidjson::FileStream* fFileStream;
-            KTJSONMaker< rapidjson::FileStream >* fJSONMaker;
+            rapidjson::FileWriteStream* fFileStream;
+            KTJSONMaker< rapidjson::FileWriteStream >* fJSONMaker;
 
             Status fStatus;
 
@@ -174,7 +176,7 @@ namespace Katydid
         return;
     }
 
-    inline KTJSONMaker< rapidjson::FileStream >* KTOfficialCandidatesWriter::GetJSONMaker() const
+    inline KTJSONMaker< rapidjson::FileWriteStream >* KTOfficialCandidatesWriter::GetJSONMaker() const
     {
         return fJSONMaker;
     }

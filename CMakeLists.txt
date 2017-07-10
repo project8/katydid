@@ -6,13 +6,15 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.6.7)
+project (Katydid VERSION 2.7.0)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/cmake )
 include( Nymph )
+
+include( PythonPackage )
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
@@ -29,13 +31,15 @@ set_option( USE_CPP11 TRUE )
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
 option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
-option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
 option (Katydid_USE_MONARCH "Flag to optionally use Monarch" ON)
-option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
-option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
-option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
-option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
+option (Katydid_USE_PYTHON "Flag to optionally build python bindings" OFF)
 option (Katydid_USE_MATLAB "Flag to optionally use MatIO libraries, needed to read MAT files" ON)
+option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
+option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
+option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
+option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
+option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
+option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
 option (Katydid_BUILD_DOC "Enable the options to build the documentation (requires Doxygen and Sphinx (optional) with Breathe)" OFF)
 option (Katydid_USE_SPHINX "Flag to optionall use Sphinx documentation" OFF)
 
@@ -47,9 +51,10 @@ set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 # Dependencies
 ##############
 
-# Midge
+# Nymph
 pbuilder_add_submodule( Nymph Nymph )
 nymph_process_options()
+add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
 
 # Mantis
 if (Katydid_USE_MANTIS)
@@ -68,11 +73,26 @@ if (Katydid_USE_MANTIS)
 endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
-find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+list (APPEND Boost_COMPONENTS date_time filesystem program_options system thread)
+# python optional
+if (Katydid_USE_PYTHON)
+    list(APPEND Boost_COMPONENTS python)
+endif (Katydid_USE_PYTHON)
+#find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+find_package (Boost 1.46.0 REQUIRED COMPONENTS ${Boost_COMPONENTS})
 # make sure dynamic linking is assumed for all boost libraries
 add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
+
+## TODO Lots of convention questions... BHL
+# python stuff is all here, maybe should not be?
+if (Katydid_USE_PYTHON)
+    python_package_find_python( 2.7 )
+    SET( Nymph_ENABLE_PYTHON ON CACHE BOOL "" FORCE)
+else (Katydid_USE_PYTHON)
+    set( Nymph_ENABLE_PYTHON OFF CACHE BOOL "" FORCE)
+endif (Katydid_USE_PYTHON)
 
 # FFTW
 if (Katydid_USE_FFTW)
@@ -144,6 +164,17 @@ else (MATIO_FOUND)
     remove_definitions(-DUSE_MATLAB)
 endif (MATIO_FOUND)
 
+# GraphicsMagic & Magick++
+if (Katydid_USE_MAGICKPP)
+    find_package(GraphicsMagick REQUIRED)
+endif (Katydid_USE_MAGICKPP)
+if (MAGICK++_FOUND)
+    message (STATUS "GraphicsMagick & Magick++ include dirs: ${MAGICK_INCLUDE_DIR} ${MAGICK++_INCLUDE_DIR}")
+    message (STATUS "GraphicsMagick & Magick++ libraries: ${MAGICK_LIBRARIES} ${MAGICK++_LIBRARIES}")
+    include_directories (${MAGICK_INCLUDE_DIR} ${MAGICK++_INCLUDE_DIR})
+    pbuilder_add_ext_libraries (${MAGICK_LIBRARIES} ${MAGICK++_LIBRARIES})
+endif (MAGICK++_FOUND)
+
 # eigen
 if (Katydid_USE_EIGEN)
     find_package (Eigen3)
@@ -164,7 +195,6 @@ if (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 else (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
     remove_definitions(-DUSE_OPENMP)
 endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
-
 
 # External packages distributed with Katydid
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
@@ -199,6 +229,9 @@ if (Katydid_USE_MONARCH)
     else (Monarch_BUILD_MONARCH3)
         remove_definitions(-DUSE_MONARCH3)
     endif (Monarch_BUILD_MONARCH3)
+    # we need the definitions for HAS_ATTR_IFC and HAS_GRP_IFC from Monarch to use the proper class interfaces in M3Header and M3Stream
+    set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} APPEND PROPERTY COMPILE_DEFINITIONS ${Monarch_COMPILE_DEFINITIONS} )
+    message(STATUS "Monarch compile definitions: ${Monarch_COMPILE_DEFINITIONS}")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
     add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)
@@ -210,6 +243,7 @@ endif (Katydid_USE_MONARCH)
 # Subdirectories
 include_directories (BEFORE 
     ${PROJECT_SOURCE_DIR}/Source/Utility
+    ${PROJECT_SOURCE_DIR}/Source/Data
     ${PROJECT_SOURCE_DIR}/Source/Data/SpectrumAnalysis
     ${PROJECT_SOURCE_DIR}/Source/Data/EventAnalysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Time
@@ -253,6 +287,12 @@ add_subdirectory (Examples)
 
 # Build the main executables (from Nymph, but linked to all of the Katydid libraries)
 nymph_build_executables()
+
+# Python
+
+if (Katydid_USE_PYTHON)
+    python_package_add_module( Source/KatydidPy.cc )
+endif (Katydid_USE_PYTHON)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
