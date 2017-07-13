@@ -300,7 +300,7 @@ namespace Katydid
         powerFit.SigmaCentral = pfData.GetSigmaCentral();
         powerFit.MaximumCentral = pfData.GetMaximumCentral();
         powerFit.RMSAwayFromCentral = pfData.GetRMSAwayFromCentral();
-        powerFit.CentralPowerRatio = pfData.GetCentralPowerRatio();
+        powerFit.CentralPowerFraction = pfData.GetCentralPowerFraction();
         powerFit.TrackID = pfData.GetTrackID();
 
         (this->fPFDataBuffer).push_back(powerFit);
