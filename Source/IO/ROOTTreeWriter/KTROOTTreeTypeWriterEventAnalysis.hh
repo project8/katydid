@@ -157,7 +157,7 @@ namespace Katydid
         Double_t fMaximumCentral;
 
         Double_t fRMSAwayFromCentral;
-        Double_t fCentralPowerRatio;
+        Double_t fCentralPowerFraction;
 
         Double_t fTrackIntercept;
     };
