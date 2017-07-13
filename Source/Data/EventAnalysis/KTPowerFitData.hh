@@ -67,7 +67,7 @@ namespace Katydid
                 double fMaximumCentral;
 
                 double fRMSAwayFromCentral; // RMS in bins greater than 3 sigma from the central peak
-                double fCentralPowerRatio; // Ratio of average power within 3 sigma of the central peak to average power greater than 3 sigma from the central peak
+                double fCentralPowerFraction; // Ratio of average power within 3 sigma of the central peak to average power greater than 3 sigma from the central peak
 
                 double fTrackIntercept; // just so that we don't lose this info, since it is subtracted away
 
@@ -150,8 +150,8 @@ namespace Katydid
             double GetRMSAwayFromCentral( unsigned component = 0 ) const;
             void SetRMSAwayFromCentral( double sigma, unsigned component = 0 );
 
-            double GetCentralPowerRatio( unsigned component = 0 ) const;
-            void SetCentralPowerRatio( double r, unsigned component = 0 );
+            double GetCentralPowerFraction( unsigned component = 0 ) const;
+            void SetCentralPowerFraction( double r, unsigned component = 0 );
 
             double GetTrackIntercept( unsigned component = 0 ) const;
             void SetTrackIntercept( double alpha, unsigned component = 0 );
@@ -411,14 +411,14 @@ namespace Katydid
         return;
     }
 
-    inline double KTPowerFitData::GetCentralPowerRatio(unsigned component) const
+    inline double KTPowerFitData::GetCentralPowerFraction(unsigned component) const
     {
-        return fComponentData[component].fCentralPowerRatio;
+        return fComponentData[component].fCentralPowerFraction;
     }
 
-    inline void KTPowerFitData::SetCentralPowerRatio(double r, unsigned component)
+    inline void KTPowerFitData::SetCentralPowerFraction(double r, unsigned component)
     {
-        fComponentData[component].fCentralPowerRatio = r;
+        fComponentData[component].fCentralPowerFraction = r;
         return;
     }
 
