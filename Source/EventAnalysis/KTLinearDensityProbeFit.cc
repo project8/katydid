@@ -678,7 +678,7 @@ namespace Katydid
 
         // Fill data
         newData.SetRMSAwayFromCentral( nonCentralRMS );
-        newData.SetCentralPowerRatio( centralMean / nonCentralMean );
+        newData.SetCentralPowerFraction( centralMean / (centralMean + nonCentralMean) );
 
         // We copy the track intercept to newData
         newData.SetTrackIntercept( data.GetIntercept() );
