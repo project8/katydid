@@ -647,10 +647,10 @@ namespace Katydid
         }
         
         // Initialize variables for mean and RMS
-        double centralMean = 0;
-        double centralRMS = 0;
-        double nonCentralMean = 0;
-        double nonCentralRMS = 0;
+        double centralMean = 0.0;
+        double centralRMS = 0.0;
+        double nonCentralMean = 0.0;
+        double nonCentralRMS = 0.0;
 
         // Calculate central mean and RMS
         for( int iPoint = 0; iPoint < centralPoints.size(); ++iPoint )
