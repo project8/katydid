@@ -331,8 +331,8 @@ namespace Katydid
     };
     H5::PredType PFFieldTypes[PFNFields] = 
     {
-        H5::PredType::NATIVE_INT,
-        H5::PredType::NATIVE_INT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
