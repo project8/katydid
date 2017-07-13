@@ -291,7 +291,7 @@ namespace Katydid
         double SigmaCentral;
         double MaximumCentral;
         double RMSAwayFromCentral;
-        double CentralPowerRatio;
+        double CentralPowerFraction;
         unsigned TrackID;
     } PFData;
 
@@ -310,7 +310,7 @@ namespace Katydid
         "SigmaCentral",
         "MaximumCentral",
         "RMSAwayFromCentral",
-        "CentralPowerRatio",
+        "CentralPowerFraction",
         "TrackID"
     };
     size_t PFFieldOffsets[PFNFields] = 
@@ -326,7 +326,7 @@ namespace Katydid
         HOFFSET(PFData, SigmaCentral),
         HOFFSET(PFData, MaximumCentral),
         HOFFSET(PFData, RMSAwayFromCentral),
-        HOFFSET(PFData, CentralPowerRatio),
+        HOFFSET(PFData, CentralPowerFraction),
         HOFFSET(PFData, TrackID)
     };
     H5::PredType PFFieldTypes[PFNFields] = 
