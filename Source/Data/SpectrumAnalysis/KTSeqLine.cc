@@ -141,8 +141,29 @@ namespace Katydid
 			KTINFO(sclog,  "Line" << fIdentifier << " was to short and is deleted");
 
 		}
-		}
+
 	}
+
+    LineRef::LineRef():
+        fLineID(0),
+        fStartTimeInRunC(0.0),
+        fEndTimeInRunC(0.0),
+        fStartFrequency(0.0),
+        fEndFrequency(0.0),
+        fSlope(0.0),
+        fLineScore(0.0),
+        fAcquisitionID(0)
+        {}
+
+    bool LineRef::InsertPoint(const KTSeqLine::Point& Point, const double& new_trimming_limits)
+    {
+        fLinePoints.push_back(Point);
+        trimming_limits.push_back(new_trimming_limits);
+        fLineScore+=Point.fScore;
+        fSlope = (Point.fPointFreq-fLinePoints[0].fPointFreq)/(Point.fTimeInAcq-fLinePoints[0].fPointFreq);
+
+        return true;
+    }
 
 } /* namespace Katydid */
 

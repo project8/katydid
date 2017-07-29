@@ -48,21 +48,32 @@ namespace Katydid
 
         public:
             MEMBERVARIABLE(char, Mode);
-            MEMBERVARIABLE(double, FDelta);
-            MEMBERVARIABLE(int, TimeDistance);
-            MEMBERVARIABLE(unsigned, Sigma);
-            MEMBERVARIABLE(unsigned, BinDelta);
+            MEMBERVARIABLE(double, TrimmingFactor);
+            MEMBERVARIABLE(unsigned, LinePowerWidth);
+            MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
+            MEMBERVARIABLE(unsigned, MinFreqBinDistance);
+            MEMBERVARIABLE(double, TimeGapTolerance);
+            MEMBERVARIABLE(double, FrequencyAcceptance);
+            MEMBERVARIABLE(unsigned, SearchRadius);
+            MEMBERVARIABLE(double, ConvergeDelta);
+            MEMBERVARIABLE(double, SNRThreshold);
+            MEMBERVARIABLE(unsigned, MinPoints);
+            MEMBERVARIABLE(double, MinSlope);
             MEMBERVARIABLE(unsigned, MinBin);
             MEMBERVARIABLE(bool, CalculateMinBin);
             MEMBERVARIABLE(unsigned, MaxBin);
             MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
-            MEMBERVARIABLE(double, ScoreThreshold);
+
+
 
         private:
-            std::vector< Nymph::KTDataPtr > fnew_Lines;
-
+            //list< LineRef > fLines;
+            //list< LineRef > fActiveLines;
+            //std::vector< Nymph::KTDataPtr > fnew_Lines;
+            std::vector< LineRef> fLines;
+            std::vector< LineRef> fActiveLines;
 
 
         public:
@@ -81,10 +92,10 @@ namespace Katydid
 
 
 
-            bool PointLineAssignment(KTSliceHeader& slHeader, KTScoredSpectrumData& spectrum);
-            bool LoopOverHighPowerPoints(KTScoredSpectrum& slice, std::vector<KTSeqLine::Point>& Points, double& new_trimming_limits);
-            void SearchAreaForBetterPoints(unsigned& PointBin, double& PointFreq, KTScoredSpectrum& slice);
-            void WeightedAverage(KTScoredSpectrum& slice, double& PointFreq, unsigned& PointBin);
+            bool PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<KTSeqLine::Point>& Points, double& new_trimming_limits);
+            void SearchTrueLinePoint(KTSeqLine::Point&, KTPowerSpectrum& slice);
+            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& FrequencyBin, double& Frequency);
 
         private:
        //     bool LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double& TrimmingTimits);
