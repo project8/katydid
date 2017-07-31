@@ -14,40 +14,41 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 #include "KTSeqLine.hh"
-#include "KTLines.hh"
+#include "KTProcessedTrackData.hh"
 
 #include <iostream>
 #include <set>
 
-namespace Nymph
-{
-    class KTParamNode;
-}
-;
 
 namespace Katydid
 {
-
-    class KTKDTreeData;
 
 
     class KTSeqTrackFinder : public Nymph::KTProcessor
     {
 
-        //typedef std::map< unsigned, Point > SetOfPoints;
+        private:
+            enum ThresholdMode
+            {
+                eSNR_Amplitude,
+                eSNR_Power,
+                eSigma
+            };
+            double fSNRPowerThreshold;
 
         public:
             KTSeqTrackFinder(const std::string& name = "seq-clustering");
             virtual ~KTSeqTrackFinder();
 
             bool KTSeqTrackFinder::Configure(const KTParamNode* node);
-            const std::set< Nymph::KTDataPtr >& GetLines() const;
+            //const std::set< Nymph::KTDataPtr >& GetLines() const;
             //void SetFrequencyRadius(double FreqRad);
             //void SetTimeDistance(double TimeDistance);
             //void SetBinDelta(int BinDelta);
 
         public:
-            MEMBERVARIABLE(char, Mode);
+            MEMBERVARIABLE(ThresholdMode, Mode);
+            //MEMBERVARIABLE(double, SNRPowerThreshold);
             MEMBERVARIABLE(double, TrimmingFactor);
             MEMBERVARIABLE(unsigned, LinePowerWidth);
             MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
@@ -56,7 +57,7 @@ namespace Katydid
             MEMBERVARIABLE(double, FrequencyAcceptance);
             MEMBERVARIABLE(unsigned, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
-            MEMBERVARIABLE(double, SNRThreshold);
+            //MEMBERVARIABLE(double, SNRThreshold);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, MinSlope);
             MEMBERVARIABLE(unsigned, MinBin);
@@ -65,6 +66,7 @@ namespace Katydid
             MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
+            MEMBERVARIABLE(unsigned, NLines);
 
 
 
@@ -72,7 +74,7 @@ namespace Katydid
             //list< LineRef > fLines;
             //list< LineRef > fActiveLines;
             //std::vector< Nymph::KTDataPtr > fnew_Lines;
-            std::vector< LineRef> fLines;
+            //std::vector< LineRef> fLines;
             std::vector< LineRef> fActiveLines;
 
 
@@ -93,19 +95,13 @@ namespace Katydid
 
 
             bool PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<KTSeqLine::Point>& Points, double& new_trimming_limits);
-            void SearchTrueLinePoint(KTSeqLine::Point&, KTPowerSpectrum& slice);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
+            void SearchTrueLinePoint(Point&, KTPowerSpectrum& slice);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& FrequencyBin, double& Frequency);
+            void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
+            bool EmitPreCandidate(LineRef Line, unsigned component);
+            void SetSNRPowerThreshold(double thresh);
 
-        private:
-       //     bool LoopOverDiscriminatedPoints(const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts, KTPowerSpectrum& slice, double& TimeInAcq, double& TrimmingTimits);
-       //     bool KTSeqTrackFinder::VetoPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator Point, KTPowerSpectrum& slice, double& freq);
-
-        public:
-            inline const std::set< Nymph::KTDataPtr >& KTSeqTrackFinder::GetLines() const
-                {
-                    return fnew_Lines;
-                }
 
 
             //***************
@@ -113,53 +109,23 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalData fLineSignal;
-            Nymph::KTSignalOneArg< void > fSeqTrackFindingDoneSignal;
+            Nymph::KTSignalData fTrackSignal;
+            Nymph::KTSignalOneArg< void > fDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTScoredSpectrumData > fSeqTrackSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
 
     };
-   /* inline void KTSeqTrackFinder::SetFrequencyRadius(double FreqRad)
+    inline void KTSeqTrackFinder::SetSNRPowerThreshold(double thresh)
     {
-       	fFDelta = FreqRad;
-    }
-    inline void KTSeqTrackFinder::SetTimeDistance(double TimeDistance)
-    {
-       	fTimeDistance = TimeDistance;
-    }
-    inline void KTSeqTrackFinder::SetBinDelta(int BinDelta)
-    {
-       	fBinDelta = BinDelta;
-    }
-    inline unsigned KTSeqTrackFinder::GetMinBin() const
-    {
-        return fMinBin;
-    }
-
-    inline void KTSeqTrackFinder::SetMinBin(unsigned bin)
-    {
-        fMinBin = bin;
-        fCalculateMinBin = false;
+        fSNRPowerThreshold = thresh;
+        fMode = eSNR_Power;
         return;
     }
-
-    inline unsigned KTSeqTrackFinder::GetMaxBin() const
-    {
-        return fMaxBin;
-    }
-
-    inline void KTSeqTrackFinder::SetMaxBin(unsigned bin)
-    {
-        fMaxBin = bin;
-        fCalculateMaxBin = false;
-        return;
-    }
-    */
 
 } /* namespace Katydid */
 #endif /* KTSEQTRACKFinder_HH_ */

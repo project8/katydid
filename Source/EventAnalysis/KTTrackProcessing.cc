@@ -43,8 +43,7 @@ namespace Katydid
             fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
             fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal),
             ftrackID(0),
-            fTrackSignal("track", this),
-            fSeqTrackSlot("line", this, &KTTrackProcessing::ConvertLineToKTTrack, &fTrackSignal)
+            fTrackSignal("track", this)
     {
     }
 
@@ -434,37 +433,4 @@ namespace Katydid
 
         return true;
     }
-
-
-    bool KTTrackProcessing::ConvertLineToKTTrack(KTSeqLine& Line)
-    {
-
-        // Add the new data
-        KTProcessedTrackData& procTrack = Line.Of< KTProcessedTrackData >();
-        procTrack.SetComponent(ftrackID);
-        procTrack.SetAcquisitionID(Line.GetAcquisitionID());
-        procTrack.SetTrackID(Line.GetIdentifier());
-
-
-        procTrack.SetStartTimeInAcq(Line.GetStartTime());
-        procTrack.SetStartTimeInRunC(Line.GetTimeInRunC());
-        procTrack.SetEndTimeInRunC(Line.GetStartTime());
-        procTrack.SetTimeLength(Line.GetLength());
-        procTrack.SetStartFrequency(Line.GetStartFreq());
-        procTrack.SetEndFrequency(Line.GetEndFreq());
-        procTrack.SetFrequencyWidth(Line.GetStartFreq()-Line.GetEndFreq());
-        procTrack.SetSlope(Line.GetLineSlope());
-        procTrack.SetIntercept(0.0);
-        procTrack.SetTotalPower(Line.GetAmplitudeSum());
-
-        ftrackID +=1;
-            //TODO: Add calculation of uncertainties
-
-        return true;
-
-    }
-
-
-
-
 } /* namespace Katydid */

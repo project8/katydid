@@ -17,6 +17,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTSpectrumDiscriminator.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
+    KTSeqTrackFinder.hh
     #KTAutoCorrMatrix.hh
 )
 
@@ -36,6 +37,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTSpectrumDiscriminator.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
+    KTSeqTrackFinder.cc
     #KTAutoCorrMatrix.cc
 )
 

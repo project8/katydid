@@ -11,11 +11,12 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTScoredSpectrum.hh"
 #include "KTScoredSpectrumData.hh"
-#include "KTSeqLine.hh"
+//#include "KTSliceHeader.hh"
 
 
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
+
 //#include "KTParam.hh"
 
 #include <numeric>
@@ -28,11 +29,10 @@ using std::vector;
 
 namespace Katydid
 {
-	KTLOGGER(sdlog, "KTSeqTrackFinder");
+	KTLOGGER(stflog, "DansTrackFinder");
 
-/* KTLOGGER(ctlog, "KTConsensusThresholding");
-*/
-    KT_REGISTER_PROCESSOR(KTSeqTrackFinder, "seq-clustering");
+
+    KT_REGISTER_PROCESSOR(KTSeqTrackFinder, "dans-track-finding-algorithm");
 
     KTSeqTrackFinder::KTSeqTrackFinder(const std::string& name) :
             KTProcessor(name),
@@ -45,7 +45,7 @@ namespace Katydid
             fFrequencyAcceptance(56166.0528183),
             fSearchRadius(6),
             fConvergeDelta(1.5),
-			fSNRThreshold(6.),
+			fSNRPowerThreshold(6.),
 			fMinPoints(2),
 			fMinSlope(0.0),
 			fMinBin(0),
@@ -55,12 +55,11 @@ namespace Katydid
 			fCalculateMinBin(true),
 			fCalculateMaxBin(true),
 			fActiveLines(),
-			fLines(),
+			fNLines(0),
 			//fnew_Lines(),
-			fLineSignal("line", this),
-			fSeqTrackFindingDoneSignal("seq-track-finding-done", this),
-	   		fSeqTrackSlot("scores_in", this, &KTSeqTrackFinder::PointLineAssignment),
-            fSeqTrackSlot("ps_in", this, &KTSeqTrackFinder::PointLineAssignment)
+			fTrackSignal("pre-candidate", this),
+			//fDoneSignal("seq-track-finding-done", this),
+			fSeqTrackSlot("ps_in", this, &KTSeqTrackFinder::PointLineAssignment)
     {
     }
 
@@ -72,10 +71,10 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        if (node->has("SNR_or_Scores"))
-                {
-                	SetMode(node->get_value< double >("SNR_or_Scores"));
-                }
+        if (node->has("snr-threshold-power"))
+        {
+            SetSNRPowerThreshold(node->get_value< double >("snr-threshold-power"));
+        }
 
         if (node->has("min-frequency"))
         {
@@ -123,10 +122,10 @@ namespace Katydid
         {
             SetFrequencyAcceptance(node->get_value<int>("frequency-acceptance"));
         }
-        if (node->has("threshold"))
-        {
-            SetSNRThreshold(node->get_value<int>("threshold"));
-        }
+        //if (node->has("threshold"))
+        //{
+        //    SetSNRThreshold(node->get_value<int>("threshold"));
+        //}
         if (node->has("min-points"))
         {
             SetMinPoints(node->get_value<int>("min-points"));
@@ -144,28 +143,25 @@ namespace Katydid
     bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum)
         {
 
-            unsigned nComponents = slHeader.GetNComponents();
-            unsigned component = 0;
-
-
+            unsigned nComponents = spectrum.GetNComponents();
 
             if (fCalculateMinBin)
             {
                 SetMinBin(spectrum.GetSpectrum(0)->FindBin(fMinFrequency));
-                KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+                KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
             }
             if (fCalculateMaxBin)
             {
                 SetMaxBin(spectrum.GetSpectrum(0)->FindBin(fMaxFrequency));
-                KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+                KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
             }
 
 
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 uint64_t AcqID = slHeader.GetAcquisitionID(iComponent);
-                std::vector<KTSeqLine::Point> Points;
-                std::vector<KTSeqLine::Point> sorted_Points;
+                std::vector<Point> Points;
+                std::vector<Point> sorted_Points;
                 KTPowerSpectrum slice=spectrum.GetSpectrum(iComponent);
                 //list< LineRef > activeLines;
 
@@ -175,7 +171,7 @@ namespace Katydid
 
                 if (slice == NULL)
                 {
-                    KTERROR(sdlog, "Frequency spectrum pointer (component " << slice << ") is NULL!");
+                    KTERROR(stflog, "Frequency spectrum pointer (component " << slice << ") is NULL!");
                     return false;
                 }
 
@@ -191,10 +187,10 @@ namespace Katydid
                     new_TrimmingLimits += slice(iBin);
                     value = (slice)(iBin);
 
-                    if (value >= fSNRThreshold)
+                    if (fMode == eSNR_Power and value >= fSNRPowerThreshold)
                     {
                         double PointFreq = BinWidth * ((double)iBin + 0.5);
-                        KTSeqLine::Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
+                        Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
                         Points.push_back(new_Point);
                     }
                 }
@@ -205,11 +201,11 @@ namespace Katydid
                 //sorted_Points = std::sort(Points.begin(), Points.end(),std::greater<KTSeqLine::Point>());
 
                 // Loop over the high power points
-                this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits);
+                this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits, iComponent);
 
 
 
-                list< LineRef >::iterator LineIt = fActiveLines.begin();
+                /*list< LineRef >::iterator LineIt = fActiveLines.begin();
                 while (LineIt != fActiveLines.end())
                 {
                     if (LineIt->LineTrimming)
@@ -218,22 +214,21 @@ namespace Katydid
                     LineIt = fActiveLines.erase(LineIt);
                     }
                 }
-                this->TurnLinesintoTracks(fLines);
+                this->TurnLinesintoTracks(fLines);*/
             }
             return true;
         }
 
 
-    bool KTSeqTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<KTSeqLine::Point>& Points, double& new_TrimmingLimits)
+    bool KTSeqTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)
      {
     	double oldFreq = 0.0, Freq = 0.0, newFreq = 0.0, Amplitude=0.0;
     	unsigned PointBin = 0;
-    	unsigned component = 0;
     	double BinWidth = slice.GetBinWidth();
     	bool match;
 
     	//loop in reverse order (by power)
-    	for(std::vector<KTSeqLine::Point>::iterator PointIt = Points.rbegin(); PointIt != Points.rend(); ++PointIt)
+    	for(std::vector<Point>::iterator PointIt = Points.rbegin(); PointIt != Points.rend(); ++PointIt)
     	{
     	    newFreq = PointIt->fPointFreq;
     	    PointBin = PointIt->fBinInSlice;
@@ -259,7 +254,7 @@ namespace Katydid
     	    }
     	    else
             {
-                KTERROR(sdlog, "Unexpected error while looping over high snr points");
+                KTERROR(stflog, "Unexpected error while looping over high snr points");
                 throw;
             }
 
@@ -271,8 +266,8 @@ namespace Katydid
             {
                 // loop over active lines, sorted by start time
 
-
-                for(std::vector< LineRef >::iterator LineIt = fActiveLines.begin(); LineIt != fActiveLines.end(); ++LineIt)
+                std::vector< LineRef >::iterator LineIt = fActiveLines.begin();
+                while( LineIt != fActiveLines.end())
          		{
 
                     if (LineIt->fEndTimeInRunC>Points[PointBin].fTimeInRunC+fTimeGapTolerance)
@@ -281,7 +276,8 @@ namespace Katydid
 
                         if (LineIt->fNPoints > fMinPoints and LineIt->fSlope > fMinSlope)
                         {
-                            fLines.push_back(*LineIt);
+                            //fLines.push_back(*LineIt);
+                            this->EmitPreCandidate(*LineIt, component);
                         }
                         LineIt = fActiveLines.erase(LineIt);
                     }
@@ -289,6 +285,7 @@ namespace Katydid
                     {
                         LineIt->InsertPoint(*PointIt, new_TrimmingLimits);
                         match = true;
+                        LineIt++;
                     }
 
                     else
@@ -297,6 +294,7 @@ namespace Katydid
                         new_Line.InsertPoint(*PointIt, new_TrimmingLimits);
                         fActiveLines.push_back(new_Line);
                         match = true;
+                        LineIt++;
                     }
          		}
 
@@ -306,8 +304,42 @@ namespace Katydid
          return true;
      }
 
+    bool KTSeqTrackFinder::EmitPreCandidate(LineRef Line, unsigned component)
+    {
+        // Set up new data object
+        Nymph::KTDataPtr data( new Nymph::KTData() );
+        KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
+        newTrack.SetComponent( component );
+        newTrack.SetTrackID(fNLines);
+        fNLines++;
 
-    void KTSeqTrackFinder::SearchTrueLinePoint(KTSeqLine::Point& Point, KTPowerSpectrum& slice)
+        newTrack.SetStartTimeInRunC( Line.fStartTimeInRunC );
+        newTrack.SetEndTimeInRunC( Line.fStartTimeInRunC );
+        newTrack.SetStartFrequency( Line.fStartFrequency );
+        newTrack.SetEndFrequency( Line.fEndFrequency );
+        newTrack.SetSlope(Line.fSlope);
+
+
+        // Process & emit new track
+
+        KTINFO(stflog, "Now processing PreCandidates");
+        ProcessNewTrack( newTrack );
+
+        KTDEBUG(stflog, "Emitting track signal");
+        fTrackSignal( data );
+
+        return true;
+    }
+
+    void KTSeqTrackFinder::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
+    {
+        myNewTrack.SetTimeLength( myNewTrack.GetEndTimeInRunC() - myNewTrack.GetStartTimeInRunC() );
+        myNewTrack.SetFrequencyWidth( myNewTrack.GetEndFrequency() - myNewTrack.GetStartFrequency() );
+        //myNewTrack.SetSlope( myNewTrack.GetFrequencyWidth() / myNewTrack.GetTimeLength() );
+        myNewTrack.SetIntercept( myNewTrack.GetStartFrequency() - myNewTrack.GetSlope() * myNewTrack.GetStartTimeInRunC() );
+    }
+
+    void KTSeqTrackFinder::SearchTrueLinePoint(Point& Point, KTPowerSpectrum& slice)
     {
         double Delta = fConvergeDelta + 1.0;
         unsigned loop_counter = 0;
