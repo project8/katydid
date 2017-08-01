@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.6.7)
+project (Katydid VERSION 2.7.1)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -229,6 +229,9 @@ if (Katydid_USE_MONARCH)
     else (Monarch_BUILD_MONARCH3)
         remove_definitions(-DUSE_MONARCH3)
     endif (Monarch_BUILD_MONARCH3)
+    # we need the definitions for HAS_ATTR_IFC and HAS_GRP_IFC from Monarch to use the proper class interfaces in M3Header and M3Stream
+    set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} APPEND PROPERTY COMPILE_DEFINITIONS ${Monarch_COMPILE_DEFINITIONS} )
+    message(STATUS "Monarch compile definitions: ${Monarch_COMPILE_DEFINITIONS}")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
     add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)

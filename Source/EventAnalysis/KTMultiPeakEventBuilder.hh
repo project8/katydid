@@ -2,7 +2,7 @@
  @file KTMultiPeakEventBuilder.hh
  @brief Contains KTMultiPeakEventBuilder
  @details Groups tracks into events
- @author: N.S. Oblath
+ @author: N.S. Oblath, B.H. LaRoque
  @date: Dec 7, 2015
  */
 
@@ -26,28 +26,36 @@
 
 namespace Katydid
 {
-    
+
     /*!
      @class KTMultiPeakEventBuilder
-     @author N.S. Oblath
+     @author N.S. Oblath, B.H. LaRoque
 
      @brief Builds multi-peak tracks into events.
 
      @details
-     Groups MPT structures into MPT events by matching head/tail timestamps within a tolerance.
+     Iterates over multi-peak track objects, each with a pre-determined value for the start and stop in both frequency and in time.
+     Tracks which have both a start time and end time in common (within "sideband-time-tol") are grouped into a multi-peak object.
+     Tracks which share a start or stop time, but not both, are also grouped, and the unknown topology attribute is set to true,
+     indicating that reconstruction is suspect.
+     All input tracks are grouped into a multi-peak object (some of which may only contain a single line).
+     Multi-peak tracks are then grouped into events, where two tracks are in the same event if the start of one is within jump-time-tol of the other.
 
      Configuration name: "multi-peak-event-builder"
 
      Available configuration values:
-     - "jump-time-tol": double -- maximum difference in time between two MPT structures to combine into an event
+     - "sideband-time-tol": double -- For an existing multi-peak track, a new track has the same start/end if it starts/ends within sideband-time-tol of the existing object.
+        units match the units of start time and end time of the input track object, should be seconds
+     - "jump-time-tol": double -- Given two multi-peak track objects, if the start of the second is within jump-time-tol of the first, they are grouped into an event.
+        units match the units of start time and end time of the input track object, should be seconds
 
      Slots:
-     - "mpt": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds group of tracks to the internally-stored set of points; Requires KTMultiPeakTrackData; Adds nothing
+     - "mpt": void (KTDataPtr) -- If this is a new acquisition; Adds group of tracks to the internally-stored set of points; Requires KTMultiPeakTrackData; Adds nothing
      - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "event": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KTMultiTrackEventData.
-     - "mpt": void (shared_ptr<KTData>) -- Emitted for each MPT within an event; Guarantees KTMultiPeakTrackData. Note: fUnknownEventTopology from the original MPT is not preserved in this signal; each MPT will have the same value of fUnknownEventTopology as the multi-peak event.
+     - "event": void (KTDataPtr) -- Emitted for each event (set of multi-peak tracks) found; Guarantees KTMultiTrackEventData.
+     - "mpt": void (KTDataPtr) -- Emitted for each MPT within an event; Guarantees KTMultiPeakTrackData. Note: fUnknownEventTopology from the original MPT is not preserved in this signal; each MPT will have the same value of fUnknownEventTopology as the multi-peak event.
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
