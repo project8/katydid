@@ -36,30 +36,30 @@ namespace Katydid
 
     KTSeqTrackFinder::KTSeqTrackFinder(const std::string& name) :
             KTProcessor(name),
-			fMode('SNR'),
-			fTrimmingFactor(8.8),
-			fLinePowerWidth(4),
-			fPointAmplitudeAfterVisit(0),
+            fMode('SNR'),
+            fTrimmingFactor(8.8),
+            fLinePowerWidth(4),
+            fPointAmplitudeAfterVisit(0),
             fMinFreqBinDistance(10),
             fTimeGapTolerance(0.5*pow(10,-3)),
             fFrequencyAcceptance(56166.0528183),
             fSearchRadius(6),
             fConvergeDelta(1.5),
-			fSNRPowerThreshold(6.),
-			fMinPoints(2),
-			fMinSlope(0.0),
-			fMinBin(0),
-			fMaxBin(1),
-			fMinFrequency(0.),
-			fMaxFrequency(1.),
-			fCalculateMinBin(true),
-			fCalculateMaxBin(true),
-			fActiveLines(),
-			fNLines(0),
-			//fnew_Lines(),
-			fTrackSignal("pre-candidate", this),
-			//fDoneSignal("seq-track-finding-done", this),
-			fSeqTrackSlot("ps_in", this, &KTSeqTrackFinder::PointLineAssignment)
+            fSNRPowerThreshold(6.),
+            fMinPoints(2),
+            fMinSlope(0.0),
+            fMinBin(0),
+            fMaxBin(1),
+            fMinFrequency(0.),
+            fMaxFrequency(1.),
+            fCalculateMinBin(true),
+            fCalculateMaxBin(true),
+            fActiveLines(),
+            fNLines(0),
+            //fnew_Lines(),
+            fTrackSignal("pre-candidate", this),
+            //fDoneSignal("seq-track-finding-done", this),
+            fSeqTrackSlot("ps_in", this, &KTSeqTrackFinder::PointLineAssignment)
     {
     }
 
@@ -349,26 +349,25 @@ namespace Katydid
         double frequency = Point.fPointFreq;
         double amplitude = Point.fAmplitude;
         unsigned frequencybin = Point.fBinInSlice;
-        double old_frequency;
+        double old_frequencybin;
 
 
         while(std::abs(Delta) > fConvergeDelta and loop_counter < max_iterations)
         {
             loop_counter++;
 
-            old_frequency = frequency;
+            old_frequencybin = frequencybin;
 
             if (frequencybin > fMinBin + fSearchRadius and frequencybin < fMaxBin - fSearchRadius)
             {
                 this-> WeightedAverage(slice, frequencybin, frequency);
+                Delta = std::abs(frequencybin - old_frequencybin);
             }
             else
             {
                 Delta = 0.0;
                 amplitude = 0.0;
             }
-
-            Delta = std::abs(frequency - old_frequency);
         }
 
         // Calculate "true" line amplitude in slice by taking mean of neighboring points

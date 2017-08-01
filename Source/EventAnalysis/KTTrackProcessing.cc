@@ -41,9 +41,7 @@ namespace Katydid
             fProcTrackAssError(0.),
             fTrackSignal("track", this),
             fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
-            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal),
-            ftrackID(0),
-            fTrackSignal("track", this)
+            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
     {
     }
 
