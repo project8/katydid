@@ -67,6 +67,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, MinBin);
             MEMBERVARIABLE(bool, CalculateMinBin);
             MEMBERVARIABLE(unsigned, MaxBin);
+            MEMBERVARIABLE(double, BinWidth);
             MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
@@ -97,10 +98,10 @@ namespace Katydid
 
 
 
-            bool PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
-            void SearchTrueLinePoint(Point&, KTPowerSpectrum& slice);
-            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& FrequencyBin, double& Frequency);
+            void PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
+            bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
+            void SearchTrueLinePoint(Point&, std::vector<double>& slice);
+            void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef Line, unsigned component);
             void SetSNRPowerThreshold(double thresh);

@@ -48,6 +48,7 @@ namespace Katydid
             fMinSlope(0.0),
             fMinBin(0),
             fMaxBin(1),
+            fBinWidth(0.0),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fCalculateMinBin(true),
@@ -138,7 +139,7 @@ namespace Katydid
     }
 
 
-    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum)
+    void KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum)
         {
 
             unsigned nComponents = spectrum.GetNComponents();
@@ -160,10 +161,13 @@ namespace Katydid
                 uint64_t AcqID = slHeader.GetAcquisitionID(iComponent);
                 std::vector<Point> Points;
                 std::vector<Point> sorted_Points;
-                KTPowerSpectrum slice=spectrum.GetSpectrum(iComponent);
+                KTPowerSpectrum* power_spectrum=spectrum.GetSpectrum(iComponent);
+
                 //list< LineRef > activeLines;
 
-                double BinWidth = slice.GetBinWidth();
+                fBinWidth = power_spectrum->GetBinWidth();
+                std::vector< double > slice(power_spectrum->GetNFrequencyBins, 0.0);
+
                 double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
                 double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
 
@@ -178,11 +182,12 @@ namespace Katydid
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
                     new_TrimmingLimits += slice(iBin);
-                    value = (slice)(iBin);
+                    value = (power_spectrum)(iBin);
+                    slice[iBin] = value;
 
                     if (fMode == eSNR_Power and value >= fSNRPowerThreshold)
                     {
-                        double PointFreq = BinWidth * ((double)iBin + 0.5);
+                        double PointFreq = fBinWidth * ((double)iBin + 0.5);
                         Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
                         Points.push_back(new_Point);
                     }
@@ -209,19 +214,17 @@ namespace Katydid
                 }
                 this->TurnLinesintoTracks(fLines);*/
             }
-            return true;
         }
 
 
-    bool KTSeqTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)
+    bool KTSeqTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)
      {
     	double oldFreq = 0.0, Freq = 0.0, newFreq = 0.0, Amplitude=0.0;
     	unsigned PointBin = 0;
-    	double BinWidth = slice.GetBinWidth();
     	bool match;
 
     	//loop in reverse order (by power)
-    	for(std::vector<Point>::iterator PointIt = Points.rbegin(); PointIt != Points.rend(); ++PointIt)
+    	for(std::vector<Point>::reverse_iterator PointIt = Points.rbegin(); PointIt != Points.rend(); ++PointIt)
     	{
     	    newFreq = PointIt->fPointFreq;
     	    PointBin = PointIt->fBinInSlice;
@@ -231,11 +234,11 @@ namespace Katydid
     	    {
     	        continue;
     	    }
-    	    else if (std::abs(newFreq - oldFreq) < fMinFreqBinDistance*BinWidth)
+    	    else if (std::abs(newFreq - oldFreq) < fMinFreqBinDistance*fBinWidth)
     	    {
     	        continue;
     	    }
-    	    else if (std::abs(newFreq - oldFreq) >= fMinFreqBinDistance*BinWidth)
+    	    else if (std::abs(newFreq - oldFreq) >= fMinFreqBinDistance*fBinWidth)
     	    {
     	        oldFreq = Freq;
     	        Freq = newFreq;
@@ -332,11 +335,11 @@ namespace Katydid
         myNewTrack.SetIntercept( myNewTrack.GetStartFrequency() - myNewTrack.GetSlope() * myNewTrack.GetStartTimeInRunC() );
     }
 
-    void KTSeqTrackFinder::SearchTrueLinePoint(Point& Point, KTPowerSpectrum& slice)
+    void KTSeqTrackFinder::SearchTrueLinePoint(Point& Point, std::vector<double>& slice)
     {
         double Delta = fConvergeDelta + 1.0;
         unsigned loop_counter = 0;
-        double dF = slice.GetBinWidth();
+        double dF = fBinWidth;
         int max_iterations = 10;
 
         double frequency = Point.fPointFreq;
@@ -370,8 +373,8 @@ namespace Katydid
             amplitude = 0;
             for (int iBin = frequencybin - fLinePowerWidth; iBin < frequencybin + fLinePowerWidth + 1; iBin++)
             {
-                amplitude += slice(iBin);
-                slice(iBin)=0.0;
+                amplitude += slice[iBin];
+                slice[iBin]=0.0;
             }
         }
         // Set larger area to zero if possible
@@ -379,7 +382,7 @@ namespace Katydid
                 {
                     for (int iBin = frequencybin - fSearchRadius; iBin < frequencybin + fSearchRadius + 1; iBin++)
                     {
-                        slice(iBin)=0.0;
+                        slice[iBin]=0.0;
                     }
                 }
         // Correct values currently still stored in Point
@@ -391,9 +394,8 @@ namespace Katydid
 
 
 
-    inline void KTSeqTrackFinder::WeightedAverage(const KTPowerSpectrum& slice, unsigned& FrequencyBin, double& Frequency)
+    inline void KTSeqTrackFinder::WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency)
     {
-        double BinWidth = slice.GetBinWidth();
 
         unsigned new_FrequencyBin = 0;
         double new_Frequency = 0.0;
@@ -406,7 +408,7 @@ namespace Katydid
             wSum +=slice(FrequencyBin+iBin);
         }
         new_FrequencyBin = unsigned(weightedBin/wSum);
-        new_Frequency = BinWidth * ((double)new_FrequencyBin + 0.5);
+        new_Frequency = fBinWidth * ((double)new_FrequencyBin + 0.5);
 
         Frequency = new_Frequency;
         FrequencyBin = new_FrequencyBin;
