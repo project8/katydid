@@ -98,7 +98,7 @@ namespace Katydid
 
 
 
-            void PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
+            bool PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
             bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
             void SearchTrueLinePoint(Point&, std::vector<double>& slice);
             void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);

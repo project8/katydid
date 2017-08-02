@@ -139,7 +139,7 @@ namespace Katydid
     }
 
 
-    void KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum)
+    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum)
         {
 
             unsigned nComponents = spectrum.GetNComponents();
@@ -161,12 +161,12 @@ namespace Katydid
                 uint64_t AcqID = slHeader.GetAcquisitionID(iComponent);
                 std::vector<Point> Points;
                 std::vector<Point> sorted_Points;
-                KTPowerSpectrum* power_spectrum=spectrum.GetSpectrum(iComponent);
-
+                const KTPowerSpectrum* power_spectrum=spectrum.GetSpectrum(iComponent);
+                //unsigned nBinsTotal = power_spectrum->GetNFrequencyBins;
                 //list< LineRef > activeLines;
 
                 fBinWidth = power_spectrum->GetBinWidth();
-                std::vector< double > slice(power_spectrum->GetNFrequencyBins, 0.0);
+                std::vector< double > slice(fMaxBin, 0.0);
 
                 double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
                 double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
@@ -181,9 +181,9 @@ namespace Katydid
                 // loop over bins, checking against the threshold
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
-                    new_TrimmingLimits += slice(iBin);
-                    value = (power_spectrum)(iBin);
+                    value = (*power_spectrum)(iBin);
                     slice[iBin] = value;
+                    new_TrimmingLimits += value;
 
                     if (fMode == eSNR_Power and value >= fSNRPowerThreshold)
                     {
@@ -214,6 +214,7 @@ namespace Katydid
                 }
                 this->TurnLinesintoTracks(fLines);*/
             }
+            return true;
         }
 
 
@@ -404,8 +405,8 @@ namespace Katydid
 
         for (int iBin = -fSearchRadius; iBin <= fSearchRadius; iBin++)
         {
-            weightedBin += double(FrequencyBin+iBin)*slice(FrequencyBin+iBin);
-            wSum +=slice(FrequencyBin+iBin);
+            weightedBin += double(FrequencyBin+iBin)*slice[FrequencyBin+iBin];
+            wSum +=slice[FrequencyBin+iBin];
         }
         new_FrequencyBin = unsigned(weightedBin/wSum);
         new_Frequency = fBinWidth * ((double)new_FrequencyBin + 0.5);
