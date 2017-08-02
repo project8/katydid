@@ -45,10 +45,7 @@ namespace Katydid
             virtual ~KTSeqTrackFinder();
 
             bool Configure(const scarab::param_node* node);
-            //const std::set< Nymph::KTDataPtr >& GetLines() const;
-            //void SetFrequencyRadius(double FreqRad);
-            //void SetTimeDistance(double TimeDistance);
-            //void SetBinDelta(int BinDelta);
+            void SetSNRPowerThreshold(double thresh);
 
         public:
             MEMBERVARIABLE(ThresholdMode, Mode);
@@ -76,35 +73,16 @@ namespace Katydid
 
 
         private:
-            //list< LineRef > fLines;
-            //list< LineRef > fActiveLines;
-            //std::vector< Nymph::KTDataPtr > fnew_Lines;
-            //std::vector< LineRef> fLines;
             std::vector< LineRef> fActiveLines;
 
 
         public:
-           /* unsigned GetMinBin() const;
-            void SetMinBin(unsigned bin);
-            unsigned GetMaxBin() const;
-            void SetMaxBin(unsigned bin);
-            double GetMinFrequency() const;
-            void SetMinFrequency(double freq);
-            double GetMaxFrequency() const;
-            void SetMaxFrequency(double freq);
-            void SetFrequencyRadius(double FreqRad);
-            void SetTimeDistance(double TimeDistance);
-            void SetBinDelta(int BinDelta);*/
-
-
-
-            bool PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum);
+            bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
             bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
             void SearchTrueLinePoint(Point&, std::vector<double>& slice);
             void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef Line, unsigned component);
-            void SetSNRPowerThreshold(double thresh);
 
 
 

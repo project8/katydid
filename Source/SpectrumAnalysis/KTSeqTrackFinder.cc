@@ -139,7 +139,7 @@ namespace Katydid
     }
 
 
-    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum)
+    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum)
         {
 
             unsigned nComponents = spectrum.GetNComponents();
