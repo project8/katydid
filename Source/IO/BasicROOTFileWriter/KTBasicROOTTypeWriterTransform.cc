@@ -20,8 +20,6 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTTimeFrequencyDataPolar.hh"
 #include "KTTimeFrequencyPolar.hh"
-#include "KTScoredSpectrum.hh"
-#include "KTScoredSpectrumData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -71,7 +69,6 @@ namespace Katydid
         fWriter->RegisterSlot("tf-polar-power", this, &KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPower);
         fWriter->RegisterSlot("multi-fs-polar", this, &KTBasicROOTTypeWriterTransform::WriteMultiFSDataPolar);
         fWriter->RegisterSlot("multi-fs-fftw", this, &KTBasicROOTTypeWriterTransform::WriteMultiFSDataFFTW);
-        fWriter->RegisterSlot("scores-1d", this, &KTBasicROOTTypeWriterTransform::WriteScoredSpectrum);
         return;
     }
 
@@ -370,39 +367,7 @@ namespace Katydid
         return;
     }
 
-    //********************
-    //Scored Spectrum Data
-    //********************
 
-    void KTBasicROOTTypeWriterTransform::WriteScoredSpectrum(KTDataPtr data)
-    {
-        if (! data) return;
-
-        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-
-        KTScoredSpectrumData& fsData = data->Of<KTScoredSpectrumData>();
-        unsigned nComponents = fsData.GetNComponents();
-
-        if (! fWriter->OpenAndVerifyFile()) return;
-
-        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
-        {
-            KTScoredSpectrum* spectrum = fsData.GetSpectrum(iChannel);
-            if (spectrum != NULL)
-            {
-                spectrum->ConvertToScoredSpectrum();
-                stringstream conv;
-                conv << "histPS_" << sliceNumber << "_" << iChannel;
-                string histName;
-                conv >> histName;
-                TH1D* scoredSpectrum = KT2ROOT::CreateScoredHistogram(spectrum, histName);
-                scoredSpectrum->SetDirectory(fWriter->GetFile());
-                scoredSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-            }
-        }
-        return;
-    }
     //********************
     // Power Spectrum Data
     //********************

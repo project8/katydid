@@ -9,8 +9,6 @@
 
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
-#include "KTScoredSpectrum.hh"
-#include "KTScoredSpectrumData.hh"
 //#include "KTSliceHeader.hh"
 
 
@@ -20,7 +18,7 @@
 //#include "KTParam.hh"
 
 #include <numeric>
-#include <cmath>;
+#include <cmath>
 
 using std::list;
 using std::set;
@@ -36,7 +34,7 @@ namespace Katydid
 
     KTSeqTrackFinder::KTSeqTrackFinder(const std::string& name) :
             KTProcessor(name),
-            fMode('SNR'),
+            fMode(eSNR_Power),
             fTrimmingFactor(8.8),
             fLinePowerWidth(4),
             fPointAmplitudeAfterVisit(0),
@@ -169,11 +167,6 @@ namespace Katydid
                 double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
                 double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
 
-                if (slice == NULL)
-                {
-                    KTERROR(stflog, "Frequency spectrum pointer (component " << slice << ") is NULL!");
-                    return false;
-                }
 
                 unsigned nBins = fMaxBin - fMinBin + 1;
 

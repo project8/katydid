@@ -55,7 +55,7 @@ namespace Katydid
         vector< double > sumP;
         vector< double > average;
 
-        for (std::vector <KTSeqLine::Point>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
+        for (std::vector <KTSeqLine::LinePoint>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
         {
             bool addToList = true;
             for (unsigned iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
@@ -79,7 +79,7 @@ namespace Katydid
             sumP.push_back(0.);
         }
 
-        for (std::vector<KTSeqLine::Point>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
+        for (std::vector<KTSeqLine::LinePoint>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
         {
             for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
             {
@@ -122,7 +122,7 @@ namespace Katydid
         double weightedSlope = 0.0;
         double wSum = 0.0;
 
-        for(std::vector<Point>::iterator PointIt = fLinePoints.begin(); PointIt != fLinePoints.end(); ++PointIt)
+        for(std::vector<LinePoint>::iterator PointIt = fLinePoints.begin(); PointIt != fLinePoints.end(); ++PointIt)
         {
             if (PointIt->fPointFreq > fStartFrequency)
             {

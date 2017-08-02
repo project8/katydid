@@ -11,7 +11,6 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTProcessedTrackData.hh"
-#include "KTScoredSpectrumData.hh"
 
 #include "TLine.h"
 
@@ -32,7 +31,6 @@ namespace Katydid
             fFSFFTWSpectrograms(),
             fPowerSpectrograms(),
             fPSDSpectrograms(),
-			fScoredSpectrograms(),
             fLineCollection()
     {
     }
@@ -80,7 +78,6 @@ namespace Katydid
         OutputASpectrogramSet(fFSFFTWSpectrograms);
         OutputASpectrogramSet(fPowerSpectrograms);
         OutputASpectrogramSet(fPSDSpectrograms);
-        OutputASpectrogramSet(fScoredSpectrograms);
 
         KTDEBUG("calling output lines")
         OutputLines();
@@ -102,7 +99,6 @@ namespace Katydid
         ClearASpectrogramSet(fFSFFTWSpectrograms);
         ClearASpectrogramSet(fPowerSpectrograms);
         ClearASpectrogramSet(fPSDSpectrograms);
-        ClearASpectrogramSet(fScoredSpectrograms);
 
         ClearLines();
         return;
@@ -116,9 +112,6 @@ namespace Katydid
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
         fWriter->RegisterSlot("proc-track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
         fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
-        fWriter->RegisterSlot("scores-1d", this, &KTROOTSpectrogramTypeWriterTransform::AddScoredSpectrumData);
-        fWriter->RegisterSlot("track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
-
         return;
     }
 
@@ -154,12 +147,6 @@ namespace Katydid
         AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
         return;
     }
-
-    void KTROOTSpectrogramTypeWriterTransform::AddScoredSpectrumData(KTDataPtr data)
-        {
-            AddScoredSpectrumDataCoreHelper< KTScoredSpectrumData >(data, fScoredSpectrograms, "ScoredSpectrogram_");
-            return;
-        }
 
     //*********************
     // Processed Track Data

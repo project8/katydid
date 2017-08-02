@@ -16,6 +16,10 @@
 #include "KTSeqLine.hh"
 #include "KTProcessedTrackData.hh"
 
+#include "KTSliceHeader.hh"
+#include "KTPowerSpectrum.hh"
+#include "KTPowerSpectrumData.hh"
+
 #include <iostream>
 #include <set>
 
@@ -40,7 +44,7 @@ namespace Katydid
             KTSeqTrackFinder(const std::string& name = "seq-clustering");
             virtual ~KTSeqTrackFinder();
 
-            bool KTSeqTrackFinder::Configure(const KTParamNode* node);
+            bool Configure(const scarab::param_node* node);
             //const std::set< Nymph::KTDataPtr >& GetLines() const;
             //void SetFrequencyRadius(double FreqRad);
             //void SetTimeDistance(double TimeDistance);
@@ -79,7 +83,6 @@ namespace Katydid
 
 
         public:
-            bool Configure(const scarab::param_node* node);
            /* unsigned GetMinBin() const;
             void SetMinBin(unsigned bin);
             unsigned GetMaxBin() const;

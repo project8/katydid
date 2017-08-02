@@ -85,7 +85,6 @@ namespace Katydid
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ConvertLineToKTTrack(KTSeqLine& Line);
 
 
         private:
@@ -107,7 +106,6 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
-            Nymph::KTSlotDataOneType< KTSeqLine> fSeqTrackSlot;
 
     };
 

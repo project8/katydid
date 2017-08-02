@@ -14,7 +14,6 @@ set (TRANSFORM_NODICT_HEADERFILES
     KTSincWindow.hh
     KTWindower.hh
     KTWindowFunction.hh
-    KTScore.hh
 )
 
 if (FFTW_FOUND)
@@ -37,7 +36,6 @@ set (TRANSFORM_SOURCEFILES
     KTSincWindow.cc
     KTWindower.cc
     KTWindowFunction.cc
-    KTScore.cc
 )
 
 if (FFTW_FOUND)

@@ -14,8 +14,6 @@
 #include "KTSmooth.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
-#include "KTLines.hh"
-#include "KTSeqLine.hh"
 
 #include <limits>
 #include <vector>
