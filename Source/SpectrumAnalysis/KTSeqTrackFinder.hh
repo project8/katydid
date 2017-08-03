@@ -87,6 +87,7 @@ namespace Katydid
             void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef Line, unsigned component);
+            void AcquisitionIsOver();
 
 
 
@@ -96,7 +97,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTrackSignal;
-            Nymph::KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************
             // Slots
@@ -106,6 +107,7 @@ namespace Katydid
             //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
             Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
             Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
+            Nymph::KTSlotDone fDoneSlot;
 
     };
     inline void KTSeqTrackFinder::SetSNRPowerThreshold(double thresh)

@@ -57,9 +57,11 @@ namespace Katydid
             fNLines(0),
             //fnew_Lines(),
             fTrackSignal("pre-candidate", this),
+            fClusterDoneSignal("clustering-done", this),
             fGainVarSlot("gv", this, &KTSeqTrackFinder::SetPreCalcGainVar),
             //fPSPreCalcSlot("ps-pre", this, &KTSeqTrack::PointLineAssignment),
-            fPSSlot("ps_in", this, &KTSeqTrackFinder::RunSequentialTrackFinding)
+            fPSSlot("ps_in", this, &KTSeqTrackFinder::RunSequentialTrackFinding),
+            fDoneSlot("done", this, &KTSeqTrackFinder::AcquisitionIsOver, &fClusterDoneSignal)
     {
     }
 
@@ -166,7 +168,7 @@ namespace Katydid
             KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
         }
 
-
+        KTDEBUG(stflog, "nComponents is " << nComponents);
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             uint64_t AcqID = slHeader.GetAcquisitionID(iComponent);
@@ -430,6 +432,26 @@ namespace Katydid
 
         Frequency = new_Frequency;
         FrequencyBin = new_FrequencyBin;
+    }
+
+    void KTSeqTrackFinder::AcquisitionIsOver()
+    {
+        unsigned component = 0;
+        // loop over active lines, sorted by start time
+
+        std::vector< LineRef >::iterator LineIt = fActiveLines.begin();
+        while( LineIt != fActiveLines.end())
+        {
+
+            LineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+
+            if (LineIt->fNPoints > fMinPoints and LineIt->fSlope > fMinSlope)
+            {
+                //fLines.push_back(*LineIt);
+                this->EmitPreCandidate(*LineIt, component);
+            }
+            LineIt = fActiveLines.erase(LineIt);
+        }
     }
 
 
