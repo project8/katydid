@@ -57,8 +57,9 @@ namespace Katydid
             fNLines(0),
             //fnew_Lines(),
             fTrackSignal("pre-candidate", this),
-            //fDoneSignal("seq-track-finding-done", this),
-            fSeqTrackSlot("ps_in", this, &KTSeqTrackFinder::PointLineAssignment)
+            fGainVarSlot("gv", this, &KTSeqTrackFinder::SetPreCalcGainVar),
+            //fPSPreCalcSlot("ps-pre", this, &KTSeqTrack::PointLineAssignment),
+            fPSSlot("ps_in", this, &KTSeqTrackFinder::RunSequentialTrackFinding)
     {
     }
 
@@ -138,84 +139,100 @@ namespace Katydid
         return true;
     }
 
+    bool KTSeqTrackFinder::SetPreCalcGainVar(KTGainVariationData& gvData)
+    {
+        fGVData = gvData;
+        return true;
+    }
 
-    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum)
+    bool KTSeqTrackFinder::RunSequentialTrackFinding(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum)
+    {
+        return this->PointLineAssignment(slHeader, spectrum, fGVData);
+    }
+
+    bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData)
+    {
+
+        unsigned nComponents = spectrum.GetNComponents();
+
+        if (fCalculateMinBin)
         {
+            SetMinBin(spectrum.GetSpectrum(0)->FindBin(fMinFrequency));
+            KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(spectrum.GetSpectrum(0)->FindBin(fMaxFrequency));
+            KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
+        }
 
-            unsigned nComponents = spectrum.GetNComponents();
 
-            if (fCalculateMinBin)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            uint64_t AcqID = slHeader.GetAcquisitionID(iComponent);
+            const KTPowerSpectrum* power_spectrum=spectrum.GetSpectrum(iComponent);
+            KTSpline* spline = fGVData.GetSpline(iComponent);
+
+            unsigned nBins = fMaxBin - fMinBin + 1;
+            double freqMin = power_spectrum->GetBinLowEdge(fMinBin);
+            double freqMax = power_spectrum->GetBinLowEdge(fMaxBin) + power_spectrum->GetBinWidth();
+            KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+
+
+            fBinWidth = power_spectrum->GetBinWidth();
+            std::vector< double > slice(fMaxBin, 0.0);
+
+            double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
+            double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
+
+
+
+
+            std::vector<Point> Points;
+            std::vector<Point> sorted_Points;
+            double new_TrimmingLimits;
+            double value;
+
+
+            // loop over bins, checking against the threshold
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                SetMinBin(spectrum.GetSpectrum(0)->FindBin(fMinFrequency));
-                KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
-            }
-            if (fCalculateMaxBin)
-            {
-                SetMaxBin(spectrum.GetSpectrum(0)->FindBin(fMaxFrequency));
-                KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
-            }
+                value = (*power_spectrum)(iBin);
+                slice[iBin] = value;
+                new_TrimmingLimits += value;
+                double threshold = fSNRPowerThreshold * (*splineImp)(iBin - fMinBin);
 
-
-            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
-            {
-                uint64_t AcqID = slHeader.GetAcquisitionID(iComponent);
-                std::vector<Point> Points;
-                std::vector<Point> sorted_Points;
-                const KTPowerSpectrum* power_spectrum=spectrum.GetSpectrum(iComponent);
-                //unsigned nBinsTotal = power_spectrum->GetNFrequencyBins;
-                //list< LineRef > activeLines;
-
-                fBinWidth = power_spectrum->GetBinWidth();
-                std::vector< double > slice(fMaxBin, 0.0);
-
-                double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
-                double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
-
-
-                unsigned nBins = fMaxBin - fMinBin + 1;
-
-                double new_TrimmingLimits;
-                double value;
-
-
-                // loop over bins, checking against the threshold
-                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                if (fMode == eSNR_Power and value >= threshold)
                 {
-                    value = (*power_spectrum)(iBin);
-                    slice[iBin] = value;
-                    new_TrimmingLimits += value;
-
-                    if (fMode == eSNR_Power and value >= fSNRPowerThreshold)
-                    {
-                        double PointFreq = fBinWidth * ((double)iBin + 0.5);
-                        Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
-                        Points.push_back(new_Point);
-                    }
+                    double PointFreq = fBinWidth * ((double)iBin + 0.5);
+                    Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
+                    Points.push_back(new_Point);
                 }
+            }
 
-                new_TrimmingLimits = new_TrimmingLimits/nBins;
+            new_TrimmingLimits = new_TrimmingLimits/nBins;
 
-                // sort points by power
-                //sorted_Points = std::sort(Points.begin(), Points.end(),std::greater<KTSeqLine::Point>());
+            // sort points by power
+            //sorted_Points = std::sort(Points.begin(), Points.end(),std::greater<KTSeqLine::Point>());
 
-                // Loop over the high power points
-                this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits, iComponent);
+            // Loop over the high power points
+            this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits, iComponent);
 
 
 
-                /*list< LineRef >::iterator LineIt = fActiveLines.begin();
-                while (LineIt != fActiveLines.end())
+            /*list< LineRef >::iterator LineIt = fActiveLines.begin();
+            while (LineIt != fActiveLines.end())
+            {
+                if (LineIt->LineTrimming)
                 {
-                    if (LineIt->LineTrimming)
-                    {
                     fLines[iComponent].insert(*LineIt);
                     LineIt = fActiveLines.erase(LineIt);
-                    }
                 }
-                this->TurnLinesintoTracks(fLines);*/
             }
-            return true;
+            this->TurnLinesintoTracks(fLines);*/
         }
+        return true;
+    }
 
 
     bool KTSeqTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)

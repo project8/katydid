@@ -19,6 +19,7 @@
 #include "KTSliceHeader.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTGainVariationData.hh"
 
 #include <iostream>
 #include <set>
@@ -39,6 +40,7 @@ namespace Katydid
                 eSigma
             };
             double fSNRPowerThreshold;
+            KTGainVariationData fGVData;
 
         public:
             KTSeqTrackFinder(const std::string& name = "seq-clustering");
@@ -77,7 +79,9 @@ namespace Katydid
 
 
         public:
-            bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
+            bool SetPreCalcGainVar(KTGainVariationData& gvData);
+            bool RunSequentialTrackFinding(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
+            bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData);
             bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
             void SearchTrueLinePoint(Point&, std::vector<double>& slice);
             void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
@@ -99,7 +103,9 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
+            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
+            Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
 
     };
     inline void KTSeqTrackFinder::SetSNRPowerThreshold(double thresh)
