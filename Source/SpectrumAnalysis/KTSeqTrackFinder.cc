@@ -388,6 +388,7 @@ namespace Katydid
 
             newTrack.SetStartTimeInRunC( Line.fStartTimeInRunC );
             newTrack.SetEndTimeInRunC( Line.fEndTimeInRunC );
+            newTrack.SetStartTimeInAcq( Line.fStartTimeInAcq);
             newTrack.SetStartFrequency( Line.fStartFrequency );
             newTrack.SetEndFrequency( Line.fEndFrequency );
             newTrack.SetSlope(Line.fSlope);
