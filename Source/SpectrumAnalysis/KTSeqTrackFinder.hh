@@ -53,12 +53,12 @@ namespace Katydid
             MEMBERVARIABLE(ThresholdMode, Mode);
             //MEMBERVARIABLE(double, SNRPowerThreshold);
             MEMBERVARIABLE(double, TrimmingFactor);
-            MEMBERVARIABLE(unsigned, LinePowerWidth);
+            MEMBERVARIABLE(int, LinePowerWidth);
             MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
             MEMBERVARIABLE(unsigned, MinFreqBinDistance);
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
-            MEMBERVARIABLE(unsigned, SearchRadius);
+            MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
             //MEMBERVARIABLE(double, SNRThreshold);
             MEMBERVARIABLE(unsigned, MinPoints);

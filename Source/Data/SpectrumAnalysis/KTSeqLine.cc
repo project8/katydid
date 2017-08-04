@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-	KTLOGGER(sclog, "KTSeqLine");
+	KTLOGGER(seqlog, "KTSeqLine");
 
 
 
@@ -37,7 +37,10 @@ namespace Katydid
 
     void LineRef::InsertPoint(const Point& Point, const double& new_trimming_limits)
     {
+        KTDEBUG(seqlog, "Insert point")
         fTrimmingLimits.push_back(new_trimming_limits);
+        fAmplitudeList.push_back(Point.fAmplitude);
+
         LinePoint newPoint(Point.fBinInSlice, Point.fPointFreq, Point.fTimeInAcq, Point.fTimeInRunC, Point.fAmplitude, Point.fAcquisitionID, Point.fComponent);
         fLinePoints.push_back(newPoint);
 
@@ -91,11 +94,11 @@ namespace Katydid
             }
         }
 
-        KTDEBUG(sllog, "Averaging");
+        KTDEBUG(seqlog, "Averaging");
         for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
         {
             average.push_back(sumPf[iTimeBin]/sumP[iTimeBin]);
-            KTDEBUG(sllog, timeBinInAcq[iTimeBin] << '\t' << average[iTimeBin]);
+            KTDEBUG(seqlog, timeBinInAcq[iTimeBin] << '\t' << average[iTimeBin]);
         }
 
         // Determining the slope and intercept from Chi-2 minimization
@@ -113,46 +116,67 @@ namespace Katydid
         double slope = (sumXY*sumOne-sumY*sumX)/(sumXX*sumOne-sumX*sumX);
         double intercept = sumY/sumOne-slope*sumX/sumOne;
         double rho = -sumX/sqrt(sumXX*sumOne); // correlation coefficient between slope and intercept
-        KTDEBUG(sllog, "Weighted average results: \n" <<
+        KTDEBUG(seqlog, "Weighted average results: \n" <<
                 "\tSlope: " << '\t' << slope << '\n' <<
                 "\tIntercept: " << '\t' << intercept);
-        KTDEBUG(sllog, "Amplitude of the track: " << amplitudeSum );
+        KTDEBUG(seqlog, "Amplitude of the track: " << amplitudeSum );
         */
 
+
+
+
+        KTDEBUG(seqlog, "Calulcating line slope")
         double weightedSlope = 0.0;
         double wSum = 0.0;
 
-        for(std::vector<LinePoint>::iterator PointIt = fLinePoints.begin(); PointIt != fLinePoints.end(); ++PointIt)
+        if (fNPoints > 1)
         {
-            if (PointIt->fPointFreq > fStartFrequency)
+            for(std::vector<LinePoint>::iterator PointIt = fLinePoints.begin(); PointIt != fLinePoints.end(); ++PointIt)
             {
-                weightedSlope += (PointIt->fPointFreq - fStartFrequency)/(PointIt->fTimeInAcq - fStartTimeInAcq) * PointIt->fAmplitude;
-                wSum += PointIt->fAmplitude;
+                if (PointIt->fPointFreq > fStartFrequency)
+                {
+                    weightedSlope += (PointIt->fPointFreq - fStartFrequency)/(PointIt->fTimeInAcq - fStartTimeInAcq) * PointIt->fAmplitude;
+                    wSum += PointIt->fAmplitude;
+                }
             }
-            weightedSlope /= wSum;
+            fSlope = weightedSlope/wSum;
+        }
+        else
+        {
+            fSlope = 3.0*pow(10.0, 9.0);
         }
     }
 
     void LineRef::LineTrimming(const double& TrimmingFactor, const unsigned& MinPoints)
     {
-        while (fAmplitudeList.back() < TrimmingFactor * fTrimmingLimits.back() and fNPoints >= MinPoints)
+
+        if (!fAmplitudeList.empty())
         {
-            fAmplitudeList.erase(fAmplitudeList.end() -1);
-            fTrimmingLimits.erase(fTrimmingLimits.end() -1);
-            fLinePoints.erase(fLinePoints.end() - 1);
-        }
-        while (fAmplitudeList.front() < TrimmingFactor * fTrimmingLimits.front() and fNPoints >= MinPoints)
-        {
-            fAmplitudeList.erase(fAmplitudeList.begin());
-            fTrimmingLimits.erase(fTrimmingLimits.begin());
-            fLinePoints.erase(fLinePoints.begin());
-        }
+            while (fAmplitudeList.back() < TrimmingFactor * fTrimmingLimits.back() and fNPoints >= MinPoints)
+            {
+                KTDEBUG(seqlog, "Entered upper trimming loop");
+                fAmplitudeList.erase(fAmplitudeList.end() -1);
+                fTrimmingLimits.erase(fTrimmingLimits.end() -1);
+                fLinePoints.erase(fLinePoints.end() - 1);
+                fNPoints = fLinePoints.size();
+            }
+            while (fAmplitudeList.front() < TrimmingFactor * fTrimmingLimits.front() and fNPoints >= MinPoints)
+            {
+                KTDEBUG(seqlog, "Entered lower trimming loop");
+                fAmplitudeList.erase(fAmplitudeList.begin());
+                fTrimmingLimits.erase(fTrimmingLimits.begin());
+                fLinePoints.erase(fLinePoints.begin());
+                fNPoints = fLinePoints.size();
+            }
+        }        
         this->UpdateLineParameters();
         this->CalculateSlope();
     }
+        
 
     inline void (LineRef::UpdateLineParameters())
     {
+        KTDEBUG(seqlog, "Updating line parameters");
         fAcquisitionID = fLinePoints.front().fAcquisitionID;
         fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
         fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
@@ -172,18 +196,12 @@ namespace Katydid
             {
                 fStartTimeInRunC = PointIt->fTimeInRunC;
                 fStartTimeInAcq = PointIt->fTimeInAcq;
+                fStartFrequency = PointIt->fPointFreq;
             }
             if (PointIt->fTimeInRunC > fEndTimeInRunC)
             {
                 fEndTimeInRunC = PointIt->fTimeInRunC;
                 fEndTimeInAcq = PointIt->fTimeInAcq;
-            }
-            if (PointIt->fPointFreq < fStartFrequency)
-            {
-                fStartFrequency = PointIt->fPointFreq;
-            }
-            if (PointIt->fPointFreq > fEndFrequency)
-            {
                 fEndFrequency = PointIt->fPointFreq;
             }
         }

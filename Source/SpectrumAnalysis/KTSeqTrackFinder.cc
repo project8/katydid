@@ -27,7 +27,7 @@ using std::vector;
 
 namespace Katydid
 {
-	KTLOGGER(stflog, "DansTrackFinder");
+    KTLOGGER(stflog, "DansTrackFinder");
 
 
     KT_REGISTER_PROCESSOR(KTSeqTrackFinder, "dans-track-finding-algorithm");
@@ -35,7 +35,7 @@ namespace Katydid
     KTSeqTrackFinder::KTSeqTrackFinder(const std::string& name) :
             KTProcessor(name),
             fMode(eSNR_Power),
-            fTrimmingFactor(8.8),
+            fTrimmingFactor(19.8),
             fLinePowerWidth(4),
             fPointAmplitudeAfterVisit(0),
             fMinFreqBinDistance(10),
@@ -60,7 +60,7 @@ namespace Katydid
             fClusterDoneSignal("clustering-done", this),
             fGainVarSlot("gv", this, &KTSeqTrackFinder::SetPreCalcGainVar),
             //fPSPreCalcSlot("ps-pre", this, &KTSeqTrack::PointLineAssignment),
-            fPSSlot("ps_in", this, &KTSeqTrackFinder::RunSequentialTrackFinding),
+            fPSSlot("ps-in", this, &KTSeqTrackFinder::RunSequentialTrackFinding),
             fDoneSlot("done", this, &KTSeqTrackFinder::AcquisitionIsOver, &fClusterDoneSignal)
     {
     }
@@ -149,7 +149,8 @@ namespace Katydid
 
     bool KTSeqTrackFinder::RunSequentialTrackFinding(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum)
     {
-        return this->PointLineAssignment(slHeader, spectrum, fGVData);
+        this->PointLineAssignment(slHeader, spectrum, fGVData);
+        return true;
     }
 
     bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData)
@@ -182,16 +183,18 @@ namespace Katydid
 
 
             fBinWidth = power_spectrum->GetBinWidth();
-            std::vector< double > slice(fMaxBin, 0.0);
-
+            KTDEBUG(stflog, "fBinWidth is " << fBinWidth);
+            std::vector< double > slice(fMaxBin+1);
+            std::fill(slice.begin(), slice.end(), 0.0);
+            
             double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
             double new_TimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
-
+            KTDEBUG(stflog, "new_TimeInAcq is " << new_TimeInAcq);
 
 
 
             std::vector<Point> Points;
-            std::vector<Point> sorted_Points;
+            //std::vector<Point> sorted_Points;
             double new_TrimmingLimits;
             double value;
 
@@ -200,7 +203,7 @@ namespace Katydid
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*power_spectrum)(iBin);
-                slice[iBin] = value;
+                slice.at(iBin) = value;
                 new_TrimmingLimits += value;
                 double threshold = fSNRPowerThreshold * (*splineImp)(iBin - fMinBin);
 
@@ -209,6 +212,7 @@ namespace Katydid
                     double PointFreq = fBinWidth * ((double)iBin + 0.5);
                     Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
                     Points.push_back(new_Point);
+                    KTDEBUG(stflog, "Collected track point candidate");
                 }
             }
 
@@ -220,18 +224,6 @@ namespace Katydid
             // Loop over the high power points
             this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits, iComponent);
 
-
-
-            /*list< LineRef >::iterator LineIt = fActiveLines.begin();
-            while (LineIt != fActiveLines.end())
-            {
-                if (LineIt->LineTrimming)
-                {
-                    fLines[iComponent].insert(*LineIt);
-                    LineIt = fActiveLines.erase(LineIt);
-                }
-            }
-            this->TurnLinesintoTracks(fLines);*/
         }
         return true;
     }
@@ -240,15 +232,18 @@ namespace Katydid
     bool KTSeqTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)
      {
     	double oldFreq = 0.0, Freq = 0.0, newFreq = 0.0, Amplitude=0.0;
-    	unsigned PointBin = 0;
+    	//unsigned PointBin = 0;
     	bool match;
 
     	//loop in reverse order (by power)
     	for(std::vector<Point>::reverse_iterator PointIt = Points.rbegin(); PointIt != Points.rend(); ++PointIt)
     	{
+            KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance)
     	    newFreq = PointIt->fPointFreq;
-    	    PointBin = PointIt->fBinInSlice;
+    	    //PointBin = PointIt->fBinInSlice;
     	    Amplitude = PointIt->fAmplitude;
+            KTDEBUG(stflog, "point amplitude is "<<Amplitude);
+
 
     	    if (Amplitude == 0.0)
     	    {
@@ -256,13 +251,13 @@ namespace Katydid
     	    }
     	    else if (std::abs(newFreq - oldFreq) < fMinFreqBinDistance*fBinWidth)
     	    {
+                KTDEBUG(stflog, "frequency distance not big enough, skipping point");
     	        continue;
     	    }
     	    else if (std::abs(newFreq - oldFreq) >= fMinFreqBinDistance*fBinWidth)
     	    {
     	        oldFreq = Freq;
     	        Freq = newFreq;
-    	        match = false;
 
     	        this->SearchTrueLinePoint(*PointIt, slice);
     	        Freq = PointIt->fPointFreq;
@@ -271,34 +266,51 @@ namespace Katydid
     	    else
             {
                 KTERROR(stflog, "Unexpected error while looping over high snr points");
-                throw;
+                return false;
             }
 
             if (Freq == 0.0 or PointIt->fAmplitude==0.0)
             {
+                KTDEBUG(stflog, "Point discarded after area search. Probably to close to min or max frequency");
                 continue;
             }
             else
             {
+                match = false;
                 // loop over active lines, sorted by start time
 
+
+                KTDEBUG(stflog, "Currently there are N Lines "<<fActiveLines.size());
                 std::vector< LineRef >::iterator LineIt = fActiveLines.begin();
                 while( LineIt != fActiveLines.end())
-         		{
+         	{
+                    // Under these conditions a point will be added to a line
+                    bool condition1 = PointIt->fTimeInRunC > LineIt->fEndTimeInRunC;
+                    bool condition2 = std::abs(PointIt->fPointFreq - (LineIt->fEndFrequency + LineIt->fSlope*(PointIt->fTimeInAcq - LineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
 
-                    if (LineIt->fEndTimeInRunC>Points[PointBin].fTimeInRunC+fTimeGapTolerance)
+                    // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
+                    if (LineIt->fEndTimeInRunC<PointIt->fTimeInRunC-fTimeGapTolerance)
                     {
-                        LineIt->LineTrimming(fTrimmingFactor, fMinPoints);
-
-                        if (LineIt->fNPoints > fMinPoints and LineIt->fSlope > fMinSlope)
+                        KTDEBUG(stflog, "Line with N points should be finished "<< LineIt->fNPoints);
+                        if (LineIt->fNPoints >= fMinPoints)
                         {
-                            //fLines.push_back(*LineIt);
-                            this->EmitPreCandidate(*LineIt, component);
+                            LineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+
+                            if (LineIt->fNPoints > fMinPoints and LineIt->fSlope > fMinSlope)
+                            {
+                                KTDEBUG(stflog, "going to emit line");
+
+                                //fLines.push_back(*LineIt);
+                                this->EmitPreCandidate(*LineIt, component);
+                            }
                         }
+                        KTDEBUG(stflog, "Erasing this line");
                         LineIt = fActiveLines.erase(LineIt);
                     }
-                    else if (std::abs(PointIt->fPointFreq - (LineIt->fEndFrequency + LineIt->fSlope*(PointIt->fTimeInRunC - LineIt->fEndTimeInRunC))) < fFrequencyAcceptance)
+                    else if (condition1 and condition2)
                     {
+                        KTDEBUG(stflog, "Going to add point to line");
+
                         LineIt->InsertPoint(*PointIt, new_TrimmingLimits);
                         match = true;
                         LineIt++;
@@ -306,16 +318,21 @@ namespace Katydid
 
                     else
                     {
-                        LineRef new_Line;
-                        new_Line.InsertPoint(*PointIt, new_TrimmingLimits);
-                        fActiveLines.push_back(new_Line);
-                        match = true;
                         LineIt++;
                     }
-         		}
+                }
 
+                // if point was not picked up
+                if (match == false)
+                {
+                    KTDEBUG(stflog, "creating new line");
 
-         	}
+                    LineRef new_Line;
+                    new_Line.InsertPoint(*PointIt, new_TrimmingLimits);
+                    fActiveLines.push_back(new_Line);
+                    match = true;
+                }
+            }
          }
          return true;
      }
@@ -330,7 +347,7 @@ namespace Katydid
         fNLines++;
 
         newTrack.SetStartTimeInRunC( Line.fStartTimeInRunC );
-        newTrack.SetEndTimeInRunC( Line.fStartTimeInRunC );
+        newTrack.SetEndTimeInRunC( Line.fEndTimeInRunC );
         newTrack.SetStartFrequency( Line.fStartFrequency );
         newTrack.SetEndFrequency( Line.fEndFrequency );
         newTrack.SetSlope(Line.fSlope);
@@ -366,6 +383,8 @@ namespace Katydid
         double amplitude = Point.fAmplitude;
         unsigned frequencybin = Point.fBinInSlice;
         double old_frequencybin;
+        
+        KTDEBUG(stflog, "before search, frequency bin, frequency and amplitude are "<<frequencybin<< " "<<frequency<<" "<<amplitude);
 
 
         while(std::abs(Delta) > fConvergeDelta and loop_counter < max_iterations)
@@ -381,6 +400,7 @@ namespace Katydid
             }
             else
             {
+                KTDEBUG(stflog, "frequencybin was not in correct range ");
                 Delta = 0.0;
                 amplitude = 0.0;
             }
@@ -394,7 +414,7 @@ namespace Katydid
             for (int iBin = frequencybin - fLinePowerWidth; iBin < frequencybin + fLinePowerWidth + 1; iBin++)
             {
                 amplitude += slice[iBin];
-                slice[iBin]=0.0;
+                slice.at(iBin)=0.0;
             }
         }
         // Set larger area to zero if possible
@@ -402,14 +422,14 @@ namespace Katydid
                 {
                     for (int iBin = frequencybin - fSearchRadius; iBin < frequencybin + fSearchRadius + 1; iBin++)
                     {
-                        slice[iBin]=0.0;
+                        slice.at(iBin)=0.0;
                     }
                 }
         // Correct values currently still stored in Point
         Point.fBinInSlice = frequencybin;
         Point.fPointFreq = frequency;
         Point.fAmplitude = amplitude;
-
+        KTDEBUG(stflog, "after weighted average, frequency bin, frequency and amplitude are "<<Point.fBinInSlice<< " "<<Point.fPointFreq<<" "<<Point.fAmplitude);
     }
 
 
@@ -422,7 +442,7 @@ namespace Katydid
         double weightedBin = 0.0;
         double wSum = 0.0;
 
-        for (int iBin = -fSearchRadius; iBin <= fSearchRadius; iBin++)
+        for (int iBin = -1*fSearchRadius; iBin <= fSearchRadius; iBin++)
         {
             weightedBin += double(FrequencyBin+iBin)*slice[FrequencyBin+iBin];
             wSum +=slice[FrequencyBin+iBin];
@@ -436,22 +456,25 @@ namespace Katydid
 
     void KTSeqTrackFinder::AcquisitionIsOver()
     {
+        KTDEBUG(stflog, "Got egg-done signal. Checking remaining line candidates");
         unsigned component = 0;
         // loop over active lines, sorted by start time
 
         std::vector< LineRef >::iterator LineIt = fActiveLines.begin();
         while( LineIt != fActiveLines.end())
         {
-
-            LineIt->LineTrimming(fTrimmingFactor, fMinPoints);
-
-            if (LineIt->fNPoints > fMinPoints and LineIt->fSlope > fMinSlope)
+            if (LineIt->fNPoints >= fMinPoints)
             {
-                //fLines.push_back(*LineIt);
-                this->EmitPreCandidate(*LineIt, component);
+                LineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+
+                if (LineIt->fNPoints > fMinPoints and LineIt->fSlope > fMinSlope)
+                {
+                    this->EmitPreCandidate(*LineIt, component);
+                }
             }
             LineIt = fActiveLines.erase(LineIt);
         }
+        KTDEBUG(stflog, "Now there should be no lines left over " << fActiveLines.empty());
     }
 
 
