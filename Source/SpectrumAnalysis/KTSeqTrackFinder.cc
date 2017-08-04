@@ -231,22 +231,23 @@ namespace Katydid
 
     bool KTSeqTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)
      {
+        KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
+
     	double oldFreq = 0.0, Freq = 0.0, newFreq = 0.0, Amplitude=0.0;
-    	//unsigned PointBin = 0;
     	bool match;
 
     	//loop in reverse order (by power)
     	for(std::vector<Point>::reverse_iterator PointIt = Points.rbegin(); PointIt != Points.rend(); ++PointIt)
     	{
-            KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance)
     	    newFreq = PointIt->fPointFreq;
-    	    //PointBin = PointIt->fBinInSlice;
-    	    Amplitude = PointIt->fAmplitude;
-            KTDEBUG(stflog, "point amplitude is "<<Amplitude);
 
+    	    // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
+            // To prevent that in the next iteration the point gets refound and added to another line the amplitude of the point is reassigned here
+            PointIt->fAmplitude = slice[PointIt->fBinInSlice];
 
-    	    if (Amplitude == 0.0)
+    	    if (PointIt->fAmplitude == 0.0)
     	    {
+                KTDEBUG(stflog, "Point amplitude is 0, skipping point");
     	        continue;
     	    }
     	    else if (std::abs(newFreq - oldFreq) < fMinFreqBinDistance*fBinWidth)
@@ -256,6 +257,7 @@ namespace Katydid
     	    }
     	    else if (std::abs(newFreq - oldFreq) >= fMinFreqBinDistance*fBinWidth)
     	    {
+                // since the points get sorted by power this is a bit redundant
     	        oldFreq = Freq;
     	        Freq = newFreq;
 
@@ -271,7 +273,7 @@ namespace Katydid
 
             if (Freq == 0.0 or PointIt->fAmplitude==0.0)
             {
-                KTDEBUG(stflog, "Point discarded after area search. Probably to close to min or max frequency");
+                KTDEBUG(stflog, "Point frequency and/or amplitude is zero, skippint point");
                 continue;
             }
             else
@@ -304,7 +306,6 @@ namespace Katydid
                                 this->EmitPreCandidate(*LineIt, component);
                             }
                         }
-                        KTDEBUG(stflog, "Erasing this line");
                         LineIt = fActiveLines.erase(LineIt);
                     }
                     else if (condition1 and condition2)
@@ -325,7 +326,7 @@ namespace Katydid
                 // if point was not picked up
                 if (match == false)
                 {
-                    KTDEBUG(stflog, "creating new line");
+                    KTDEBUG(stflog, "Creating new line");
 
                     LineRef new_Line;
                     new_Line.InsertPoint(*PointIt, new_TrimmingLimits);
@@ -425,6 +426,7 @@ namespace Katydid
                         slice.at(iBin)=0.0;
                     }
                 }
+
         // Correct values currently still stored in Point
         Point.fBinInSlice = frequencybin;
         Point.fPointFreq = frequency;
