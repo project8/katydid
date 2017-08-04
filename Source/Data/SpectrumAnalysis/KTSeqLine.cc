@@ -37,7 +37,7 @@ namespace Katydid
 
     void LineRef::InsertPoint(const Point& Point, const double& new_trimming_limits)
     {
-        KTDEBUG(seqlog, "Insert point")
+        KTDEBUG(seqlog, "Insert point");
         fTrimmingLimits.push_back(new_trimming_limits);
         fAmplitudeList.push_back(Point.fAmplitude);
 
@@ -125,7 +125,7 @@ namespace Katydid
 
 
 
-        KTDEBUG(seqlog, "Calulcating line slope")
+        KTDEBUG(seqlog, "Calulcating line slope");
         double weightedSlope = 0.0;
         double wSum = 0.0;
 
@@ -143,7 +143,7 @@ namespace Katydid
         }
         else
         {
-            fSlope = 3.0*pow(10.0, 9.0);
+            fSlope = 3.0*pow(10.0, 8.0);
         }
     }
 
@@ -154,7 +154,6 @@ namespace Katydid
         {
             while (fAmplitudeList.back() < TrimmingFactor * fTrimmingLimits.back() and fNPoints >= MinPoints)
             {
-                KTDEBUG(seqlog, "Entered upper trimming loop");
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fTrimmingLimits.erase(fTrimmingLimits.end() -1);
                 fLinePoints.erase(fLinePoints.end() - 1);
@@ -162,7 +161,6 @@ namespace Katydid
             }
             while (fAmplitudeList.front() < TrimmingFactor * fTrimmingLimits.front() and fNPoints >= MinPoints)
             {
-                KTDEBUG(seqlog, "Entered lower trimming loop");
                 fAmplitudeList.erase(fAmplitudeList.begin());
                 fTrimmingLimits.erase(fTrimmingLimits.begin());
                 fLinePoints.erase(fLinePoints.begin());

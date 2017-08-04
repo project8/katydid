@@ -219,7 +219,7 @@ namespace Katydid
             new_TrimmingLimits = new_TrimmingLimits/nBins;
 
             // sort points by power
-            //sorted_Points = std::sort(Points.begin(), Points.end(),std::greater<KTSeqLine::Point>());
+            std::sort(Points.begin(), Points.end(),std::less<Point>());
 
             // Loop over the high power points
             this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits, iComponent);
