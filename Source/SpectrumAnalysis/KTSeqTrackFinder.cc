@@ -46,6 +46,7 @@ namespace Katydid
             fSNRPowerThreshold(6.),
             fMinPoints(2),
             fMinSlope(0.0),
+            fInitialSlope(3.0*pow(10,8)),
             fMinBin(0),
             fMaxBin(1),
             fBinWidth(0.0),
@@ -55,7 +56,10 @@ namespace Katydid
             fCalculateMaxBin(true),
             fActiveLines(),
             fNLines(0),
-            //fnew_Lines(),
+            fApplyPowerCut(false),
+            fApplyDensityCut(false),
+            fPowerThreshold(0.0),
+            fDensityThreshold(0.0),
             fTrackSignal("pre-candidate", this),
             fClusterDoneSignal("clustering-done", this),
             fGainVarSlot("gv", this, &KTSeqTrackFinder::SetPreCalcGainVar),
@@ -100,21 +104,21 @@ namespace Katydid
         {
             SetTrimmingFactor(node->get_value<double>("trimming-factor"));
         }
-        if (node->has("line-width"))
+        if (node->has("half-line-width"))
         {
-            SetLinePowerWidth(node->get_value<unsigned>("line-width"));
+            SetLinePowerWidth(node->get_value<unsigned>("half-line-width"));
         }
         if (node->has("time-gap-tolerance"))
         {
             SetTimeGapTolerance(node->get_value<double>("time-gap-tolerance"));
         }
-        if (node->has("minimum-line-frequency-distance"))
+        if (node->has("minimum-line-bin-distance"))
 		{
-        	SetMinFreqBinDistance(node->get_value<double>("minimum-line-frequency-distance"));
+        	SetMinFreqBinDistance(node->get_value<double>("minimum-line-bin-distance"));
 		}
         if (node->has("search-radius"))
         {
-        	SetSearchRadius(node->get_value<int>("searched-bin-radius"));
+        	SetSearchRadius(node->get_value<int>("search-radius"));
         }
         if (node->has("converge-delta"))
         {
@@ -124,10 +128,10 @@ namespace Katydid
         {
             SetFrequencyAcceptance(node->get_value<int>("frequency-acceptance"));
         }
-        //if (node->has("threshold"))
-        //{
-        //    SetSNRThreshold(node->get_value<int>("threshold"));
-        //}
+        if (node->has("initial-slope"))
+        {
+            SetInitialSlope(node->get_value<int>("initial-slope"));
+        }
         if (node->has("min-points"))
         {
             SetMinPoints(node->get_value<int>("min-points"));
@@ -135,6 +139,22 @@ namespace Katydid
         if (node->has("min-slope"))
         {
             SetMinSlope(node->get_value<int>("min-slope"));
+        }
+        if (node->has("apply-power-cut"))
+        {
+            SetApplyPowerCut(node->get_value<bool>("apply-power-cut"));
+        }
+        if (node->has("apply-point-density-cut"))
+        {
+            SetApplyDensityCut(node->get_value<bool>("apply-point-density-cut"));
+        }
+        if (node->has("power-threshold"))
+        {
+            SetPowerThreshold(node->get_value<double>("power-threshold"));
+        }
+        if (node->has("point-density-threshold"))
+        {
+            SetDensityThreshold(node->get_value<double>("point-density-threshold"));
         }
 
 
@@ -328,7 +348,7 @@ namespace Katydid
                 {
                     KTDEBUG(stflog, "Creating new line");
 
-                    LineRef new_Line;
+                    LineRef new_Line(fInitialSlope);
                     new_Line.InsertPoint(*PointIt, new_TrimmingLimits);
                     fActiveLines.push_back(new_Line);
                     match = true;
@@ -340,27 +360,51 @@ namespace Katydid
 
     bool KTSeqTrackFinder::EmitPreCandidate(LineRef Line, unsigned component)
     {
-        // Set up new data object
-        Nymph::KTDataPtr data( new Nymph::KTData() );
-        KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
-        newTrack.SetComponent( component );
-        newTrack.SetTrackID(fNLines);
-        fNLines++;
+        bool LineIsTrack = true;
 
-        newTrack.SetStartTimeInRunC( Line.fStartTimeInRunC );
-        newTrack.SetEndTimeInRunC( Line.fEndTimeInRunC );
-        newTrack.SetStartFrequency( Line.fStartFrequency );
-        newTrack.SetEndFrequency( Line.fEndFrequency );
-        newTrack.SetSlope(Line.fSlope);
+        if (fApplyPowerCut)
+        {
+            if (Line.fAmplitudeSum <= fPowerThreshold)
+            {
+                LineIsTrack = false;
+            }
+        }
+        if (fApplyDensityCut)
+        {
+            if ((double)Line.fNPoints/(Line.fEndTimeInRunC-Line.fStartTimeInRunC)*1000.0 <= fDensityThreshold)
+            {
+                LineIsTrack = false;
+            }
+        }
+
+        if (LineIsTrack == true)
+        {
+            // Set up new data object
+            Nymph::KTDataPtr data( new Nymph::KTData() );
+            KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
+            newTrack.SetComponent( Line.fComponent );
+            newTrack.SetTrackID(fNLines);
+            fNLines++;
+
+            newTrack.SetStartTimeInRunC( Line.fStartTimeInRunC );
+            newTrack.SetEndTimeInRunC( Line.fEndTimeInRunC );
+            newTrack.SetStartFrequency( Line.fStartFrequency );
+            newTrack.SetEndFrequency( Line.fEndFrequency );
+            newTrack.SetSlope(Line.fSlope);
 
 
-        // Process & emit new track
+            // Process & emit new track
 
-        KTINFO(stflog, "Now processing PreCandidates");
-        ProcessNewTrack( newTrack );
+            KTINFO(stflog, "Now processing PreCandidates");
+            ProcessNewTrack( newTrack );
 
-        KTDEBUG(stflog, "Emitting track signal");
-        fTrackSignal( data );
+            KTDEBUG(stflog, "Emitting track signal");
+            fTrackSignal( data );
+        }
+        else
+        {
+            KTDEBUG(stflog, "Line did not make it above the cut and was not emitted as track");
+        }
 
         return true;
     }
@@ -415,7 +459,7 @@ namespace Katydid
             for (int iBin = frequencybin - fLinePowerWidth; iBin < frequencybin + fLinePowerWidth + 1; iBin++)
             {
                 amplitude += slice[iBin];
-                slice.at(iBin)=0.0;
+                slice.at(iBin)=fPointAmplitudeAfterVisit;
             }
         }
         // Set larger area to zero if possible
@@ -423,7 +467,7 @@ namespace Katydid
                 {
                     for (int iBin = frequencybin - fSearchRadius; iBin < frequencybin + fSearchRadius + 1; iBin++)
                     {
-                        slice.at(iBin)=0.0;
+                        slice.at(iBin)=fPointAmplitudeAfterVisit;
                     }
                 }
 
@@ -438,7 +482,6 @@ namespace Katydid
 
     inline void KTSeqTrackFinder::WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency)
     {
-
         unsigned new_FrequencyBin = 0;
         double new_Frequency = 0.0;
         double weightedBin = 0.0;
@@ -455,6 +498,7 @@ namespace Katydid
         Frequency = new_Frequency;
         FrequencyBin = new_FrequencyBin;
     }
+
 
     void KTSeqTrackFinder::AcquisitionIsOver()
     {

@@ -19,15 +19,17 @@ namespace Katydid
 
 
 
-    LineRef::LineRef():
+    LineRef::LineRef(const double& InitialSlope):
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
         fEndTimeInRunC(0.0),
         fEndTimeInAcq(0.0),
         fStartFrequency(0.0),
         fEndFrequency(0.0),
+        fInitialSlope(InitialSlope),
         fSlope(0.0),
         fNPoints(0),
+        fComponent(0),
         fAmplitudeSum(0.0),
         fAcquisitionID(0)
         {}
@@ -143,7 +145,7 @@ namespace Katydid
         }
         else
         {
-            fSlope = 3.0*pow(10.0, 8.0);
+            fSlope = fInitialSlope;
         }
     }
 
@@ -176,6 +178,7 @@ namespace Katydid
     {
         KTDEBUG(seqlog, "Updating line parameters");
         fAcquisitionID = fLinePoints.front().fAcquisitionID;
+        fComponent = fLinePoints.front().fComponent;
         fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
         fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
         fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
