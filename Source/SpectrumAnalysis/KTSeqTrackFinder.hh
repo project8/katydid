@@ -13,13 +13,13 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
-#include "KTSeqLine.hh"
-#include "KTProcessedTrackData.hh"
 
 #include "KTSliceHeader.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTGainVariationData.hh"
+#include "KTSeqLine.hh"
+#include "KTProcessedTrackData.hh"
 
 #include <iostream>
 #include <set>

@@ -6,16 +6,8 @@
  */
 
 #include "KTSeqTrackFinder.hh"
-
-#include "KTPowerSpectrum.hh"
-#include "KTPowerSpectrumData.hh"
-//#include "KTSliceHeader.hh"
-
-
-#include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 
-//#include "KTParam.hh"
 
 #include <numeric>
 #include <cmath>
@@ -204,7 +196,10 @@ namespace Katydid
 
             fBinWidth = power_spectrum->GetBinWidth();
             KTDEBUG(stflog, "fBinWidth is " << fBinWidth);
-            std::vector< double > slice(fMaxBin+1);
+
+            // I need a deepcopy of the power spectrum slice and dont know how to do that
+            // As I am looping over each bin anyway I will fill the vector "slice" at the same time
+            std::vector< double > slice(fMaxBin +1);
             std::fill(slice.begin(), slice.end(), 0.0);
             
             double new_TimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
@@ -238,6 +233,7 @@ namespace Katydid
 
             new_TrimmingLimits = new_TrimmingLimits/nBins;
 
+            // I want to iterate over the collected points in order of descending power
             // sort points by power
             std::sort(Points.begin(), Points.end(),std::less<Point>());
 
@@ -299,10 +295,12 @@ namespace Katydid
             else
             {
                 match = false;
-                // loop over active lines, sorted by start time
 
+                // loop over active lines, in order of earliest start time
+                // dont need to sort them because they are already sorted by the slice of the line's start point
 
                 KTDEBUG(stflog, "Currently there are N Lines "<<fActiveLines.size());
+
                 std::vector< LineRef >::iterator LineIt = fActiveLines.begin();
                 while( LineIt != fActiveLines.end())
          	{
