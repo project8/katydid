@@ -175,7 +175,7 @@ namespace Katydid
 
                 // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
 
-                fSlope = slope;
+                //fSlope = slope;
                 fIntercept = intercept;
                 fSlopeSigma = deltaSlope;
                 fInterceptSigma = deltaIntercept;
