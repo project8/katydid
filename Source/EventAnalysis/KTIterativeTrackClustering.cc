@@ -224,7 +224,7 @@ namespace Katydid
         newTrack.SetTimeLength( newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC());
 
         newTrack.SetSlopeSigma( sqrt(newTrack.GetSlopeSigma()*newTrack.GetSlopeSigma() + oldTrack.GetSlopeSigma()*oldTrack.GetSlopeSigma()));
-        KTDEBUG(itclog, "Combinging tracks, power before and after: "<<oldTrack.GetTotalPower()<<" "<<newTrack.GetTotalPower());
+        KTDEBUG(itclog, "Combining tracks, power before and after: "<<oldTrack.GetTotalPower()<<" "<<newTrack.GetTotalPower());
     }
 
 
@@ -232,7 +232,7 @@ namespace Katydid
     {
         bool slope_condition1 = std::abs(Track1.GetEndFrequency()+Track1.GetSlope()*(Track2.GetStartTimeInRunC()-Track1.GetEndTimeInRunC()) - Track2.GetStartFrequency())<fFrequencyAcceptance;
         bool slope_condition2 = std::abs(Track2.GetStartFrequency()-Track2.GetSlope()*(Track2.GetStartTimeInRunC()-Track1.GetEndTimeInRunC()) - Track1.GetEndFrequency())<fFrequencyAcceptance;
-        bool time_gap_in_line = Track1.GetEndTimeInRunC() <= Track2.GetStartTimeInRunC();
+        bool time_gap_in_line = Track1.GetEndTimeInRunC() < Track2.GetStartTimeInRunC();
         bool gap_smaller_than_limit = std::abs(Track2.GetStartTimeInRunC() - Track1.GetEndTimeInRunC())<fTimeGapTolerance;
 
         if (time_gap_in_line and gap_smaller_than_limit and (slope_condition1 or slope_condition2))
@@ -242,7 +242,7 @@ namespace Katydid
 
         slope_condition1 = std::abs(Track2.GetEndFrequency()+Track2.GetSlope()*(Track1.GetStartTimeInRunC()-Track2.GetEndTimeInRunC()) - Track1.GetStartFrequency())<fFrequencyAcceptance;
         slope_condition2 = std::abs(Track1.GetStartFrequency()-Track1.GetSlope()*(Track1.GetStartTimeInRunC()-Track2.GetEndTimeInRunC()) - Track2.GetEndFrequency())<fFrequencyAcceptance;
-        time_gap_in_line = Track2.GetEndTimeInRunC() <= Track1.GetStartTimeInRunC();
+        time_gap_in_line = Track2.GetEndTimeInRunC() < Track1.GetStartTimeInRunC();
         gap_smaller_than_limit = std::abs(Track1.GetStartTimeInRunC() - Track2.GetEndTimeInRunC())<fTimeGapTolerance;
 
         if (time_gap_in_line and gap_smaller_than_limit and (slope_condition1 or slope_condition2))
@@ -256,18 +256,18 @@ namespace Katydid
     bool KTIterativeTrackClustering::DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2)
     {
         // if the start time of track 2 is between start and end time of track 1
-        bool condition1 = Track1.GetEndTimeInRunC() > Track2.GetStartTimeInRunC() and Track1.GetStartTimeInRunC() < Track2.GetStartTimeInRunC();
+        bool condition1 = Track2.GetStartTimeInRunC() < Track1.GetEndTimeInRunC() and Track2.GetStartTimeInRunC() > Track1.GetStartTimeInRunC();
 
         // and the start frequency of track 2 is too close to track 1
-        bool condition2 = std::abs(Track2.GetStartFrequency() - Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetStartTimeInRunC() - Track1.GetStartTimeInRunC())) < fFrequencyAcceptance;
+        bool condition2 = std::abs(Track2.GetStartFrequency() - (Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetStartTimeInRunC() - Track1.GetStartTimeInRunC()))) < fFrequencyAcceptance;
 
         if (condition1 or condition2)
         {
             return true;
         }
         // the other way around
-        bool condition3 = Track2.GetEndTimeInRunC() > Track1.GetStartTimeInRunC() and Track2.GetStartTimeInRunC() < Track1.GetStartTimeInRunC();
-        bool condition4 = std::abs(Track1.GetStartFrequency() - Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetStartTimeInRunC() - Track2.GetStartTimeInRunC())) < fFrequencyAcceptance;
+        bool condition3 = Track1.GetStartTimeInRunC() < Track2.GetEndTimeInRunC() and Track1.GetStartTimeInRunC() > Track2.GetStartTimeInRunC();
+        bool condition4 = std::abs(Track1.GetStartFrequency() - (Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetStartTimeInRunC() - Track2.GetStartTimeInRunC()))) < fFrequencyAcceptance;
 
         if (condition3 or condition4)
         {
@@ -275,18 +275,18 @@ namespace Katydid
         }
 
         // same for end point of track2
-        condition1 = Track1.GetEndTimeInRunC() > Track2.GetEndTimeInRunC() and Track1.GetStartTimeInRunC() < Track2.GetEndTimeInRunC();
+        condition1 = Track2.GetEndTimeInRunC() < Track1.GetEndTimeInRunC() and Track2.GetEndTimeInRunC() > Track1.GetStartTimeInRunC();
 
         // and the start frequency of track 2 is too close to track 1
-        condition2 = std::abs(Track2.GetEndFrequency() - Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetEndTimeInRunC() - Track1.GetStartTimeInRunC())) < fFrequencyAcceptance;
+        condition2 = std::abs(Track2.GetEndFrequency() - (Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetEndTimeInRunC() - Track1.GetStartTimeInRunC()))) < fFrequencyAcceptance;
 
         if (condition1 or condition2)
         {
             return true;
         }
         // the other way around
-        condition3 = Track2.GetEndTimeInRunC() > Track1.GetEndTimeInRunC() and Track2.GetStartTimeInRunC() < Track1.GetEndTimeInRunC();
-        condition4 = std::abs(Track1.GetEndFrequency() - Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetEndTimeInRunC() - Track2.GetStartTimeInRunC())) < fFrequencyAcceptance;
+        condition3 = Track1.GetEndTimeInRunC() < Track2.GetEndTimeInRunC() and Track1.GetEndTimeInRunC() > Track2.GetStartTimeInRunC();
+        condition4 = std::abs(Track1.GetEndFrequency() - (Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetEndTimeInRunC() - Track2.GetStartTimeInRunC()))) < fFrequencyAcceptance;
 
         if (condition3 or condition4)
         {
