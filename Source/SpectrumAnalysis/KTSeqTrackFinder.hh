@@ -97,7 +97,7 @@ namespace Katydid
             MEMBERVARIABLE(double, TrimmingFactor);
             MEMBERVARIABLE(int, LinePowerWidth);
             MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
-            MEMBERVARIABLE(unsigned, MinFreqBinDistance);
+            MEMBERVARIABLE(int, MinFreqBinDistance);
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
             MEMBERVARIABLE(int, SearchRadius);

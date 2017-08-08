@@ -374,9 +374,9 @@ namespace Katydid
 
         if (LineIsTrack == true)
         {
-            KTDEBUG(stflog, "Line slope is "<<Line.fSlope);
-            Line.FinishTrack();
-            KTDEBUG(stflog, "Track slope is "<<Line.fSlope);
+            //KTDEBUG(stflog, "Line slope is "<<Line.fSlope);
+            //Line.FinishTrack();
+            //KTDEBUG(stflog, "Track slope is "<<Line.fSlope);
 
 
             // Set up new data object
@@ -469,13 +469,21 @@ namespace Katydid
             }
         }
         // Set larger area to zero if possible
-        if (frequencybin > fMinBin + fSearchRadius and frequencybin < fMaxBin - fSearchRadius)
-                {
-                    for (int iBin = frequencybin - fSearchRadius; iBin < frequencybin + fSearchRadius + 1; iBin++)
-                    {
-                        slice.at(iBin)=fPointAmplitudeAfterVisit;
-                    }
-                }
+        if (frequencybin > fMinBin + fMinFreqBinDistance and frequencybin < fMaxBin - fMinFreqBinDistance)
+        {
+            for (int iBin = frequencybin - fMinFreqBinDistance; iBin < frequencybin + fMinFreqBinDistance + 1; iBin++)
+            {
+                slice.at(iBin)=fPointAmplitudeAfterVisit;
+            }
+        }
+
+        else if (frequencybin > fMinBin + fSearchRadius and frequencybin < fMaxBin - fSearchRadius)
+        {
+            for (int iBin = frequencybin - fSearchRadius; iBin < frequencybin + fSearchRadius + 1; iBin++)
+            {
+                slice.at(iBin)=fPointAmplitudeAfterVisit;
+            }
+        }
 
         // Correct values currently still stored in Point
         Point.fBinInSlice = frequencybin;

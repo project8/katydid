@@ -80,7 +80,8 @@ namespace Katydid
 
 
         private:
-            bool LineClustering();
+            bool OverlapClustering();
+            bool ExtrapolateClustering();
             bool DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             bool DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             void CombineTracks(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);

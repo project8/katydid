@@ -137,20 +137,16 @@ namespace Katydid
         unsigned NumberOfNewTracks = fNewTracks.size();
 
 
-        //std::vector<newTrack> newTracks;
-
-        // loop over components
-        //unsigned component = 0;
         unsigned loopCounter = 0;
 
         if (NumberOfTracks > 1)
         {
-            while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 5)
+            while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 10)
             {
                 NumberOfTracks = fCompTracks.size();
                 KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
                 loopCounter ++;
-                this->LineClustering();
+                this->OverlapClustering();
 
                 // Update number of tracks
                 NumberOfNewTracks = fNewTracks.size();
@@ -162,40 +158,91 @@ namespace Katydid
                 fNewTracks.clear();
             }
         }
+        NumberOfTracks = fCompTracks.size();
+        NumberOfNewTracks = fNewTracks.size();
+
+
+        loopCounter = 0;
+
+        if (NumberOfTracks > 1)
+        {
+            while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 10)
+            {
+                NumberOfTracks = fCompTracks.size();
+                KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
+                loopCounter ++; 
+                this->ExtrapolateClustering();
+
+                // Update number of tracks
+                NumberOfNewTracks = fNewTracks.size();
+
+                KTDEBUG(itclog, "Number of new tracks: "<< NumberOfNewTracks);
+
+                fCompTracks.clear();
+                fCompTracks = fNewTracks;
+                fNewTracks.clear();
+            }
+        }
+
         this->EmitTrackCandidates();
 
         return true;
     }
 
-    bool KTIterativeTrackClustering::LineClustering()
+    bool KTIterativeTrackClustering::OverlapClustering()
     {
+        bool match;
         for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
         {
+            match = false;
             for (std::vector<KTProcessedTrackData>::iterator newIt = fNewTracks.begin(); newIt != fNewTracks.end(); ++newIt)
             {
-                if (this->DoTheyMatch(*compIt, *newIt))
+                if (this->DoTheyOverlap(*compIt, *newIt))
                 {
-                    KTDEBUG(itclog, "Found matching tracks");
-                    this->CombineTracks(*compIt, *newIt);
-                    break;
-                }
-                else if (this->DoTheyOverlap(*compIt, *newIt))
-                {
+                    match = true;
                     KTDEBUG(itclog, "Found overlapping tracks")
                     this->CombineTracks(*compIt, *newIt);
                     break;
                 }
-                else
-                {
-                    KTProcessedTrackData newTrack(*compIt);
-                    KTDEBUG(itclog, "Creating new track: "<< newTrack.GetTotalPower());
-
-                    fNewTracks.push_back(newTrack);
-                }
+            }
+        
+            if (match == false)
+            {
+                KTProcessedTrackData newTrack(*compIt);
+                KTDEBUG(itclog, "Creating new track: "<< newTrack.GetTotalPower());
+                fNewTracks.push_back(newTrack);
             }
         }
         return true;
     }
+
+    bool KTIterativeTrackClustering::ExtrapolateClustering()
+    {
+        bool match;
+        for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
+        {
+            match = false;
+            for (std::vector<KTProcessedTrackData>::iterator newIt = fNewTracks.begin(); newIt != fNewTracks.end(); ++newIt)
+            {
+                if (this->DoTheyMatch(*compIt, *newIt))
+                {
+                    match = true;
+                    KTDEBUG(itclog, "Found overlapping tracks")
+                    this->CombineTracks(*compIt, *newIt);
+                    break;
+                }   
+            }
+
+            if (match == false)
+            {
+                KTProcessedTrackData newTrack(*compIt);
+                KTDEBUG(itclog, "Creating new track: "<< newTrack.GetTotalPower());
+                fNewTracks.push_back(newTrack);
+            }   
+        }
+        return true;
+    }
+
 
     void KTIterativeTrackClustering::CombineTracks(KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
     {
@@ -206,6 +253,8 @@ namespace Katydid
             newTrack.SetStartFrequency( oldTrack.GetStartFrequency());
             newTrack.SetStartTimeInRunCSigma( oldTrack.GetStartTimeInRunCSigma());
             newTrack.SetStartFrequencySigma( oldTrack.GetStartFrequencySigma());
+            newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
+
         }
         if (oldTrack.GetEndTimeInRunC() > newTrack.GetEndTimeInRunC())
         {
@@ -213,9 +262,10 @@ namespace Katydid
             newTrack.SetEndFrequency( oldTrack.GetEndFrequency());
             newTrack.SetEndTimeInRunCSigma( oldTrack.GetEndTimeInRunCSigma());
             newTrack.SetEndFrequencySigma( oldTrack.GetEndFrequencySigma());
+            newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
 
         }
-        newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
+        //newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
         newTrack.SetTotalPower( newTrack.GetTotalPower() + oldTrack.GetTotalPower());
         newTrack.SetTimeLength( newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC());
 
@@ -366,6 +416,7 @@ namespace Katydid
                 newTrack.SetStartFrequency( trackIt->GetStartFrequency());
                 newTrack.SetEndFrequency( trackIt->GetEndFrequency());
                 newTrack.SetSlope(trackIt->GetSlope());
+                newTrack.SetTotalPower(trackIt->GetTotalPower());
 
 
                 // Process & emit new track
