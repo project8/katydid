@@ -181,12 +181,14 @@ namespace Katydid
                     match = true;
                     KTDEBUG(itclog, "Found matching tracks");
                     this->CombineTracks(*compIt, *newIt);
+                    break;
                 }
                 else if (this->DoTheyOverlap(*compIt, *newIt))
                 {
                     KTDEBUG(itclog, "Found overlapping tracks")
                     match = true;
                     this->CombineTracks(*compIt, *newIt);
+                    break;
                 }
             }
             if (match == false)
@@ -362,6 +364,7 @@ namespace Katydid
                 Nymph::KTDataPtr data( new Nymph::KTData() );
                 KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
                 newTrack.SetComponent( trackIt->GetComponent() );
+                newTrack.SetAcquisitionID( trackIt->GetAcquisitionID());
                 newTrack.SetTrackID(fNTracks);
                 fNTracks++;
 
