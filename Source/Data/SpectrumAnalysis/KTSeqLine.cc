@@ -31,7 +31,14 @@ namespace Katydid
         fNPoints(0),
         fComponent(0),
         fAmplitudeSum(0.0),
-        fAcquisitionID(0)
+        fAcquisitionID(0),
+        fProcTrackMinPoints(0),
+        fProcTrackAssError(0.),
+        fIntercept(0.),
+        fSlopeSigma(0.),
+        fInterceptSigma(0.),
+        fStartFrequencySigma(0.),
+        fEndFrequencySigma(0.)
         {}
 
     LineRef::~LineRef()
@@ -50,17 +57,17 @@ namespace Katydid
         this->CalculateSlope();
     }
 
-    inline void LineRef::CalculateSlope()
+    void LineRef::FinishTrack()
     {
-        /*
-        // Makes a first loop over the points to calculate the weighted average in one time slice
-        vector< double > timeBinInAcq;
-        vector< double > timeBinInRunC;
-        vector< double > sumPf;
-        vector< double > sumP;
-        vector< double > average;
 
-        for (std::vector <KTSeqLine::LinePoint>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
+        // Makes a first loop over the points to calculate the weighted average in one time slice
+        std::vector< double > timeBinInAcq;
+        std::vector< double > timeBinInRunC;
+        std::vector< double > sumPf;
+        std::vector< double > sumP;
+        std::vector< double > average;
+
+        for (std::vector <LinePoint>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
         {
             bool addToList = true;
             for (unsigned iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
@@ -84,7 +91,7 @@ namespace Katydid
             sumP.push_back(0.);
         }
 
-        for (std::vector<KTSeqLine::LinePoint>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
+        for (std::vector<LinePoint>::const_iterator pIt = fLinePoints.begin(); pIt != fLinePoints.end(); ++pIt)
         {
             for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
             {
@@ -122,12 +129,69 @@ namespace Katydid
                 "\tSlope: " << '\t' << slope << '\n' <<
                 "\tIntercept: " << '\t' << intercept);
         KTDEBUG(seqlog, "Amplitude of the track: " << amplitudeSum );
-        */
+
+        //Calculating Chi^2_min
+        double chi2min = 0;
+        double residual = 0;
+        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        {
+            residual = average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
+            chi2min += residual * residual;
+            KTDEBUG(seqlog, "Residuals : " << residual );
+        }
+        // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
+        double deltaSlope = 0;
+        double deltaIntercept = 0;
+        double sigmaStartFreq = 0;
+        double sigmaEndFreq = 0;
+
+        // need at least 3 points to get a non-zero Ndf
+        if (timeBinInAcq.size()>2)
+        {
+            KTDEBUG(seqlog, "Chi2min : " << chi2min );
+
+            if (chi2min < 0.1)
+            {
+                KTDEBUG(seqlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssError << ")");
+                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
+                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
+                    }
+                    else
+                    {
+                        double ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
+                        deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
+                        deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
+                    }
+                    KTDEBUG(seqlog, "Error calculations results: \n" <<
+                            "\tSlope: " << '\t' << deltaSlope << '\n' <<
+                            "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
+                            "\tCorrelation coefficifent: " << '\t' << rho);
+                    //Calculating error on the starting frequency and the end frequency
+                    double startTime = *std::min_element(timeBinInAcq.begin(), timeBinInAcq.end());
+                    double endTime = *std::max_element(timeBinInAcq.begin(), timeBinInAcq.end());
+                    sigmaStartFreq = sqrt( startTime*startTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * startTime * rho * deltaSlope * deltaIntercept );
+                    sigmaEndFreq = sqrt( endTime*endTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * endTime * rho * deltaSlope * deltaIntercept );
+                }
+
+                // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
+
+                fSlope = slope;
+                fIntercept = intercept;
+                fSlopeSigma = deltaSlope;
+                fInterceptSigma = deltaIntercept;
+                fStartFrequencySigma = sigmaStartFreq;
+                fEndFrequencySigma = sigmaEndFreq;
+
+    }
+
+    inline void LineRef::CalculateSlope()
+    {
 
 
 
 
-        KTDEBUG(seqlog, "Calulcating line slope");
+
+        KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
         double wSum = 0.0;
 

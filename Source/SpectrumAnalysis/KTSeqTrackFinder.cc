@@ -377,6 +377,11 @@ namespace Katydid
 
         if (LineIsTrack == true)
         {
+            KTDEBUG(stflog, "Line slope is "<<Line.fSlope);
+            Line.FinishTrack();
+            KTDEBUG(stflog, "Track slope is "<<Line.fSlope);
+
+
             // Set up new data object
             Nymph::KTDataPtr data( new Nymph::KTData() );
             KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
@@ -390,6 +395,10 @@ namespace Katydid
             newTrack.SetStartFrequency( Line.fStartFrequency );
             newTrack.SetEndFrequency( Line.fEndFrequency );
             newTrack.SetSlope(Line.fSlope);
+            newTrack.SetSlopeSigma(Line.fSlopeSigma);
+            newTrack.SetInterceptSigma(Line.fInterceptSigma);
+            newTrack.SetStartFrequencySigma(Line.fStartFrequencySigma);
+            newTrack.SetEndFrequencySigma(Line.fEndFrequencySigma);
 
 
             // Process & emit new track
@@ -414,6 +423,7 @@ namespace Katydid
         myNewTrack.SetFrequencyWidth( myNewTrack.GetEndFrequency() - myNewTrack.GetStartFrequency() );
         //myNewTrack.SetSlope( myNewTrack.GetFrequencyWidth() / myNewTrack.GetTimeLength() );
         myNewTrack.SetIntercept( myNewTrack.GetStartFrequency() - myNewTrack.GetSlope() * myNewTrack.GetStartTimeInRunC() );
+
     }
 
     void KTSeqTrackFinder::SearchTrueLinePoint(Point& Point, std::vector<double>& slice)

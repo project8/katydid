@@ -204,15 +204,26 @@ namespace Katydid
             newTrack.fStartTimeInRunC = oldTrack.fStartTimeInRunC;
             newTrack.fStartTimeInAcq = oldTrack.fStartTimeInAcq;
             newTrack.fStartFrequency = oldTrack.fStartFrequency;
+            newTrack.fIntercept = oldTrack.fIntercept;
+            newTrack.fInterceptSigma = oldTrack.fInterceptSigmaM;
+            newTrack.fStartTimeInRunCSigma = oldTrack.fStartTimeInRunCSigma;
+            newTrack.fStartFrequencySigma = oldTrack.fStartFrequencySigma;
         }
         if (oldTrack.fEndTimeInRunC > oldTrack.fEndTimeInRunC)
         {
             newTrack.fEndTimeInRunC = oldTrack.fEndTimeInRunC;
             newTrack.fEndFrequency = oldTrack.fEndFrequency;
+            newTrack.fEndTimeInRunCSigma = oldTrack.fEndTimeInRunCSigma;
+            newTrack.fEndFrequencySigma = oldTrack.fEndFrequenySigma;
+
         }
         newTrack.fSlope = (newTrack.fEndFrequency - newTrack.fStartFrequency)/(newTrack.fEndTimeInRunC - newTrack.fStartTimeInRunC);
         newTrack.fTotalPower = newTrack.fTotalPower + oldTrack.fTotalPower;
+        newTrack.fTimeLength = newTrack.fEndTimeInRunC - newTrack.fStartTimeInRunC;
+
+        newTrack.fSlopeSigma = sqrt(newTrack.fSlopeSigma*newTrack.fSlopeSigma + oldTrack.fSlopeSigma*oldTrack.fSlopeSigma);
     }
+
 
     bool KTIterativeTrackClustering::DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2)
     {

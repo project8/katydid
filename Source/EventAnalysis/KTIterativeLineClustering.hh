@@ -27,18 +27,22 @@ namespace Katydid
     
     /*!
      @class KTIterativeLineClustering
-     @author E. Zayas and C. Claessens
+     @author C. Claessens
 
      @brief Clusters tracks together until number of lines stops decreasing
 
      @details
-     Checks whether line start/ends lie on another tracks extrapolation
+     Checks whether line start/ends matches another track's extrapolation
 
      Configuration name: "iterative-track-clustering"
 
      Available configuration values:
      - "time-gap-tolerance": maximum time gap between tracks
      - "frequency-acceptance": maximum allowed distance from the slope extrapolation
+     - "apply-power-cut": default is true
+     - "apply-power-density-cut": default is false
+     - "power-threshold": total track power must be above this threshold
+     - "power-density-threshold": totel power per second threshold
 
      Slots:
      - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.

@@ -94,6 +94,13 @@ namespace Katydid {
         double fAmplitudeSum;
         unsigned fNPoints;
         uint64_t fAcquisitionID;
+        unsigned fProcTrackMinPoints;
+        double fProcTrackAssError;
+        double fIntercept;
+        double fSlopeSigma;
+        double fInterceptSigma;
+        double fStartFrequencySigma;
+        double fEndFrequencySigma;
 
 
         LineRef(const double& InitialSlope);
@@ -101,6 +108,7 @@ namespace Katydid {
         void LineTrimming(const double& TrimminFactor, const unsigned& MinPoints);
         void CalculateSlope();
         void UpdateLineParameters();
+        void FinishTrack();
         void Clear();
         virtual ~LineRef();
 
