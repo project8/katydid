@@ -29,7 +29,7 @@ namespace Katydid
     KTIterativeTrackClustering::KTIterativeTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
             fTimeGapTolerance(5.*pow(10, -3)),
-            fFrequencyAcceptance(185.*pow(10, 5)),
+            fFrequencyAcceptance(185.*pow(10, 3)),
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
@@ -130,7 +130,7 @@ namespace Katydid
     bool KTIterativeTrackClustering::FindMatchingTracks()
     {
         KTINFO(itclog, "Finding extrapolated tracks");
-
+        KTDEBUG(itclog, "TimeGapTolerance and FrequencyAcceptance are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance);
         fNewTracks.clear();
 
         unsigned NumberOfTracks = fCompTracks.size();
@@ -169,9 +169,10 @@ namespace Katydid
 
     bool KTIterativeTrackClustering::LineClustering()
     {
-        bool match = false;
+        bool match;
         for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
         {
+            match = false;
             KTINFO(itclog,"track power: "<<compIt->GetTotalPower());
             for (std::vector<KTProcessedTrackData>::iterator newIt = fNewTracks.begin(); newIt != fNewTracks.end(); ++newIt)
             {
