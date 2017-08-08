@@ -13,6 +13,9 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTEggHeader.hh"
 #include "KTMath.hh"
 
 #include <cmath>
@@ -35,9 +38,10 @@ namespace Katydid
             fTSSignal("time-series", this),
             fFSSignal("frequency-spectrum", this)
     {
-        RegisterSlot( "ts", this, &KTQuadraticPhaseShift::SlotFunctionDeChirp );
-        RegisterSlot( "fs", this, &KTQuadraticPhaseShift::SlotFunctionFrFFT );
+        RegisterSlot( "ts", this, &KTQuadraticPhaseShift::SlotFunctionTS );
+        RegisterSlot( "fs", this, &KTQuadraticPhaseShift::SlotFunctionFS );
         RegisterSlot( "track", this, &KTQuadraticPhaseShift::SlotFunctionTrack );
+        RegisterSlot( "header", this, &KTQuadraticPhaseShift::SlotFunctionHeader );
     }
 
     KTQuadraticPhaseShift::~KTQuadraticPhaseShift()
@@ -112,7 +116,7 @@ namespace Katydid
         // Slice and TS parameters
 
         double f = 0;                               // frequency value of the current bin
-        double df = fsData.GetFrequencyBinWidth();  // frequency step
+        double df;                                  // frequency step
         double norm = 0.;                           // norm of the current FS value
         double phase = 0.;                          // argument of current FS value
         double q = GetSlopeF();                     // q-value to determine phase shift
@@ -125,9 +129,10 @@ namespace Katydid
 
             // get TS from data object and make the new TS
             fs = dynamic_cast< KTFrequencySpectrumFFTW* >(fsData.GetSpectrum( iComponent ));
+            df = fs->GetFrequencyBinWidth();
             
             // Loop through all bins
-            for( unsigned iBin = 0; iBin < fs->GetFrequencyBins(); ++iBin )
+            for( unsigned iBin = 0; iBin < fs->GetNFrequencyBins(); ++iBin )
             {
                 // Obtain norm and phase from components
                 norm = sqrt( (*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1] );
@@ -150,7 +155,7 @@ namespace Katydid
 
     bool KTQuadraticPhaseShift::AssignPhase( KTProcessedTrackData& trackData )
     {
-        SetRotationAngle( atan2( trackData.GetSlope() * fTimeBinWidth * fTimeBinWidth ) );
+        SetRotationAngle( atan( trackData.GetSlope() * fTimeBinWidth * fTimeBinWidth ) );
         KTINFO(evlog, "Set rotation angle: " << GetRotationAngle());
 
         if( GetMethod() == "dechirp" )
@@ -159,8 +164,8 @@ namespace Katydid
         }
         else if( GetMethod() == "frfft" )
         {
-            SetSlopeT( tan( 0.5 * GetRotationAngle() ) * fFrequencyBinWidth * fFrequencyBinWidth )
-            SetSlopeF( sin( GetRotationAngle() ) * fTimeBinWidth * fTimeBinWidth )
+            SetSlopeT( tan( 0.5 * GetRotationAngle() ) * fFrequencyBinWidth * fFrequencyBinWidth );
+            SetSlopeF( sin( GetRotationAngle() ) * fTimeBinWidth * fTimeBinWidth );
         }
         else
         {
@@ -174,10 +179,105 @@ namespace Katydid
 
     bool KTQuadraticPhaseShift::InitializeFrFFT( KTEggHeader& header )
     {
-        fTimeBinWidth = header.GetSliceSize();
+        fTimeBinWidth = header.GetChannelHeader(0)->GetSliceSize();
         fFrequencyBinWidth = 1. / (double)fTimeBinWidth;
 
         return true;
+    }
+
+    void KTQuadraticPhaseShift::SlotFunctionTS( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTTimeSeriesData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTTimeSeriesData >!");
+            return;
+        }
+        if (! data->Has< KTSliceHeader >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
+            return;
+        }
+
+        // Use a copy of the original data pointer rather than alter it
+        Nymph::KTDataPtr newData = data;
+
+        // Call function
+        if(! DechirpTS( newData->Of< KTTimeSeriesData >(), newData->Of< KTSliceHeader >() ))
+        {
+            KTERROR(avlog_hh, "Something went wrong while analyzing time series data!");
+            return;
+        }
+
+        // Emit signal
+        fTSSignal( newData );
+    
+        return;
+    }
+
+    void KTQuadraticPhaseShift::SlotFunctionFS( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTFrequencySpectrumDataFFTW >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTFrequencySpectrumDataFFTW >!");
+            return;
+        }
+
+        // Use a new data pointer
+        Nymph::KTDataPtr newData;
+
+        // Copy the old frequency spectrum
+        KTFrequencySpectrumDataFFTW& newFS = newData->Of< KTFrequencySpectrumDataFFTW >();
+        newFS = data->Of< KTFrequencySpectrumDataFFTW >();
+
+        // Call function
+        if(! DechirpFS( newData->Of< KTFrequencySpectrumDataFFTW >() ))
+        {
+            KTERROR(avlog_hh, "Something went wrong while analyzing frequency spectrum data!");
+            return;
+        }
+
+        // Emit signal
+        fFSSignal( newData );
+    
+        return;
+    } 
+
+    void KTQuadraticPhaseShift::SlotFunctionTrack( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTProcessedTrackData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
+            return;
+        }
+
+        if(! AssignPhase( data->Of< KTProcessedTrackData >() ))
+        {
+            KTERROR(avlog_hh, "Something went wrong setting the phase slope!");
+            return;
+        }
+    }
+
+    void KTQuadraticPhaseShift::SlotFunctionHeader( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTEggHeader >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTEggHeader >!");
+            return;
+        }
+
+        if(! InitializeFrFFT( data->Of< KTEggHeader >() ))
+        {
+            KTERROR(avlog_hh, "Something went wrong initializing the fractional FFT!");
+            return;
+        }
     }
 
 } // namespace Katydid

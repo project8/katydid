@@ -21,6 +21,8 @@ namespace Katydid
     KTLOGGER(avlog_hh, "KTQuadraticPhaseShift.hh");
 
     class KTSliceHeader;
+    class KTEggHeader;
+    class KTFrequencySpectrumDataFFTW;
     class KTProcessedTrackData;
     class KTTimeSeriesData;
 
@@ -138,7 +140,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTQuadraticPhaseShift::GetMethod() const
+    inline std::string KTQuadraticPhaseShift::GetMethod() const
     {
         return fMethod;
     }
@@ -148,101 +150,7 @@ namespace Katydid
         fMethod = method;
         return;
     }
-
-    void KTQuadraticPhaseShift::SlotFunctionTS( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTTimeSeriesData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTTimeSeriesData >!");
-            return;
-        }
-        if (! data->Has< KTSliceHeader >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
-            return;
-        }
-
-        // Use a copy of the original data pointer rather than alter it
-        Nymph::KTDataPtr newData = data;
-
-        // Call function
-        if(! DechirpTS( newData->Of< KTTimeSeriesData >(), newData->Of< KTSliceHeader >() ))
-        {
-            KTERROR(avlog_hh, "Something went wrong while analyzing time series data!");
-            return;
-        }
-
-        // Emit signal
-        fTSSignal( newData );
     
-        return;
-    }
-
-    void KTQuadraticPhaseShift::SlotFunctionFS( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTFrequencySpectrumDataFFTW >!");
-            return;
-        }
-
-        // Use a new data pointer
-        Nymph::KTDataPtr newData;
-
-        // Copy the old frequency spectrum
-        KTFrequencySpectrumDataFFTW& newFS = newData->Of< KTFrequencySpectrumDataFFTW >();
-        newData = data->Of< KTFrequencySpectrumDataFFTW >();
-
-        // Call function
-        if(! DechirpFS( newData->Of< KTFrequencySpectrumDataFFTW >() ))
-        {
-            KTERROR(avlog_hh, "Something went wrong while analyzing frequency spectrum data!");
-            return;
-        }
-
-        // Emit signal
-        fFSSignal( newData );
-    
-        return;
-    } 
-
-    void KTQuadraticPhaseShift::SlotFunctionTrack( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
-
-        if(! AssignPhase( data->Of< KTProcessedTrackData >() ))
-        {
-            KTERROR(avlog_hh, "Something went wrong setting the phase slope!");
-            return;
-        }
-    }
-
-    void KTQuadraticPhaseShift::SlotFunctionHeader( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTEggHeader >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTEggHeader >!");
-            return;
-        }
-
-        if(! InitializeFrFFT( data->Of< KTEggHeader >() ))
-        {
-            KTERROR(avlog_hh, "Something went wrong initializing the fractional FFT!");
-            return;
-        }
-    }
 }
 
 #endif /* KTQUADRATICPHASESHIFT_HH_ */
