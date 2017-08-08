@@ -1,11 +1,11 @@
 /*
  * KTCollinearTrackClustering.cc
  *
- *  Created on: May 1, 2017
- *      Author: E. Zayas
+ *  Created on: August 7, 2017
+ *      Author: C. Claessens
  */
 
-#include "KTIterativeLineClustering.hh"
+#include "KTIterativeTrackClustering.hh"
 
 #include "KTLogger.hh"
 
@@ -22,7 +22,7 @@ using std::set;
 
 namespace Katydid
 {
-    KTLOGGER(itclog, "KTCollinearTrackClustering");
+    KTLOGGER(itclog, "KTIterativeTrackClustering");
 
     KT_REGISTER_PROCESSOR(KTIterativeTrackClustering, "iterative-track-clustering");
 

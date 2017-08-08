@@ -1,9 +1,9 @@
 /**
- @file KTCollinearTrackClustering.hh
- @brief Contains KTCollinearTrackClustering
+ @file KTIterativeTrackClustering.hh
+ @brief Contains KTIterativeTrackClustering
  @details Groups collinear tracks into one
- @author: E. Zayas
- @date: May 1, 2017
+ @author: C. Claessens
+ @date: August 7, 2017
  */
 
 #ifndef KTITERATIVETRACKCLUSTERING_HH_
