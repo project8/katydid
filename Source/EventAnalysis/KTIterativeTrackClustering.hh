@@ -74,7 +74,7 @@ namespace Katydid
             // Store point information locally
             bool TakeTrack(KTProcessedTrackData& track);
 
-            void SetNComponents(unsigned nComps);
+            //void SetNComponents(unsigned nComps);
             bool DoClustering();
             bool Run();
 

@@ -125,10 +125,10 @@ namespace Katydid
         double slope = (sumXY*sumOne-sumY*sumX)/(sumXX*sumOne-sumX*sumX);
         double intercept = sumY/sumOne-slope*sumX/sumOne;
         double rho = -sumX/sqrt(sumXX*sumOne); // correlation coefficient between slope and intercept
-        KTDEBUG(seqlog, "Weighted average results: \n" <<
-                "\tSlope: " << '\t' << slope << '\n' <<
-                "\tIntercept: " << '\t' << intercept);
-        KTDEBUG(seqlog, "Amplitude of the track: " << amplitudeSum );
+        //KTDEBUG(seqlog, "Weighted average results: \n" <<
+        //        "\tSlope: " << '\t' << slope << '\n' <<
+        //        "\tIntercept: " << '\t' << intercept);
+        //KTDEBUG(seqlog, "Amplitude of the track: " << amplitudeSum );
 
         //Calculating Chi^2_min
         double chi2min = 0;
@@ -137,7 +137,7 @@ namespace Katydid
         {
             residual = average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
             chi2min += residual * residual;
-            KTDEBUG(seqlog, "Residuals : " << residual );
+         //   KTDEBUG(seqlog, "Residuals : " << residual );
         }
         // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
         double deltaSlope = 0;
@@ -162,10 +162,10 @@ namespace Katydid
                         deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
                         deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
                     }
-                    KTDEBUG(seqlog, "Error calculations results: \n" <<
-                            "\tSlope: " << '\t' << deltaSlope << '\n' <<
-                            "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
-                            "\tCorrelation coefficifent: " << '\t' << rho);
+         //           KTDEBUG(seqlog, "Error calculations results: \n" <<
+         //                   "\tSlope: " << '\t' << deltaSlope << '\n' <<
+         //                   "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
+         //                   "\tCorrelation coefficifent: " << '\t' << rho);
                     //Calculating error on the starting frequency and the end frequency
                     double startTime = *std::min_element(timeBinInAcq.begin(), timeBinInAcq.end());
                     double endTime = *std::max_element(timeBinInAcq.begin(), timeBinInAcq.end());
@@ -187,11 +187,7 @@ namespace Katydid
     inline void LineRef::CalculateSlope()
     {
 
-
-
-
-
-        KTDEBUG(seqlog, "Calculating line slope");
+        //KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
         double wSum = 0.0;
 
@@ -215,6 +211,7 @@ namespace Katydid
 
     void LineRef::LineTrimming(const double& TrimmingFactor, const unsigned& MinPoints)
     {
+        KTDEBUG(seqlog, "Trimming line edges");
 
         if (!fAmplitudeList.empty())
         {
@@ -240,7 +237,7 @@ namespace Katydid
 
     inline void (LineRef::UpdateLineParameters())
     {
-        KTDEBUG(seqlog, "Updating line parameters");
+        //KTDEBUG(seqlog, "Updating line parameters");
         fAcquisitionID = fLinePoints.front().fAcquisitionID;
         fComponent = fLinePoints.front().fComponent;
         fStartTimeInRunC = fLinePoints.front().fTimeInRunC;

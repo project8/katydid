@@ -299,7 +299,7 @@ namespace Katydid
                 // loop over active lines, in order of earliest start time
                 // dont need to sort them because they are already sorted by the slice of the line's start point
 
-                KTDEBUG(stflog, "Currently there are N Lines "<<fActiveLines.size());
+                //KTDEBUG(stflog, "Currently there are N Lines "<<fActiveLines.size());
 
                 std::vector< LineRef >::iterator LineIt = fActiveLines.begin();
                 while( LineIt != fActiveLines.end())
@@ -311,7 +311,6 @@ namespace Katydid
                     // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
                     if (LineIt->fEndTimeInRunC<PointIt->fTimeInRunC-fTimeGapTolerance)
                     {
-                        KTDEBUG(stflog, "Line with N points should be finished "<< LineIt->fNPoints);
                         if (LineIt->fNPoints >= fMinPoints)
                         {
                             LineIt->LineTrimming(fTrimmingFactor, fMinPoints);
@@ -328,8 +327,6 @@ namespace Katydid
                     }
                     else if (condition1 and condition2)
                     {
-                        KTDEBUG(stflog, "Going to add point to line");
-
                         LineIt->InsertPoint(*PointIt, new_TrimmingLimits);
                         match = true;
                         LineIt++;
@@ -399,8 +396,9 @@ namespace Katydid
             newTrack.SetInterceptSigma(Line.fInterceptSigma);
             newTrack.SetStartFrequencySigma(Line.fStartFrequencySigma);
             newTrack.SetEndFrequencySigma(Line.fEndFrequencySigma);
+            newTrack.SetTotalPower(Line.fAmplitudeSum);
 
-
+            KTDEBUG(stflog, "Line power and track power are: "<<Line.fAmplitudeSum<<" "<<newTrack.GetTotalPower());
             // Process & emit new track
 
             KTINFO(stflog, "Now processing PreCandidates");
@@ -438,7 +436,6 @@ namespace Katydid
         unsigned frequencybin = Point.fBinInSlice;
         double old_frequencybin;
         
-        KTDEBUG(stflog, "before search, frequency bin, frequency and amplitude are "<<frequencybin<< " "<<frequency<<" "<<amplitude);
 
 
         while(std::abs(Delta) > fConvergeDelta and loop_counter < max_iterations)
@@ -484,7 +481,6 @@ namespace Katydid
         Point.fBinInSlice = frequencybin;
         Point.fPointFreq = frequency;
         Point.fAmplitude = amplitude;
-        KTDEBUG(stflog, "after weighted average, frequency bin, frequency and amplitude are "<<Point.fBinInSlice<< " "<<Point.fPointFreq<<" "<<Point.fAmplitude);
     }
 
 
