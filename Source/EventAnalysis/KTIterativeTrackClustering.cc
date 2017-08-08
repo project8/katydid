@@ -30,8 +30,8 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fTimeGapTolerance(185.*pow(10, 5)),
             fFrequencyAcceptance(5.*pow(10, -3)),
-            fCompTracks(1),
-            fNewTracks(1),
+            fCompTracks(),
+            fNewTracks(),
             fNTracks(0),
             fApplyPowerCut(true),
             fApplyDensityCut(false),
@@ -93,7 +93,6 @@ namespace Katydid
 
         KTDEBUG(itclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
-        KTDEBUG(itclog, "track power is: "<<track.GetTotalPower());
         // copy the full track data
         fCompTracks.push_back(track);
 
@@ -148,12 +147,12 @@ namespace Katydid
         {
             while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 5)
             {
+                NumberOfTracks = fCompTracks.size();
                 KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
                 loopCounter ++;
                 this->LineClustering();
 
                 // Update number of tracks
-                NumberOfTracks = fCompTracks.size();
                 NumberOfNewTracks = fNewTracks.size();
 
                 KTDEBUG(itclog, "Number of new tracks: "<< NumberOfNewTracks);
@@ -173,6 +172,7 @@ namespace Katydid
         bool match = false;
         for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
         {
+            KTINFO(itclog,"track power: "<<compIt->GetTotalPower());
             for (std::vector<KTProcessedTrackData>::iterator newIt = fNewTracks.begin(); newIt != fNewTracks.end(); ++newIt)
             {
                 if (this->DoTheyMatch(*compIt, *newIt))
@@ -233,7 +233,7 @@ namespace Katydid
         bool slope_condition1 = std::abs(Track1.GetEndFrequency()+Track1.GetSlope()*(Track2.GetStartTimeInRunC()-Track1.GetEndTimeInRunC()) - Track2.GetStartFrequency())<fFrequencyAcceptance;
         bool slope_condition2 = std::abs(Track2.GetStartFrequency()-Track2.GetSlope()*(Track2.GetStartTimeInRunC()-Track1.GetEndTimeInRunC()) - Track1.GetEndFrequency())<fFrequencyAcceptance;
         bool time_gap_in_line = Track1.GetEndTimeInRunC() <= Track2.GetStartTimeInRunC();
-        bool gap_smaller_than_limit = Track2.GetStartTimeInRunC() - Track1.GetEndTimeInRunC();
+        bool gap_smaller_than_limit = std::abs(Track2.GetStartTimeInRunC() - Track1.GetEndTimeInRunC())<fTimeGapTolerance;
 
         if (time_gap_in_line and gap_smaller_than_limit and (slope_condition1 or slope_condition2))
         {
@@ -243,7 +243,7 @@ namespace Katydid
         slope_condition1 = std::abs(Track2.GetEndFrequency()+Track2.GetSlope()*(Track1.GetStartTimeInRunC()-Track2.GetEndTimeInRunC()) - Track1.GetStartFrequency())<fFrequencyAcceptance;
         slope_condition2 = std::abs(Track1.GetStartFrequency()-Track1.GetSlope()*(Track1.GetStartTimeInRunC()-Track2.GetEndTimeInRunC()) - Track2.GetEndFrequency())<fFrequencyAcceptance;
         time_gap_in_line = Track2.GetEndTimeInRunC() <= Track1.GetStartTimeInRunC();
-        gap_smaller_than_limit = Track1.GetStartTimeInRunC() - Track2.GetEndTimeInRunC();
+        gap_smaller_than_limit = std::abs(Track1.GetStartTimeInRunC() - Track2.GetEndTimeInRunC())<fTimeGapTolerance;
 
         if (time_gap_in_line and gap_smaller_than_limit and (slope_condition1 or slope_condition2))
         {
@@ -328,10 +328,15 @@ namespace Katydid
 */
     void KTIterativeTrackClustering::EmitTrackCandidates()
     {
+        KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
+        bool LineIsTrack;
         KTINFO(itclog, "Clustering done. Emitting new tracks followed by clustering-done signal")
-        for (std::vector<KTProcessedTrackData>::const_iterator trackIt = fCompTracks.begin(); trackIt!=fCompTracks.end(); trackIt++)
+
+        std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();
+
+        while(trackIt!=fCompTracks.end())
         {
-            bool LineIsTrack = true;
+            LineIsTrack = true;
 
             if (fApplyPowerCut)
             {
@@ -375,6 +380,7 @@ namespace Katydid
                 KTDEBUG(itclog, "Emitting track signal");
                 fTrackSignal( data );
             }
+            trackIt = fCompTracks.erase(trackIt);
         }
     }
 
