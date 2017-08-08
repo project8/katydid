@@ -28,8 +28,8 @@ namespace Katydid
 
     KTIterativeTrackClustering::KTIterativeTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
-            fTimeGapTolerance(185.*pow(10, 5)),
-            fFrequencyAcceptance(5.*pow(10, -3)),
+            fTimeGapTolerance(5.*pow(10, -3)),
+            fFrequencyAcceptance(185.*pow(10, 5)),
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
