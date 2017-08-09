@@ -137,17 +137,14 @@ namespace Katydid
         unsigned NumberOfNewTracks = fNewTracks.size();
 
 
-        unsigned loopCounter = 0;
-
         /*
         // this combines overlapping tracks -> moved to KtOverlappingClustering
         if (NumberOfTracks > 1)
         {
-            while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 10)
+            while (NumberOfTracks!=NumberOfNewTracks)
             {
                 NumberOfTracks = fCompTracks.size();
                 KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
-                loopCounter ++;
                 this->OverlapClustering();
 
                 // Update number of tracks
@@ -165,16 +162,14 @@ namespace Katydid
         NumberOfNewTracks = fNewTracks.size();
 
 
-        loopCounter = 0;
         */
 
         if (NumberOfTracks > 1)
         {
-            while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 10)
+            while (NumberOfTracks!=NumberOfNewTracks)
             {
                 NumberOfTracks = fCompTracks.size();
                 KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
-                loopCounter ++; 
                 this->ExtrapolateClustering();
 
                 // Update number of tracks
@@ -213,7 +208,6 @@ namespace Katydid
             if (match == false)
             {
                 KTProcessedTrackData newTrack(*compIt);
-                KTDEBUG(itclog, "Creating new track: "<< newTrack.GetTotalPower());
                 fNewTracks.push_back(newTrack);
             }
         }
@@ -231,7 +225,6 @@ namespace Katydid
                 if (this->DoTheyMatch(*compIt, *newIt))
                 {
                     match = true;
-                    KTDEBUG(itclog, "Found overlapping tracks")
                     this->CombineTracks(*compIt, *newIt);
                     break;
                 }   
