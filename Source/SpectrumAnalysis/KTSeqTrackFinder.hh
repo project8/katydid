@@ -31,7 +31,7 @@ namespace Katydid
      @class KTSeqTrackFinder
      @author E. Christine
 
-     @brief Implementation of a slighly modified version of Dan Furse's algorithm
+     @brief Implementation of a slightly modified version of Dan Furse's algorithm
 
      @details
      Collects points that lie on a linear track
@@ -133,7 +133,7 @@ namespace Katydid
             void SearchTrueLinePoint(Point&, std::vector<double>& slice);
             void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
-            bool EmitPreCandidate(LineRef Line, unsigned component);
+            bool EmitPreCandidate(LineRef Line);
             void AcquisitionIsOver();
 
 

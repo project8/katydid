@@ -1,11 +1,11 @@
 /*
- * KTIterativeTrackClustering.cc
+ * KTOverlappingTrackClustering.cc
  *
  *  Created on: August 7, 2017
  *      Author: C. Claessens
  */
 
-#include "KTIterativeTrackClustering.hh"
+#include "KTOverlappingTrackClustering.hh"
 
 #include "KTLogger.hh"
 
@@ -22,11 +22,11 @@ using std::set;
 
 namespace Katydid
 {
-    KTLOGGER(itclog, "KTIterativeTrackClustering");
+    KTLOGGER(itclog, "KTOverlappingTrackClustering");
 
-    KT_REGISTER_PROCESSOR(KTIterativeTrackClustering, "iterative-track-clustering");
+    KT_REGISTER_PROCESSOR(KTOverlappingTrackClustering, "Overlapping-track-clustering");
 
-    KTIterativeTrackClustering::KTIterativeTrackClustering(const std::string& name) :
+    KTOverlappingTrackClustering::KTOverlappingTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
             fTimeGapTolerance(5.*pow(10, -3)),
             fFrequencyAcceptance(185.*pow(10, 3)),
@@ -39,16 +39,16 @@ namespace Katydid
             fDensityThreshold(0.0),
             fTrackSignal("track", this),
             fDoneSignal("tracks-done", this),
-            fTakeTrackSlot("track", this, &KTIterativeTrackClustering::TakeTrack)
+            fTakeTrackSlot("track", this, &KTOverlappingTrackClustering::TakeTrack)
     {
-        RegisterSlot("do-clustering", this, &KTIterativeTrackClustering::DoClusteringSlot);
+        RegisterSlot("do-clustering", this, &KTOverlappingTrackClustering::DoClusteringSlot);
     }
 
-    KTIterativeTrackClustering::~KTIterativeTrackClustering()
+    KTOverlappingTrackClustering::~KTOverlappingTrackClustering()
     {
     }
 
-    bool KTIterativeTrackClustering::Configure(const scarab::param_node* node)
+    bool KTOverlappingTrackClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
@@ -80,16 +80,11 @@ namespace Katydid
         return true;
     }
 
-    bool KTIterativeTrackClustering::TakeTrack(KTProcessedTrackData& track)
+    bool KTOverlappingTrackClustering::TakeTrack(KTProcessedTrackData& track)
     {
         // ignore the track if it's been cut
         if (track.GetIsCut()) return true;
 
-        // verify that we have the right number of components
-        //if (track.GetComponent() >= fCompTracks.size())
-        //{
-        //    SetNComponents(track.GetComponent() + 1);
-        //}
 
         KTDEBUG(itclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
@@ -99,25 +94,25 @@ namespace Katydid
         return true;
     }
 
-    void KTIterativeTrackClustering::DoClusteringSlot()
+    void KTOverlappingTrackClustering::DoClusteringSlot()
     {
         if (! Run())
         {
-            KTERROR(itclog, "An error occurred while running the iterative track clustering");
+            KTERROR(itclog, "An error occurred while running the clustering");
         }
         return;
     }
 
-    bool KTIterativeTrackClustering::Run()
+    bool KTOverlappingTrackClustering::Run()
     {
         return DoClustering();
     }
 
-    bool KTIterativeTrackClustering::DoClustering()
+    bool KTOverlappingTrackClustering::DoClustering()
     {
         if (! FindMatchingTracks())
         {
-            KTERROR(itclog, "An error occurred while identifying extrapolated tracks");
+            KTERROR(itclog, "An error occurred while identifying overlapping tracks");
             return false;
         }
 
@@ -127,9 +122,9 @@ namespace Katydid
         return true;
     }
 
-    bool KTIterativeTrackClustering::FindMatchingTracks()
+    bool KTOverlappingTrackClustering::FindMatchingTracks()
     {
-        KTINFO(itclog, "Finding extrapolated tracks");
+        KTINFO(itclog, "Finding overlapping tracks");
         KTDEBUG(itclog, "TimeGapTolerance and FrequencyAcceptance are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance);
         fNewTracks.clear();
 
@@ -170,7 +165,7 @@ namespace Katydid
             {
                 NumberOfTracks = fCompTracks.size();
                 KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
-                loopCounter ++; 
+                loopCounter ++;
                 this->ExtrapolateClustering();
 
                 // Update number of tracks
@@ -189,7 +184,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTIterativeTrackClustering::OverlapClustering()
+    bool KTOverlappingTrackClustering::OverlapClustering()
     {
         bool match;
         for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
@@ -205,7 +200,7 @@ namespace Katydid
                     break;
                 }
             }
-        
+
             if (match == false)
             {
                 KTProcessedTrackData newTrack(*compIt);
@@ -216,7 +211,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTIterativeTrackClustering::ExtrapolateClustering()
+    bool KTOverlappingTrackClustering::ExtrapolateClustering()
     {
         bool match;
         for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
@@ -230,7 +225,7 @@ namespace Katydid
                     KTDEBUG(itclog, "Found overlapping tracks")
                     this->CombineTracks(*compIt, *newIt);
                     break;
-                }   
+                }
             }
 
             if (match == false)
@@ -238,13 +233,13 @@ namespace Katydid
                 KTProcessedTrackData newTrack(*compIt);
                 KTDEBUG(itclog, "Creating new track: "<< newTrack.GetTotalPower());
                 fNewTracks.push_back(newTrack);
-            }   
+            }
         }
         return true;
     }
 
 
-    void KTIterativeTrackClustering::CombineTracks(KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
+    void KTOverlappingTrackClustering::CombineTracks(KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
     {
         if (oldTrack.GetStartTimeInRunC() < newTrack.GetStartTimeInRunC())
         {
@@ -274,7 +269,7 @@ namespace Katydid
     }
 
 
-    bool KTIterativeTrackClustering::DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2)
+    bool KTOverlappingTrackClustering::DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2)
     {
         bool slope_condition1 = std::abs(Track1.GetEndFrequency()+Track1.GetSlope()*(Track2.GetStartTimeInRunC()-Track1.GetEndTimeInRunC()) - Track2.GetStartFrequency())<fFrequencyAcceptance;
         bool slope_condition2 = std::abs(Track2.GetStartFrequency()-Track2.GetSlope()*(Track2.GetStartTimeInRunC()-Track1.GetEndTimeInRunC()) - Track1.GetEndFrequency())<fFrequencyAcceptance;
@@ -299,7 +294,7 @@ namespace Katydid
     return false;
     }
 
-    bool KTIterativeTrackClustering::DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2)
+    bool KTOverlappingTrackClustering::DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2)
     {
         // if the start time of track 2 is between start and end time of track 1
         bool condition1 = Track2.GetStartTimeInRunC() <= Track1.GetEndTimeInRunC() and Track2.GetStartTimeInRunC() >= Track1.GetStartTimeInRunC();
@@ -337,11 +332,12 @@ namespace Katydid
         {
             return true;
         }
+
         return false;
     }
 
 
-    void KTIterativeTrackClustering::EmitTrackCandidates()
+    void KTOverlappingTrackClustering::EmitTrackCandidates()
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
         bool LineIsTrack;
@@ -401,7 +397,7 @@ namespace Katydid
         }
     }
 
-    void KTIterativeTrackClustering::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
+    void KTOverlappingTrackClustering::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
     {
         myNewTrack.SetTimeLength( myNewTrack.GetEndTimeInRunC() - myNewTrack.GetStartTimeInRunC() );
         myNewTrack.SetFrequencyWidth( myNewTrack.GetEndFrequency() - myNewTrack.GetStartFrequency() );
