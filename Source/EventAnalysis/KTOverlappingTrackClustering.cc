@@ -24,7 +24,7 @@ namespace Katydid
 {
     KTLOGGER(itclog, "KTOverlappingTrackClustering");
 
-    KT_REGISTER_PROCESSOR(KTOverlappingTrackClustering, "Overlapping-track-clustering");
+    KT_REGISTER_PROCESSOR(KTOverlappingTrackClustering, "overlapping-track-clustering");
 
     KTOverlappingTrackClustering::KTOverlappingTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
@@ -33,7 +33,7 @@ namespace Katydid
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
-            fApplyPowerCut(true),
+            fApplyPowerCut(false),
             fApplyDensityCut(false),
             fPowerThreshold(0.0),
             fDensityThreshold(0.0),
@@ -156,7 +156,7 @@ namespace Katydid
         NumberOfTracks = fCompTracks.size();
         NumberOfNewTracks = fNewTracks.size();
 
-
+        /*
         loopCounter = 0;
 
         if (NumberOfTracks > 1)
@@ -178,7 +178,7 @@ namespace Katydid
                 fNewTracks.clear();
             }
         }
-
+        */
         this->EmitTrackCandidates();
 
         return true;

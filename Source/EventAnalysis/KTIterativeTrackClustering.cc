@@ -33,7 +33,7 @@ namespace Katydid
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
-            fApplyPowerCut(true),
+            fApplyPowerCut(false),
             fApplyDensityCut(false),
             fPowerThreshold(0.0),
             fDensityThreshold(0.0),
@@ -139,6 +139,8 @@ namespace Katydid
 
         unsigned loopCounter = 0;
 
+        /*
+        // this combines overlapping tracks -> moved to KtOverlappingClustering
         if (NumberOfTracks > 1)
         {
             while (NumberOfTracks!=NumberOfNewTracks and loopCounter < 10)
@@ -158,11 +160,13 @@ namespace Katydid
                 fNewTracks.clear();
             }
         }
+
         NumberOfTracks = fCompTracks.size();
         NumberOfNewTracks = fNewTracks.size();
 
 
         loopCounter = 0;
+        */
 
         if (NumberOfTracks > 1)
         {
