@@ -30,8 +30,10 @@ namespace Katydid
             KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >(name),
             fFilename("spect_output.root"),
             fFileFlag("recreate"),
+            fMode(kSingle),
             fMinTime(0.),
             fMaxTime(0.),
+            fNTimeBins(0),
             fMinFreq(0.),
             fMaxFreq(0.),
             fBufferFreq(0.),
@@ -54,10 +56,32 @@ namespace Katydid
         {
             SetFilename(node->get_value("output-file", fFilename));
             SetFileFlag(node->get_value("file-flag", fFileFlag));
+
+            if (node->has("mode"))
+            {
+                std::string modeStr = node->get_value("mode");
+                if (modeStr == "single") SetMode(kSingle);
+                else if (modeStr == "sequential") SetMode(kSequential);
+                else
+                {
+                    KTERROR(publog, "Invalid mode: <" << modeStr << ">");
+                    return false;
+                }
+            }
+
             SetMinFreq(node->get_value("min-freq", fMinFreq));
             SetMaxFreq(node->get_value("max-freq", fMaxFreq));
+
+            SetNTimeBins(node->get_value("n-time-bins", fNTimeBins));
+
             SetMinTime(node->get_value("min-time", fMinTime));
             SetMaxTime(node->get_value("max-time", fMaxTime));
+
+            if (fMinTime > fMaxTime)
+            {
+                fMode = kSequential;
+            }
+
             SetBufferFreq(node->get_value("buffer-freq", fBufferFreq));
             SetBufferTime(node->get_value("buffer-time", fBufferTime));
         }

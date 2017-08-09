@@ -101,6 +101,13 @@ namespace Katydid
     class KTROOTSpectrogramWriter : public Nymph::KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >//public KTWriter
     {
         public:
+            enum Mode
+            {
+                kSingle,
+                kSequential
+            };
+
+        public:
             KTROOTSpectrogramWriter(const std::string& name = "root-spectrogram-writer");
             virtual ~KTROOTSpectrogramWriter();
 
@@ -113,8 +120,12 @@ namespace Katydid
             MEMBERVARIABLEREF(std::string, Filename);
             MEMBERVARIABLEREF(std::string, FileFlag);
 
+            MEMBERVARIABLE(Mode, Mode);
+
             MEMBERVARIABLE(double, MinTime); // in sec
             MEMBERVARIABLE(double, MaxTime); // in sec
+
+            MEMBERVARIABLE(unsigned, NTimeBins);
 
             MEMBERVARIABLE(double, MinFreq); // in Hz
             MEMBERVARIABLE(double, MaxFreq); // in Hz
