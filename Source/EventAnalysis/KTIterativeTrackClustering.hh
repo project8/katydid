@@ -63,6 +63,7 @@ namespace Katydid
 
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
+            MEMBERVARIABLE(double, TrackFrequencyRadius);
             MEMBERVARIABLE(bool, ApplyPowerCut);
             MEMBERVARIABLE(bool, ApplyDensityCut);
             MEMBERVARIABLE(double, PowerThreshold);

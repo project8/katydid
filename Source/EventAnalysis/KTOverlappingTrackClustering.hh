@@ -84,6 +84,7 @@ namespace Katydid
             bool ExtrapolateClustering();
             bool DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             bool DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
+            bool DoTheyCross(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             void CombineTracks(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             bool FindMatchingTracks();
             void EmitTrackCandidates();
