@@ -22,8 +22,8 @@ namespace Katydid {
     KTLOGGER(sllog, "KTSeqLine");
 
 
-    //using namespace Nymph;
-
+    // this is a point from a power spectrum slice
+    // sorting it will sort it by power
     struct Point
     {
         double fBinInSlice;
@@ -48,6 +48,8 @@ namespace Katydid {
         }
     };
 
+    // this is a line point. Its amplitude is the sum of all bins in the power slice of its frequency +/- the line width
+    // sort by time
     struct LinePoint
     {
         double fBinInSlice;
@@ -75,8 +77,6 @@ namespace Katydid {
 
     struct LineRef
     {
-        //std::set< TrackSetCIt, TrackSetCItComp > fTrackRefs;
-        // Keep track of both the sum and the mean so that the mean can be updated regularly without an extra multiplication
 
         std::vector<double> fTrimmingLimits;
         std::vector<LinePoint> fLinePoints;
@@ -120,22 +120,8 @@ namespace Katydid {
 
 
 
- /*   struct LineComp
-    {
-        bool operator() (const LineRef& lhs, const LineRef& rhs)
-        {
-            if (lhs.fStartTimeInRunC != rhs.fStartTimeInRunC) return lhs.fStartTimeInRunC < rhs.fStartTimeInRunC;
-                        return lhs.fEndTimeInRunC < rhs.fEndTimeInRunC;
-        }
-
-    };
-*/
-
-
-
-
 } /* namespace Katydid */
 
-#endif /* SOURCE_DATA_TRANSFORM_KTSEQLINE_HH_ */
+#endif /* SOURCE_DATA_SPECTRUM_ANALYSIS_KTSEQLINE_HH_ */
 
 

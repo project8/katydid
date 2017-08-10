@@ -59,8 +59,9 @@ namespace Katydid
 
     void LineRef::FinishTrack()
     {
+        // This is the weighted slope algorithm from the track processing.
+        // However it did not result in better slopes and it's currently not used.
 
-        // Makes a first loop over the points to calculate the weighted average in one time slice
         std::vector< double > timeBinInAcq;
         std::vector< double > timeBinInRunC;
         std::vector< double > sumPf;

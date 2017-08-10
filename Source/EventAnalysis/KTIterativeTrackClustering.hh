@@ -29,20 +29,21 @@ namespace Katydid
      @class KTIterativeLineClustering
      @author C. Claessens
 
-     @brief Clusters tracks together until number of lines stops decreasing
+     @brief merges track segments until number of lines stops decreasing
 
      @details
-     Checks whether line start/ends matches another track's extrapolation
+     Checks whether track start/ends matches another track's extrapolation
 
      Configuration name: "iterative-track-clustering"
 
      Available configuration values:
      - "time-gap-tolerance": maximum time gap between tracks
      - "frequency-acceptance": maximum allowed distance from the slope extrapolation
-     - "apply-power-cut": default is true
+     - "max-track-width": radius around a track where there cannot be another track
+     - "apply-power-cut": default is false
      - "apply-power-density-cut": default is false
      - "power-threshold": total track power must be above this threshold
-     - "power-density-threshold": totel power per second threshold
+     - "power-density-threshold": total power per second threshold
 
      Slots:
      - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.
@@ -63,7 +64,7 @@ namespace Katydid
 
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
-            MEMBERVARIABLE(double, TrackFrequencyRadius);
+            MEMBERVARIABLE(double, MaxTrackWidth);
             MEMBERVARIABLE(bool, ApplyPowerCut);
             MEMBERVARIABLE(bool, ApplyDensityCut);
             MEMBERVARIABLE(double, PowerThreshold);
@@ -81,7 +82,6 @@ namespace Katydid
 
 
         private:
-            bool OverlapClustering();
             bool ExtrapolateClustering();
             bool DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             bool DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);

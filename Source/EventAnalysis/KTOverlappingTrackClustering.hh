@@ -1,7 +1,7 @@
 /**
  @file KTOverlappingTrackClustering.hh
  @brief Contains KTOverlappingTrackClustering
- @details Groups collinear tracks into one
+ @details Groups overlapping or crossing tracks into one
  @author: C. Claessens
  @date: August 7, 2017
  */
@@ -32,17 +32,17 @@ namespace Katydid
      @brief Clusters tracks together until number of lines stops decreasing
 
      @details
-     Checks whether line start/ends are very close to another track
+     Checks whether tracks start/ends are very close to another track or whether tracks cross.
+     This step is necessary for dans algorithm, because for a wide of slightly curved track it often finds several parallel track segments
 
      Configuration name: "overlapping-track-clustering"
 
      Available configuration values:
-     - "time-gap-tolerance": maximum time gap between tracks
-     - "frequency-acceptance": maximum allowed distance from the slope extrapolation
+     - "max-track-width": tracks that are not further apart than this value in frequency will be grouped together to a combined track
      - "apply-power-cut": default is false
      - "apply-power-density-cut": default is false
      - "power-threshold": total track power must be above this threshold
-     - "power-density-threshold": totel power per second threshold
+     - "power-density-threshold": total power/second threshold
 
      Slots:
      - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.
@@ -56,13 +56,12 @@ namespace Katydid
     class KTOverlappingTrackClustering : public Nymph::KTPrimaryProcessor
     {
         public:
-            KTOverlappingTrackClustering(const std::string& name = "Overlapping-track-clustering");
+            KTOverlappingTrackClustering(const std::string& name = "overlapping-track-clustering");
             virtual ~KTOverlappingTrackClustering();
 
             bool Configure(const scarab::param_node* node);
 
-            MEMBERVARIABLE(double, TimeGapTolerance);
-            MEMBERVARIABLE(double, FrequencyAcceptance);
+            MEMBERVARIABLE(double, MaxTrackWidth);
             MEMBERVARIABLE(bool, ApplyPowerCut);
             MEMBERVARIABLE(bool, ApplyDensityCut);
             MEMBERVARIABLE(double, PowerThreshold);
@@ -81,8 +80,7 @@ namespace Katydid
 
         private:
             bool OverlapClustering();
-            bool ExtrapolateClustering();
-            bool DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
+            //bool DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             bool DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             bool DoTheyCross(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
             void CombineTracks(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);

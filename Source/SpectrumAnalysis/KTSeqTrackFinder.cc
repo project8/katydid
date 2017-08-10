@@ -213,6 +213,9 @@ namespace Katydid
 
             // the trimming limits are the average of the entire slice power
             // trimming_factor x trimming_limits are the threshold for the line edges
+            // this is part of dans algorithm but seems to only make sense with a flat background
+            //should probably be average snr
+            //testing on roach data will show, because roach background is not flat
             double new_TrimmingLimits;
             double value;
 
@@ -263,7 +266,7 @@ namespace Katydid
     	    newFreq = PointIt->fPointFreq;
 
     	    // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
-            // To prevent that in the next iteration the point gets refound and added to another line the amplitude of the point is reassigned here
+            // To prevent that in the next iteration the point gets re-found and added to another line the amplitude of the point is reassigned here
             PointIt->fAmplitude = slice[PointIt->fBinInSlice];
 
     	    if (PointIt->fAmplitude == 0.0)
@@ -271,12 +274,7 @@ namespace Katydid
                 KTDEBUG(stflog, "Point amplitude is 0, skipping point");
     	        continue;
     	    }
-    	    /*else if (std::abs(newFreq - oldFreq) < fMinFreqBinDistance*fBinWidth)
-    	    {
-                KTDEBUG(stflog, "frequency distance not big enough, skipping point");
-    	        continue;
 
-    	    else if (std::abs(newFreq - oldFreq) >= fMinFreqBinDistance*fBinWidth)*/
     	    else
     	    {
                 oldFreq = Freq;

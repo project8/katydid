@@ -34,7 +34,7 @@ namespace Katydid
      @brief Implementation of a slightly modified version of Dan Furse's algorithm
 
      @details
-     Collects points that lie on a linear track
+     Collects points on a linear track
 
      Configuration name: "dans-track-finding-algorithm"
 
@@ -42,28 +42,28 @@ namespace Katydid
      - "snr-threshold-power": discrimination snr for point candidates
      - "min-frequency": minimum allowed frequency (has to be set)
      - "max-frequency": max allowed frequency (has to be set)
-     - "min-bin": can be set instead of min and frequency
+     - "min-bin": can be set instead of min frequency
      - "max-bin": can be set instead of  max frequency
      - "trimming-factor": before a line is converted to a track its edges get trimmed. If the last or first line point power is less than the trimming-factor times the slice average power, theses points get cut off the line
      - "half-line-width": the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
      - "time-gap-tolerance": maximum gap between points in a line (in seconds)
-     - "minimum-line-bin-distance": if a point is less than this distance (in frequency bins) away from the last point it will be skipped
+     - "minimum-line-bin-distance": if a point is less than this distance (in bins) away from the last point it will be skipped
      - "search-radius": before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
      - "converge-delta": defines when convergence has been reached (in bins)
-     - "frequency-acceptance": maximum allowed frequency distance of point to extrapolated line (in Hz)
+     - "frequency-acceptance": maximum allowed frequency distance of point to an extrapolated line (in Hz)
      - "initial-slope": if a line has only one point, this is the line's slope
-     - "min-points": a line only gets converted to a track if it has collected more than min-points points
-     - "min-slope": a line only gets converted to a track if its slope is > than min-slope (in Hz/s)
-     - "apply-power-cut" (bool): if not set to true no power cut is applied before converting line to track
-     - "apply-point-density-cut" (bool): if not set to true no point density cut is applied before converting line to track
-     - "power-threshold": don't emit lines as tracks with less power than this threshold
-     - "point-density-threshold": don't emit lines as tracks with less points per milli second
+     - "min-points": a line only gets converted to a track if it has collected more than this many number of points
+     - "min-slope": a line only gets converted to a track if its slope is > than this slope (in Hz/s)
+     - "apply-power-cut" (bool): if true, a power threshold will be applied to a line before converting it to a processed track
+     - "apply-point-density-cut" (bool): if true, a number-of-points/time-length threshold will be applied to a line before converting it to a processed track
+     - "power-threshold": threshold for power cut
+     - "point-density-threshold": threshold for point density cut in points/millisecond
 
 
      Slots:
      - "gv": needs gain variation for thresholding
      - "ps-in": power spectrum to collect points from
-     - "done": connect with egg:done. Processes remaining active lines and sends done signal to multi-peak-track-builder
+     - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
      - "pre-candidate": void (shared_ptr<KTData>) -- Emitted for each line; Guarantees KTMultiPeakTrackData.
@@ -75,6 +75,7 @@ namespace Katydid
     {
 
         private:
+            // actually, currently only the eSNR_Power mode is implemented
             enum ThresholdMode
             {
                 eSNR_Amplitude,
@@ -93,7 +94,6 @@ namespace Katydid
 
         public:
             MEMBERVARIABLE(ThresholdMode, Mode);
-            //MEMBERVARIABLE(double, SNRPowerThreshold);
             MEMBERVARIABLE(double, TrimmingFactor);
             MEMBERVARIABLE(int, LinePowerWidth);
             MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
@@ -102,7 +102,6 @@ namespace Katydid
             MEMBERVARIABLE(double, FrequencyAcceptance);
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
-            //MEMBERVARIABLE(double, SNRThreshold);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, MinSlope);
             MEMBERVARIABLE(double, InitialSlope);

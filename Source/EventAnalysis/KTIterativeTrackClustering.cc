@@ -30,7 +30,7 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fTimeGapTolerance(5.*pow(10, -3)),
             fFrequencyAcceptance(185.*pow(10, 3)),
-            fTrackFrequencyRadius(50.*pow(10, 3)),
+            fMaxTrackWidth(50.*pow(10, 3)),
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
@@ -59,15 +59,19 @@ namespace Katydid
         }
         if (node->has("frequency-acceptance"))
         {
-            SetFrequencyAcceptance(node->get_value<int>("frequency-acceptance"));
+            SetFrequencyAcceptance(node->get_value<double>("frequency-acceptance"));
+        }
+        if (node->has("max-track-width"))
+        {
+            SetFrequencyAcceptance(node->get_value<double>("max-track-width"));
         }
         if (node->has("apply-power-cut"))
         {
             SetApplyPowerCut(node->get_value<bool>("apply-power-cut"));
         }
-        if (node->has("apply-point-density-cut"))
+        if (node->has("apply-power-density-cut"))
         {
-            SetApplyDensityCut(node->get_value<bool>("apply-point-density-cut"));
+            SetApplyDensityCut(node->get_value<bool>("apply-power-density-cut"));
         }
         if (node->has("power-threshold"))
         {
@@ -86,11 +90,6 @@ namespace Katydid
         // ignore the track if it's been cut
         if (track.GetIsCut()) return true;
 
-        // verify that we have the right number of components
-        //if (track.GetComponent() >= fCompTracks.size())
-        //{
-        //    SetNComponents(track.GetComponent() + 1);
-        //}
 
         KTDEBUG(itclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
@@ -138,33 +137,6 @@ namespace Katydid
         unsigned NumberOfNewTracks = fNewTracks.size();
 
 
-        /*
-        // this combines overlapping tracks -> moved to KtOverlappingClustering
-        if (NumberOfTracks > 1)
-        {
-            while (NumberOfTracks!=NumberOfNewTracks)
-            {
-                NumberOfTracks = fCompTracks.size();
-                KTDEBUG(itclog, "Number of tracks to cluster: "<< NumberOfTracks);
-                this->OverlapClustering();
-
-                // Update number of tracks
-                NumberOfNewTracks = fNewTracks.size();
-
-                KTDEBUG(itclog, "Number of new tracks: "<< NumberOfNewTracks);
-
-                fCompTracks.clear();
-                fCompTracks = fNewTracks;
-                fNewTracks.clear();
-            }
-        }
-
-        NumberOfTracks = fCompTracks.size();
-        NumberOfNewTracks = fNewTracks.size();
-
-
-        */
-
         if (NumberOfTracks > 1)
         {
             while (NumberOfTracks!=NumberOfNewTracks)
@@ -189,31 +161,6 @@ namespace Katydid
         return true;
     }
 
-    bool KTIterativeTrackClustering::OverlapClustering()
-    {
-        bool match;
-        for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
-        {
-            match = false;
-            for (std::vector<KTProcessedTrackData>::iterator newIt = fNewTracks.begin(); newIt != fNewTracks.end(); ++newIt)
-            {
-                if (this->DoTheyOverlap(*compIt, *newIt))
-                {
-                    match = true;
-                    KTDEBUG(itclog, "Found overlapping tracks")
-                    this->CombineTracks(*compIt, *newIt);
-                    break;
-                }
-            }
-        
-            if (match == false)
-            {
-                KTProcessedTrackData newTrack(*compIt);
-                fNewTracks.push_back(newTrack);
-            }
-        }
-        return true;
-    }
 
     bool KTIterativeTrackClustering::ExtrapolateClustering()
     {
@@ -226,12 +173,16 @@ namespace Katydid
                 if (this->DoTheyMatch(*compIt, *newIt))
                 {
                     match = true;
+                    KTDEBUG(itclog, "Found matching tracks");
                     this->CombineTracks(*compIt, *newIt);
                     break;
                 }
+                // it is possible that the segments that get combined first are not direct neighbors in time
+                // in that case there can be a track segment very close to an already combined track
                 if (this->DoTheyOverlap(*compIt, *newIt))
                 {
                     match = true;
+                    KTDEBUG(itclog, "Found overlapping tracks");
                     this->CombineTracks(*compIt, *newIt);
                     break;   
                 }
@@ -240,7 +191,6 @@ namespace Katydid
             if (match == false)
             {
                 KTProcessedTrackData newTrack(*compIt);
-                KTDEBUG(itclog, "Creating new track: "<< newTrack.GetTotalPower());
                 fNewTracks.push_back(newTrack);
             }   
         }
@@ -269,13 +219,10 @@ namespace Katydid
             newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
 
         }
-        //newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
-        //newTrack.SetSlope( (newTrack.GetSlope() + oldTrack.GetSlope())/2.0);
+
         newTrack.SetTotalPower( newTrack.GetTotalPower() + oldTrack.GetTotalPower());
         newTrack.SetTimeLength( newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC());
-
         newTrack.SetSlopeSigma( sqrt(newTrack.GetSlopeSigma()*newTrack.GetSlopeSigma() + oldTrack.GetSlopeSigma()*oldTrack.GetSlopeSigma()));
-        KTDEBUG(itclog, "Combining tracks, power before and after: "<<oldTrack.GetTotalPower()<<" "<<newTrack.GetTotalPower());
     }
 
 
@@ -310,7 +257,7 @@ namespace Katydid
         bool condition1 = Track2.GetStartTimeInRunC() < Track1.GetEndTimeInRunC() and Track2.GetStartTimeInRunC() >= Track1.GetStartTimeInRunC();
 
         // and the start frequency of track 2 is too close to track 1
-        bool condition2 = std::abs(Track2.GetStartFrequency() - (Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetStartTimeInRunC() - Track1.GetStartTimeInRunC()))) < fTrackFrequencyRadius;
+        bool condition2 = std::abs(Track2.GetStartFrequency() - (Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetStartTimeInRunC() - Track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
 
         if (condition1 and condition2)
         {
@@ -318,7 +265,7 @@ namespace Katydid
         }
         // the other way around
         bool condition3 = Track1.GetStartTimeInRunC() < Track2.GetEndTimeInRunC() and Track1.GetStartTimeInRunC() >= Track2.GetStartTimeInRunC();
-        bool condition4 = std::abs(Track1.GetStartFrequency() - (Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetStartTimeInRunC() - Track2.GetStartTimeInRunC()))) < fTrackFrequencyRadius;
+        bool condition4 = std::abs(Track1.GetStartFrequency() - (Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetStartTimeInRunC() - Track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
 
         if (condition3 and condition4)
         {
@@ -328,7 +275,7 @@ namespace Katydid
         condition1 = Track2.GetEndTimeInRunC() <= Track1.GetEndTimeInRunC() and Track2.GetEndTimeInRunC() > Track1.GetStartTimeInRunC();
 
         // and the start frequency of track 2 is too close to track 1
-        condition2 = std::abs(Track2.GetEndFrequency() - (Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetEndTimeInRunC() - Track1.GetStartTimeInRunC()))) < fTrackFrequencyRadius;
+        condition2 = std::abs(Track2.GetEndFrequency() - (Track1.GetStartFrequency() + Track1.GetSlope() * (Track2.GetEndTimeInRunC() - Track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
 
         if (condition1 and condition2)
         {
@@ -336,7 +283,7 @@ namespace Katydid
         }
         // the other way around
         condition3 = Track1.GetEndTimeInRunC() <= Track2.GetEndTimeInRunC() and Track1.GetEndTimeInRunC() > Track2.GetStartTimeInRunC();
-        condition4 = std::abs(Track1.GetEndFrequency() - (Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetEndTimeInRunC() - Track2.GetStartTimeInRunC()))) < fTrackFrequencyRadius;
+        condition4 = std::abs(Track1.GetEndFrequency() - (Track2.GetStartFrequency() + Track2.GetSlope() * (Track1.GetEndTimeInRunC() - Track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
 
         if (condition3 and condition4)
         {
@@ -350,7 +297,7 @@ namespace Katydid
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
         bool LineIsTrack;
-        KTINFO(itclog, "Clustering done. Emitting new tracks followed by clustering-done signal")
+        KTINFO(itclog, "Clustering done.")
 
         std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();
 
