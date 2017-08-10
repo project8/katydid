@@ -85,7 +85,7 @@ namespace Katydid
             SetBufferFreq(node->get_value("buffer-freq", fBufferFreq));
             SetBufferTime(node->get_value("buffer-time", fBufferTime));
 
-            if (fMode == kSequential && fNBins == 0)
+            if (fMode == kSequential && fNTimeBins == 0)
             {
                 KTERROR(publog, "Invalid configuration: you must specify a non-zero number of bins if using sequential mode");
                 return false;
@@ -146,6 +146,17 @@ namespace Katydid
     // KTROOTSpectrogramTypeWriter
     //****************************
 
+    KTROOTSpectrogramTypeWriter::DataTypeBundle::DataTypeBundle(const std::string& histNameBase) :
+            fSpectrograms(),
+            fHistNameBase(histNameBase),
+            fHistCount(0),
+            fNTimeBins(0),
+            fTimeAxisMin(0.),
+            fTimeAxisMax(0.),
+            fCurrentTimeBin(-1)
+    {
+    }
+
     KTROOTSpectrogramTypeWriter::KTROOTSpectrogramTypeWriter() :
         KTDerivedTypeWriter< KTROOTSpectrogramWriter >()
     {
@@ -155,62 +166,119 @@ namespace Katydid
     {
     }
 
-    int KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, SpecificTypeData& typeData)
+    int KTROOTSpectrogramTypeWriter::UpdateSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double timeInRun, double sliceLength, DataTypeBundle& dataBundle)
     {
-        bool typeDataWasResized = false;
+        KTROOTSpectrogramWriter::Mode mode = fWriter->GetMode();
 
-        // resize the typeData vector if necessary and initialize the new spectrogram pointers
-        if (typeData.fSpectrograms.size() < nComponents)
+        // resize the dataBundle vector if necessary and initialize the new spectrogram pointers
+        if (dataBundle.fSpectrograms.size() < nComponents)
         {
             // Yes, we do need to resize the vector of histograms
             // Get number of components and resize the vector of histograms
-            unsigned currentSize = typeData.fSpectrograms.size();
-            typeData.fSpectrograms.resize(nComponents);
-            for (unsigned iComponent = currentSize; iComponent < nComponents; ++iComponent)
+            unsigned currentSize = dataBundle.fSpectrograms.size();
+            if (currentSize == 0)
             {
-                typeData.fSpectrograms[iComponent].fSpectrogram = nullptr;
+                // this is the first time creating histograms
+                dataBundle.fCurrentTimeBin = 0;
+
+                dataBundle.fSpectrograms.resize(nComponents);
+                for (unsigned iComponent = currentSize; iComponent < nComponents; ++iComponent)
+                {
+                    dataBundle.fSpectrograms[iComponent].fSpectrogram = nullptr;
+                    dataBundle.fHistCount = 0;
+                }
+
+                // calculate the properties of the time axis
+                if (mode == KTROOTSpectrogramWriter::kSingle)
+                {
+                    dataBundle.fNTimeBins = unsigned((fWriter->GetMaxTime() - dataBundle.fTimeAxisMin) / sliceLength) + 1; // the +1 is so that the end time is the first slice ending outside the max time.
+                }
+                else // mode == KTROOTSpectrogramWriter::kSequential
+                {
+                    dataBundle.fNTimeBins = fWriter->GetNTimeBins();
+                }
+                dataBundle.fTimeAxisMin = timeInRun;
+                dataBundle.fTimeAxisMax = dataBundle.fTimeAxisMin + sliceLength * (double)dataBundle.fNTimeBins;
+
+            } // end if currentSize == 0
+
+            // create the new histograms
+            for (auto sdIt = dataBundle.fSpectrograms.begin(); sdIt != dataBundle.fSpectrograms.end(); ++sdIt)
+            {
+                if (sdIt->fSpectrogram == nullptr) continue;
+                unsigned iComponent = sdIt - dataBundle.fSpectrograms.begin();
+
+                // calculate the properties of the frequency axis
+                double freqBinWidth = data.GetArray(iComponent)->GetAxis().GetBinWidth();
+                const KTAxisProperties< 1 >& axis = data.GetArray(iComponent)->GetAxis();
+                sdIt->fFirstFreqBin = std::max< unsigned >(0, axis.FindBin(fWriter->GetMinFreq()));
+                sdIt->fLastFreqBin = std::min< unsigned >(axis.GetNBins()-1, axis.FindBin(fWriter->GetMaxFreq()));
+                //spectrograms[iComponent].fFirstFreqBin = unsigned((fWriter->GetMinFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth);
+                //spectrograms[iComponent].fLastFreqBin = unsigned((fWriter->GetMaxFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth) + 1;
+                unsigned nFreqBins = sdIt->fLastFreqBin - sdIt->fFirstFreqBin + 1;
+                //double startFreq = spectrograms[iComponent].fFirstFreqBin * freqBinWidth;
+                //double endFreq = spectrograms[iComponent].fLastFreqBin * freqBinWidth;
+                double startFreq = axis.GetBinLowEdge(sdIt->fFirstFreqBin);
+                double endFreq = axis.GetBinLowEdge(sdIt->fLastFreqBin) + freqBinWidth;
+                // form the histogram name
+                stringstream conv;
+                conv << "_" << dataBundle.fHistCount << "_" << iComponent;
+                string histName = dataBundle.fHistNameBase + conv.str();
+                KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << dataBundle.fNTimeBins << ", " << dataBundle.fTimeAxisMin << ", " << dataBundle.fTimeAxisMax << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
+                sdIt->fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", dataBundle.fNTimeBins, dataBundle.fTimeAxisMin, dataBundle.fTimeAxisMax, nFreqBins, startFreq, endFreq );
+                sdIt->fSpectrogram->SetXTitle("Time (s)");
+                sdIt->fSpectrogram->SetYTitle(axis.GetAxisLabel().c_str());
+                sdIt->fSpectrogram->SetZTitle(data.GetArray(iComponent)->GetOrdinateLabel().c_str());
             }
-            typeDataWasResized = true;
+
+        } // end if had to resize vector of histograms
+
+        dataBundle.fCurrentTimeBin += 1;
+        if (dataBundle.fCurrentTimeBin > dataBundle.fNTimeBins)
+        {
+            dataBundle.fHistCount += 1;
+            if (mode == KTROOTSpectrogramWriter::kSingle)
+            {
+                OutputASpectrogramSet(dataBundle.fSpectrograms, false);
+                dataBundle.fCurrentTimeBin = -1; // writing to the spectrogram is finished, so returning -1 will prevent further histogram filling
+            }
+            else // mode == KTROOTSpectrogramWriter::kSequential
+            {
+                OutputASpectrogramSet(dataBundle.fSpectrograms, true);
+            }
         }
 
-        if (fWriter->GetMode() == KTROOTSpectrogramWriter::kSingle)
+        return dataBundle.fCurrentTimeBin;
+    }
+
+    void KTROOTSpectrogramTypeWriter::OutputASpectrogramSet(std::vector< SpectrogramPack >& aSpectrogramSet, bool cloneSpectrograms)
+    {
+        // this function does not check the root file; it's assumed to be opened and verified already
+        for (auto spectIt = aSpectrogramSet.begin(); spectIt != aSpectrogramSet.end(); ++spectIt)
         {
-            if (typeDataWasResized)
+            TH2D* spectrogram = spectIt->fSpectrogram;
+            if (cloneSpectrograms)
             {
-                // calculate the properties of the time axis
-                unsigned nSlices = unsigned((fWriter->GetMaxTime() - startTime) / sliceLength) + 1; // the +1 is so that the end time is the first slice ending outside the max time.
-                double endTime = startTime + sliceLength * (double)nSlices;
-                KTDEBUG(publog, fWriter->GetMaxTime() << "  " << startTime << "  " << sliceLength << "  " << nSlices << "  " << endTime);
-
-                for (auto sdIt = typeData.fSpectrograms.begin(); sdIt != typeData.fSpectrograms.end(); ++sdIt)
-                {
-                    if (sdIt->fSpectrogram == nullptr) continue;
-                    unsigned iComponent = sdIt - typeData.fSpectrograms.begin();
-
-                    // calculate the properties of the frequency axis
-                    double freqBinWidth = data.GetArray(iComponent)->GetAxis().GetBinWidth();
-                    const KTAxisProperties< 1 >& axis = data.GetArray(iComponent)->GetAxis();
-                    sdIt->fFirstFreqBin = std::max< unsigned >(0, axis.FindBin(fWriter->GetMinFreq()));
-                    sdIt->fLastFreqBin = std::min< unsigned >(axis.GetNBins()-1, axis.FindBin(fWriter->GetMaxFreq()));
-                    //spectrograms[iComponent].fFirstFreqBin = unsigned((fWriter->GetMinFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth);
-                    //spectrograms[iComponent].fLastFreqBin = unsigned((fWriter->GetMaxFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth) + 1;
-                    unsigned nFreqBins = sdIt->fLastFreqBin - sdIt->fFirstFreqBin + 1;
-                    //double startFreq = spectrograms[iComponent].fFirstFreqBin * freqBinWidth;
-                    //double endFreq = spectrograms[iComponent].fLastFreqBin * freqBinWidth;
-                    double startFreq = axis.GetBinLowEdge(sdIt->fFirstFreqBin);
-                    double endFreq = axis.GetBinLowEdge(sdIt->fLastFreqBin) + freqBinWidth;
-                    // form the histogram name
-                    stringstream conv;
-                    conv << iComponent;
-                    string histName = typeData.fHistNameBase + conv.str();
-                    KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << nSlices << ", " << startTime << ", " << endTime << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
-                    sdIt->fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", nSlices, startTime, endTime, nFreqBins, startFreq, endFreq );
-                    sdIt->fSpectrogram->SetXTitle("Time (s)");
-                    sdIt->fSpectrogram->SetYTitle(axis.GetAxisLabel().c_str());
-                    sdIt->fSpectrogram->SetZTitle(data.GetArray(iComponent)->GetOrdinateLabel().c_str());
-                }
+                spectIt->fSpectrogram = new TH2D();
+                spectrogram->Copy(*spectIt->fSpectrogram);
+                spectIt->fSpectrogram->Reset();
             }
-        } // done initializing new spectrograms
+            spectrogram->SetDirectory(fWriter->GetFile());
+            spectrogram->Write();
+        }
+
+        if (! cloneSpectrograms) aSpectrogramSet.clear();
+        return;
+    }
+
+    void KTROOTSpectrogramTypeWriter::ClearASpectrogramSet(std::vector< SpectrogramPack >& aSpectrogramSet)
+    {
+        while (! aSpectrogramSet.empty())
+        {
+            delete aSpectrogramSet.back().fSpectrogram;
+            aSpectrogramSet.pop_back();
+        }
+        return;
     }
 
 

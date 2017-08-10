@@ -24,10 +24,10 @@ namespace Katydid
     KTROOTSpectrogramTypeWriterTransform::KTROOTSpectrogramTypeWriterTransform() :
             KTROOTSpectrogramTypeWriter(),
             //KTTypeWriterTransform()
-            fFSPolarSpectrograms(),
-            fFSFFTWSpectrograms(),
-            fPowerSpectrograms(),
-            fPSDSpectrograms()
+            fFSPolarBundle("FSPolarSpectrogram"),
+            fFSFFTWBundle("FSFFTWSpectrogram"),
+            fPowerBundle("PowerSpectrogram"),
+            fPSDBundle("PSDSpectrogram")
     {
     }
 
@@ -35,48 +35,25 @@ namespace Katydid
     {
     }
 
-    void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
-    {
-        // this function does not check the root file; it's assumed to be opened and verified already
-        while (! aSpectrogramSet.empty())
-        {
-            TH2D* spectrogram = aSpectrogramSet.back().fSpectrogram;
-            spectrogram->SetDirectory(fWriter->GetFile());
-            spectrogram->Write();
-            aSpectrogramSet.pop_back();
-        }
-        return;
-    }
-
-    void KTROOTSpectrogramTypeWriterTransform::ClearASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
-    {
-        while (! aSpectrogramSet.empty())
-        {
-            delete aSpectrogramSet.back().fSpectrogram;
-            aSpectrogramSet.pop_back();
-        }
-        return;
-    }
-
     void KTROOTSpectrogramTypeWriterTransform::OutputSpectrograms()
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
         KTDEBUG("calling output each spectrogram set")
-        OutputASpectrogramSet(fFSPolarSpectrograms);
-        OutputASpectrogramSet(fFSFFTWSpectrograms);
-        OutputASpectrogramSet(fPowerSpectrograms);
-        OutputASpectrogramSet(fPSDSpectrograms);
+        OutputASpectrogramSet(fFSPolarBundle.fSpectrograms, false);
+        OutputASpectrogramSet(fFSFFTWBundle.fSpectrograms, false);
+        OutputASpectrogramSet(fPowerBundle.fSpectrograms, false);
+        OutputASpectrogramSet(fPSDBundle.fSpectrograms, false);
 
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
     {
-        ClearASpectrogramSet(fFSPolarSpectrograms);
-        ClearASpectrogramSet(fFSFFTWSpectrograms);
-        ClearASpectrogramSet(fPowerSpectrograms);
-        ClearASpectrogramSet(fPSDSpectrograms);
+        ClearASpectrogramSet(fFSPolarBundle.fSpectrograms);
+        ClearASpectrogramSet(fFSFFTWBundle.fSpectrograms);
+        ClearASpectrogramSet(fPowerBundle.fSpectrograms);
+        ClearASpectrogramSet(fPSDBundle.fSpectrograms);
         return;
     }
 
@@ -96,13 +73,13 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
-        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarSpectrograms, "FSPolarSpectrogram_");
+        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarBundle);
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
-        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWSpectrograms, "FSFFTWSpectrogram_");
+        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWBundle);
         return;
     }
 
@@ -112,13 +89,13 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerSpectrograms, "PowerSpectrogram_");
+        AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerBundle);
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::AddPSDData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
+        AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDBundle);
         return;
     }
 

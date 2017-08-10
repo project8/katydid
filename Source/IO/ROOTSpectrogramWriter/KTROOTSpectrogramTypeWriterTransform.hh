@@ -35,18 +35,15 @@ namespace Katydid
             void OutputPSDData();
 
         private:
-            std::vector< SpectrogramData > fFSPolarSpectrograms;
-            std::vector< SpectrogramData > fFSFFTWSpectrograms;
-            std::vector< SpectrogramData > fPowerSpectrograms;
-            std::vector< SpectrogramData > fPSDSpectrograms;
+            DataTypeBundle fFSPolarBundle;
+            DataTypeBundle fFSFFTWBundle;
+            DataTypeBundle fPowerBundle;
+            DataTypeBundle fPSDBundle;
 
         public:
             void OutputSpectrograms();
             void ClearSpectrograms();
 
-        private:
-            void OutputASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);
-            void ClearASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);
     };
 
 
