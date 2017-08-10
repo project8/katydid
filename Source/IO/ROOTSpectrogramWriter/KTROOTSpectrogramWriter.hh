@@ -42,14 +42,22 @@ namespace Katydid
             virtual void OutputSpectrograms() = 0;
 
         protected:
-            struct SpectrogramData {
+            struct SpectrogramData
+            {
                 TH2D* fSpectrogram;
                 unsigned fFirstFreqBin; // frequency-axis bin 0 is this bin in the incoming data
                 unsigned fLastFreqBin; // frequency-axis last-bin is this bin in the incoming data
             };
 
+            struct SpecificTypeData
+            {
+                std::vector< SpectrogramData > fSpectrograms; // vector over components
+                unsigned fCurrentTimeBin;
+                std::string fHistNameBase;
+            };
+
             /// Checks to see if new spectrograms are needed, and creates them if so
-            void CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
+            int CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, double sliceLength, SpecificTypeData& typeData);
 
             template< typename XDataType >
             void AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms, std::string histNameBase);
@@ -162,13 +170,13 @@ namespace Katydid
          // Check if this is a slice we should care about.
          // The first slice of interest will contain the writer's min time;
          // The last slice of interest will contain the writer's max time.
-         if (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime())
+         if (fWriter->GetMode() == KTROOTSpectrogramWriter::kSequential || (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime()))
          {
              // Ok, this is a slice we should pay attention to.
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms, histNameBase);
+             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(fsData, nComponents, timeInRun, sliceLength, spectrograms, histNameBase);
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
