@@ -46,7 +46,7 @@ namespace Katydid
 
      Signals:
      - "track": void (shared_ptr<KTData>) -- Emitted for each group found; Guarantees KTProcessedTrackData.
-     - "clustering-done": void () -- Emitted when track clustering is complete
+     - "tracks-done": void () -- Emitted when track clustering is complete
     */
 
     class KTCollinearTrackClustering : public Nymph::KTPrimaryProcessor
