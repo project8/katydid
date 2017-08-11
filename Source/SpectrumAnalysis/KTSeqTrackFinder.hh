@@ -44,7 +44,7 @@ namespace Katydid
      - "max-frequency": max allowed frequency (has to be set)
      - "min-bin": can be set instead of min frequency
      - "max-bin": can be set instead of  max frequency
-     - "trimming-factor": before a line is converted to a track its edges get trimmed. If the last or first line point power is less than the trimming-factor times the slice average power, theses points get cut off the line
+     - "trimming-factor": before a line is converted to a track its edges get trimmed. If the last or first line point power is less than the trimming-factor times the power threshold of the points frequency bins in the power spectrum slice, these points get cut off the line
      - "half-line-width": the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
      - "time-gap-tolerance": maximum gap between points in a line (in seconds)
      - "minimum-line-bin-distance": if a point is less than this distance (in bins) away from the last point it will be skipped
@@ -128,7 +128,7 @@ namespace Katydid
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
             bool RunSequentialTrackFinding(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
             bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData);
-            bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_trimming_limits, unsigned component);
+            bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, unsigned component);
             void SearchTrueLinePoint(Point&, std::vector<double>& slice);
             void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );

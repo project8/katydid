@@ -106,7 +106,7 @@ namespace Katydid {
 
 
         LineRef(const double& InitialSlope);
-        void InsertPoint(const Point& Point, const double& new_trimming_limits);
+        void InsertPoint(const Point& Point);
         void LineTrimming(const double& TrimminFactor, const unsigned& MinPoints);
         void CalculateSlope();
         void UpdateLineParameters();

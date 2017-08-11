@@ -215,9 +215,8 @@ namespace Katydid
             // the trimming limits are the average of the entire slice power
             // trimming_factor x trimming_limits are the threshold for the line edges
             // this is part of dans algorithm but seems to only make sense with a flat background
-            //should probably be average snr
-            //testing on roach data will show, because roach background is not flat
-            double new_TrimmingLimits;
+            // ->replaced by point threshold
+            // double new_TrimmingLimits;
             double value;
 
 
@@ -227,7 +226,7 @@ namespace Katydid
             {
                 value = (*power_spectrum)(iBin);
                 slice.at(iBin) = value;
-                new_TrimmingLimits += value;
+                //new_TrimmingLimits += value;
                 double threshold = fSNRPowerThreshold * (*splineImp)(iBin - fMinBin);
 
                 // currently this is the only implemented mode
@@ -240,21 +239,21 @@ namespace Katydid
                 }
             }
 
-            new_TrimmingLimits = new_TrimmingLimits/nBins;
+            //new_TrimmingLimits = new_TrimmingLimits/nBins;
 
             // I want to iterate over the collected points in order of descending power
             // sort points by power
             std::sort(Points.begin(), Points.end(),std::less<Point>());
 
             // Loop over the high power points
-            this->LoopOverHighPowerPoints(slice, Points, new_TrimmingLimits, iComponent);
+            this->LoopOverHighPowerPoints(slice, Points, iComponent);
 
         }
         return true;
     }
 
 
-    bool KTSeqTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, double& new_TrimmingLimits, unsigned component)
+    bool KTSeqTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, unsigned component)
      {
         KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -326,7 +325,7 @@ namespace Katydid
                     // if point matches this line: attach
                     else if (condition1 and condition2)
                     {
-                        LineIt->InsertPoint(*PointIt, new_TrimmingLimits);
+                        LineIt->InsertPoint(*PointIt);
                         match = true;
                         LineIt++;
                     }
@@ -343,7 +342,7 @@ namespace Katydid
                     //KTDEBUG(stflog, "Starting new line");
 
                     LineRef new_Line(fInitialSlope);
-                    new_Line.InsertPoint(*PointIt, new_TrimmingLimits);
+                    new_Line.InsertPoint(*PointIt);
                     fActiveLines.push_back(new_Line);
                     match = true;
                 }
