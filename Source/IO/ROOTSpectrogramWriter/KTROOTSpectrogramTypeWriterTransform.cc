@@ -40,20 +40,20 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         KTDEBUG("calling output each spectrogram set")
-        OutputASpectrogramSet(fFSPolarBundle.fSpectrograms, false);
-        OutputASpectrogramSet(fFSFFTWBundle.fSpectrograms, false);
-        OutputASpectrogramSet(fPowerBundle.fSpectrograms, false);
-        OutputASpectrogramSet(fPSDBundle.fSpectrograms, false);
+        OutputASpectrogramSet(fFSPolarBundle, false);
+        OutputASpectrogramSet(fFSFFTWBundle, false);
+        OutputASpectrogramSet(fPowerBundle, false);
+        OutputASpectrogramSet(fPSDBundle, false);
 
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
     {
-        ClearASpectrogramSet(fFSPolarBundle.fSpectrograms);
-        ClearASpectrogramSet(fFSFFTWBundle.fSpectrograms);
-        ClearASpectrogramSet(fPowerBundle.fSpectrograms);
-        ClearASpectrogramSet(fPSDBundle.fSpectrograms);
+        ClearASpectrogramSet(fFSPolarBundle);
+        ClearASpectrogramSet(fFSFFTWBundle);
+        ClearASpectrogramSet(fPowerBundle);
+        ClearASpectrogramSet(fPSDBundle);
         return;
     }
 

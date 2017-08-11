@@ -57,12 +57,12 @@ namespace Katydid
                 unsigned fNTimeBins;
                 double fTimeAxisMin;
                 double fTimeAxisMax;
-                unsigned fCurrentTimeBin;
+                int fCurrentTimeBin;
                 DataTypeBundle(const std::string& histNameBase);
             };
 
             /// Checks to see if new spectrograms are needed, and creates them if so
-            int UpdateSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double timeInRun, double sliceLength, DataTypeBundle& dataBundle);
+            int UpdateSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double timeInRun, double sliceLength, bool isNewAcq, DataTypeBundle& dataBundle);
 
             template< typename XDataType >
             void AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle);
@@ -72,8 +72,8 @@ namespace Katydid
             template< typename XDataType >
             void AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle);
 
-            void OutputASpectrogramSet(std::vector< SpectrogramPack >& aSpectSet, bool cloneSpectrograms);
-            void ClearASpectrogramSet(std::vector< SpectrogramPack >& aSpectSet);
+            void OutputASpectrogramSet(DataTypeBundle& dataBundle, bool cloneSpectrograms);
+            void ClearASpectrogramSet(DataTypeBundle& dataBundle);
 };
 
 
@@ -95,12 +95,18 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
-     - "min-time": double -- start time for the spectrograms. Overwritten by the 'track' slot
-     - "max-time": double -- end time for the spectrograms. Overwritten by the 'track' slot
+     - "mode": string -- switches the mode of operation of the writer; see below
+     - "min-time": double -- start time for the spectrograms. Only used in "single" mode.  Overwritten by the 'track' slot
+     - "max-time": double -- end time for the spectrograms. Only used in "single" mode.  Overwritten by the 'track' slot
+     - "n-time-bins": unsigned int -- number of bins on the spectrogram's time (x) axis.  Only used in "sequential" mode.
      - "min-freq": double -- start frequency for the spectrograms. Overwritten by the 'track' slot
      - "max-freq": double -- end frequency for the spectrograms. Overwritten by the 'track' slot
      - "buffer-freq": double -- range to extend the spectrogram around a track in frequency
      - "buffer-time": double -- range to extend the spectrogram around a track in time
+
+     Modes of operation:
+     - "single": Outputs a single spectrogram per component using the min/max times and frequencies provided by the user.
+     - "sequential": Outputs a sequential series of spectrograms per component using the number of time bins and the min/max frequencies provided by the user.
 
      Slots:
      - "fs-fftw": void (Nymph::KTDataPtr) -- Contribute a slice to a FS-FFTW spectrogram. Requires KTFrequencySpectrumDataFFTW.
@@ -175,6 +181,7 @@ namespace Katydid
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
          double sliceLength = sliceHeader.GetSliceLength();
+         bool isNewAcq = sliceHeader.GetIsNewAcquisition();
          // Check if this is a slice we should care about.
          // The first slice of interest will contain the writer's min time;
          // The last slice of interest will contain the writer's max time.
@@ -185,15 +192,19 @@ namespace Katydid
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, dataBundle);
+             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
+             KTDEBUG( publog_rsw, "Spectrogram time bin to write to is <" << iSpectTimeBin << ">");
+             if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
              {
+                 KTWARN(publog_rsw, "Working on component " << iComponent);
                  const KTFrequencySpectrum* spectrum = fsData.GetSpectrum(iComponent);
                  TH2D* spectrogram = dataBundle.fSpectrograms[iComponent].fSpectrogram;
+                 KTWARN(publog_rsw, "pointers: " << spectrum << "  " << spectrogram);
                  unsigned iSpectFreqBin = 0;
-                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrogram->GetNbinsX()) continue;
+                 if (iSpectTimeBin > spectrogram->GetNbinsX()) continue;
                  //std::cout << "spectrum size: " << spectrum->GetNFrequencyBins() << std::endl;
                  //std::cout << "first freq bin: " << spectrograms[iComponent].fFirstFreqBin << "; last freq bin: " << spectrograms[iComponent].fLastFreqBin << std::endl;
                  for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponent].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponent].fLastFreqBin; ++iFreqBin)
@@ -215,16 +226,18 @@ namespace Katydid
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
          double sliceLength = sliceHeader.GetSliceLength();
+         bool isNewAcq = sliceHeader.GetIsNewAcquisition();
          // Check if this is a slice we should care about.
          // The first slice of interest will contain the writer's min time;
          // The last slice of interest will contain the writer's max time.
-         if (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime())
+         if (fWriter->GetMode() == KTROOTSpectrogramWriter::kSequential || (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime()))
          {
              // Ok, this is a slice we should pay attention to.
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, dataBundle);
+             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
+             if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -233,7 +246,7 @@ namespace Katydid
                  spectrum->ConvertToPowerSpectrum();
                  TH2D* spectrogram = dataBundle.fSpectrograms[iComponent].fSpectrogram;
                  unsigned iSpectFreqBin = 0;
-                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrogram->GetNbinsX()) continue;
+                 if (iSpectTimeBin > spectrogram->GetNbinsX()) continue;
                  for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponent].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
@@ -253,16 +266,18 @@ namespace Katydid
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
          double sliceLength = sliceHeader.GetSliceLength();
+         bool isNewAcq = sliceHeader.GetIsNewAcquisition();
          // Check if this is a slice we should care about.
          // The first slice of interest will contain the writer's min time;
          // The last slice of interest will contain the writer's max time.
-         if (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime())
+         if (fWriter->GetMode() == KTROOTSpectrogramWriter::kSequential || (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime()))
          {
              // Ok, this is a slice we should pay attention to.
              XDataType& fsData = data->Of< XDataType >();
              unsigned nComponents = fsData.GetNComponents();
 
-             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, dataBundle);
+             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
+             if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
 
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -271,7 +286,7 @@ namespace Katydid
                  spectrum->ConvertToPowerSpectralDensity();
                  TH2D* spectrogram = dataBundle.fSpectrograms[iComponent].fSpectrogram;
                  unsigned iSpectFreqBin = 0;
-                 if (iSpectTimeBin <= 0 || iSpectTimeBin > spectrogram->GetNbinsX()) continue;
+                 if (iSpectTimeBin > spectrogram->GetNbinsX()) continue;
                  for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponent].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
