@@ -26,12 +26,8 @@ namespace Katydid
         public:
             void AddProcessedTrackData(Nymph::KTDataPtr data);
 
-            void TakeLine(Nymph::KTDataPtr data);
-
-
         private:
             TOrdCollection *fLineCollection;
-
 
         public:
             void OutputSpectrograms();

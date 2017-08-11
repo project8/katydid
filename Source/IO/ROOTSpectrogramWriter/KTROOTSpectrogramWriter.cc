@@ -36,8 +36,6 @@ namespace Katydid
             fNTimeBins(0),
             fMinFreq(0.),
             fMaxFreq(0.),
-            fBufferFreq(0.),
-            fBufferTime(0.),
             fFile(NULL),
             fFileManager(KTROOTWriterFileManager::get_instance()),
             fWriteFileSlot("write-file", this, &KTROOTSpectrogramWriter::WriteFile)
@@ -81,9 +79,6 @@ namespace Katydid
             {
                 fMode = kSequential;
             }
-
-            SetBufferFreq(node->get_value("buffer-freq", fBufferFreq));
-            SetBufferTime(node->get_value("buffer-time", fBufferTime));
 
             if (fMode == kSequential && fNTimeBins == 0)
             {

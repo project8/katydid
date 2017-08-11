@@ -101,8 +101,6 @@ namespace Katydid
      - "n-time-bins": unsigned int -- number of bins on the spectrogram's time (x) axis.  Only used in "sequential" mode.
      - "min-freq": double -- start frequency for the spectrograms. Overwritten by the 'track' slot
      - "max-freq": double -- end frequency for the spectrograms. Overwritten by the 'track' slot
-     - "buffer-freq": double -- range to extend the spectrogram around a track in frequency
-     - "buffer-time": double -- range to extend the spectrogram around a track in time
 
      Modes of operation:
      - "single": Outputs a single spectrogram per component using the min/max times and frequencies provided by the user.
@@ -113,8 +111,7 @@ namespace Katydid
      - "fs-polar": void (Nymph::KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
      - "ps": void (Nymph::KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
      - "psd": void (Nymph::KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
-     - "track": void (Nymph::KTDataPtr) -- Set the time and frequency bounds in accordance with a track. Requires KTProcessedTrackData. Overwrites min-freq, max-freq, min-time and max-time configuration variables.
-     - "all-lines": void (Nymph::KTDataPtr) -- Contribute a track to a spectrogram; Requires KTProcessedTrackData.
+     - "proc-track": void (Nymph::KTDataPtr) -- Contribute a line representing a track; all lines will be written to the root file together, and can be drawn on top of a spectrogram.  Requires KTProcessedTrackData.
      - "write-file": void () -- Write out the ROOT file of any spectrograms that were built.
 
 
@@ -151,9 +148,6 @@ namespace Katydid
 
             MEMBERVARIABLE(double, MinFreq); // in Hz
             MEMBERVARIABLE(double, MaxFreq); // in Hz
-
-            MEMBERVARIABLE(double, BufferFreq); // in Hz
-            MEMBERVARIABLE(double, BufferTime); // in sec
 
             MEMBERVARIABLE_NOSET(TFile*, File);
 
