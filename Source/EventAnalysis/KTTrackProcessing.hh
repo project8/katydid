@@ -79,8 +79,6 @@ namespace Katydid
             unsigned fProcTrackMinPoints;
             double fProcTrackAssError;
 
-            unsigned ftrackID;
-
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
