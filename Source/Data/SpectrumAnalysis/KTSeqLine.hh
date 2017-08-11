@@ -31,11 +31,12 @@ namespace Katydid {
         double fTimeInAcq;
         double fTimeInRunC;
         double fAmplitude;
+        double fThreshold;
         uint64_t fAcquisitionID;
         double fComponent;
 
-        Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Amplitude, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
-                fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fAmplitude(Amplitude), fAcquisitionID(AcqID), fComponent(iComponent) {}
+        Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Amplitude, double Threshold, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
+                fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fAmplitude(Amplitude), fThreshold(Threshold), fAcquisitionID(AcqID), fComponent(iComponent) {}
 
         void Clear();
         bool operator > (const Point& str) const
@@ -57,11 +58,12 @@ namespace Katydid {
         double fTimeInAcq;
         double fTimeInRunC;
         double fAmplitude;
+        double fThreshold;
         uint64_t fAcquisitionID;
         double fComponent;
 
-        LinePoint(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Amplitude, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
-                fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fAmplitude(Amplitude), fAcquisitionID(AcqID), fComponent(iComponent) {}
+        LinePoint(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Amplitude, double Threshold, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
+                fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fAmplitude(Amplitude), fThreshold(Threshold), fAcquisitionID(AcqID), fComponent(iComponent) {}
         void Clear();
 
         bool operator > (const Point& str) const

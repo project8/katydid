@@ -47,10 +47,10 @@ namespace Katydid
     void LineRef::InsertPoint(const Point& Point, const double& new_trimming_limits)
     {
         KTDEBUG(seqlog, "Insert point");
-        fTrimmingLimits.push_back(new_trimming_limits);
+        fTrimmingLimits.push_back(Point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(Point.fAmplitude);
 
-        LinePoint newPoint(Point.fBinInSlice, Point.fPointFreq, Point.fTimeInAcq, Point.fTimeInRunC, Point.fAmplitude, Point.fAcquisitionID, Point.fComponent);
+        LinePoint newPoint(Point.fBinInSlice, Point.fPointFreq, Point.fTimeInAcq, Point.fTimeInRunC, Point.fAmplitude, Point.fThreshold, Point.fAcquisitionID, Point.fComponent);
         fLinePoints.push_back(newPoint);
 
         this->UpdateLineParameters();

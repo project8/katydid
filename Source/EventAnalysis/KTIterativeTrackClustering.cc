@@ -63,7 +63,7 @@ namespace Katydid
         }
         if (node->has("max-track-width"))
         {
-            SetFrequencyAcceptance(node->get_value<double>("max-track-width"));
+            SetMaxTrackWidth(node->get_value<double>("max-track-width"));
         }
         if (node->has("apply-power-cut"))
         {
@@ -130,7 +130,7 @@ namespace Katydid
     bool KTIterativeTrackClustering::FindMatchingTracks()
     {
         KTINFO(itclog, "Finding extrapolated tracks");
-        KTDEBUG(itclog, "TimeGapTolerance and FrequencyAcceptance are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance);
+        KTDEBUG(itclog, "TimeGapTolerance FrequencyAcceptance and MaxTrackWidth are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance<< " "<<fMaxTrackWidth);
         fNewTracks.clear();
 
         unsigned NumberOfTracks = fCompTracks.size();

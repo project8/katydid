@@ -118,11 +118,11 @@ namespace Katydid
         }
         if (node->has("frequency-acceptance"))
         {
-            SetFrequencyAcceptance(node->get_value<int>("frequency-acceptance"));
+            SetFrequencyAcceptance(node->get_value<double>("frequency-acceptance"));
         }
         if (node->has("initial-slope"))
         {
-            SetInitialSlope(node->get_value<int>("initial-slope"));
+            SetInitialSlope(node->get_value<double>("initial-slope"));
         }
         if (node->has("min-points"))
         {
@@ -167,6 +167,7 @@ namespace Katydid
 
     bool KTSeqTrackFinder::PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData)
     {
+        KTDEBUG(stflog, "Initial slope is: "<<fInitialSlope);
 
         unsigned nComponents = spectrum.GetNComponents();
 
@@ -233,7 +234,7 @@ namespace Katydid
                 if (fMode == eSNR_Power and value >= threshold)
                 {
                     double PointFreq = fBinWidth * ((double)iBin + 0.5);
-                    Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, AcqID, iComponent);
+                    Point new_Point(iBin, PointFreq, new_TimeInAcq, new_TimeInRunC, value, threshold, AcqID, iComponent);
                     Points.push_back(new_Point);
                     //KTDEBUG(stflog, "Collected track point candidate");
                 }
