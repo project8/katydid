@@ -55,6 +55,7 @@ if (ROOT_FOUND)
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.hh
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.hh
         MultiSliceROOTWriter/KTMultiSliceROOTWriter.hh
+        ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterEventAnalysis.hh
         ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.hh
         ROOTSpectrogramWriter/KTROOTSpectrogramWriter.hh
         ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.hh
@@ -85,6 +86,7 @@ if (ROOT_FOUND)
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.cc
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.cc
         MultiSliceROOTWriter/KTMultiSliceROOTWriter.cc
+        ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterEventAnalysis.cc
         ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.cc
         ROOTSpectrogramWriter/KTROOTSpectrogramWriter.cc
         ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.cc
@@ -119,8 +121,21 @@ if (HDF5_FOUND)
         HDF5Writer/KTHDF5TypeWriterSpectrumAnalysis.cc
         HDF5Writer/KTHDF5Writer.cc
     )
-    
 endif (HDF5_FOUND)
+
+if (MAGICK++_FOUND)
+    set (IO_HEADERFILES
+        ${IO_HEADERFILES}
+        ImageWriter/KTImageTypeWriterTransform.hh
+        ImageWriter/KTImageWriter.hh
+    )
+
+    set (IO_SOURCEFILES
+        ${IO_SOURCEFILES}
+        ImageWriter/KTImageTypeWriterTransform.cc
+        ImageWriter/KTImageWriter.cc
+    )
+endif (MAGICK++_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility

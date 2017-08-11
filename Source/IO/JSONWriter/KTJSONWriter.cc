@@ -8,6 +8,8 @@
 #include "KTJSONWriter.hh"
 
 #include "param.hh"
+#include "param_json.hh" // for JSON_FILE_BUFFER_SIZE
+
 
 using std::string;
 
@@ -51,9 +53,10 @@ namespace Katydid
     {
         CloseFile();
 
+        char tBuffer[ RAPIDJSON_FILE_BUFFER_SIZE ];
         if (fFilename == "stdout")
         {
-            fFileStream = new rapidjson::FileStream(stdout);
+            fFileStream = new rapidjson::FileWriteStream(stdout, tBuffer, sizeof(tBuffer));
         }
         else
         {
@@ -65,16 +68,16 @@ namespace Katydid
                         "\tMode: " << fFileMode);
                 return false;
             }
-            fFileStream = new rapidjson::FileStream(fFile);
+            fFileStream = new rapidjson::FileWriteStream(fFile, tBuffer, sizeof(tBuffer));
         }
 
         if (fPrettyJSONFlag)
         {
-            fJSONMaker = new KTJSONMakerPretty< rapidjson::FileStream >(*fFileStream);
+            fJSONMaker = new KTJSONMakerPretty< rapidjson::FileWriteStream >(*fFileStream);
         }
         else
         {
-            fJSONMaker = new KTJSONMakerCompact< rapidjson::FileStream >(*fFileStream);
+            fJSONMaker = new KTJSONMakerCompact< rapidjson::FileWriteStream >(*fFileStream);
         }
 
         fJSONMaker->StartObject();

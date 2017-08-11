@@ -82,7 +82,7 @@ namespace Katydid
             bool Configure(const KTEggProcessor& eggProc);
 
             /// Opens the egg file and returns a new copy of the header information.
-            Nymph::KTDataPtr BreakEgg(const std::string& filename);
+            Nymph::KTDataPtr BreakEgg(const path_vec& filenames);
             /// Returns the next slice's time series data.
             Nymph::KTDataPtr HatchNextSlice();
             /// Closes the file.

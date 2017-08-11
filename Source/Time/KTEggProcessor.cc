@@ -18,9 +18,6 @@
 #include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 
-#include "factory.hh"
-#include "path.hh"
-
 using std::string;
 
 
@@ -38,7 +35,7 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fNSlices(0),
             fProgressReportInterval(1),
-            fFilename(""),
+            fFilenames(),
             fEggReaderType("none"),
             fSliceSize(1024),
             fStride(1024),
@@ -79,7 +76,25 @@ namespace Katydid
         {
             SetNSlices(node->get_value< unsigned >("number-of-slices", fNSlices));
             SetProgressReportInterval(node->get_value< unsigned >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->get_value("filename", fFilename));
+
+            if (node->has("filename"))
+            {
+                KTDEBUG(egglog, "Adding single file to egg processor");
+                fFilenames.clear();
+                fFilenames.push_back( std::move(scarab::expand_path(node->get_value( "filename" ))) );
+                KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+            }
+            else if (node->has("filenames"))
+            {
+                KTDEBUG(egglog, "Adding multiple files to egg processor");
+                fFilenames.clear();
+                const scarab::param_array* t_filenames = node->array_at("filenames");
+                for(scarab::param_array::const_iterator t_file_it = t_filenames->begin(); t_file_it != t_filenames->end(); ++t_file_it)
+                {
+                    fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)->as_value().as_string())) );
+                    KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+                }
+            }
 
             // specify the length of the time series
             fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
@@ -106,7 +121,13 @@ namespace Katydid
 
         // Command-line settings
         SetNSlices(fCLHandler->GetCommandLineValue< int >("n-slices", fNSlices));
-        SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
+        if (fCLHandler->IsCommandLineOptSet("egg-file"))
+        {
+            KTDEBUG(egglog, "Adding single file to egg processor from the CL");
+            fFilenames.clear();
+            fFilenames.push_back( std::move(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("egg-file"))));
+            KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+        }
 
         return true;
     }
@@ -123,9 +144,15 @@ namespace Katydid
         }
         reader->Configure(*this);
 
+        if (fFilenames.size() == 0)
+        {
+            KTERROR(egglog, "No files have been specified");
+            return false;
+        }
+
         // ******************************************************************** //
         // Call BreakEgg - this actually opens the file and loads its content
-        Nymph::KTDataPtr headerPtr = reader->BreakEgg(scarab::expand_path(fFilename).native());
+        Nymph::KTDataPtr headerPtr = reader->BreakEgg(fFilenames);
         if (! headerPtr)
         {
             KTERROR(egglog, "Egg did not break");
@@ -159,6 +186,12 @@ namespace Katydid
                 "\tSlices processed: " << summary->GetNSlicesProcessed() << '\n' <<
                 "\tRecords processed: " << summary->GetNRecordsProcessed() << '\n' <<
                 "\tIntegrated time: " << summary->GetIntegratedTime() << " s");
+        if(fNSlices != 0 && summary->GetNSlicesProcessed() != fNSlices)
+        {
+            KTWARN(egglog, "Could not process the requested number of slices because there was not enough data in the file(s):\n" <<
+                    "\tSlices requested: " << fNSlices << '\n' <<
+                    "\tSlices processed: " << summary->GetNSlicesProcessed());
+        }
         fSummarySignal(summary);
         delete summary;
 

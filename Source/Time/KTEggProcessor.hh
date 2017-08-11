@@ -12,9 +12,9 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTData.hh"
+#include "KTEggHeader.hh"
 #include "KTEggReader.hh"
 #include "KTSlot.hh"
-#include "KTEggHeader.hh"
 
 
 namespace Katydid
@@ -39,7 +39,8 @@ namespace Katydid
      - "number-of-slices": unsigned -- Number of slices to process
      - "progress-report-interval": unsigned -- Interval (# of slices) between 
         reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
-     - "filename": string -- Egg filename to use
+     - "filename": string -- Egg filename to use (will take priority over \"filenames\")
+     - "filenames": array of strings -- Egg filenames to use (\"filename\" will take priority over this)
      - "egg-reader": string -- Egg reader to use.
         Options: "egg2" [default], "egg1", "rsamat"
         - "egg2" [default] - Uses the monarch2 library to read Egg files
@@ -90,7 +91,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, NSlices);
             MEMBERVARIABLE(unsigned, ProgressReportInterval);
 
-            MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLEREF(KTEggReader::path_vec, Filenames);
             MEMBERVARIABLEREF(std::string, EggReaderType);
 
             MEMBERVARIABLE(unsigned, SliceSize);
