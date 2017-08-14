@@ -22,7 +22,7 @@ namespace Katydid
     KTLOGGER(stflog, "DansTrackFinder");
 
 
-    KT_REGISTER_PROCESSOR(KTSeqTrackFinder, "dans-track-finding-algorithm");
+    KT_REGISTER_PROCESSOR(KTSeqTrackFinder, "seq-clustering");
 
     KTSeqTrackFinder::KTSeqTrackFinder(const std::string& name) :
             KTProcessor(name),
