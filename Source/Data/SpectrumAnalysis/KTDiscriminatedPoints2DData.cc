@@ -25,5 +25,21 @@ namespace Katydid
     {
     }
 
+    const std::string KTDiscriminatedPoints2DDataLabelled::sName("disc-points-2d-labelled");
+
+    KTDiscriminatedPoints2DDataLabelled::KTDiscriminatedPoints2DDataLabelled() :
+            KTExtensibleData< KTDiscriminatedPoints2DDataLabelled >(),
+            fComponentData(1),
+            fNBinsX(1),
+            fNBinsY(1),
+            fBinWidthX(1.),
+            fBinWidthY(1.)
+    {
+    }
+
+    KTDiscriminatedPoints2DDataLabelled::~KTDiscriminatedPoints2DDataLabelled()
+    {
+    }
+
 } /* namespace Katydid */
 
