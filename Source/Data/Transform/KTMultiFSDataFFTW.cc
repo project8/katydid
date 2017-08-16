@@ -20,7 +20,7 @@ namespace Katydid
     KTMultiFSDataFFTWCore::KTMultiFSDataFFTWCore() :
             fSpectra(1)
     {
-        fSpectra[0] = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(1, 0., 1.);
+        fSpectra[0] = new KTMultiFSFFTW(1, 0., 1.);
 
         (*fSpectra[0])(0) = NULL;
     }
@@ -29,8 +29,8 @@ namespace Katydid
     {
         while (! fSpectra.empty())
         {
-            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* backSpectra = fSpectra.back();
-            for (KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
+            KTMultiFSFFTW* backSpectra = fSpectra.back();
+            for (KTMultiFSFFTW::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
             {
                 delete *iter;
             }
@@ -49,7 +49,7 @@ namespace Katydid
         if (fSpectra[component] == NULL)
         {
             KTDEBUG(datalog, "Pointer to spectra is NULL; adding new spectra with " << iSpect + 1 << "bins");
-            fSpectra[component] = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(iSpect+1, 0., 1.);
+            fSpectra[component] = new KTMultiFSFFTW(iSpect+1, 0., 1.);
         }
         (*fSpectra[component])(iSpect) = spectrum;
         return;

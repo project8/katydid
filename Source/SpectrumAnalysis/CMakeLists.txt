@@ -15,6 +15,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTMergeKDTree.hh
     KTNNFilter.hh
     KTSpectrumDiscriminator.hh
+    KTSpectrogramStriper.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
     #KTAutoCorrMatrix.hh
@@ -34,6 +35,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTMergeKDTree.cc
     KTNNFilter.cc
     KTSpectrumDiscriminator.cc
+    KTSpectrogramStriper.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
     #KTAutoCorrMatrix.cc
