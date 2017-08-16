@@ -25,6 +25,10 @@ namespace Katydid
     class KTMultiFSDataFFTWCore
     {
         public:
+            typedef KTMultiFSFFTW multi_spectrum_type;
+            typedef KTFrequencySpectrumFFTW spectrum_type;
+
+        public:
             KTMultiFSDataFFTWCore();
             virtual ~KTMultiFSDataFFTWCore();
 

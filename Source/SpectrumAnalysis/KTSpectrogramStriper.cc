@@ -31,7 +31,9 @@ namespace Katydid
             fStripeSize(100),
             fStripeOverlap(0),
             fDataMap(),
-            fLastAccumulatorPtr(),
+            fLastAccumulatorPtr(nullptr),
+            fLastTypeInfo(nullptr),
+            fSwaps(),
             fStripeSignal("stripe", this),
             fAddFSFFTWSlot("fs-fftw", this, &KTSpectrogramStriper::AddData)
     {
@@ -87,31 +89,43 @@ namespace Katydid
     {
         unsigned nComponents = data.GetNComponents();
 
-        KTSliceHeader& stripeHeader = stripeDataStruct.fData->Of< KTSliceHeader >();
         if (stripeData.GetNComponents() == 0) // this is the first time through this function
         {
+            KTSliceHeader& stripeHeader = stripeDataStruct.fData->Of< KTSliceHeader >();
+            stripeHeader.CopySliceHeaderOnly(header);
             stripeData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
 
-                KTFrequencySpectrumFFTW* dataFS = data.GetSpectrumFFTW(iComponent);
-                KTMultiFSFFTW* newMultiFS = new KTMultiFSFFTW(fStripeSize, header.GetTimeInRun(), header.GetTimeInRun() + fStripeSize * header.GetSliceLength());
+                KTMultiFSDataFFTW::spectrum_type* dataFS = data.GetSpectrumFFTW(iComponent);
+                KTMultiFSDataFFTW::multi_spectrum_type* newMultiFS = new KTMultiFSDataFFTW::multi_spectrum_type(fStripeSize, header.GetTimeInRun(), header.GetTimeInRun() + fStripeSize * header.GetSliceLength());
                 for (unsigned iFS = 0; iFS < fStripeSize; ++iFS)
                 {
-                    (*newMultiFS)(iFS) = new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
+                    (*newMultiFS)(iFS) = new KTMultiFSDataFFTW::spectrum_type(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
                     (*newMultiFS)(iFS)->operator*=(double(0.));
                 }
                 stripeData.SetSpectra(newMultiFS, iComponent);
             }
         }
-        else if (stripeDataStruct.fNextBin == 0) // this isn't the first time through, but we have a fresh stripe
+        else if (header.GetIsNewAcquisition()) // this starts a new acquisition, so it should start a new stripe, ignoring the overlap
         {
-            // TODO: reorganize existing frequency spectra
-            // TODO: redo time limits of the x-axis?
+            // emit signal for the current stripe if there is an existing partially-filled stripe
+            if (stripeDataStruct.fNextBin != fStripeOverlap) fStripeSignal(stripeDataStruct.fData);
+
+            KTSliceHeader& stripeHeader = stripeDataStruct.fData->Of< KTSliceHeader >();
+            stripeHeader.CopySliceHeaderOnly(header);
+            stripeDataStruct.fNextBin = 0;
+
         }
-
-        //accDataStruct.BumpSliceNumber();
-
+        else if (stripeDataStruct.fNextBin == fStripeOverlap) // this isn't the first time through, but we have a fresh stripe
+        {
+            KTSliceHeader& stripeHeader = stripeDataStruct.fData->Of< KTSliceHeader >();
+            stripeHeader.CopySliceHeaderOnly(header);
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                PerformSwaps(*stripeData.GetSpectra(iComponent));
+            }
+        }
 
         if (nComponents != stripeData.GetNComponents())
         {
@@ -135,6 +149,13 @@ namespace Katydid
                 (*avSpect)(iBin)[0] = (*newSpect)(iBin)[0];
                 (*avSpect)(iBin)[1] = (*newSpect)(iBin)[1];
             }
+        }
+
+        stripeDataStruct.fNextBin += 1;
+        if (stripeDataStruct.fNextBin == fStripeSize)
+        {
+            fStripeSignal(stripeDataStruct.fData);
+            stripeDataStruct.fNextBin = fStripeOverlap;
         }
 
         return true;

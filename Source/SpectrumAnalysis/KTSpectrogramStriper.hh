@@ -83,6 +83,8 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
+            void CalculateSwaps();
+
             MEMBERVARIABLE(unsigned, StripeSize) // in number of slices
             MEMBERVARIABLE(unsigned, StripeOverlap) // in number of slices
 
@@ -94,7 +96,8 @@ namespace Katydid
             const std::vector< std::pair< unsigned, unsigned > >& Swaps() const;
 
         private:
-            void CalculateSwaps();
+            template< class XDataType >
+            void PerformSwaps(XDataType& data);
 
             template< class XDataType >
             StripeAccumulator& GetOrCreateAccumulator();
@@ -127,9 +130,28 @@ namespace Katydid
 
     };
 
-    inline const std::vector< std::pair< unsigned, unsigned > >& KTSpectrogramStriper::Swaps() const
+
+    template< class XSpectraType >
+    void KTSpectrogramStriper::PerformSwaps(XSpectraType& spectra)
     {
-        return fSwaps;
+        // calculate min/max times
+        double minTime = spectra.GetBinLowEdge(fStripeOverlap - 1);
+        double maxTime = minTime + fStripeSize * spectra.GetBinWidth();
+
+        // send element 0 to a holding buffer
+        typename XSpectraType::value_type bufferSpectrum = spectra(0);
+        // do mapped swaps
+        unsigned nSwaps = fSwaps.size();
+        for (unsigned iSwap = 0; iSwap < nSwaps; ++iSwap)
+        {
+            spectra(fSwaps[iSwap].second) = spectra(fSwaps[iSwap].first);
+        }
+        // return the pointer in the buffer to the final position
+        spectra(fSwaps[nSwaps-1].first) = bufferSpectrum;
+
+        // apply new min and max times
+        spectra.SetRange(minTime, maxTime);
+        return;
     }
 
     template< class XDataType >
@@ -140,6 +162,11 @@ namespace Katydid
         fLastAccumulatorPtr = &fDataMap[typeInfo];
         fLastTypeInfo = const_cast< std::type_info* >(typeInfo);
         return *fLastAccumulatorPtr;
+    }
+
+    inline const std::vector< std::pair< unsigned, unsigned > >& KTSpectrogramStriper::Swaps() const
+    {
+        return fSwaps;
     }
 
 }
