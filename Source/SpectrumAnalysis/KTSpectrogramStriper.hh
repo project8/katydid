@@ -13,6 +13,7 @@
 
 #include "KTSliceHeader.hh"
 
+#include "KTLogger.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
@@ -27,9 +28,12 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
+    class KTFrequencySpectrumFFTW;
     class KTMultiFSDataFFTW;
+    class KTMultiFSDataFFTWCore;
     class KTPowerSpectrumData;
 
+    KTLOGGER(sslog_h, "KTSpectrogramStriper");
 
     /*!
      @class KTSpectrogramStriper
@@ -64,17 +68,23 @@ namespace Katydid
 
             struct StripeAccumulator
             {
-                Nymph::KTDataPtr fData;
+                Nymph::KTDataPtr fDataPtr;
                 KTSliceHeader& fSliceHeader;
                 unsigned fNextBin;
 
-                void IncrementSlice();
-                StripeAccumulator() : fData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>()), fNextBin(0)
-                {
-                }
+                //void IncrementSlice();
+                StripeAccumulator() : fDataPtr(new Nymph::KTData()), fSliceHeader(fDataPtr->Of<KTSliceHeader>()), fNextBin(0)
+                {}
+            };
+            template< class XDataClass >
+            struct TypedStripeAccumulator : StripeAccumulator
+            {
+                XDataClass& fData;
+                TypedStripeAccumulator() : StripeAccumulator(), fData(fDataPtr->Of<XDataClass>())
+                {}
             };
 
-            typedef std::map< const std::type_info*, StripeAccumulator > AccumulatorMap;
+            typedef std::map< const std::type_info*, StripeAccumulator* > AccumulatorMap;
             typedef AccumulatorMap::iterator AccumulatorMapIt;
 
         public:
@@ -100,10 +110,18 @@ namespace Katydid
             void PerformSwaps(XDataType& data);
 
             template< class XDataType >
-            StripeAccumulator& GetOrCreateAccumulator();
+            TypedStripeAccumulator< XDataType >& GetOrCreateAccumulator();
+
+            template< class XSpectrumDataCore, class XMultiSpectrumDataCore >
+            bool CoreAddData(const KTSliceHeader& header, const XSpectrumDataCore& data, StripeAccumulator& stripeDataStruct, XMultiSpectrumDataCore& stripeData);
+
+            // FS FFTW functions
+            const KTFrequencySpectrumFFTW* GetSpectrum(const KTFrequencySpectrumDataFFTWCore& data, const unsigned iComponent) const;
+            void CopySpectrum(const KTFrequencySpectrumFFTW* source, KTFrequencySpectrumFFTW* dest, unsigned arraySize);
 
             //bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData);
-            bool CoreAddData(KTSliceHeader& header, KTFrequencySpectrumDataFFTWCore& data, StripeAccumulator& stripeDataStruct, KTMultiFSDataFFTW& stripeData);
+
+            //bool CoreAddData(KTSliceHeader& header, KTFrequencySpectrumDataFFTWCore& data, StripeAccumulator& stripeDataStruct, KTMultiFSDataFFTWCore& stripeData);
 
             //bool CoreAddData(KTPowerSpectrumData& data, Accumulator& accDataStruct, KTPowerSpectrumData& accData);
 
@@ -155,14 +173,86 @@ namespace Katydid
     }
 
     template< class XDataType >
-    KTSpectrogramStriper::StripeAccumulator& KTSpectrogramStriper::GetOrCreateAccumulator()
+    KTSpectrogramStriper::TypedStripeAccumulator< XDataType >& KTSpectrogramStriper::GetOrCreateAccumulator()
     {
         const std::type_info* typeInfo = &typeid(XDataType);
-        if (typeInfo == fLastTypeInfo) return *fLastAccumulatorPtr;
-        fLastAccumulatorPtr = &fDataMap[typeInfo];
-        fLastTypeInfo = const_cast< std::type_info* >(typeInfo);
-        return *fLastAccumulatorPtr;
+        if (typeInfo != fLastTypeInfo)
+        {
+            fLastAccumulatorPtr = fDataMap[typeInfo];
+            fLastTypeInfo = const_cast< std::type_info* >(typeInfo);
+        }
+        return static_cast< TypedStripeAccumulator< XDataType >& >(*fLastAccumulatorPtr);;
     }
+
+    template< class XSpectrumDataCore, class XMultiSpectrumDataCore >
+    bool KTSpectrogramStriper::CoreAddData(const KTSliceHeader& header, const XSpectrumDataCore& data, StripeAccumulator& stripeDataStruct, XMultiSpectrumDataCore& stripeData)
+    {
+        KTWARN(sslog_h, "In CoreAddData");
+        unsigned nComponents = data.GetNComponents();
+
+        if (stripeData.GetNComponents() == 0) // this is the first time through this function
+        {
+            stripeDataStruct.fSliceHeader.CopySliceHeaderOnly(header);
+            stripeData.SetNComponents(nComponents);
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+
+                const typename XMultiSpectrumDataCore::spectrum_type* dataFS = GetSpectrum(data, iComponent);
+                typename XMultiSpectrumDataCore::multi_spectrum_type* newMultiFS = new typename XMultiSpectrumDataCore::multi_spectrum_type(fStripeSize, header.GetTimeInRun(), header.GetTimeInRun() + fStripeSize * header.GetSliceLength());
+                for (unsigned iFS = 0; iFS < fStripeSize; ++iFS)
+                {
+                    (*newMultiFS)(iFS) = new typename XMultiSpectrumDataCore::spectrum_type(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
+                    (*newMultiFS)(iFS)->operator*=(double(0.));
+                }
+                stripeData.SetSpectra(newMultiFS, iComponent);
+            }
+        }
+        else if (header.GetIsNewAcquisition()) // this starts a new acquisition, so it should start a new stripe, ignoring the overlap
+        {
+            // emit signal for the current stripe if there is an existing partially-filled stripe
+            if (stripeDataStruct.fNextBin != fStripeOverlap) fStripeSignal(stripeDataStruct.fDataPtr);
+
+            stripeDataStruct.fSliceHeader.CopySliceHeaderOnly(header);
+            stripeDataStruct.fNextBin = 0;
+
+        }
+        else if (stripeDataStruct.fNextBin == fStripeOverlap) // this isn't the first time through, but we have a fresh stripe
+        {
+            stripeDataStruct.fSliceHeader.CopySliceHeaderOnly(header);
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                PerformSwaps(*stripeData.GetSpectra(iComponent));
+            }
+        }
+
+        if (nComponents != stripeData.GetNComponents())
+        {
+            KTERROR(sslog_h, "Numbers of components in the average and in the new data do not match");
+            return false;
+        }
+
+        unsigned arraySize = data.GetSpectrumFFTW(0)->size();
+        if (arraySize != (*stripeData.GetSpectra(0))(stripeDataStruct.fNextBin)->size())
+        {
+            KTERROR(sslog_h, "Sizes of arrays in the average and in the new data do not match");
+            return false;
+        }
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            CopySpectrum(data.GetSpectrumFFTW(iComponent), (*stripeData.GetSpectra(iComponent))(stripeDataStruct.fNextBin), arraySize);
+        }
+
+        stripeDataStruct.fNextBin += 1;
+        if (stripeDataStruct.fNextBin == fStripeSize)
+        {
+            fStripeSignal(stripeDataStruct.fDataPtr);
+            stripeDataStruct.fNextBin = fStripeOverlap;
+        }
+
+        return true;
+    }
+
 
     inline const std::vector< std::pair< unsigned, unsigned > >& KTSpectrogramStriper::Swaps() const
     {

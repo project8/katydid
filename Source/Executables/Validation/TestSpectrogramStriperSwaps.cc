@@ -17,7 +17,7 @@ int main()
     striper.SetStripeSize(10);
     striper.SetStripeOverlap(3);
 
-    striper.Configure(nullptr);
+    striper.CalculateSwaps();
 
     return 0;
 }
