@@ -15,9 +15,6 @@
 #include "KTNormalizedFSData.hh"
 #include "KTPowerSpectrumData.hh"
 
-#include <vector>
-#include <cmath>
-
 using std::string;
 using std::vector;
 
@@ -94,14 +91,14 @@ namespace Katydid
         std::vector< double > inputPiece;   // length <= block
         std::vector< double > outputPiece;  // length <= step
 
-        std::vector< double > transformedInput;
-        std::vector< double > transformedOutput;
+        fftw_complex *transformedInput;
+        fftw_complex *transformedOutput;
 
         int blockNumber = 0;
         int nBins;
         unsigned nBin = 0;
         
-        std::vector< double > transformedKernelX = DFT( kernelX );
+        fftw_complex *transformedKernelX = DFT( kernelX, block );
 
         KTPowerSpectrum* ps;
         KTPowerSpectrum* transformedPS;
@@ -130,16 +127,15 @@ namespace Katydid
                 }
 
                 // FFT of input block
-                transformedInput = DFT( inputPiece );
+                transformedInput = DFT( inputPiece, nBin );
 
-                transformedOutput.clear();
                 for( nBin = 0; nBin < block && nBin + blockNumber * step < nBins; ++nBin )
                 {
-                    transformedOutput.push_back( transformedInput[nBin] * transformedKernelX[nBin] );
+                    transformedOutput[nBin] = transformedInput[nBin] * transformedKernelX[nBin] );
                 }
 
                 // Reverse FFT of output block
-                outputPiece = RDFT( transformedOutput );
+                outputPiece = RDFT( transformedOutput, nBin );
                 
                 // Loop over bins in the output block and fill the convolved spectrum
                 for( nBin = overlap; nBin < block && nBin + blockNumber * step < nBins; ++nBin )
@@ -158,16 +154,44 @@ namespace Katydid
         return true;
     }
 
-    std::vector< double > KTConvolution::DFT( std::vector< double > in )
+    fftw_complex* KTConvolution::DFT( std::vector< double > in, int n )
     {
-        // Use FFTW
-        return in;
+        double *input;
+        fftw_complex *output;
+        fftw_plan realToComplex;
+
+        // Convert vector input to array
+        input = &in[0];
+
+        // Initialize output
+        output = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * n );
+        realToComplex = fftw_plan_dft_r2c_1d( n, input, output, "ESTIMATE" );
+
+        fftw_execute( realToComplex );
+
+        fftw_destroy_plan( realToComplex );
+        fftw_free( input );
+        fftw_free( output );
+
+        return output;
     }
 
-    std::vector< double > KTConvolution::RDFT( std::vector< double > in )
+    std::vector< double > KTConvolution::RDFT( fftw_complex *input, int n )
     {
-        // Use FFTW
-        return in;
+        double *output;
+        fftw_plan complexToReal;
+
+        complexToReal = fftw_plan_dft_c2r_1d( n, input, output, "ESTIMATE" );
+
+        fftw_execute( complexToReal );
+
+        fftw_destroy_plan( complexToReal );
+        fftw_free( input );
+        fftw_free( output );
+
+        std::vector< double > out( output, output + sizeof( output ) / sizeof( output[0] ) );
+
+        return out;
     }
 
 

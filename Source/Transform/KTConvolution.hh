@@ -12,11 +12,9 @@
 #include "KTProcessor.hh"
 #include "KTSlot.hh"
 
-#include "KTForwardFFTW.hh"
-#include "KTReverseFFTW.hh"
-
 #include <vector>
-
+#include <cmath>
+#include <fftw3.h>
 
 namespace Katydid
 {
@@ -83,8 +81,8 @@ namespace Katydid
             
             bool ParseKernel();
             bool Convolve1D( KTPowerSpectrumData& data );
-            std::vector< double > DFT( std::vector< double > in );
-            std::vector< double > RDFT( std::vector< double > in );
+            fftw_complex* DFT( std::vector< double > in, int n );
+            std::vector< double > RDFT( fftw_complex *input, int n );
 
             //***************
             // Signals
