@@ -83,6 +83,8 @@ namespace Katydid
             
             bool ParseKernel();
             bool Convolve1D( KTPowerSpectrumData& data );
+            std::vector< double > DFT( std::vector< double > in );
+            std::vector< double > RDFT( std::vector< double > in );
 
             //***************
             // Signals

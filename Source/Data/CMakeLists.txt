@@ -43,6 +43,7 @@ set (DATA_HEADERFILES
     Evaluation/KTAnalysisCandidates.hh
     Evaluation/KTCCResults.hh
     Evaluation/KTMCTruthEvents.hh
+    Transform/KTConvolvedSpectrumData.hh
     Transform/KTFrequencyDomainArray.hh
     Transform/KTFrequencySpectrum.hh
     Transform/KTFrequencySpectrumDataFFTW.hh
@@ -99,6 +100,7 @@ set (DATA_SOURCEFILES
     Evaluation/KTAnalysisCandidates.cc
     Evaluation/KTCCResults.cc
     Evaluation/KTMCTruthEvents.cc
+    Transform/KTConvolvedSpectrumData.cc
     Transform/KTFrequencyDomainArray.cc
     Transform/KTFrequencySpectrum.cc
     Transform/KTFrequencySpectrumDataFFTW.cc
