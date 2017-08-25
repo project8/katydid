@@ -22,16 +22,16 @@
 #### New Features:
 
 * Feature 1
-  * Details
+    * Details
 * Feature 2
-  * Details
+    * Details
   
 #### Fixes:
 
 * Fix 1
-  * Details
+    * Details
 * Fix 2
-  * Details
+    * Details
   
 ## Log
 
@@ -42,15 +42,23 @@
 #### New Features:
 
 * ROOT Spectrogram Writer: sequential writing mode
-  * A new mode of writing was added to the writer that writes sequential spectrograms of a given time size.
-  * Documentation is included in the KTROOTSpectrogramWriter header documentation.
-  * The new writing mode was tested on a concatenated file from an RSA run. Sequential spectrograms split at the right times according to the setting and acquisition breaks.
-  * The old writing mode ("single") continued to function in the same way.
+    * A new mode of writing was added to the writer that writes sequential spectrograms of a given time size.
+    * Documentation is included in the KTROOTSpectrogramWriter header documentation.
+    * The new writing mode was tested on a concatenated file from an RSA run. Sequential spectrograms split at the right times according to the setting and acquisition breaks.
+    * The old writing mode ("single") continued to function in the same way.
   
 #### Fixes:
 
-* Fix 1
-  * Details
-* Fix 2
-  * Details
+* Consensus Thresholding NaN fix
+    * For vertically-aligned points, the CT algorithm would calculate an NaN slope, but the algorithm did not crash. This special case is now handled without calculating a slope.
+    * Validated by observing the debug output of the CT processor when processing a data file, and seeing that no NaN or inf values were present.
+  
+* Egg3 reader: crashed on reading second file and beyond in multi-file runs
+    * The reader was not picking up the first record number in the file, which was non-zero for the second file and beyond in a multi-file run.
+    * This was fixed by adjusting the variable that tracks that record number immediately after the first record was read.
+    * This was validated by analyzing a non-first-file in a multi-file run and seeing that the record number was correct in the debug output.  Run number 3870 was used.
+
+
+
+
   
