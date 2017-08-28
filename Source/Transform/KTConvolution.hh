@@ -62,30 +62,36 @@ namespace Katydid
     {
 
         public:
+
             KTConvolution(const std::string& name = "convolution");
             virtual ~KTConvolution();
 
             bool Configure(const scarab::param_node* node);
 
-            std::string GetKernel() const;
-            void SetKernel( std::string path );
-
-            unsigned GetBlockSize() const;
-            void SetBlockSize( unsigned n );
-
+            MEMBERVARIABLE(std::string, Kernel);
+            MEMBERVARIABLE(unsigned, BlockSize);
+            MEMBERVARIABLE_NOSET(std::string, TransformFlag);
             void SetTransformFlag(const std::string& flag);
 
 
         private:
 
-            std::string fKernel;
-            unsigned fBlockSize;
-
             std::vector< double > kernelX;
 
             typedef std::map< std::string, unsigned > TransformFlagMap;
             TransformFlagMap fTransformFlagMap;
-            std::string fTransformFlag;
+            
+            fftw_plan fComplexToRealPlan;
+            fftw_plan fRealToComplexPlan;
+            fftw_plan fC2CForwardPlan;
+            fftw_plan fC2CReversePlan;
+
+            double *fInputArrayReal;
+            double *fOutputArrayReal;
+            fftw_complex *fInputArrayComplex;
+            fftw_complex *fOutputArrayComplex;
+
+            unsigned fTransformFlagUnsigned;
 
         public:
             
@@ -94,6 +100,9 @@ namespace Katydid
             fftw_complex* DFT_1D_R2C( std::vector< double > in, int n );
             std::vector< double > RDFT_1D_C2R( fftw_complex *input, int n );
             void SetupInternalMaps();
+
+            void AllocateArrays( int nSize );
+            void FreeArrays();
 
             //***************
             // Signals
@@ -112,29 +121,6 @@ namespace Katydid
 
     };
 
-    
-    inline std::string KTConvolution::GetKernel() const
-    {
-        return fKernel;
-    }
-
-    inline void KTConvolution::SetKernel( std::string path )
-    {
-        fKernel = path;
-        return;
-    }
-
-    inline unsigned KTConvolution::GetBlockSize() const
-    {
-        return fBlockSize;
-    }
-
-    inline void KTConvolution::SetBlockSize( unsigned n )
-    {
-        fBlockSize = n;
-        return;
-    }
-    
 } /* namespace Katydid */
 
 #endif /* KTCONVOLUTION_HH_ */

@@ -35,6 +35,15 @@ namespace Katydid
             fBlockSize(0),
             fTransformFlag("ESTIMATE"),
             fTransformFlagMap(),
+            fComplexToRealPlan(),
+            fRealToComplexPlan(),
+            fC2CForwardPlan(),
+            fC2CReversePlan(),
+            fInputArrayReal(NULL),
+            fOutputArrayReal(NULL),
+            fInputArrayComplex(NULL),
+            fOutputArrayComplex(NULL),
+            fTransformFlagUnsigned(0),
             fPSSignal("ps", this),
             fPSSlot("ps", this, &KTConvolution::Convolve1D_PS, &fPSSignal)
     {
@@ -49,31 +58,12 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        if (node->has("kernel"))
-        {
-            SetKernel(node->get_value< std::string >("kernel"));
-        }
-        if (node->has("block-size"))
-        {
-            SetBlockSize(node->get_value< unsigned >("block-size"));
-        }
-        if (node->has("transform-flag"))
-        {
-            SetTransformFlag(node->get_value< std::string >("transform-flag"));
-        }
+        SetKernel(node->get_value< std::string >("kernel", GetKernel()));
+        SetBlockSize(node->get_value< unsigned >("block-size", GetBlockSize()));
+        SetTransformFlag(node->get_value< std::string >("transform-flag", GetTransformFlag()));
 
-        if( GetBlockSize() == 0 )
-        {
-            SetBlockSize( 8 * kernelX.size() );
-            int power = log2( GetBlockSize() ); // int will take the floor of the log
-            SetBlockSize( pow( 2, power ) );    // largest power of 2 which is <= 8 * kernel size
-        }
-
-        if( GetBlockSize() < kernelX.size() )
-        {
-            KTERROR( sdlog, "Block size is smaller than kernel length. Aborting." );
-            return false;
-        }
+        TransformFlagMap::const_iterator iter = fTransformFlagMap.find( fTransformFlag );
+        fTransformFlagUnsigned = iter->second;
 
         if( ! ParseKernel() )
         {
@@ -81,7 +71,37 @@ namespace Katydid
             return false;
         }
 
+        AllocateArrays( GetBlockSize() );
+
         return true;
+    }
+
+    void KTConvolution::AllocateArrays( int nSize )
+    {
+        FreeArrays();
+
+        fInputArrayReal = (double*) fftw_malloc( sizeof( double ) * nSize );
+        fOutputArrayReal = (double*) fftw_malloc( sizeof( double ) * nSize );
+        fInputArrayComplex = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSize );
+        fOutputArrayComplex = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSize );
+
+        fRealToComplexPlan = fftw_plan_dft_r2c_1d( nSize, fInputArrayReal, fOutputArrayComplex, fTransformFlagUnsigned );
+        fComplexToRealPlan = fftw_plan_dft_c2r_1d( nSize, fInputArrayComplex, fOutputArrayReal, fTransformFlagUnsigned );
+        // fC2CForwardPlan
+        // fC2CReversePlan
+    }
+
+    void KTConvolution::FreeArrays()
+    {
+        fftw_free( fInputArrayReal );
+        fftw_free( fOutputArrayReal );
+        fftw_free( fInputArrayComplex );
+        fftw_free( fOutputArrayComplex );
+
+        fftw_destroy_plan( fRealToComplexPlan );
+        fftw_destroy_plan( fComplexToRealPlan );
+        fftw_destroy_plan( fC2CForwardPlan );
+        fftw_destroy_plan( fC2CReversePlan );
     }
 
     bool KTConvolution::ParseKernel()
@@ -107,8 +127,22 @@ namespace Katydid
             kernelX.push_back( kernel1DArray.get_value< double >(iValue) );
         }
 
-        // Periodically continue
+        // Set block size if left unspecified
+        if( GetBlockSize() == 0 )
+        {
+            SetBlockSize( 8 * kernelX.size() );
+            int power = log2( GetBlockSize() ); // int will take the floor of the log
+            SetBlockSize( pow( 2, power ) );    // largest power of 2 which is <= 8 * kernel size
+        }
 
+        // Check that kernel size is not more than block size
+        if( GetBlockSize() < kernelX.size() )
+        {
+            KTERROR( sdlog, "Block size is smaller than kernel length. Aborting." );
+            return false;
+        }
+
+        // Periodically continue kernel up to block size
         for( int iPosition = kernelSize; iPosition < GetBlockSize(); ++iPosition )
         {
             kernelX.push_back( kernelX[iPosition - kernelSize] );
@@ -194,46 +228,29 @@ namespace Katydid
 
     fftw_complex* KTConvolution::DFT_1D_R2C( std::vector< double > in, int n )
     {
-        double *input;
-        fftw_complex *output;
-        fftw_plan realToComplex;
+        if( in.size() != n )
+        {
+            KTWARN(sdlog, "Input array size does not match expected value. Re-allocating arrays.");
+            AllocateArrays( n );
+        }
 
-        TransformFlagMap::const_iterator iter = fTransformFlagMap.find( fTransformFlag );
-        unsigned transformFlag = iter->second;
+        fInputArrayReal = &in[0];
+        fftw_execute( fRealToComplexPlan );
 
-        // Convert vector input to array
-        input = &in[0];
-
-        // Initialize output
-        output = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * n );
-        realToComplex = fftw_plan_dft_r2c_1d( n, input, output, transformFlag );
-
-        fftw_execute( realToComplex );
-
-        fftw_destroy_plan( realToComplex );
-        fftw_free( input );
-        fftw_free( output );
-
-        return output;
+        return fOutputArrayComplex;
     }
 
     std::vector< double > KTConvolution::RDFT_1D_C2R( fftw_complex *input, int n )
     {
-        double *output;
-        fftw_plan complexToReal;
+        if( sizeof( input ) / sizeof( input[0] ) != n )
+        {
+            KTWARN(sdlog, "Input array size does not match expected value. Re-allocating arrays.");
+            AllocateArrays( n );
+        }
 
-        TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
-        unsigned transformFlag = iter->second;
-
-        complexToReal = fftw_plan_dft_c2r_1d( n, input, output, transformFlag );
-
-        fftw_execute( complexToReal );
-
-        fftw_destroy_plan( complexToReal );
-        fftw_free( input );
-        fftw_free( output );
-
-        std::vector< double > out( output, output + sizeof( output ) / sizeof( output[0] ) );
+        fInputArrayComplex = input;
+        fftw_execute( fComplexToRealPlan );
+        std::vector< double > out( fOutputArrayReal, fOutputArrayReal + sizeof( fOutputArrayReal ) / sizeof( fOutputArrayReal[0] ) );
 
         return out;
     }
