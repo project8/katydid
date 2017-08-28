@@ -91,9 +91,9 @@ namespace Katydid
         scarab::path kernelFilePath = scarab::expand_path( GetKernel() );
         scarab::param_translator translator;
         scarab::param* kernelFromFile = translator.read_file( kernelFilePath.native() );
-        scarab::param_node* kernelNode = &kernelFromFile->as_node();
+        scarab::param_node& kernelNode = kernelFromFile->as_node();
 
-        if( ! kernelNode->has( "kernel" ) )
+        if( ! kernelNode.has( "kernel" ) )
         {
             KTERROR( sdlog, "Kernel configuration file is not properly written. Aboring" );
             return false;
@@ -104,7 +104,7 @@ namespace Katydid
 
         for( int iValue = 0; iValue < kernelSize; ++iValue )
         {
-            kernelX.push_back( kernel1DArray[iValue] );
+            kernelX.push_back( kernel1DArray.get_value< double >(iValue) );
         }
 
         // Periodically continue
