@@ -16,6 +16,7 @@
 #include <cmath>
 #include <fftw3.h>
 #include <map>
+#include <iostream>
 
 namespace Katydid
 {

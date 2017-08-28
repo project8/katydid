@@ -15,6 +15,11 @@
 #include "KTNormalizedFSData.hh"
 #include "KTPowerSpectrumData.hh"
 
+#include "param_codec.hh"
+#include "param_json.hh"
+#include "param.hh"
+#include "KTConfigurator.hh"
+
 using std::string;
 using std::vector;
 
@@ -83,6 +88,31 @@ namespace Katydid
     {
         // Read in json with scarab::param
 
+        scarab::path kernelFilePath = scarab::expand_path( GetKernel() );
+        scarab::param_translator translator;
+        scarab::param* kernelFromFile = translator.read_file( kernelFilePath.native() );
+        scarab::param_node* kernelNode = &kernelFromFile->as_node();
+
+        if( ! kernelNode->has( "kernel" ) )
+        {
+            KTERROR( sdlog, "Kernel configuration file is not properly written. Aboring" );
+            return false;
+        }
+
+        scarab::param_array& kernel1DArray = kernelNode["kernel"].as_array();
+        int kernelSize = kernel1DArray.size();
+
+        for( int iValue = 0; iValue < kernelSize; ++iValue )
+        {
+            kernelX.push_back( kernel1DArray[iValue] );
+        }
+
+        // Periodically continue
+
+        for( int iPosition = kernelSize; iPosition < GetBlockSize(); ++iPosition )
+        {
+            kernelX.push_back( kernelX[iPosition - kernelSize] );
+        }
 
         return true;
     }
