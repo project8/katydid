@@ -43,6 +43,7 @@ namespace Katydid
             fOutputArrayReal(NULL),
             fInputArrayComplex(NULL),
             fOutputArrayComplex(NULL),
+            fTransformedKernelX(NULL),
             fTransformFlagUnsigned(0),
             fPSSignal("ps", this),
             fPSSlot("ps", this, &KTConvolution::Convolve1D_PS, &fPSSignal)
@@ -72,6 +73,8 @@ namespace Katydid
         }
 
         AllocateArrays( GetBlockSize() );
+
+        fTransformedKernelX = DFT_1D_R2C( kernelX, GetBlockSize() );
 
         return true;
     }
@@ -169,8 +172,6 @@ namespace Katydid
         int nBins;
         unsigned nBin = 0;
         
-        fftw_complex *transformedKernelX = DFT_1D_R2C( kernelX, block );
-
         KTPowerSpectrum* ps;
         KTPowerSpectrum* transformedPS;
 
@@ -202,8 +203,8 @@ namespace Katydid
 
                 for( nBin = 0; nBin < block && nBin + blockNumber * step < nBins; ++nBin )
                 {
-                    transformedOutput[nBin][0] = transformedInput[nBin][0] * transformedKernelX[nBin][0] - transformedInput[nBin][1] * transformedKernelX[nBin][1];
-                    transformedOutput[nBin][1] = transformedInput[nBin][0] * transformedKernelX[nBin][1] + transformedInput[nBin][1] * transformedKernelX[nBin][0];
+                    transformedOutput[nBin][0] = transformedInput[nBin][0] * fTransformedKernelX[nBin][0] - transformedInput[nBin][1] * fTransformedKernelX[nBin][1];
+                    transformedOutput[nBin][1] = transformedInput[nBin][0] * fTransformedKernelX[nBin][1] + transformedInput[nBin][1] * fTransformedKernelX[nBin][0];
                 }
 
                 // Reverse FFT of output block

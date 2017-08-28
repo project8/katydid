@@ -91,6 +91,8 @@ namespace Katydid
             fftw_complex *fInputArrayComplex;
             fftw_complex *fOutputArrayComplex;
 
+            fftw_complex *fTransformedKernelX;
+
             unsigned fTransformFlagUnsigned;
 
         public:
