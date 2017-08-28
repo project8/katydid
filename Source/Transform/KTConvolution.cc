@@ -28,9 +28,12 @@ namespace Katydid
             KTProcessor(name),
             fKernel("placeholder.json"),
             fBlockSize(0),
+            fTransformFlag("ESTIMATE"),
+            fTransformFlagMap(),
             fPSSignal("ps", this),
-            fPSSlot("ps", this, &KTConvolution::Convolve1D, &fPSSignal)
+            fPSSlot("ps", this, &KTConvolution::Convolve1D_PS, &fPSSignal)
     {
+        SetupInternalMaps();
     }
 
     KTConvolution::~KTConvolution()
@@ -49,11 +52,9 @@ namespace Katydid
         {
             SetBlockSize(node->get_value< unsigned >("block-size"));
         }
-        
-        if( ! ParseKernel() )
+        if (node->has("transform-flag"))
         {
-            KTERROR( sdlog, "Failed to parse kernel json. Aborting" );
-            return false;
+            SetTransformFlag(node->get_value< std::string >("transform-flag"));
         }
 
         if( GetBlockSize() == 0 )
@@ -69,6 +70,12 @@ namespace Katydid
             return false;
         }
 
+        if( ! ParseKernel() )
+        {
+            KTERROR( sdlog, "Failed to parse kernel json. Aborting" );
+            return false;
+        }
+
         return true;
     }
 
@@ -80,7 +87,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTConvolution::Convolve1D( KTPowerSpectrumData& data )
+    bool KTConvolution::Convolve1D_PS( KTPowerSpectrumData& data )
     {
         KTConvolvedPowerSpectrumData& newData = data.Of< KTConvolvedPowerSpectrumData >();
 
@@ -98,7 +105,7 @@ namespace Katydid
         int nBins;
         unsigned nBin = 0;
         
-        fftw_complex *transformedKernelX = DFT( kernelX, block );
+        fftw_complex *transformedKernelX = DFT_1D_R2C( kernelX, block );
 
         KTPowerSpectrum* ps;
         KTPowerSpectrum* transformedPS;
@@ -127,15 +134,16 @@ namespace Katydid
                 }
 
                 // FFT of input block
-                transformedInput = DFT( inputPiece, nBin );
+                transformedInput = DFT_1D_R2C( inputPiece, nBin );
 
                 for( nBin = 0; nBin < block && nBin + blockNumber * step < nBins; ++nBin )
                 {
-                    transformedOutput[nBin] = transformedInput[nBin] * transformedKernelX[nBin] );
+                    transformedOutput[nBin][0] = transformedInput[nBin][0] * transformedKernelX[nBin][0] - transformedInput[nBin][1] * transformedKernelX[nBin][1];
+                    transformedOutput[nBin][1] = transformedInput[nBin][0] * transformedKernelX[nBin][1] + transformedInput[nBin][1] * transformedKernelX[nBin][0];
                 }
 
                 // Reverse FFT of output block
-                outputPiece = RDFT( transformedOutput, nBin );
+                outputPiece = RDFT_1D_C2R( transformedOutput, nBin );
                 
                 // Loop over bins in the output block and fill the convolved spectrum
                 for( nBin = overlap; nBin < block && nBin + blockNumber * step < nBins; ++nBin )
@@ -154,18 +162,21 @@ namespace Katydid
         return true;
     }
 
-    fftw_complex* KTConvolution::DFT( std::vector< double > in, int n )
+    fftw_complex* KTConvolution::DFT_1D_R2C( std::vector< double > in, int n )
     {
         double *input;
         fftw_complex *output;
         fftw_plan realToComplex;
+
+        TransformFlagMap::const_iterator iter = fTransformFlagMap.find( fTransformFlag );
+        unsigned transformFlag = iter->second;
 
         // Convert vector input to array
         input = &in[0];
 
         // Initialize output
         output = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * n );
-        realToComplex = fftw_plan_dft_r2c_1d( n, input, output, "ESTIMATE" );
+        realToComplex = fftw_plan_dft_r2c_1d( n, input, output, transformFlag );
 
         fftw_execute( realToComplex );
 
@@ -176,12 +187,15 @@ namespace Katydid
         return output;
     }
 
-    std::vector< double > KTConvolution::RDFT( fftw_complex *input, int n )
+    std::vector< double > KTConvolution::RDFT_1D_C2R( fftw_complex *input, int n )
     {
         double *output;
         fftw_plan complexToReal;
 
-        complexToReal = fftw_plan_dft_c2r_1d( n, input, output, "ESTIMATE" );
+        TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
+        unsigned transformFlag = iter->second;
+
+        complexToReal = fftw_plan_dft_c2r_1d( n, input, output, transformFlag );
 
         fftw_execute( complexToReal );
 
@@ -192,6 +206,30 @@ namespace Katydid
         std::vector< double > out( output, output + sizeof( output ) / sizeof( output[0] ) );
 
         return out;
+    }
+
+    void KTConvolution::SetupInternalMaps()
+    {
+        // transform flag map
+        fTransformFlagMap.clear();
+        fTransformFlagMap["ESTIMATE"] = FFTW_ESTIMATE;
+        fTransformFlagMap["MEASURE"] = FFTW_MEASURE;
+        fTransformFlagMap["PATIENT"] = FFTW_PATIENT;
+        fTransformFlagMap["EXHAUSTIVE"] = FFTW_EXHAUSTIVE;
+        return;
+    }
+
+    void KTConvolution::SetTransformFlag(const std::string& flag)
+    {
+        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
+        {
+            KTWARN(sdlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            return;
+        }
+
+        SetTransformFlag( flag );
+
+        return;
     }
 
 

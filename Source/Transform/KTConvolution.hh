@@ -15,6 +15,7 @@
 #include <vector>
 #include <cmath>
 #include <fftw3.h>
+#include <map>
 
 namespace Katydid
 {
@@ -47,6 +48,7 @@ namespace Katydid
      Available configuration values:
      - "kernel": std::string -- Location of a .json file which contains the kernel
      - "block-size": double -- Size of the input blocks. 0 will trigger an automatic determination of the ideal block size
+     - "transform-flag": std:string -- Transform flag for FFTW
 
      Slots:
      - "ps": void (Nymph::KTDataPtr) -- Convolves a power spectrum; Requires KTPowerSpectrumData; Adds KTConvolvedPowerSpectrumData
@@ -70,6 +72,9 @@ namespace Katydid
             unsigned GetBlockSize() const;
             void SetBlockSize( unsigned n );
 
+            void SetTransformFlag(const std::string& flag);
+
+
         private:
 
             std::string fKernel;
@@ -77,12 +82,17 @@ namespace Katydid
 
             std::vector< double > kernelX;
 
+            typedef std::map< std::string, unsigned > TransformFlagMap;
+            TransformFlagMap fTransformFlagMap;
+            std::string fTransformFlag;
+
         public:
             
             bool ParseKernel();
-            bool Convolve1D( KTPowerSpectrumData& data );
-            fftw_complex* DFT( std::vector< double > in, int n );
-            std::vector< double > RDFT( fftw_complex *input, int n );
+            bool Convolve1D_PS( KTPowerSpectrumData& data );
+            fftw_complex* DFT_1D_R2C( std::vector< double > in, int n );
+            std::vector< double > RDFT_1D_C2R( fftw_complex *input, int n );
+            void SetupInternalMaps();
 
             //***************
             // Signals
