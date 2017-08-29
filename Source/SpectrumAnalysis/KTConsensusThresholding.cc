@@ -115,10 +115,8 @@ namespace Katydid
                 double k = 1.0;
                 while (closeEnough)
                 {
-#ifndef NDEBUG
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
-#endif
                     KTDEBUG(ctlog, "x = "<< test_pt[0] << " = " << setOfPoints[iPoint].fCoords[0] << " + " << k << " * " << timeDelta <<"\t" << "y = "<< test_pt[1] << " = " << setOfPoints[iPoint].fCoords[1] << " + " << k << " * " << frequencyDelta );
 
                     kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
@@ -139,10 +137,8 @@ namespace Katydid
                 k = -1.0;
                 while (closeEnough)
                 {
-#ifndef NDEBUG
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
-#endif
                     KTDEBUG(ctlog, "x = "<< test_pt[0] << " = " << setOfPoints[iPoint].fCoords[0] << " + " << k << " * " << timeDelta <<"\t" << "y = "<< test_pt[1] << " = " << setOfPoints[iPoint].fCoords[1] << " + " << k << " * " << frequencyDelta );
 
                     kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
