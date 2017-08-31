@@ -26,8 +26,8 @@ namespace Katydid
 
             virtual unsigned GetNComponents() const;
 
-            virtual const KTPowerSpectrum* GetSpectrum(unsigned component = 0) const;
-            virtual KTPowerSpectrum* GetSpectrum(unsigned component = 0);
+            const KTPowerSpectrum* GetSpectrum(unsigned component = 0) const;
+            KTPowerSpectrum* GetSpectrum(unsigned component = 0);
 
             const KTFrequencyDomainArray* GetArray(unsigned component = 0) const;
             KTFrequencyDomainArray* GetArray(unsigned component = 0);
