@@ -71,6 +71,10 @@ namespace Katydid
             MEMBERVARIABLE(std::string, Kernel);
             MEMBERVARIABLE(unsigned, BlockSize);
             MEMBERVARIABLE_NOSET(std::string, TransformFlag);
+
+            MEMBERVARIABLE_NOSET(double, RegularSize);
+            MEMBERVARIABLE_NOSET(double, ShortSize);
+
             void SetTransformFlag(const std::string& flag);
 
 
@@ -86,25 +90,42 @@ namespace Katydid
             fftw_plan fC2CForwardPlan;
             fftw_plan fC2CReversePlan;
 
+            fftw_plan fComplexToRealPlanShort;
+            fftw_plan fRealToComplexPlanShort;
+            fftw_plan fC2CForwardPlanShort;
+            fftw_plan fC2CReversePlanShort;
+
             double *fInputArrayReal;
             double *fOutputArrayReal;
             fftw_complex *fInputArrayComplex;
             fftw_complex *fOutputArrayComplex;
 
+            fftw_complex *fTransformedInputArray;
+            fftw_complex *fTransformedOutputArray;
+
+            fftw_complex *fTransformedInputArrayShort;
+            fftw_complex *fTransformedOutputArrayShort;
+
+            double *fInputArrayRealShort;
+            double *fOutputArrayRealShort;
+            fftw_complex *fInputArrayComplexShort;
+            fftw_complex *fOutputArrayComplexShort;
+
             fftw_complex *fTransformedKernelX;
 
             unsigned fTransformFlagUnsigned;
             int fKernelSize;
+            bool fInitialized;
 
         public:
             
             bool ParseKernel();
             bool Convolve1D_PS( KTPowerSpectrumData& data );
-            fftw_complex* DFT_1D_R2C( std::vector< double > in, int n );
-            std::vector< double > RDFT_1D_C2R( fftw_complex *input, int n );
+            bool DFT_1D_R2C( int size );
+            bool RDFT_1D_C2R( int size );
             void SetupInternalMaps();
 
-            void AllocateArrays( int nSize );
+            void AllocateArrays( int nSizeRegular, int nSizeShort );
             void FreeArrays();
 
             //***************
