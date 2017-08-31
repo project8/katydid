@@ -32,7 +32,7 @@ namespace Katydid
             fLastAccumulatorPtr(nullptr),
             fLastTypeInfo(nullptr),
             fSwaps(),
-            fStripeSignal("stripe", this),
+            fStripeFSFFTWSignal("str-fs-fftw", this),
             fAddFSFFTWSlot("fs-fftw", this, &KTSpectrogramStriper::AddData)
     {
     }
@@ -88,7 +88,7 @@ namespace Katydid
         for (AccumulatorMapIt accIt = fDataMap.begin(); accIt != fDataMap.end(); ++accIt)
         {
             KTDEBUG(sslog, "Checking <" << accIt->first->name() << "> for final outputting");
-            if (accIt->second.fNextBin != fStripeOverlap) fStripeSignal(accIt->second.fDataPtr);
+            if (accIt->second.fNextBin != fStripeOverlap) fStripeFSFFTWSignal(accIt->second.fDataPtr);
         }
         return true;
     }
@@ -117,7 +117,7 @@ namespace Katydid
         else if (header.GetIsNewAcquisition()) // this starts a new acquisition, so it should start a new stripe, ignoring the overlap
         {
             // emit signal for the current stripe if there is an existing partially-filled stripe
-            if (stripeDataStruct.fNextBin != fStripeOverlap) fStripeSignal(stripeDataStruct.fDataPtr);
+            if (stripeDataStruct.fNextBin != fStripeOverlap) fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
 
             stripeDataStruct.fSliceHeader.CopySliceHeaderOnly(header);
             stripeDataStruct.fNextBin = 0;
@@ -159,7 +159,7 @@ namespace Katydid
         stripeDataStruct.fNextBin += 1;
         if (stripeDataStruct.fNextBin == fStripeSize)
         {
-            fStripeSignal(stripeDataStruct.fDataPtr);
+            fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
             stripeDataStruct.fNextBin = fStripeOverlap;
         }
 

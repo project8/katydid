@@ -37,23 +37,25 @@ namespace Katydid
 
     /*!
      @class KTSpectrogramStriper
-     @author [name]
+     @author N.S. Oblath
 
-     @brief [brief class description]
+     @brief Collects individual spectra into stripes of a spectrogram
 
      @details
-     [detailed class description]
+     If a spectrogram represents all of the data in a run, this processor breaks that spectrogram into vertical stripes.
+     Each stripe covers the entire frequency range and some smaller time range.  Stripes can overlap.
 
-     Configuration name: "[config-name]"
+     Configuration name: "spectrogram-striper"
 
      Available configuration values:
-     - "some-name": [type] -- [what it does]
+     - "stripe-size": unsigned int -- The size, in slices, of each stripe
+     - "overlap": unsigned int -- The number of slices that overlap from one stripe to the next
 
      Slots:
-     - "[slot-name]": void (KTDataPtr) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
+     - "fs-fftw": void (KTDataPtr) -- Adds an FS-FFTW spectrum to the current (or a new) stripe; Requires KTSliceHeader and KTFrequencySpectrumDataFFTW; Adds [output data type]
 
      Signals:
-     - "[signal-name]": void (KTDataPtr) -- Emitted upon [whatever was done]; Guarantees [output data type].
+     - "str-fs-fftw": void (KTDataPtr) -- Emitted upon completion of an FS-FFTW stripe, either after collecting the requisite number of spectra, when a new acquisition is starting, or when a file is done (when the "done" slot is used); Guarantees KTMultiFSDataFFTW.
     */
     class KTSpectrogramStriper : public Nymph::KTProcessor
     {
@@ -146,7 +148,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalData fStripeSignal;
+            Nymph::KTSignalData fStripeFSFFTWSignal;
 
             //***************
             // Slots
@@ -222,7 +224,7 @@ namespace Katydid
             KTDEBUG(sslog_h, "This is a new acquisition; will emit signal if there's a partially-filled stripe");
 
             // emit signal for the current stripe if there is an existing partially-filled stripe
-            if (stripeDataStruct.fNextBin != fStripeOverlap || (stripeDataStruct.fFirstAccumulation && stripeDataStruct.fNextBin == fStripeOverlap)) fStripeSignal(stripeDataStruct.fDataPtr);
+            if (stripeDataStruct.fNextBin != fStripeOverlap || (stripeDataStruct.fFirstAccumulation && stripeDataStruct.fNextBin == fStripeOverlap)) fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
 
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
@@ -279,7 +281,7 @@ namespace Katydid
         {
             // emit the signal for this stripe
             KTDEBUG(sslog_h, "Finished a stripe; emitting signal");
-            fStripeSignal(stripeDataStruct.fDataPtr);
+            fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
             stripeDataStruct.fNextBin = fStripeOverlap;
             stripeDataStruct.fFirstAccumulation = false;
         }

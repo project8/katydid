@@ -102,7 +102,7 @@ int main()
     printer.SetFilename(filename);
 
     // Connect the strip signal to the print-hist slot
-    striper.ConnectASlot("stripe", &printer, "print-hist");
+    striper.ConnectASlot("str-fs-fftw", &printer, "print-hist");
 
     KTINFO(testlog, "Deleting the output file if it exists");
     boost::filesystem::remove(filename);
