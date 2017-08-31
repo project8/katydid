@@ -83,8 +83,7 @@ namespace Katydid
 
     inline void KTMultiFSDataFFTWCore::DeleteSpectra(unsigned component)
     {
-        if (component >= fSpectra.size())
-            return;
+        if (component >= fSpectra.size() || fSpectra[component] == NULL) return;
         for (KTMultiFSFFTW::iterator iter = fSpectra[component]->begin(); iter != fSpectra[component]->end(); iter++)
         {
             delete *iter;

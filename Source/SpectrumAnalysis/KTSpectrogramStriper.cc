@@ -56,7 +56,7 @@ namespace Katydid
 
     void KTSpectrogramStriper::CalculateSwaps()
     {
-        KTWARN(sslog, "Calculating swaps");
+        KTDEBUG(sslog, "Calculating swaps");
         fSwaps.clear();
 
         unsigned nSwaps = fStripeSize;
@@ -80,6 +80,17 @@ namespace Katydid
         StripeAccumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataFFTW >();
         KTMultiFSDataFFTWCore& accData = accDataStruct.fDataPtr->Of< KTMultiFSDataFFTW >();
         return CoreAddData(header, static_cast< KTFrequencySpectrumDataFFTWCore& >(data), accDataStruct, accData);
+    }
+
+    bool KTSpectrogramStriper::OutputStripes()
+    {
+        KTINFO(sslog, "Outputting all histograms");
+        for (AccumulatorMapIt accIt = fDataMap.begin(); accIt != fDataMap.end(); ++accIt)
+        {
+            KTDEBUG(sslog, "Checking <" << accIt->first->name() << "> for final outputting");
+            if (accIt->second.fNextBin != fStripeOverlap) fStripeSignal(accIt->second.fDataPtr);
+        }
+        return true;
     }
 /*
     bool KTSpectrogramStriper::CoreAddData(KTSliceHeader& header, KTFrequencySpectrumDataFFTWCore& data, StripeAccumulator& stripeDataStruct, KTMultiFSDataFFTWCore& stripeData)

@@ -18,11 +18,8 @@ namespace Katydid
     KTLOGGER(datalog, "KTMultiFSDataFFTW");
 
     KTMultiFSDataFFTWCore::KTMultiFSDataFFTWCore() :
-            fSpectra(1)
+            fSpectra()
     {
-        fSpectra[0] = new KTMultiFSFFTW(1, 0., 1.);
-
-        (*fSpectra[0])(0) = NULL;
     }
 
     KTMultiFSDataFFTWCore::~KTMultiFSDataFFTWCore()

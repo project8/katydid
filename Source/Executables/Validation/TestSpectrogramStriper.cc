@@ -25,7 +25,10 @@ namespace Katydid
     class HistogramPrinter : public Nymph::KTProcessor
     {
         public:
-            HistogramPrinter() : Nymph::KTProcessor()
+            HistogramPrinter() :
+                    Nymph::KTProcessor(),
+                    fFilename("TestSpectrogramStriper.root"),
+                    fHistCounter(0)
             {
                 this->RegisterSlot("print-hist", this, &HistogramPrinter::PrintHistogram);
             }
@@ -40,15 +43,22 @@ namespace Katydid
             {
                 KTINFO(testlog, "Printing a histogram");
 #ifdef ROOT_FOUND
-                TFile* file = new TFile("TestSpectrogramStriper.root", "update");
+                TFile* file = new TFile(fFilename.c_str(), "update");
                 KTMultiFSDataFFTW& data = dataPtr->Of< KTMultiFSDataFFTW >();
-                TH2D* tsHist = data.CreateMagnitudeHistogram(0);
+                std::stringstream str;
+                str << "hMultiFSFFTW_" << fHistCounter++;
+                TH2D* tsHist = data.CreateMagnitudeHistogram(0, str.str());
                 tsHist->SetDirectory(file);
                 tsHist->Write();
                 file->Close();
 #endif
                 return;
             }
+
+            MEMBERVARIABLEREF(std::string, Filename);
+
+        private:
+            unsigned fHistCounter;
     };
 }
 
@@ -60,19 +70,18 @@ int main()
 {
     KTINFO(testlog, "Preparing");
 
-    Nymph::KTDataPtr dp;
-    KTMultiFSFFTWData& md = dp->Of< KTMultiFSFFTWData >();
-
     // Test parameters
     unsigned nFreqBins = 10;
     unsigned stripeSize = 8;
     unsigned stripeOverlap = 3;
     unsigned nAcquisitions = 3;
     unsigned slicesPerAcq = 15;
+    std::string filename("TestSpectrogramStriper.root");
 
     // Set the necessary parameters in the header; time-in-run will be updated for each slice
     KTSliceHeader header;
     header.SetTimeInRun(0.);
+    header.SetTimeInAcq(0.);
     header.SetSliceLength(1.);
     header.SetIsNewAcquisition(true);
 
@@ -90,9 +99,13 @@ int main()
 
     // Create the histogram printer
     HistogramPrinter printer;
+    printer.SetFilename(filename);
 
     // Connect the strip signal to the print-hist slot
     striper.ConnectASlot("stripe", &printer, "print-hist");
+
+    KTINFO(testlog, "Deleting the output file if it exists");
+    boost::filesystem::remove(filename);
 
     KTINFO(testlog, "Everything is prepared; starting the action");
 
@@ -101,6 +114,7 @@ int main()
     {
         KTINFO(testlog, "New acquisition");
         header.SetIsNewAcquisition(true);
+        header.SetTimeInAcq(0.);
         for (unsigned iSlice = 0; iSlice < slicesPerAcq; ++iSlice)
         {
             KTDEBUG(testlog, "New slice");
@@ -108,13 +122,18 @@ int main()
 
             striper.AddData(header, spectrumData);
 
+            // update data for the next slice
             (*spectrum)(peakPos)[0] = 0.;
             peakPos++;
             if (peakPos == nFreqBins) peakPos = 0;
 
             header.SetIsNewAcquisition(false);
+            header.SetTimeInRun(header.GetTimeInRun() + header.GetSliceLength());
+            header.SetTimeInAcq(header.GetTimeInAcq() + header.GetSliceLength());
         }
     }
+
+    striper.OutputStripes();
 
     KTINFO(testlog, "Testing complete");
 
