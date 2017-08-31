@@ -7,15 +7,12 @@
 
 #include "KTSpectrogramStriper.hh"
 
-#include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTMultiFSDataFFTW.hh"
 #include "KTMultiFSDataPolar.hh"
 #include "KTMultiPSData.hh"
 #include "KTPowerSpectrum.hh"
-#include "KTPowerSpectrumData.hh"
 
 #include "param.hh"
 
@@ -113,11 +110,6 @@ namespace Katydid
         return true;
     }
 
-    const KTFrequencySpectrumFFTW* KTSpectrogramStriper::GetSpectrum(const KTFrequencySpectrumDataFFTWCore& data, const unsigned iComponent) const
-    {
-        return data.GetSpectrumFFTW(iComponent);
-    }
-
     void KTSpectrogramStriper::CopySpectrum(const KTFrequencySpectrumFFTW* source, KTFrequencySpectrumFFTW* dest, unsigned arraySize)
     {
         for (unsigned iBin = 0; iBin < arraySize; ++iBin)
@@ -127,22 +119,12 @@ namespace Katydid
         }
     }
 
-    const KTFrequencySpectrumPolar* KTSpectrogramStriper::GetSpectrum(const KTFrequencySpectrumDataPolarCore& data, const unsigned iComponent) const
-    {
-        return data.GetSpectrumPolar(iComponent);
-    }
-
     void KTSpectrogramStriper::CopySpectrum(const KTFrequencySpectrumPolar* source, KTFrequencySpectrumPolar* dest, unsigned arraySize)
     {
         for (unsigned iBin = 0; iBin < arraySize; ++iBin)
         {
             (*dest)(iBin).set_polar((*source)(iBin).abs(), (*source)(iBin).arg());
         }
-    }
-
-    const KTPowerSpectrum* KTSpectrogramStriper::GetSpectrum(const KTPowerSpectrumDataCore& data, const unsigned iComponent) const
-    {
-        return data.GetSpectrum(iComponent);
     }
 
     void KTSpectrogramStriper::CopySpectrum(const KTPowerSpectrum* source, KTPowerSpectrum* dest, unsigned arraySize)

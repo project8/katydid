@@ -11,6 +11,9 @@
 
 #include "KTProcessor.hh"
 
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTPowerSpectrumData.hh"
 #include "KTSliceHeader.hh"
 
 #include "KTLogger.hh"
@@ -24,17 +27,9 @@ namespace scarab
 
 namespace Katydid
 {
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumDataFFTWCore;
-    class KTFrequencySpectrumDataPolar;
-    class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
-    class KTMultiFSDataFFTW;
-    class KTMultiFSDataFFTWCore;
     class KTPowerSpectrum;
-    class KTPowerSpectrumData;
-    class KTPowerSpectrumDataCore;
 
     KTLOGGER(sslog_h, "KTSpectrogramStriper");
 
@@ -307,6 +302,22 @@ namespace Katydid
     {
         return fSwaps;
     }
+
+    inline const KTFrequencySpectrumFFTW* KTSpectrogramStriper::GetSpectrum(const KTFrequencySpectrumDataFFTWCore& data, const unsigned iComponent) const
+    {
+        return data.GetSpectrumFFTW(iComponent);
+    }
+
+    inline const KTFrequencySpectrumPolar* KTSpectrogramStriper::GetSpectrum(const KTFrequencySpectrumDataPolarCore& data, const unsigned iComponent) const
+    {
+        return data.GetSpectrumPolar(iComponent);
+    }
+
+    inline const KTPowerSpectrum* KTSpectrogramStriper::GetSpectrum(const KTPowerSpectrumDataCore& data, const unsigned iComponent) const
+    {
+        return data.GetSpectrum(iComponent);
+    }
+
 
 }
  /* namespace Katydid */
