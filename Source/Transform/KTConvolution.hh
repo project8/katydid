@@ -94,6 +94,7 @@ namespace Katydid
             fftw_complex *fTransformedKernelX;
 
             unsigned fTransformFlagUnsigned;
+            int fKernelSize;
 
         public:
             

@@ -45,6 +45,7 @@ namespace Katydid
             fOutputArrayComplex(NULL),
             fTransformedKernelX(NULL),
             fTransformFlagUnsigned(0),
+            fKernelSize(0),
             fPSSignal("ps", this),
             fPSSlot("ps", this, &KTConvolution::Convolve1D_PS, &fPSSignal)
     {
@@ -53,6 +54,7 @@ namespace Katydid
 
     KTConvolution::~KTConvolution()
     {
+        FreeArrays();
     }
 
     bool KTConvolution::Configure(const scarab::param_node* node)
@@ -96,15 +98,47 @@ namespace Katydid
 
     void KTConvolution::FreeArrays()
     {
-        fftw_free( fInputArrayReal );
-        fftw_free( fOutputArrayReal );
-        fftw_free( fInputArrayComplex );
-        fftw_free( fOutputArrayComplex );
+        if( fInputArrayReal != nullptr )
+        {
+            fftw_free( fInputArrayReal );
+            fInputArrayReal = nullptr;
+        }
+        if( fOutputArrayReal != nullptr )
+        {
+            fftw_free( fOutputArrayReal );
+            fOutputArrayReal = nullptr;
+        }
+        if( fInputArrayComplex != nullptr )
+        {
+            fftw_free( fInputArrayComplex );
+            fInputArrayComplex = nullptr;
+        }
+        if( fOutputArrayComplex != nullptr )
+        {
+            fftw_free( fOutputArrayComplex );
+            fOutputArrayComplex = nullptr;
+        }
 
-        fftw_destroy_plan( fRealToComplexPlan );
-        fftw_destroy_plan( fComplexToRealPlan );
-        fftw_destroy_plan( fC2CForwardPlan );
-        fftw_destroy_plan( fC2CReversePlan );
+        if( fRealToComplexPlan != nullptr )
+        {
+            fftw_destroy_plan( fRealToComplexPlan );
+            fRealToComplexPlan = nullptr;
+        }
+        if( fComplexToRealPlan != nullptr )
+        {
+            fftw_destroy_plan( fComplexToRealPlan );
+            fComplexToRealPlan = nullptr;
+        }
+        if( fC2CForwardPlan != nullptr )
+        {
+            fftw_destroy_plan( fC2CForwardPlan );
+            fC2CForwardPlan = nullptr;
+        }
+        if( fC2CReversePlan != nullptr )
+        {
+            fftw_destroy_plan( fC2CReversePlan );
+            fC2CReversePlan = nullptr;
+        }
     }
 
     bool KTConvolution::ParseKernel()
@@ -123,9 +157,9 @@ namespace Katydid
         }
 
         scarab::param_array& kernel1DArray = kernelNode["kernel"].as_array();
-        int kernelSize = kernel1DArray.size();
+        fKernelSize = kernel1DArray.size();
 
-        for( int iValue = 0; iValue < kernelSize; ++iValue )
+        for( int iValue = 0; iValue < fKernelSize; ++iValue )
         {
             kernelX.push_back( kernel1DArray.get_value< double >(iValue) );
         }
@@ -146,9 +180,9 @@ namespace Katydid
         }
 
         // Periodically continue kernel up to block size
-        for( int iPosition = kernelSize; iPosition < GetBlockSize(); ++iPosition )
+        for( int iPosition = fKernelSize; iPosition < GetBlockSize(); ++iPosition )
         {
-            kernelX.push_back( kernelX[iPosition - kernelSize] );
+            kernelX.push_back( kernelX[iPosition - fKernelSize] );
         }
 
         return true;
@@ -159,7 +193,7 @@ namespace Katydid
         KTConvolvedPowerSpectrumData& newData = data.Of< KTConvolvedPowerSpectrumData >();
 
         int block = GetBlockSize();
-        int overlap = kernelX.size() - 1;
+        int overlap = fKernelSize - 1;
         int step = block - overlap;
 
         std::vector< double > inputPiece;   // length <= block
