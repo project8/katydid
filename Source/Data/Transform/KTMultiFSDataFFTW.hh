@@ -74,22 +74,9 @@ namespace Katydid
 
     inline void KTMultiFSDataFFTWCore::SetSpectra(KTMultiFSFFTW* spectra, unsigned component)
     {
-        if (component >= fSpectra.size())
-            SetNComponents(component+1);
+        if (component >= fSpectra.size()) SetNComponents(component+1);
         DeleteSpectra(component);
         fSpectra[component] = spectra;
-        return;
-    }
-
-    inline void KTMultiFSDataFFTWCore::DeleteSpectra(unsigned component)
-    {
-        if (component >= fSpectra.size() || fSpectra[component] == NULL) return;
-        for (KTMultiFSFFTW::iterator iter = fSpectra[component]->begin(); iter != fSpectra[component]->end(); iter++)
-        {
-            delete *iter;
-        }
-        delete fSpectra[component];
-        fSpectra[component] = NULL;
         return;
     }
 
