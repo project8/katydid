@@ -80,9 +80,11 @@ namespace Katydid
         SetBlockSize(node->get_value< unsigned >("block-size", GetBlockSize()));
         SetTransformFlag(node->get_value< std::string >("transform-flag", GetTransformFlag()));
 
+        // Convert transform flag string to unsigned
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find( fTransformFlag );
         fTransformFlagUnsigned = iter->second;
 
+        // Read in the kernel
         if( ! ParseKernel() )
         {
             KTERROR( sdlog, "Failed to parse kernel json. Aborting" );
@@ -94,23 +96,39 @@ namespace Katydid
 
     void KTConvolution::AllocateArrays( int nSizeRegular, int nSizeShort )
     {
+        KTDEBUG(sdlog, "DFT initialization started");
+        KTDEBUG(sdlog, "Regular size = " << nSizeRegular);
+        KTDEBUG(sdlog, "Short size = " << nSizeShort);
+
+        if( nSizeShort >= nSizeRegular )
+        {
+            KTWARN(sdlog, "Short size is not smaller than regular size; something weird happened. Aborting DFT initialization");
+            return;
+        }
+
         if( fInitialized )
         {
+            KTDEBUG(sdlog, "Already initialized! Freeing arrays first");
             FreeArrays();
         }
 
+        // Input/Output arrays
         fInputArrayReal = (double*) fftw_malloc( sizeof( double ) * nSizeRegular );
         fOutputArrayReal = (double*) fftw_malloc( sizeof( double ) * nSizeRegular );
         fInputArrayComplex = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeRegular );
         fOutputArrayComplex = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeRegular );
 
+        // Intermediate (fourier space) arrays
         fTransformedInputArray = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeRegular );
         fTransformedOutputArray = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeRegular );
 
+        // DFT plans
         fRealToComplexPlan = fftw_plan_dft_r2c_1d( nSizeRegular, fInputArrayReal, fTransformedInputArray, fTransformFlagUnsigned );
         fComplexToRealPlan = fftw_plan_dft_c2r_1d( nSizeRegular, fTransformedOutputArray, fOutputArrayReal, fTransformFlagUnsigned );
         // fC2CForwardPlan
         // fC2CReversePlan
+
+        // All the same for short size
 
         fInputArrayRealShort = (double*) fftw_malloc( sizeof( double ) * nSizeShort );
         fOutputArrayRealShort = (double*) fftw_malloc( sizeof( double ) * nSizeShort );
@@ -125,8 +143,11 @@ namespace Katydid
         // fC2CForwardPlan
         // fC2CReversePlan
 
+        // Store these guys
         fRegularSize = nSizeRegular;
         fShortSize = nSizeShort;
+
+        // Make sure we don't come back here unless something weird happens
         fInitialized = true;
 
         return;
@@ -249,6 +270,7 @@ namespace Katydid
 
     bool KTConvolution::ParseKernel()
     {
+        KTINFO(sdlog, "Attempting to parse kernel");
         // Read in json with scarab::param
 
         scarab::path kernelFilePath = scarab::expand_path( GetKernel() );
@@ -262,21 +284,29 @@ namespace Katydid
             return false;
         }
 
+        // Get kernel as array
         scarab::param_array& kernel1DArray = kernelNode["kernel"].as_array();
-        fKernelSize = kernel1DArray.size();
+        KTDEBUG(sdlog, "Obtained kernel as array");
 
+        // We need to store this because we're about to periodically extend it
+        fKernelSize = kernel1DArray.size();
+        KTDEBUG(sdlog, "Kernel size = " << fKernelSize);
+
+        // Fill kernel vector
         for( int iValue = 0; iValue < fKernelSize; ++iValue )
         {
             kernelX.push_back( kernel1DArray.get_value< double >(iValue) );
         }
 
-        // Set block size if left unspecified
+        // Here is where we set block size if left unspecified
+        // We need it to periodically extend the kernel
         if( GetBlockSize() == 0 )
         {
             SetBlockSize( 8 * kernelX.size() );
             int power = log2( GetBlockSize() ); // int will take the floor of the log
             SetBlockSize( pow( 2, power ) );    // largest power of 2 which is <= 8 * kernel size
         }
+        KTDEBUG(sdlog, "Set block size: " << GetBlockSize());
 
         // Check that kernel size is not more than block size
         if( GetBlockSize() < kernelX.size() )
@@ -285,30 +315,50 @@ namespace Katydid
             return false;
         }
 
-        // Periodically continue kernel up to block size
+        // Periodically extend kernel up to block size
         for( int iPosition = fKernelSize; iPosition < GetBlockSize(); ++iPosition )
         {
             kernelX.push_back( kernelX[iPosition - fKernelSize] );
         }
 
+        KTINFO(sdlog, "Successfully parsed kernel!");
         return true;
     }
 
     bool KTConvolution::Convolve1D_PS( KTPowerSpectrumData& data )
     {
+        KTINFO(sdlog, "Received power spectrum. Performing 1D convolution");
+        // New data object
         KTConvolvedPowerSpectrumData& newData = data.Of< KTConvolvedPowerSpectrumData >();
         newData.SetNComponents( data.GetNComponents() );
 
+        // Set overlap-and-save method parameters
+        // These do not change, but I want to group them together like this so it's easy to follow
         int block = GetBlockSize();
         int overlap = fKernelSize - 1;
         int step = block - overlap;
 
+        KTINFO(sdlog, "Block size: " << block);
+        KTINFO(sdlog, "Overlap: " << overlap);
+        KTINFO(sdlog, "Step size: " << step);
+
+        // Block-loop parameters
         int blockNumber = 0;
         int nBinsTotal = data.GetSpectrum(0)->GetNFrequencyBins();
-        unsigned nBin = 0;
+        unsigned nBin = 0;  // this will be the current bin in the loop
 
+        KTINFO(sdlog, "nBinsTotal = " << nBinsTotal);
+
+        // Now that nBinsTotal is determined, we can initialize the DFTs
+        // The following conditional should only be true on the first slice
         if( ! fInitialized )
         {
+            KTINFO(sdlog, "DFTs are not yet initialized; doing so now");
+
+            // Slightly obnoxious conditionals to determine the sizes
+            // Ordinary block is given, but the shorter block at the end is harder
+            // Maybe there is a simpler way to determine this, I'm not sure
+
             if( nBinsTotal % step > overlap )
             {
                 AllocateArrays( block, nBinsTotal % step );
@@ -317,6 +367,9 @@ namespace Katydid
             {
                 AllocateArrays( block, (nBinsTotal % step) + step );
             }
+
+            // Also transform the kernel, we only need to do this once
+            KTDEBUG(sdlog, "Transforming kernel");
 
             fInputArrayReal = &kernelX[0];
             DFT_1D_R2C( block );
@@ -329,6 +382,8 @@ namespace Katydid
         // First loop over components
         for( unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent )
         {
+            KTINFO(sdlog, "Starting component: " << iComponent);
+
             // Get power spectrum and initialize convolved spectrum for this component
             ps = data.GetSpectrum( iComponent );
             transformedPS = new KTPowerSpectrum( nBinsTotal, ps->GetRangeMin(), ps->GetRangeMax() );
@@ -336,6 +391,11 @@ namespace Katydid
             // Loop over block numbers
             while( blockNumber * step + block < nBinsTotal )
             {
+                KTDEBUG(sdlog, "Block number: " << blockNumber);
+                KTDEBUG(sdlog, "Starting position: " << blockNumber * step);
+                KTDEBUG(sdlog, "nBinsTotal: " << nBinsTotal);
+
+                // Fill input array
                 for( nBin = 0; nBin < block; ++nBin )
                 {
                     fInputArrayReal[nBin] = (*ps)(nBin + blockNumber * step);
@@ -347,6 +407,7 @@ namespace Katydid
                     return false;
                 }
 
+                // Bin multiplication in fourier space
                 for( nBin = 0; nBin < block; ++nBin )
                 {
                     fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
@@ -362,17 +423,26 @@ namespace Katydid
                 // Loop over bins in the output block and fill the convolved spectrum
                 for( nBin = overlap; nBin < block; ++nBin )
                 {
-                    (*transformedPS)(nBin + blockNumber * step) = fOutputArrayReal[nBin];
+                    (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin];
+                    KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
                 }
 
                 // Increment block number
                 ++blockNumber;
             }
 
+            KTINFO(sdlog, "Reached final block");
+            KTINFO(sdlog, "Starting position: " << blockNumber * step);
+
+            // Same procedure as above, this time with a shorter final block
+
             for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
             {
                 fInputArrayRealShort[nBin] = (*ps)(nBin + blockNumber * step);
             }
+
+            KTINFO(sdlog, "Short array length = " << nBin);
+            KTDEBUG(sdlog, "Initialized short array length = " << fShortSize);
 
             // FFT of input block
             if( ! DFT_1D_R2C( nBin ) )
@@ -395,11 +465,15 @@ namespace Katydid
             // Loop over bins in the output block and fill the convolved spectrum
             for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
             {
-                (*transformedPS)(nBin + blockNumber * step) = fOutputArrayReal[nBin];
+                (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin];
+                KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
             }
+
+            KTINFO(sdlog, "Component finished!");
 
             // Set power spectrum
             newData.SetSpectrum( transformedPS, iComponent );
+            KTDEBUG(sdlog, "Filled new power spectrum");
         }
 
         return true;
