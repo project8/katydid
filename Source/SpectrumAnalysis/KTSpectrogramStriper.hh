@@ -29,9 +29,12 @@ namespace Katydid
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumPolar;
     class KTMultiFSDataFFTW;
     class KTMultiFSDataFFTWCore;
+    class KTPowerSpectrum;
     class KTPowerSpectrumData;
+    class KTPowerSpectrumDataCore;
 
     KTLOGGER(sslog_h, "KTSpectrogramStriper");
 
@@ -52,10 +55,14 @@ namespace Katydid
      - "overlap": unsigned int -- The number of slices that overlap from one stripe to the next
 
      Slots:
-     - "fs-fftw": void (KTDataPtr) -- Adds an FS-FFTW spectrum to the current (or a new) stripe; Requires KTSliceHeader and KTFrequencySpectrumDataFFTW; Adds [output data type]
+     - "fs-fftw": void (KTDataPtr) -- Adds an FS-FFTW spectrum to the current (or a new) stripe; Requires KTSliceHeader and KTFrequencySpectrumDataFFTW
+     - "fs-polar": void (KTDataPtr) -- Adds an FS-Polar spectrum to the current (or a new) stripe; Requires KTSliceHeader and KTFrequencySpectrumDataPolar
+     - "ps: void (KTDataPtr) -- Adds a power spectrum to the current (or a new) stripe; Requires KTSliceHeader and KTPowerSpectrumData
 
      Signals:
      - "str-fs-fftw": void (KTDataPtr) -- Emitted upon completion of an FS-FFTW stripe, either after collecting the requisite number of spectra, when a new acquisition is starting, or when a file is done (when the "done" slot is used); Guarantees KTMultiFSDataFFTW.
+     - "str-fs-polar": void (KTDataPtr) -- Emitted upon completion of an FS-Polar stripe, either after collecting the requisite number of spectra, when a new acquisition is starting, or when a file is done (when the "done" slot is used); Guarantees KTMultiFSDataPolar.
+     - "str-ps": void (KTDataPtr) -- Emitted upon completion of a PS stripe, either after collecting the requisite number of spectra, when a new acquisition is starting, or when a file is done (when the "done" slot is used); Guarantees KTMultiPSData.
     */
     class KTSpectrogramStriper : public Nymph::KTProcessor
     {
@@ -108,9 +115,9 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, StripeOverlap) // in number of slices
 
         public:
-            //bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTSliceHeader& header, KTFrequencySpectrumDataFFTW& data);
-            //bool AddData(KTPowerSpectrumData& data);
+            bool AddData(KTSliceHeader& header, KTFrequencySpectrumDataPolar& data);
+            bool AddData(KTSliceHeader& header, KTPowerSpectrumData& data);
 
             bool OutputStripes();
 
@@ -130,11 +137,13 @@ namespace Katydid
             const KTFrequencySpectrumFFTW* GetSpectrum(const KTFrequencySpectrumDataFFTWCore& data, const unsigned iComponent) const;
             void CopySpectrum(const KTFrequencySpectrumFFTW* source, KTFrequencySpectrumFFTW* dest, unsigned arraySize);
 
-            //bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData);
+            // FS Polar functions
+            const KTFrequencySpectrumPolar* GetSpectrum(const KTFrequencySpectrumDataPolarCore& data, const unsigned iComponent) const;
+            void CopySpectrum(const KTFrequencySpectrumPolar* source, KTFrequencySpectrumPolar* dest, unsigned arraySize);
 
-            //bool CoreAddData(KTSliceHeader& header, KTFrequencySpectrumDataFFTWCore& data, StripeAccumulator& stripeDataStruct, KTMultiFSDataFFTWCore& stripeData);
-
-            //bool CoreAddData(KTPowerSpectrumData& data, Accumulator& accDataStruct, KTPowerSpectrumData& accData);
+            // PS functions
+            const KTPowerSpectrum* GetSpectrum(const KTPowerSpectrumDataCore& data, const unsigned iComponent) const;
+            void CopySpectrum(const KTPowerSpectrum* source, KTPowerSpectrum* dest, unsigned arraySize);
 
             AccumulatorMap fDataMap;
             mutable StripeAccumulator* fLastAccumulatorPtr;
@@ -149,6 +158,8 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fStripeFSFFTWSignal;
+            Nymph::KTSignalData fStripeFSPolarSignal;
+            Nymph::KTSignalData fStripePSSignal;
 
             //***************
             // Slots
@@ -156,6 +167,8 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTFrequencySpectrumDataFFTW > fAddFSFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTFrequencySpectrumDataPolar > fAddFSPolarSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fAddPSSlot;
 
     };
 
