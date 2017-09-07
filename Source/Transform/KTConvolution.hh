@@ -1,13 +1,13 @@
 /**
- @file KTConvolution.hh
- @brief Contains KTConvolution
+ @file KTConvolution1D.hh
+ @brief Contains KTConvolution1D
  @details Performs 1D discrete convolution
  @author: E. Zayas
  @date: Aug 25, 2017
  */
 
-#ifndef KTCONVOLUTION_HH_
-#define KTCONVOLUTION_HH_
+#ifndef KTCONVOLUTION1D_HH_
+#define KTCONVOLUTION1D_HH_
 
 #include "KTProcessor.hh"
 #include "KTSlot.hh"
@@ -27,14 +27,17 @@ namespace Katydid
     class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
-    class KTNormalizedFSDataFFTW;
-    class KTNormalizedFSDataPolar;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
+    class KTPowerSpectrumDataCore;
+
+    class KTConvolvedPowerSpectrumData;
+    class KTConvolvedFrequencySpectrumDataFFTW;
+    class KTConvolvedFrequencySpectrumDataPolar;
 
 
     /*!
-     @class KTConvolution
+     @class KTConvolution1D
      @author E. Zayas
 
      @brief Performs discrete convolution of 1D spectra
@@ -53,18 +56,22 @@ namespace Katydid
 
      Slots:
      - "ps": void (Nymph::KTDataPtr) -- Convolves a power spectrum; Requires KTPowerSpectrumData; Adds KTConvolvedPowerSpectrumData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Convolves a frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTConvolvedFrequencySpectrumDataFFTW
+     - "fs-polar": void (Nymph::KTDataPtr) -- Convolves a frequency spectrum; Requires KTFrequencySpectrumDataPolar; Adds KTConvolvedFrequencySpectrumDataPolar
 
      Signals:
      - "conv-ps": void (Nymph::KTDataPtr) -- Emitted upon convolution of a power spectrum; Guarantees KTConvolvedPowerSpectrumData
+     - "conv-fs-fftw": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataFFTW
+     - "conv-fs-polar": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataPolar
     */
 
-    class KTConvolution : public Nymph::KTProcessor
+    class KTConvolution1D : public Nymph::KTProcessor
     {
 
         public:
 
-            KTConvolution(const std::string& name = "convolution");
-            virtual ~KTConvolution();
+            KTConvolution1D(const std::string& name = "convolution");
+            virtual ~KTConvolution1D();
 
             bool Configure(const scarab::param_node* node);
 
@@ -120,9 +127,24 @@ namespace Katydid
         public:
             
             bool ParseKernel();
-            bool Convolve1D_PS( KTPowerSpectrumData& data );
+
+            bool Convolve1D( KTPowerSpectrumData& data );
+            bool Convolve1D( KTFrequencySpectrumDataFFTW& data );
+            bool Convolve1D( KTFrequencySpectrumDataPolar& data );
+
+            bool CoreConvolve1D( KTPowerSpectrumDataCore& data, KTConvolvedPowerSpectrumData& newData );
+            bool CoreConvolve1D( KTFrequencySpectrumDataFFTWCore& data, KTConvolvedFrequencySpectrumDataFFTW& newData );
+            bool CoreConvolve1D( KTFrequencySpectrumDataPolarCore& data, KTConvolvedFrequencySpectrumDataPolar& newData );
+
+            KTPowerSpectrum* DoConvolution( const KTPowerSpectrum* initialSpectrum, const int block, const int step, const int overlap );
+            KTFrequencySpectrumFFTW* DoConvolution( const KTFrequencySpectrumFFTW* initialSpectrum, const int block, const int step, const int overlap );
+            KTFrequencySpectrumPolar* DoConvolution( const KTFrequencySpectrumPolar* initialSpectrum, const int block, const int step, const int overlap );
+
             bool DFT_1D_R2C( int size );
             bool RDFT_1D_C2R( int size );
+            bool DFT_1D_C2C( int size );
+            bool RDFT_1D_C2C( int size );
+
             void SetupInternalMaps();
 
             void AllocateArrays( int nSizeRegular, int nSizeShort );
@@ -134,6 +156,8 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fPSSignal;
+            Nymph::KTSignalData fFSFFTWSignal;
+            Nymph::KTSignalData fFSPolarSignal;
 
             //***************
             // Slots
@@ -142,9 +166,11 @@ namespace Katydid
         private:
 
             Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;            
 
     };
 
 } /* namespace Katydid */
 
-#endif /* KTCONVOLUTION_HH_ */
+#endif /* KTCONVOLUTION1D_HH_ */

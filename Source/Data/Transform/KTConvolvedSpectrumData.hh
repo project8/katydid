@@ -12,6 +12,10 @@
 
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumPolar.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 
 #include <vector>
 
@@ -25,6 +29,32 @@ namespace Katydid
             virtual ~KTConvolvedPowerSpectrumData();
 
             KTConvolvedPowerSpectrumData& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
+    class KTConvolvedFrequencySpectrumDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumDataFFTW >
+    {
+        public:
+            KTConvolvedFrequencySpectrumDataFFTW();
+            virtual ~KTConvolvedFrequencySpectrumDataFFTW();
+
+            KTConvolvedFrequencySpectrumDataFFTW& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
+    class KTConvolvedFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumDataPolar >
+    {
+        public:
+            KTConvolvedFrequencySpectrumDataPolar();
+            virtual ~KTConvolvedFrequencySpectrumDataPolar();
+
+            KTConvolvedFrequencySpectrumDataPolar& SetNComponents(unsigned channels);
 
         public:
             static const std::string sName;
