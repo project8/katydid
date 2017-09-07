@@ -58,7 +58,7 @@ namespace Katydid
             fTransformedInputArrayShort(NULL),
             fTransformedOutputArrayShort(NULL),
             fTransformedKernelX(NULL),
-            fTransformFlagUnsigned(0),
+            fTransformFlagUnsigned(FFTW_ESTIMATE),
             fKernelSize(0),
             fInitialized(false),
             fPSSignal("ps", this),
@@ -84,6 +84,11 @@ namespace Katydid
         SetBlockSize(node->get_value< unsigned >("block-size", GetBlockSize()));
         SetTransformFlag(node->get_value< std::string >("transform-flag", GetTransformFlag()));
 
+        return FinishSetup();
+    }
+
+    bool KTConvolution1D::FinishSetup()
+    {
         // Convert transform flag string to unsigned
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find( fTransformFlag );
         fTransformFlagUnsigned = iter->second;
@@ -378,27 +383,7 @@ namespace Katydid
         // The following conditional should only be true on the first slice
         if( ! fInitialized )
         {
-            KTINFO(sdlog, "DFTs are not yet initialized; doing so now");
-
-            // Slightly obnoxious conditionals to determine the sizes
-            // Ordinary block is given, but the shorter block at the end is harder
-            // Maybe there is a simpler way to determine this, I'm not sure
-
-            if( nBinsTotal % step > overlap )
-            {
-                AllocateArrays( block, nBinsTotal % step );
-            }
-            else
-            {
-                AllocateArrays( block, (nBinsTotal % step) + step );
-            }
-
-            // Also transform the kernel, we only need to do this once
-            KTDEBUG(sdlog, "Transforming kernel");
-
-            fInputArrayReal = &kernelX[0];
-            DFT_1D_R2C( block );
-            fTransformedKernelX = fTransformedInputArray;
+            Initialize( nBinsTotal, block, step, overlap );
         }
 
         // First loop over components
@@ -444,27 +429,7 @@ namespace Katydid
         // The following conditional should only be true on the first slice
         if( ! fInitialized )
         {
-            KTINFO(sdlog, "DFTs are not yet initialized; doing so now");
-
-            // Slightly obnoxious conditionals to determine the sizes
-            // Ordinary block is given, but the shorter block at the end is harder
-            // Maybe there is a simpler way to determine this, I'm not sure
-
-            if( nBinsTotal % step > overlap )
-            {
-                AllocateArrays( block, nBinsTotal % step );
-            }
-            else
-            {
-                AllocateArrays( block, (nBinsTotal % step) + step );
-            }
-
-            // Also transform the kernel, we only need to do this once
-            KTDEBUG(sdlog, "Transforming kernel");
-
-            fInputArrayReal = &kernelX[0];
-            DFT_1D_R2C( block );
-            fTransformedKernelX = fTransformedInputArray;
+            Initialize( nBinsTotal, block, step, overlap );
         }
 
         // First loop over components
@@ -510,27 +475,7 @@ namespace Katydid
         // The following conditional should only be true on the first slice
         if( ! fInitialized )
         {
-            KTINFO(sdlog, "DFTs are not yet initialized; doing so now");
-
-            // Slightly obnoxious conditionals to determine the sizes
-            // Ordinary block is given, but the shorter block at the end is harder
-            // Maybe there is a simpler way to determine this, I'm not sure
-
-            if( nBinsTotal % step > overlap )
-            {
-                AllocateArrays( block, nBinsTotal % step );
-            }
-            else
-            {
-                AllocateArrays( block, (nBinsTotal % step) + step );
-            }
-
-            // Also transform the kernel, we only need to do this once
-            KTDEBUG(sdlog, "Transforming kernel");
-
-            fInputArrayReal = &kernelX[0];
-            DFT_1D_R2C( block );
-            fTransformedKernelX = fTransformedInputArray;
+            Initialize( nBinsTotal, block, step, overlap );
         }
 
         // First loop over components
@@ -580,12 +525,14 @@ namespace Katydid
             }
 
             // FFT of input block
+            KTDEBUG(sdlog, "Performing DFT");
             if( ! DFT_1D_R2C( block ) )
             {
                 return nullptr;
             }
 
             // Bin multiplication in fourier space
+            KTDEBUG(sdlog, "Multiplying arrays in fourier space");
             for( nBin = 0; nBin < block; ++nBin )
             {
                 fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
@@ -593,6 +540,7 @@ namespace Katydid
             }
 
             // Reverse FFT of output block
+            KTDEBUG(sdlog, "Performing reverse DFT");
             if( ! RDFT_1D_C2R( block ) )
             {
                 return nullptr;
@@ -602,7 +550,7 @@ namespace Katydid
             for( nBin = overlap; nBin < block; ++nBin )
             {
                 (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin];
-                KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+                //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
             }
 
             // Increment block number
@@ -628,7 +576,7 @@ namespace Katydid
             return nullptr;
         }
 
-        for( nBin = 0; nBin < nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
             fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][1];
             fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][0];
@@ -644,7 +592,7 @@ namespace Katydid
         for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
             (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin];
-            KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+            //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
         }
 
         KTINFO(sdlog, "Component finished!");
@@ -676,12 +624,14 @@ namespace Katydid
             }
 
             // FFT of input block
+            KTDEBUG(sdlog, "Performing DFT");
             if( ! DFT_1D_C2C( block ) )
             {
                 return nullptr;
             }
 
             // Bin multiplication in fourier space
+            KTDEBUG(sdlog, "Multiplying arrays in fourier space");
             for( nBin = 0; nBin < block; ++nBin )
             {
                 fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
@@ -689,6 +639,7 @@ namespace Katydid
             }
 
             // Reverse FFT of output block
+            KTDEBUG(sdlog, "Performing reverse DFT");
             if( ! RDFT_1D_C2C( block ) )
             {
                 return nullptr;
@@ -699,8 +650,7 @@ namespace Katydid
             {
                 (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[0] = fOutputArrayComplex[nBin][0];
                 (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[1] = fOutputArrayComplex[nBin][1];
-
-                KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+                //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
             }
 
             // Increment block number
@@ -727,7 +677,7 @@ namespace Katydid
             return nullptr;
         }
 
-        for( nBin = 0; nBin < nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
             fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][1];
             fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][0];
@@ -744,8 +694,7 @@ namespace Katydid
         {
             (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[0] = fOutputArrayComplexShort[nBin][0];
             (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[1] = fOutputArrayComplexShort[nBin][1];
-
-            KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+            //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
         }
 
         KTINFO(sdlog, "Component finished!");
@@ -777,12 +726,14 @@ namespace Katydid
             }
 
             // FFT of input block
+            KTDEBUG(sdlog, "Performing DFT");
             if( ! DFT_1D_C2C( block ) )
             {
                 return nullptr;
             }
 
             // Bin multiplication in fourier space
+            KTDEBUG(sdlog, "Multiplying arrays in fourier space");
             for( nBin = 0; nBin < block; ++nBin )
             {
                 fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
@@ -790,6 +741,7 @@ namespace Katydid
             }
 
             // Reverse FFT of output block
+            KTDEBUG(sdlog, "Performing reverse DFT");
             if( ! RDFT_1D_C2C( block ) )
             {
                 return nullptr;
@@ -799,7 +751,7 @@ namespace Katydid
             for( nBin = overlap; nBin < block; ++nBin )
             {
                 transformedFSPolar->SetRect( nBin - overlap + blockNumber * step, fOutputArrayComplex[nBin][0], fOutputArrayComplex[nBin][1] );
-                KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+                //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
             }
 
             // Increment block number
@@ -826,7 +778,7 @@ namespace Katydid
             return nullptr;
         }
 
-        for( nBin = 0; nBin < nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
             fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][1];
             fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][0];
@@ -842,7 +794,7 @@ namespace Katydid
         for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
             transformedFSPolar->SetRect( nBin - overlap + blockNumber * step, fOutputArrayComplexShort[nBin][0], fOutputArrayComplexShort[nBin][1] );
-            KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+            //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
         }
 
         KTINFO(sdlog, "Component finished!");
@@ -952,6 +904,8 @@ namespace Katydid
 
     void KTConvolution1D::SetupInternalMaps()
     {
+        KTDEBUG(sdlog, "Setting up internal maps");
+
         // transform flag map
         fTransformFlagMap.clear();
         fTransformFlagMap["ESTIMATE"] = FFTW_ESTIMATE;
@@ -969,9 +923,34 @@ namespace Katydid
             return;
         }
 
-        SetTransformFlag( flag );
+        fTransformFlag = flag;
 
         return;
+    }
+
+    void KTConvolution1D::Initialize( int nBinsTotal, int block, int step, int overlap )
+    {
+        KTINFO(sdlog, "DFTs are not yet initialized; doing so now");
+
+        // Slightly obnoxious conditionals to determine the sizes
+        // Ordinary block is given, but the shorter block at the end is harder
+        // Maybe there is a simpler way to determine this, I'm not sure
+
+        if( nBinsTotal % step > overlap )
+        {
+            AllocateArrays( block, nBinsTotal % step );
+        }
+        else
+        {
+            AllocateArrays( block, (nBinsTotal % step) + step );
+        }
+
+        // Also transform the kernel, we only need to do this once
+        KTDEBUG(sdlog, "Transforming kernel");
+
+        fInputArrayReal = &kernelX[0];
+        DFT_1D_R2C( block );
+        fTransformedKernelX = fTransformedInputArray;
     }
 
 

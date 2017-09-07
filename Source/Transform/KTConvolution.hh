@@ -147,6 +147,9 @@ namespace Katydid
 
             void SetupInternalMaps();
 
+            bool FinishSetup();
+            void Initialize( int nBinsTotal, int block, int step, int overlap );
+
             void AllocateArrays( int nSizeRegular, int nSizeShort );
             void FreeArrays();
 
