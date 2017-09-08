@@ -114,9 +114,9 @@ namespace Katydid
         KTDEBUG(sdlog, "Regular size = " << nSizeRegular);
         KTDEBUG(sdlog, "Short size = " << nSizeShort);
 
-        if( nSizeShort >= nSizeRegular )
+        if( nSizeShort > nSizeRegular )
         {
-            KTWARN(sdlog, "Short size is not smaller than regular size; something weird happened. Aborting DFT initialization");
+            KTWARN(sdlog, "Short size is larger than regular size; something weird happened. Aborting DFT initialization");
             return;
         }
 
@@ -145,6 +145,18 @@ namespace Katydid
         fC2CReversePlan = fftw_plan_dft_1d( nSizeRegular, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
 
         // All the same for short size
+        // But we can skip this if the size is chosen right
+
+        if( nSizeShort == fKernelSize - 1 )
+        {
+            KTINFO(sdlog, "Input blocks are divided evenly! I will only initialize one group of FFTW plans");
+
+            fRegularSize = nSizeRegular;
+            fShortSize = nSizeShort;
+            fInitialized = true;
+
+            return;
+        }
 
         fInputArrayRealShort = (double*) fftw_malloc( sizeof( double ) * nSizeShort );
         fOutputArrayRealShort = (double*) fftw_malloc( sizeof( double ) * nSizeShort );
@@ -523,7 +535,7 @@ namespace Katydid
         KTPowerSpectrum* transformedPS = new KTPowerSpectrum( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         // Loop over block numbers
-        while( (blockNumber+1) * step < nBinsTotal )
+        while( (blockNumber+1) * step <= nBinsTotal )
         {
             KTDEBUG(sdlog, "Block number: " << blockNumber);
             KTDEBUG(sdlog, "Starting position: " << blockNumber * step - overlap);
@@ -573,6 +585,12 @@ namespace Katydid
 
             // Increment block number
             ++blockNumber;
+        }
+
+        if( blockNumber * step == nBinsTotal )
+        {
+            KTINFO(sdlog, "Reached end of input data");
+            return transformedPS;
         }
 
         KTINFO(sdlog, "Reached final block");
@@ -630,10 +648,10 @@ namespace Katydid
         KTFrequencySpectrumFFTW* transformedFSFFTW = new KTFrequencySpectrumFFTW( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         // Loop over block numbers
-        while( (blockNumber+1) * step < nBinsTotal )
+        while( (blockNumber+1) * step <= nBinsTotal )
         {
             KTDEBUG(sdlog, "Block number: " << blockNumber);
-            KTDEBUG(sdlog, "Starting position: " << blockNumber * step);
+            KTDEBUG(sdlog, "Starting position: " << blockNumber * step - overlap);
             KTDEBUG(sdlog, "nBinsTotal: " << nBinsTotal);
 
             // Fill input array
@@ -684,6 +702,12 @@ namespace Katydid
 
             // Increment block number
             ++blockNumber;
+        }
+
+        if( blockNumber * step == nBinsTotal )
+        {
+            KTINFO(sdlog, "Reached end of input data");
+            return transformedFSFFTW;
         }
 
         KTINFO(sdlog, "Reached final block");
@@ -742,10 +766,10 @@ namespace Katydid
         KTFrequencySpectrumPolar* transformedFSPolar = new KTFrequencySpectrumPolar( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         // Loop over block numbers
-        while( (blockNumber+1) * step < nBinsTotal )
+        while( (blockNumber+1) * step <= nBinsTotal )
         {
             KTDEBUG(sdlog, "Block number: " << blockNumber);
-            KTDEBUG(sdlog, "Starting position: " << blockNumber * step);
+            KTDEBUG(sdlog, "Starting position: " << blockNumber * step - overlap);
             KTDEBUG(sdlog, "nBinsTotal: " << nBinsTotal);
 
             // Fill input array
@@ -796,8 +820,14 @@ namespace Katydid
             ++blockNumber;
         }
 
+        if( blockNumber * step == nBinsTotal )
+        {
+            KTINFO(sdlog, "Reached end of input data");
+            return transformedFSPolar;
+        }
+
         KTINFO(sdlog, "Reached final block");
-        KTINFO(sdlog, "Starting position: " << blockNumber * step);
+        KTINFO(sdlog, "Starting position: " << blockNumber * step - overlap);
 
         // Same procedure as above, this time with a shorter final block
 
@@ -974,7 +1004,7 @@ namespace Katydid
         // Ordinary block is given, but the shorter block at the end is harder
         // Maybe there is a simpler way to determine this, I'm not sure
 
-        if( (nBinsTotal + overlap) % step > overlap )
+        if( (nBinsTotal + overlap) % step >= overlap )
         {
             AllocateArrays( block, (nBinsTotal + overlap) % step );
         }

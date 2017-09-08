@@ -75,6 +75,7 @@ int main()
 	//std::cout << kernel << std::endl;
 
 	convProcessor.SetKernel( kernelPath );
+	convProcessor.SetBlockSize( 5095 );
 	convProcessor.FinishSetup();
 
     int block = convProcessor.GetBlockSize();
