@@ -55,9 +55,14 @@ namespace Katydid
             fOutputArrayComplexShort(NULL),
             fTransformedInputArray(NULL),
             fTransformedOutputArray(NULL),
+            fTransformedInputArrayFromReal(NULL),
+            fTransformedOutputArrayFromReal(NULL),
             fTransformedInputArrayShort(NULL),
             fTransformedOutputArrayShort(NULL),
-            fTransformedKernelX(NULL),
+            fTransformedInputArrayFromRealShort(NULL),
+            fTransformedOutputArrayFromRealShort(NULL),
+            fTransformedKernelXAsReal(NULL),
+            fTransformedKernelXAsComplex(NULL),
             fTransformFlagUnsigned(FFTW_ESTIMATE),
             fKernelSize(0),
             fInitialized(false),
@@ -130,10 +135,12 @@ namespace Katydid
         // Intermediate (fourier space) arrays
         fTransformedInputArray = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeRegular );
         fTransformedOutputArray = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeRegular );
+        fTransformedInputArrayFromReal = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * (nSizeRegular/2 + 1) );
+        fTransformedOutputArrayFromReal = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * (nSizeRegular/2 + 1) );
 
         // DFT plans
-        fRealToComplexPlan = fftw_plan_dft_r2c_1d( nSizeRegular, fInputArrayReal, fTransformedInputArray, fTransformFlagUnsigned );
-        fComplexToRealPlan = fftw_plan_dft_c2r_1d( nSizeRegular, fTransformedOutputArray, fOutputArrayReal, fTransformFlagUnsigned );
+        fRealToComplexPlan = fftw_plan_dft_r2c_1d( nSizeRegular, fInputArrayReal, fTransformedInputArrayFromReal, fTransformFlagUnsigned );
+        fComplexToRealPlan = fftw_plan_dft_c2r_1d( nSizeRegular, fTransformedOutputArrayFromReal, fOutputArrayReal, fTransformFlagUnsigned );
         fC2CForwardPlan = fftw_plan_dft_1d( nSizeRegular, fInputArrayComplex, fTransformedInputArray, FFTW_FORWARD, fTransformFlagUnsigned );
         fC2CReversePlan = fftw_plan_dft_1d( nSizeRegular, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
 
@@ -146,9 +153,12 @@ namespace Katydid
 
         fTransformedInputArrayShort = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeShort );
         fTransformedOutputArrayShort = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * nSizeShort );
+        fTransformedInputArrayFromRealShort = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * (nSizeShort/2 + 1) );
+        fTransformedOutputArrayFromRealShort = (fftw_complex*) fftw_malloc( sizeof( fftw_complex ) * (nSizeShort/2 + 1) );
 
-        fRealToComplexPlanShort = fftw_plan_dft_r2c_1d( nSizeShort, fInputArrayRealShort, fTransformedInputArrayShort, fTransformFlagUnsigned );
-        fComplexToRealPlanShort = fftw_plan_dft_c2r_1d( nSizeShort, fTransformedOutputArrayShort, fOutputArrayRealShort, fTransformFlagUnsigned );
+
+        fRealToComplexPlanShort = fftw_plan_dft_r2c_1d( nSizeShort, fInputArrayRealShort, fTransformedInputArrayFromRealShort, fTransformFlagUnsigned );
+        fComplexToRealPlanShort = fftw_plan_dft_c2r_1d( nSizeShort, fTransformedOutputArrayFromRealShort, fOutputArrayRealShort, fTransformFlagUnsigned );
         fC2CForwardPlan = fftw_plan_dft_1d( nSizeShort, fInputArrayComplexShort, fTransformedInputArrayShort, FFTW_FORWARD, fTransformFlagUnsigned );
         fC2CReversePlan = fftw_plan_dft_1d( nSizeShort, fTransformedOutputArrayShort, fOutputArrayComplexShort, FFTW_BACKWARD, fTransformFlagUnsigned );
 
@@ -533,10 +543,10 @@ namespace Katydid
 
             // Bin multiplication in fourier space
             KTDEBUG(sdlog, "Multiplying arrays in fourier space");
-            for( nBin = 0; nBin < block; ++nBin )
+            for( nBin = 0; nBin < block/2 + 1; ++nBin )
             {
-                fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
-                fTransformedOutputArray[nBin][1] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][0];
+                fTransformedOutputArrayFromReal[nBin][0] = fTransformedInputArrayFromReal[nBin][0] * fTransformedKernelXAsReal[nBin][0] - fTransformedInputArrayFromReal[nBin][1] * fTransformedKernelXAsReal[nBin][1];
+                fTransformedOutputArrayFromReal[nBin][1] = fTransformedInputArrayFromReal[nBin][0] * fTransformedKernelXAsReal[nBin][1] + fTransformedInputArrayFromReal[nBin][1] * fTransformedKernelXAsReal[nBin][0];
             }
 
             // Reverse FFT of output block
@@ -576,14 +586,14 @@ namespace Katydid
             return nullptr;
         }
 
-        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; nBin < fShortSize/2 + 1; ++nBin )
         {
-            fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][1];
-            fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][0];
+            fTransformedOutputArrayFromRealShort[nBin][0] = fTransformedInputArrayFromRealShort[nBin][0] * fTransformedKernelXAsReal[nBin][0] - fTransformedInputArrayFromRealShort[nBin][1] * fTransformedKernelXAsReal[nBin][1];
+            fTransformedOutputArrayFromRealShort[nBin][1] = fTransformedInputArrayFromRealShort[nBin][0] * fTransformedKernelXAsReal[nBin][1] + fTransformedInputArrayFromRealShort[nBin][1] * fTransformedKernelXAsReal[nBin][0];
         }
 
         // Reverse FFT of output block
-        if( ! RDFT_1D_C2R( nBin ) )
+        if( ! RDFT_1D_C2R( fShortSize ) )
         {
             return nullptr;
         }
@@ -634,8 +644,8 @@ namespace Katydid
             KTDEBUG(sdlog, "Multiplying arrays in fourier space");
             for( nBin = 0; nBin < block; ++nBin )
             {
-                fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
-                fTransformedOutputArray[nBin][1] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][0];
+                fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelXAsComplex[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelXAsComplex[nBin][1];
+                fTransformedOutputArray[nBin][1] = fTransformedInputArray[nBin][0] * fTransformedKernelXAsComplex[nBin][1] + fTransformedInputArray[nBin][1] * fTransformedKernelXAsComplex[nBin][0];
             }
 
             // Reverse FFT of output block
@@ -679,8 +689,8 @@ namespace Katydid
 
         for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
-            fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][1];
-            fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][0];
+            fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][1];
+            fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][0];
         }
 
         // Reverse FFT of output block
@@ -736,8 +746,8 @@ namespace Katydid
             KTDEBUG(sdlog, "Multiplying arrays in fourier space");
             for( nBin = 0; nBin < block; ++nBin )
             {
-                fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][1];
-                fTransformedOutputArray[nBin][1] = fTransformedInputArray[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArray[nBin][1] * fTransformedKernelX[nBin][0];
+                fTransformedOutputArray[nBin][0] = fTransformedInputArray[nBin][0] * fTransformedKernelXAsComplex[nBin][0] - fTransformedInputArray[nBin][1] * fTransformedKernelXAsComplex[nBin][1];
+                fTransformedOutputArray[nBin][1] = fTransformedInputArray[nBin][0] * fTransformedKernelXAsComplex[nBin][1] + fTransformedInputArray[nBin][1] * fTransformedKernelXAsComplex[nBin][0];
             }
 
             // Reverse FFT of output block
@@ -780,8 +790,8 @@ namespace Katydid
 
         for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
-            fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][1];
-            fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelX[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelX[nBin][0];
+            fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][1];
+            fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][0];
         }
 
         // Reverse FFT of output block
@@ -948,9 +958,26 @@ namespace Katydid
         // Also transform the kernel, we only need to do this once
         KTDEBUG(sdlog, "Transforming kernel");
 
-        fInputArrayReal = &kernelX[0];
+        for( int iBin = 0; iBin < block; ++iBin )
+        {
+            fInputArrayReal[iBin] = kernelX[iBin];
+            fInputArrayComplex[iBin][0] = kernelX[iBin];
+            fInputArrayComplex[iBin][1] = 0.;
+        }
+
         DFT_1D_R2C( block );
-        fTransformedKernelX = fTransformedInputArray;
+        DFT_1D_C2C( block );
+        
+        fTransformedKernelXAsReal = fTransformedInputArrayFromReal;
+        fTransformedKernelXAsComplex = fTransformedInputArray;
+
+        for( int i = 0; i < block/2 + 1; ++i )
+        {
+            KTDEBUG(sdlog, "Transformed kernel value " << i << ": (" << fTransformedKernelXAsReal[i][0] << ", " << fTransformedKernelXAsReal[i][1] << ")");
+        }
+
+
+
     }
 
 

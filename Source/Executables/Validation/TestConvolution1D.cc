@@ -59,7 +59,7 @@ int main()
 
 		kernel += std::to_string( (*blur)(iBin) );
 	}
-	kernel += "]\n}";
+	kernel += "]\n}\n";
 
 	//std::cout << kernel << std::endl;
 
@@ -70,18 +70,31 @@ int main()
     int overlap = nKernelBins - 1;
     int step = block - overlap;
 
-    if( nBins % step > overlap )
-    {
-        convProcessor.AllocateArrays( block, nBins % step );
-    }
-    else
-    {
-        convProcessor.AllocateArrays( block, (nBins % step) + step );
-    }
-
     convProcessor.Initialize( nBins, block, step, overlap );
 
     KTPowerSpectrum* convolvedPowerSpect = convProcessor.DoConvolution( powerSpect, block, step, overlap );
+/*
+    for( int i = 0; i < nBins; ++i )
+    {
+    	std::cout << (*convolvedPowerSpect)(i) << std::endl;
+    }
+*/
+    KTINFO(vallog, "Writing to ROOT file");
+
+    #ifdef ROOT_FOUND
+	    TFile* file = new TFile("TestConvolution1D.root", "recreate");
+	    TH1D* psInitial = KT2ROOT::CreatePowerHistogram( powerSpect, "hPowerSpectrum" );
+	    TH1D* psFinal = KT2ROOT::CreatePowerHistogram( convolvedPowerSpect, "hConvolvedSpectrum" );
+	    
+	    psInitial->SetDirectory(file);
+	    psFinal->SetDirectory(file);
+	    
+	    psInitial->Write();
+	    psFinal->Write();
+
+	    file->Close();
+	    delete file;
+	#endif
 
     delete powerSpect;
     delete blur;

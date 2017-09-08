@@ -109,16 +109,21 @@ namespace Katydid
 
             fftw_complex *fTransformedInputArray;
             fftw_complex *fTransformedOutputArray;
+            fftw_complex *fTransformedInputArrayFromReal;
+            fftw_complex *fTransformedOutputArrayFromReal;
 
             fftw_complex *fTransformedInputArrayShort;
             fftw_complex *fTransformedOutputArrayShort;
+            fftw_complex *fTransformedInputArrayFromRealShort;
+            fftw_complex *fTransformedOutputArrayFromRealShort;
 
             double *fInputArrayRealShort;
             double *fOutputArrayRealShort;
             fftw_complex *fInputArrayComplexShort;
             fftw_complex *fOutputArrayComplexShort;
 
-            fftw_complex *fTransformedKernelX;
+            fftw_complex *fTransformedKernelXAsReal;
+            fftw_complex *fTransformedKernelXAsComplex;
 
             unsigned fTransformFlagUnsigned;
             int fKernelSize;
