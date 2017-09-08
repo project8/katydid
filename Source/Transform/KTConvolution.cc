@@ -159,8 +159,8 @@ namespace Katydid
 
         fRealToComplexPlanShort = fftw_plan_dft_r2c_1d( nSizeShort, fInputArrayRealShort, fTransformedInputArrayFromRealShort, fTransformFlagUnsigned );
         fComplexToRealPlanShort = fftw_plan_dft_c2r_1d( nSizeShort, fTransformedOutputArrayFromRealShort, fOutputArrayRealShort, fTransformFlagUnsigned );
-        fC2CForwardPlan = fftw_plan_dft_1d( nSizeShort, fInputArrayComplexShort, fTransformedInputArrayShort, FFTW_FORWARD, fTransformFlagUnsigned );
-        fC2CReversePlan = fftw_plan_dft_1d( nSizeShort, fTransformedOutputArrayShort, fOutputArrayComplexShort, FFTW_BACKWARD, fTransformFlagUnsigned );
+        fC2CForwardPlanShort = fftw_plan_dft_1d( nSizeShort, fInputArrayComplexShort, fTransformedInputArrayShort, FFTW_FORWARD, fTransformFlagUnsigned );
+        fC2CReversePlanShort = fftw_plan_dft_1d( nSizeShort, fTransformedOutputArrayShort, fOutputArrayComplexShort, FFTW_BACKWARD, fTransformFlagUnsigned );
 
         // Store these guys
         fRegularSize = nSizeRegular;
@@ -337,7 +337,7 @@ namespace Katydid
         // Periodically extend kernel up to block size
         for( int iPosition = fKernelSize; iPosition < GetBlockSize(); ++iPosition )
         {
-            kernelX.push_back( kernelX[iPosition - fKernelSize] );
+            kernelX.push_back( 0.0 );
         }
 
         KTINFO(sdlog, "Successfully parsed kernel!");
@@ -518,20 +518,34 @@ namespace Katydid
         int nBin = 0;
         int nBinsTotal = initialSpectrum->GetNFrequencyBins();
         int blockNumber = 0;
+        int position = 0;
         
         KTPowerSpectrum* transformedPS = new KTPowerSpectrum( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         // Loop over block numbers
-        while( blockNumber * step + block < nBinsTotal )
+        while( (blockNumber+1) * step < nBinsTotal )
         {
             KTDEBUG(sdlog, "Block number: " << blockNumber);
-            KTDEBUG(sdlog, "Starting position: " << blockNumber * step);
+            KTDEBUG(sdlog, "Starting position: " << blockNumber * step - overlap);
             KTDEBUG(sdlog, "nBinsTotal: " << nBinsTotal);
 
             // Fill input array
             for( nBin = 0; nBin < block; ++nBin )
             {
-                fInputArrayReal[nBin] = (*initialSpectrum)(nBin + blockNumber * step);
+                position = nBin + blockNumber * step - overlap;
+                if( position < 0 )
+                {
+                    fInputArrayReal[nBin] = 0.0;
+                }
+                else
+                {
+                    fInputArrayReal[nBin] = (*initialSpectrum)(position);
+                }
+
+                if( blockNumber == 10 )
+                {
+                    KTINFO(sdlog, "Input position " << nBin << ": " << fInputArrayReal[nBin]);
+                }
             }
 
             // FFT of input block
@@ -547,6 +561,13 @@ namespace Katydid
             {
                 fTransformedOutputArrayFromReal[nBin][0] = fTransformedInputArrayFromReal[nBin][0] * fTransformedKernelXAsReal[nBin][0] - fTransformedInputArrayFromReal[nBin][1] * fTransformedKernelXAsReal[nBin][1];
                 fTransformedOutputArrayFromReal[nBin][1] = fTransformedInputArrayFromReal[nBin][0] * fTransformedKernelXAsReal[nBin][1] + fTransformedInputArrayFromReal[nBin][1] * fTransformedKernelXAsReal[nBin][0];
+            
+                if( blockNumber == 10 )
+                {
+                    KTINFO(sdlog, "Transformed input position " << nBin << ": (" << fTransformedInputArrayFromReal[nBin][0] << ", " << fTransformedInputArrayFromReal[nBin][1] << ")");
+                    KTINFO(sdlog, "Transformed output position " << nBin << ": (" << fTransformedOutputArrayFromReal[nBin][0] << ", " << fTransformedOutputArrayFromReal[nBin][1] << ")");
+                    KTDEBUG(sdlog, "Transformed kernel position " << nBin << ": (" << fTransformedKernelXAsReal[nBin][0] << ", " << fTransformedKernelXAsReal[nBin][1] << ")");
+                }
             }
 
             // Reverse FFT of output block
@@ -559,8 +580,11 @@ namespace Katydid
             // Loop over bins in the output block and fill the convolved spectrum
             for( nBin = overlap; nBin < block; ++nBin )
             {
-                (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin];
-                //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+                (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin] / (double)block; // divide by block for normalization
+                if( blockNumber == 10 )
+                {
+                    KTINFO(sdlog, "Output position " << nBin << ": " << fOutputArrayReal[nBin] / (double)block);
+                }
             }
 
             // Increment block number
@@ -568,13 +592,14 @@ namespace Katydid
         }
 
         KTINFO(sdlog, "Reached final block");
-        KTINFO(sdlog, "Starting position: " << blockNumber * step);
+        KTINFO(sdlog, "Starting position: " << blockNumber * step - overlap);
 
         // Same procedure as above, this time with a shorter final block
 
-        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; position+1 < nBinsTotal; ++nBin )
         {
-            fInputArrayRealShort[nBin] = (*initialSpectrum)(nBin + blockNumber * step);
+            position = nBin + blockNumber * step - overlap;
+            fInputArrayRealShort[nBin] = (*initialSpectrum)(position);
         }
 
         KTINFO(sdlog, "Short array length = " << nBin);
@@ -599,9 +624,9 @@ namespace Katydid
         }
         
         // Loop over bins in the output block and fill the convolved spectrum
-        for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = overlap; nBin < fShortSize/2 + 1; ++nBin )
         {
-            (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin];
+            (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin] / (double)fShortSize; // divide by fShortSize for normalization
             //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
         }
 
@@ -698,7 +723,7 @@ namespace Katydid
         {
             return nullptr;
         }
-        
+
         // Loop over bins in the output block and fill the convolved spectrum
         for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
         {
@@ -946,13 +971,13 @@ namespace Katydid
         // Ordinary block is given, but the shorter block at the end is harder
         // Maybe there is a simpler way to determine this, I'm not sure
 
-        if( nBinsTotal % step > overlap )
+        if( (nBinsTotal + overlap) % step > overlap )
         {
-            AllocateArrays( block, nBinsTotal % step );
+            AllocateArrays( block, (nBinsTotal + overlap) % step );
         }
         else
         {
-            AllocateArrays( block, (nBinsTotal % step) + step );
+            AllocateArrays( block, ((nBinsTotal + overlap) % step) + step );
         }
 
         // Also transform the kernel, we only need to do this once
@@ -968,15 +993,20 @@ namespace Katydid
         DFT_1D_R2C( block );
         DFT_1D_C2C( block );
         
-        fTransformedKernelXAsReal = fTransformedInputArrayFromReal;
-        fTransformedKernelXAsComplex = fTransformedInputArray;
+        fTransformedKernelXAsReal = new fftw_complex[block];
+        fTransformedKernelXAsComplex = new fftw_complex[block];
+        for( int iBin = 0; iBin < block; ++iBin )
+        {
+            fTransformedKernelXAsReal[iBin][0] = fTransformedInputArrayFromReal[iBin][0];
+            fTransformedKernelXAsReal[iBin][1] = fTransformedInputArrayFromReal[iBin][1];
+            fTransformedKernelXAsComplex[iBin][0] = fTransformedInputArray[iBin][0];
+            fTransformedKernelXAsComplex[iBin][1] = fTransformedInputArray[iBin][1];
+        }
 
         for( int i = 0; i < block/2 + 1; ++i )
         {
             KTDEBUG(sdlog, "Transformed kernel value " << i << ": (" << fTransformedKernelXAsReal[i][0] << ", " << fTransformedKernelXAsReal[i][1] << ")");
         }
-
-
 
     }
 
