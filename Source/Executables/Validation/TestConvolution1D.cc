@@ -72,7 +72,7 @@ int main()
 	}
 	kernel += "]\n}\n";
 
-	std::cout << kernel << std::endl;
+	//std::cout << kernel << std::endl;
 
 	convProcessor.SetKernel( kernelPath );
 	convProcessor.FinishSetup();
@@ -84,8 +84,8 @@ int main()
     convProcessor.Initialize( nBins, block, step, overlap );
 
     KTPowerSpectrum* convolvedPowerSpect = convProcessor.DoConvolution( powerSpect, block, step, overlap );
-    //KTFrequencySpectrumFFTW* convolvedFFTWSpect = convProcessor.DoConvolution( fftwSpect, block, step, overlap );
-    //KTFrequencySpectrumPolar* convolvedPolarSpect = convProcessor.DoConvolution( polarSpect, block, step, overlap );
+    KTFrequencySpectrumFFTW* convolvedFFTWSpect = convProcessor.DoConvolution( fftwSpect, block, step, overlap );
+    KTFrequencySpectrumPolar* convolvedPolarSpect = convProcessor.DoConvolution( polarSpect, block, step, overlap );
 /*
     for( int i = 0; i < nBins; ++i )
     {
@@ -98,24 +98,24 @@ int main()
 	    TFile* file = new TFile("TestConvolution1D.root", "recreate");
 	    TH1D* psInitial = KT2ROOT::CreatePowerHistogram( powerSpect, "hPowerSpectrum" );
 	    TH1D* psFinal = KT2ROOT::CreatePowerHistogram( convolvedPowerSpect, "hConvolvedPowerSpectrum" );
-//	    TH1D* fsfftwInitial = KT2ROOT::CreateMagnitudeHistogram( fftwSpect, "hFFTWSpectrum" );
-//	    TH1D* fsfftwFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedFFTWSpect, "hConvolvedFFTWSpectrum" );
-//	    TH1D* fsPolarInitial = KT2ROOT::CreateMagnitudeHistogram( polarSpect, "hPolarSpectrum" );
-//	    TH1D* fsPolarFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedPolarSpect, "hConvolvedPolarSpectrum" );
+	    TH1D* fsfftwInitial = KT2ROOT::CreateMagnitudeHistogram( fftwSpect, "hFFTWSpectrum" );
+	    TH1D* fsfftwFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedFFTWSpect, "hConvolvedFFTWSpectrum" );
+	    TH1D* fsPolarInitial = KT2ROOT::CreateMagnitudeHistogram( polarSpect, "hPolarSpectrum" );
+	    TH1D* fsPolarFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedPolarSpect, "hConvolvedPolarSpectrum" );
 	    
 	    psInitial->SetDirectory(file);
 	    psFinal->SetDirectory(file);
-//	    fsfftwInitial->SetDirectory(file);
-//	    fsfftwFinal->SetDirectory(file);
-//	    fsPolarInitial->SetDirectory(file);
-//	    fsPolarFinal->SetDirectory(file);
+	    fsfftwInitial->SetDirectory(file);
+	    fsfftwFinal->SetDirectory(file);
+	    fsPolarInitial->SetDirectory(file);
+	    fsPolarFinal->SetDirectory(file);
 	    
 	    psInitial->Write();
 	    psFinal->Write();
-//	    fsfftwInitial->Write();
-//	    fsfftwFinal->Write();
-//	    fsPolarInitial->Write();
-//	    fsPolarFinal->Write();
+	    fsfftwInitial->Write();
+	    fsfftwFinal->Write();
+	    fsPolarInitial->Write();
+	    fsPolarFinal->Write();
 
 	    file->Close();
 	    delete file;

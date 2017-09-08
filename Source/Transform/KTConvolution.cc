@@ -541,11 +541,6 @@ namespace Katydid
                 {
                     fInputArrayReal[nBin] = (*initialSpectrum)(position);
                 }
-
-                if( blockNumber == 10 )
-                {
-                    KTINFO(sdlog, "Input position " << nBin << ": " << fInputArrayReal[nBin]);
-                }
             }
 
             // FFT of input block
@@ -561,13 +556,6 @@ namespace Katydid
             {
                 fTransformedOutputArrayFromReal[nBin][0] = fTransformedInputArrayFromReal[nBin][0] * fTransformedKernelXAsReal[nBin][0] - fTransformedInputArrayFromReal[nBin][1] * fTransformedKernelXAsReal[nBin][1];
                 fTransformedOutputArrayFromReal[nBin][1] = fTransformedInputArrayFromReal[nBin][0] * fTransformedKernelXAsReal[nBin][1] + fTransformedInputArrayFromReal[nBin][1] * fTransformedKernelXAsReal[nBin][0];
-            
-                if( blockNumber == 10 )
-                {
-                    KTINFO(sdlog, "Transformed input position " << nBin << ": (" << fTransformedInputArrayFromReal[nBin][0] << ", " << fTransformedInputArrayFromReal[nBin][1] << ")");
-                    KTINFO(sdlog, "Transformed output position " << nBin << ": (" << fTransformedOutputArrayFromReal[nBin][0] << ", " << fTransformedOutputArrayFromReal[nBin][1] << ")");
-                    KTDEBUG(sdlog, "Transformed kernel position " << nBin << ": (" << fTransformedKernelXAsReal[nBin][0] << ", " << fTransformedKernelXAsReal[nBin][1] << ")");
-                }
             }
 
             // Reverse FFT of output block
@@ -581,10 +569,6 @@ namespace Katydid
             for( nBin = overlap; nBin < block; ++nBin )
             {
                 (*transformedPS)(nBin - overlap + blockNumber * step) = fOutputArrayReal[nBin] / (double)block; // divide by block for normalization
-                if( blockNumber == 10 )
-                {
-                    KTINFO(sdlog, "Output position " << nBin << ": " << fOutputArrayReal[nBin] / (double)block);
-                }
             }
 
             // Increment block number
@@ -641,11 +625,12 @@ namespace Katydid
         int nBin = 0;
         int nBinsTotal = initialSpectrum->GetNFrequencyBins();
         int blockNumber = 0;
+        int position = 0;
         
         KTFrequencySpectrumFFTW* transformedFSFFTW = new KTFrequencySpectrumFFTW( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         // Loop over block numbers
-        while( blockNumber * step + block < nBinsTotal )
+        while( (blockNumber+1) * step < nBinsTotal )
         {
             KTDEBUG(sdlog, "Block number: " << blockNumber);
             KTDEBUG(sdlog, "Starting position: " << blockNumber * step);
@@ -654,8 +639,17 @@ namespace Katydid
             // Fill input array
             for( nBin = 0; nBin < block; ++nBin )
             {
-                fInputArrayComplex[nBin][0] = (*initialSpectrum)(nBin + blockNumber * step)[0];
-                fInputArrayComplex[nBin][1] = (*initialSpectrum)(nBin + blockNumber * step)[1];
+                position = nBin + blockNumber * step - overlap;
+                if( position < 0 )
+                {
+                    fInputArrayComplex[nBin][0] = 0.0;
+                    fInputArrayComplex[nBin][1] = 0.0;
+                }
+                else
+                {
+                    fInputArrayComplex[nBin][0] = (*initialSpectrum)(position)[0];
+                    fInputArrayComplex[nBin][1] = (*initialSpectrum)(position)[1];
+                }
             }
 
             // FFT of input block
@@ -683,8 +677,8 @@ namespace Katydid
             // Loop over bins in the output block and fill the convolved spectrum
             for( nBin = overlap; nBin < block; ++nBin )
             {
-                (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[0] = fOutputArrayComplex[nBin][0];
-                (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[1] = fOutputArrayComplex[nBin][1];
+                (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[0] = fOutputArrayComplex[nBin][0] / (double)block; // divide by block for normalization
+                (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[1] = fOutputArrayComplex[nBin][1] / (double)block;
                 //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
             }
 
@@ -693,14 +687,15 @@ namespace Katydid
         }
 
         KTINFO(sdlog, "Reached final block");
-        KTINFO(sdlog, "Starting position: " << blockNumber * step);
+        KTINFO(sdlog, "Starting position: " << blockNumber * step - overlap);
 
         // Same procedure as above, this time with a shorter final block
 
-        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; position+1 < nBinsTotal; ++nBin )
         {
-            fInputArrayComplexShort[nBin][0] = (*initialSpectrum)(nBin + blockNumber * step)[0];
-            fInputArrayComplexShort[nBin][1] = (*initialSpectrum)(nBin + blockNumber * step)[1];
+            position = nBin + blockNumber * step - overlap;
+            fInputArrayComplexShort[nBin][0] = (*initialSpectrum)(position)[0];
+            fInputArrayComplexShort[nBin][1] = (*initialSpectrum)(position)[1];
         }
 
         KTINFO(sdlog, "Short array length = " << nBin);
@@ -712,7 +707,7 @@ namespace Katydid
             return nullptr;
         }
 
-        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; nBin < fShortSize; ++nBin )
         {
             fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][1];
             fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][0];
@@ -725,11 +720,10 @@ namespace Katydid
         }
 
         // Loop over bins in the output block and fill the convolved spectrum
-        for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = overlap; nBin < fShortSize; ++nBin )
         {
-            (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[0] = fOutputArrayComplexShort[nBin][0];
-            (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[1] = fOutputArrayComplexShort[nBin][1];
-            //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+            (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[0] = fOutputArrayComplexShort[nBin][0] / (double)fShortSize; // divide by fShortSize for normalization
+            (*transformedFSFFTW)(nBin - overlap + blockNumber * step)[1] = fOutputArrayComplexShort[nBin][1] / (double)fShortSize; // divide by fShortSize for normalization
         }
 
         KTINFO(sdlog, "Component finished!");
@@ -743,11 +737,12 @@ namespace Katydid
         int nBin = 0;
         int nBinsTotal = initialSpectrum->GetNFrequencyBins();
         int blockNumber = 0;
+        int position = 0;
         
         KTFrequencySpectrumPolar* transformedFSPolar = new KTFrequencySpectrumPolar( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         // Loop over block numbers
-        while( blockNumber * step + block < nBinsTotal )
+        while( (blockNumber+1) * step < nBinsTotal )
         {
             KTDEBUG(sdlog, "Block number: " << blockNumber);
             KTDEBUG(sdlog, "Starting position: " << blockNumber * step);
@@ -756,8 +751,17 @@ namespace Katydid
             // Fill input array
             for( nBin = 0; nBin < block; ++nBin )
             {
-                fInputArrayComplex[nBin][0] = initialSpectrum->GetReal(nBin + blockNumber * step);
-                fInputArrayComplex[nBin][1] = initialSpectrum->GetImag(nBin + blockNumber * step);
+                position = nBin + blockNumber * step - overlap;
+                if( position < 0 )
+                {
+                    fInputArrayComplex[nBin][0] = 0.0;
+                    fInputArrayComplex[nBin][1] = 0.0;
+                }
+                else
+                {
+                    fInputArrayComplex[nBin][0] = initialSpectrum->GetReal(position);
+                    fInputArrayComplex[nBin][1] = initialSpectrum->GetImag(position);
+                }
             }
 
             // FFT of input block
@@ -785,8 +789,7 @@ namespace Katydid
             // Loop over bins in the output block and fill the convolved spectrum
             for( nBin = overlap; nBin < block; ++nBin )
             {
-                transformedFSPolar->SetRect( nBin - overlap + blockNumber * step, fOutputArrayComplex[nBin][0], fOutputArrayComplex[nBin][1] );
-                //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+                transformedFSPolar->SetRect( nBin - overlap + blockNumber * step, fOutputArrayComplex[nBin][0] / (double)block, fOutputArrayComplex[nBin][1] / (double)block ); // divide by block for normalization
             }
 
             // Increment block number
@@ -798,38 +801,38 @@ namespace Katydid
 
         // Same procedure as above, this time with a shorter final block
 
-        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; position+1 < nBinsTotal; ++nBin )
         {
-            fInputArrayComplexShort[nBin][0] = initialSpectrum->GetReal(nBin + blockNumber * step);
-            fInputArrayComplexShort[nBin][1] = initialSpectrum->GetImag(nBin + blockNumber * step);
+            position = nBin + blockNumber * step - overlap;
+            fInputArrayComplexShort[nBin][0] = initialSpectrum->GetReal(position);
+            fInputArrayComplexShort[nBin][1] = initialSpectrum->GetImag(position);
         }
 
         KTINFO(sdlog, "Short array length = " << nBin);
         KTDEBUG(sdlog, "Initialized short array length = " << fShortSize);
 
         // FFT of input block
-        if( ! DFT_1D_C2C( nBin ) )
+        if( ! DFT_1D_C2C( fShortSize ) )
         {
             return nullptr;
         }
 
-        for( nBin = 0; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = 0; nBin < fShortSize; ++nBin )
         {
             fTransformedOutputArrayShort[nBin][0] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][0] - fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][1];
             fTransformedOutputArrayShort[nBin][1] = fTransformedInputArrayShort[nBin][0] * fTransformedKernelXAsComplex[nBin][1] + fTransformedInputArrayShort[nBin][1] * fTransformedKernelXAsComplex[nBin][0];
         }
 
         // Reverse FFT of output block
-        if( ! RDFT_1D_C2C( nBin ) )
+        if( ! RDFT_1D_C2C( fShortSize ) )
         {
             return nullptr;
         }
         
         // Loop over bins in the output block and fill the convolved spectrum
-        for( nBin = overlap; nBin + blockNumber * step < nBinsTotal; ++nBin )
+        for( nBin = overlap; nBin < fShortSize; ++nBin )
         {
-            transformedFSPolar->SetRect( nBin - overlap + blockNumber * step, fOutputArrayComplexShort[nBin][0], fOutputArrayComplexShort[nBin][1] );
-            //KTDEBUG(sdlog, "Filled output bin: " << nBin - overlap + blockNumber * step);
+            transformedFSPolar->SetRect( nBin - overlap + blockNumber * step, fOutputArrayComplexShort[nBin][0] / (double)fShortSize, fOutputArrayComplexShort[nBin][1] / (double)fShortSize); // divide by fShortSize for normalization
         }
 
         KTINFO(sdlog, "Component finished!");
@@ -1002,12 +1005,6 @@ namespace Katydid
             fTransformedKernelXAsComplex[iBin][0] = fTransformedInputArray[iBin][0];
             fTransformedKernelXAsComplex[iBin][1] = fTransformedInputArray[iBin][1];
         }
-
-        for( int i = 0; i < block/2 + 1; ++i )
-        {
-            KTDEBUG(sdlog, "Transformed kernel value " << i << ": (" << fTransformedKernelXAsReal[i][0] << ", " << fTransformedKernelXAsReal[i][1] << ")");
-        }
-
     }
 
 
