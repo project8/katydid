@@ -33,6 +33,7 @@ namespace Katydid
             KTProcessor(name),
             fKernel("placeholder.json"),
             fBlockSize(0),
+            fNormalizeKernel(false),
             fTransformFlag("ESTIMATE"),
             fRegularSize(0),
             fShortSize(0),
@@ -324,10 +325,15 @@ namespace Katydid
         KTDEBUG(sdlog, "Kernel size = " << fKernelSize);
 
         // Fill kernel vector
+        // Also calculate the norm in case we need that
+
+        double norm = 0.;
         for( int iValue = 0; iValue < fKernelSize; ++iValue )
         {
             kernelX.push_back( kernel1DArray.get_value< double >(iValue) );
+            norm += kernelX[iValue];
         }
+        KTDEBUG(sdlog, "Kernel norm = " << norm);
 
         // Here is where we set block size if left unspecified
         // We need it to periodically extend the kernel
@@ -350,6 +356,15 @@ namespace Katydid
         for( int iPosition = fKernelSize; iPosition < GetBlockSize(); ++iPosition )
         {
             kernelX.push_back( 0.0 );
+        }
+
+        if( GetNormalizeKernel() )
+        {
+            KTDEBUG(sdlog, "Normalizing kernel");
+            for( int iPosition = 0; iPosition < GetBlockSize(); ++iPosition )
+            {
+                kernelX[iPosition] = kernelX[iPosition] / norm;
+            }
         }
 
         KTINFO(sdlog, "Successfully parsed kernel!");

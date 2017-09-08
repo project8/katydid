@@ -52,6 +52,7 @@ namespace Katydid
      Available configuration values:
      - "kernel": std::string -- Location of a .json file which contains the kernel
      - "block-size": double -- Size of the input blocks. 0 will trigger an automatic determination of the ideal block size
+     - "normalize": bool -- Normalize the kernel. If false, the output will be scaled by the norm of the kernel
      - "transform-flag": std:string -- Transform flag for FFTW
 
      Slots:
@@ -77,6 +78,7 @@ namespace Katydid
 
             MEMBERVARIABLE(std::string, Kernel);
             MEMBERVARIABLE(unsigned, BlockSize);
+            MEMBERVARIABLE(bool, NormalizeKernel);
             MEMBERVARIABLE_NOSET(std::string, TransformFlag);
 
             MEMBERVARIABLE_NOSET(double, RegularSize);

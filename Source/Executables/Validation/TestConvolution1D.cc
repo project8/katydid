@@ -76,6 +76,7 @@ int main()
 
 	convProcessor.SetKernel( kernelPath );
 	convProcessor.SetBlockSize( 5095 );
+	convProcessor.SetNormalizeKernel( true );
 	convProcessor.FinishSetup();
 
     int block = convProcessor.GetBlockSize();
