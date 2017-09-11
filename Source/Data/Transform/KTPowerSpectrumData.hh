@@ -21,6 +21,9 @@ namespace Katydid
     class KTPowerSpectrumDataCore : public KTFrequencyDomainArrayData
     {
         public:
+	    typedef KTPowerSpectrum spectrum_type;
+
+        public:
             KTPowerSpectrumDataCore();
             virtual ~KTPowerSpectrumDataCore();
 

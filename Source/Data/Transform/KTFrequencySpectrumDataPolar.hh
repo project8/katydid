@@ -21,6 +21,9 @@ namespace Katydid
     class KTFrequencySpectrumDataPolarCore : public KTFrequencySpectrumData
     {
         public:
+            typedef KTFrequencySpectrumPolar spectrum_type;
+
+        public:
             KTFrequencySpectrumDataPolarCore();
             virtual ~KTFrequencySpectrumDataPolarCore();
 

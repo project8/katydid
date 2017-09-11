@@ -53,6 +53,7 @@ namespace Katydid
      - "kernel": std::string -- Location of a .json file which contains the kernel
      - "block-size": double -- Size of the input blocks. 0 will trigger an automatic determination of the ideal block size
      - "normalize": bool -- Normalize the kernel. If false, the output will be scaled by the norm of the kernel
+     - "transform-type": std::string -- "convolution" or "cross-correlation"
      - "transform-flag": std:string -- Transform flag for FFTW
 
      Slots:
@@ -79,6 +80,7 @@ namespace Katydid
             MEMBERVARIABLE(std::string, Kernel);
             MEMBERVARIABLE(unsigned, BlockSize);
             MEMBERVARIABLE(bool, NormalizeKernel);
+            MEMBERVARIABLE(std::string, TransformType);
             MEMBERVARIABLE_NOSET(std::string, TransformFlag);
 
             MEMBERVARIABLE_NOSET(double, RegularSize);
@@ -139,13 +141,39 @@ namespace Katydid
             bool Convolve1D( KTFrequencySpectrumDataFFTW& data );
             bool Convolve1D( KTFrequencySpectrumDataPolar& data );
 
-            bool CoreConvolve1D( KTPowerSpectrumDataCore& data, KTConvolvedPowerSpectrumData& newData );
-            bool CoreConvolve1D( KTFrequencySpectrumDataFFTWCore& data, KTConvolvedFrequencySpectrumDataFFTW& newData );
-            bool CoreConvolve1D( KTFrequencySpectrumDataPolarCore& data, KTConvolvedFrequencySpectrumDataPolar& newData );
+            template< class XSpectrumDataCore, class XConvolvedSpectrumTypeData >
+            bool CoreConvolve1D( XSpectrumDataCore& data, XConvolvedSpectrumTypeData& newData );
 
-            KTPowerSpectrum* DoConvolution( const KTPowerSpectrum* initialSpectrum, const int block, const int step, const int overlap );
-            KTFrequencySpectrumFFTW* DoConvolution( const KTFrequencySpectrumFFTW* initialSpectrum, const int block, const int step, const int overlap );
-            KTFrequencySpectrumPolar* DoConvolution( const KTFrequencySpectrumPolar* initialSpectrum, const int block, const int step, const int overlap );
+            const KTPowerSpectrum* GetSpectrum( KTPowerSpectrumDataCore& data, unsigned iComponent );
+            const KTFrequencySpectrumFFTW* GetSpectrum( KTFrequencySpectrumDataFFTWCore& data, unsigned iComponent );
+            const KTFrequencySpectrumPolar* GetSpectrum( KTFrequencySpectrumDataPolarCore& data, unsigned iComponent );
+
+            template< class XSpectraType >
+            XSpectraType* DoConvolution( const XSpectraType* initialSpectrum, const int block, const int step, const int overlap );
+
+            void ConjugateAndReverse( KTPowerSpectrum& spectrum );
+            void ConjugateAndReverse( KTFrequencySpectrumFFTW& spectrum );
+            void ConjugateAndReverse( KTFrequencySpectrumPolar& spectrum );
+
+            void SetInputArray( int position, int nBin, const KTPowerSpectrum* initialSpectrum, bool shortArray );
+            void SetInputArray( int position, int nBin, const KTFrequencySpectrumFFTW* initialSpectrum, bool shortArray );
+            void SetInputArray( int position, int nBin, const KTFrequencySpectrumPolar* initialSpectrum, bool shortArray );
+
+            void SetOutputArray( int position, int nBin, KTPowerSpectrum& transformedPS, double norm, bool shortArray );
+            void SetOutputArray( int position, int nBin, KTFrequencySpectrumFFTW& transformedFSFFTW, double norm, bool shortArray );
+            void SetOutputArray( int position, int nBin, KTFrequencySpectrumPolar& transformedFSPolar, double norm, bool shortArray );
+
+            bool DFT_1D_General( int size, const KTPowerSpectrum* initialSpectrum );
+            bool DFT_1D_General( int size, const KTFrequencySpectrumFFTW* initialSpectrum );
+            bool DFT_1D_General( int size, const KTFrequencySpectrumPolar* initialSpectrum );
+
+            void MultiplyArrays( int nBins, const KTPowerSpectrum* initialSpectrum, bool shortArray );
+            void MultiplyArrays( int nBins, const KTFrequencySpectrumFFTW* initialSpectrum, bool shortArray );
+            void MultiplyArrays( int nBins, const KTFrequencySpectrumPolar* initialSpectrum, bool shortArray );
+
+            bool RDFT_1D_General( int size, KTPowerSpectrum* transformedSpectrum );
+            bool RDFT_1D_General( int size, KTFrequencySpectrumFFTW* transformedSpectrum );
+            bool RDFT_1D_General( int size, KTFrequencySpectrumPolar* transformedSpectrum );
 
             bool DFT_1D_R2C( int size );
             bool RDFT_1D_C2R( int size );

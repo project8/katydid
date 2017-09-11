@@ -55,15 +55,15 @@ int main()
 			polarSpect->SetRect( iBin, 0.0, 0.0 );
 		}
 
-		(*blur)(iBin) = exp( -0.5 * pow( blur->GetBinCenter( iBin ) - 0.5 * (rangeMin + rangeMax), 2 ) * pow( blurWidth, -2 ) );
+		(*blur)(iBin) = exp( -0.5 * pow( blur->GetBinCenter( iBin ) - rangeMin, 2 ) * pow( blurWidth, -2 ) );
 	}
 
 	KTConvolution1D convProcessor;
 	
 	std::string kernel = "{\n\t\"kernel\": [";
-	for( unsigned iBin = nBins/2 - nKernelBins/2; iBin < nBins/2 + nKernelBins/2; ++iBin )
+	for( unsigned iBin = 0; iBin < nKernelBins; ++iBin )
 	{
-		if( iBin != nBins/2 - nKernelBins/2 )
+		if( iBin != 0 )
 		{
 			kernel += ", ";
 		}
@@ -72,10 +72,10 @@ int main()
 	}
 	kernel += "]\n}\n";
 
-	//std::cout << kernel << std::endl;
+	std::cout << "Kernel from script parameters is: \n" << kernel << std::endl;
 
 	convProcessor.SetKernel( kernelPath );
-	convProcessor.SetBlockSize( 5095 );
+	convProcessor.SetBlockSize( 4096 );
 	convProcessor.SetNormalizeKernel( true );
 	convProcessor.FinishSetup();
 
@@ -127,6 +127,10 @@ int main()
     delete fftwSpect;
     delete polarSpect;
     delete blur;
+
+    std::cout << "ROOT file has been written to the current directory with the results of this validation." << std::endl;
+    std::cout << "If you want to check the contents, open a TBrowser in the file:\n\n$ root TestConvolution1D.root\nroot [1] new TBrowser\n" << std::endl;
+    std::cout << "And you will find TH1s for each of the original and convolved spectra." << std::endl;
 
     return 0;
 }
