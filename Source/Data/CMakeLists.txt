@@ -16,11 +16,11 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTKDTreeData.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
     SpectrumAnalysis/KTPointCloud.hh
+    SpectrumAnalysis/KTSeqLine.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
     SpectrumAnalysis/KTWignerVilleData.hh
-    SpectrumAnalysis/KTSeqLine.hh
     EventAnalysis/KTFrequencyCandidate.hh
     EventAnalysis/KTFrequencyCandidateData.hh
     EventAnalysis/KTLinearFitResult.hh
@@ -73,11 +73,11 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
     SpectrumAnalysis/KTNormalizedFSData.cc
+    SpectrumAnalysis/KTSeqLine.cc
     SpectrumAnalysis/KTTimeSeriesDist.cc
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
     SpectrumAnalysis/KTWignerVilleData.cc
-    SpectrumAnalysis/KTSeqLine.cc
     EventAnalysis/KTFrequencyCandidate.cc
     EventAnalysis/KTFrequencyCandidateData.cc
     EventAnalysis/KTLinearFitResult.cc
