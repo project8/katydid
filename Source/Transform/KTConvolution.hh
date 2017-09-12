@@ -12,6 +12,10 @@
 #include "KTProcessor.hh"
 #include "KTSlot.hh"
 
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTPowerSpectrumData.hh"
+
 #include <vector>
 #include <cmath>
 #include <fftw3.h>
@@ -116,18 +120,18 @@ namespace Katydid
             fftw_complex *fTransformedInputArrayFromReal;
             fftw_complex *fTransformedOutputArrayFromReal;
 
-            fftw_complex *fTransformedInputArrayShort;
-            fftw_complex *fTransformedOutputArrayShort;
-            fftw_complex *fTransformedInputArrayFromRealShort;
-            fftw_complex *fTransformedOutputArrayFromRealShort;
-
-            double *fInputArrayRealShort;
-            double *fOutputArrayRealShort;
-            fftw_complex *fInputArrayComplexShort;
-            fftw_complex *fOutputArrayComplexShort;
-
             fftw_complex *fTransformedKernelXAsReal;
             fftw_complex *fTransformedKernelXAsComplex;
+
+            fftw_complex* fGeneralTransformedInputArray;
+            fftw_complex* fGeneralTransformedOutputArray;
+            fftw_complex* fGeneralTransformedKernelArray;
+            int nBinLimitRegular;
+            int nBinLimitShort;
+            fftw_plan fGeneralForwardPlan;
+            fftw_plan fGeneralReversePlan;
+            fftw_plan fGeneralForwardPlanShort;
+            fftw_plan fGeneralReversePlanShort;
 
             unsigned fTransformFlagUnsigned;
             int fKernelSize;
@@ -151,34 +155,20 @@ namespace Katydid
             template< class XSpectraType >
             XSpectraType* DoConvolution( const XSpectraType* initialSpectrum, const int block, const int step, const int overlap );
 
+            template< class XSpectraType >
+            bool SetUpGeneralVars();
+
             void ConjugateAndReverse( KTPowerSpectrum& spectrum );
             void ConjugateAndReverse( KTFrequencySpectrumFFTW& spectrum );
             void ConjugateAndReverse( KTFrequencySpectrumPolar& spectrum );
 
-            void SetInputArray( int position, int nBin, const KTPowerSpectrum* initialSpectrum, bool shortArray );
-            void SetInputArray( int position, int nBin, const KTFrequencySpectrumFFTW* initialSpectrum, bool shortArray );
-            void SetInputArray( int position, int nBin, const KTFrequencySpectrumPolar* initialSpectrum, bool shortArray );
+            void SetInputArray( int position, int nBin, const KTPowerSpectrum* initialSpectrum );
+            void SetInputArray( int position, int nBin, const KTFrequencySpectrumFFTW* initialSpectrum );
+            void SetInputArray( int position, int nBin, const KTFrequencySpectrumPolar* initialSpectrum );
 
-            void SetOutputArray( int position, int nBin, KTPowerSpectrum& transformedPS, double norm, bool shortArray );
-            void SetOutputArray( int position, int nBin, KTFrequencySpectrumFFTW& transformedFSFFTW, double norm, bool shortArray );
-            void SetOutputArray( int position, int nBin, KTFrequencySpectrumPolar& transformedFSPolar, double norm, bool shortArray );
-
-            bool DFT_1D_General( int size, const KTPowerSpectrum* initialSpectrum );
-            bool DFT_1D_General( int size, const KTFrequencySpectrumFFTW* initialSpectrum );
-            bool DFT_1D_General( int size, const KTFrequencySpectrumPolar* initialSpectrum );
-
-            void MultiplyArrays( int nBins, const KTPowerSpectrum* initialSpectrum, bool shortArray );
-            void MultiplyArrays( int nBins, const KTFrequencySpectrumFFTW* initialSpectrum, bool shortArray );
-            void MultiplyArrays( int nBins, const KTFrequencySpectrumPolar* initialSpectrum, bool shortArray );
-
-            bool RDFT_1D_General( int size, KTPowerSpectrum* transformedSpectrum );
-            bool RDFT_1D_General( int size, KTFrequencySpectrumFFTW* transformedSpectrum );
-            bool RDFT_1D_General( int size, KTFrequencySpectrumPolar* transformedSpectrum );
-
-            bool DFT_1D_R2C( int size );
-            bool RDFT_1D_C2R( int size );
-            bool DFT_1D_C2C( int size );
-            bool RDFT_1D_C2C( int size );
+            void SetOutputArray( int position, int nBin, KTPowerSpectrum& transformedPS, double norm );
+            void SetOutputArray( int position, int nBin, KTFrequencySpectrumFFTW& transformedFSFFTW, double norm );
+            void SetOutputArray( int position, int nBin, KTFrequencySpectrumPolar& transformedFSPolar, double norm );
 
             void SetupInternalMaps();
 
@@ -208,6 +198,21 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;            
 
     };
+
+    inline const KTPowerSpectrum* KTConvolution1D::GetSpectrum( KTPowerSpectrumDataCore& data, unsigned iComponent )
+    {
+        return data.GetSpectrum( iComponent );
+    }
+
+    inline const KTFrequencySpectrumFFTW* KTConvolution1D::GetSpectrum( KTFrequencySpectrumDataFFTWCore& data, unsigned iComponent )
+    {
+        return data.GetSpectrumFFTW( iComponent );
+    }
+
+    inline const KTFrequencySpectrumPolar* KTConvolution1D::GetSpectrum( KTFrequencySpectrumDataPolarCore& data, unsigned iComponent )
+    {
+        return data.GetSpectrumPolar( iComponent );
+    }
 
 } /* namespace Katydid */
 
