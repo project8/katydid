@@ -115,7 +115,6 @@ namespace Katydid
 
     struct TPowerFitData
     {
-        UInt_t fComponent;
 /*
         Double_t fScale;
         Double_t fBackground;
