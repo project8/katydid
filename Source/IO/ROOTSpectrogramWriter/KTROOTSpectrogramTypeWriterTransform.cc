@@ -10,9 +10,6 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
-#include "KTProcessedTrackData.hh"
-
-#include "TLine.h"
 
 //#include "KTLogger.hh"
 
@@ -27,46 +24,15 @@ namespace Katydid
     KTROOTSpectrogramTypeWriterTransform::KTROOTSpectrogramTypeWriterTransform() :
             KTROOTSpectrogramTypeWriter(),
             //KTTypeWriterTransform()
-            fFSPolarSpectrograms(),
-            fFSFFTWSpectrograms(),
-            fPowerSpectrograms(),
-            fPSDSpectrograms(),
-            fLineCollection()
+            fFSPolarBundle("FSPolarSpectrogram"),
+            fFSFFTWBundle("FSFFTWSpectrogram"),
+            fPowerBundle("PowerSpectrogram"),
+            fPSDBundle("PSDSpectrogram")
     {
     }
 
     KTROOTSpectrogramTypeWriterTransform::~KTROOTSpectrogramTypeWriterTransform()
     {
-        delete fLineCollection;
-    }
-
-    void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
-    {
-        // this function does not check the root file; it's assumed to be opened and verified already
-        while (! aSpectrogramSet.empty())
-        {
-            TH2D* spectrogram = aSpectrogramSet.back().fSpectrogram;
-            spectrogram->SetDirectory(fWriter->GetFile());
-            spectrogram->Write();
-            aSpectrogramSet.pop_back();
-        }
-        return;
-    }
-
-    void KTROOTSpectrogramTypeWriterTransform::ClearASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
-    {
-        while (! aSpectrogramSet.empty())
-        {
-            delete aSpectrogramSet.back().fSpectrogram;
-            aSpectrogramSet.pop_back();
-        }
-        return;
-    }
-
-    void KTROOTSpectrogramTypeWriterTransform::ClearLines()
-    {
-        delete fLineCollection;
-        fLineCollection = NULL;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::OutputSpectrograms()
@@ -74,33 +40,20 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         KTDEBUG("calling output each spectrogram set")
-        OutputASpectrogramSet(fFSPolarSpectrograms);
-        OutputASpectrogramSet(fFSFFTWSpectrograms);
-        OutputASpectrogramSet(fPowerSpectrograms);
-        OutputASpectrogramSet(fPSDSpectrograms);
+        OutputASpectrogramSet(fFSPolarBundle, false);
+        OutputASpectrogramSet(fFSFFTWBundle, false);
+        OutputASpectrogramSet(fPowerBundle, false);
+        OutputASpectrogramSet(fPSDBundle, false);
 
-        KTDEBUG("calling output lines")
-        OutputLines();
-
-        return;
-    }
-
-    void KTROOTSpectrogramTypeWriterTransform::OutputLines()
-    {
-        KTDEBUG("grab file and cd")
-        fWriter->GetFile()->WriteTObject(fLineCollection, "AllLines", "SingleKey");
-        fLineCollection = NULL;
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
     {
-        ClearASpectrogramSet(fFSPolarSpectrograms);
-        ClearASpectrogramSet(fFSFFTWSpectrograms);
-        ClearASpectrogramSet(fPowerSpectrograms);
-        ClearASpectrogramSet(fPSDSpectrograms);
-
-        ClearLines();
+        ClearASpectrogramSet(fFSPolarBundle);
+        ClearASpectrogramSet(fFSFFTWBundle);
+        ClearASpectrogramSet(fPowerBundle);
+        ClearASpectrogramSet(fPSDBundle);
         return;
     }
 
@@ -110,8 +63,6 @@ namespace Katydid
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
-        fWriter->RegisterSlot("proc-track", this, &KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData);
-        fWriter->RegisterSlot("all-lines", this, &KTROOTSpectrogramTypeWriterTransform::TakeLine);
         return;
     }
 
@@ -122,13 +73,13 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
     {
-        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarSpectrograms, "FSPolarSpectrogram_");
+        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarBundle);
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
-        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWSpectrograms, "FSFFTWSpectrogram_");
+        AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWBundle);
         return;
     }
 
@@ -138,52 +89,14 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerSpectrograms, "PowerSpectrogram_");
+        AddPowerSpectrumDataCoreHelper< KTPowerSpectrumData >(data, fPowerBundle);
         return;
     }
 
     void KTROOTSpectrogramTypeWriterTransform::AddPSDData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDSpectrograms, "PSDSpectrogram_");
+        AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDBundle);
         return;
-    }
-
-    //*********************
-    // Processed Track Data
-    //*********************
-
-    void KTROOTSpectrogramTypeWriterTransform::AddProcessedTrackData(Nymph::KTDataPtr data)
-    {
-        KTProcessedTrackData thisTrack = data->Of< KTProcessedTrackData >();
-
-        if( !thisTrack.GetIsCut() )
-        {
-            fWriter->SetMinTime( thisTrack.GetStartTimeInRunC() - fWriter->GetBufferTime() );
-            fWriter->SetMaxTime( thisTrack.GetEndTimeInRunC() + fWriter->GetBufferTime() );
-            fWriter->SetMinFreq( thisTrack.GetStartFrequency() - fWriter->GetBufferFreq() );
-            fWriter->SetMaxFreq( thisTrack.GetEndFrequency() + fWriter->GetBufferFreq() );
-        }
-
-        return;
-    }
-
-
-    void KTROOTSpectrogramTypeWriterTransform::TakeLine(Nymph::KTDataPtr data)
-    {
-        KTProcessedTrackData thisLine = data->Of< KTProcessedTrackData >();
-        
-//        if( thisLine.GetIsCut() )
-//        {
-//            KTINFO("The track is cut! Will not add it to the Line Collection");
-//            return;
-//        }
-
-        if (fLineCollection == NULL)
-        {
-            fLineCollection = new TOrdCollection();
-        }
-        TLine* rootLine = new TLine(thisLine.GetStartTimeInRunC(), thisLine.GetStartFrequency(), thisLine.GetEndTimeInRunC(), thisLine.GetEndFrequency());
-        fLineCollection->Add(rootLine);
     }
 
 } /* namespace Katydid */
