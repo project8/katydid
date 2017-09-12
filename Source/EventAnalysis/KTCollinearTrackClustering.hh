@@ -16,10 +16,7 @@
 #include "KTMemberVariable.hh"
 #include "KTProcessedTrackData.hh"
 
-#include <algorithm>
-#include <set>
 #include <vector>
-#include <list>
 
 
 namespace Katydid
@@ -41,11 +38,11 @@ namespace Katydid
      - "frequency-radius": clustering tolernace in the intercept axis
 
      Slots:
-     - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.
+     - "track": void (KTDataPtr) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.
      - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "track": void (shared_ptr<KTData>) -- Emitted for each group found; Guarantees KTProcessedTrackData.
+     - "track": void (KTDataPtr) -- Emitted for each group found; Guarantees KTProcessedTrackData.
      - "tracks-done": void () -- Emitted when track clustering is complete
     */
 
@@ -83,23 +80,12 @@ namespace Katydid
             std::vector< double > fStartTimes;
             std::vector< int > fGroupingStatuses;
 
-            int fUNGROUPED = 0;
-            int fGROUPED = 1;
-            int fREMOVED = -1;
+            const int fUNGROUPED = 0;
+            const int fGROUPED = 1;
+            const int fREMOVED = -1;
 
-            bool fClusterFlag = false;
-            bool fTerminateFlag = false;
-
-            // Initialize variables for variance and mean
-            double avgQ = 0., varQ = 0.;
-            double avgF = 0., varF = 0.;
-            double totalVariance = 0.;
-
-            // Stuff for finding the worst track
-            double delta = 0., bestDelta = 0.;
-            int worstTrack = -1.;
-
-            double nUngrouped;
+            bool fClusterFlag;
+            bool fTerminateFlag;
 
             std::vector< int > fCluster;
 

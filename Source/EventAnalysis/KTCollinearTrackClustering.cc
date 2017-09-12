@@ -9,16 +9,7 @@
 
 #include "KTLogger.hh"
 
-#include <list>
 #include <vector>
-#include <cmath>
-
-#ifndef NDEBUG
-#include <sstream>
-#endif
-
-using std::list;
-using std::set;
 
 namespace Katydid
 {
@@ -39,6 +30,9 @@ namespace Katydid
             fDoneSignal("tracks-done", this),
             fTakeTrackSlot("track", this, &KTCollinearTrackClustering::TakeTrack)
     {
+        fClusterFlag = false;
+        fTerminateFlag = false;
+
         RegisterSlot("do-clustering", this, &KTCollinearTrackClustering::DoClusteringSlot);
     }
 
@@ -222,19 +216,23 @@ namespace Katydid
     void KTCollinearTrackClustering::FindCluster()
     {
         KTDEBUG(tclog, "Beginning cluster determination");
+        
         // Initialize variables for variance and mean
-        avgQ = 0.;
-        varQ = 0.;
-        avgF = 0.;
-        varF = 0.;
-        totalVariance = 0.;
+        double avgQ = 0.;
+        double varQ = 0.;
+        double avgF = 0.;
+        double varF = 0.;
+        double totalVariance = 0.;
 
         // Stuff for finding the worst track
-        delta = 0.;
-        bestDelta = 0.;
+        double delta = 0.;
+        double bestDelta = 0.;
+        int worstTrack = -1;
 
         // Having nUngrouped will be handy without calling the thing all the time
-        nUngrouped = (double)GetNUngrouped();
+        // Make it a double because I want to divide by it often
+        double nUngrouped = (double)GetNUngrouped();
+
         fCluster.clear();
 
         int nTracks = fSlopes.size();
@@ -259,9 +257,8 @@ namespace Katydid
 
         // Normalize expectation values and compure variances
 
-        avgQ /= nUngrouped;
-        avgF /= nUngrouped;
-
+        avgQ /= (double)nUngrouped;
+        avgF /= (double)nUngrouped;
         for( int i = 0; i < nTracks; ++i )
         {
             // Consider only ungrouped tracks
@@ -270,18 +267,18 @@ namespace Katydid
                 continue;
             }
 
-            varQ += std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i], 2 );
-            varF += std::pow( fIntercepts[i] - avgF, 2 );
+            varQ += (fSlopes[i] - avgQ) * (fSlopes[i] - avgQ) * fTimeLengths[i] * fTimeLengths[i];
+            varF += (fIntercepts[i] - avgF) * (fIntercepts[i] - avgF);
         }
 
-        varQ /= nUngrouped;
-        varF /= nUngrouped;
+        varQ /= (double)nUngrouped;
+        varF /= (double)nUngrouped;
 
         KTDEBUG(tclog, "Slope variance = " << varQ);
         KTDEBUG(tclog, "Frequency variance = " << varF);
 
         // Weighted total variance
-        totalVariance = varQ / std::pow( fSlopeRadius, 2 ) + varF / std::pow( fFrequencyRadius, 2 );
+        totalVariance = varQ / (double)(fSlopeRadius * fSlopeRadius) + varF / (double)(fFrequencyRadius * fFrequencyRadius);
 
         KTINFO(tclog, "Computed total weighted variance = " << totalVariance);
 
@@ -303,10 +300,10 @@ namespace Katydid
                     continue;
                 }
                 
-                // This time maximum delta = best track because minus sign
-                delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) / fFrequencyRadius, 2 ); 
+                // This time minimum delta = best track
+                delta = (fSlopes[i] - avgQ) * (fSlopes[i] - avgQ) * fTimeLengths[i] * fTimeLengths[i] / (double)(fSlopeRadius * fSlopeRadius) + (fIntercepts[i] - avgF) * (fIntercepts[i] - avgF) / (double)(fFrequencyRadius * fFrequencyRadius); 
 
-                // Compare to the current maximum delta
+                // Compare to the current minimum delta
                 if( delta < bestDelta )
                 {
                     bestDelta = delta;
@@ -358,8 +355,8 @@ namespace Katydid
                     }
                     
                     // Maximum delta = worst track
-                    delta = std::pow( (fSlopes[i] - avgQ) * fTimeLengths[i] / fSlopeRadius, 2 ) + std::pow( (fIntercepts[i] - avgF) / fFrequencyRadius, 2 ); 
-                    
+                    delta = (fSlopes[i] - avgQ) * (fSlopes[i] - avgQ) * fTimeLengths[i] * fTimeLengths[i] / (double)(fSlopeRadius * fSlopeRadius) + (fIntercepts[i] - avgF) * (fIntercepts[i] - avgF) / (double)(fFrequencyRadius * fFrequencyRadius); 
+
                     // Compare to the current maximum delta
                     if( delta > bestDelta )
                     {
