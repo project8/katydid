@@ -210,8 +210,8 @@ namespace Katydid
         newData.SetNComponents( 2 );
         newData.SetSlope( data.GetSlope(), 0 );
         newData.SetSlope( data.GetSlope(), 1 );
-        newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 0 );
-        newData.SetTrackDuration( data.GetEndTimeInRunC() - data.GetStartTimeInRunC(), 1 );
+        newData.SetTrackDuration( data.GetTimeLength(), 0 );
+        newData.SetTrackDuration( data.GetTimeLength(), 1 );
 
         // Calculate number of points
         int nPts = pts.GetSetOfPoints(0).size();
@@ -259,8 +259,8 @@ namespace Katydid
         double ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
 
         // We add +1 for the underflow bin
-        int xBinStart = floor( (data.GetStartTimeInRunC() - ps_xmin) / ps_dx ) + 1;
-        int xBinEnd   = floor( (data.GetEndTimeInRunC() - ps_xmin) / ps_dx ) + 1;
+        int xBinStart = floor( (data.GetStartTimeInAcq() - ps_xmin) / ps_dx ) + 1;
+        int xBinEnd   = floor( (data.GetStartTimeInAcq() + data.GetTimeLength() - ps_xmin) / ps_dx ) + 1;
         int xWindow = xBinEnd - xBinStart + 1;
         KTDEBUG(evlog, "Set xBin range to " << xBinStart << ", " << xBinEnd);
 
@@ -488,7 +488,7 @@ namespace Katydid
         for( int peak = 0; peak < fNPeaks; ++peak )
         {
             fit->SetParLimits( 3*peak+2, 0, 1000 );
-            fit->SetParLimits( 3*peak+3, 0, 50000 );
+            fit->SetParLimits( 3*peak+3, -50000, 50000 );
             fit->SetParLimits( 3*peak+4, 0, 100 );
         }
         fit->SetNpx( 1000 );

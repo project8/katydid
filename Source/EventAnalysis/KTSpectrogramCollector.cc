@@ -406,7 +406,7 @@ namespace Katydid
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
-                it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
+                it->second->AddSpectrum( slice.GetTimeInAcq(), &ps );
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );
             }
@@ -420,10 +420,17 @@ namespace Katydid
 
                     // Emit signal
                     KTINFO(evlog, "Finished a track; emitting signal");
+
+                    // Convert start and end times from run to acquistion
+                    it->second->SetStartTime( it->second->GetStartTime() - slice.GetTimeInRun() + slice.GetTimeInAcq() );
+                    it->second->SetEndTime( it->second->GetEndTime() - slice.GetTimeInRun() + slice.GetTimeInAcq() );
+
                     FinishSC( it->first );
                 }
                 else
+                {
                     it->second->SetFilling( false );
+                }
             }
         }
 
