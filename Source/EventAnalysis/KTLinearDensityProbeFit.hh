@@ -74,6 +74,8 @@ namespace Katydid
             anticipated that these results will differ between signal and sideband peaks, in a way which is not necessarily simple.
 
      Available configuration values:
+     - "do-density-maximization": bool -- whether or not to perform the density maximization algorithm
+     - "do-projection-analysis": bool -- whether or not to perform the rotate-and-project analysis
      - "min-frequency": double -- minimum frequency bound for intercept
      - "max-frequency": double -- maximum frequency bound for intercept
      - "probe-width-big": double -- wide value of 's' in the above description, the Gaussian width of the error metric
@@ -81,7 +83,6 @@ namespace Katydid
      - "step-size": double -- increment in the intercept sweep
      - "spectrum-tolerance": double -- 'sigma' in the TSpectrum::Search function; roughly the minimum number of bins which must separate distinct peaks
      - "spectrum-threshold": double -- 'threshold' in the TSpectrum::Search function; peaks with amplitude less than threshold*highest_peak are discarded
-     - "algorithm": unsigned -- specifies which algorithm to use, 1 or 2. Any other value will default to performing both algorithms.
 
      Slots:
      - "thresh-points": void (Nymph::KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData, KTDiscriminatedPoints2DData, and KTPSCollectionData; Adds KTLinearFitResult
