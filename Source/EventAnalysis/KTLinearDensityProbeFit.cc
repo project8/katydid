@@ -207,7 +207,8 @@ namespace Katydid
         unsigned trackComponent = data.GetComponent();
 
         // Set up the KTLinearFitResult object with some data from the track
-        newData.SetNComponents( 2 );
+        newData.SetComponent( data.GetComponent() );
+        newData.SetNFits( 2 );
         newData.SetSlope( data.GetSlope(), 0 );
         newData.SetSlope( data.GetSlope(), 1 );
         newData.SetTrackDuration( data.GetTimeLength(), 0 );

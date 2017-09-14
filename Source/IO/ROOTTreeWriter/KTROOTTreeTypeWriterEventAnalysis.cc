@@ -619,22 +619,22 @@ namespace Katydid
             }
         }
 
-        for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
+        for (fLineFitData.fFitNumber = 0; fLineFitData.fFitNumber < lfData.GetNFits(); fLineFitData.fFitNumber++)
         {
-            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fComponent );
-            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fComponent );
-            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fComponent );
-            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fComponent );
-            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fComponent );
-            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fComponent );
-            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fComponent );
-            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fComponent );
-            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fComponent );
-            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fComponent );
+            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fFitNumber );
+            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fFitNumber );
+            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fFitNumber );
+            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fFitNumber );
+            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fFitNumber );
+            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fFitNumber );
+            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fFitNumber );
+            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fFitNumber );
+            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fFitNumber );
+            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fFitNumber );
 
             fLinearFitResultTree->Fill();
         }
@@ -653,7 +653,7 @@ namespace Katydid
                 KTINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fLinearFitResultTree );
 
-                fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
+                fLinearFitResultTree->SetBranchAddress( "FitNumber", &fLineFitData.fFitNumber );
                 fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
                 fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
                 fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
@@ -681,7 +681,7 @@ namespace Katydid
         }
         fWriter->AddTree( fLinearFitResultTree );
 
-        fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
+        fLinearFitResultTree->Branch( "FitNumber", &fLineFitData.fFitNumber, "fFitNumber/i" );
         fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
         fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
         fLinearFitResultTree->Branch( "StartingFrequency", &fLineFitData.fStartingFrequency, "fStartingFrequency/d" );
