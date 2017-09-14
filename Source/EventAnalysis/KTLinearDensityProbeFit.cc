@@ -168,7 +168,7 @@ namespace Katydid
         double bestAlpha = 0., bestError = 0., error = 0.;
         while( alpha <= fMaxFrequency )
         {
-            error = 0;
+            error = 0.;
 
             // Calculate the associated error to the current value of alpha
             for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
@@ -231,6 +231,12 @@ namespace Katydid
         KTDEBUG(evlog, "Signal candidate intercept = " << intercept2 );
         KTDEBUG(evlog, "Sideband candidate intercept = " << intercept1 );
 
+        if( intercept1 == 0 || intercept2 == 0 )
+        {
+            KTERROR(evlog, "Failed to find a suitable intercept. Perhaps there is a problem with fMin/MaxFrequency or the timestamps of your tracks. Aborting.");
+            return false;
+        }
+
         // Update the result with start frequencies and the separation between intercepts
         newData.SetSidebandSeparation( intercept1 - intercept2, 0 );
         newData.SetSidebandSeparation( intercept1 - intercept2, 1 );
@@ -292,7 +298,7 @@ namespace Katydid
 
             // Unweighted power = sum of raw power spectrum
             unweighted[iSpectrum] = 0;
-            for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow && iBin < it->second->GetNFrequencyBins(); ++iBin )
             {
                 yVal = ps_ymin + ps_dy * (iBin - 1);
 
@@ -315,7 +321,7 @@ namespace Katydid
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
             yBinStart = it->second->FindBin( alphaBoundLower + q_fit * xVal );
 
-            for( int iBin = yBinStart; iBin < yBinStart + yWindow; ++iBin )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow && iBin < it->second->GetNFrequencyBins(); ++iBin )
             {
                 yVal = ps_ymin + ps_dy * (iBin - 1);
 
@@ -658,9 +664,10 @@ namespace Katydid
     bool KTLinearDensityProbeFit::PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component)
     {
         double alpha = fMinFrequency;
-        double bestAlpha = 0;
+        double bestAlpha = 0.;
 
         KTINFO(evlog, "Performing density probe test with fProbeWidth = " << fProbeWidth << " and fStepSize = " << fStepSize);
+
         bestAlpha = FindIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
 
