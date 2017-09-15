@@ -49,6 +49,10 @@
   
 #### Fixes:
 
+* Monarch: updated to v3.4.6
+    * Fixed the string-attribute-length bug.
+    * Validated by testing on an egg file with a long description attribute. File opened and read correctly.
+
 * Consensus Thresholding NaN fix
     * For vertically-aligned points, the CT algorithm would calculate an NaN slope, but the algorithm did not crash. This special case is now handled without calculating a slope.
     * Validated by observing the debug output of the CT processor when processing a data file, and seeing that no NaN or inf values were present.
@@ -57,7 +61,6 @@
     * The reader was not picking up the first record number in the file, which was non-zero for the second file and beyond in a multi-file run.
     * This was fixed by adjusting the variable that tracks that record number immediately after the first record was read.
     * This was validated by analyzing a non-first-file in a multi-file run and seeing that the record number was correct in the debug output.  Run number 3870 was used.
-
 
 
 
