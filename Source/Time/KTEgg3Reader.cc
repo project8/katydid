@@ -223,21 +223,30 @@ namespace Katydid
             if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
             {
                 // Assumed values in fReadState:
-                // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr are at the intended starting position in the run.
+                // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr are at the intended starting offset into the run.
                 //   They may be (0,0), or they may specify some offset into the run.
                 // - fCurrentRecord is 0
+
+                // get the record start offset into the run
+                int startingRecordShift = fReadState.fStartOfLastSliceRecord;
+                // and set the read position
+                readPos = fReadState.fStartOfLastSliceReadPtr;
+                KTINFO(eggreadlog, "Starting offset into the run: record shift = " << startingRecordShift << "; read position = " << readPos);
 
                 KTDEBUG(eggreadlog, "Reading first record");
                 isNewAcquisition = true;
 
                 // if we're at the beginning of the run, load the first record
-                if (! fM3Stream->ReadRecord(fReadState.fStartOfLastSliceRecord))
+                if (! fM3Stream->ReadRecord(startingRecordShift))
                 {
                     KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();
                 }
-                // and set the read position
-                readPos = fReadState.fStartOfLastSliceReadPtr;
+
+                // set fStartOFLastSliceRecord properly, considering that the first record in the file might not be record 0
+                // this has to be done after the first record is read, because Monarch only knows what the first record number is after accessing the records
+                fReadState.fStartOfLastSliceRecord += fM3Stream->GetFirstRecordInFile();
+                KTDEBUG(eggreadlog, "File starts with record " << fReadState.fStartOfLastSliceRecord);
 
                 // the current record is the one we just loaded
                 fReadState.fCurrentRecord = fReadState.fStartOfLastSliceRecord;

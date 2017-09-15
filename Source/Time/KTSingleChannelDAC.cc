@@ -215,7 +215,7 @@ namespace Katydid
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
                 "\tReduced levels: " << params.levels << '\n' <<
-                "\tVoltage range: " << params.v_range << '\n' <<
+                "\tVoltage range: " << params.v_range << "V\n" <<
                 "\tVoltage offset: " << params.v_offset << " V\n" <<
                 "\tDAC gain: " << params.dac_gain << " V\n" <<
                 "\tOversampling bins: " << fOversamplingBins << '\n' <<
