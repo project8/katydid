@@ -19,14 +19,14 @@ namespace Katydid
 
 
 
-    LineRef::LineRef(const double& InitialSlope):
+    LineRef::LineRef(const double& initialSlope):
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
         fEndTimeInRunC(0.0),
         fEndTimeInAcq(0.0),
         fStartFrequency(0.0),
         fEndFrequency(0.0),
-        fInitialSlope(InitialSlope),
+        fInitialSlope(initialSlope),
         fSlope(0.0),
         fNPoints(0),
         fComponent(0),
@@ -44,14 +44,14 @@ namespace Katydid
     LineRef::~LineRef()
     {}
 
-    void LineRef::InsertPoint(const Point& Point)
+    void LineRef::InsertPoint(const Point& point)
     {
         KTDEBUG(seqlog, "Insert point");
-        fTrimmingLimits.push_back(Point.fThreshold); //new_trimming_limits);
-        fAmplitudeList.push_back(Point.fAmplitude);
+        fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
+        fAmplitudeList.push_back(point.fAmplitude);
 
-        LinePoint newPoint(Point.fBinInSlice, Point.fPointFreq, Point.fTimeInAcq, Point.fTimeInRunC, Point.fAmplitude, Point.fThreshold, Point.fAcquisitionID, Point.fComponent);
-        fLinePoints.push_back(newPoint);
+        LinePoint new_point(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
+        fLinePoints.push_back(new_point);
 
         this->UpdateLineParameters();
         this->CalculateSlope();
@@ -194,12 +194,12 @@ namespace Katydid
 
         if (fNPoints > 1)
         {
-            for(std::vector<LinePoint>::iterator PointIt = fLinePoints.begin(); PointIt != fLinePoints.end(); ++PointIt)
+            for(std::vector<LinePoint>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
             {
-                if (PointIt->fPointFreq > fStartFrequency)
+                if (pointIt->fPointFreq > fStartFrequency)
                 {
-                    weightedSlope += (PointIt->fPointFreq - fStartFrequency)/(PointIt->fTimeInAcq - fStartTimeInAcq) * PointIt->fAmplitude;
-                    wSum += PointIt->fAmplitude;
+                    weightedSlope += (pointIt->fPointFreq - fStartFrequency)/(pointIt->fTimeInAcq - fStartTimeInAcq) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
                 }
             }
             fSlope = weightedSlope/wSum;
@@ -210,20 +210,20 @@ namespace Katydid
         }
     }
 
-    void LineRef::LineTrimming(const double& TrimmingFactor, const unsigned& MinPoints)
+    void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
     {
         KTDEBUG(seqlog, "Trimming line edges");
 
         if (!fAmplitudeList.empty())
         {
-            while (fAmplitudeList.back() < TrimmingFactor * fTrimmingLimits.back() and fNPoints >= MinPoints)
+            while (fAmplitudeList.back() < trimmingFactor * fTrimmingLimits.back() and fNPoints >= minPoints)
             {
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fTrimmingLimits.erase(fTrimmingLimits.end() -1);
                 fLinePoints.erase(fLinePoints.end() - 1);
                 fNPoints = fLinePoints.size();
             }
-            while (fAmplitudeList.front() < TrimmingFactor * fTrimmingLimits.front() and fNPoints >= MinPoints)
+            while (fAmplitudeList.front() < trimmingFactor * fTrimmingLimits.front() and fNPoints >= minPoints)
             {
                 fAmplitudeList.erase(fAmplitudeList.begin());
                 fTrimmingLimits.erase(fTrimmingLimits.begin());

@@ -105,9 +105,9 @@ namespace Katydid {
         double fEndFrequencySigma;
 
 
-        LineRef(const double& InitialSlope);
-        void InsertPoint(const Point& Point);
-        void LineTrimming(const double& TrimminFactor, const unsigned& MinPoints);
+        LineRef(const double& initialSlope);
+        void InsertPoint(const Point& point);
+        void LineTrimming(const double& trimminFactor, const unsigned& minPoints);
         void CalculateSlope();
         void UpdateLineParameters();
         void FinishTrack();

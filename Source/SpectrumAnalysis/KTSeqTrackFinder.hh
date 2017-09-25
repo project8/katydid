@@ -1,13 +1,13 @@
 /**
- @file KTSeqTrackFinder.hh
+ @file KTSequentialTrackFinder.hh
  @brief Contains KTSeqTrackFinder
  @details Creates a track
  @author: Christine
  @date: Aug 4, 2017
  */
 
-#ifndef KTSEQTRACKFinder_HH_
-#define KTSEQTRACKFinder_HH_
+#ifndef KTSEQUENTIALTRACKFINDER_HH_
+#define KTSEQUENTIALTRACKFINDER_HH_
 
 #include "KTProcessor.hh"
 #include "KTData.hh"
@@ -71,7 +71,7 @@ namespace Katydid
     */
 
 
-    class KTSeqTrackFinder : public Nymph::KTProcessor
+    class KTSequentialTrackFinder : public Nymph::KTProcessor
     {
 
         private:
@@ -86,8 +86,8 @@ namespace Katydid
             KTGainVariationData fGVData;
 
         public:
-            KTSeqTrackFinder(const std::string& name = "seq-clustering");
-            virtual ~KTSeqTrackFinder();
+            KTSequentialTrackFinder(const std::string& name = "seq-clustering");
+            virtual ~KTSequentialTrackFinder();
 
             bool Configure(const scarab::param_node* node);
             void SetSNRPowerThreshold(double thresh);
@@ -128,11 +128,11 @@ namespace Katydid
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
             bool RunSequentialTrackFinding(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
             bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData);
-            bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& Points, unsigned component);
-            void SearchTrueLinePoint(Point&, std::vector<double>& slice);
-            void WeightedAverage(const std::vector<double>& slice, unsigned& FrequencyBin, double& Frequency);
+            bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
+            void SearchTrueLinePoint(Point& point, std::vector<double>& slice);
+            void WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
-            bool EmitPreCandidate(LineRef Line);
+            bool EmitPreCandidate(LineRef line);
             void AcquisitionIsOver();
 
 
@@ -156,7 +156,7 @@ namespace Katydid
             Nymph::KTSlotDone fDoneSlot;
 
     };
-    inline void KTSeqTrackFinder::SetSNRPowerThreshold(double thresh)
+    inline void KTSequentialTrackFinder::SetSNRPowerThreshold(double thresh)
     {
         fSNRPowerThreshold = thresh;
         fMode = eSNR_Power;
@@ -164,4 +164,4 @@ namespace Katydid
     }
 
 } /* namespace Katydid */
-#endif /* KTSEQTRACKFinder_HH_ */
+#endif /* KTSEQUENTIALTRACKFinder_HH_ */

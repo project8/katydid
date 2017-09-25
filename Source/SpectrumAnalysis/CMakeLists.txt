@@ -14,7 +14,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTHoughTransform.hh
     KTMergeKDTree.hh
     KTNNFilter.hh
-    KTSeqTrackFinder.hh
+    KTSequentialTrackFinder.hh
     KTSpectrumDiscriminator.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
@@ -34,7 +34,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTHoughTransform.cc
     KTMergeKDTree.cc
     KTNNFilter.cc
-    KTSeqTrackFinder.cc
+    KTSequentialTrackFinder.cc
     KTSpectrumDiscriminator.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
