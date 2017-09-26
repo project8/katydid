@@ -50,8 +50,7 @@ namespace Katydid
         fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(point.fAmplitude);
 
-        LinePoint new_point(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
-        fLinePoints.push_back(new_point);
+        fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
 
         this->UpdateLineParameters();
         this->CalculateSlope();
@@ -138,7 +137,7 @@ namespace Katydid
         {
             residual = average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
             chi2min += residual * residual;
-         //   KTDEBUG(seqlog, "Residuals : " << residual );
+        //   KTDEBUG(seqlog, "Residuals : " << residual );
         }
         // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
         double deltaSlope = 0;
@@ -156,32 +155,32 @@ namespace Katydid
                 KTDEBUG(seqlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssError << ")");
                 deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
                 deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
-                    }
-                    else
-                    {
-                        double ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
-                        deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
-                        deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
-                    }
-         //           KTDEBUG(seqlog, "Error calculations results: \n" <<
-         //                   "\tSlope: " << '\t' << deltaSlope << '\n' <<
-         //                   "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
-         //                   "\tCorrelation coefficifent: " << '\t' << rho);
-                    //Calculating error on the starting frequency and the end frequency
-                    double startTime = *std::min_element(timeBinInAcq.begin(), timeBinInAcq.end());
-                    double endTime = *std::max_element(timeBinInAcq.begin(), timeBinInAcq.end());
-                    sigmaStartFreq = sqrt( startTime*startTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * startTime * rho * deltaSlope * deltaIntercept );
-                    sigmaEndFreq = sqrt( endTime*endTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * endTime * rho * deltaSlope * deltaIntercept );
-                }
+            }
+            else
+            {
+                double ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
+                deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
+                deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
+            }
+            //           KTDEBUG(seqlog, "Error calculations results: \n" <<
+            //                   "\tSlope: " << '\t' << deltaSlope << '\n' <<
+            //                   "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
+            //                   "\tCorrelation coefficifent: " << '\t' << rho);
+            //Calculating error on the starting frequency and the end frequency
+            double startTime = *std::min_element(timeBinInAcq.begin(), timeBinInAcq.end());
+            double endTime = *std::max_element(timeBinInAcq.begin(), timeBinInAcq.end());
+            sigmaStartFreq = sqrt( startTime*startTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * startTime * rho * deltaSlope * deltaIntercept );
+            sigmaEndFreq = sqrt( endTime*endTime *  deltaSlope*deltaSlope + deltaIntercept*deltaIntercept + 2 * endTime * rho * deltaSlope * deltaIntercept );
+        }
 
-                // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
+        // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
 
-                //fSlope = slope;
-                fIntercept = intercept;
-                fSlopeSigma = deltaSlope;
-                fInterceptSigma = deltaIntercept;
-                fStartFrequencySigma = sigmaStartFreq;
-                fEndFrequencySigma = sigmaEndFreq;
+        //fSlope = slope;
+        fIntercept = intercept;
+        fSlopeSigma = deltaSlope;
+        fInterceptSigma = deltaIntercept;
+        fStartFrequencySigma = sigmaStartFreq;
+        fEndFrequencySigma = sigmaEndFreq;
 
     }
 

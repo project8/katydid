@@ -16,11 +16,7 @@
 #include "KTMemberVariable.hh"
 #include "KTProcessedTrackData.hh"
 
-#include <algorithm>
-#include <set>
 #include <vector>
-#include <list>
-
 
 namespace Katydid
 {
@@ -83,16 +79,13 @@ namespace Katydid
 
         private:
             bool ExtrapolateClustering();
-            bool DoTheyMatch(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
-            bool DoTheyOverlap(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
-            void CombineTracks(KTProcessedTrackData& Track1, KTProcessedTrackData& Track2);
+            bool DoTheyMatch(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
+            bool DoTheyOverlap(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
+            const void CombineTracks(const KTProcessedTrackData& track1, KTProcessedTrackData& track2);
             bool FindMatchingTracks();
             void EmitTrackCandidates();
-            //void EmitPreCandidatesAsCandidates();
-            void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
+            const void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
 
-            //std::vector< TrackSet > fCompTracks; // input tracks
-            //std::vector< TrackSet> fNewTracks;
 
             std::vector<KTProcessedTrackData> fCompTracks;
             std::vector<KTProcessedTrackData> fNewTracks;

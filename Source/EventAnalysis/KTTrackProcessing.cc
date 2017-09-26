@@ -14,7 +14,6 @@
 #include "KTSmooth.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
-
 #include <limits>
 #include <vector>
 #include <algorithm>

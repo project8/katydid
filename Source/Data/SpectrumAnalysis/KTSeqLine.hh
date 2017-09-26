@@ -8,9 +8,6 @@
 #ifndef KTSEQLINE_HH_
 #define KTSEQLINE_HH_
 
-
-#include "KTFrequencyDomainArray.hh"
-#include "KTPhysicalArray.hh"
 #include "KTMemberVariable.hh"
 //#include "KTSeqTrackCreator.hh"
 
@@ -19,8 +16,6 @@
 #include <vector>
 
 namespace Katydid {
-    KTLOGGER(sllog, "KTSeqLine");
-
 
     // this is a point from a power spectrum slice
     // sorting it will sort it by power
@@ -35,8 +30,8 @@ namespace Katydid {
         uint64_t fAcquisitionID;
         double fComponent;
 
-        Point(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Amplitude, double Threshold, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
-                fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fAmplitude(Amplitude), fThreshold(Threshold), fAcquisitionID(AcqID), fComponent(iComponent) {}
+        Point(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, uint64_t acqID, unsigned iComponent) : fBinInSlice(binInSclice), fPointFreq(pointFreq),
+                fTimeInAcq(timeInAcq), fTimeInRunC(timeInRunC), fAmplitude(amplitude), fThreshold(threshold), fAcquisitionID(acqID), fComponent(iComponent) {}
 
         void Clear();
         bool operator > (const Point& str) const
@@ -62,8 +57,8 @@ namespace Katydid {
         uint64_t fAcquisitionID;
         double fComponent;
 
-        LinePoint(unsigned BinInSclice, double PointFreq, double TimeInAcq, double TimeInRunC, double Amplitude, double Threshold, uint64_t AcqID, unsigned iComponent) : fBinInSlice(BinInSclice), fPointFreq(PointFreq),
-                fTimeInAcq(TimeInAcq), fTimeInRunC(TimeInRunC), fAmplitude(Amplitude), fThreshold(Threshold), fAcquisitionID(AcqID), fComponent(iComponent) {}
+        LinePoint(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, uint64_t acqID, unsigned iComponent) : fBinInSlice(binInSclice), fPointFreq(pointFreq),
+                fTimeInAcq(timeInAcq), fTimeInRunC(timeInRunC), fAmplitude(amplitude), fThreshold(threshold), fAcquisitionID(acqID), fComponent(iComponent) {}
         void Clear();
 
         bool operator > (const Point& str) const

@@ -206,9 +206,9 @@ namespace Katydid
             // filling it with zeros first shouldn't be necessary
             //std::fill(slice.begin(), slice.end(), 0.0);
 
-            double new_timeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
-            double new_timeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
-            KTDEBUG(stflog, "new_TimeInAcq is " << new_timeInAcq);
+            double newTimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
+            double newTimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
+            KTDEBUG(stflog, "new_TimeInAcq is " << newTimeInAcq);
 
 
             // this vector will collect the high power bins in this power slice
@@ -235,7 +235,7 @@ namespace Katydid
                 if (fMode == eSNR_Power and value >= threshold)
                 {
                     double pointFreq = fBinWidth * ((double)iBin + 0.5);
-                    Point newPoint(iBin, pointFreq, new_timeInAcq, new_timeInRunC, value, threshold, acqID, iComponent);
+                    Point newPoint(iBin, pointFreq, newTimeInAcq, newTimeInRunC, value, threshold, acqID, iComponent);
                     points.push_back(newPoint);
                     //KTDEBUG(stflog, "Collected track point candidate");
                 }
@@ -380,7 +380,7 @@ namespace Katydid
             KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
             newTrack.SetComponent( line.fComponent );
             newTrack.SetTrackID(fNLines);
-            fNLines++;
+            ++fNLines;
 
             newTrack.SetStartTimeInRunC( line.fStartTimeInRunC );
             newTrack.SetEndTimeInRunC( line.fEndTimeInRunC );
@@ -430,7 +430,7 @@ namespace Katydid
         double frequency = point.fPointFreq;
         double amplitude = point.fAmplitude;
         unsigned frequencyBin = point.fBinInSlice;
-        double old_frequencyBin;
+        double oldFrequencyBin;
         
 
 
@@ -438,12 +438,12 @@ namespace Katydid
         {
             ++loopCounter;
 
-            old_frequencyBin = frequencyBin;
+            oldFrequencyBin = frequencyBin;
 
             if (frequencyBin > fMinBin + fSearchRadius and frequencyBin < fMaxBin - fSearchRadius)
             {
                 this-> WeightedAverage(slice, frequencyBin, frequency);
-                Delta = std::abs(frequencyBin - old_frequencyBin);
+                Delta = std::abs(frequencyBin - oldFrequencyBin);
             }
             else
             {
@@ -458,7 +458,7 @@ namespace Katydid
         if (frequencyBin > fMinBin + fLinePowerWidth and frequencyBin < fMaxBin - fLinePowerWidth)
         {
             amplitude = 0;
-            for (int iBin = frequencyBin - fLinePowerWidth; iBin <= frequencyBin + fLinePowerWidth; iBin++)
+            for (int iBin = frequencyBin - fLinePowerWidth; iBin <= frequencyBin + fLinePowerWidth; ++iBin)
             {
                 amplitude += slice[iBin];
                 slice.at(iBin)=fPointAmplitudeAfterVisit;
@@ -472,7 +472,7 @@ namespace Katydid
         // Set larger area to zero if possible
         if (frequencyBin > fMinBin + fMinFreqBinDistance and frequencyBin < fMaxBin - fMinFreqBinDistance)
         {
-            for (int iBin = frequencyBin - fMinFreqBinDistance; iBin <= frequencyBin + fMinFreqBinDistance; iBin++)
+            for (int iBin = frequencyBin - fMinFreqBinDistance; iBin <= frequencyBin + fMinFreqBinDistance; ++iBin)
             {
                 slice.at(iBin)=fPointAmplitudeAfterVisit;
             }
@@ -480,7 +480,7 @@ namespace Katydid
         // if point was to close to edge, try again with smaller range
         else if (frequencyBin > fMinBin + fSearchRadius and frequencyBin < fMaxBin - fSearchRadius)
         {
-            for (int iBin = frequencyBin - fSearchRadius; iBin <= frequencyBin + fSearchRadius; iBin++)
+            for (int iBin = frequencyBin - fSearchRadius; iBin <= frequencyBin + fSearchRadius; ++iBin)
             {
                 slice.at(iBin)=fPointAmplitudeAfterVisit;
             }
@@ -496,21 +496,21 @@ namespace Katydid
 
     inline void KTSequentialTrackFinder::WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency)
     {
-        unsigned new_frequencyBin = 0;
-        double new_frequency = 0.0;
+        unsigned newFrequencyBin = 0;
+        double newFrequency = 0.0;
         double weightedBin = 0.0;
         double wSum = 0.0;
 
-        for (int iBin = -1*fSearchRadius; iBin <= fSearchRadius; iBin++)
+        for (int iBin = -1*fSearchRadius; iBin <= fSearchRadius; ++iBin)
         {
             weightedBin += double(frequencyBin+iBin)*slice[frequencyBin+iBin];
             wSum +=slice[frequencyBin+iBin];
         }
-        new_frequencyBin = unsigned(weightedBin/wSum);
-        new_frequency = fBinWidth * ((double)new_frequencyBin + 0.5);
+        newFrequencyBin = unsigned(weightedBin/wSum);
+        newFrequency = fBinWidth * ((double)newFrequencyBin + 0.5);
 
-        frequency = new_frequency;
-        frequencyBin = new_frequencyBin;
+        frequency = newFrequency;
+        frequencyBin = newFrequencyBin;
     }
 
 

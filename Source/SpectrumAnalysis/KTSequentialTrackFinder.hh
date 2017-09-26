@@ -66,7 +66,7 @@ namespace Katydid
      - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "pre-candidate": void (shared_ptr<KTData>) -- Emitted for each line; Guarantees KTMultiPeakTrackData.
+     - "pre-candidate": KTProcessedTrackData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
