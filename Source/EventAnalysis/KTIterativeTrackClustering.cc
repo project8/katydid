@@ -49,14 +49,10 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        if (node->has("time-gap-tolerance"))
-        {
-            SetTimeGapTolerance(node->get_value<double>("time-gap-tolerance"));
-        }
-        if (node->has("frequency-acceptance"))
-        {
-            SetFrequencyAcceptance(node->get_value<double>("frequency-acceptance"));
-        }
+        SetTimeGapTolerance(node->get_value("time-gap-tolerance", GetTimeGapTolerance()));
+
+        SetFrequencyAcceptance(node->get_value("frequency-acceptance", GetFrequencyAcceptance()));
+
         if (node->has("max-track-width"))
         {
             SetMaxTrackWidth(node->get_value<double>("max-track-width"));
@@ -300,7 +296,7 @@ namespace Katydid
     void KTIterativeTrackClustering::EmitTrackCandidates()
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
-        bool lineIsTrack true;
+        bool lineIsTrack = true;
         KTINFO(itclog, "Clustering done.");
 
         std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();

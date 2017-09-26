@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <cmath>
-
+#include <algorithm>
 
 namespace Katydid
 {
