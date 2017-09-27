@@ -90,7 +90,6 @@ namespace Katydid
             virtual ~KTSequentialTrackFinder();
 
             bool Configure(const scarab::param_node* node);
-            void SetSNRPowerThreshold(double thresh);
 
         public:
             MEMBERVARIABLE(ThresholdMode, Mode);
@@ -157,12 +156,6 @@ namespace Katydid
             Nymph::KTSlotDone fDoneSlot;
 
     };
-    inline void KTSequentialTrackFinder::SetSNRPowerThreshold(double thresh)
-    {
-        fSNRPowerThreshold = thresh;
-        fMode = eSNR_Power;
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTSEQUENTIALTRACKFinder_HH_ */

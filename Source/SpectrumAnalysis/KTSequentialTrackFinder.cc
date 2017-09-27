@@ -31,7 +31,7 @@ namespace Katydid
             fLinePowerWidth(4),
             fPointAmplitudeAfterVisit(0),
             fMinFreqBinDistance(10),
-            fTimeGapTolerance(0.5*pow(10,-3)),
+            fTimeGapTolerance(0.0005),
             fFrequencyAcceptance(56166.0528183),
             fSNRPowerThreshold(6.),
             fSearchRadius(6),
