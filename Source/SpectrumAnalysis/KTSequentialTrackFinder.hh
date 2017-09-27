@@ -82,7 +82,7 @@ namespace Katydid
                 eSNR_Power,
                 eSigma
             };
-            double fSNRPowerThreshold;
+
             KTGainVariationData fGVData;
 
         public:
@@ -100,6 +100,7 @@ namespace Katydid
             MEMBERVARIABLE(int, MinFreqBinDistance);
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
+            MEMBERVARIABLE(double, SNRPowerThreshold);
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
             MEMBERVARIABLE(unsigned, MinPoints);

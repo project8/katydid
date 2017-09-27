@@ -50,7 +50,6 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetTimeGapTolerance(node->get_value("time-gap-tolerance", GetTimeGapTolerance()));
-
         SetFrequencyAcceptance(node->get_value("frequency-acceptance", GetFrequencyAcceptance()));
 
         if (node->has("max-track-width"))
@@ -59,19 +58,13 @@ namespace Katydid
         }
         if (node->has("apply-power-cut"))
         {
-            SetApplyPowerCut(node->get_value<bool>("apply-power-cut"));
+            SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
+            SetPowerThreshold(node->get_value("power-threshold", GetPowerThreshold()));
         }
         if (node->has("apply-power-density-cut"))
         {
-            SetApplyDensityCut(node->get_value<bool>("apply-power-density-cut"));
-        }
-        if (node->has("power-threshold"))
-        {
-            SetPowerThreshold(node->get_value<double>("power-threshold"));
-        }
-        if (node->has("power-density-threshold"))
-        {
-            SetDensityThreshold(node->get_value<double>("power-density-threshold"));
+            SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
+            SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
         }
 
         return true;

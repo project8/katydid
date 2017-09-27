@@ -27,16 +27,16 @@ namespace Katydid
     KTSequentialTrackFinder::KTSequentialTrackFinder(const std::string& name) :
             KTProcessor(name),
             fMode(eSNR_Power),
-            fTrimmingFactor(19.8),
+            fTrimmingFactor(3.2),
             fLinePowerWidth(4),
             fPointAmplitudeAfterVisit(0),
             fMinFreqBinDistance(10),
             fTimeGapTolerance(0.5*pow(10,-3)),
             fFrequencyAcceptance(56166.0528183),
+            fSNRPowerThreshold(6.),
             fSearchRadius(6),
             fConvergeDelta(1.5),
-            fSNRPowerThreshold(6.),
-            fMinPoints(2),
+            fMinPoints(3),
             fMinSlope(0.0),
             fInitialSlope(3.0*pow(10,8)),
             fMinBin(0),
@@ -69,20 +69,28 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        //SetSNRPowerThreshold(node->get_value("snr-threshold-power", GetSNRPowerThreshold()));
+        SetSNRPowerThreshold(node->get_value("snr-threshold-power", GetSNRPowerThreshold()));
+        SetTrimmingFactor(node->get_value("trimming-factor", GetTrimmingFactor()));
+        SetLinePowerWidth(node->get_value("half-line-width", GetLinePowerWidth()));
+        SetTimeGapTolerance(node->get_value("time-gap-tolerance", GetTimeGapTolerance()));
+        SetFrequencyAcceptance(node->get_value("frequency-acceptance", GetFrequencyAcceptance()));
+        SetInitialSlope(node->get_value("initial-slope", GetInitialSlope()));
+        SetMinPoints(node->get_value("min-points", GetMinPoints()));
+        SetMinSlope(node->get_value("min-slope", GetMinSlope()));
 
-        if (node->has("snr-threshold-power"))
-        {
-            SetSNRPowerThreshold(node->get_value< double >("snr-threshold-power"));
-        }
+        SetMinFrequency(node->get_value("min-frequency", GetMinFrequency()));
+        SetMaxFrequency(node->get_value("max-frequency", GetMaxFrequency()));
 
-        if (node->has("min-frequency"))
+
+        if (node->has("apply-power-cut"))
         {
-        	SetMinFrequency(node->get_value< double >("min-frequency"));
+            SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
+            SetPowerThreshold(node->get_value("power-threshold", GetPowerThreshold()));
         }
-        if (node->has("max-frequency"))
+        if (node->has("apply-power-density-cut"))
         {
-        	SetMaxFrequency(node->get_value< double >("max-frequency"));
+            SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
+            SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
         }
         if (node->has("min-bin"))
         {
@@ -93,18 +101,6 @@ namespace Katydid
         {
             SetMaxBin(node->get_value< unsigned >("max-bin"));
             SetCalculateMaxBin(false);
-        }
-        if (node->has("trimming-factor"))
-        {
-            SetTrimmingFactor(node->get_value<double>("trimming-factor"));
-        }
-        if (node->has("half-line-width"))
-        {
-            SetLinePowerWidth(node->get_value<unsigned>("half-line-width"));
-        }
-        if (node->has("time-gap-tolerance"))
-        {
-            SetTimeGapTolerance(node->get_value<double>("time-gap-tolerance"));
         }
         if (node->has("minimum-line-bin-distance"))
 		{
@@ -118,38 +114,7 @@ namespace Katydid
         {
             SetConvergeDelta(node->get_value<int>("converge_delta"));
         }
-        if (node->has("frequency-acceptance"))
-        {
-            SetFrequencyAcceptance(node->get_value<double>("frequency-acceptance"));
-        }
-        if (node->has("initial-slope"))
-        {
-            SetInitialSlope(node->get_value<double>("initial-slope"));
-        }
-        if (node->has("min-points"))
-        {
-            SetMinPoints(node->get_value<int>("min-points"));
-        }
-        if (node->has("min-slope"))
-        {
-            SetMinSlope(node->get_value<int>("min-slope"));
-        }
-        if (node->has("apply-power-cut"))
-        {
-            SetApplyPowerCut(node->get_value<bool>("apply-power-cut"));
-        }
-        if (node->has("apply-point-density-cut"))
-        {
-            SetApplyDensityCut(node->get_value<bool>("apply-point-density-cut"));
-        }
-        if (node->has("power-threshold"))
-        {
-            SetPowerThreshold(node->get_value<double>("power-threshold"));
-        }
-        if (node->has("point-density-threshold"))
-        {
-            SetDensityThreshold(node->get_value<double>("point-density-threshold"));
-        }
+
 
 
         return true;
@@ -311,11 +276,11 @@ namespace Katydid
                     // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
                     if (lineIt->fEndTimeInRunC<pointIt->fTimeInRunC-fTimeGapTolerance)
                     {
-                        if (lineIt->fNPoints > fMinPoints)
+                        if (lineIt->fNPoints >= fMinPoints)
                         {
                             lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
 
-                            if (lineIt->fNPoints > fMinPoints and lineIt->fSlope > fMinSlope)
+                            if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
                             {
                                 KTINFO(stflog, "Found track candidate");
                                 this->EmitPreCandidate(*lineIt);
@@ -525,7 +490,7 @@ namespace Katydid
             {
                 lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
 
-                if (lineIt->fNPoints > fMinPoints and lineIt->fSlope > fMinSlope)
+                if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
                 {
                     this->EmitPreCandidate(*lineIt);
                 }

@@ -26,7 +26,7 @@ namespace Katydid
 
     KTOverlappingTrackClustering::KTOverlappingTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
-            fMaxTrackWidth(185000.),
+            fMaxTrackWidth(200000.),
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
@@ -55,21 +55,14 @@ namespace Katydid
         }
         if (node->has("apply-power-cut"))
         {
-            SetApplyPowerCut(node->get_value<bool>("apply-power-cut"));
+            SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
+            SetPowerThreshold(node->get_value("power-threshold", GetPowerThreshold()));
         }
         if (node->has("apply-power-density-cut"))
         {
-            SetApplyDensityCut(node->get_value<bool>("apply-power-density-cut"));
+            SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
+            SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
         }
-        if (node->has("power-threshold"))
-        {
-            SetPowerThreshold(node->get_value<double>("power-threshold"));
-        }
-        if (node->has("power-density-threshold"))
-        {
-            SetDensityThreshold(node->get_value<double>("power-density-threshold"));
-        }
-
         return true;
     }
 
