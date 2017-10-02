@@ -49,6 +49,8 @@
   
 #### Fixes:
 
+* Egg3 reader: Fixeed filling of frequencies (min/max/center)
+
 * Monarch: updated to v3.4.6
     * Fixed the string-attribute-length bug.
     * Validated by testing on an egg file with a long description attribute. File opened and read correctly.
