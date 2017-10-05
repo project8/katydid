@@ -20,6 +20,7 @@
 #include "KTGainVariationData.hh"
 #include "KTSeqLine.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTDiscriminatedPoints1DData.hh"
 
 #include <iostream>
 #include <set>
@@ -126,11 +127,17 @@ namespace Katydid
 
         public:
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
-            bool RunSequentialTrackFinding(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
-            bool PointLineAssignment(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTGainVariationData& gvData);
+            bool CollectPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTGainVariationData& gvData);
+            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
             bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
+
             void SearchTrueLinePoint(Point& point, std::vector<double>& slice);
+            void SearchTrueLinePoint(Point& point, KTPowerSpectrum& slice);
             void WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency);
+            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef line);
             void AcquisitionIsOver();
@@ -153,6 +160,7 @@ namespace Katydid
             //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
             Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
             Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
+            Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimSlot;
             Nymph::KTSlotDone fDoneSlot;
 
     };
