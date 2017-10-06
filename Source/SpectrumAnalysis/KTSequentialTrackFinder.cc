@@ -283,7 +283,7 @@ namespace Katydid
 
              // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
              // To prevent that in the next iteration the point gets re-found and added to another line the amplitude of the point is reassigned here
-             pointIt->fAmplitude = slice[pointIt->fBinInSlice];
+             pointIt->fAmplitude = slice(pointIt->fBinInSlice);
 
              if (pointIt->fAmplitude == 0.0)
              {
@@ -569,9 +569,9 @@ namespace Katydid
             amplitude = 0;
             for (int iBin = frequencyBin - fLinePowerWidth; iBin <= frequencyBin + fLinePowerWidth; ++iBin)
             {
-                amplitude += slice[iBin];
+                amplitude += slice(iBin);
                 KTDEBUG(stflog, "slice before: "<<slice[iBin]);
-                slice[iBin]=fPointAmplitudeAfterVisit;
+                slice(iBin)=fPointAmplitudeAfterVisit;
                 KTDEBUG(stflog, "slice after: "<<slice[iBin]);
             }
         }
@@ -585,7 +585,7 @@ namespace Katydid
         {
             for (int iBin = frequencyBin - fMinFreqBinDistance; iBin <= frequencyBin + fMinFreqBinDistance; ++iBin)
             {
-                slice[iBin]=fPointAmplitudeAfterVisit;
+                slice(iBin)=fPointAmplitudeAfterVisit;
             }
         }
         // if point was to close to edge, try again with smaller range
@@ -705,7 +705,7 @@ namespace Katydid
         for (int iBin = -1*fSearchRadius; iBin <= fSearchRadius; ++iBin)
         {
             weightedBin += double(frequencyBin+iBin)*slice[frequencyBin+iBin];
-            wSum +=slice[frequencyBin+iBin];
+            wSum +=slice(frequencyBin+iBin);
         }
         newFrequencyBin = unsigned(weightedBin/wSum);
         newFrequency = fBinWidth * ((double)newFrequencyBin + 0.5);
