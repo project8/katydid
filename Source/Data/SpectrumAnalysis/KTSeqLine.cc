@@ -46,7 +46,6 @@ namespace Katydid
 
     void LineRef::InsertPoint(const Point& point)
     {
-        KTDEBUG(seqlog, "Insert point");
         fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(point.fAmplitude);
 

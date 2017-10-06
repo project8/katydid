@@ -242,6 +242,7 @@ namespace Katydid
             double freqMin = powerSpectrum.GetBinLowEdge(fMinBin);
             double freqMax = powerSpectrum.GetBinLowEdge(fMaxBin) + powerSpectrum.GetBinWidth();
 
+            fBinWidth = powerSpectrum.GetBinWidth();
 
             double newTimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
             double newTimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
@@ -254,7 +255,7 @@ namespace Katydid
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
             {
-                KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum[pIt->first] <<", threshold = "<<pIt->second.fThreshold);
+                //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
                 Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, acqID, iComponent);
                 points.push_back(newPoint);
             }
@@ -297,7 +298,6 @@ namespace Katydid
                  this->SearchTrueLinePoint(*pointIt, slice);
                  newFreq = pointIt->fPointFreq;
              }
-
 
              if (newFreq == 0.0 or pointIt->fAmplitude==0.0)
              {
@@ -570,16 +570,15 @@ namespace Katydid
             for (int iBin = frequencyBin - fLinePowerWidth; iBin <= frequencyBin + fLinePowerWidth; ++iBin)
             {
                 amplitude += slice(iBin);
-                KTDEBUG(stflog, "slice before: "<<slice[iBin]);
-                slice(iBin)=fPointAmplitudeAfterVisit;
-                KTDEBUG(stflog, "slice after: "<<slice[iBin]);
+                slice(iBin) = fPointAmplitudeAfterVisit;
             }
         }
         else
         {
-            amplitude = slice[frequencyBin];
-            slice[frequencyBin]=fPointAmplitudeAfterVisit;
+            amplitude = slice(frequencyBin);
+            slice(frequencyBin) = fPointAmplitudeAfterVisit;
         }
+
         // Set larger area to zero if possible
         if (frequencyBin > fMinBin + fMinFreqBinDistance and frequencyBin < fMaxBin - fMinFreqBinDistance)
         {
@@ -593,7 +592,7 @@ namespace Katydid
         {
             for (int iBin = frequencyBin - fSearchRadius; iBin <= frequencyBin + fSearchRadius; ++iBin)
             {
-                slice[iBin]=fPointAmplitudeAfterVisit;
+                slice(iBin) = fPointAmplitudeAfterVisit;
             }
         }
 
@@ -704,7 +703,7 @@ namespace Katydid
 
         for (int iBin = -1*fSearchRadius; iBin <= fSearchRadius; ++iBin)
         {
-            weightedBin += double(frequencyBin+iBin)*slice[frequencyBin+iBin];
+            weightedBin += double(frequencyBin+iBin)*slice(frequencyBin+iBin);
             wSum +=slice(frequencyBin+iBin);
         }
         newFrequencyBin = unsigned(weightedBin/wSum);
@@ -712,6 +711,7 @@ namespace Katydid
 
         frequency = newFrequency;
         frequencyBin = newFrequencyBin;
+
     }
 
 
