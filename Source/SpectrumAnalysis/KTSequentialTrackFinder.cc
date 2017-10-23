@@ -158,22 +158,16 @@ namespace Katydid
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             uint64_t acqID = slHeader.GetAcquisitionID(iComponent);
-            const KTPowerSpectrum* powerSpectrum=spectrum.GetSpectrum(iComponent);
+            KTPowerSpectrum powerSpectrum= *spectrum.GetSpectrum(iComponent);
             KTSpline* spline = fGVData.GetSpline(iComponent);
 
             unsigned nBins = fMaxBin - fMinBin + 1;
-            double freqMin = powerSpectrum->GetBinLowEdge(fMinBin);
-            double freqMax = powerSpectrum->GetBinLowEdge(fMaxBin) + powerSpectrum->GetBinWidth();
+            double freqMin = powerSpectrum.GetBinLowEdge(fMinBin);
+            double freqMax = powerSpectrum.GetBinLowEdge(fMaxBin) + powerSpectrum->GetBinWidth();
             KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
 
-            fBinWidth = powerSpectrum->GetBinWidth();
-
-            // this will be the deepcopy of the power spectrum slice
-            std::vector< double > slice(fMaxBin +1);
-            
-            // filling it with zeros first shouldn't be necessary
-            //std::fill(slice.begin(), slice.end(), 0.0);
+            fBinWidth = powerSpectrum.GetBinWidth();
 
             double newTimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
             double newTimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
@@ -189,16 +183,13 @@ namespace Katydid
             KTDEBUG(stflog, "Collecting high power bins");
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*powerSpectrum)(iBin);
-                slice.at(iBin) = value;
-                //new_TrimmingLimits += value;
-                double threshold = fSNRPowerThreshold * (*splineImp)(iBin - fMinBin);
+               double threshold = fSNRPowerThreshold * (*splineImp)(iBin - fMinBin);
 
                 // currently this is the only implemented mode
                 if (fMode == eSNR_Power and value >= threshold)
                 {
                     double pointFreq = fBinWidth * ((double)iBin + 0.5);
-                    Point newPoint(iBin, pointFreq, newTimeInAcq, newTimeInRunC, value, threshold, acqID, iComponent);
+                    Point newPoint(iBin, pointFreq, newTimeInAcq, newTimeInRunC, powerSpectrum(iBin), threshold, acqID, iComponent);
                     points.push_back(newPoint);
                     //KTDEBUG(stflog, "Collected track point candidate");
                 }
@@ -209,7 +200,7 @@ namespace Katydid
             std::sort(points.begin(), points.end(),std::less<Point>());
 
             // Loop over the high power points
-            this->LoopOverHighPowerPoints(slice, points, iComponent);
+            this->LoopOverHighPowerPoints(powerSpectrum, points, iComponent);
 
         }
         return true;
@@ -365,7 +356,7 @@ namespace Katydid
          return true;
      }
 
-
+/*
     bool KTSequentialTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component)
     {
         KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
@@ -461,7 +452,7 @@ namespace Katydid
     	}
     	return true;
     }
-
+*/
     bool KTSequentialTrackFinder::EmitPreCandidate(LineRef line)
     {
         bool lineIsTrack = true;
@@ -533,7 +524,6 @@ namespace Katydid
     {
         double Delta = fConvergeDelta + 1.0;
         unsigned loopCounter = 0;
-        double dF = fBinWidth;
         int maxIterations = 10;
 
         double frequency = point.fPointFreq;
@@ -601,12 +591,11 @@ namespace Katydid
         point.fPointFreq = frequency;
         point.fAmplitude = amplitude;
     }
-
+/*
     void KTSequentialTrackFinder::SearchTrueLinePoint(Point& point, std::vector<double>& slice)
         {
             double Delta = fConvergeDelta + 1.0;
             unsigned loopCounter = 0;
-            double dF = fBinWidth;
             int maxIterations = 10;
 
             double frequency = point.fPointFreq;
@@ -673,8 +662,8 @@ namespace Katydid
             point.fPointFreq = frequency;
             point.fAmplitude = amplitude;
         }
-
-
+*/
+/*
     inline void KTSequentialTrackFinder::WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency)
     {
         unsigned newFrequencyBin = 0;
@@ -693,7 +682,7 @@ namespace Katydid
         frequency = newFrequency;
         frequencyBin = newFrequencyBin;
     }
-
+*/
     inline void KTSequentialTrackFinder::WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency)
     {
         unsigned newFrequencyBin = 0;
