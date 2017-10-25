@@ -47,6 +47,7 @@ namespace Katydid
                 TH2D* fSpectrogram;
                 unsigned fFirstFreqBin; // frequency-axis bin 0 is this bin in the incoming data
                 unsigned fLastFreqBin; // frequency-axis last-bin is this bin in the incoming data
+                TH2D* fSpectrogram_phase;
             };
 
             struct DataTypeBundle

@@ -253,12 +253,23 @@ namespace Katydid
                 stringstream conv;
                 conv << "_" << dataBundle.fHistCount << "_" << iComponent;
                 string histName = dataBundle.fHistNameBase + conv.str();
+                string histName_phase = dataBundle.fHistNameBase + conv.str() + "_phase";
+
                 KTWARN(publog, "Creating histogram called <" << histName << ">");
                 KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << dataBundle.fNTimeBins << ", " << dataBundle.fTimeAxisMin << ", " << dataBundle.fTimeAxisMax << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
                 sdIt->fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", dataBundle.fNTimeBins, dataBundle.fTimeAxisMin, dataBundle.fTimeAxisMax, nFreqBins, startFreq, endFreq );
                 sdIt->fSpectrogram->SetXTitle("Time (s)");
                 sdIt->fSpectrogram->SetYTitle(axis.GetAxisLabel().c_str());
                 sdIt->fSpectrogram->SetZTitle(data.GetArray(iComponent)->GetOrdinateLabel().c_str());
+
+                //repeat (hack) but now for phase instead of power (same axes)
+                
+                KTWARN(publog, "Creating histogram called <" << histName << "_phase>");
+                KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << "_phase, " << dataBundle.fNTimeBins << ", " << dataBundle.fTimeAxisMin << ", " << dataBundle.fTimeAxisMax << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
+                sdIt->fSpectrogram_phase = new TH2D(histName_phase.c_str(), "Spectrogram_Phase", dataBundle.fNTimeBins, dataBundle.fTimeAxisMin, dataBundle.fTimeAxisMax, nFreqBins, startFreq, endFreq );
+                sdIt->fSpectrogram_phase->SetXTitle("Time (s)");
+                sdIt->fSpectrogram_phase->SetYTitle(axis.GetAxisLabel().c_str());
+                sdIt->fSpectrogram_phase->SetZTitle(data.GetArray(iComponent)->GetOrdinateLabel().c_str());
             }
 
         } // end if had to resize vector of histograms
@@ -298,8 +309,10 @@ namespace Katydid
     {
         // this function does not check the root file; it's assumed to be opened and verified already
         KTDEBUG(publog, "Outputting a spectrogram set; cloning? " << cloneSpectrograms);
+        KTDEBUG(publog, "WHAAAAAAAAAAAA");
         for (auto spectIt = dataBundle.fSpectrograms.begin(); spectIt != dataBundle.fSpectrograms.end(); ++spectIt)
         {
+            KTDEBUG(publog, "WHAAAAAAAAAAAA");
             TH2D* spectrogram = spectIt->fSpectrogram;
             KTWARN(publog, "Writing histogram <" << spectrogram->GetName() << ">");
             if (cloneSpectrograms)
@@ -314,6 +327,23 @@ namespace Katydid
             }
             spectrogram->SetDirectory(fWriter->GetFile());
             spectrogram->Write();
+
+            
+            TH2D* spectrogram_phase = spectIt->fSpectrogram_phase;
+            KTWARN(publog, "Writing histogram <" << spectrogram_phase->GetName() << ">");
+            if (cloneSpectrograms)
+            {
+                spectIt->fSpectrogram_phase = new TH2D();
+                spectrogram_phase->Copy(*spectIt->fSpectrogram_phase);
+                spectIt->fSpectrogram_phase->Reset();
+                stringstream conv;
+                conv << "_" << dataBundle.fHistCount << "_" << spectIt - dataBundle.fSpectrograms.begin();
+                string histName_phase = dataBundle.fHistNameBase + conv.str() + "_phase";
+                spectIt->fSpectrogram_phase->SetName(histName_phase.c_str());
+            }
+            spectrogram_phase->SetDirectory(fWriter->GetFile());
+            spectrogram_phase->Write();
+            
         }
 
         if (! cloneSpectrograms) dataBundle.fSpectrograms.clear();
