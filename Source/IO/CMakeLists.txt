@@ -55,6 +55,7 @@ if (ROOT_FOUND)
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.hh
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.hh
         MultiSliceROOTWriter/KTMultiSliceROOTWriter.hh
+        ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterEventAnalysis.hh
         ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.hh
         ROOTSpectrogramWriter/KTROOTSpectrogramWriter.hh
         ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.hh
@@ -85,6 +86,7 @@ if (ROOT_FOUND)
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTime.cc
         MultiSliceROOTWriter/KTMultiSliceROOTTypeWriterTransform.cc
         MultiSliceROOTWriter/KTMultiSliceROOTWriter.cc
+        ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterEventAnalysis.cc
         ROOTSpectrogramWriter/KTROOTSpectrogramTypeWriterTransform.cc
         ROOTSpectrogramWriter/KTROOTSpectrogramWriter.cc
         ROOTTreeWriter/KTROOTTreeTypeWriterSpectrumAnalysis.cc

@@ -8,6 +8,7 @@
 #include "KTCreateKDTree.hh"
 
 #include "KTDiscriminatedPoints1DData.hh"
+#include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
@@ -32,6 +33,8 @@ namespace Katydid
             fMaxLeafSize(10),
             fTimeRadius(1.),
             fFreqRadius(1.),
+            fTimeRadiusAlreadySet(false),
+            fFreqRadiusAlreadySet(false),
             fDataPtr(new Nymph::KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
             fSliceInWindowCount(0),
@@ -40,6 +43,7 @@ namespace Katydid
             fHaveNewData(false),
             fKDTreeSignal("kd-tree", this),
             fDoneSignal("done", this),
+            fHeaderSlot("header", this, &KTCreateKDTree::ReconfigureWithHeader),
             fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints),
             fSWFCAndPTSlot("swfc-and-track", this, &KTCreateKDTree::AddPoints),
             fSWFCSlot("swfc", this, &KTCreateKDTree::AddPoints),
@@ -78,9 +82,18 @@ namespace Katydid
 
         SetMaxLeafSize(node->get_value("max-leaf-size", GetMaxLeafSize()));
 
-        SetTimeRadius(node->get_value("time-radius", GetTimeRadius()));
-        SetFreqRadius(node->get_value("freq-radius", GetFreqRadius()));
+        if (node->has("time-radius")) SetTimeRadius(node->get_value< double >("time-radius"), true);
+        if (node->has("freq-radius")) SetFreqRadius(node->get_value< double >("freq-radius"), true);
 
+        return true;
+    }
+
+    bool KTCreateKDTree::ReconfigureWithHeader(KTEggHeader& header)
+    {
+        KTChannelHeader* chanHeader = header.GetChannelHeader(0);
+        SetTimeRadius(chanHeader->GetRawSliceSize() / header.GetAcquisitionRate());
+        SetFreqRadius(1. / GetTimeRadius());
+        KTDEBUG(kdlog, "Reconfiguring with header: time radius = " << GetTimeRadius() << "; freq radius = " << GetFreqRadius());
         return true;
     }
 

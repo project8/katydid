@@ -159,10 +159,6 @@ namespace Katydid
         fRecordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
-        fHeader.SetMinimumFrequency(0.0);
-        fHeader.SetMaximumFrequency(fHeader.GetAcquisitionRate()/2.0);
-        fHeader.SetCenterFrequency((fHeader.GetMaximumFrequency() - fHeader.GetMinimumFrequency())/2.0);
-
         // by default, start the read state at the beginning of the run
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fStartOfLastSliceRecord = 0;
@@ -223,21 +219,30 @@ namespace Katydid
             if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
             {
                 // Assumed values in fReadState:
-                // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr are at the intended starting position in the run.
+                // - fStartOfLastSliceRecord and fStartOfLastSliceReadPtr are at the intended starting offset into the run.
                 //   They may be (0,0), or they may specify some offset into the run.
                 // - fCurrentRecord is 0
+
+                // get the record start offset into the run
+                int startingRecordShift = fReadState.fStartOfLastSliceRecord;
+                // and set the read position
+                readPos = fReadState.fStartOfLastSliceReadPtr;
+                KTINFO(eggreadlog, "Starting offset into the run: record shift = " << startingRecordShift << "; read position = " << readPos);
 
                 KTDEBUG(eggreadlog, "Reading first record");
                 isNewAcquisition = true;
 
                 // if we're at the beginning of the run, load the first record
-                if (! fM3Stream->ReadRecord(fReadState.fStartOfLastSliceRecord))
+                if (! fM3Stream->ReadRecord(startingRecordShift))
                 {
                     KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();
                 }
-                // and set the read position
-                readPos = fReadState.fStartOfLastSliceReadPtr;
+
+                // set fStartOFLastSliceRecord properly, considering that the first record in the file might not be record 0
+                // this has to be done after the first record is read, because Monarch only knows what the first record number is after accessing the records
+                fReadState.fStartOfLastSliceRecord += fM3Stream->GetFirstRecordInFile();
+                KTDEBUG(eggreadlog, "File starts with record " << fReadState.fStartOfLastSliceRecord);
 
                 // the current record is the one we just loaded
                 fReadState.fCurrentRecord = fReadState.fStartOfLastSliceRecord;
@@ -583,6 +588,11 @@ namespace Katydid
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());
 
+        // NOTE: the egg header has fields for the min, max, and center frequencies
+        //       these don't really make sense for the file-wide header
+        //       the values are pulled from the first channel found
+        bool haveSetHeaderFreqs = false;
+
         fHeader.SetNChannels(fM3StreamHeader->GetNChannels());
         unsigned streamNum = fM3StreamHeader->GetNumber();
         unsigned iChanInKatydid = 0;
@@ -594,6 +604,14 @@ namespace Katydid
                 KTDEBUG(eggreadlog, "Adding channel " << iChanInFile << " in the egg file");
                 const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
                 KTChannelHeader* newChanHeader = new KTChannelHeader();
+                if (! haveSetHeaderFreqs)
+                {
+                    // NOTE: here we assume that channel's center frequency and frequency width are valid for the whole egg file
+                    fHeader.SetMinimumFrequency(channelHeader.GetFrequencyMin());
+                    fHeader.SetMaximumFrequency(channelHeader.GetFrequencyMin() + channelHeader.GetFrequencyRange());
+                    fHeader.SetCenterFrequency(0.5 * (fHeader.GetMaximumFrequency() - fHeader.GetMinimumFrequency()));
+                    haveSetHeaderFreqs = false;
+                }
                 newChanHeader->SetNumber(iChanInKatydid);
                 newChanHeader->SetSource(channelHeader.GetSource());
                 newChanHeader->SetRawSliceSize(fSliceSize);
