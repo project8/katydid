@@ -309,10 +309,8 @@ namespace Katydid
     {
         // this function does not check the root file; it's assumed to be opened and verified already
         KTDEBUG(publog, "Outputting a spectrogram set; cloning? " << cloneSpectrograms);
-        KTDEBUG(publog, "WHAAAAAAAAAAAA");
         for (auto spectIt = dataBundle.fSpectrograms.begin(); spectIt != dataBundle.fSpectrograms.end(); ++spectIt)
         {
-            KTDEBUG(publog, "WHAAAAAAAAAAAA");
             TH2D* spectrogram = spectIt->fSpectrogram;
             KTWARN(publog, "Writing histogram <" << spectrogram->GetName() << ">");
             if (cloneSpectrograms)
