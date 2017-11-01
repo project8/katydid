@@ -41,6 +41,16 @@
 
 #### New Features:
 
+  
+#### Fixes:
+
+
+### Version: 2.7.2
+
+#### Release Date: October 2, 2017
+
+#### New Features:
+
 * ROOT Spectrogram Writer: sequential writing mode
     * A new mode of writing was added to the writer that writes sequential spectrograms of a given time size.
     * Documentation is included in the KTROOTSpectrogramWriter header documentation.
@@ -48,6 +58,12 @@
     * The old writing mode ("single") continued to function in the same way.
   
 #### Fixes:
+
+* Egg3 reader: Fixeed filling of frequencies (min/max/center)
+
+* Monarch: updated to v3.4.6
+    * Fixed the string-attribute-length bug.
+    * Validated by testing on an egg file with a long description attribute. File opened and read correctly.
 
 * Consensus Thresholding NaN fix
     * For vertically-aligned points, the CT algorithm would calculate an NaN slope, but the algorithm did not crash. This special case is now handled without calculating a slope.
@@ -57,8 +73,6 @@
     * The reader was not picking up the first record number in the file, which was non-zero for the second file and beyond in a multi-file run.
     * This was fixed by adjusting the variable that tracks that record number immediately after the first record was read.
     * This was validated by analyzing a non-first-file in a multi-file run and seeing that the record number was correct in the debug output.  Run number 3870 was used.
-
-
 
 
   
