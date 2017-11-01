@@ -159,10 +159,6 @@ namespace Katydid
         fRecordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
-        fHeader.SetMinimumFrequency(0.0);
-        fHeader.SetMaximumFrequency(fHeader.GetAcquisitionRate()/2.0);
-        fHeader.SetCenterFrequency((fHeader.GetMaximumFrequency() - fHeader.GetMinimumFrequency())/2.0);
-
         // by default, start the read state at the beginning of the run
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fStartOfLastSliceRecord = 0;
@@ -592,6 +588,11 @@ namespace Katydid
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());
 
+        // NOTE: the egg header has fields for the min, max, and center frequencies
+        //       these don't really make sense for the file-wide header
+        //       the values are pulled from the first channel found
+        bool haveSetHeaderFreqs = false;
+
         fHeader.SetNChannels(fM3StreamHeader->GetNChannels());
         unsigned streamNum = fM3StreamHeader->GetNumber();
         unsigned iChanInKatydid = 0;
@@ -603,6 +604,14 @@ namespace Katydid
                 KTDEBUG(eggreadlog, "Adding channel " << iChanInFile << " in the egg file");
                 const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
                 KTChannelHeader* newChanHeader = new KTChannelHeader();
+                if (! haveSetHeaderFreqs)
+                {
+                    // NOTE: here we assume that channel's center frequency and frequency width are valid for the whole egg file
+                    fHeader.SetMinimumFrequency(channelHeader.GetFrequencyMin());
+                    fHeader.SetMaximumFrequency(channelHeader.GetFrequencyMin() + channelHeader.GetFrequencyRange());
+                    fHeader.SetCenterFrequency(0.5 * (fHeader.GetMaximumFrequency() - fHeader.GetMinimumFrequency()));
+                    haveSetHeaderFreqs = false;
+                }
                 newChanHeader->SetNumber(iChanInKatydid);
                 newChanHeader->SetSource(channelHeader.GetSource());
                 newChanHeader->SetRawSliceSize(fSliceSize);
