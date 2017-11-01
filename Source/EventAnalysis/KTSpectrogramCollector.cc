@@ -9,7 +9,6 @@
 
 #include "KTLogger.hh"
 
-#include "KTSliceHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTMultiTrackEventData.hh"
@@ -41,6 +40,8 @@ namespace Katydid
             fTrailFreq(0.),
             fUseTrackFreqs(false),
             fFullEvent(false),
+            fPrevSliceTimeInRun(0.),
+            fPrevSliceTimeInAcq(0.),
             fWaterfallSignal("ps-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
             fMPTrackSlot("mp-track", this, &KTSpectrogramCollector::ReceiveMPTrack),
@@ -97,6 +98,9 @@ namespace Katydid
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
+
+        KTINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
+        KTINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
 
         // Configure PSCollectionData frequency bounds
         if( GetUseTrackFreqs() )
@@ -399,6 +403,7 @@ namespace Katydid
 
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit )
     {
+        KTDEBUG(evlog, "Now cross-checking slice timestamp with known tracks");
         // Iterate through each track which has been added
         for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
@@ -406,6 +411,7 @@ namespace Katydid
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
+                KTDEBUG(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
                 it->second->AddSpectrum( slice.GetTimeInAcq(), &ps );
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );
@@ -421,9 +427,17 @@ namespace Katydid
                     // Emit signal
                     KTINFO(evlog, "Finished a track; emitting signal");
 
+                    KTINFO(evlog, "Old start time: " << it->second->GetStartTime());
+                    KTINFO(evlog, "Old end time: " << it->second->GetEndTime());
+
+                    KTINFO(evlog, "Slice acquisition time:" << slice.GetTimeInAcq());
+
                     // Convert start and end times from run to acquistion
-                    it->second->SetStartTime( it->second->GetStartTime() - slice.GetTimeInRun() + slice.GetTimeInAcq() );
-                    it->second->SetEndTime( it->second->GetEndTime() - slice.GetTimeInRun() + slice.GetTimeInAcq() );
+                    it->second->SetStartTime( it->second->GetStartTime() - it->second->GetEndTime() + fPrevSliceTimeInAcq );
+                    it->second->SetEndTime( fPrevSliceTimeInAcq );
+
+                    KTINFO(evlog, "New start time: " << it->second->GetStartTime());
+                    KTINFO(evlog, "New end time: " << it->second->GetEndTime());
 
                     FinishSC( it->first );
                 }
@@ -433,6 +447,12 @@ namespace Katydid
                 }
             }
         }
+
+        SetPrevSliceTimeInRun( slice.GetTimeInRun() );
+        SetPrevSliceTimeInAcq( slice.GetTimeInAcq() );
+
+        KTDEBUG(evlog, "Set previous slice time in run to " << fPrevSliceTimeInRun);
+        KTDEBUG(evlog, "Set previous slice time in acq to " << fPrevSliceTimeInAcq);
 
         return true;
     }

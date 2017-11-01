@@ -14,6 +14,7 @@
 #include "KTLogger.hh"
 
 #include "KTSpectrumCollectionData.hh"
+#include "KTSliceHeader.hh"
 
 #include <set>
 
@@ -27,7 +28,6 @@ namespace Katydid
     class KTProcessedTrackData;
     class KTMultiPeakTrackData;
     class KTMultiTrackEventData;
-    class KTSliceHeader;
 
     /*
      @class KTSpectrogramCollector
@@ -71,49 +71,22 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            double GetMinFrequency() const;
-            void SetMinFrequency(double freq);
-
-            double GetMaxFrequency() const;
-            void SetMaxFrequency(double freq);
-
-            unsigned GetMinBin() const;
-            void SetMinBin(unsigned bin);
-
-            unsigned GetMaxBin() const;
-            void SetMaxBin(unsigned bin);
-
-            double GetLeadTime() const;
-            void SetLeadTime(double t);
-
-            double GetTrailTime() const;
-            void SetTrailTime(double t);
-
-            double GetLeadFreq() const;
-            void SetLeadFreq(double f);
-
-            double GetTrailFreq() const;
-            void SetTrailFreq(double f);
-
-            bool GetUseTrackFreqs() const;
-            void SetUseTrackFreqs(bool b);
-
-            bool GetFullEvent() const;
-            void SetFullEvent(bool b);
+            MEMBERVARIABLE(double, MinFrequency);
+            MEMBERVARIABLE(double, MaxFrequency);
+            MEMBERVARIABLE(unsigned, MinBin);
+            MEMBERVARIABLE(unsigned, MaxBin);
+            MEMBERVARIABLE(double, LeadTime);
+            MEMBERVARIABLE(double, TrailTime);
+            MEMBERVARIABLE(double, LeadFreq);
+            MEMBERVARIABLE(double, TrailFreq);
+            MEMBERVARIABLE(bool, UseTrackFreqs);
+            MEMBERVARIABLE(bool, FullEvent);
+            MEMBERVARIABLE(double, PrevSliceTimeInRun);
+            MEMBERVARIABLE(double, PrevSliceTimeInAcq);
 
         private:
-            double fMinFrequency;
-            double fMaxFrequency;
-            unsigned fMinBin;
-            unsigned fMaxBin;
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
-            double fLeadTime;
-            double fTrailTime;
-            double fLeadFreq;
-            double fTrailFreq;
-            bool fUseTrackFreqs;
-            bool fFullEvent;
 
         public:
             bool AddTrack(KTProcessedTrackData& trackData, unsigned component);
@@ -164,120 +137,6 @@ namespace Katydid
 
     };
 
-    inline double KTSpectrogramCollector::GetMinFrequency() const
-    {
-        return fMinFrequency;
-    }
-
-    inline void KTSpectrogramCollector::SetMinFrequency(double freq)
-    {
-        fMinFrequency = freq;
-        fCalculateMinBin = true;
-        return;
-    }
-
-    inline double KTSpectrogramCollector::GetMaxFrequency() const
-    {
-        return fMaxFrequency;
-    }
-
-    inline void KTSpectrogramCollector::SetMaxFrequency(double freq)
-    {
-        fMaxFrequency = freq;
-        fCalculateMaxBin = true;
-        return;
-    }
-
-    inline unsigned KTSpectrogramCollector::GetMinBin() const
-    {
-        return fMinBin;
-    }
-
-    inline void KTSpectrogramCollector::SetMinBin(unsigned bin)
-    {
-        fMinBin = bin;
-        fCalculateMinBin = false;
-        return;
-    }
-
-    inline unsigned KTSpectrogramCollector::GetMaxBin() const
-    {
-        return fMaxBin;
-    }
-
-    inline void KTSpectrogramCollector::SetMaxBin(unsigned bin)
-    {
-        fMaxBin = bin;
-        fCalculateMaxBin = false;
-        return;
-    }
-
-    inline double KTSpectrogramCollector::GetLeadTime() const
-    {
-        return fLeadTime;
-    }
-
-    inline void KTSpectrogramCollector::SetLeadTime(double t)
-    {
-        fLeadTime = t;
-        return;
-    }
-
-    inline double KTSpectrogramCollector::GetTrailTime() const
-    {
-        return fTrailTime;
-    }
-
-    inline void KTSpectrogramCollector::SetTrailTime(double t)
-    {
-        fTrailTime = t;
-        return;
-    }
-
-    inline double KTSpectrogramCollector::GetLeadFreq() const
-    {
-        return fLeadFreq;
-    }
-
-    inline void KTSpectrogramCollector::SetLeadFreq(double f)
-    {
-        fLeadFreq = f;
-        return;
-    }
-
-    inline double KTSpectrogramCollector::GetTrailFreq() const
-    {
-        return fTrailFreq;
-    }
-
-    inline void KTSpectrogramCollector::SetTrailFreq(double f)
-    {
-        fTrailFreq = f;
-        return;
-    }
-
-    inline bool KTSpectrogramCollector::GetUseTrackFreqs() const
-    {
-        return fUseTrackFreqs;
-    }
-
-    inline void KTSpectrogramCollector::SetUseTrackFreqs(bool b)
-    {
-        fUseTrackFreqs = b;
-        return;
-    }
-
-    inline bool KTSpectrogramCollector::GetFullEvent() const
-    {
-        return fFullEvent;
-    }
-
-    inline void KTSpectrogramCollector::SetFullEvent(bool b)
-    {
-        fFullEvent = b;
-        return;
-    }
-
     void KTSpectrogramCollector::SlotFunctionPSData( Nymph::KTDataPtr data )
     {
         // Standard data slot pattern:
@@ -294,7 +153,7 @@ namespace Katydid
         }
 
         // If the slice is the last, set a flag to force a signal emit
-        bool force = data->GetLastData();
+        bool force = data->GetLastData() || data->Of< KTSliceHeader >().GetIsNewAcquisition();
         if (force)
         {
             KTDEBUG(avlog_hh, "Reached last-data, forcing emit");

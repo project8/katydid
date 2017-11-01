@@ -96,7 +96,7 @@ namespace Katydid
 
     struct TLinearFitResult
     {
-        UInt_t fComponent;
+        UInt_t fFitNumber;
         Double_t fSlope;
         Double_t fIntercept;
         Double_t fStartingFrequency;
@@ -115,7 +115,6 @@ namespace Katydid
 
     struct TPowerFitData
     {
-        UInt_t fComponent;
 /*
         Double_t fScale;
         Double_t fBackground;
