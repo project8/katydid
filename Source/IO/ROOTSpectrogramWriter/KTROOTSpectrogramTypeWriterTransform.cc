@@ -64,7 +64,7 @@ namespace Katydid
     {
         fWriter->RegisterSlot("fs-polar", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar);
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
-        //fWriter->RegisterSlot("fs-fftw-phase", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumPhaseDataFFTW);
+        fWriter->RegisterSlot("fs-fftw-phase", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumPhaseDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
         return;
