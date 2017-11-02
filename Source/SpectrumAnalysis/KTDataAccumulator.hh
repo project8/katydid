@@ -24,11 +24,13 @@ namespace Katydid
     
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
+    class KTConvolvedPowerSpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
     class KTPowerSpectrumData;
+    class KTPowerSpectrumDataCore;
     class KTTimeSeriesData;
 
     /*!
@@ -64,6 +66,7 @@ namespace Katydid
      - "ts-dist": void (Nymph::KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
      - "fs-polar": void (Nymph::KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
      - "fs-fftw": void (Nymph::KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
+     - "conv-ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTConvolvedPowerSpectrumData; Emits signal "conv-ps"
      - "ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTPowerSpectrumData; Emits signal "ps"
 
      Signals:
@@ -71,11 +74,13 @@ namespace Katydid
      - "ts-dist": void (Nymph::KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
      - "fs-polar": void (Nymph::KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw": void (Nymph::KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
+     - "conv-ps": void (Nymph::KTDataPtr) -- emitted when the conv-ps sum is updated; guarantees KTConvolvedPowerSpectrumData
      - "ps": void (Nymph::KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
      - "ts-finished": void (Nymph::KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
      - "ts-dist-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
      - "fs-polar-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
+     - "core-ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
      - "ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
     */
 
@@ -151,6 +156,7 @@ namespace Katydid
             bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
+            bool AddData(KTConvolvedPowerSpectrumData& data);
             bool AddData(KTPowerSpectrumData& data);
 
             const AccumulatorMap& GetAccumulators() const;
@@ -169,12 +175,13 @@ namespace Katydid
             bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData);
             bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData);
 
-            bool CoreAddData(KTPowerSpectrumData& data, Accumulator& accDataStruct, KTPowerSpectrumData& accData);
+            bool CoreAddData(KTPowerSpectrumDataCore& data, Accumulator& accDataStruct, KTPowerSpectrumDataCore& accData);
 
             bool Scale(KTTimeSeriesData& data, KTSliceHeader& header);
             bool Scale(KTTimeSeriesDistData& data, KTSliceHeader& header);
             bool Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header);
             bool Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header);
+            bool Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header);
             bool Scale(KTPowerSpectrumData& data, KTSliceHeader& header);
 
             AccumulatorMap fDataMap;
@@ -190,12 +197,14 @@ namespace Katydid
             Nymph::KTSignalData fTSDistSignal;
             Nymph::KTSignalData fFSPolarSignal;
             Nymph::KTSignalData fFSFFTWSignal;
+            Nymph::KTSignalData fConvPSSignal;
             Nymph::KTSignalData fPSSignal;
 
             Nymph::KTSignalData fTSFinishedSignal;
             Nymph::KTSignalData fTSDistFinishedSignal;
             Nymph::KTSignalData fFSPolarFinishedSignal;
             Nymph::KTSignalData fFSFFTWFinishedSignal;
+            Nymph::KTSignalData fConvPSFinishedSignal;
             Nymph::KTSignalData fPSFinishedSignal;
 
             SignalMap fSignalMap;
