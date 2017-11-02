@@ -10,6 +10,7 @@
 #include "KTLogger.hh"
 
 #include <vector>
+#include <cmath>
 
 #ifndef NDEBUG
 #include <sstream>
