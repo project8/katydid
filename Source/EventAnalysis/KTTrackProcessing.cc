@@ -274,6 +274,7 @@ namespace Katydid
         return true;
     }
 
+
     bool KTTrackProcessing::ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
     {
         unsigned component = swfData.GetComponent();
@@ -427,5 +428,4 @@ namespace Katydid
 
         return true;
     }
-
 } /* namespace Katydid */
