@@ -28,6 +28,9 @@ namespace Katydid
             void AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
             void OutputFrequencySpectrumDataFFTW();
 
+            void AddFrequencySpectrumPhaseDataFFTW(Nymph::KTDataPtr data);
+            void OutputFrequencySpectrumPhaseDataFFTW();
+
             void AddPowerSpectrumData(Nymph::KTDataPtr data);
             void OutputPowerSpectrumData();
 
@@ -37,6 +40,7 @@ namespace Katydid
         private:
             DataTypeBundle fFSPolarBundle;
             DataTypeBundle fFSFFTWBundle;
+            DataTypeBundle fFSFFTWPhaseBundle;
             DataTypeBundle fPowerBundle;
             DataTypeBundle fPSDBundle;
 

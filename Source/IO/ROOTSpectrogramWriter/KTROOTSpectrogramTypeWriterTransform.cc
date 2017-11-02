@@ -26,6 +26,7 @@ namespace Katydid
             //KTTypeWriterTransform()
             fFSPolarBundle("FSPolarSpectrogram"),
             fFSFFTWBundle("FSFFTWSpectrogram"),
+            fFSFFTWPhaseBundle("FSFFTWPhaseSpectrogram"),
             fPowerBundle("PowerSpectrogram"),
             fPSDBundle("PSDSpectrogram")
     {
@@ -42,6 +43,7 @@ namespace Katydid
         KTDEBUG("calling output each spectrogram set")
         OutputASpectrogramSet(fFSPolarBundle, false);
         OutputASpectrogramSet(fFSFFTWBundle, false);
+        OutputASpectrogramSet(fFSFFTWPhaseBundle, false);
         OutputASpectrogramSet(fPowerBundle, false);
         OutputASpectrogramSet(fPSDBundle, false);
 
@@ -52,6 +54,7 @@ namespace Katydid
     {
         ClearASpectrogramSet(fFSPolarBundle);
         ClearASpectrogramSet(fFSFFTWBundle);
+        ClearASpectrogramSet(fFSFFTWPhaseBundle);
         ClearASpectrogramSet(fPowerBundle);
         ClearASpectrogramSet(fPSDBundle);
         return;
@@ -61,6 +64,7 @@ namespace Katydid
     {
         fWriter->RegisterSlot("fs-polar", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar);
         fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW);
+        //fWriter->RegisterSlot("fs-fftw-phase", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumPhaseDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData);
         fWriter->RegisterSlot("psd", this, &KTROOTSpectrogramTypeWriterTransform::AddPSDData);
         return;
@@ -80,6 +84,12 @@ namespace Katydid
     void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data)
     {
         AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWBundle);
+        return;
+    }
+
+    void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumPhaseDataFFTW(Nymph::KTDataPtr data)
+    {
+        AddFrequencySpectrumPhaseDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWPhaseBundle);
         return;
     }
 
