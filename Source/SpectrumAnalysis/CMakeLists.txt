@@ -5,6 +5,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
     KTConsensusThresholding.hh
+    KTConvolution.hh
     KTCorrelator.hh
     KTCreateKDTree.hh
     KTDataAccumulator.hh
@@ -26,6 +27,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTAmplitudeDistributor.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc
+    KTConvolution.cc
     KTCreateKDTree.cc
     KTDataAccumulator.cc
     KTDistanceClustering.cc

@@ -62,6 +62,7 @@ namespace Katydid
 
 
      Slots:
+     - "disc-1d": needs sparse spectrogram for thresholding 
      - "gv": needs gain variation for thresholding
      - "ps-in": power spectrum to collect points from
      - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
