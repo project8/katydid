@@ -124,8 +124,8 @@ namespace Katydid
             fftw_complex *fTransformedInputArrayFromReal;
             fftw_complex *fTransformedOutputArrayFromReal;
 
-            fftw_complex *fTransformedKernelXAsReal;
-            fftw_complex *fTransformedKernelXAsComplex;
+            fftw_complex *fTransformedKernelXYAsReal;
+            fftw_complex *fTransformedKernelXYAsComplex;
 
             fftw_complex* fGeneralTransformedInputArray;
             fftw_complex* fGeneralTransformedOutputArray;
@@ -206,19 +206,19 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTPowerSpectrum* >* KTConvolution2D::GetSpectrum( KTMultiPSDataCore& data, unsigned iComponent )
+    inline const KTPhysicalArray< 1, KTPowerSpectrum* >* KTConvolution2D::GetSpectra( KTMultiPowerSpectrumDataCore& data, unsigned iComponent )
     {
-        return data.GetSpectrum( iComponent );
+        return data.GetSpectra( iComponent );
     }
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTConvolution2D::GetSpectrum( KTMultiFSDataFFTWCore& data, unsigned iComponent )
+    inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTConvolution2D::GetSpectra( KTMultiFSDataFFTWCore& data, unsigned iComponent )
     {
-        return data.GetSpectrumFFTW( iComponent );
+        return data.GetSpectraFFTW( iComponent );
     }
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTConvolution2D::GetSpectrum( KTMultiFSDataPolarCore& data, unsigned iComponent )
+    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTConvolution2D::GetSpectra( KTMultiFSDataPolarCore& data, unsigned iComponent )
     {
-        return data.GetSpectrumPolar( iComponent );
+        return data.GetSpectraPolar( iComponent );
     }
 
 } /* namespace Katydid */

@@ -55,8 +55,8 @@ namespace Katydid
             fTransformedOutputArray(NULL),
             fTransformedInputArrayFromReal(NULL),
             fTransformedOutputArrayFromReal(NULL),
-            fTransformedKernelXAsReal(NULL),
-            fTransformedKernelXAsComplex(NULL),
+            fTransformedKernelXYAsReal(NULL),
+            fTransformedKernelXYAsComplex(NULL),
             fGeneralTransformedInputArray(NULL),
             fGeneralTransformedOutputArray(NULL),
             fGeneralTransformedKernelArray(NULL),
@@ -382,56 +382,60 @@ namespace Katydid
         return true;
     }
 
-    bool KTConvolution2D::Convolve1D( KTPowerSpectrumData& data )
+    bool KTConvolution2D::Convolve2D( KTMultiPowerSpectrumData& data )
     {
-        KTINFO(sdlog, "Received power spectrum. Performing 1D convolution");
+        KTINFO(sdlog, "Received multi power spectrum. Performing 2D convolution");
         // New data object
-        KTConvolvedPowerSpectrumData& newData = data.Of< KTConvolvedPowerSpectrumData >();
+        KTConvolvedMultiPowerSpectrumData& newData = data.Of< KTConvolvedMultiPowerSpectrumData >();
         
-        return CoreConvolve1D( static_cast< KTPowerSpectrumDataCore& >(data), newData );
+        return CoreConvolve2D( static_cast< KTMultiPowerSpectrumDataCore& >(data), newData );
     }
 
-    bool KTConvolution2D::Convolve1D( KTFrequencySpectrumDataFFTW& data )
+    bool KTConvolution2D::Convolve2D( KTMultiFSDataFFTW& data )
     {
-        KTINFO(sdlog, "Received frequency spectrum. Performing 1D convolution");
+        KTINFO(sdlog, "Received multi frequency spectrum. Performing 2D convolution");
         // New data object
-        KTConvolvedFrequencySpectrumDataFFTW& newData = data.Of< KTConvolvedFrequencySpectrumDataFFTW >();
+        KTConvolvedMultiFSDataFFTW& newData = data.Of< KTConvolvedMultiFSDataFFTW >();
         
-        return CoreConvolve1D( static_cast< KTFrequencySpectrumDataFFTWCore& >(data), newData );
+        return CoreConvolve2D( static_cast< KTMultiFSDataFFTWCore& >(data), newData );
     }
 
-    bool KTConvolution2D::Convolve1D( KTFrequencySpectrumDataPolar& data )
+    bool KTConvolution2D::Convolve2D( KTMultiFSDataPolar& data )
     {
-        KTINFO(sdlog, "Received frequency spectrum. Performing 1D convolution");
+        KTINFO(sdlog, "Received multi frequency spectrum. Performing 1D convolution");
         // New data object
-        KTConvolvedFrequencySpectrumDataPolar& newData = data.Of< KTConvolvedFrequencySpectrumDataPolar >();
+        KTConvolvedMultiFSDataPolar& newData = data.Of< KTConvolvedMultiFSDataPolar >();
         
-        return CoreConvolve1D( static_cast< KTFrequencySpectrumDataPolarCore& >(data), newData );
+        return CoreConvolve2D( static_cast< KTMultiFSDataPolarCore& >(data), newData );
     }
 
-    template< class XSpectrumDataCore, class XConvolvedSpectrumTypeData >
-    bool KTConvolution2D::CoreConvolve1D( XSpectrumDataCore& data, XConvolvedSpectrumTypeData& newData )
+    template< class XMultiSpectrumDataCore, class XConvolvedMultiSpectrumTypeData >
+    bool KTConvolution2D::CoreConvolve2D( XMultiSpectrumDataCore& data, XConvolvedMultiSpectrumTypeData& newData )
     {
         newData.SetNComponents( data.GetNComponents() );
 
         // Set overlap-and-save method parameters
         // These do not change, but I want to group them together like this so it's easy to follow
-        int block = GetBlockSize();
-        int overlap = fKernelSize - 1;
-        int step = block - overlap;
+        int blockX = GetBlockSizeTime();
+        int blockY = GetBlockSizeFreq();
+        int overlapX = fKernelSizeX - 1;
+        int overlapY = fKernelSizeY - 1;
+        int stepX = blockX - overlapX;
+        int stepY = blockY - overlapY;
 
-        KTINFO(sdlog, "Block size: " << block);
-        KTINFO(sdlog, "Overlap: " << overlap);
-        KTINFO(sdlog, "Step size: " << step);
+        KTINFO(sdlog, "Block size: (" << blockX << ", " << blockY << ")");
+        KTINFO(sdlog, "Overlap: (" << overlapX << ", " << overlapY << ")");
+        KTINFO(sdlog, "Step size: (" << stepX << ", " << stepY << ")");
 
-        int nBinsTotal = GetSpectrum( data, 0 )->GetNFrequencyBins();
-        KTINFO(sdlog, "nBinsTotal = " << nBinsTotal);
+        int nBinsTotalX = GetSpectra( data, 0 )->size();
+        int nBinsTotalY = GetSpectra( data, 0 )(0)->GetNFrequencyBins();
+        KTINFO(sdlog, "nBinsTotal = (" << nBinsTotalX << ", " << nBinsTotalY << ")");
 
         // Now that nBinsTotal is determined, we can initialize the DFTs
         // The following conditional should only be true on the first slice
         if( ! fInitialized )
         {
-            Initialize( nBinsTotal, block, step, overlap );
+            Initialize( nBinsTotalX, nBinsTotalY, blockX, blockY, stepX, stepY, overlapX, overlapY );
         }
 
         // First loop over components
@@ -440,17 +444,17 @@ namespace Katydid
             KTINFO(sdlog, "Starting component: " << iComponent);
 
             // Get power spectrum and initialize convolved spectrum for this component
-            typename XSpectrumDataCore::spectrum_type* transformedSpectrum = DoConvolution( GetSpectrum( data, iComponent ), block, step, overlap );
+            typename KTPhysicalArray< 1, XSpectrumDataCore::spectrum_type* >* transformedSpectra = DoConvolution( GetSpectra( data, iComponent ), blockX, blockY, stepX, stepY, overlapX, overlapY );
 
-            if( transformedSpectrum == nullptr )
+            if( transformedSpectra == nullptr )
             {
                 KTERROR( sdlog, "Convolution was unsuccessful. Aborting." );
                 return false;
             }
 
             // Set power spectrum
-            newData.SetSpectrum( transformedSpectrum, iComponent );
-            KTDEBUG(sdlog, "Filled new spectrum");
+            newData.SetSpectra( transformedSpectra, iComponent );
+            KTDEBUG(sdlog, "Filled new spectra");
         }
 
         KTINFO(sdlog, "All components finished successfully!");
@@ -459,16 +463,20 @@ namespace Katydid
     }
 
     template< class XSpectraType >
-    XSpectraType* KTConvolution2D::DoConvolution( const XSpectraType* myInitialSpectrum, const int block, const int step, const int overlap )
+    KTPhysicalArray< 1, XSpectraType* >* KTConvolution2D::DoConvolution( const KTPhysicalArray< 1, XSpectraType* >* myInitialSpectrum, const int blockX, const int blockY, const int stepX, const int stepY, const int overlapX, const int overlapY )
     {
         // Block loop parameters
-        int nBin = 0;
-        int nBinsTotal = myInitialSpectrum->GetNFrequencyBins();
-        int blockNumber = 0;
-        int position = 0;
+        int nBinX = 0;
+        int nBinY = 0;
+        int nBinsTotalX = myInitialSpectrum->size();
+        int nBinsTotalY = myInitialSpectrum(0)->GetNFrequencyBins();
+        int blockNumberX = 0;
+        int blockNumberY = 0;
+        int positionX = 0;
+        int positionY = 0;
 
         // non-const version
-        XSpectraType* initialSpectrum = new XSpectraType( *myInitialSpectrum );
+        KTPhysicalArray< 1, XSpectraType* >* initialSpectrum = new KTPhysicalArray< 1, XSpectraType* >( *myInitialSpectrum );
 
         // If we're doing cross-correlation, first we need to conjugate and reverse the input spectrum
         if( fTransformType == "cross-correlation" )
@@ -476,7 +484,7 @@ namespace Katydid
             ConjugateAndReverse( *initialSpectrum );
         }
         
-        XSpectraType* transformedSpectrum = new XSpectraType( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
+        KTPhysicalArray< 1, XSpectraType* >* transformedSpectrum = new KTPhysicalArray< 1, XSpectraType* >( nBinsTotalX, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
 
         if( ! SetUpGeneralVars< XSpectraType* >() )
         {
@@ -485,82 +493,216 @@ namespace Katydid
         }
 
         // Loop over block numbers
-        while( (blockNumber+1) * step <= nBinsTotal )
+        while( (blockNumberX+1) * stepX <= nBinsTotalX )
         {
-            KTDEBUG(sdlog, "Block number: " << blockNumber);
-            KTDEBUG(sdlog, "Starting position: " << blockNumber * step - overlap);
-            KTDEBUG(sdlog, "nBinsTotal: " << nBinsTotal);
+            blockNumberY = 0;
+            positionY = 0;
 
-            // Fill input array
-            for( nBin = 0; nBin < block; ++nBin )
+            while( (blockNumberY+1) * stepY <= nBinsTotalY )
             {
-                position = nBin + blockNumber * step - overlap;
-                SetInputArray( position, nBin, initialSpectrum );
+                KTDEBUG(sdlog, "Block number: (" << blockNumberX << ", " << blockNumberY << ")");
+                KTDEBUG(sdlog, "Starting position: (" << blockNumberX * stepX - overlapX << ", " << blockNumberY * stepY - overlapY << ")");
+                KTDEBUG(sdlog, "nBinsTotal: (" << nBinsTotalX << ", " << nBinsTotalY << ")");
+
+                // Fill input array
+                for( nBinX = 0; nBinX < blockX; ++nBinX )
+                {
+                    positionX = nBinX + blockNumberX * stepX - overlapX;
+                    for( nBinY = 0; nBinY < blockY; ++nBinY )
+                    {
+                        positionY = nBinY + blockNumberY * stepY - overlapY;
+                        SetInputArray( positionX, positionY, nBinX, nBinY, initialSpectrum );
+                    }
+                }
+
+                // FFT of input block
+                KTDEBUG(sdlog, "Performing DFT");
+                fftw_execute( fGeneralForwardPlan );
+
+                // Bin multiplication in fourier space
+                KTDEBUG(sdlog, "Multiplying arrays in fourier space");
+
+                for( int nBinX = 0; nBinX < nBinLimitRegularTime; ++nBinX )
+                {
+                    for( int nBinY = 0; nBinY < nBinLimitRegularFreq; ++nBinY )
+                    {
+                        fGeneralTransformedOutputArray[nBinX, nBinY][0] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][0] - fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][1];
+                        fGeneralTransformedOutputArray[nBinX, nBinY][1] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][1] + fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][0];
+                    }
+                }
+
+                // Reverse FFT of output block
+                KTDEBUG(sdlog, "Performing reverse DFT");
+                fftw_execute( fGeneralReversePlan );
+                
+                // Loop over bins in the output block and fill the convolved spectrum
+                for( nBinX = overlapX; nBinX < blockX; ++nBinX )
+                {
+                    for( nBinY = overlapY; nBinY < blockY; ++nBinY )
+                    {
+                        SetOutputArray( nBinX - overlapX + blockNumberX * stepX, nBinY - overlapY + blockNumberY * stepY, nBinX, nBinY, *transformedSpectrum, blockX, blockY );
+                    }
+                }
+
+                // Increment block number
+                ++blockNumberY;
             }
 
-            // FFT of input block
-            KTDEBUG(sdlog, "Performing DFT");
-            fftw_execute( fGeneralForwardPlan );
-
-            // Bin multiplication in fourier space
-            KTDEBUG(sdlog, "Multiplying arrays in fourier space");
-
-            for( int nBin = 0; nBin < nBinLimitRegular; ++nBin )
+            if( blockNumberY * stepY == nBinsTotalY )
             {
-                fGeneralTransformedOutputArray[nBin][0] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][0] - fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][1];
-                fGeneralTransformedOutputArray[nBin][1] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][1] + fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][0];
+                KTINFO(sdlog, "Reached end of input data");
+
+                ++blockNumberX
+                continue;
+            }
+
+            KTINFO(sdlog, "Reached final block");
+            KTINFO(sdlog, "Starting position: " << blockNumberY * stepY - overlapY);
+
+            // Same procedure as above, this time with a shorter final block
+
+            for( nBinX = 0; nBinX < blockX; ++nBinX )
+            {
+                positionX = nBinX + blockNumberX * stepX - overlapX; 
+                for( nBinY = 0; positionY+1 < nBinsTotalY; ++nBinY )
+                {
+                    positionY = nBinY + blockNumberY * stepY - overlapY;
+                    SetInputArray( positionX, positionY, nBinX, nBinY, initialSpectrum );
+                }
+            }
+
+            KTINFO(sdlog, "Short array length = " << nBinY);
+            KTDEBUG(sdlog, "Initialized short array length = " << fShortSizeFreq);
+
+            // FFT of input block
+            fftw_execute( fGeneralForwardPlanShort );
+
+            for( int nBinX = 0; nBinX < nBinLimitRegularTime; ++nBinX )
+            {
+                for( int nBinY = 0; nBinY < nBinLimitShortFreq; ++nBinY )
+                {
+                    fGeneralTransformedOutputArray[nBinX, nBinY][0] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][0] - fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][1];
+                    fGeneralTransformedOutputArray[nBinX, nBinY][1] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][1] + fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][0];
+                }
             }
 
             // Reverse FFT of output block
-            KTDEBUG(sdlog, "Performing reverse DFT");
-            fftw_execute( fGeneralReversePlan );
+            fftw_execute( fGeneralReversePlanShort );
             
             // Loop over bins in the output block and fill the convolved spectrum
-            for( nBin = overlap; nBin < block; ++nBin )
+            for( nBinX = overlapX; nBinX < blockX; ++nBinX )
             {
-                SetOutputArray( nBin - overlap + blockNumber * step, nBin, *transformedSpectrum, block );
+                for( nBinY = overlapY; nBinY < fShortSizeFreq; ++nBinY )
+                {
+                    SetOutputArray( nBinX - overlapX + blockNumberX * stepX, nBinY - overlapY + blockNumberY * stepY, nBinX, nBinY, *transformedSpectrum, fShortSizeTime, fShortSizeFreq );
+                }
             }
 
-            // Increment block number
-            ++blockNumber;
+            ++blockNumberX;
         }
 
-        if( blockNumber * step == nBinsTotal )
+        if( blockNumberX * stepX == nBinsTotalX )
         {
             KTINFO(sdlog, "Reached end of input data");
             return transformedSpectrum;
         }
 
         KTINFO(sdlog, "Reached final block");
-        KTINFO(sdlog, "Starting position: " << blockNumber * step - overlap);
+        KTINFO(sdlog, "Starting position: " << blockNumberX * stepX - overlapX);
 
         // Same procedure as above, this time with a shorter final block
 
-        for( nBin = 0; position+1 < nBinsTotal; ++nBin )
+        blockNumberY = 0;
+        positionY = 0;
+
+        while( (blockNumberY+1) * stepY <= nBinsTotalY )
         {
-            position = nBin + blockNumber * step - overlap;
-            SetInputArray( position, nBin, initialSpectrum );
+            for( nBinX = 0; positionX+1 < nBinsTotalX; ++nBinX )
+            {
+                positionX = nBinX + blockNumberX * stepX - overlapX;
+                for( nBinY = 0; nBinY < blockY; ++nBinY )
+                {
+                    positionY = nBinY + blockNumberY * stepY - overlapY;
+                    SetInputArray( positionX, positionY, nBinX, nBinY, initialSpectrum );
+                }
+            }
+
+            KTINFO(sdlog, "Short array length = " << nBinX);
+            KTDEBUG(sdlog, "Initialized short array length = " << fShortSizeTime);
+
+            // FFT of input block
+            fftw_execute( fGeneralForwardPlanShort );
+
+            for( int nBinX = 0; nBinX < nBinLimitShortTime; ++nBinX )
+            {
+                for( int nBinY = 0; nBinY < nBinLimitRegularFreq; ++nBinY )
+                {
+                    fGeneralTransformedOutputArray[nBinX, nBinY][0] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][0] - fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][1];
+                    fGeneralTransformedOutputArray[nBinX, nBinY][1] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][1] + fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][0];
+                }
+            }
+
+            // Reverse FFT of output block
+            fftw_execute( fGeneralReversePlanShort );
+            
+            // Loop over bins in the output block and fill the convolved spectrum
+            for( nBinX = overlapX; nBinX < fShortSizeX; ++nBinX )
+            {
+                for( nBinY = overlapY; nBinY < blockY; ++nBinY )
+                {
+                    SetOutputArray( nBinX - overlapX + blockNumberX * stepX, nBinY - overlapY + blockNumberY * stepY, nBinX, nBinY, *transformedSpectrum, fShortSizeTime, fShortSizeFreq );
+                }
+            }
+
+            blockNumberY++;
         }
 
-        KTINFO(sdlog, "Short array length = " << nBin);
-        KTDEBUG(sdlog, "Initialized short array length = " << fShortSize);
+        if( blockNumberX * stepX == nBinsTotalX )
+        {
+            KTINFO(sdlog, "Reached end of input data");
+            return transformedSpectrum;
+        }
+
+        KTINFO(sdlog, "Reached final block");
+        KTINFO(sdlog, "Starting position: " << blockNumberX * stepX - overlapX);
+
+        // Same procedure as above, this time with a shorter final block
+
+        for( nBinX = 0; positionX+1 < nBinsTotalX; ++nBinX )
+        {
+            positionX = nBinX + blockNumberX * stepX - overlapX; 
+            for( nBinY = 0; positionY+1 < nBinsTotalY; ++nBinY )
+            {
+                positionY = nBinY + blockNumberY * stepY - overlapY;
+                SetInputArray( positionX, positionY, nBinX, nBinY, initialSpectrum );
+            }
+        }
+
+        KTINFO(sdlog, "Short array length = " << nBinX);
+        KTDEBUG(sdlog, "Initialized short array length = " << fShortSizeTime);
 
         // FFT of input block
         fftw_execute( fGeneralForwardPlanShort );
 
-        for( int nBin = 0; nBin < nBinLimitShort; ++nBin )
+        for( int nBinX = 0; nBinX < nBinLimitShortTime; ++nBinX )
         {
-            fGeneralTransformedOutputArray[nBin][0] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][0] - fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][1];
-            fGeneralTransformedOutputArray[nBin][1] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][1] + fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][0];
+            for( int nBinY = 0; nBinY < nBinLimitShortFreq; ++nBinY )
+            {
+                fGeneralTransformedOutputArray[nBinX, nBinY][0] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][0] - fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][1];
+                fGeneralTransformedOutputArray[nBinX, nBinY][1] = fGeneralTransformedInputArray[nBinX, nBinY][0] * fGeneralTransformedKernelArray[nBinX, nBinY][1] + fGeneralTransformedInputArray[nBinX, nBinY][1] * fGeneralTransformedKernelArray[nBinX, nBinY][0];
+            }
         }
 
         // Reverse FFT of output block
         fftw_execute( fGeneralReversePlanShort );
         
         // Loop over bins in the output block and fill the convolved spectrum
-        for( nBin = overlap; nBin < fShortSize; ++nBin )
+        for( nBinX = overlapX; nBinX < fShortSizeTime; ++nBinX )
         {
-            SetOutputArray( nBin - overlap + blockNumber * step, nBin, *transformedSpectrum, fShortSize );
+            for( nBinY = overlapY; nBinY < fShortSizeFreq; ++nBinY )
+            {
+                SetOutputArray( nBinX - overlapX + blockNumberX * stepX, nBinY - overlapY + blockNumberY * stepY, nBinX, nBinY, *transformedSpectrum, fShortSizeTime, fShortSizeFreq );
+            }
         }
 
         KTINFO(sdlog, "Component finished!");
@@ -579,13 +721,15 @@ namespace Katydid
     {
         fGeneralTransformedInputArray = fTransformedInputArrayFromReal;
         fGeneralTransformedOutputArray = fTransformedOutputArrayFromReal;
-        fGeneralTransformedKernelArray = fTransformedKernelXAsReal;
+        fGeneralTransformedKernelArray = fTransformedKernelXYAsReal;
         fGeneralForwardPlan = fRealToComplexPlan;
         fGeneralForwardPlanShort = fRealToComplexPlanShort;
         fGeneralReversePlan = fComplexToRealPlan;
         fGeneralReversePlanShort = fComplexToRealPlanShort;
-        nBinLimitRegular = fRegularSize/2 + 1;
-        nBinLimitShort = fShortSize/2 + 1;
+        nBinLimitRegularTime = fRegularSizeTime/2 + 1;
+        nBinLimitRegularFreq = fRegularSizeFreq/2 + 1;
+        nBinLimitShortTime = fShortSizeTime/2 + 1;
+        nBinLimitShortFreq = fShortSizeFreq/2 + 1;
 
         return true;
     }
@@ -595,13 +739,15 @@ namespace Katydid
     {
         fGeneralTransformedInputArray = fTransformedInputArray;
         fGeneralTransformedOutputArray = fTransformedOutputArray;
-        fGeneralTransformedKernelArray = fTransformedKernelXAsComplex;
+        fGeneralTransformedKernelArray = fTransformedKernelXYAsComplex;
         fGeneralForwardPlan = fC2CForwardPlan;
         fGeneralForwardPlanShort = fC2CForwardPlanShort;
         fGeneralReversePlan = fC2CReversePlan;
         fGeneralReversePlanShort = fC2CReversePlanShort;
-        nBinLimitRegular = fRegularSize;
-        nBinLimitShort = fShortSize;
+        nBinLimitRegularTime = fRegularSizeTime;
+        nBinLimitRegularFreq = fRegularSizeFreq;
+        nBinLimitShortTime = fShortSizeTime;
+        nBinLimitShortFreq = fShortSizeFreq;
 
         return true;
     }
@@ -611,122 +757,138 @@ namespace Katydid
     {
         fGeneralTransformedInputArray = fTransformedInputArray;
         fGeneralTransformedOutputArray = fTransformedOutputArray;
-        fGeneralTransformedKernelArray = fTransformedKernelXAsComplex;
+        fGeneralTransformedKernelArray = fTransformedKernelXYAsComplex;
         fGeneralForwardPlan = fC2CForwardPlan;
         fGeneralForwardPlanShort = fC2CForwardPlanShort;
         fGeneralReversePlan = fC2CReversePlan;
         fGeneralReversePlanShort = fC2CReversePlanShort;
-        nBinLimitRegular = fRegularSize;
-        nBinLimitShort = fShortSize;
+        nBinLimitRegularTime = fRegularSizeTime;
+        nBinLimitRegularFreq = fRegularSizeFreq;
+        nBinLimitShortTime = fShortSizeTime;
+        nBinLimitShortFreq = fShortSizeFreq;
 
         return true;
     }
 
-    void KTConvolution2D::ConjugateAndReverse( KTPowerSpectrum& spectrum )
+    void KTConvolution2D::ConjugateAndReverse( KTPhysicalArray< 1, KTPowerSpectrum* >& spectrum )
     {
         double temp;
-        int nBins = spectrum.GetNFrequencyBins();
-        for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
+        int nBins;
+
+        for( int i = 0; i < spectrum.size(); ++i )
         {
-            temp = spectrum(iBin);
-            spectrum(iBin) = spectrum(nBins - iBin - 1);
-            spectrum(nBins - iBin - 1) = temp;
+            nBins = spectrum(i)->GetNFrequencyBins();
+            for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
+            {
+                temp = (*spectrum(i))(iBin);
+                (*spectrum(i))(iBin) = (*spectrum(i))(nBins - iBin - 1);
+                (*spectrum(i))nBins - iBin - 1) = temp;
+            }
         }
 
         return;
     }
 
-    void KTConvolution2D::ConjugateAndReverse( KTFrequencySpectrumFFTW& spectrum )
+    void KTConvolution2D::ConjugateAndReverse( KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& spectrum )
     {
         fftw_complex temp;
-        int nBins = spectrum.GetNFrequencyBins();
-        for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
+        int nBins;
+
+        for( int i = 0; i < spectrum.size(); ++i )
         {
-            temp[0] = spectrum(iBin)[0];
-            temp[1] = spectrum(iBin)[1];
-            spectrum(iBin)[0] = spectrum(nBins - iBin - 1)[0];
-            spectrum(iBin)[1] = -1. * spectrum(nBins - iBin - 1)[1];
-            spectrum(nBins - iBin - 1)[0] = temp[0];
-            spectrum(nBins - iBin - 1)[1] = -1. * temp[1];
+            nBins = spectrum(i)->GetNFrequencyBins();
+            for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
+            {
+                temp[0] = (*spectrum)(i)(iBin)[0];
+                temp[1] = (*spectrum)(i)(iBin)[1];
+                (*spectrum)(i)(iBin)[0] = (*spectrum)(i)(nBins - iBin - 1)[0];
+                (*spectrum)(i)(iBin)[1] = -1. * (*spectrum)(i)(nBins - iBin - 1)[1];
+                (*spectrum)(i)(nBins - iBin - 1)[0] = temp[0];
+                (*spectrum)(i)(nBins - iBin - 1)[1] = -1. * temp[1];
+            }
         }
 
         return;
     }
 
-    void KTConvolution2D::ConjugateAndReverse( KTFrequencySpectrumPolar& spectrum )
+    void KTConvolution2D::ConjugateAndReverse( KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& spectrum )
     {
         fftw_complex temp;
-        int nBins = spectrum.GetNFrequencyBins();
-        for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
+        int nBins;
+
+        for( int i = 0; i < spectrum.size(); ++i )
         {
-            temp[0] = spectrum.GetReal( iBin );
-            temp[1] = spectrum.GetImag( iBin );
-            spectrum.SetRect( iBin, spectrum.GetReal(nBins - iBin - 1), -1. * spectrum.GetImag(nBins - iBin - 1) );
-            spectrum.SetRect( nBins - iBin - 1, temp[0], -1. * temp[1] );
+            nBins = spectrum(i)->GetNFrequencyBins();
+            for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
+            {
+                temp[0] = spectrum(i)->GetReal( iBin );
+                temp[1] = spectrum(i)->GetImag( iBin );
+                spectrum(i)->SetRect( iBin, spectrum(i)->GetReal(nBins - iBin - 1), -1. * spectrum(i)->GetImag(nBins - iBin - 1) );
+                spectrum(i)->SetRect( nBins - iBin - 1, temp[0], -1. * temp[1] );
+            }
         }
 
         return;
     }
 
-    void KTConvolution2D::SetInputArray( int position, int nBin, const KTPowerSpectrum* initialSpectrum )
+    void KTConvolution2D::SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTPowerSpectrum* >* initialSpectrum )
     {
-
-        if( position < 0 ) { fInputArrayReal[nBin] = 0.0; }
-        else { fInputArrayReal[nBin] = (*initialSpectrum)(position); }
+        if( positionX < 0 || positionY < 0 ) { fInputArrayReal[nBinX, nBinY] = 0.0; }
+        else { fInputArrayReal[nBinX, nBinY] = (*(*initialSpectrum)(positionX))(positionY); }
 
         return;
     }
 
-    void KTConvolution2D::SetInputArray( int position, int nBin, const KTFrequencySpectrumFFTW* initialSpectrum )
+    void KTConvolution2D::SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* initialSpectrum )
     {
-        if( position < 0 )
+        if( positionX < 0 || positionY < 0 )
         {
-            fInputArrayComplex[nBin][0] = 0.0;
-            fInputArrayComplex[nBin][1] = 0.0;
+            fInputArrayComplex[nBinX, nBinY][0] = 0.0;
+            fInputArrayComplex[nBinX, nBinY][1] = 0.0;
         }
         else
         {
-            fInputArrayComplex[nBin][0] = (*initialSpectrum)(position)[0];
-            fInputArrayComplex[nBin][1] = (*initialSpectrum)(position)[1];
+            fInputArrayComplex[nBinX, nBinY][0] = (*(*initialSpectrum)(positionX))(positionY)[0];
+            fInputArrayComplex[nBinX, nBinY][1] = (*(*initialSpectrum)(positionX))(positionY)[1];
         }
 
         return;
     }
 
-    void KTConvolution2D::SetInputArray( int position, int nBin, const KTFrequencySpectrumPolar* initialSpectrum )
+    void KTConvolution2D::SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* initialSpectrum )
     {
-        if( position < 0 )
+        if( positionX < 0 || positionY < 0 )
         {
-            fInputArrayComplex[nBin][0] = 0.0;
-            fInputArrayComplex[nBin][1] = 0.0;
+            fInputArrayComplex[nBinX, nBinY][0] = 0.0;
+            fInputArrayComplex[nBinX, nBinY][1] = 0.0;
         }
         else
         {
-            fInputArrayComplex[nBin][0] = initialSpectrum->GetReal(position);
-            fInputArrayComplex[nBin][1] = initialSpectrum->GetImag(position);
+            fInputArrayComplex[nBinX, nBinY][0] = (*initialSpectrum)(positionX)->GetReal(positionY);
+            fInputArrayComplex[nBinX, nBinY][1] = (*initialSpectrum)(positionX)->GetImag(positionY);
         }
 
         return;
     }
 
-    void KTConvolution2D::SetOutputArray( int position, int nBin, KTPowerSpectrum& transformedPS, double norm )
+    void KTConvolution2D::SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTPowerSpectrum* >& transformedPS, double normX, double normY )
     {
-        transformedPS(position) = fOutputArrayReal[nBin] / (double)norm;
+        (transformedPS(positionX))(positionY) = fOutputArrayReal[nBinX, nBinY] / (double)(normX * normY);
 
         return;
     }
 
-    void KTConvolution2D::SetOutputArray( int position, int nBin, KTFrequencySpectrumFFTW& transformedFSFFTW, double norm )
+    void KTConvolution2D::SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& transformedFSFFTW, double normX, double normY )
     {
-        transformedFSFFTW(position)[0] = fOutputArrayComplex[nBin][0] / (double)norm;
-        transformedFSFFTW(position)[1] = fOutputArrayComplex[nBin][1] / (double)norm;
+        (transformedFSFFTW(positionX))(positionY)[0] = fOutputArrayComplex[nBinX, nBinY][0] / (double)(normX * normY);
+        (transformedFSFFTW(positionX))(positionY)[1] = fOutputArrayComplex[nBinX, nBinY][1] / (double)(normX * normY);
 
         return;
     }
 
-    void KTConvolution2D::SetOutputArray( int position, int nBin, KTFrequencySpectrumPolar& transformedFSPolar, double norm )
+    void KTConvolution2D::SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& transformedFSPolar, double normX, double normY )
     {
-        transformedFSPolar.SetRect( position, fOutputArrayComplex[nBin][0] / (double)norm, fOutputArrayComplex[nBin][1] / (double)norm );
+        transformedFSPolar(positionX)->SetRect( positionY, fOutputArrayComplex[nBinX, nBinY][0] / (double)(normX * normY), fOutputArrayComplex[nBinX, nBinY][1] / (double)(normX * normY) );
 
         return;
     }
@@ -765,36 +927,56 @@ namespace Katydid
         // Ordinary block is given, but the shorter block at the end is harder
         // Maybe there is a simpler way to determine this, I'm not sure
 
-        if( (nBinsTotal + overlap) % step >= overlap )
+        if( (nBinsTotalX + overlapX) % stepX >= overlapX )
         {
-            AllocateArrays( block, (nBinsTotal + overlap) % step );
+            if( (nBinsTotalY + overlapY) % stepY >= overlapY )
+            {
+                AllocateArrays( blockX, (nBinsTotalX + overlapX) % stepX, blockY, (nBinsTotalY + overlapY) % stepY );
+            }
+            else
+            {
+                AllocateArrays( blockX, (nBinsTotalX + overlapX) % stepX, blockY, ((nBinsTotalY + overlapY) % stepY) + stepY );
+            }
         }
         else
         {
-            AllocateArrays( block, ((nBinsTotal + overlap) % step) + step );
+            if( (nBinsTotalY + overlapY) % stepY >= overlapY )
+            {
+                AllocateArrays( blockX, ((nBinsTotalX + overlapX) % stepX) + stepX, blockY, (nBinsTotalY + overlapY) % stepY );
+            }
+            else
+            {
+                AllocateArrays( blockX, ((nBinsTotalX + overlapX) % stepX) + stepX, blockY, ((nBinsTotalY + overlapY) % stepY) + stepY );
+            }
         }
 
         // Also transform the kernel, we only need to do this once
         KTDEBUG(sdlog, "Transforming kernel");
 
-        for( int iBin = 0; iBin < block; ++iBin )
+        for( int iBin = 0; iBin < blockX; ++iBin )
         {
-            fInputArrayReal[iBin] = kernelX[iBin];
-            fInputArrayComplex[iBin][0] = kernelX[iBin];
-            fInputArrayComplex[iBin][1] = 0.;
+            for( int jBin = 0; jBin < blockY; ++jBin )
+            {
+                fInputArrayReal[iBin, jBin] = kernelXY[iBin, jBin];
+                fInputArrayComplex[iBin, jBin][0] = kernelXY[iBin, jBin];
+                fInputArrayComplex[iBin, jBin][1] = 0.;
+            }
         }
 
         fftw_execute( fRealToComplexPlan );
         fftw_execute( fC2CForwardPlan );
         
-        fTransformedKernelXAsReal = new fftw_complex[block];
-        fTransformedKernelXAsComplex = new fftw_complex[block];
-        for( int iBin = 0; iBin < block; ++iBin )
+        fTransformedKernelXYAsReal = new fftw_complex[blockX, blockY];
+        fTransformedKernelXYAsComplex = new fftw_complex[blockX, blockY];
+        for( int iBin = 0; iBin < blockX; ++iBin )
         {
-            fTransformedKernelXAsReal[iBin][0] = fTransformedInputArrayFromReal[iBin][0];
-            fTransformedKernelXAsReal[iBin][1] = fTransformedInputArrayFromReal[iBin][1];
-            fTransformedKernelXAsComplex[iBin][0] = fTransformedInputArray[iBin][0];
-            fTransformedKernelXAsComplex[iBin][1] = fTransformedInputArray[iBin][1];
+            for( int jBin = 0; jBin < blockY; ++jBin )
+            {
+                fTransformedKernelXYAsReal[iBin, jBin][0] = fTransformedInputArrayFromReal[iBin, jBin][0];
+                fTransformedKernelXYAsReal[iBin, jBin][1] = fTransformedInputArrayFromReal[iBin, jBin][1];
+                fTransformedKernelXYAsComplex[iBin, jBin][0] = fTransformedInputArray[iBin, jBin][0];
+                fTransformedKernelXYAsComplex[iBin, jBin][1] = fTransformedInputArray[iBin, jBin][1];
+            }
         }
     }
 
