@@ -16,6 +16,10 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 
+#include "KTMultiFSDataPolar.hh"
+#include "KTMultiFSDataFFTW.hh"
+#include "KTMultiPowerSpectrumData.hh"
+
 #include <vector>
 #include <cmath>
 #include <fftw3.h>
@@ -35,9 +39,9 @@ namespace Katydid
     class KTPowerSpectrumData;
     class KTPowerSpectrumDataCore;
 
-    class KTConvolvedPowerSpectrumData;
-    class KTConvolvedFrequencySpectrumDataFFTW;
-    class KTConvolvedFrequencySpectrumDataPolar;
+    class KTConvolvedMultiPowerSpectrumData;
+    class KTConvolvedMultiFSDataFFTW;
+    class KTConvolvedMultiFSDataPolar;
 
 
     /*!
@@ -148,7 +152,7 @@ namespace Katydid
             
             bool ParseKernel();
 
-            bool Convolve2D( KTMultiPSData& data );
+            bool Convolve2D( KTMultiPowerSpectrumData& data );
             bool Convolve2D( KTMultiFSDataFFTW& data );
             bool Convolve2D( KTMultiFSDataPolar& data );
 
@@ -169,13 +173,13 @@ namespace Katydid
             void ConjugateAndReverse( KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& spectrum );
             void ConjugateAndReverse( KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& spectrum );
 
-            void SetInputArray( int position, int nBin, const KTPhysicalArray< 1, KTPowerSpectrum* >* initialSpectrum );
-            void SetInputArray( int position, int nBin, const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* initialSpectrum );
-            void SetInputArray( int position, int nBin, const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* initialSpectrum );
+            void SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTPowerSpectrum* >* initialSpectrum );
+            void SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* initialSpectrum );
+            void SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* initialSpectrum );
 
-            void SetOutputArray( int position, int nBin, KTPhysicalArray< 1, KTPowerSpectrum* >& transformedPS, double norm );
-            void SetOutputArray( int position, int nBin, KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& transformedFSFFTW, double norm );
-            void SetOutputArray( int position, int nBin, KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& transformedFSPolar, double norm );
+            void SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTPowerSpectrum* >& transformedPS, double normX, double normY );
+            void SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& transformedFSFFTW, double normX, double normY );
+            void SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& transformedFSPolar, double normX, double normY );
 
             void SetupInternalMaps();
 
