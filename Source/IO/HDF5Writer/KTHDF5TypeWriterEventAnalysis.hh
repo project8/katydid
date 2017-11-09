@@ -346,6 +346,180 @@ namespace Katydid
         H5::PredType::NATIVE_UINT
     };
 
+    // Rotate-Project-Track-Data
+
+    typedef struct 
+    {
+        // processed track stuff
+
+        unsigned Component;
+        uint64_t AcquisitionID;
+        unsigned TrackID;
+        unsigned EventID;
+        unsigned EventSequenceID;
+        bool IsCut;
+        double StartTimeInAcq;
+        double StartTimeInRunC;
+        double EndTimeInRunC;
+        double TimeLength;
+        double StartFrequency;
+        double EndFrequency;
+        double FrequencyWidth;
+        double Slope;
+        double Intercept;
+        double TotalPower;
+        double StartTimeInRunCSigma;
+        double EndTimeInRunCSigma;
+        double TimeLengthSigma;
+        double StartFrequencySigma;
+        double EndFrequencySigma;
+        double FrequencyWidthSigma;
+        double SlopeSigma;
+        double InterceptSigma;
+        double TotalPowerSigma;
+
+        // additional power-fit results
+
+        int IsValid;
+        int NPeaks;
+        double Average;
+        double RMS;
+        double Skewness;
+        double Kurtosis;
+        double NormCentral;
+        double MeanCentral;
+        double SigmaCentral;
+        double MaximumCentral;
+        double RMSAwayFromCentral;
+        double CentralPowerFraction;
+
+    } RPTData;
+
+    const size_t RPTNFields = 37;
+    size_t RPTSize = sizeof(RPTData);
+    const char* RPTFieldNames[RPTNFields] = 
+    {
+        "Component",
+        "AcquisitionID",
+        "TrackID",
+        "EventID",
+        "EventSequenceID",
+        "IsCut",
+        "StartTimeInAcq",
+        "StartTimeInRunC",
+        "EndTimeInRunC",
+        "TimeLength",
+        "StartFrequency",
+        "EndFrequency",
+        "FrequencyWidth",
+        "Slope",
+        "Intercept",
+        "TotalPower",
+        "StartTimeInRunCSigma",
+        "EndTimeInRunCSigma",
+        "TimeLengthSigma",
+        "StartFrequencySigma",
+        "EndFrequencySigma",
+        "FrequencyWidthSigma",
+        "SlopeSigma",
+        "InterceptSigma",
+        "TotalPowerSigma",
+        "IsValid",
+        "NPeaks",
+        "Average",
+        "RMS",
+        "Skewness",
+        "Kurtosis",
+        "NormCentral",
+        "MeanCentral",
+        "SigmaCentral",
+        "MaximumCentral",
+        "RMSAwayFromCentral",
+        "CentralPowerFraction"
+    };
+    size_t RPTFieldOffsets[RPTNFields] = 
+    {
+        HOFFSET(RPTData, Component),
+        HOFFSET(RPTData, AcquisitionID),
+        HOFFSET(RPTData, TrackID),
+        HOFFSET(RPTData, EventID),
+        HOFFSET(RPTData, EventSequenceID),
+        HOFFSET(RPTData, IsCut),
+        HOFFSET(RPTData, StartTimeInAcq),
+        HOFFSET(RPTData, StartTimeInRunC),
+        HOFFSET(RPTData, EndTimeInRunC),
+        HOFFSET(RPTData, TimeLength),
+        HOFFSET(RPTData, StartFrequency),
+        HOFFSET(RPTData, EndFrequency),
+        HOFFSET(RPTData, FrequencyWidth),
+        HOFFSET(RPTData, Slope),
+        HOFFSET(RPTData, Intercept),
+        HOFFSET(RPTData, TotalPower),
+        HOFFSET(RPTData, StartTimeInRunCSigma),
+        HOFFSET(RPTData, EndTimeInRunCSigma),
+        HOFFSET(RPTData, TimeLengthSigma),
+        HOFFSET(RPTData, StartFrequencySigma),
+        HOFFSET(RPTData, EndFrequencySigma),
+        HOFFSET(RPTData, FrequencyWidthSigma),
+        HOFFSET(RPTData, SlopeSigma),
+        HOFFSET(RPTData, InterceptSigma),
+        HOFFSET(RPTData, TotalPowerSigma),
+        HOFFSET(RPTData, IsValid),
+        HOFFSET(RPTData, NPeaks),
+        HOFFSET(RPTData, Average),
+        HOFFSET(RPTData, RMS),
+        HOFFSET(RPTData, Skewness),
+        HOFFSET(RPTData, Kurtosis),
+        HOFFSET(RPTData, NormCentral),
+        HOFFSET(RPTData, MeanCentral),
+        HOFFSET(RPTData, SigmaCentral),
+        HOFFSET(RPTData, MaximumCentral),
+        HOFFSET(RPTData, RMSAwayFromCentral),
+        HOFFSET(RPTData, CentralPowerFraction)
+    };
+    H5::PredType RPTFieldTypes[RPTNFields] = 
+    {
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT64,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_INT8,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE
+    };
+
+
+
     class KTHDF5TypeWriterEventAnalysis: public KTHDF5TypeWriter
     {
         /*
@@ -366,9 +540,11 @@ namespace Katydid
         void WriteProcessedTrack(Nymph::KTDataPtr data);
         void WriteMultiTrackEvent(Nymph::KTDataPtr data);
         void WritePowerFitData(Nymph::KTDataPtr data);
+        void WriteRPTrackEventData(Nymph::KTDataPtr data);
         void WriteMTEBuffer();
         void WritePTBuffer();
         void WritePFBuffer();
+        void WriteMTERPTracksBuffer();
 
     private:
         std::vector<MTEData> fMTEDataBuffer;
@@ -378,10 +554,14 @@ namespace Katydid
         H5::CompType* fPTType;
         std::vector<PFData> fPFDataBuffer;
         H5::CompType* fPFType;
+        std::vector<RPTData> fMTERPTracksDataBuffer;
+        std::vector<RPTData> fRPTDataBuffer;
+        H5::CompType* fRPTType;
 
         unsigned fFlushMTEIdx;
         unsigned fFlushPTIdx;
         unsigned fFlushPFIdx;
+        unsigned fFlushRPTIdx;
     };
 };
 

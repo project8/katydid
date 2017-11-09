@@ -10,6 +10,7 @@
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTRPTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
@@ -29,9 +30,12 @@ namespace Katydid
             fMTETracksDataBuffer(),
             fPTDataBuffer(),
             fPFDataBuffer(),
+            fMTERPTracksDataBuffer(),
+            fRPTDataBuffer(),
             fFlushMTEIdx(0),
             fFlushPTIdx(0),
-            fFlushPFIdx(0) 
+            fFlushPFIdx(0),
+            fFlushRPTIdx(0)
 
     {
         /*
@@ -62,6 +66,14 @@ namespace Katydid
                 PFFieldOffsets[f],
                 PFFieldTypes[f]);
         }
+        this->fRPTType = new H5::CompType(RPTSize);
+        for (int f = 0; f < RPTNFields; f++) 
+        {
+            this->fRPTType->insertMember(
+                RPTFieldNames[f],
+                RPTFieldOffsets[f],
+                RPTFieldTypes[f]);
+        }
     }
 
     KTHDF5TypeWriterEventAnalysis::~KTHDF5TypeWriterEventAnalysis()
@@ -69,6 +81,7 @@ namespace Katydid
         if(fMTEType) delete fMTEType;
         if(fPTType) delete fPTType;
         if(fPFType) delete fPFType;
+        if(fRPTType) delete fRPTType;
     }
 
     void KTHDF5TypeWriterEventAnalysis::RegisterSlots() 
@@ -82,6 +95,8 @@ namespace Katydid
         fWriter->RegisterSlot("final-write-events", this, &KTHDF5TypeWriterEventAnalysis::WriteMTEBuffer);
         fWriter->RegisterSlot("power-fit", this, &KTHDF5TypeWriterEventAnalysis::WritePowerFitData);
         fWriter->RegisterSlot("final-write-pf", this, &KTHDF5TypeWriterEventAnalysis::WritePFBuffer);
+        fWriter->RegisterSlot("rp-track", this, &KTHDF5TypeWriterEventAnalysis::WriteRPTrackEventData);
+        fWriter->RegisterSlot("final-write-rp-tracks", this, &KTHDF5TypeWriterEventAnalysis::WriteMTERPTracksBuffer);
 
         return;
     }
@@ -328,5 +343,140 @@ namespace Katydid
         this->fPFDataBuffer.clear();
         this->fFlushPFIdx++;
     }
+
+    void KTHDF5TypeWriterEventAnalysis::WriteRPTrackEventData(Nymph::KTDataPtr data) 
+    {
+        KTDEBUG(publog, "Processing RP-Track Event");
+        KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
+
+        // Write the event information
+        MTEData event;
+        event.Component = mteData.GetComponent();
+        event.AcquisitionID = mteData.GetAcquisitionID();
+        event.EventID = mteData.GetEventID();
+        event.TotalEventSequences = mteData.GetTotalEventSequences();
+        event.StartTimeInAcq = mteData.GetStartTimeInAcq();
+        event.StartTimeInRunC = mteData.GetStartTimeInRunC();
+        event.EndTimeInRunC = mteData.GetEndTimeInRunC();
+        event.TimeLength = mteData.GetTimeLength();
+        event.StartFrequency = mteData.GetStartFrequency();
+        event.EndFrequency = mteData.GetEndFrequency();
+        event.MinimumFrequency = mteData.GetMinimumFrequency();
+        event.MaximumFrequency = mteData.GetMaximumFrequency();
+        event.FrequencyWidth = mteData.GetFrequencyWidth();
+        event.StartTimeInRunCSigma = mteData.GetStartTimeInRunCSigma();
+        event.EndTimeInRunCSigma = mteData.GetEndTimeInRunCSigma();
+        event.TimeLengthSigma = mteData.GetTimeLengthSigma();
+        event.StartFrequencySigma = mteData.GetStartFrequencySigma();
+        event.EndFrequencySigma = mteData.GetEndFrequencySigma();
+        event.FrequencyWidthSigma = mteData.GetFrequencyWidthSigma();
+        event.FirstTrackID = mteData.GetFirstTrackID();
+        event.FirstTrackTimeLength = mteData.GetFirstTrackTimeLength();
+        event.FirstTrackFrequencyWidth = mteData.GetFirstTrackFrequencyWidth();
+        event.FirstTrackSlope = mteData.GetFirstTrackSlope();
+        event.FirstTrackIntercept = mteData.GetFirstTrackIntercept();
+        event.FirstTrackTotalPower = mteData.GetFirstTrackTotalPower();
+        event.UnknownEventTopology = mteData.GetUnknownEventTopology();
+        fMTEDataBuffer.push_back(event);
+
+        // Write the tracks that make up this event
+        KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
+        RPTData track;
+        for (std::set< KTProcessedTrackData , TrackTimeComp >::iterator RPTrackIt = mteData.GetTracksBegin(); RPTrackIt != mteData.GetTracksEnd(); ++RPTrackIt)
+        {
+            //KTRPTrackData RPTrackIt = dynamic_cast< KTRPTrackData >( *ProcessedTrackIt );
+            
+            track.Component = RPTrackIt->GetComponent();
+            track.AcquisitionID = RPTrackIt->GetAcquisitionID();
+            track.TrackID = RPTrackIt->GetTrackID();
+            track.EventID = event.EventID; // Get the Event ID from the Event, not from the Track
+            track.EventSequenceID = RPTrackIt->GetEventSequenceID();
+            track.IsCut = RPTrackIt->GetIsCut();
+            track.StartTimeInAcq = RPTrackIt->GetStartTimeInAcq();
+            track.StartTimeInRunC = RPTrackIt->GetStartTimeInRunC();
+            track.EndTimeInRunC = RPTrackIt->GetEndTimeInRunC();
+            track.TimeLength = RPTrackIt->GetTimeLength();
+            track.StartFrequency = RPTrackIt->GetStartFrequency();
+            track.EndFrequency = RPTrackIt->GetEndFrequency();
+            track.FrequencyWidth = RPTrackIt->GetFrequencyWidth();
+            track.Slope = RPTrackIt->GetSlope();
+            track.Intercept = RPTrackIt->GetIntercept();
+            track.TotalPower = RPTrackIt->GetTotalPower();
+            track.StartTimeInRunCSigma = RPTrackIt->GetStartTimeInRunCSigma();
+            track.EndTimeInRunCSigma = RPTrackIt->GetEndTimeInRunCSigma();
+            track.TimeLengthSigma = RPTrackIt->GetTimeLengthSigma();
+            track.StartFrequencySigma = RPTrackIt->GetStartFrequencySigma();
+            track.EndFrequencySigma = RPTrackIt->GetEndFrequencySigma();
+            track.FrequencyWidthSigma = RPTrackIt->GetFrequencyWidthSigma();
+            track.SlopeSigma = RPTrackIt->GetSlopeSigma();
+            track.InterceptSigma = RPTrackIt->GetInterceptSigma();
+            track.TotalPowerSigma = RPTrackIt->GetTotalPowerSigma();
+/*
+            track.IsValid = RPTrackIt->GetIsValid();
+            track.NPeaks = RPTrackIt->GetNPeaks();
+            track.Average = RPTrackIt->GetAverage();
+            track.RMS = RPTrackIt->GetRMS();
+            track.Skewness = RPTrackIt->GetSkewness();
+            track.Kurtosis = RPTrackIt->GetKurtosis();
+            track.NormCentral = RPTrackIt->GetNormCentral();
+            track.MeanCentral = RPTrackIt->GetMeanCentral();
+            track.SigmaCentral = RPTrackIt->GetSigmaCentral();
+            track.MaximumCentral = RPTrackIt->GetMaximumCentral();
+            track.RMSAwayFromCentral = RPTrackIt->GetRMSAwayFromCentral();
+            track.CentralPowerFraction = RPTrackIt->GetCentralPowerFraction();
+*/
+            fMTERPTracksDataBuffer.push_back(track);
+            KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
+        }
+
+
+        KTDEBUG("Done.");
+        return;
+    }
+
+    void KTHDF5TypeWriterEventAnalysis::WriteMTERPTracksBuffer()
+    {
+        if (fMTEDataBuffer.empty())
+        {
+            KTDEBUG("MTE buffer is empty; no multi-track events written");
+            return;
+        }
+
+        KTDEBUG("Writing MTE buffer.");
+        // Now create the dataspace we need
+        hsize_t* dims_cands = new hsize_t(fMTEDataBuffer.size());
+        hsize_t* dims_tracks = new hsize_t(fMTERPTracksDataBuffer.size());
+        H5::DataSpace dspace_cands(1, dims_cands);
+        H5::DataSpace dspace_tracks(1, dims_tracks);
+
+        if( !fWriter->OpenAndVerifyFile() ) return;
+        // Make a group for the events, and a separate group for the tracks belonging to the event
+        H5::Group* candidatesGroup = fWriter->AddGroup("candidates");
+        H5::Group* candidateTracksGroup = fWriter->AddGroup("candidate_tracks");
+
+        // OK, create the dataset and write it down.
+        // Write the event information
+        std::stringstream namestream;
+        std::string dsetname;
+        namestream << "candidates_" << fFlushMTEIdx;
+        namestream >> dsetname;
+        H5::DataSet* dset_cands = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(), *fMTEType, dspace_cands));
+        dset_cands->write(fMTEDataBuffer.data(), *fMTEType);
+
+        // Write the tracks that belong to the current events
+        //dsetname.clear();
+        //namestream.str(std::string());
+        std::stringstream namestream2;
+        std::string dsetname2;
+        namestream2 << "candidate_tracks_" << fFlushMTEIdx;
+        namestream2 >> dsetname2;
+        H5::DataSet* dset_tracks = new H5::DataSet(candidateTracksGroup->createDataSet(dsetname2.c_str(), *fRPTType, dspace_tracks));
+        dset_tracks->write(fMTERPTracksDataBuffer.data(), *fRPTType);
+
+        fMTERPTracksDataBuffer.clear();
+        fMTEDataBuffer.clear();
+        fFlushMTEIdx++;
+    }
+
 
 }  //  namespace Katydid

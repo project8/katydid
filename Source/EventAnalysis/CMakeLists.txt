@@ -25,6 +25,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTOverlappingTrackClustering.hh
     KTPowerFitCut.hh
     KTProcessedTrackCut.hh
+    KTRPClassifier.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
     KTTrackProcessing.hh
@@ -51,6 +52,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTOverlappingTrackClustering.cc
     KTPowerFitCut.cc
     KTProcessedTrackCut.cc
+    KTRPClassifier.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
     KTTrackProcessing.cc
