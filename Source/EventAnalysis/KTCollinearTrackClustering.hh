@@ -87,6 +87,8 @@ namespace Katydid
             bool fClusterFlag;
             bool fTerminateFlag;
 
+            int fWorstTrack;
+
             std::vector< int > fCluster;
 
             //***************
