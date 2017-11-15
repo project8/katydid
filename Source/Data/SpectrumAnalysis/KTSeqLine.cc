@@ -54,7 +54,7 @@ namespace Katydid
         fAmplitudeList.push_back(point.fAmplitude);
 
         fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
-
+        KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineParameters();
         this->CalculateSlope();
     }
@@ -190,9 +190,17 @@ namespace Katydid
     inline void LineRef::CalculateSlope()
     {
 
-        /*//KTDEBUG(seqlog, "Calculating line slope");
+        //KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
         double wSum = 0.0;
+        fNPoints = fLinePoints.size();
+
+        fSumX += fLinePoints.back().fTimeInRunC; 
+        fSumY += fLinePoints.back().fPointFreq;
+        fSumXY += fLinePoints.back().fTimeInRunC * fLinePoints.back().fPointFreq;
+        fSumXX += fLinePoints.back().fTimeInRunC * fLinePoints.back().fTimeInRunC;
+        fAmplitudeSum += fLinePoints.back().fAmplitude;
+
 
         if (fNPoints > 1)
         {
@@ -206,19 +214,15 @@ namespace Katydid
             }
             fSlope = weightedSlope/wSum;
         }
-        else
+        /*if (fNPoints > 1)
+        {
+            fSlope = (fNPoints * fSumXY - fSumX * fSumY)/(fSumXX * fNPoints - fSumX * fSumX);
+            KTDEBUG( seqlog, "New slope "<<fSlope);
+        }*/
+        if (fNPoints <= 1)
         {
             fSlope = fInitialSlope;
-        }*/
-        fSumX += fLinePoints.back().fTimeInRunC;
-        fSumY += fLinePoints.back().fPointFreq * fLinePoints.back().fAmplitude;
-        fSumXY += fLinePoints.back().fTimeInRunC * fLinePoints.back().fPointFreq * fLinePoints.back().fAmplitude;
-        fSumXX += fLinePoints.back().fTimeInRunC * fLinePoints.back().fTimeInRunC;
-        fNPoints = fLinePoints.size();
-        fAmplitudeSum += fLinePoints.back().fAmplitude;
-
-        fSlope = (fNPoints * fSumXY/fAmplitudeSum - fSumX * fSumY)/(fSumXX * fNPoints - fSumX * fSumX);
-
+        }
     }
 
     void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
@@ -243,7 +247,7 @@ namespace Katydid
             }
         }        
         this->UpdateLineParameters();
-        this->CalculateSlope();
+        //this->CalculateSlope();
     }
         
 
@@ -251,7 +255,7 @@ namespace Katydid
     {
         //KTDEBUG(seqlog, "Updating line parameters");
         fNPoints = fLinePoints.size();
-        if (fNPoints < 2)
+        if (fNPoints == 1)
             {
                 fAcquisitionID = fLinePoints.front().fAcquisitionID;
                 fComponent = fLinePoints.front().fComponent;
