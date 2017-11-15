@@ -38,7 +38,11 @@ namespace Katydid
         fSlopeSigma(0.),
         fInterceptSigma(0.),
         fStartFrequencySigma(0.),
-        fEndFrequencySigma(0.)
+        fEndFrequencySigma(0.),
+        fSumX(0.),
+        fSumY(0.),
+        fSumXY(0.),
+        fSumXX(0.)
         {}
 
     LineRef::~LineRef()
@@ -186,7 +190,7 @@ namespace Katydid
     inline void LineRef::CalculateSlope()
     {
 
-        //KTDEBUG(seqlog, "Calculating line slope");
+        /*//KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
         double wSum = 0.0;
 
@@ -205,7 +209,16 @@ namespace Katydid
         else
         {
             fSlope = fInitialSlope;
-        }
+        }*/
+        fSumX += fLinePoints.back().fTimeInRunC;
+        fSumY += fLinePoints.back().fPointFreq * fLinePoints.back().fAmplitude;
+        fSumXY += fLinePoints.back().fTimeInRunC * fLinePoints.back().fPointFreq * fLinePoints.back().fAmplitude;
+        fSumXX += fLinePoints.back().fTimeInRunC * fLinePoints.back().fTimeInRunC;
+        fNPoints = fLinePoints.size();
+        fAmplitudeSum += fLinePoints.back().fAmplitude;
+
+        fSlope = (fNPoints * fSumXY/fAmplitudeSum - fSumX * fSumY)/(fSumXX * fNPoints - fSumX * fSumX);
+
     }
 
     void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
@@ -234,24 +247,28 @@ namespace Katydid
     }
         
 
-    inline void (LineRef::UpdateLineParameters())
+    inline void LineRef::UpdateLineParameters()
     {
         //KTDEBUG(seqlog, "Updating line parameters");
-        fAcquisitionID = fLinePoints.front().fAcquisitionID;
-        fComponent = fLinePoints.front().fComponent;
-        fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
-        fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+        fNPoints = fLinePoints.size();
+        if (fNPoints < 2)
+            {
+                fAcquisitionID = fLinePoints.front().fAcquisitionID;
+                fComponent = fLinePoints.front().fComponent;
+                fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
+                fStartFrequency = fLinePoints.front().fPointFreq;
+                fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+            }
         fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
         fEndTimeInAcq = fLinePoints.back().fTimeInAcq;
-        fStartFrequency = fLinePoints.front().fPointFreq;
         fEndFrequency = fLinePoints.back().fPointFreq;
-        fNPoints = fLinePoints.size();
 
-        fAmplitudeSum = 0.0;
 
+        //fAmplitudeSum = 0.0;
+        /*
         for (std::vector<LinePoint>::iterator PointIt=fLinePoints.begin(); PointIt != fLinePoints.end(); PointIt++)
         {
-            fAmplitudeSum += PointIt->fAmplitude;
+            //fAmplitudeSum += PointIt->fAmplitude;
 
             if (PointIt->fTimeInRunC < fStartTimeInRunC)
             {
@@ -265,7 +282,7 @@ namespace Katydid
                 fEndTimeInAcq = PointIt->fTimeInAcq;
                 fEndFrequency = PointIt->fPointFreq;
             }
-        }
+        }*/
     }
 } /* namespace Katydid */
 

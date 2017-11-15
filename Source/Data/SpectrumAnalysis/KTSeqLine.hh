@@ -99,6 +99,11 @@ namespace Katydid {
         double fStartFrequencySigma;
         double fEndFrequencySigma;
 
+        double fSumX;
+        double fSumY;
+        double fSumXY;
+        double fSumXX;
+
 
         LineRef(const double& initialSlope);
         void InsertPoint(const Point& point);
