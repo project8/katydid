@@ -20,8 +20,9 @@ if (FFTW_FOUND)
     set (TRANSFORM_NODICT_HEADERFILES
         ${TRANSFORM_NODICT_HEADERFILES}
         KTForwardFFTW.hh
-	KTQuadraticPhaseShift.hh
+        KTQuadraticPhaseShift.hh
         KTReverseFFTW.hh
+        KTWarblet.hh
     )
 endif (FFTW_FOUND)        
 
@@ -43,8 +44,9 @@ if (FFTW_FOUND)
     set (TRANSFORM_SOURCEFILES
         ${TRANSFORM_SOURCEFILES}
         KTForwardFFTW.cc
-	KTQuadraticPhaseShift.cc
+        KTQuadraticPhaseShift.cc
         KTReverseFFTW.cc
+        KTWarblet.cc
     )
 endif (FFTW_FOUND)        
 
