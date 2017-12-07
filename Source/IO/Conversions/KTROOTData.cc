@@ -206,7 +206,7 @@ namespace Katydid
 
         Int_t nTracks = fTracks->GetSize();
         Nymph::KTDataPtr dummyData;
-        KTProcessedTrackData procTrack = dummyData->Of< KTProcessedTrackData >();
+        KTProcessedTrackData& procTrack = dummyData->Of< KTProcessedTrackData >();
         AllTrackData track( dummyData, procTrack );
 
         for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)

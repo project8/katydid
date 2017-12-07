@@ -65,7 +65,7 @@ namespace Katydid
             return;
         }
 
-        KTProcessedTrackData track = data->Of< KTProcessedTrackData >();
+        KTProcessedTrackData& track = data->Of< KTProcessedTrackData >();
 
         if (track.GetAcquisitionID() != fCurrentAcquisitionID)
         {
@@ -93,6 +93,8 @@ namespace Katydid
         // copy the full track data
         AllTrackData trackObject( data, track );
         fCompTracks[track.GetComponent()].insert(trackObject);
+
+        KTINFO(tclog, "Successfully took track. Total tracks stored: " << fCompTracks.size());
 
         return;
     }

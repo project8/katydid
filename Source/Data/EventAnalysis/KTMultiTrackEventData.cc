@@ -179,7 +179,7 @@ namespace Katydid
     void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
     {
         Nymph::KTDataPtr data;
-        KTProcessedTrackData newTrack = data->Of< KTProcessedTrackData >();
+        KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
         newTrack = track;
 
         AllTrackData trackObject( data, newTrack );

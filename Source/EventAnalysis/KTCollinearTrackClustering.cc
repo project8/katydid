@@ -66,7 +66,7 @@ namespace Katydid
         // copy the full track data
 
         Nymph::KTDataPtr data;
-        KTProcessedTrackData newTrack = data->Of< KTProcessedTrackData >();
+        KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
         newTrack = track;
 
         AllTrackData trackObject( data, newTrack );
