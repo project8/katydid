@@ -160,13 +160,13 @@ namespace Katydid
         {
             // Get track time and frequency info
             KTProcessedTrackData aTrack;
-            aTrack.SetEventSequenceID( (**it).GetEventSequenceID() );
-            aTrack.SetStartTimeInRunC( (**it).GetStartTimeInRunC() );
-            aTrack.SetEndTimeInRunC( (**it).GetEndTimeInRunC() );
-            aTrack.SetStartFrequency( (**it).GetStartFrequency() );
-            aTrack.SetEndFrequency( (**it).GetEndFrequency() );
-            aTrack.SetSlope( (**it).GetSlope() );
-            aTrack.SetIntercept( (**it).GetIntercept() );
+            aTrack.SetEventSequenceID( (**it).fProcTrack.GetEventSequenceID() );
+            aTrack.SetStartTimeInRunC( (**it).fProcTrack.GetStartTimeInRunC() );
+            aTrack.SetEndTimeInRunC( (**it).fProcTrack.GetEndTimeInRunC() );
+            aTrack.SetStartFrequency( (**it).fProcTrack.GetStartFrequency() );
+            aTrack.SetEndFrequency( (**it).fProcTrack.GetEndFrequency() );
+            aTrack.SetSlope( (**it).fProcTrack.GetSlope() );
+            aTrack.SetIntercept( (**it).fProcTrack.GetIntercept() );
 
             // Assign overall start/end time and frequency
             if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
@@ -290,13 +290,13 @@ namespace Katydid
             for( TrackSet::const_iterator it = allTracks.begin(); it != allTracks.end(); ++it )
             {
                 KTProcessedTrackData aTrack;// = KTProcessedTrackData(*it);
-                aTrack.SetEventSequenceID( it->GetEventSequenceID() );
-                aTrack.SetStartTimeInRunC( it->GetStartTimeInRunC() );
-                aTrack.SetEndTimeInRunC( it->GetEndTimeInRunC() );
-                aTrack.SetStartFrequency( it->GetStartFrequency() );
-                aTrack.SetEndFrequency( it->GetEndFrequency() );
-                aTrack.SetSlope( it->GetSlope() );
-                aTrack.SetIntercept( it->GetIntercept() );
+                aTrack.SetEventSequenceID( it->fProcTrack.GetEventSequenceID() );
+                aTrack.SetStartTimeInRunC( it->fProcTrack.GetStartTimeInRunC() );
+                aTrack.SetEndTimeInRunC( it->fProcTrack.GetEndTimeInRunC() );
+                aTrack.SetStartFrequency( it->fProcTrack.GetStartFrequency() );
+                aTrack.SetEndFrequency( it->fProcTrack.GetEndFrequency() );
+                aTrack.SetSlope( it->fProcTrack.GetSlope() );
+                aTrack.SetIntercept( it->fProcTrack.GetIntercept() );
                 
                 // Skip tracks with fEventSequenceID != 0
                 if( aTrack.GetEventSequenceID() != 0 )

@@ -38,10 +38,10 @@ namespace Katydid
             fCompTracks(1),
             fMPTracks(1),
             fMPTSignal("mpt", this),
-            fDoneSignal("mpt-done", this),
-            fTakeTrackSlot("track", this, &KTMultiPeakTrackBuilder::TakeTrack)
+            fDoneSignal("mpt-done", this)
     {
         RegisterSlot("do-clustering", this, &KTMultiPeakTrackBuilder::DoClusteringSlot);
+        RegisterSlot("track", this, &KTMultiPeakTrackBuilder::SlotFunctionTakeTrack);
     }
 
     KTMultiPeakTrackBuilder::~KTMultiPeakTrackBuilder()
@@ -57,22 +57,30 @@ namespace Katydid
         return true;
     }
 
-    bool KTMultiPeakTrackBuilder::TakeTrack(KTProcessedTrackData& track)
+    void KTMultiPeakTrackBuilder::SlotFunctionTakeTrack(Nymph::KTDataPtr data)
     {
+        if (! data->Has< KTProcessedTrackData >())
+        {
+            KTERROR(tclog, "Data not found with type < KTProcessedTrackData >!");
+            return;
+        }
+
+        KTProcessedTrackData track = data->Of< KTProcessedTrackData >();
+
         if (track.GetAcquisitionID() != fCurrentAcquisitionID)
         {
             KTINFO(tclog, "Incoming track has a new acquisition ID (new: " << track.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
             if (! DoClustering())
             {
                 KTERROR(tclog, "An error occurred while running the event clustering");
-                return false;
+                return;
             }
             fCurrentAcquisitionID = track.GetAcquisitionID();
             KTDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
         }
 
         // ignore the track if it's been cut
-        if (track.GetIsCut()) return true;
+        if (track.GetIsCut()) return;
 
         // verify that we have the right number of components
         if (track.GetComponent() >= fCompTracks.size())
@@ -83,9 +91,10 @@ namespace Katydid
         KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         // copy the full track data
-        fCompTracks[track.GetComponent()].insert(track);
+        AllTrackData trackObject( data, track );
+        fCompTracks[track.GetComponent()].insert(trackObject);
 
-        return true;
+        return;
     }
 
     void KTMultiPeakTrackBuilder::DoClusteringSlot()
@@ -154,7 +163,7 @@ namespace Katydid
                 while (mptrIt != activeTrackRefs.end())
                 {
                     KTDEBUG(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
-                    double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
+                    double deltaStartT = trackIt->fProcTrack.GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
 
                     // check to see if this track ref should no longer be active
                     if (deltaStartT > fSidebandTimeTolerance)
@@ -167,7 +176,7 @@ namespace Katydid
                     }
                     else
                     {
-                        double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
+                        double deltaEndT = trackIt->fProcTrack.GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
                         // check if this track should be added to this track ref
                         if ( !trackHasBeenAdded &&
                              (fabs(deltaStartT) <= fSidebandTimeTolerance || fabs(deltaEndT) < fSidebandTimeTolerance)
@@ -188,7 +197,7 @@ namespace Katydid
                 {
                     activeTrackRefs.push_back(MultiPeakTrackRef());
                     activeTrackRefs.rbegin()->InsertTrack(trackIt);
-                    activeTrackRefs.rbegin()->fAcquisitionID = trackIt->GetAcquisitionID();
+                    activeTrackRefs.rbegin()->fAcquisitionID = trackIt->fProcTrack.GetAcquisitionID();
                     trackHasBeenAdded = true;
                 }
                 ++trackIt;

@@ -192,31 +192,31 @@ namespace Katydid
         PTData track;
         for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); ++MTETrackIt)
         {
-            track.Component = MTETrackIt->GetComponent();
-            track.AcquisitionID = MTETrackIt->GetAcquisitionID();
-            track.TrackID = MTETrackIt->GetTrackID();
+            track.Component = MTETrackIt->fProcTrack.GetComponent();
+            track.AcquisitionID = MTETrackIt->fProcTrack.GetAcquisitionID();
+            track.TrackID = MTETrackIt->fProcTrack.GetTrackID();
             track.EventID = event.EventID; // Get the Event ID from the Event, not from the Track
-            track.EventSequenceID = MTETrackIt->GetEventSequenceID();
-            track.IsCut = MTETrackIt->GetIsCut();
-            track.StartTimeInAcq = MTETrackIt->GetStartTimeInAcq();
-            track.StartTimeInRunC = MTETrackIt->GetStartTimeInRunC();
-            track.EndTimeInRunC = MTETrackIt->GetEndTimeInRunC();
-            track.TimeLength = MTETrackIt->GetTimeLength();
-            track.StartFrequency = MTETrackIt->GetStartFrequency();
-            track.EndFrequency = MTETrackIt->GetEndFrequency();
-            track.FrequencyWidth = MTETrackIt->GetFrequencyWidth();
-            track.Slope = MTETrackIt->GetSlope();
-            track.Intercept = MTETrackIt->GetIntercept();
-            track.TotalPower = MTETrackIt->GetTotalPower();
-            track.StartTimeInRunCSigma = MTETrackIt->GetStartTimeInRunCSigma();
-            track.EndTimeInRunCSigma = MTETrackIt->GetEndTimeInRunCSigma();
-            track.TimeLengthSigma = MTETrackIt->GetTimeLengthSigma();
-            track.StartFrequencySigma = MTETrackIt->GetStartFrequencySigma();
-            track.EndFrequencySigma = MTETrackIt->GetEndFrequencySigma();
-            track.FrequencyWidthSigma = MTETrackIt->GetFrequencyWidthSigma();
-            track.SlopeSigma = MTETrackIt->GetSlopeSigma();
-            track.InterceptSigma = MTETrackIt->GetInterceptSigma();
-            track.TotalPowerSigma = MTETrackIt->GetTotalPowerSigma();
+            track.EventSequenceID = MTETrackIt->fProcTrack.GetEventSequenceID();
+            track.IsCut = MTETrackIt->fProcTrack.GetIsCut();
+            track.StartTimeInAcq = MTETrackIt->fProcTrack.GetStartTimeInAcq();
+            track.StartTimeInRunC = MTETrackIt->fProcTrack.GetStartTimeInRunC();
+            track.EndTimeInRunC = MTETrackIt->fProcTrack.GetEndTimeInRunC();
+            track.TimeLength = MTETrackIt->fProcTrack.GetTimeLength();
+            track.StartFrequency = MTETrackIt->fProcTrack.GetStartFrequency();
+            track.EndFrequency = MTETrackIt->fProcTrack.GetEndFrequency();
+            track.FrequencyWidth = MTETrackIt->fProcTrack.GetFrequencyWidth();
+            track.Slope = MTETrackIt->fProcTrack.GetSlope();
+            track.Intercept = MTETrackIt->fProcTrack.GetIntercept();
+            track.TotalPower = MTETrackIt->fProcTrack.GetTotalPower();
+            track.StartTimeInRunCSigma = MTETrackIt->fProcTrack.GetStartTimeInRunCSigma();
+            track.EndTimeInRunCSigma = MTETrackIt->fProcTrack.GetEndTimeInRunCSigma();
+            track.TimeLengthSigma = MTETrackIt->fProcTrack.GetTimeLengthSigma();
+            track.StartFrequencySigma = MTETrackIt->fProcTrack.GetStartFrequencySigma();
+            track.EndFrequencySigma = MTETrackIt->fProcTrack.GetEndFrequencySigma();
+            track.FrequencyWidthSigma = MTETrackIt->fProcTrack.GetFrequencyWidthSigma();
+            track.SlopeSigma = MTETrackIt->fProcTrack.GetSlopeSigma();
+            track.InterceptSigma = MTETrackIt->fProcTrack.GetInterceptSigma();
+            track.TotalPowerSigma = MTETrackIt->fProcTrack.GetTotalPowerSigma();
             fMTETracksDataBuffer.push_back(track);
             KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }
@@ -382,49 +382,49 @@ namespace Katydid
         // Write the tracks that make up this event
         KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         RPTData track;
-        for (std::set< KTProcessedTrackData , TrackTimeComp >::iterator RPTrackIt = mteData.GetTracksBegin(); RPTrackIt != mteData.GetTracksEnd(); ++RPTrackIt)
+        for (std::set< AllTrackData , TrackTimeComp >::iterator RPTrackIt = mteData.GetTracksBegin(); RPTrackIt != mteData.GetTracksEnd(); ++RPTrackIt)
         {
             //KTRPTrackData RPTrackIt = dynamic_cast< KTRPTrackData >( *ProcessedTrackIt );
             
-            track.Component = RPTrackIt->GetComponent();
-            track.AcquisitionID = RPTrackIt->GetAcquisitionID();
-            track.TrackID = RPTrackIt->GetTrackID();
+            track.Component = RPTrackIt->fProcTrack.GetComponent();
+            track.AcquisitionID = RPTrackIt->fProcTrack.GetAcquisitionID();
+            track.TrackID = RPTrackIt->fProcTrack.GetTrackID();
             track.EventID = event.EventID; // Get the Event ID from the Event, not from the Track
-            track.EventSequenceID = RPTrackIt->GetEventSequenceID();
-            track.IsCut = RPTrackIt->GetIsCut();
-            track.StartTimeInAcq = RPTrackIt->GetStartTimeInAcq();
-            track.StartTimeInRunC = RPTrackIt->GetStartTimeInRunC();
-            track.EndTimeInRunC = RPTrackIt->GetEndTimeInRunC();
-            track.TimeLength = RPTrackIt->GetTimeLength();
-            track.StartFrequency = RPTrackIt->GetStartFrequency();
-            track.EndFrequency = RPTrackIt->GetEndFrequency();
-            track.FrequencyWidth = RPTrackIt->GetFrequencyWidth();
-            track.Slope = RPTrackIt->GetSlope();
-            track.Intercept = RPTrackIt->GetIntercept();
-            track.TotalPower = RPTrackIt->GetTotalPower();
-            track.StartTimeInRunCSigma = RPTrackIt->GetStartTimeInRunCSigma();
-            track.EndTimeInRunCSigma = RPTrackIt->GetEndTimeInRunCSigma();
-            track.TimeLengthSigma = RPTrackIt->GetTimeLengthSigma();
-            track.StartFrequencySigma = RPTrackIt->GetStartFrequencySigma();
-            track.EndFrequencySigma = RPTrackIt->GetEndFrequencySigma();
-            track.FrequencyWidthSigma = RPTrackIt->GetFrequencyWidthSigma();
-            track.SlopeSigma = RPTrackIt->GetSlopeSigma();
-            track.InterceptSigma = RPTrackIt->GetInterceptSigma();
-            track.TotalPowerSigma = RPTrackIt->GetTotalPowerSigma();
-/*
-            track.IsValid = RPTrackIt->GetIsValid();
-            track.NPeaks = RPTrackIt->GetNPeaks();
-            track.Average = RPTrackIt->GetAverage();
-            track.RMS = RPTrackIt->GetRMS();
-            track.Skewness = RPTrackIt->GetSkewness();
-            track.Kurtosis = RPTrackIt->GetKurtosis();
-            track.NormCentral = RPTrackIt->GetNormCentral();
-            track.MeanCentral = RPTrackIt->GetMeanCentral();
-            track.SigmaCentral = RPTrackIt->GetSigmaCentral();
-            track.MaximumCentral = RPTrackIt->GetMaximumCentral();
-            track.RMSAwayFromCentral = RPTrackIt->GetRMSAwayFromCentral();
-            track.CentralPowerFraction = RPTrackIt->GetCentralPowerFraction();
-*/
+            track.EventSequenceID = RPTrackIt->fProcTrack.GetEventSequenceID();
+            track.IsCut = RPTrackIt->fProcTrack.GetIsCut();
+            track.StartTimeInAcq = RPTrackIt->fProcTrack.GetStartTimeInAcq();
+            track.StartTimeInRunC = RPTrackIt->fProcTrack.GetStartTimeInRunC();
+            track.EndTimeInRunC = RPTrackIt->fProcTrack.GetEndTimeInRunC();
+            track.TimeLength = RPTrackIt->fProcTrack.GetTimeLength();
+            track.StartFrequency = RPTrackIt->fProcTrack.GetStartFrequency();
+            track.EndFrequency = RPTrackIt->fProcTrack.GetEndFrequency();
+            track.FrequencyWidth = RPTrackIt->fProcTrack.GetFrequencyWidth();
+            track.Slope = RPTrackIt->fProcTrack.GetSlope();
+            track.Intercept = RPTrackIt->fProcTrack.GetIntercept();
+            track.TotalPower = RPTrackIt->fProcTrack.GetTotalPower();
+            track.StartTimeInRunCSigma = RPTrackIt->fProcTrack.GetStartTimeInRunCSigma();
+            track.EndTimeInRunCSigma = RPTrackIt->fProcTrack.GetEndTimeInRunCSigma();
+            track.TimeLengthSigma = RPTrackIt->fProcTrack.GetTimeLengthSigma();
+            track.StartFrequencySigma = RPTrackIt->fProcTrack.GetStartFrequencySigma();
+            track.EndFrequencySigma = RPTrackIt->fProcTrack.GetEndFrequencySigma();
+            track.FrequencyWidthSigma = RPTrackIt->fProcTrack.GetFrequencyWidthSigma();
+            track.SlopeSigma = RPTrackIt->fProcTrack.GetSlopeSigma();
+            track.InterceptSigma = RPTrackIt->fProcTrack.GetInterceptSigma();
+            track.TotalPowerSigma = RPTrackIt->fProcTrack.GetTotalPowerSigma();
+
+            track.IsValid = RPTrackIt->fData->Of< KTPowerFitData >().GetIsValid();
+            track.NPeaks = RPTrackIt->fData->Of< KTPowerFitData >().GetNPeaks();
+            track.Average = RPTrackIt->fData->Of< KTPowerFitData >().GetAverage();
+            track.RMS = RPTrackIt->fData->Of< KTPowerFitData >().GetRMS();
+            track.Skewness = RPTrackIt->fData->Of< KTPowerFitData >().GetSkewness();
+            track.Kurtosis = RPTrackIt->fData->Of< KTPowerFitData >().GetKurtosis();
+            track.NormCentral = RPTrackIt->fData->Of< KTPowerFitData >().GetNormCentral();
+            track.MeanCentral = RPTrackIt->fData->Of< KTPowerFitData >().GetMeanCentral();
+            track.SigmaCentral = RPTrackIt->fData->Of< KTPowerFitData >().GetSigmaCentral();
+            track.MaximumCentral = RPTrackIt->fData->Of< KTPowerFitData >().GetMaximumCentral();
+            track.RMSAwayFromCentral = RPTrackIt->fData->Of< KTPowerFitData >().GetRMSAwayFromCentral();
+            track.CentralPowerFraction = RPTrackIt->fData->Of< KTPowerFitData >().GetCentralPowerFraction();
+
             fMTERPTracksDataBuffer.push_back(track);
             KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }
