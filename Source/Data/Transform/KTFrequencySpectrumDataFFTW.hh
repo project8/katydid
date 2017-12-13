@@ -22,6 +22,9 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTWCore : public KTFrequencySpectrumData
     {
         public:
+            typedef KTFrequencySpectrumFFTW spectrum_type;
+
+        public:
             KTFrequencySpectrumDataFFTWCore();
             virtual ~KTFrequencySpectrumDataFFTWCore();
 
