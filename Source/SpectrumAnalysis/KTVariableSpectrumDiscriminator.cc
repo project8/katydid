@@ -7,6 +7,7 @@
 
 #include "KTVariableSpectrumDiscriminator.hh"
 
+#include "KTConvolvedSpectrumData.hh"
 #include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoints2DData.hh"
@@ -55,6 +56,7 @@ namespace Katydid
             fDiscrim2DSignal("disc-2d", this),
             fFSPolarSlot("fs-polar", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fFSFFTWSlot("fs-fftw", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fConvPSSlot("conv-ps", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fNormFSPolarSlot("norm-fs-polar", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fNormFSFFTWSlot("norm-fs-fftw", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fCorrSlot("corr", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
@@ -62,6 +64,7 @@ namespace Katydid
             fPSSlot("ps", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fSpecSlot("spec", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim2DSignal),
             fPreCalcSlot("gv", this, &KTVariableSpectrumDiscriminator::SetPreCalcGainVar),
+            fConvPSPreCalcSlot("conv-ps-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fPSPreCalcSlot("ps-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fSpecPreCalcSlot("spec-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim2DSignal)
     {
@@ -115,6 +118,11 @@ namespace Katydid
         return true;
     }
 
+    bool KTVariableSpectrumDiscriminator::Discriminate(KTConvolvedPowerSpectrumData& data)
+    {
+        return Discriminate(data, fGVData);
+    }
+
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data)
     {
         return Discriminate(data, fGVData);
@@ -132,6 +140,12 @@ namespace Katydid
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData)
+    {
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, gvData, newData);
+    }
+
+    bool KTVariableSpectrumDiscriminator::Discriminate(KTConvolvedPowerSpectrumData& data, KTGainVariationData& gvData)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, gvData, newData);
@@ -164,35 +178,7 @@ namespace Katydid
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data, KTGainVariationData& gvData)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-
-        if (fCalculateMinBin)
-        {
-            SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
-        }
-        if (fCalculateMaxBin)
-        {
-            SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
-        }
-
-        unsigned nComponents = data.GetNComponents();
-
-        newData.SetNBins(data.GetSpectrum(0)->size());
-        newData.SetBinWidth(data.GetSpectrum(0)->GetBinWidth());
-
-        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-        {
-            if (! DiscriminateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
-            {
-                KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
-                return false;
-            }
-            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
-        }
-        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
-
-        return true;
+        return CoreDiscriminate(data, gvData, newData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData)
@@ -321,6 +307,38 @@ namespace Katydid
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! DiscriminateSpectrum(data.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
+            {
+                KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
+                return false;
+            }
+            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
+        }
+        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
+
+        return true;
+    }
+
+    bool KTVariableSpectrumDiscriminator::CoreDiscriminate(KTPowerSpectrumDataCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData)
+    {
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+        }
+
+        unsigned nComponents = data.GetNComponents();
+
+        newData.SetNBins(data.GetSpectrum(0)->size());
+        newData.SetBinWidth(data.GetSpectrum(0)->GetBinWidth());
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            if (! DiscriminateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
                 KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;

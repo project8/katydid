@@ -20,6 +20,9 @@
 namespace Katydid
 {
     
+    class KTConvolvedPowerSpectrumData;
+    class KTConvolvedFrequencySpectrumDataFFTW;
+    class KTConvolvedFrequencySpectrumDataPolar;
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
     class KTDiscriminatedPoints2DData;
@@ -33,6 +36,7 @@ namespace Katydid
     class KTNormalizedFSDataPolar;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
+    class KTPowerSpectrumDataCore;
     class KTPSCollectionData;
     class KTSpline;
     class KTWignerVilleData;
@@ -73,12 +77,14 @@ namespace Katydid
      Slots:
      - "fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
      - "fs-fftw": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
+     - "conv-ps": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTConvolvedPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "norm-fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
      - "norm-fs-fftw": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
      - "corr": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
      - "wv": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "ps": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "gv": void (Nymph::KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
+     - "conv-ps-pre": void (Nymph::KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTConvolvedPowerSpectrumData; Adds DiscriminatedPoints1DData
      - "ps-pre": void (Nymph::KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
      - "spec": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTPSCollectionData and KTGainVariationData; Adds KTDiscriminatedPoints2DData
      - "spec-pre": void (Nymph::KTDataPtr) -- Discriminates points above a pre-calculated threshold; Requires KTPSCollectionData; Adds KTDiscriminatedPoints2DData
@@ -138,11 +144,13 @@ namespace Katydid
         public:
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
 
+            bool Discriminate(KTConvolvedPowerSpectrumData& data);
             bool Discriminate(KTPowerSpectrumData& data);
             bool Discriminate(KTPSCollectionData& data);
 
             bool Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
             bool Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
+            bool Discriminate(KTConvolvedPowerSpectrumData& data, KTGainVariationData& gvData);
             bool Discriminate(KTNormalizedFSDataPolar& data, KTGainVariationData& gvData);
             bool Discriminate(KTNormalizedFSDataFFTW& data, KTGainVariationData& gvData);
             bool Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
@@ -157,6 +165,7 @@ namespace Katydid
         private:
             bool CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
             bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTPowerSpectrumDataCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
 
             KTGainVariationData fGVData;
             std::vector< double > fMagnitudeCache;
@@ -176,6 +185,7 @@ namespace Katydid
         private:
             Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
             Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
+            Nymph::KTSlotDataTwoTypes< KTConvolvedPowerSpectrumData, KTGainVariationData > fConvPSSlot;
             Nymph::KTSlotDataTwoTypes< KTNormalizedFSDataPolar, KTGainVariationData > fNormFSPolarSlot;
             Nymph::KTSlotDataTwoTypes< KTNormalizedFSDataFFTW, KTGainVariationData > fNormFSFFTWSlot;
             Nymph::KTSlotDataTwoTypes< KTCorrelationData, KTGainVariationData > fCorrSlot;
@@ -185,6 +195,7 @@ namespace Katydid
 
             Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
 
+            Nymph::KTSlotDataOneType< KTConvolvedPowerSpectrumData > fConvPSPreCalcSlot;
             Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
 
             Nymph::KTSlotDataOneType< KTPSCollectionData > fSpecPreCalcSlot;
