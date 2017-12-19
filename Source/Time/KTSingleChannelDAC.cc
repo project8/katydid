@@ -41,6 +41,26 @@ namespace Katydid
     {
     }
 
+    KTSingleChannelDAC::KTSingleChannelDAC(const KTSingleChannelDAC& orig) :
+            fDataTypeSize(orig.fDataTypeSize),
+            fNBits(orig.fNBits),
+            fVoltageOffset(orig.fVoltageOffset),
+            fVoltageRange(orig.fVoltageRange),
+            fDACGain(orig.fDACGain),
+            fBitAlignment(orig.fBitAlignment),
+            fDigitizedDataFormat(orig.fDigitizedDataFormat),
+            fTimeSeriesType(orig.fTimeSeriesType),
+            fBitDepthMode(orig.fBitDepthMode),
+            fEmulatedNBits(orig.fEmulatedNBits),
+            fShouldRunInitialize(orig.fShouldRunInitialize),
+            fVoltages(orig.fVoltages),
+            fIntLevelOffset(orig.fIntLevelOffset),
+            fConvertTSFunc(orig.fConvertTSFunc),
+            fOversamplingBins(orig.fOversamplingBins),
+            fOversamplingScaleFactor(orig.fOversamplingScaleFactor)
+    {
+    }
+
     KTSingleChannelDAC::~KTSingleChannelDAC()
     {
     }
