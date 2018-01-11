@@ -55,6 +55,36 @@ New Features:
 Fixes:
 ''''''
 
+Release Date: January 11, 2018
+''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Sequential Track Building
+* Overlapping Track Clustering
+* Iterative Track Clustering
+* Collinear Track Clustering
+* 1D Convolution Processor
+* Auto-building documentation system
+  
+Fixes:
+''''''
+
+
+Version: 2.7.3
+~~~~~~~~~~~~~~
+
+Release Date: December 19, 2017
+'''''''''''''''''''''''''''''''
+
+Fixes:
+''''''
+
+* Fixed bug in creating the correct number of SingleChannelADCs
+    * Added a copy constructor to KTSingleChannelADC
+    * Create the correct number of SingleChannelADCS in KTDAC
+
 
 Version: 2.7.2
 ~~~~~~~~~~~~~~
