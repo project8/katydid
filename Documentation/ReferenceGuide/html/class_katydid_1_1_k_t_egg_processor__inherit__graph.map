@@ -1,4 +1,0 @@
-<map id="Katydid::KTEggProcessor" name="Katydid::KTEggProcessor">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="5,287,199,400"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n|# fSignalMap\l# fSlotMap\l|+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="20,5,185,239"/>
-</map>

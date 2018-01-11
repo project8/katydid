@@ -1,9 +1,0 @@
-<map id="Katydid::KTEggWriter" name="Katydid::KTEggWriter">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_writer.html" title="{Nymph::KTWriter\n||+ KTWriter()\l+ ~KTWriter()\l}" alt="" coords="26,313,150,400"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="5,5,171,225"/>
-<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_slot_data_two_types.html" title="{Nymph::KTSlotDataTwoTypes\l\&lt; Katydid::KTSliceHeader,\l Katydid::KTTimeSeriesData \&gt;\n|# fFunc\l|+ KTSlotDataTwoTypes()\l+ KTSlotDataTwoTypes()\l+ ~KTSlotDataTwoTypes()\l+ operator()()\l}" alt="" coords="173,287,374,427"/>
-<area shape="rect" id="node5" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="197,52,350,179"/>
-<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_slot_no_arg.html" title="{Nymph::KTSlotNoArg\l\&lt; void() \&gt;\n|# fFunc\l|+ KTSlotNoArg()\l+ KTSlotNoArg()\l+ ~KTSlotNoArg()\l+ operator()()\l}" alt="" coords="398,293,546,420"/>
-<area shape="rect" id="node7" title="STL class. " alt="" coords="570,320,649,393"/>
-<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_slot_one_arg.html" title="{Nymph::KTSlotOneArg\l\&lt; void(Katydid::KTEggHeader *) \&gt;\n|# fFunc\l|+ KTSlotOneArg()\l+ KTSlotOneArg()\l+ ~KTSlotOneArg()\l+ operator()()\l}" alt="" coords="673,293,896,420"/>
-</map>

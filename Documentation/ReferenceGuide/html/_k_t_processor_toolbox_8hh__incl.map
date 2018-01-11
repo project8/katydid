@@ -1,9 +1,0 @@
-<map id="KTProcessorToolbox.hh" name="KTProcessorToolbox.hh">
-<area shape="rect" id="node2" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="83,79,215,104"/>
-<area shape="rect" id="node7" href="$factory_8hh.html" title="factory.hh" alt="" coords="224,152,303,177"/>
-<area shape="rect" id="node3" href="$param_8hh.html" title="param.hh" alt="" coords="72,152,149,177"/>
-<area shape="rect" id="node8" href="$singleton_8hh.html" title="singleton.hh" alt="" coords="364,225,457,251"/>
-<area shape="rect" id="node9" href="$mutex_8hh.html" title="mutex.hh" alt="" coords="330,299,406,324"/>
-<area shape="rect" id="node10" href="$lock__guard_8hh.html" title="lock_guard.hh" alt="" coords="481,225,586,251"/>
-<area shape="rect" id="node11" href="$logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="610,225,686,251"/>
-</map>

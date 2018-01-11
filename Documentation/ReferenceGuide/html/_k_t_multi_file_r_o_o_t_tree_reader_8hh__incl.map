@@ -1,9 +1,0 @@
-<map id="KTMultiFileROOTTreeReader.hh" name="KTMultiFileROOTTreeReader.hh">
-<area shape="rect" id="node2" href="$_k_t_reader_8hh.html" title="KTReader.hh" alt="" coords="60,79,160,104"/>
-<area shape="rect" id="node7" href="$_k_t_slot_8hh.html" title="KTSlot.hh" alt="" coords="353,79,433,104"/>
-<area shape="rect" id="node3" href="$_k_t_primary_processor_8hh.html" title="KTPrimaryProcessor.hh" alt="" coords="29,152,191,177"/>
-<area shape="rect" id="node6" href="$factory_8hh.html" title="factory.hh" alt="" coords="28,225,107,251"/>
-<area shape="rect" id="node4" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="180,225,278,251"/>
-<area shape="rect" id="node8" href="$_k_t_data_8hh.html" title="KTData.hh" alt="" coords="558,225,643,251"/>
-<area shape="rect" id="node9" href="$_k_t_signal_8hh.html" title="KTSignal.hh" alt="" coords="554,152,648,177"/>
-</map>

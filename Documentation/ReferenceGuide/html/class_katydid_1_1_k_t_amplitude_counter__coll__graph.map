@@ -1,7 +1,0 @@
-<map id="Katydid::KTAmplitudeCounter" name="Katydid::KTAmplitudeCounter">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="232,383,398,603"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="5,195,169,321"/>
-<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="576,195,729,321"/>
-<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTRawTimeSeriesData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="606,429,841,556"/>
-<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_signal_one_arg.html" title="{Nymph::KTSignalOneArg\l\&lt; KTDataPtr \&gt;\n|# fSignal\l|+ KTSignalOneArg()\l+ ~KTSignalOneArg()\l+ operator()()\l# KTSignalOneArg()\l# KTSignalOneArg()\l}" alt="" coords="567,5,738,145"/>
-</map>

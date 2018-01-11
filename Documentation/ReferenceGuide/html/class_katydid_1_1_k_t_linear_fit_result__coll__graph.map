@@ -1,7 +1,0 @@
-<map id="Katydid::KTLinearFitResult" name="Katydid::KTLinearFitResult">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTLinearFitResult \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="58,287,236,400"/>
-<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTLinearFitResult, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,32,238,199"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="285,307,364,380"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="262,72,387,159"/>
-<area shape="rect" id="node7" href="$struct_katydid_1_1_k_t_linear_fit_result_1_1_per_component_data.html" title="{Katydid::KTLinearFitResult\l::PerComponentData\n|+ fSlope\l+ fSlopeSigma\l+ fIntercept\l+ fIntercept_deviation\l+ fStartingFrequency\l+ fTrackDuration\l+ fSidebandSeparation\l+ fFineProbe_sigma_1\l+ fFineProbe_sigma_2\l+ fFineProbe_SNR_1\land 8 more...\l|}" alt="" coords="412,5,592,225"/>
-</map>

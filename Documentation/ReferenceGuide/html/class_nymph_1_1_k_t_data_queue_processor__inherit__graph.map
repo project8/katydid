@@ -1,4 +1,0 @@
-<map id="Nymph::KTDataQueueProcessor" name="Nymph::KTDataQueueProcessor">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_data_queue_processor_template.html" title="{Nymph::KTDataQueueProcessor\lTemplate\&lt; KTDataQueueProcessor \&gt;\n|# fStatus\l# fFuncPtr\l# fQueue\l# fPopFromQueue\l# fQueueDoneSignal\l|+ KTDataQueueProcessorTemplate()\l+ ~KTDataQueueProcessorTemplate()\l+ Configure()\l+ ConfigureSubClass()\l+ GetStatus()\l+ SetStatus()\l+ SetFuncPtr()\l+ Run()\l+ Stop()\l+ ProcessQueue()\l+ ClearQueue()\l+ SwitchToTimedPop()\l+ SwitchToUntimedPop()\l+ SwitchToSinglePop()\l# DoQueueData()\l}" alt="" coords="5,167,254,493"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="33,5,227,119"/>
-</map>

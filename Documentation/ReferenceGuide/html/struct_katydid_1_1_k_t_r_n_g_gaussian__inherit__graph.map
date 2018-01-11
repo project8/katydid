@@ -1,4 +1,0 @@
-<map id="Katydid::KTRNGGaussian&lt; Engine, RealType &gt;" name="Katydid::KTRNGGaussian&lt; Engine, RealType &gt;">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_r_n_g_distribution.html" title="{Katydid::KTRNGDistribution\l\&lt; Engine \&gt;\n|# fEngine\l|+ KTRNGDistribution()\l+ ~KTRNGDistribution()\l+ GetEngine()\l+ SetEngine()\l+ Configure()\l+ ConfigureDistribution()\l}" alt="" coords="5,193,192,347"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n|# fCLHandler\l# fConfigName\l|+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="17,5,180,145"/>
-</map>

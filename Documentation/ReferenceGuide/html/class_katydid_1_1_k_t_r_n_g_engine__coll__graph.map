@@ -1,4 +1,0 @@
-<map id="Katydid::KTRNGEngine" name="Katydid::KTRNGEngine">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_self_configurable.html" title="{Nymph::KTSelfConfigurable\n|&#45; fIsConfigured\l|+ KTSelfConfigurable()\l+ ~KTSelfConfigurable()\l+ Configure()\l+ Configure()\l+ IsReady()\l+ GetIsConfigured()\l}" alt="" coords="5,180,192,320"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="17,5,180,132"/>
-</map>
