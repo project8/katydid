@@ -16,6 +16,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTKDTreeData.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
     SpectrumAnalysis/KTPointCloud.hh
+    SpectrumAnalysis/KTSeqLine.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
@@ -43,6 +44,7 @@ set (DATA_HEADERFILES
     Evaluation/KTAnalysisCandidates.hh
     Evaluation/KTCCResults.hh
     Evaluation/KTMCTruthEvents.hh
+    Transform/KTConvolvedSpectrumData.hh
     Transform/KTFrequencyDomainArray.hh
     Transform/KTFrequencySpectrum.hh
     Transform/KTFrequencySpectrumDataFFTW.hh
@@ -72,6 +74,7 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
     SpectrumAnalysis/KTNormalizedFSData.cc
+    SpectrumAnalysis/KTSeqLine.cc
     SpectrumAnalysis/KTTimeSeriesDist.cc
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
@@ -99,6 +102,7 @@ set (DATA_SOURCEFILES
     Evaluation/KTAnalysisCandidates.cc
     Evaluation/KTCCResults.cc
     Evaluation/KTMCTruthEvents.cc
+    Transform/KTConvolvedSpectrumData.cc
     Transform/KTFrequencyDomainArray.cc
     Transform/KTFrequencySpectrum.cc
     Transform/KTFrequencySpectrumDataFFTW.cc

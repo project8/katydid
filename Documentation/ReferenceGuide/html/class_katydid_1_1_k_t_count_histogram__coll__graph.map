@@ -1,5 +1,0 @@
-<map id="Katydid::KTCountHistogram" name="Katydid::KTCountHistogram">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_physical_array.html" title="{Katydid::KTPhysicalArray\l\&lt; 1, unsigned \&gt;\n|# fData\l|+ KTPhysicalArray()\l+ KTPhysicalArray()\l+ ~KTPhysicalArray()\l+ GetData()\l+ GetData()\l+ GetDataLabel()\l+ SetDataLabel()\l+ operator()()\l+ operator()()\l+ IsCompatibleWith()\land 9 more...\l}" alt="" coords="13,449,185,669"/>
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_axis_properties.html" title="Encapsulates the properties of n&#45;dimensional binned axes. " alt="" coords="122,140,297,400"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="62,5,141,79"/>
-</map>

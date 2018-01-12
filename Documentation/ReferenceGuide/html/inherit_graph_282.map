@@ -1,6 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classscarab_1_1singleton.html" title="scarab::singleton\&lt;\l factory\&lt; XBaseType,\l XArgs... \&gt; \&gt;" alt="" coords="5,48,154,100"/>
-<area shape="rect" id="node2" href="$classscarab_1_1factory.html" title="scarab::factory\&lt; XBaseType \&gt;" alt="" coords="202,5,402,31"/>
-<area shape="rect" id="node3" href="$classscarab_1_1factory.html" title="scarab::factory\&lt; XBaseType,\l XArgs... \&gt;" alt="" coords="206,55,398,93"/>
-<area shape="rect" id="node4" href="$classscarab_1_1factory.html" title="scarab::factory\&lt; XBaseType,\l XArgs \&gt;" alt="" coords="206,117,398,156"/>
-</map>

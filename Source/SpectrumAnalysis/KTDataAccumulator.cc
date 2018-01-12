@@ -7,6 +7,7 @@
 
 #include "KTDataAccumulator.hh"
 
+#include "KTConvolvedSpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -39,11 +40,13 @@ namespace Katydid
             fTSDistSignal("ts-dist", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
+            fConvPSSignal("conv-ps", this),
             fPSSignal("ps", this),
             fTSFinishedSignal("ts-finished", this),
             fTSDistFinishedSignal("ts-dist-finished", this),
             fFSPolarFinishedSignal("fs-polar-finished", this),
             fFSFFTWFinishedSignal("fs-fftw-finished", this),
+            fConvPSFinishedSignal("conv-ps-finished", this),
             fPSFinishedSignal("ps-finished", this),
             fSignalMap()
     {
@@ -58,6 +61,9 @@ namespace Katydid
 
         RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWFinishedSignal)));
+
+        RegisterSlot("conv-ps", this, &KTDataAccumulator::SlotFunction< KTConvolvedPowerSpectrumData >);
+        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSFinishedSignal)));
 
         RegisterSlot("ps", this, &KTDataAccumulator::SlotFunction< KTPowerSpectrumData >);
         fSignalMap.insert(SignalMapValue(&typeid(KTPowerSpectrumData), SignalSet(&fPSSignal, &fPSFinishedSignal)));
@@ -109,6 +115,13 @@ namespace Katydid
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataFFTW >();
         KTFrequencySpectrumDataFFTW& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataFFTW>();
+        return CoreAddData(data, accDataStruct, accData);
+    }
+
+    bool KTDataAccumulator::AddData(KTConvolvedPowerSpectrumData& data)
+    {
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTConvolvedPowerSpectrumData >();
+        KTConvolvedPowerSpectrumData& accData = accDataStruct.fData->Of<KTConvolvedPowerSpectrumData>();
         return CoreAddData(data, accDataStruct, accData);
     }
 
@@ -366,7 +379,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTDataAccumulator::CoreAddData(KTPowerSpectrumData& data, Accumulator& accDataStruct, KTPowerSpectrumData& accData)
+    bool KTDataAccumulator::CoreAddData(KTPowerSpectrumDataCore& data, Accumulator& accDataStruct, KTPowerSpectrumDataCore& accData)
     {
         double remainingFrac = 1.;
         if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
@@ -463,6 +476,19 @@ namespace Katydid
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
+            avSpect->Scale(scale);
+        }
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header)
+    {
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling power spectrum by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* avSpect = data.GetSpectrum(iComponent);
             avSpect->Scale(scale);
         }
         return true;

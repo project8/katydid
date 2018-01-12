@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    
+    class KTConvolvedPowerSpectrumData;
     class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
@@ -24,6 +24,7 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTWCore;
     class KTGainVariationData;
     class KTPowerSpectrumData;
+    class KTPowerSpectrumDataCore;
     //class KTSpline;
 
     /*!
@@ -48,8 +49,9 @@ namespace Katydid
      Slots:
      - "fs-polar": void (Nymph::KTDataPtr) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
      - "fs-fftw": void (Nymph::KTDataPtr) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
-     - "corr": void (Nymph::KTDataPtr) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
-     - "ps": void (Nymph::KTDataPtr) -- Calculates gain variation on a power power spectrum; Requires KTPowerSpectrumData; Adds KTGainVariationData
+     - "corr": void (Nymph::KTDataPtr) -- Calculates gain variation on a correlation data object; Requires KTCorrlationData; Adds KTGainVariationData
+     - "conv-ps": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved power spectrum; Requires KTConvolvedPowerSpectrumData; Adds KTGainVariationData
+     - "ps": void (Nymph::KTDataPtr) -- Calculates gain variation on a power spectrum; Requires KTPowerSpectrumData; Adds KTGainVariationData
 
      Signals:
      - "gain-var": void (Nymph::KTDataPtr) emitted upon performance of a fit; Guarantees KTGainVariationData
@@ -95,13 +97,14 @@ namespace Katydid
             bool CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
             bool CalculateGainVariation(KTFrequencySpectrumDataFFTW& data);
             bool CalculateGainVariation(KTCorrelationData& data);
+            bool CalculateGainVariation(KTConvolvedPowerSpectrumData& data);
             bool CalculateGainVariation(KTPowerSpectrumData& data);
 
         private:
             bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
             bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
             //GainVariation* CreateGainVariation(KTSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const;
-            bool CoreGainVarCalc(KTPowerSpectrumData& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData);
 
             //***************
             // Signals
@@ -118,6 +121,7 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
             Nymph::KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            Nymph::KTSlotDataOneType< KTConvolvedPowerSpectrumData > fConvPSSlot;
             Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
 
     };

@@ -1,8 +1,0 @@
-<map id="ConfigCheck.cc" name="ConfigCheck.cc">
-<area shape="rect" id="node2" href="$_k_t_application_8hh.html" title="Contains KTApplication. " alt="" coords="402,79,523,104"/>
-<area shape="rect" id="node4" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="673,225,771,251"/>
-<area shape="rect" id="node3" href="$_k_t_command_line_handler_8hh.html" title="Contains KTCommandLineHandler. " alt="" coords="367,152,557,177"/>
-<area shape="rect" id="node6" href="$param_8hh.html" title="param.hh" alt="" coords="239,225,317,251"/>
-<area shape="rect" id="node8" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="5,152,138,177"/>
-<area shape="rect" id="node9" href="$_k_t_configurator_8hh.html" title="KTConfigurator.hh" alt="" coords="213,152,343,177"/>
-</map>

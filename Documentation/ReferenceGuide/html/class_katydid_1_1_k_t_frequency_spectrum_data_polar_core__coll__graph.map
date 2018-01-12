@@ -1,5 +1,0 @@
-<map id="Katydid::KTFrequencySpectrumDataPolarCore" name="Katydid::KTFrequencySpectrumDataPolarCore">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_frequency_spectrum_data.html" title="{Katydid::KTFrequencySpectrumData\n||+ KTFrequencySpectrumData()\l+ ~KTFrequencySpectrumData()\l+ GetSpectrum()\l+ GetSpectrum()\l}" alt="" coords="5,287,244,400"/>
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_frequency_domain_array_data.html" title="{Katydid::KTFrequencyDomain\lArrayData\n||+ KTFrequencyDomainArrayData()\l+ ~KTFrequencyDomainArrayData()\l+ GetArray()\l+ GetArray()\l}" alt="" coords="7,52,242,179"/>
-<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_frequency_spectrum_polar.html" title="{Katydid::KTFrequencySpectrum\lPolar\n|&#45; fNTimeBins\l|+ KTFrequencySpectrumPolar()\l+ KTFrequencySpectrumPolar()\l+ KTFrequencySpectrumPolar()\l+ ~KTFrequencySpectrumPolar()\l+ operator=()\l+ GetAxis()\l+ GetAxis()\l+ GetOrdinateLabel()\l+ GetReal()\l+ GetImag()\land 12 more...\l}" alt="" coords="268,5,485,225"/>
-</map>

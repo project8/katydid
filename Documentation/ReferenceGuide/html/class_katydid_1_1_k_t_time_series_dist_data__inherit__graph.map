@@ -1,4 +1,0 @@
-<map id="Katydid::KTTimeSeriesDistData" name="Katydid::KTTimeSeriesDistData">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTTimeSeriesDistData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="20,233,199,347"/>
-<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTTimeSeriesDistData,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="17,5,202,185"/>
-</map>

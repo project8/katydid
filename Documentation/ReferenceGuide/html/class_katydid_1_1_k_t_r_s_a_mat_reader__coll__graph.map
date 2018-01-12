@@ -1,6 +1,0 @@
-<map id="Katydid::KTRSAMatReader" name="Katydid::KTRSAMatReader">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_egg_reader.html" title="{Katydid::KTEggReader\n||+ KTEggReader()\l+ ~KTEggReader()\l+ Configure()\l+ BreakEgg()\l+ HatchNextSlice()\l+ CloseEgg()\l+ GetNSlicesProcessed()\l+ GetNRecordsProcessed()\l+ GetIntegratedTime()\l}" alt="" coords="5,193,191,373"/>
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_egg_header.html" title="{Katydid::KTEggHeader\n||+ KTEggHeader()\l+ KTEggHeader()\l+ ~KTEggHeader()\l+ operator=()\l+ MEMBERVARIABLEREF()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\land 9 more...\l}" alt="" coords="215,180,406,387"/>
-<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTEggHeader \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="29,5,207,119"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="415,25,494,99"/>
-</map>

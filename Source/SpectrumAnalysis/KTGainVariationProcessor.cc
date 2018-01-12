@@ -7,6 +7,7 @@
 
 #include "KTGainVariationProcessor.hh"
 
+#include "KTConvolvedSpectrumData.hh"
 #include "KTCorrelationData.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -45,6 +46,7 @@ namespace Katydid
             fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fCorrSlot("corr", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fConvPSSlot("conv-ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fPSSlot("ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
     {
     }
@@ -95,6 +97,12 @@ namespace Katydid
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
+    {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+        return CoreGainVarCalc(data, newData);
+    }
+
+    bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
         return CoreGainVarCalc(data, newData);
@@ -281,7 +289,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTGainVariationProcessor::CoreGainVarCalc(KTPowerSpectrumData& data, KTGainVariationData& newData)
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData)
     {
         if (fCalculateMinBin)
         {
