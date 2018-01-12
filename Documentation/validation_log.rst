@@ -55,6 +55,10 @@ New Features:
 Fixes:
 ''''''
 
+
+Version: 2.8.0
+~~~~~~~~~~~~~~
+
 Release Date: January 11, 2018
 ''''''''''''''''''''''''''''''
 
