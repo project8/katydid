@@ -249,7 +249,7 @@ htmlhelp_basename = 'Katydiddoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {
+#latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
 #'papersize': 'letterpaper',
 
@@ -261,15 +261,15 @@ latex_elements = {
 
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
-}
+#}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-  (master_doc, 'Katydid.tex', u'Katydid Documentation',
-   u'Project 8 Collaboration', 'manual'),
-]
+#latex_documents = [
+#  (master_doc, 'Katydid.tex', u'Katydid Documentation',
+#   u'Project 8 Collaboration', 'manual'),
+#]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -296,10 +296,10 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'katydid', u'Katydid Documentation',
-     [author], 1)
-]
+#man_pages = [
+#    (master_doc, 'katydid', u'Katydid Documentation',
+#     [author], 1)
+#]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -310,11 +310,11 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-  (master_doc, 'Katydid', 'Katydid Documentation',
-   author, 'Katydid', 'Data processing framework',
-   'Miscellaneous'),
-]
+#texinfo_documents = [
+#  (master_doc, 'Katydid', 'Katydid Documentation',
+#   author, 'Katydid', 'Data processing framework',
+#   'Miscellaneous'),
+#]
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
