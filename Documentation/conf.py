@@ -41,20 +41,28 @@ except:
     pass
 
 # doxygen
-call(['doxygen', 'Doxyfile'])
-call(['mv', './user_doxygen_out/html', './_static'])
-call(['echo', '... doxygen_out/xml ...'])
-call(['ls', './user_doxygen_out/xml'])
+if not os.path.exists('./user_doxygen_out') or (os.path.getmtime('../.git/index') > os.path.getmtime('./user_doxygen_out')):
+    call(['doxygen', 'Doxyfile'])
+    call(['mv', './user_doxygen_out/html', './_static'])
+    call(['echo', '... doxygen_out/xml ...'])
+    call(['ls', './user_doxygen_out/xml'])
+else:
+    print("doxygen output newer than repo, not building")
 
-ms = make_source.site_builder()
-# build source
-# arguments:
-#   1: directory in which to make the documentation (recommendation: leave as '.')
-#   2: list of directories in which to look for source files
-#   3: list of directories to exclude from the search for source files
-ms.build('.', ['../Source'], ['../Source/Time/Monarch', '../Source/Evaluation', '../Source/Simulation', '../Source/Time', '../Source/Transform'])
-call(['echo', '====== make source complete ====='])
 
+if not os.path.exists('./API_Ref') or (os.path.getmtime('../.git/index') > os.path.getmtime('./API_Ref')):
+    ms = make_source.site_builder()
+    # build source
+    # arguments:
+    #   1: directory in which to make the documentation (recommendation: leave as '.')
+    #   2: list of directories in which to look for source files
+    #   3: list of directories to exclude from the search for source files
+    ms.build('.', ['../Source'], ['../Source/Time/Monarch', '../Source/Evaluation', '../Source/Simulation', '../Source/Time', '../Source/Transform'])
+    call(['echo', '====== make source complete ====='])
+else:
+    print("auto-generated API rst files newer than repo, not building")
+
+# debugging prints
 call(['cat', 'index.rst'])
 call(['echo', "===== files ====="])
 call(['ls'])
