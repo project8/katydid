@@ -50,17 +50,17 @@ else:
     print("doxygen output newer than repo, not building")
 
 
-#if not os.path.exists('./API_Ref') or (os.path.getmtime('../.git/index') > os.path.getmtime('./API_Ref')):
-    #ms = make_source.site_builder()
+if not os.path.exists('./API_Ref') or (os.path.getmtime('../.git/index') > os.path.getmtime('./API_Ref')):
+    ms = make_source.site_builder()
     # build source
     # arguments:
     #   1: directory in which to make the documentation (recommendation: leave as '.')
     #   2: list of directories in which to look for source files
     #   3: list of directories to exclude from the search for source files
-    #ms.build('.', ['../Source'], ['../Source/Time/Monarch', '../Source/Evaluation', '../Source/Simulation', '../Source/Time', '../Source/Transform'])
-    #call(['echo', '====== make source complete ====='])
-#else:
-    #print("auto-generated API rst files newer than repo, not building")
+    ms.build('.', ['../Source'], ['../Source/Time/Monarch', '../Source/Evaluation', '../Source/Simulation', '../Source/Time', '../Source/Transform'])
+    call(['echo', '====== make source complete ====='])
+else:
+    print("auto-generated API rst files newer than repo, not building")
 
 # debugging prints
 call(['cat', 'index.rst'])
