@@ -34,11 +34,12 @@ import make_source
 #sys.path.insert(0, os.path.abspath('.'))
 
 # version
-this_version = 'none'
+this_version = 'v?.?.?'
 try:
     this_version = check_output(['git', 'describe', '--abbrev=0', '--tags'])
 except:
     pass
+os.environ['PROJECT_NUMBER'] = this_version
 
 # doxygen
 if not os.path.exists('./user_doxygen_out') or (os.path.getmtime('../.git/index') > os.path.getmtime('./user_doxygen_out')):
