@@ -56,6 +56,21 @@ Fixes:
 ''''''
 
 
+Version: 2.9.0
+~~~~~~~~~~~~~~
+
+Release Date: January 18, 2018
+''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Auto-building documentation system now fully functional
+  
+Fixes:
+''''''
+
+
 Version: 2.8.0
 ~~~~~~~~~~~~~~
 
