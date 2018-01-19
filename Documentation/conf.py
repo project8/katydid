@@ -34,32 +34,41 @@ import make_source
 #sys.path.insert(0, os.path.abspath('.'))
 
 # version
-this_version = 'none'
+this_version = 'v?.?.?'
 try:
     this_version = check_output(['git', 'describe', '--abbrev=0', '--tags'])
 except:
     pass
+os.environ['PROJECT_NUMBER'] = this_version
 
 # doxygen
-call(['doxygen', 'Doxyfile'])
-call(['mv', './user_doxygen_out/html', './_static'])
-call(['echo', '... doxygen_out/xml ...'])
-call(['ls', './user_doxygen_out/xml'])
+if not os.path.exists('./user_doxygen_out') or (os.path.getmtime('../.git/index') > os.path.getmtime('./user_doxygen_out')):
+    call(['doxygen', 'Doxyfile'])
+    call(['mv', './user_doxygen_out/html', './_static'])
+    call(['echo', '... doxygen_out/xml ...'])
+    call(['ls', './user_doxygen_out/xml'])
+else:
+    print("doxygen output newer than repo, not building")
 
-ms = make_source.site_builder()
-# build source
-# arguments:
-#   1: directory in which to make the documentation (recommendation: leave as '.')
-#   2: list of directories in which to look for source files
-#   3: list of directories to exclude from the search for source files
-ms.build('.', ['../Source'], ['../Source/Time/Monarch'])
-call(['echo', '====== make source complete ====='])
 
+#if not os.path.exists('./API_Ref') or (os.path.getmtime('../.git/index') > os.path.getmtime('./API_Ref')):
+#    ms = make_source.site_builder()
+    # build source
+    # arguments:
+    #   1: directory in which to make the documentation (recommendation: leave as '.')
+    #   2: list of directories in which to look for source files
+    #   3: list of directories to exclude from the search for source files
+#    ms.build('.', ['../Source'], ['../Source/Time/Monarch', '../Source/Evaluation', '../Source/Simulation', '../Source/Time', '../Source/Transform'])
+#    call(['echo', '====== make source complete ====='])
+#else:
+#    print("auto-generated API rst files newer than repo, not building")
+
+# debugging prints
 call(['cat', 'index.rst'])
 call(['echo', "===== files ====="])
 call(['ls'])
-call(['echo', 'Api index ==='])
-call(['cat', 'API_Ref/index.rst'])
+#call(['echo', 'Api index ==='])
+#call(['cat', 'API_Ref/index.rst'])
 
 
 breathe_projects = { "myproject" : "./user_doxygen_out/xml/" }
@@ -249,7 +258,7 @@ htmlhelp_basename = 'Katydiddoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {
+#latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
 #'papersize': 'letterpaper',
 
@@ -261,15 +270,15 @@ latex_elements = {
 
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
-}
+#}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-  (master_doc, 'Katydid.tex', u'Katydid Documentation',
-   u'Project 8 Collaboration', 'manual'),
-]
+#latex_documents = [
+#  (master_doc, 'Katydid.tex', u'Katydid Documentation',
+#   u'Project 8 Collaboration', 'manual'),
+#]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -296,10 +305,10 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'katydid', u'Katydid Documentation',
-     [author], 1)
-]
+#man_pages = [
+#    (master_doc, 'katydid', u'Katydid Documentation',
+#     [author], 1)
+#]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -310,11 +319,11 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-  (master_doc, 'Katydid', 'Katydid Documentation',
-   author, 'Katydid', 'Data processing framework',
-   'Miscellaneous'),
-]
+#texinfo_documents = [
+#  (master_doc, 'Katydid', 'Katydid Documentation',
+#   author, 'Katydid', 'Data processing framework',
+#   'Miscellaneous'),
+#]
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []

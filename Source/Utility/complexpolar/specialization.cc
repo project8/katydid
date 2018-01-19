@@ -41,7 +41,7 @@ namespace Katydid
     complexpolar<double>::complexpolar(const double& abs, const double& arg) :
                             fAbs(abs), fArg(arg)
     {}
-    complexpolar<double>::complexpolar(const complexpolar& cmplxp) :
+    complexpolar<double>::complexpolar(const complexpolar<double>& cmplxp) :
                             fAbs(cmplxp.fAbs), fArg(cmplxp.fArg)
     {}
     complexpolar<double>::complexpolar(const std_complex_type& cmplx) :
