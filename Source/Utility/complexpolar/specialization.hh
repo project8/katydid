@@ -23,7 +23,7 @@ namespace Katydid
             // constructors (and destructor)
         public:
             complexpolar(const float& abs = 0., const float& arg = 0.);
-            complexpolar(const complexpolar& cmplxp);
+            complexpolar(const complexpolar<float>& cmplxp);
             complexpolar(const std_complex_type& cmplx);
             template< class X >
             complexpolar(const complexpolar<X>& cmplxp) :
@@ -219,7 +219,7 @@ namespace Katydid
             // constructors (and destructor)
         public:
             complexpolar(const double& abs = 0., const double& arg = 0.);
-            complexpolar(const complexpolar& cmplxp);
+            complexpolar(const complexpolar<double>& cmplxp);
             complexpolar(const std_complex_type& cmplx);
             template< class X >
             complexpolar(const complexpolar<X>& cmplxp) :
@@ -416,7 +416,7 @@ namespace Katydid
             // constructors (and destructor)
         public:
             complexpolar(const long double& abs = 0., const long double& arg = 0.);
-            complexpolar(const complexpolar& cmplxp);
+            complexpolar(const complexpolar<long double>& cmplxp);
             complexpolar(const std_complex_type& cmplx);
             template< class X >
             complexpolar(const complexpolar<X>& cmplxp) :
