@@ -56,6 +56,21 @@ Fixes:
 ''''''
 
 
+Version: 2.9.1
+~~~~~~~~~~~~~~
+
+Release Date: January 29, 2018
+''''''''''''''''''''''''''''''
+
+ 
+Fixes:
+''''''
+
+* Updated the documentation system to remove Sphinx-based API pages
+* Fixed problem in KTEgg3Reader where the current record ID was not being kept track of
+    * This was only a problem for multi-file runs when reading the non-first files
+    * Validated by reading both a first file and a non-first file and seeing that the records were stepped through correctly
+
 Version: 2.9.0
 ~~~~~~~~~~~~~~
 
