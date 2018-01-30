@@ -55,7 +55,7 @@ namespace Katydid
 
         fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
         KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
-        this->UpdateLineParameters();
+        this->UpdateLineProperties();
         this->CalculateSlope();
     }
 
@@ -187,43 +187,72 @@ namespace Katydid
 
     }
 
-    inline void LineRef::CalculateSlope()
+    inline void LineRef::CalculateNewSlope()
     {
+        fSumX = 0.0;
+        fSumY = 0.0;
+        fSumXY = 0.0;
+        fSumXX = 0.0;
 
         //KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
+        double weight = 0.0;
         double wSum = 0.0;
         fNPoints = fLinePoints.size();
-
-        fSumX += fLinePoints.back().fTimeInRunC; 
-        fSumY += fLinePoints.back().fPointFreq;
-        fSumXY += fLinePoints.back().fTimeInRunC * fLinePoints.back().fPointFreq;
-        fSumXX += fLinePoints.back().fTimeInRunC * fLinePoints.back().fTimeInRunC;
-        fAmplitudeSum += fLinePoints.back().fAmplitude;
-
 
         if (fNPoints > 1)
         {
             for(std::vector<LinePoint>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq > fStartFrequency)
-                {
-                    weightedSlope += (pointIt->fPointFreq - fStartFrequency)/(pointIt->fTimeInAcq - fStartTimeInAcq) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
-                }
+                   weight = pointIt->fAmplitude/fAmplitudeSum*fNPoints;
+
+                   fSumX += fLinePoints.back().fTimeInRunC * weight;
+                   fSumY += fLinePoints.back().fPointFreq * weight;
+                   fSumXY += fLinePoints.back().fTimeInRunC * fLinePoints.back().fPointFreq * weight;
+                   fSumXX += fLinePoints.back().fTimeInRunC * fLinePoints.back().fTimeInRunC *weight;
             }
-            fSlope = weightedSlope/wSum;
-        }
-        /*if (fNPoints > 1)
-        {
             fSlope = (fNPoints * fSumXY - fSumX * fSumY)/(fSumXX * fNPoints - fSumX * fSumX);
             KTDEBUG( seqlog, "New slope "<<fSlope);
-        }*/
+        }
         if (fNPoints <= 1)
         {
             fSlope = fInitialSlope;
         }
     }
+
+    inline void LineRef::CalculateSlope()
+    {
+
+            //KTDEBUG(seqlog, "Calculating line slope");
+            double slope = 0.0;
+            double weight = 0.0;
+            double weightedSlope = 0.0;
+            double wSum = 0.0;
+            fNPoints = fLinePoints.size();
+
+
+            //slope = (fLinePoints.back().fPointFreq - fStartFrequency)/(fLinePoints.back().fTimeInRunC - fStartTimeInRunC);
+            //weight = fLinePoints.back().fAmplitude/fLinePoints.back().fThreshold;
+            //weightedSlope += slope * weight;
+
+            if (fNPoints > 1)
+            {
+                for(std::vector<LinePoint>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+                {
+                    if (pointIt->fPointFreq > fStartFrequency)
+                    {
+                        weightedSlope += (pointIt->fPointFreq - fStartFrequency)/(pointIt->fTimeInAcq - fStartTimeInAcq) * pointIt->fAmplitude;
+                        wSum += pointIt->fAmplitude;
+                    }
+                }
+                fSlope = weightedSlope/wSum;
+            }
+
+            if (fNPoints <= 1)
+            {
+                fSlope = fInitialSlope;
+            }
+        }
 
     void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
     {
@@ -246,12 +275,12 @@ namespace Katydid
                 fNPoints = fLinePoints.size();
             }
         }        
-        this->UpdateLineParameters();
-        //this->CalculateSlope();
+        this->UpdateLineProperties();
+        this->CalculateSlope();
     }
         
 
-    inline void LineRef::UpdateLineParameters()
+    inline void LineRef::UpdateLineProperties()
     {
         //KTDEBUG(seqlog, "Updating line parameters");
         fNPoints = fLinePoints.size();
@@ -266,27 +295,7 @@ namespace Katydid
         fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
         fEndTimeInAcq = fLinePoints.back().fTimeInAcq;
         fEndFrequency = fLinePoints.back().fPointFreq;
-
-
-        //fAmplitudeSum = 0.0;
-        /*
-        for (std::vector<LinePoint>::iterator PointIt=fLinePoints.begin(); PointIt != fLinePoints.end(); PointIt++)
-        {
-            //fAmplitudeSum += PointIt->fAmplitude;
-
-            if (PointIt->fTimeInRunC < fStartTimeInRunC)
-            {
-                fStartTimeInRunC = PointIt->fTimeInRunC;
-                fStartTimeInAcq = PointIt->fTimeInAcq;
-                fStartFrequency = PointIt->fPointFreq;
-            }
-            if (PointIt->fTimeInRunC > fEndTimeInRunC)
-            {
-                fEndTimeInRunC = PointIt->fTimeInRunC;
-                fEndTimeInAcq = PointIt->fTimeInAcq;
-                fEndFrequency = PointIt->fPointFreq;
-            }
-        }*/
+        fAmplitudeSum += fLinePoints.back().fAmplitude;
     }
 } /* namespace Katydid */
 
