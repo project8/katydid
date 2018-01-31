@@ -32,6 +32,7 @@ namespace Katydid
             fTimeGapTolerance(0.0005),
             fFrequencyAcceptance(56166.0528183),
             fSNRPowerThreshold(6.),
+            fReferenceThreshold(0.0),
             fSearchRadius(6),
             fConvergeDelta(1.5),
             fMinPoints(3),
@@ -165,6 +166,7 @@ namespace Katydid
             double freqMin = powerSpectrum.GetBinLowEdge(fMinBin);
             double freqMax = powerSpectrum.GetBinLowEdge(fMaxBin) + powerSpectrum.GetBinWidth();
             KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+            fReferenceThreshold = (*splineImp)((fMinBin+fMaxBin)/2);
 
 
             fBinWidth = powerSpectrum.GetBinWidth();
@@ -228,10 +230,14 @@ namespace Katydid
         {
             uint64_t acqID = slHeader.GetAcquisitionID(iComponent);
             KTPowerSpectrum powerSpectrum= *spectrum.GetSpectrum(iComponent);
+            KTSpline* spline = fGVData.GetSpline(iComponent);
 
             unsigned nBins = fMaxBin - fMinBin + 1;
             double freqMin = powerSpectrum.GetBinLowEdge(fMinBin);
             double freqMax = powerSpectrum.GetBinLowEdge(fMaxBin) + powerSpectrum.GetBinWidth();
+            KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+
+            fReferenceThreshold = (*splineImp)((fMinBin+fMaxBin)/2);
 
             fBinWidth = powerSpectrum.GetBinWidth();
 
@@ -330,7 +336,7 @@ namespace Katydid
                      // if point matches this line: attach
                      else if (condition1 and condition2)
                      {
-                         lineIt->InsertPoint(*pointIt);
+                         lineIt->InsertPoint(*pointIt, fReferenceThreshold);
                          match = true;
                          ++lineIt;
                      }
@@ -346,8 +352,8 @@ namespace Katydid
                  {
                      //KTDEBUG(stflog, "Starting new line");
 
-                     LineRef new_line(fInitialSlope);
-                     new_line.InsertPoint(*pointIt);
+                     LineRef new_line(fInitialSlope, fLinePowerWidth);
+                     new_line.InsertPoint(*pointIt, fReferenceThreshold);
                      fActiveLines.push_back(new_line);
                      match = true;
                  }
@@ -356,103 +362,7 @@ namespace Katydid
          return true;
      }
 
-/*
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component)
-    {
-        KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
-    	double newFreq = 0.0;
-    	bool match;
-
-        //loop in reverse order (by power)
-    	for(std::vector<Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
-    	{
-    	    newFreq = pointIt->fPointFreq;
-
-    	    // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
-            // To prevent that in the next iteration the point gets re-found and added to another line the amplitude of the point is reassigned here
-            pointIt->fAmplitude = slice[pointIt->fBinInSlice];
-
-    	    if (pointIt->fAmplitude == 0.0)
-    	    {
-                KTDEBUG(stflog, "Point amplitude is 0, skipping point");
-    	        continue;
-    	    }
-
-    	    else
-    	    {
-
-    	        this->SearchTrueLinePoint(*pointIt, slice);
-    	        newFreq = pointIt->fPointFreq;
-    	    }
-
-
-            if (newFreq == 0.0 or pointIt->fAmplitude==0.0)
-            {
-                KTDEBUG(stflog, "Point frequency and/or amplitude is zero, skipping point");
-                continue;
-            }
-            else
-            {
-                match = false;
-
-                // loop over active lines, in order of earliest start time
-                // dont need to sort them because they are already sorted by the slice of the line's start point
-
-                //KTDEBUG(stflog, "Currently there are N active Lines "<<fActiveLines.size());
-
-                std::vector< LineRef >::iterator lineIt = fActiveLines.begin();
-                while( lineIt != fActiveLines.end())
-                {
-                    // Under these conditions a point will be added to a line
-                    bool condition1 = pointIt->fTimeInRunC > lineIt->fEndTimeInRunC;
-                    bool condition2 = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
-
-                    // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
-                    if (lineIt->fEndTimeInRunC<pointIt->fTimeInRunC-fTimeGapTolerance)
-                    {
-                        if (lineIt->fNPoints >= fMinPoints)
-                        {
-                            lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
-
-                            if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
-                            {
-                                KTINFO(stflog, "Found track candidate");
-                                this->EmitPreCandidate(*lineIt);
-                            }
-                        }
-                        // in any case, this line should be removed from the vector with active lines
-                        lineIt = fActiveLines.erase(lineIt);
-                    }
-                    // if point matches this line: attach
-                    else if (condition1 and condition2)
-                    {
-                        lineIt->InsertPoint(*pointIt);
-                        match = true;
-                        ++lineIt;
-                    }
-                    // if not try next line
-                    else
-                    {
-                        ++lineIt;
-                    }
-                }
-
-                // if point was not picked up
-                if (match == false)
-                {
-                    //KTDEBUG(stflog, "Starting new line");
-
-                    LineRef new_line(fInitialSlope);
-                    new_line.InsertPoint(*pointIt);
-                    fActiveLines.push_back(new_line);
-                    match = true;
-                }
-            }
-    	}
-    	return true;
-    }
-*/
     bool KTSequentialTrackFinder::EmitPreCandidate(LineRef line)
     {
         bool lineIsTrack = true;
@@ -591,98 +501,7 @@ namespace Katydid
         point.fPointFreq = frequency;
         point.fAmplitude = amplitude;
     }
-/*
-    void KTSequentialTrackFinder::SearchTrueLinePoint(Point& point, std::vector<double>& slice)
-        {
-            double Delta = fConvergeDelta + 1.0;
-            unsigned loopCounter = 0;
-            int maxIterations = 10;
 
-            double frequency = point.fPointFreq;
-            double amplitude = point.fAmplitude;
-            unsigned frequencyBin = point.fBinInSlice;
-            double oldFrequencyBin;
-
-
-
-            while(std::abs(Delta) > fConvergeDelta and loopCounter < maxIterations)
-            {
-                ++loopCounter;
-
-                oldFrequencyBin = frequencyBin;
-
-                if (frequencyBin > fMinBin + fSearchRadius and frequencyBin < fMaxBin - fSearchRadius)
-                {
-                    this-> WeightedAverage(slice, frequencyBin, frequency);
-                    Delta = std::abs(frequencyBin - oldFrequencyBin);
-                }
-                else
-                {
-                    KTDEBUG(stflog, "frequency bin was not in correct range ");
-                    Delta = 0.0;
-                    amplitude = 0.0;
-                }
-            }
-
-            // Calculate "true" line amplitude in slice by summing neighboring point amplitudes
-            // and set slice amplitude to zero
-            if (frequencyBin > fMinBin + fLinePowerWidth and frequencyBin < fMaxBin - fLinePowerWidth)
-            {
-                amplitude = 0;
-                for (int iBin = frequencyBin - fLinePowerWidth; iBin <= frequencyBin + fLinePowerWidth; ++iBin)
-                {
-                    amplitude += slice[iBin];
-                    slice.at(iBin)=fPointAmplitudeAfterVisit;
-                }
-            }
-            else
-            {
-                amplitude = slice[frequencyBin];
-                slice.at(frequencyBin)=fPointAmplitudeAfterVisit;
-            }
-            // Set larger area to zero if possible
-            if (frequencyBin > fMinBin + fMinFreqBinDistance and frequencyBin < fMaxBin - fMinFreqBinDistance)
-            {
-                for (int iBin = frequencyBin - fMinFreqBinDistance; iBin <= frequencyBin + fMinFreqBinDistance; ++iBin)
-                {
-                    slice.at(iBin)=fPointAmplitudeAfterVisit;
-                }
-            }
-            // if point was to close to edge, try again with smaller range
-            else if (frequencyBin > fMinBin + fSearchRadius and frequencyBin < fMaxBin - fSearchRadius)
-            {
-                for (int iBin = frequencyBin - fSearchRadius; iBin <= frequencyBin + fSearchRadius; ++iBin)
-                {
-                    slice.at(iBin)=fPointAmplitudeAfterVisit;
-                }
-            }
-
-            // Correct values currently still stored in Point
-            point.fBinInSlice = frequencyBin;
-            point.fPointFreq = frequency;
-            point.fAmplitude = amplitude;
-        }
-*/
-/*
-    inline void KTSequentialTrackFinder::WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency)
-    {
-        unsigned newFrequencyBin = 0;
-        double newFrequency = 0.0;
-        double weightedBin = 0.0;
-        double wSum = 0.0;
-
-        for (int iBin = -1*fSearchRadius; iBin <= fSearchRadius; ++iBin)
-        {
-            weightedBin += double(frequencyBin+iBin)*slice[frequencyBin+iBin];
-            wSum +=slice[frequencyBin+iBin];
-        }
-        newFrequencyBin = unsigned(weightedBin/wSum);
-        newFrequency = fBinWidth * ((double)newFrequencyBin + 0.5);
-
-        frequency = newFrequency;
-        frequencyBin = newFrequencyBin;
-    }
-*/
     inline void KTSequentialTrackFinder::WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency)
     {
         unsigned newFrequencyBin = 0;

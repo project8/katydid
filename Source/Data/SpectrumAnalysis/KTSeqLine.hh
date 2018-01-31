@@ -85,8 +85,9 @@ namespace Katydid {
         double fEndTimeInAcq;
         double fStartFrequency;
         double fEndFrequency;
-        double fSlope;
+        unsigned fLineWidth;
         double fInitialSlope;
+        double fSlope;
         unsigned fComponent;
         double fAmplitudeSum;
         unsigned fNPoints;
@@ -105,8 +106,8 @@ namespace Katydid {
         double fSumXX;
 
 
-        LineRef(const double& initialSlope);
-        void InsertPoint(const Point& point);
+        LineRef(const double& initialSlope, const unsigned& lineWidth);
+        void InsertPoint(const Point& point, const double& referenceThreshold);
         void LineTrimming(const double& trimminFactor, const unsigned& minPoints);
         void CalculateSlope();
         void CalculateNewSlope();

@@ -102,6 +102,7 @@ namespace Katydid
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
             MEMBERVARIABLE(double, SNRPowerThreshold);
+            MEMBERVARIABLE(double, ReferenceThreshold);
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
             MEMBERVARIABLE(unsigned, MinPoints);
