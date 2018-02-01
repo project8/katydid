@@ -31,6 +31,7 @@ namespace Katydid
             fMinFreqBinDistance(10),
             fTimeGapTolerance(0.0005),
             fFrequencyAcceptance(56166.0528183),
+            fInitialFrequencyAcceptance(0.0),
             fSNRPowerThreshold(6.),
             fReferenceThreshold(0.0),
             fSearchRadius(6),
@@ -82,6 +83,14 @@ namespace Katydid
         SetMaxFrequency(node->get_value("max-frequency", GetMaxFrequency()));
 
 
+        if (node->has("initial-frequency-acceptance"))
+        {
+            SetInitialFrequencyAcceptance(node->get_value("initial-frequency-acceptance", GetInitialFrequencyAcceptance()));
+        }
+        else
+        {
+            SetInitialFrequencyAcceptance(node->get_value("frequency-acceptance", GetInitialFrequencyAcceptance()));
+        }
         if (node->has("apply-power-cut"))
         {
             SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
@@ -314,8 +323,10 @@ namespace Katydid
                  while( lineIt != fActiveLines.end())
                  {
                      // Under these conditions a point will be added to a line
-                     bool condition1 = pointIt->fTimeInRunC > lineIt->fEndTimeInRunC;
-                     bool condition2 = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
+                     bool timeCondition = pointIt->fTimeInRunC > lineIt->fEndTimeInRunC;
+                     bool anyPointCondition = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
+                     bool secondPointCondition = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fInitialFrequencyAcceptance;
+
 
                      // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
                      if (lineIt->fEndTimeInRunC<pointIt->fTimeInRunC-fTimeGapTolerance)
@@ -334,7 +345,13 @@ namespace Katydid
                          lineIt = fActiveLines.erase(lineIt);
                      }
                      // if point matches this line: attach
-                     else if (condition1 and condition2)
+                     else if (timeCondition and anyPointCondition)
+                     {
+                         lineIt->InsertPoint(*pointIt, fReferenceThreshold);
+                         match = true;
+                         ++lineIt;
+                     }
+                     else if (lineIt->fNPoints == 1 and timeCondition and secondPointCondition)
                      {
                          lineIt->InsertPoint(*pointIt, fReferenceThreshold);
                          match = true;

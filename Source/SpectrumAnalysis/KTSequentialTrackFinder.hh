@@ -101,6 +101,7 @@ namespace Katydid
             MEMBERVARIABLE(int, MinFreqBinDistance);
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
+            MEMBERVARIABLE(double, InitialFrequencyAcceptance);
             MEMBERVARIABLE(double, SNRPowerThreshold);
             MEMBERVARIABLE(double, ReferenceThreshold);
             MEMBERVARIABLE(int, SearchRadius);
