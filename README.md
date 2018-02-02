@@ -50,17 +50,8 @@ Directory Structure
 *  External - A few dependencies that are included with the distribution.
 *  Nymph - Submodule
 *  OldAnalysis - Dump for old source files.
-*  Source
-  *  Data - Classes that store the data as it gets processed.
-  *  Evaluation - Processors for determining how well an analysis is performing.
-  *  EventAnalysis - Processors that act on individual events (e.g. tracks, clusters of tracks, etc.).
-  *  Executables - Source code for Katydid executables and test programs.
-  *  IO - Writer and reader classes.
-  *  Simulation - An attempt at integrating a simulation into Katydid (use Locust_MC instead)
-  *  SpectrumAnalysis - Processors that act on spectrum-like data.
-  *  Time - Processors that act on data in the time domain.
-  *  Transform - Processors involved in transforming between the time and frequency domains.
-  *  Utility - Generic classes that can be used throughout Katydid.
+*  Source - current source files (more docs in that folder)
+
 
 
 Tips on Installing the Dependencies
