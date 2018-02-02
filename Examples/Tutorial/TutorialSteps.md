@@ -52,7 +52,7 @@ Although the signals emit the output, explicitly specifying the output type when
 ### Member Variables
 For a low-pass filter we need only one configurable parameter, which is the time constant. Thus, we can remove from the processor template anything to do with the 2nd and 3rd dummy member variables, and replace the lines to do with MemberVariable1 with something to represent the time constant. Member variables are parsed from the configuration file in the Configure method; make sure to also edit this method to use the more appropriate name you've chosen for the time constant.
 
-At this point, add the processor to the CMakeLists.txt file in Source/SpectrumAnalysis, and re-build to check for errors and debug. Now we will move on to the actual function of the processor.
+At this point, add the processor to the CMakeLists.txt file in Source/SpectrumAnalysis, and re-build to check for errors and debug. If the build fails, make sure that you have included the headers corresponding to the three input data types in the processor header. Indeed, the types of the slots depend on those, and the compiler will not be able to build your processor if it does not know the memory layout of its slots. Now we will move on to the actual function of the processor.
 
 ### Slot Method
 By now, we have developed all of the framework for the processor and we are ready to implement the actual low-pass filter. This will happen separately for each data type, in the methods which you have assigned to each slot in their initializations. The actual code at this point, finally, is up to you to write without explicit guidance. However, there are some things the method needs to accomplish in a specific way:
