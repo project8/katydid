@@ -1,6 +1,6 @@
 # Tutorial -- Low-Pass Filter Processor
 
-For this tutorial, your goal is to add to Katydid the ability to apply a low-pass filter to frequency-domain data.  You will need to create the processor that performs the filtering, and data objects that will represent post-filtered data.  Your processor should be able to act on 3 data types: KTFrequencySpectrumDataPolar, KTFrequencySpectrumDataFFTW, and KTPowerSpectrumData.
+For this tutorial, your goal is to add to Katydid the ability to apply a low-pass filter to frequency-domain data.  You will need to create the processor that performs the filtering, and data objects that will represent post-filtered data.  Your processor should be able to act on 3 data types: KTFrequencySpectrumDataPolar, KTFrequencySpectrumDataFFTW, and KTPowerSpectrumData. For this type of processor, the output and input data types are going to be virtually identical. However, due to the current design of the software, the output types must differ from the input types. Consequently, the processor will output three new types you have to create.
 
 ## Get Katydid
 1. Clone the git repo: git clone --recursive https://github.com/project8/katydid.git
