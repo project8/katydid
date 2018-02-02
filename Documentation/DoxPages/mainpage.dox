@@ -3,46 +3,4 @@
  *
  * Go to the <A HREF="../index.html">main Katydid documentation</A>.
  * 
- * Katydid is a C++-based analysis toolkit for the Project 8 experiment.
- * 
- * \section contents_sec Contents
- *
- * * Getting and Installing Katydid
- * * For Users
- * ** Proto-Quick-Start Guide
- * ** The Big Idea
- * ** User Interface
- * ** Configuration Files
- * ** Command-Line Options
- * ** Executables
- * ** Processors
- * ** Setting up a Config File
- * ** Output Formats
- * * For Developers
- * ** Contributing to Katydid
- * ** Modules
- * ** Configuration
- * ** Developer's Guide (outdated)
- * *Configuration File Options
- * * Command Line Options
- * * Known Issues
- * 
- * 
- * \section help_sec Getting Help
- * 
- * * Send your question by email to Noah Oblath: nsoblath-at-mit.edu
- * * For installation problems: Katydid Installation
- * * Found a bug or have a suggestion: submit an issue
- * * For ROOT problems: ROOT Website
- * 
- * \section req_sec Requirements
-
- * See more info in the top-folder README file
- * 
- * \section copy_sec Copyright and Licensing
- * 
- * * The copyright for all original code in Katydid belongs to the the authors of Katydid and their institutions.
- * * Katydid is an open-source distribution. See the LICENSE file in the distribution for the full license text.
- * 
- * 
 */
