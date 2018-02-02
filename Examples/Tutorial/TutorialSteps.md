@@ -29,10 +29,10 @@ The data classes that we have just copied each contain essentially the same stru
 
 The low-pass filtered data will have exactly the same structure as these spectrum data classes, so it will be sufficient to make them inherit from the Core classes just the same. Obviously we do not need to redefine the Core data classes, so in each of the new data classes we should:
 
-1. Remove the Core data class and all its inline functions from the header file, and simply add an inclusion at the top (.e.g #include KTFrequencySpectrumDataFFTW.hh).
+1. Remove the Core data class and all its inline functions from the header file, and simply add an inclusion at the top (e.g `#include KTFrequencySpectrumDataFFTW.hh`).
 2. Replace every instance of the class name with the new class name you have chosen. This can be (almost completely) done by text-replace once the Core data class lines have been removed. Remember that the class must still inherit from the Core data class with the old name.
 3. Similarly, remove the Core data class constructor/destructor from the source file of each new data class and replace the class name with our low-pass filtered data class names.
-4. Replace the definition lines at the top of the header file (e.g. #ifndef KTFREQUENCYSPECTRUMFFTW_HH_) with the new class name.
+4. Replace the definition lines at the top of the header file (e.g. `#ifndef KTFREQUENCYSPECTRUMFFTW_HH_`) with the new class name.
 
 At this point, we should have a working set of new spectrum data classes which inherit from the Core classes in the same way as our input data. Add the new data classes to the CMakeLists.txt file in Source/Data and re-build to ensure the data classes were created without error.
 
@@ -51,7 +51,17 @@ For a low-pass filter we need only one configurable parameter, which is the time
 
 At this point, add the processor to the CMakeLists.txt file in Source/SpectrumAnalysis, and re-build to check for errors and debug. Now we will move on to the actual function of the processor.
 
+### Slot Method
+By now, we have developed all of the framework for the processor and we are ready to implement the actual low-pass filter. This will happen separately for each data type, in the methods which you have assigned to each slot in their initializations. The actual code at this point, finally, is up to you to write without explicit guidance. However, there are some things the method needs to accomplish in a specific way:
 
+1. Create the new data type and append it to the list of objects contained in the KTDataPtr. This is accomplished by calling the `.Of< NewDataType >` method on the initial data object (the argument to the slot method), e.g.:
+
+`KTLowPassFilteredDataFSFFTW& newData = data.Of< KTLowPassFilteredDataFSFFTW >();`
+
+2. Set `NComponents` of the new data object to the same as that of the old data object.
+3. Loop through the components of the incoming data and operate on an individual spectrum using the `GetSpectrum` methods to obtain an initial spectrum and `SetSpectrum` to assign one to the new data.
+
+Since the individual spectrum objects are contained in the Core data classes, these will be the same type for both the initial and filtered data.
 
 ## Writer
 1. In Source/IO/KTBasicROOTTypeWriterAnalysis.hh, copy WriteNormalized[FSDataPolar/FSDataFFTW/PSData] to WriteLowPassFiltered[FSDataPolar/FSDataFFTW/PSData]
