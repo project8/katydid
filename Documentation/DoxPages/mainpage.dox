@@ -5,8 +5,8 @@
  * 
  * Katydid is a C++-based analysis toolkit for the Project 8 experiment.
  * 
- * Contents
- * ------------------
+ * \section contents_sec Contents
+ *
  * * Getting and Installing Katydid
  * * For Users
  * ** Proto-Quick-Start Guide
@@ -27,34 +27,22 @@
  * * Command Line Options
  * * Known Issues
  * 
+ * 
+ * \section help_sec Getting Help
+ * 
+ * * Send your question by email to Noah Oblath: nsoblath-at-mit.edu
+ * * For installation problems: Katydid Installation
+ * * Found a bug or have a suggestion: submit an issue
+ * * For ROOT problems: ROOT Website
+ * 
+ * \section req_sec Requirements
+
+ * See more info in the top-folder README file
+ * 
+ * \section copy_sec Copyright and Licensing
+ * 
+ * * The copyright for all original code in Katydid belongs to the the authors of Katydid and their institutions.
+ * * Katydid is an open-source distribution. See the LICENSE file in the distribution for the full license text.
+ * 
+ * 
 */
-
-Getting Help
-------------------
-
-* Send your question by email to Noah Oblath: nsoblath-at-mit.edu
-* For installation problems: Katydid Installation
-* Found a bug or have a suggestion: submit an issue
-* For ROOT problems: ROOT Website
-
-Requirements
-------------------
-
-* Tested on: Mac OS X and Linux
-* Compilers tested: gcc (4.6 or higher) and LLVM (3.1 or higher)
-* CMake 2.8 or higher
-* Monarch (included as a submodule of Katydid)
-* Protobuf
-* Boost -- headers, plus the following libraries: date_time, filesystem, program_options, system, thread
-* FFTW3 -- version 3.3 or newer
-* Eigen -- optional, though some functionality will not be available without it
-* ROOT -- optional, though some functionality will not be available without it
-* Matlab or Matlab Compiler Runtime (MCR) -- optional, though some functionality will not be available without it. Please see Library-Version-Information for version compatibility.
-* log4cxx -- optional
-More detailed information can be found on the Library-Version-Information page.
-
-Copyright and Licensing
-------------------
-
-* The copyright for all original code in Katydid belongs to the the authors of Katydid and their institutions.
-* Katydid is an open-source distribution. See the LICENSE file in the distribution for the full license text.
