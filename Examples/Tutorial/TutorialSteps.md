@@ -46,10 +46,13 @@ As we have already discussed, there will be 3 slots and 3 signals corresponding 
 
 The slots are initialized in the source file, and in their initialization they each point to a method. This is the method that will be executed when the processor receives its input data to this slot; it is where the "meat" of the processor code will go. First, simply change the method names and the input data classes to something less dumb. We will finish setting up the framework of the processor before we move on to developing these methods.
 
+Although the signals emit the output, explicitly specifying the output type when declaring or initialising the signals is not necessary. Nevertheless, the slots must be connected to their respective signal objects upon initialisation. This is achieved by providing a fourth argument to the slot constructor, which is the address of the signal, as can be seen in the following example:
+`fSlot("slot", this, &KTFilter::Filter, &fSignal)`
+
 ### Member Variables
 For a low-pass filter we need only one configurable parameter, which is the time constant. Thus, we can remove from the processor template anything to do with the 2nd and 3rd dummy member variables, and replace the lines to do with MemberVariable1 with something to represent the time constant. Member variables are parsed from the configuration file in the Configure method; make sure to also edit this method to use the more appropriate name you've chosen for the time constant.
 
-At this point, add the processor to the CMakeLists.txt file in Source/SpectrumAnalysis, and re-build to check for errors and debug. Now we will move on to the actual function of the processor.
+At this point, add the processor to the CMakeLists.txt file in Source/SpectrumAnalysis, and re-build to check for errors and debug. If the build fails, make sure that you have included the headers corresponding to the three input data types in the processor header. Indeed, the types of the slots depend on those, and the compiler will not be able to build your processor if it does not know the memory layout of its slots. Now we will move on to the actual function of the processor.
 
 ### Slot Method
 By now, we have developed all of the framework for the processor and we are ready to implement the actual low-pass filter. This will happen separately for each data type, in the methods which you have assigned to each slot in their initializations. The actual code at this point, finally, is up to you to write without explicit guidance. However, there are some things the method needs to accomplish in a specific way:
@@ -64,20 +67,16 @@ By now, we have developed all of the framework for the processor and we are read
 Since the individual spectrum objects are contained in the Core data classes, these will be the same type for both the initial and filtered data.
 
 ## Writer
-1. In Source/IO/KTBasicROOTTypeWriterAnalysis.hh, copy WriteNormalized[FSDataPolar/FSDataFFTW/PSData] to WriteLowPassFiltered[FSDataPolar/FSDataFFTW/PSData]
-2. Do the same copying in the .cc file.
-3. Change the class names in the functions appropriately.
-4. Add a #include line for the data class header.
-5. Add Register lines for the new functions (i.e. copy and modify the relevant WriteNormalized lines)
+The last step is to add the ability to write our new data class, so we can see the output of our new processor. We will once again use what exists already for the input data as a starting point; the writers for these classes are located in Source/IO/BasicROOTFileWriter/KTBasicROOTTypeWriterTransform.hh/cc.
 
+In the header file, we must add a declaration of a method for each of the three data types we'd like to write, in the same fashion as the numerous other methods already listed. The argument to these methods is a KTDataPtr, because they will serve as the direct slot functions.
 
-## Config
-1. Copy Examples/ConfigFiles/KatydidPSConfig.json to a working directory.
-2. Add the creation of the LPF processor.
-3. Connect the processor between the FFT and the writer.
-4. Add the configuration of the processor.
+In the source file, we must register the new slots in the constructor and create the slot methods. These can be almost exactly the same as the methods already in place; that is, copy the slot method for `KTFrequencySpectrumDataFFTW`, change instances of the data object accordingly (but the spectrum objects can remain the same), and then do the same for the other two data types. 
 
+## Configure and Run Katydid
+At last, we are ready to run Katydid and make use of our new processor. There is a configuration file in this directory which is already set up to perform a simple Fourier transform and low-pass filter; simply take the following steps to adapt this config file for your build and run it:
 
-## Run Katydid
-1. Customize the input and output filenames.
-2. Katydid -c [config file]
+1. Copy the config file to a working directory outside of the Katydid repo folder
+2. Change the strings which describe the filter processor if they do not match the choices you have made: the processor name `low-pass-filter`, the slot name `ps`, the signal name `ps` (for these two you should use the power spectrum signal/slot names), the writer slot name `ps`, and the reciprocal time constant `rc`.
+3. Specify an input egg file in configuration of the egg processor.
+4. Run Katydid with this configuration file: `Katydid -c LPFConfig.json`
