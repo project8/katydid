@@ -33,7 +33,5 @@ The purpose of the Configuration mechanism is to allow objects to be setup at ru
 
 # Useful Details
 
-# How do I . . .
-
-* [[make a new Processor?|Creating a Processor]]
-* [[add a new Data class?|Data]]
+# Further Reading
+For more details on creating new processors and custom Katydid components, go through the Tutorial in the source code "Documentation" folder. You may also be interested in the tutorials about how to use the DIRAC file system and batch computing cluster-- those tutorials are on the "hardware" wiki under the DIRAC section. 
