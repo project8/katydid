@@ -1,6 +1,6 @@
 Contributing 
 ==============
-
+TODO_DOC: move this to a more general page, not Katydid
 
 ## Git
 Katydid uses the Git version control system.  There are many resources available on the Web if you're new to Git or just need to brush up on the commands:

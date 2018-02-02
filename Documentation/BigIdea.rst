@@ -1,7 +1,7 @@
 The Big Idea
 ===============
 
-Katydid is built on the Nymph analysis framework.  Since it doesn't have its own documentation yet, I'll include the general principles here.
+Katydid is a C++-based analysis toolkit for the Project 8 experiment. At is heart is a more general analysis framework Nymph (which was also written custom for Project 8). Nymph in turn uses several general tools from Scarab.  Since Nymph and Scarab don't have their own documentation yet, its general principles go here too.
 
 The goals behind the design of Katydid/Nymph are:
 - Users should be able to reconfigure and rerun their analysis without needing to recompile Katydid.

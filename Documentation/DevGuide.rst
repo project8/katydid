@@ -1,6 +1,8 @@
 Developers Guide
 ========================
 
+TODO_DOC: this should probably be split up into the different bits it talks about. Better that each entry has a basic section followed by an advanced section, rather than what we have now: a folder of basic pages followed by a folder of advanced pages. 
+
 # Concepts
 
 ## Processors and Data
@@ -31,7 +33,5 @@ The purpose of the Configuration mechanism is to allow objects to be setup at ru
 
 # Useful Details
 
-# How do I . . .
-
-* [[make a new Processor?|Creating a Processor]]
-* [[add a new Data class?|Data]]
+# Further Reading
+For more details on creating new processors and custom Katydid components, go through the Tutorial in the source code "Documentation" folder. You may also be interested in the tutorials about how to use the DIRAC file system and batch computing cluster-- those tutorials are on the "hardware" wiki under the DIRAC section. 

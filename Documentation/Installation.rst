@@ -1,6 +1,8 @@
 Installation 
 ===========
 
+TODO_DOC: compare this to the README file in the top level folder. We only want one tutorial to maintain! (with arbitrary amounts of detail for different audiences, but that's the challenge to write well versus writing too much)
+
 # Getting Katydid
 ## Distribution Tarball
 These are produced automatically by github as https://github.com/project8/katydid/tarball/TAG_NAME.
