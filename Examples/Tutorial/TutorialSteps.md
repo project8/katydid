@@ -21,12 +21,12 @@ For this tutorial, your goal is to add to Katydid the ability to apply a low-pas
 
 ## Development Setup
 1. Copy KTProcessorTemplate.hh/cc files to the appropriate location (Source/SpectrumAnalysis) and new filenames (best practice: something that indicates what the processor will do).
-2. Copy a data class files (e.g. Source/Data/SpectrumAnalysis/KTNormalizedFSData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames (best practice: something that indicates what the data represents).
+2. Copy a data class files (e.g. Source/Data/SpectrumAnalysis/KTFrequencySpectrumDataFFTWData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames (best practice: something that indicates what the data represents).
 3. Build again, to make sure there are no errors. 
 
 
 ## Data
-1. Create classes for FS-polar, FS-fftw, and PS. If KTNormalizedFSData was copied, this can be done by text-replace.
+1. Create classes for F-polar, FS-fftw, and PS. If KTNormalizedFSData was copied, this can be done by text-replace.
 2. Fix inclusion guard.
 3. Fix class-name documentation.
 4. Add the class to the CMakeLists.txt in Source/Data.
