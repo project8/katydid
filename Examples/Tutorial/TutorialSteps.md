@@ -64,20 +64,16 @@ By now, we have developed all of the framework for the processor and we are read
 Since the individual spectrum objects are contained in the Core data classes, these will be the same type for both the initial and filtered data.
 
 ## Writer
-1. In Source/IO/KTBasicROOTTypeWriterAnalysis.hh, copy WriteNormalized[FSDataPolar/FSDataFFTW/PSData] to WriteLowPassFiltered[FSDataPolar/FSDataFFTW/PSData]
-2. Do the same copying in the .cc file.
-3. Change the class names in the functions appropriately.
-4. Add a #include line for the data class header.
-5. Add Register lines for the new functions (i.e. copy and modify the relevant WriteNormalized lines)
+The last step is to add the ability to write our new data class, so we can see the output of our new processor. We will once again use what exists already for the input data as a starting point; the writers for these classes are located in Source/IO/BasicROOTFileWriter/KTBasicROOTTypeWriterTransform.hh/cc.
 
+In the header file, we must add a declaration of a method for each of the three data types we'd like to write, in the same fashion as the numerous other methods already listed. The argument to these methods is a KTDataPtr, because they will serve as the direct slot functions.
 
-## Config
-1. Copy Examples/ConfigFiles/KatydidPSConfig.json to a working directory.
-2. Add the creation of the LPF processor.
-3. Connect the processor between the FFT and the writer.
-4. Add the configuration of the processor.
+In the source file, we must register the new slots in the constructor and create the slot methods. These can be almost exactly the same as the methods already in place; that is, copy the slot method for `KTFrequencySpectrumDataFFTW`, change instances of the data object accordingly (but the spectrum objects can remain the same), and then do the same for the other two data types. 
 
+## Configure and Run Katydid
+At last, we are ready to run Katydid and make use of our new processor. There is a configuration file in this directory which is already set up to perform a simple Fourier transform and low-pass filter; simply take the following steps to adapt this config file for your build and run it:
 
-## Run Katydid
-1. Customize the input and output filenames.
-2. Katydid -c [config file]
+1. Copy the config file to a working directory outside of the Katydid repo folder
+2. Change the strings which describe the filter processor if they do not match the choices you have made: the processor name `low-pass-filter`, the slot name `ps`, the signal name `ps` (for these two you should use the power spectrum signal/slot names), the writer slot name `ps`, and the reciprocal time constant `rc`.
+3. Specify an input egg file in configuration of the egg processor.
+4. Run Katydid with this configuration file: `Katydid -c LPFConfig.json`
