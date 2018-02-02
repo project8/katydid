@@ -26,9 +26,9 @@ namespace Katydid
             fDummySignal3("dummy-signal-3", this),
 
             // If you would like to build this template as-is, you must comment out the following slot initializations because they use made-up data types
-            fSlotOne("dummy-slot-1", this, &KTProcessorTemplate::AnalyzeDummyObject1),
-            fSlotTwo("dummy-slot-2", this, &KTProcessorTemplate::AnalyzeDummyObject2),
-            fSlotThree("dummy-slot-3", this, &KTProcessedTemplate::AnalyzeDummyObject3)
+            fSlotOne("dummy-slot-1", this, &KTProcessorTemplate::AnalyzeDummyObject1, &fDummySignal1),
+            fSlotTwo("dummy-slot-2", this, &KTProcessorTemplate::AnalyzeDummyObject2, &fDummySignal2),
+            fSlotThree("dummy-slot-3", this, &KTProcessedTemplate::AnalyzeDummyObject3, &fDummySignal3)
     {
     }
 
