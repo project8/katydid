@@ -22,7 +22,6 @@ For this tutorial, your goal is to add to Katydid the ability to apply a low-pas
 ## Development Setup
 1. Copy KTProcessorTemplate.hh/cc to the Source/SpectrumAnalysis directory and rename them to create your new processor. Generally the file name should describe the function of the processor (e.g. KTLowPassFilter.hh/cc).
 2. Copy the data class files KTFrequencySpectrumDataFFTW.hh/cc, KTFrequencySpectrumDataPolar.hh/cc, and KTPowerSpectrumData.hh/cc in the Source/Data/Transform directory to Source/Data/SpectrumAnalysis to create your new data types. Again, rename them to something which indicates they will represent data that has been processed by the low-pass filter.
-3. Build again, to make sure there are no errors. 
 
 
 ## Data
