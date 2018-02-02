@@ -7,6 +7,9 @@ Dependencies between the modules are certainly allowed, though care should be ta
 
 The library filenames are libKatydid[ModuleName].so (or .dylib).
 
+
+TODO_DOC: this section might better fit in the Doxygen files? Perhaps delete this page. 
+
 The modules in Katydid are:
 * **Analysis** -- Classes that perform various higher-level analyses of time- and frequency-space data.
 * **Candidates** -- Classes that are responsible for identifying and analyzing candidates

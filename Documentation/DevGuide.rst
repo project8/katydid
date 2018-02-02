@@ -1,6 +1,8 @@
 Developers Guide
 ========================
 
+TODO_DOC: this should probably be split up into the different bits it talks about. Better that each entry has a basic section followed by an advanced section, rather than what we have now: a folder of basic pages followed by a folder of advanced pages. 
+
 # Concepts
 
 ## Processors and Data
