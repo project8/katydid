@@ -20,9 +20,20 @@ For this tutorial, your goal is to add to Katydid the ability to apply a low-pas
    To speed the build process, if you have multiple cores, you can add a -j argument.
 
 ## Development Setup
-1. Copy KTProcessorTemplate.hh/cc to the Source/SpectrumAnalysis directory and rename them to create your new processor. Generally the file name should describe the function of the processor (e.g. KTLowPassFilter.hh/cc).
-2. Copy the data class files KTFrequencySpectrumDataFFTW.hh/cc, KTFrequencySpectrumDataPolar.hh/cc, and KTPowerSpectrumData.hh/cc in the Source/Data/Transform directory to Source/Data/SpectrumAnalysis to create your new data types. Again, rename them to something which indicates they will represent data that has been processed by the low-pass filter.
+1. Copy KTProcessorTemplate.hh/cc to the Source/SpectrumAnalysis directory and rename them to create our new processor. Generally the file name should describe the function of the processor (e.g. KTLowPassFilter.hh/cc).
+2. Copy the data class files KTFrequencySpectrumDataFFTW.hh/cc, KTFrequencySpectrumDataPolar.hh/cc, and KTPowerSpectrumData.hh/cc in the Source/Data/Transform directory to Source/Data/SpectrumAnalysis to create our new data types. Again, rename them to something which indicates they will represent data that has been processed by the low-pass filter.
+3. Build again, to make sure there are no errors. 
 
+The data classes that we have just copied each contain essentially the same structure. There is a Core class, which is declared in the header file and contains the spectrum object as well as public methods to Get and Set any component of the spectrum. Then, there is the actual data class which inherits from the appropriate Core data class and contains only a SetNComponents method.
+
+The low-pass filtered data will have exactly the same structure as these spectrum data classes, so it will be sufficient to make them inherit from the Core classes just the same. Obviously we do not need to redefine the Core data classes, so in each of the new data classes we should:
+
+1. Remove the Core data class and all its inline functions from the header file, and simply add an inclusion at the top (.e.g #include KTFrequencySpectrumDataFFTW.hh).
+2. Replace every instance of the class name with the new class name you have chosen. This can be (almost completely) done by text-replace once the Core data class lines have been removed. Remember that the class must still inherit from the Core data class with the old name.
+3. Similarly, remove the Core data class constructor/destructor from the source file of each new data class and replace the class name with our low-pass filtered data class names.
+4. Replace the definition lines at the top of the header file (e.g. #ifndef KTFREQUENCYSPECTRUMFFTW_HH_) with the new class name.
+
+At this point, we should have a working set of new spectrum data classes which inherit from the Core classes in the same way as our input data. Add the new data classes to the CMakeLists.txt file in Source/Data and re-build to ensure the data classes were created without error.
 
 ## Data
 1. Create classes for F-polar, FS-fftw, and PS. If KTNormalizedFSData was copied, this can be done by text-replace.
