@@ -24,6 +24,7 @@ For this tutorial, your goal is to add to Katydid the ability to apply a low-pas
 2. Copy the data class files KTFrequencySpectrumDataFFTW.hh/cc, KTFrequencySpectrumDataPolar.hh/cc, and KTPowerSpectrumData.hh/cc in the Source/Data/Transform directory to Source/Data/SpectrumAnalysis to create our new data types. Again, rename them to something which indicates they will represent data that has been processed by the low-pass filter.
 3. Build again, to make sure there are no errors. 
 
+## Data
 The data classes that we have just copied each contain essentially the same structure. There is a Core class, which is declared in the header file and contains the spectrum object as well as public methods to Get and Set any component of the spectrum. Then, there is the actual data class which inherits from the appropriate Core data class and contains only a SetNComponents method.
 
 The low-pass filtered data will have exactly the same structure as these spectrum data classes, so it will be sufficient to make them inherit from the Core classes just the same. Obviously we do not need to redefine the Core data classes, so in each of the new data classes we should:
@@ -34,13 +35,6 @@ The low-pass filtered data will have exactly the same structure as these spectru
 4. Replace the definition lines at the top of the header file (e.g. #ifndef KTFREQUENCYSPECTRUMFFTW_HH_) with the new class name.
 
 At this point, we should have a working set of new spectrum data classes which inherit from the Core classes in the same way as our input data. Add the new data classes to the CMakeLists.txt file in Source/Data and re-build to ensure the data classes were created without error.
-
-## Data
-1. Create classes for F-polar, FS-fftw, and PS. If KTNormalizedFSData was copied, this can be done by text-replace.
-2. Fix inclusion guard.
-3. Fix class-name documentation.
-4. Add the class to the CMakeLists.txt in Source/Data.
-
 
 ## Processor
 1. Fix inclusion guard. (.hh)
