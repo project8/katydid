@@ -46,7 +46,7 @@ As we have already discussed, there will be 3 slots and 3 signals corresponding 
 
 The slots are initialized in the source file, and in their initialization they each point to a method. This is the method that will be executed when the processor receives its input data to this slot; it is where the "meat" of the processor code will go. First, simply change the method names and the input data classes to something less dumb. We will finish setting up the framework of the processor before we move on to developing these methods.
 
-Although the signals emit the output, explicitly specifying the output type when declaring or initialising the signals is not necessary. Nevertheless, the slots must be connected to their respective signal objects upon initialisation. This is achieved by providing a third argument to the slot constructor, which is the address of the signal, as can be seen in the following example:
+Although the signals emit the output, explicitly specifying the output type when declaring or initialising the signals is not necessary. Nevertheless, the slots must be connected to their respective signal objects upon initialisation. This is achieved by providing a fourth argument to the slot constructor, which is the address of the signal, as can be seen in the following example:
 `fSlot("slot", this, &KTFilter::Filter, &fSignal)`
 
 ### Member Variables
