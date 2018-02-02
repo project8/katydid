@@ -10,18 +10,18 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-    QuickStart
-    BigIdea
-    UserInterface
-    Configuration
-    Modules
-    Executables
-    OutputFormats
-    Installation
-    Contributing
-    DevGuide
-    Modules
-    
+   QuickStart
+   BigIdea
+   UserInterface
+   Configuration
+   Modules
+   Executables
+   OutputFormats
+   Installation
+   Contributing
+   DevGuide
+   Modules
+   
 .. end of toc
 .. (you must not remove or modify the above comment line, it is required by the API Doc generation)
 `Full Doxygen API Reference <_static/index.html>`_
