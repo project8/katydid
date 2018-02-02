@@ -39,12 +39,12 @@ At this point, we should have a working set of new spectrum data classes which i
 ## Processor
 The processor template contains dummy objects for each of the essential components of a processor: member variables, slots, and signals. Member variables are parameters of the processor which are often (but not always) configurable at run-time with the configuration file. Slots will determine the type of input data that the processor is allowed to accept, and signals will determine the output data types. We have to replace the dummy objects here with the slots, signals, and member variables that we will need for a low-pass filter.
 
-# Slots and Signals
+### Slots and Signals
 As we have already discussed, there will be 3 slots and 3 signals corresponding to the 3 types of input and output data. Change the names such as dummy-slot-1, etc. everywhere they appear to reflect the data types that they will be handling. The slots themselves are declared in the header file at the end of the class definition, and here we must specify the real input data class for each slot, for example:
 
 `Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFrequencySpectrumFFTWSlot;`
 
-# Member Variables
+### Member Variables
 
 
 
