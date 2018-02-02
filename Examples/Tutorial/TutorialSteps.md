@@ -44,25 +44,13 @@ As we have already discussed, there will be 3 slots and 3 signals corresponding 
 
 `Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFrequencySpectrumFFTWSlot;`
 
+The slots are initialized in the source file, and in their initialization they each point to a method. This is the method that will be executed when the processor receives its input data to this slot; it is where the "meat" of the processor code will go. First, simply change the method names and the input data classes to something less dumb. We will finish setting up the framework of the processor before we move on to developing these methods.
+
 ### Member Variables
+For a low-pass filter we need only one configurable parameter, which is the time constant. Thus, we can remove from the processor template anything to do with the 2nd and 3rd dummy member variables, and replace the lines to do with MemberVariable1 with something to represent the time constant. Member variables are parsed from the configuration file in the Configure method; make sure to also edit this method to use the more appropriate name you've chosen for the time constant.
 
+At this point, add the processor to the CMakeLists.txt file in Source/SpectrumAnalysis, and re-build to check for errors and debug. Now we will move on to the actual function of the processor.
 
-
-1. Fix inclusion guard. (.hh)
-2. Fix class name and class-name documentation. (.hh and .cc)
-3. Fix config name. (.hh and .cc)
-4. Add brief description. (.hh)
-5. Add the time constant parameter using MEMBERVARIABLE (or you can write the variable declaration, and getter and setter methods).  Add KTMemberVariable.hh inclusion. (.hh and .cc)
-6. Implement Configure function to set the time constant. (.hh and .cc)
-7. Create and implement Convolve functions: (.hh and .cc)
-    ```
-    bool Filter(KTFrequencySpectrumDataPolar& fsData);
-    bool Filter(KTFrequencySpectrumDataFFTW& fsData);
-    bool Filter(KTPowerSpectrumData& psData);
-    ```
-8. Add signal/slot interface. (.hh and .cc)
-9. Finish documentation. (.hh)
-10. Add the class to the CMakeLists.txt file in Source/Data/SpectrumAnalysis.
 
 
 ## Writer
