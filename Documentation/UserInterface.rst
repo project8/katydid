@@ -17,7 +17,6 @@ Configuration files are broken up into two main sections:
 
 Here is an example of an annotated JSON-formatted configuration file::
 
-::
 
 json
 {
@@ -29,16 +28,15 @@ json
             { "type": "forward-fftw",        "name": "fft" },
             { "type": "convert-to-power",    "name": "to-ps" },
             { "type": "basic-root-writer",   "name": "writer" }
-        ],
+        ],::
 
-::
         "connections":
         [
         {
             "signal": "egg:header",
             "slot": "fft:header"
-        },
-::            
+        },::
+                    
         {
             "signal": "egg:ts",
             "slot": "fft:ts-fftw"
@@ -51,28 +49,27 @@ json
                 "signal": "to-ps:psd",
             "slot": "writer:ps"
         }
-        ],
-::        
+        ],::
+                
         "run-queue":
         [
             "egg"
         ]
-    },
+    },::
     
-::
     "egg":
     {
         "filename": "/path/to/file.egg",
         "egg-reader": "egg3",
         "slice-size": 16384,
         "number-of-slices": 1
-    },
-::    
+    },::
+        
     "fft":
     {
         "transform-flag": "ESTIMATE"
-    },
-::    
+    },::
+        
     "writer":
     {
         "output-file": "/path/to/file.root",
