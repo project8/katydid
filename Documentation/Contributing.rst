@@ -1,6 +1,9 @@
 Contributing 
 ==============
-TODO_DOC: move this to a more general page, not Katydid
+TODO_DOC: move this to a more general page, not Katydid,
+Probably here: https://github.com/project8/hardware/wiki/Conventions
+but it will take some thought to combine usefully. 
+At the same time, it may be useful to link or combine the "commone cli tools" page into the software section
 
 ## Git
 Katydid uses the Git version control system.  There are many resources available on the Web if you're new to Git or just need to brush up on the commands:
