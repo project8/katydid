@@ -1,87 +1,15 @@
 Installation 
 ===========
 
-TODO_DOC: compare this to the README file in the top level folder. We only want one tutorial to maintain! (with arbitrary amounts of detail for different audiences, but that's the challenge to write well versus writing too much)
-
-# Getting Katydid
-## Distribution Tarball
-These are produced automatically by github as https://github.com/project8/katydid/tarball/TAG_NAME.
-
-* [v0.5](https://github.com/project8/katydid/tarball/v0.5)
-* [v0.5.1](https://github.com/project8/katydid/tarball/v0.5.1)
 
 ## Github
-Katydid source can be found on the [Project 8 Github repository](https://github.com/project8/katydid).  You will need to have CMake installed on your computer (version 2.6 or better).  It's also useful to have ccmake or cmake-gui to make the configuration step easier.
-
+Katydid source can be found on the [Project 8 Github repository](https://github.com/project8/katydid).  
 The master branch of the source code can be cloned from the Github repository in the standard way (assuming you have Git installed and configured on your computer):
 
     > git clone https://github.com/project8/katydid.git
 
-You will also need to clone the Monarch and libthorax submodules:
+Follow the installation instructions in the top-level README file, which also shows up on the front page of the Github Katydid webpage. 
 
-    > cd katydid
-    > git submodule update --init --recursive
-
-On some systems the default submodule cloning method (via the `https` protocol) won't work, and will give you an error that looks something like this: 
- 
-    fatal: Unable to find remote helper for 'https' 
-
-To fix this problem, git can be configured locally to connect using `ssh` instead of `https`.  The following command will update your global git config:
-
-    > git config --global url.git@github.com:.insteadOf https://github.com/
-
-On other systems, you may not be able to use the `ssh` protocol, and you might get an error that looks something like this:
-
-    fatal: unable to connect to github.com:
-    github.com[0: 192.30.252.128]: errno=Connection refused
-
-To fix this problem, git can be configured locally to connect using `https` instead of `ssh`.  The following command will update your global git config:
-
-    > git config --global url.https://github.com.insteadOf git@github.com
-
-# Installing Katydid
-CMake allows you to create a variety of different build systems.  The repository includes a hierarchy of CMakeLists.txt files that tell CMake how the project should be built.  The only option supported here is for Unix Makefiles.
-
-These instructions assume that you start from the top-level directory of your repository.
-
-## Build directory
-
-The best practice for building Katydid (or any package, for that matter) is to keep your build files separate from your source tree.  This is done easily with CMake by creating a build directory.  Typically this can be a directory within your source tree.
-
-    > mkdir build
-    > cd build
-
-## Configuring the Installation
-The simplest way to configure Katydid is to use the `cmake` command.  The `..` argument tells CMake to look one directory up for the main CMakeLists.txt file:
-
-    > cmake ..
-
-Alternatively you can use `ccmake` or `cmake-gui` to interactively select your configuration:
-
-    > ccmake ..
-
-or
-
-    > cmake-gui .. &
-
-## Compiling and Installing
-The following two command will compile and install Katydid:
-
-    > make install
-
-The default install directory (or "prefix") is within your build directory.
-
-If everything compiles and installs correctly, Katydid is ready to use.  If there were problems with the installation process, please see the Installation Problems section below.
-
-## Compilers
-
-The basic requirements are either gcc 4.6 or higher, or Clang 3.1 or higher.
-
-More detailed information can be found on the [[Library-Version-Information]] page.
-
-The chosen compiler should also be used to build the Boost libraries.
-
-## External Dependencies
 
 ### Matlab
 
