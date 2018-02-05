@@ -1,12 +1,14 @@
 Output Formats
 =============
 
-# ROOT
-
+ROOT
+-----------
 Katydid has a variety of ROOT writers:
-- "basic-root-writer" 
+ * "basic-root-writer" 
+ * ...
 
-# HDF5
+HDF5
+----------
 Katydid supports writing data to the HDF5 file format, which can be opened with various Python plotting tools.  The data are structured according to their type, so that
 the HDF5 file will have the following (data dependent) structure:
 
