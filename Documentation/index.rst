@@ -10,14 +10,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   QuickStart
    BigIdea
+   Installation
+   QuickStart
    UserInterface
    Configuration
    Modules
    Executables
    OutputFormats
-   Installation
    Contributing
    DevGuide
    Modules
