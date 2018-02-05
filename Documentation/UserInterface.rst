@@ -15,9 +15,9 @@ Configuration files are broken up into two main sections:
 * Configuring the processor toolbox, including defining which processors will be used, how they are connected, and which processor(s) is in charge of the run,
 * Configuring each individual processor.
 
-Here is an example of an annotated JSON-formatted configuration file:
-
-```json
+Here is an example of an annotated JSON-formatted configuration file::
+::
+json
 {
     "processor-toolbox":
     {
@@ -28,35 +28,35 @@ Here is an example of an annotated JSON-formatted configuration file:
             { "type": "convert-to-power",    "name": "to-ps" },
             { "type": "basic-root-writer",   "name": "writer" }
         ],
-        
+::        
         "connections":
         [
-	    {
-	        "signal": "egg:header",
-	        "slot": "fft:header"
-	    },
-	        
-	    {
-	        "signal": "egg:ts",
-	        "slot": "fft:ts-fftw"
-	    },
-	    {
-	        "signal": "fft:fft",
+        {
+            "signal": "egg:header",
+            "slot": "fft:header"
+        },
+::            
+        {
+            "signal": "egg:ts",
+            "slot": "fft:ts-fftw"
+        },
+        {
+            "signal": "fft:fft",
                 "slot": "to-ps:fs-fftw-to-psd"
             },
             {
                 "signal": "to-ps:psd",
-	        "slot": "writer:ps"
-	    }
+            "slot": "writer:ps"
+        }
         ],
-        
+::        
         "run-queue":
         [
             "egg"
         ]
     },
     
-
+::
     "egg":
     {
         "filename": "/path/to/file.egg",
@@ -64,12 +64,12 @@ Here is an example of an annotated JSON-formatted configuration file:
         "slice-size": 16384,
         "number-of-slices": 1
     },
-    
+::    
     "fft":
     {
         "transform-flag": "ESTIMATE"
     },
-    
+::    
     "writer":
     {
         "output-file": "/path/to/file.root",
@@ -77,12 +77,14 @@ Here is an example of an annotated JSON-formatted configuration file:
     }
 }
 
-```
 
-## Command-Line Options
+
+Command-Line Options
+----------------- 
 The built-in options are discussed above.  Those are available for any program using Katydid's application interface.
 
 Other command-line options can be added by various parts of the code to provide short-cuts for setting certain parameters.  Generally there are also configuration-file options available that can set the same parameters; Command-line options always take precedence over settings from a configuration file.  The command-line options available for an application can be found using the -h (--help) command-line option.
 
-### Modifying Configuration-File Parameters from the Command Line
+Modifying Configuration-File Parameters from the Command Line
+---------
 Even if an application or a class does not specify a command-line option for modifying a certain parameter, it is still possible to set that parameter from the command line, or add parameters to the configuration.  The entire nested address of the parameter is used as the command-line-option name.  For example, to change the FFTW transform flag in the above configuration file, one would use `--fft.transform-flag="PATIENT"`.  To get all of the options, build-in and configuration-file-based, you can run `Katydid --help-config -c my_config.json` .
