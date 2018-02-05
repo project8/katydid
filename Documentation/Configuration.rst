@@ -10,16 +10,19 @@ Patterns for using the parameter system
 -----------
 Here are some examples of code that has been used to configure different KTConfigurable classes in Katydid.  This is an incomplete list, and if new ways are developed, they should be added here.
 
-* Basic method for getting information from the tree, for the available data types (an exception is thrown if the data cannot be cast to the requested type, or if the data doesn't exist)::  
+* Basic method for getting information from the tree, for the available data types (an exception is thrown if the data cannot be cast to the requested type, or if the data doesn't exist)::
+
         std::string stringData = node->GetValue("string-data")
         int intData = node->GetValue< int >("int-data")
         double floatData = node->GetValue< double >("float-data")
         bool boolData = node->GetValue< bool >("bool-data")
 
-* Data can be accessed with a default to make setting optional (from KTEggProcessor)::  
+* Data can be accessed with a default to make setting optional (from KTEggProcessor)::
+
         SetNSlices(node->GetValue< unsigned >("number-of-slices", fNSlices));
 
 * Optional setting with limited possibilities (from KTEggProcessor)::
+
         string eggReaderTypeString = node->GetValue("egg-reader", "monarch");
         if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
         else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
@@ -30,6 +33,7 @@ Here are some examples of code that has been used to configure different KTConfi
         }
 
 * Require that a setting is present (from KTProcessorToolbox)::
+
         if (! subNode.Has("type"))
         {
             KTERROR(proclog, "Unable to create processor: no processor type given");
@@ -38,6 +42,7 @@ Here are some examples of code that has been used to configure different KTConfi
         string procType = subNode.GetData("type");
 
 * Iterate over all settings in an array (from KTProcessorToolbox; also requires that the array is present)::
+
         const KTParamArray* procArray = node->ArrayAt( "processors" );
         if (procArray == NULL)
         {
@@ -52,6 +57,7 @@ Here are some examples of code that has been used to configure different KTConfi
         }
 
 * Nested configuration: get a child node and use it to configure a member (from KTCorrelator)::
+
         /* required configuration */
         fFFT->Configure(node->NodeAt("complex-fftw"));
 
@@ -64,6 +70,7 @@ Here are some examples of code that has been used to configure different KTConfi
         }
 
 * Array of number pairs (from KTCorrelator)::
+
         const KTParamArray* corrPairs = node->ArrayAt("corr-pairs");
         if (corrPairs != NULL)
         {

@@ -16,7 +16,9 @@ Configuration files are broken up into two main sections:
 * Configuring each individual processor.
 
 Here is an example of an annotated JSON-formatted configuration file::
+
 ::
+
 json
 {
     "processor-toolbox":
@@ -28,7 +30,8 @@ json
             { "type": "convert-to-power",    "name": "to-ps" },
             { "type": "basic-root-writer",   "name": "writer" }
         ],
-::        
+
+::
         "connections":
         [
         {
