@@ -84,6 +84,12 @@ namespace Katydid
                 eSNR_Power,
                 eSigma
             };
+            enum class slopeMethod
+            {
+                weighted_first_point_ref,
+                weighted,
+                unweighted
+            };
 
             KTGainVariationData fGVData;
 
@@ -116,6 +122,7 @@ namespace Katydid
             MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
+            MEMBERVARIABLE(slopeMethod, SlopeMethod);
             MEMBERVARIABLE(unsigned, NLines);
             MEMBERVARIABLE(bool, ApplyPowerCut);
             MEMBERVARIABLE(bool, ApplyDensityCut);
@@ -141,6 +148,10 @@ namespace Katydid
             void SearchTrueLinePoint(Point& point, KTPowerSpectrum& slice);
             //void WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
+            void (KTSequentialTrackFinder::*fCalcSlope)();
+            void CalculateSlope(LineRef& Line);
+            void CalculateWeightedSlope(LineRef& Line);
+            void CalculateUnweightedSlope(LineRef& Line);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef line);
             void AcquisitionIsOver();

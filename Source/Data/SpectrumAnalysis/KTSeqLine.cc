@@ -44,7 +44,21 @@ namespace Katydid
         fSumY(0.),
         fSumXY(0.),
         fSumXX(0.)
-        {}
+        {
+           /*
+           if (slopeMethod == slope_method::weighted_first_point_ref)
+            {
+                f_calc_slope_func = &LineRef::CalculateSlope();
+            }
+            if (slopeMethod == slope_method::weighted)
+            {
+                f_calc_slope_func = &LineRef::CalculateNewSlope();
+            }
+            if (slopeMethod == slope_method::unweighted)
+            {
+                f_calc_slope_func = &LineRef::CalculateUnweightedSlope();
+            }*/
+        }
 
     LineRef::~LineRef()
     {}
@@ -64,7 +78,7 @@ namespace Katydid
         fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, correctedPower, referenceThreshold, point.fAcquisitionID, point.fComponent);
         KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();
-        this->CalculateSlope();
+        //this->*f_calc_slope_func();
     }
 
 
@@ -163,7 +177,7 @@ namespace Katydid
         fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
 
         this->UpdateLineProperties();
-        this->CalculateSlope();
+        //this->CalculateSlope();
     }
         
 

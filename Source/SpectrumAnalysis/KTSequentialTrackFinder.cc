@@ -44,6 +44,7 @@ namespace Katydid
             fBinWidth(0.0),
             fMinFrequency(0.),
             fMaxFrequency(1.),
+            fSlopeMethod(slopeMethod::weighted_first_point_ref),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fActiveLines(),
@@ -52,6 +53,7 @@ namespace Katydid
             fApplyDensityCut(false),
             fPowerThreshold(0.0),
             fDensityThreshold(0.0),
+            fCalcSlope(&KTSequentialTrackFinder::CalculateSlope),
             fTrackSignal("pre-candidate", this),
             fClusterDoneSignal("clustering-done", this),
             fGainVarSlot("gv", this, &KTSequentialTrackFinder::SetPreCalcGainVar),
@@ -71,6 +73,7 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetSNRPowerThreshold(node->get_value("snr-threshold-power", GetSNRPowerThreshold()));
+
         SetTrimmingFactor(node->get_value("trimming-factor", GetTrimmingFactor()));
         SetLinePowerWidth(node->get_value("half-line-width", GetLinePowerWidth()));
         SetTimeGapTolerance(node->get_value("time-gap-tolerance", GetTimeGapTolerance()));
@@ -122,6 +125,38 @@ namespace Katydid
         if (node->has("converge-delta"))
         {
             SetConvergeDelta(node->get_value<int>("converge_delta"));
+        }
+
+        if (node->has("slope-method"))
+        {
+            if (node->get_value("slope-method") == "weighted_first_point_ref")
+            {
+                SetSlopeMethod(slopeMethod::weighted_first_point_ref);
+            }
+            else if (node->get_value("slope-method") == "weighted")
+            {
+                 SetSlopeMethod(slopeMethod::weighted);
+            }
+            else if (node->get_value("slope-method") == "unweighted")
+                {
+                 SetSlopeMethod(slopeMethod::unweighted);
+                }
+            else
+            {
+                KTERROR(stflog, "Set slope method not valid");
+            }
+        }
+        if (fSlopeMethod == slopeMethod::weighted_first_point_ref)
+        {
+            fCalcSlope = &KTSequentialTrackFinder::CalculateSlope;
+        }
+        if (slopeMethod == slopeMethod::weighted)
+        {
+            fCalcSlope = &KTSequentialTrackFinder::CalculateWeightedSlope;
+        }
+        if (slopeMethod == slopeMethod::unweighted)
+        {
+            fCalcSlope = &KTSequentialTrackFinder::CalculateUnweightedSlope;
         }
 
 
@@ -334,6 +369,7 @@ namespace Katydid
                          if (lineIt->fNPoints >= fMinPoints)
                          {
                              lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+                             this->*fCalcSlope(lineIt);
 
                              if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
                              {
@@ -348,12 +384,14 @@ namespace Katydid
                      else if (timeCondition and anyPointCondition)
                      {
                          lineIt->InsertPoint(*pointIt, fReferenceThreshold);
+                         this->*fCalcSlope(lineIt);
                          match = true;
                          ++lineIt;
                      }
                      else if (lineIt->fNPoints == 1 and timeCondition and secondPointCondition)
                      {
                          lineIt->InsertPoint(*pointIt, fReferenceThreshold);
+                         this->*fCalcSlope(lineIt);
                          match = true;
                          ++lineIt;
                      }
@@ -371,6 +409,7 @@ namespace Katydid
 
                      LineRef new_line(fInitialSlope, fLinePowerWidth);
                      new_line.InsertPoint(*pointIt, fReferenceThreshold);
+                     this->*fCalcSlope(new_line);
                      fActiveLines.push_back(new_line);
                      match = true;
                  }
@@ -560,4 +599,91 @@ namespace Katydid
         }
         KTDEBUG(stflog, "Now there should be no lines left over " << fActiveLines.empty());
     }
+
+    inline void KTSequentialTrackFinder::CalculateWeightedSlope(LineRef& Line)
+    {
+        double SumX = 0.0;
+        double SumY = 0.0;
+        double SumXY = 0.0;
+        double SumXX = 0.0;
+
+        //KTDEBUG(seqlog, "Calculating line slope");
+        double weightedSlope = 0.0;
+        double weight = 0.0;
+        double wSum = 0.0;
+        Line.fNPoints = Line.fLinePoints.size();
+
+        if (Line.fNPoints > 1)
+        {
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+            {
+                   weight = pointIt->fAmplitude/Line.fAmplitudeSum*Line.fNPoints;
+
+                   SumX += Line.fLinePoints.back().fTimeInRunC * weight;
+                   SumY += Line.fLinePoints.back().fPointFreq * weight;
+                   SumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq * weight;
+                   SumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC *weight;
+            }
+            Line.fSlope = (Line.fNPoints * SumXY - SumX * SumY)/(SumXX * Line.fNPoints - SumX * SumX);
+            KTDEBUG( stflog, "New slope "<<Line.fSlope);
+        }
+        if (Line.fNPoints <= 1)
+        {
+            Line.fSlope = fInitialSlope;
+        }
+    }
+    inline void KTSequentialTrackFinder::CalculateUnweightedSlope(LineRef& Line)
+    {
+
+        //KTDEBUG(stflog, "Calculating line slope");
+        Line.fNPoints = Line.fLinePoints.size();
+
+        Line.fSumX += Line.fLinePoints.back().fTimeInRunC;
+        Line.fSumY += Line.fLinePoints.back().fPointFreq;
+        Line.fSumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq;
+        Line.fSumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC;
+
+        if (Line.fNPoints > 1)
+        {
+            Line.fSlope = (Line.fNPoints * Line.fSumXY - Line.fSumX * Line.fSumY)/(Line.fSumXX * Line.fNPoints - Line.fSumX * Line.fSumX);
+        }
+        else
+        {
+            Line.fSlope = fInitialSlope;
+        }
+        KTDEBUG( stflog, "New slope "<<Line.fSlope);
+    }
+
+    inline void KTSequentialTrackFinder::CalculateSlope(LineRef& Line)
+    {
+
+            //KTDEBUG(seqlog, "Calculating line slope");
+            double slope = 0.0;
+            double weightedSlope = 0.0;
+            double wSum = 0.0;
+            Line.fNPoints = Line.fLinePoints.size();
+
+
+            //slope = (fLinePoints.back().fPointFreq - fStartFrequency)/(fLinePoints.back().fTimeInRunC - fStartTimeInRunC);
+            //weight = fLinePoints.back().fAmplitude/fLinePoints.back().fThreshold;
+            //weightedSlope += slope * weight;
+
+            if (Line.fNPoints > 1)
+            {
+                for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+                {
+                    if (pointIt->fPointFreq > Line.fStartFrequency)
+                    {
+                        weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
+                        wSum += pointIt->fAmplitude;
+                    }
+                }
+                Line.fSlope = weightedSlope/wSum;
+            }
+
+            if (Line.fNPoints <= 1)
+            {
+                Line.fSlope = fInitialSlope;
+            }
+        }
 } /* namespace Katydid */
