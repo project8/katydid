@@ -26,7 +26,7 @@ namespace Katydid
         public:
             MEMBERVARIABLE(unsigned, NSlicesProcessed);
             MEMBERVARIABLE(unsigned, NRecordsProcessed); /// if any samples from a record were used, it's counted
-            MEMBERVARIABLE(unsigned, IntegratedTime); /// # of slices * slice size * bin width
+            MEMBERVARIABLE(double, IntegratedTime); /// # of slices * slice size * bin width
     };
 
 } /* namespace Katydid */

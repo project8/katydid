@@ -1,7 +1,0 @@
-<map id="KTExtensibleStructFactory.hh" name="KTExtensibleStructFactory.hh">
-<area shape="rect" id="node2" href="$_k_t_extensible_struct_8hh.html" title="KTExtensibleStruct.hh" alt="" coords="5,79,159,104"/>
-<area shape="rect" id="node3" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="233,79,331,104"/>
-<area shape="rect" id="node7" href="$singleton_8hh.html" title="singleton.hh" alt="" coords="395,79,489,104"/>
-<area shape="rect" id="node8" href="$destroyer_8hh.html" title="destroyer.hh" alt="" coords="395,152,489,177"/>
-<area shape="rect" id="node9" href="$mutex_8hh.html" title="mutex.hh" alt="" coords="513,152,589,177"/>
-</map>

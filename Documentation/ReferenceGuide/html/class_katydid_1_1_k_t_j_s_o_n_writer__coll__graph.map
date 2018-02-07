@@ -1,6 +1,0 @@
-<map id="Katydid::KTJSONWriter" name="Katydid::KTJSONWriter">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_writer_with_typists.html" title="{Nymph::KTWriterWithTypists\l\&lt; KTJSONWriter, KTJSONTypeWriter \&gt;\n||+ KTWriterWithTypists()\l+ ~KTWriterWithTypists()\l+ GetTypeWriter()\l}" alt="" coords="40,233,296,347"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_writer.html" title="{Nymph::KTWriter\n||+ KTWriter()\l+ ~KTWriter()\l}" alt="" coords="5,5,129,92"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="321,253,400,327"/>
-<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_j_s_o_n_maker.html" title="{Katydid::KTJSONMaker\l\&lt; rapidjson::FileStream \&gt;\n||+ KTJSONMaker()\l+ ~KTJSONMaker()\l+ Null()\l+ Bool()\l+ Int()\l+ Uint()\l+ Int64()\l+ Uint64()\l+ Double()\l+ String()\l+ String()\l+ StartObject()\l+ EndObject()\l+ StartArray()\l+ EndArray()\l}" alt="" coords="425,153,595,427"/>
-</map>

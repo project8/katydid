@@ -1,8 +1,0 @@
-<map id="Katydid::KTConvertToPower" name="Katydid::KTConvertToPower">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n||+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="232,193,398,413"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n||+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="5,5,169,132"/>
-<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTFrequencySpectrum\lDataPolar \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="692,233,914,373"/>
-<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="815,5,968,132"/>
-<area shape="rect" id="node8" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTPowerSpectrumData \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="938,240,1175,367"/>
-<area shape="rect" id="node9" href="$class_nymph_1_1_k_t_slot_data_one_type.html" title="{Nymph::KTSlotDataOneType\l\&lt; Katydid::KTFrequencySpectrum\lDataFFTW \&gt;\n|# fFunc\l|+ KTSlotDataOneType()\l+ KTSlotDataOneType()\l+ ~KTSlotDataOneType()\l+ operator()()\l}" alt="" coords="1199,233,1421,373"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="scarab::param_value" name="scarab::param_value">
-<area shape="rect" id="node2" href="$classscarab_1_1param.html" title="{scarab::param\n|+ s_indent_level\l|+ param()\l+ param()\l+ ~param()\l+ clone()\l+ is_null()\l+ is_value()\l+ is_array()\l+ is_node()\l+ has_subset()\l+ as_value()\land 12 more...\l}" alt="" coords="5,140,123,347"/>
-<area shape="rect" id="node3" href="$unionscarab_1_1param__value_1_1_values.html" title="{scarab::param_value\l::Values\n|+ f_bool\l+ f_uint\l+ f_int\l+ f_double\l|}" alt="" coords="249,180,395,307"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="179,5,259,79"/>
-</map>

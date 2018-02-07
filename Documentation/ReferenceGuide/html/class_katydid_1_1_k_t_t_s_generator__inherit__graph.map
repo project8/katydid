@@ -1,7 +1,0 @@
-<map id="Katydid::KTTSGenerator" name="Katydid::KTTSGenerator">
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_d_c_offset_generator.html" title="Generates a DC&#45;offset time series. " alt="" coords="5,889,211,1029"/>
-<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_gaussian_noise_generator.html" title="Generates a time series with Gaussian noise. " alt="" coords="234,869,451,1049"/>
-<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_sinusoid_generator.html" title="Generates a sinusoidal time series. " alt="" coords="475,849,680,1069"/>
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="246,287,440,400"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n|# fSignalMap\l# fSlotMap\l|+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="260,5,425,239"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="Katydid::KTWindowFunction" name="Katydid::KTWindowFunction">
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_blackman_harris_window.html" title="Implementation of a Blackman&#45;Harris window function. " alt="" coords="5,508,213,648"/>
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_hamming_window.html" title="Implementation of a Hamming window function. " alt="" coords="237,515,432,641"/>
-<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_hann_window.html" title="Implementation of a Hann window function. " alt="" coords="457,515,642,641"/>
-<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_rectangular_window.html" title="Implementation of a rectangular window function. " alt="" coords="666,501,875,655"/>
-<area shape="rect" id="node7" href="$class_katydid_1_1_k_t_sinc_window.html" title="Implementation of a sinc window function. " alt="" coords="899,515,1085,641"/>
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n|# fCLHandler\l# fConfigName\l|+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="468,5,631,145"/>
-</map>

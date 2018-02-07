@@ -1,7 +1,0 @@
-<map id="scarab::factory&lt; XBaseType, void &gt;" name="scarab::factory&lt; XBaseType, void &gt;">
-<area shape="rect" id="node2" href="$classscarab_1_1singleton.html" title="{scarab::singleton\&lt;\l factory\&lt; XBaseType \&gt; \&gt;\n||+ get_instance()\l+ kill_instance()\l# singleton()\l# ~singleton()\l&#45; create_instance()\l&#45; delete_instance()\l}" alt="" coords="233,609,401,763"/>
-<area shape="rect" id="node3" href="$classscarab_1_1factory.html" title="{scarab::factory\&lt; XBaseType \&gt;\n||+ create()\l+ create()\l+ register_class()\l+ begin()\l+ end()\l# factory()\l# ~factory()\l}" alt="" coords="157,193,357,347"/>
-<area shape="rect" id="node6" href="$classscarab_1_1destroyer.html" title="{scarab::destroyer\&lt;\l factory\&lt; XBaseType \&gt; \&gt;\n||+ destroyer()\l+ ~destroyer()\l+ set_doomed()\l&#45; destroyer()\l&#45; operator=()\l}" alt="" coords="101,408,269,548"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="5,32,125,105"/>
-<area shape="rect" id="node5" href="$classscarab_1_1mutex.html" title="{scarab::mutex\n|&#45; f_mutex\l|+ mutex()\l+ ~mutex()\l+ trylock()\l+ lock()\l+ unlock()\l}" alt="" coords="371,5,476,132"/>
-</map>
