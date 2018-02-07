@@ -56,6 +56,23 @@ Fixes:
 ''''''
 
 
+Version: 2.10.0
+~~~~~~~~~~~~~~~
+
+Release Date: TBD
+'''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
+  
+Fixes:
+''''''
+
+
 Version: 2.9.1
 ~~~~~~~~~~~~~~
 
