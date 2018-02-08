@@ -127,16 +127,49 @@ namespace Katydid
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTConvolvedPowerSpectrumData& data)
     {
+        if( fGVData.GetSpline() == nullptr )
+        {
+            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
+            return false;
+        }
+        if( fVVData.GetSpline() == nullptr && fThresholdMode == eSigma )
+        {
+            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
+            return false;
+        }
+        
         return Discriminate(data, fGVData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data)
     {
+        if( fGVData.GetSpline() == nullptr )
+        {
+            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
+            return false;
+        }
+        if( fVVData.GetSpline() == nullptr && fThresholdMode == eSigma )
+        {
+            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
+            return false;
+        }
+
         return Discriminate(data, fGVData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data)
     {
+        if( fGVData.GetSpline() == nullptr )
+        {
+            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
+            return false;
+        }
+        if( fVVData.GetSpline() == nullptr && fThresholdMode == eSigma )
+        {
+            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
+            return false;
+        }
+
         return Discriminate(data, fGVData);
     }
 
