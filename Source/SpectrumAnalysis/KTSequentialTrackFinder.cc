@@ -369,7 +369,6 @@ namespace Katydid
                          if (lineIt->fNPoints >= fMinPoints)
                          {
                              lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
-                             (this->*fCalcSlope)(*lineIt);
 
                              if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
                              {
@@ -528,6 +527,7 @@ namespace Katydid
                 amplitude += slice(iBin);
                 slice(iBin) = fPointAmplitudeAfterVisit;
             }
+            amplitude = amplitude / fLinePowerWidth;
         }
         else
         {
@@ -600,7 +600,7 @@ namespace Katydid
         KTDEBUG(stflog, "Now there should be no lines left over " << fActiveLines.empty());
     }
 
-    void KTSequentialTrackFinder::CalculateWeightedSlope(LineRef Line)
+    void KTSequentialTrackFinder::CalculateWeightedSlope(LineRef& Line)
     {
         double SumX = 0.0;
         double SumY = 0.0;
@@ -632,7 +632,7 @@ namespace Katydid
             Line.fSlope = fInitialSlope;
         }
     }
-    void KTSequentialTrackFinder::CalculateUnweightedSlope(LineRef Line)
+    void KTSequentialTrackFinder::CalculateUnweightedSlope(LineRef& Line)
     {
 
         //KTDEBUG(stflog, "Calculating line slope");
@@ -654,7 +654,7 @@ namespace Katydid
         KTDEBUG( stflog, "New slope "<<Line.fSlope);
     }
 
-    void KTSequentialTrackFinder::CalculateSlope(LineRef Line)
+    void KTSequentialTrackFinder::CalculateSlope(LineRef& Line)
     {
 
             //KTDEBUG(seqlog, "Calculating line slope");

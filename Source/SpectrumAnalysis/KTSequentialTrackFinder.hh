@@ -148,10 +148,10 @@ namespace Katydid
             void SearchTrueLinePoint(Point& point, KTPowerSpectrum& slice);
             //void WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
-            void (KTSequentialTrackFinder::*fCalcSlope)(LineRef Line);
-            void CalculateSlope(LineRef Line);
-            void CalculateWeightedSlope(LineRef Line);
-            void CalculateUnweightedSlope(LineRef Line);
+            void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
+            void CalculateSlope(LineRef& Line);
+            void CalculateWeightedSlope(LineRef& Line);
+            void CalculateUnweightedSlope(LineRef& Line);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef line);
             void AcquisitionIsOver();

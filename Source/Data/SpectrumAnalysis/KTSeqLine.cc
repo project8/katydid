@@ -72,10 +72,10 @@ namespace Katydid
         correctedPower = point.fAmplitude/point.fThreshold * referenceThreshold;
         //correctedThreshold = referenceThreshold;
 
-        fTrimmingLimits.push_back(referenceThreshold); //new_trimming_limits);
-        fAmplitudeList.push_back(correctedPower);
+        fTrimmingLimits.push_back(referenceThreshold * fLineWidth); //new_trimming_limits);
+        fAmplitudeList.push_back(correctedPower * fLineWidth);
 
-        fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, correctedPower, referenceThreshold, point.fAcquisitionID, point.fComponent);
+        fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, correctedPower * fLineWidth, referenceThreshold * fLineWidth, point.fAcquisitionID, point.fComponent);
         KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();
         //this->*f_calc_slope_func();
@@ -155,14 +155,14 @@ namespace Katydid
 
         if (!fAmplitudeList.empty())
         {
-            while (fAmplitudeList.back() < trimmingFactor * fLineWidth * fTrimmingLimits.back() and fNPoints >= minPoints)
+            while (fAmplitudeList.back() < trimmingFactor * fTrimmingLimits.back() and fNPoints >= minPoints)
             {
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fTrimmingLimits.erase(fTrimmingLimits.end() -1);
                 fLinePoints.erase(fLinePoints.end() - 1);
                 fNPoints = fLinePoints.size();
             }
-            while (fAmplitudeList.front() < trimmingFactor * fLineWidth * fTrimmingLimits.front() and fNPoints >= minPoints)
+            while (fAmplitudeList.front() < trimmingFactor * fTrimmingLimits.front() and fNPoints >= minPoints)
             {
                 fAmplitudeList.erase(fAmplitudeList.begin());
                 fTrimmingLimits.erase(fTrimmingLimits.begin());
