@@ -119,7 +119,7 @@ namespace Katydid
                 KTSliceHeader& fSliceHeader;
 
                 void IncrementSlice();
-                Accumulator() : fData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
+                Accumulator() : fData(new Nymph::KTData()), fVarianceData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
                 {
                 }
                 unsigned GetSliceNumber() const
