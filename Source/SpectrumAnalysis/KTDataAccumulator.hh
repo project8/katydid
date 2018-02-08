@@ -70,24 +70,35 @@ namespace Katydid
      - "ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTPowerSpectrumData; Emits signal "ps"
 
      Signals:
+
      - "ts": void (Nymph::KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
      - "ts-dist": void (Nymph::KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
      - "fs-polar": void (Nymph::KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw": void (Nymph::KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
      - "conv-ps": void (Nymph::KTDataPtr) -- emitted when the conv-ps sum is updated; guarantees KTConvolvedPowerSpectrumData
      - "ps": void (Nymph::KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
+
      - "ts-variance": void (Nymph::KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
      - "ts-dist-variance": void (Nymph::KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
      - "fs-polar-variance": void (Nymph::KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw-variance": void (Nymph::KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
      - "conv-ps-variance": void (Nymph::KTDataPtr) -- emitted when the conv-ps sum is updated; guarantees KTConvolvedPowerSpectrumData
      - "ps-variance": void (Nymph::KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
+
      - "ts-finished": void (Nymph::KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
      - "ts-dist-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
      - "fs-polar-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
-     - "core-ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
+     - "conv-ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
      - "ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
+
+     - "ts-variance-finished": void (Nymph::KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
+     - "ts-dist-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
+     - "fs-polar-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
+     - "conv-ps-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
+     - "ps-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
+
     */
 
     class KTDataAccumulator : public Nymph::KTProcessor
@@ -131,11 +142,13 @@ namespace Katydid
                     Nymph::KTSignalData* fAccumulatingSignal;
                     Nymph::KTSignalData* fVarianceSignal;
                     Nymph::KTSignalData* fFinishedSignal;
-                    SignalSet(Nymph::KTSignalData* accSig, Nymph::KTSignalData* varSig, Nymph::KTSignalData* finishedSig) :
+                    Nymph::KTSignalData* fVarianceFinishedSignal;
+                    SignalSet(Nymph::KTSignalData* accSig, Nymph::KTSignalData* varSig, Nymph::KTSignalData* finishedSig, Nymph::KTSignalData* varFinishedSig) :
                         fSignalCount(0),
                         fAccumulatingSignal(accSig),
                         fVarianceSignal(varSig),
-                        fFinishedSignal(finishedSig)
+                        fFinishedSignal(finishedSig),
+                        fVarianceFinishedSignal(varFinishedSig)
                     {}
             };
             typedef std::map< const std::type_info*, SignalSet > SignalMap;
@@ -222,6 +235,13 @@ namespace Katydid
             Nymph::KTSignalData fFSFFTWFinishedSignal;
             Nymph::KTSignalData fConvPSFinishedSignal;
             Nymph::KTSignalData fPSFinishedSignal;
+
+            Nymph::KTSignalData fTSVarianceFinishedSignal;
+            Nymph::KTSignalData fTSDistVarianceFinishedSignal;
+            Nymph::KTSignalData fFSPolarVarianceFinishedSignal;
+            Nymph::KTSignalData fFSFFTWVarianceFinishedSignal;
+            Nymph::KTSignalData fConvPSVarianceFinishedSignal;
+            Nymph::KTSignalData fPSVarianceFinishedSignal;
 
             SignalMap fSignalMap;
 
@@ -329,7 +349,7 @@ namespace Katydid
                     KTERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
                 }
                 (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
-                (*sigIt->second.fVarianceSignal)(fLastAccumulatorPtr->fVarianceData);
+                (*sigIt->second.fVarianceFinishedSignal)(fLastAccumulatorPtr->fVarianceData);
             }
         }
         return;

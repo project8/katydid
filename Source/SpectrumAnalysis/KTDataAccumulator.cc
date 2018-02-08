@@ -36,43 +36,54 @@ namespace Katydid
             fSignalInterval(1),
             fDataMap(),
             fLastAccumulatorPtr(),
+
             fTSSignal("ts", this),
             fTSDistSignal("ts-dist", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
             fConvPSSignal("conv-ps", this),
             fPSSignal("ps", this),
+
             fTSVarianceSignal("ts-variance", this),
             fTSDistVarianceSignal("ts-dist-variance", this),
             fFSPolarVarianceSignal("fs-polar-variance", this),
             fFSFFTWVarianceSignal("fs-fftw-variance", this),
             fConvPSVarianceSignal("conv-ps-variance", this),
             fPSVarianceSignal("ps-variance", this),
+
             fTSFinishedSignal("ts-finished", this),
             fTSDistFinishedSignal("ts-dist-finished", this),
             fFSPolarFinishedSignal("fs-polar-finished", this),
             fFSFFTWFinishedSignal("fs-fftw-finished", this),
             fConvPSFinishedSignal("conv-ps-finished", this),
             fPSFinishedSignal("ps-finished", this),
+
+            fTSVarianceFinishedSignal("ts-variance-finished", this),
+            fTSDistVarianceFinishedSignal("ts-dist-variance-finished", this),
+            fFSPolarVarianceFinishedSignal("fs-polar-variance-finished", this),
+            fFSFFTWVarianceFinishedSignal("fs-fftw-variance-finished", this),
+            fConvPSVarianceFinishedSignal("conv-ps-variance-finished", this),
+            fPSVarianceFinishedSignal("ps-variance-finished", this),
+
             fSignalMap()
     {
         RegisterSlot("ts", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSVarianceSignal, &fTSFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSVarianceSignal, &fTSFinishedSignal, &fTSVarianceFinishedSignal)));
 
         RegisterSlot("ts-dist", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesDistData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal, &fTSDistVarianceSignal, &fTSDistFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal, &fTSDistVarianceSignal, &fTSDistFinishedSignal, &fTSDistVarianceFinishedSignal)));
 
         RegisterSlot("fs-polar", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataPolar >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarVarianceSignal, &fFSPolarFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarVarianceSignal, &fFSPolarFinishedSignal, &fFSPolarVarianceFinishedSignal)));
 
         RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWVarianceSignal, &fFSFFTWFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWVarianceSignal, &fFSFFTWFinishedSignal, &fFSFFTWVarianceFinishedSignal)));
 
         RegisterSlot("conv-ps", this, &KTDataAccumulator::SlotFunction< KTConvolvedPowerSpectrumData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSVarianceSignal, &fConvPSFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSVarianceSignal, &fConvPSFinishedSignal, &fConvPSVarianceFinishedSignal)));
 
         RegisterSlot("ps", this, &KTDataAccumulator::SlotFunction< KTPowerSpectrumData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTPowerSpectrumData), SignalSet(&fPSSignal, &fPSVarianceSignal, &fPSFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTPowerSpectrumData), SignalSet(&fPSSignal, &fPSVarianceSignal, &fPSFinishedSignal, &fPSVarianceFinishedSignal)));
     }
 
     KTDataAccumulator::~KTDataAccumulator()
