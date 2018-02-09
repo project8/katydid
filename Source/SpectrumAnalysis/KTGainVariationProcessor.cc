@@ -13,6 +13,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTSpectrumVarianceData.hh"
 #include "KTSpline.hh"
 
 #include <cmath>
@@ -46,8 +47,10 @@ namespace Katydid
             fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fCorrSlot("corr", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fConvPSSlot("conv-ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fPSSlot("ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
+            fPSSlot("ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fConvFSPolarSlot("conv-fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fConvFSFFTWSlot("conv-fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fConvPSSlot("conv-ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
     {
     }
 
@@ -87,31 +90,177 @@ namespace Katydid
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-        return CoreGainVarCalc(data, newData);
+
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for polar frequency spectrum!" );
+            return false;
+        }
+
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTFrequencySpectrumVarianceDataPolar >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTFrequencySpectrumVarianceDataPolar >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for polar frequency spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+
+        return true;
+        
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-        return CoreGainVarCalc(data, newData);
+
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for fftw frequency spectrum!" );
+            return false;
+        }
+
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTFrequencySpectrumVarianceDataFFTW >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTFrequencySpectrumVarianceDataFFTW >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for fftw frequency spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+
+        return true;
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-        return CoreGainVarCalc(data, newData);
-    }
 
-    bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data)
-    {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-        return CoreGainVarCalc(data, newData);
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for correlation data!" );
+            return false;
+        }
+        /*
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTFrequencySpectrumVarianceDataPolar >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTFrequencySpectrumVarianceDataPolar >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for polar frequency spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+        */
+        return true;
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTPowerSpectrumData& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-        return CoreGainVarCalc(data, newData);
+
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for power spectrum!" );
+            return false;
+        }
+
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTPowerSpectrumVarianceData >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTPowerSpectrumVarianceData >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for power spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+
+        return true;
+    }
+
+    bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data)
+    {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved polar frequency spectrum!" );
+            return false;
+        }
+
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTConvolvedFrequencySpectrumVarianceDataPolar >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTConvolvedFrequencySpectrumVarianceDataPolar >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved polar frequency spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+
+        return true;
+    }
+
+    bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data)
+    {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved fftw frequency spectrum!" );
+            return false;
+        }
+
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTConvolvedFrequencySpectrumVarianceDataFFTW >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTConvolvedFrequencySpectrumVarianceDataFFTW >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved fftw frequency spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+
+        return true;
+    }
+
+    bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data)
+    {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+
+        if( ! CoreGainVarCalc( data, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved power spectrum!" );
+            return false;
+        }
+
+        KTGainVariationData* varianceData = new KTGainVariationData();
+        if( data.Has< KTConvolvedPowerSpectrumVarianceData >() )
+        {
+            if( ! CoreGainVarCalc( data.Of< KTConvolvedPowerSpectrumVarianceData >(), *varianceData ) )
+            {
+                KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved power spectrum variance!" );
+                return false;
+            }
+
+            // Set spline
+        }
+
+        return true;
     }
 
     bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData)
