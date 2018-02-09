@@ -84,7 +84,6 @@ namespace Katydid
      - "wv": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "ps": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "gv": void (Nymph::KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
-     - "sigmav": void (Nymph::KTDataPtr) -- Sets the pre-calculated variance-variation; Requires KTGainVariationData
      - "conv-ps-pre": void (Nymph::KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTConvolvedPowerSpectrumData; Adds DiscriminatedPoints1DData
      - "ps-pre": void (Nymph::KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
      - "spec": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTPSCollectionData and KTGainVariationData; Adds KTDiscriminatedPoints2DData
@@ -143,8 +142,8 @@ namespace Katydid
             bool fCalculateMaxBin;
 
         public:
+            bool CheckGVData();
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
-            bool SetPreCalcVarianceVariation(KTGainVariationData& gvData);
 
             bool Discriminate(KTConvolvedPowerSpectrumData& data);
             bool Discriminate(KTPowerSpectrumData& data);
@@ -170,7 +169,6 @@ namespace Katydid
             bool CoreDiscriminate(KTPowerSpectrumDataCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
 
             KTGainVariationData fGVData;
-            KTGainVariationData fVVData;
             std::vector< double > fMagnitudeCache;
 
             //***************
@@ -197,7 +195,6 @@ namespace Katydid
             Nymph::KTSlotDataTwoTypes< KTPSCollectionData, KTGainVariationData > fSpecSlot;
 
             Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
-            Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcVarSlot;
 
             Nymph::KTSlotDataOneType< KTConvolvedPowerSpectrumData > fConvPSPreCalcSlot;
             Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;

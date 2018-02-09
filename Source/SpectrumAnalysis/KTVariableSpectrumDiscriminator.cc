@@ -64,7 +64,6 @@ namespace Katydid
             fPSSlot("ps", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fSpecSlot("spec", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim2DSignal),
             fPreCalcSlot("gv", this, &KTVariableSpectrumDiscriminator::SetPreCalcGainVar),
-            fPreCalcVarSlot("sigmav", this, &KTVariableSpectrumDiscriminator::SetPreCalcVarianceVariation),
             fConvPSPreCalcSlot("conv-ps-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fPSPreCalcSlot("ps-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fSpecPreCalcSlot("spec-pre", this, &KTVariableSpectrumDiscriminator::Discriminate, &fDiscrim2DSignal)
@@ -113,63 +112,47 @@ namespace Katydid
         return true;
     }
 
+    bool KTVariableSpectrumDiscriminator::CheckGVData()
+    {
+        if( fGVData.GetSpline() == nullptr )
+        {
+            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
+            return false;
+        }
+        if( fGVData.GetVarianceSpline() == nullptr && fThresholdMode == eSigma )
+        {
+            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
+            return false;
+        }
+
+        return true;
+    }
+
     bool KTVariableSpectrumDiscriminator::SetPreCalcGainVar(KTGainVariationData& gvData)
     {
         fGVData = gvData;
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::SetPreCalcVarianceVariation(KTGainVariationData& gvData)
-    {
-        fVVData = gvData;
-        return true;
-    }
-
     bool KTVariableSpectrumDiscriminator::Discriminate(KTConvolvedPowerSpectrumData& data)
     {
-        if( fGVData.GetSpline() == nullptr )
-        {
-            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
-            return false;
-        }
-        if( fVVData.GetSpline() == nullptr && fThresholdMode == eSigma )
-        {
-            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
-            return false;
-        }
         
+        if( ! CheckGVData() ){ return false; }
+
         return Discriminate(data, fGVData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data)
     {
-        if( fGVData.GetSpline() == nullptr )
-        {
-            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
-            return false;
-        }
-        if( fVVData.GetSpline() == nullptr && fThresholdMode == eSigma )
-        {
-            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
-            return false;
-        }
-
+        if( ! CheckGVData() ){ return false; }
+        
         return Discriminate(data, fGVData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data)
     {
-        if( fGVData.GetSpline() == nullptr )
-        {
-            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
-            return false;
-        }
-        if( fVVData.GetSpline() == nullptr && fThresholdMode == eSigma )
-        {
-            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
-            return false;
-        }
-
+        if( ! CheckGVData() ){ return false; }
+        
         return Discriminate(data, fGVData);
     }
 
