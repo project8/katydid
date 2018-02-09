@@ -107,6 +107,7 @@ namespace Katydid
             }
 
             // Set spline
+            newData.SetVarianceSpline( varianceData->GetSpline() );
         }
 
         return true;
@@ -133,6 +134,7 @@ namespace Katydid
             }
 
             // Set spline
+            newData.SetVarianceSpline( varianceData->GetSpline() );
         }
 
         return true;
@@ -183,6 +185,7 @@ namespace Katydid
             }
 
             // Set spline
+            newData.SetVarianceSpline( varianceData->GetSpline() );
         }
 
         return true;
@@ -208,6 +211,7 @@ namespace Katydid
             }
 
             // Set spline
+            newData.SetVarianceSpline( varianceData->GetSpline() );
         }
 
         return true;
@@ -233,6 +237,7 @@ namespace Katydid
             }
 
             // Set spline
+            newData.SetVarianceSpline( varianceData->GetSpline() );
         }
 
         return true;
@@ -258,6 +263,7 @@ namespace Katydid
             }
 
             // Set spline
+            newData.SetVarianceSpline( varianceData->GetSpline() );
         }
 
         return true;
