@@ -51,6 +51,7 @@ namespace Katydid
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
+            fNormalize(false),
             fMagnitudeCache(),
             fDiscrim1DSignal("disc-1d", this),
             fDiscrim2DSignal("disc-2d", this),
@@ -107,6 +108,11 @@ namespace Katydid
         if (node->has("max-bin"))
         {
             SetMaxBin(node->get_value< unsigned >("max-bin"));
+        }
+
+        if(node->has("normalize"))
+        {
+            SetNormalize(node->get_value< bool >("normalize"));
         }
 
         return true;
@@ -388,6 +394,14 @@ namespace Katydid
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
         KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
+        // Average of each spline
+        double normalizedValue = 0., normalizedSigma = 0.;
+        for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+        {
+            normalizedValue += (*splineImp)(iBin - fMinBin) / (double)nBins;
+            normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - (*splineImp)(iBin - fMinBin) * (*splineImp)(iBin - fMinBin), 0.5 ) / (double)nBins;
+        }
+
         //************
         // SNR mode
         //************
@@ -431,8 +445,15 @@ namespace Katydid
                 sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
                 threshold = mean + fSigmaThreshold * sigma;
                 value = (*spectrum)(iBin).abs();
+
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
 
@@ -440,7 +461,6 @@ namespace Katydid
         varSpline->AddToCache(varSplineImp);
 
         return true;
-
     }
 
     bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component)
@@ -457,6 +477,14 @@ namespace Katydid
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + binWidth;
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
         KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        double normalizedValue = 0., normalizedSigma = 0.;
+        for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+        {
+            normalizedValue += (*splineImp)(iBin - fMinBin) / (double)nBins;
+            normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - (*splineImp)(iBin - fMinBin) * (*splineImp)(iBin - fMinBin), 0.5 ) / (double)nBins;
+        }
 
         //************
         // SNR mode
@@ -502,7 +530,13 @@ namespace Katydid
                 threshold = mean + fSigmaThreshold * sigma;
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
 
@@ -526,6 +560,14 @@ namespace Katydid
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
         KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        double normalizedValue = 0., normalizedSigma = 0.;
+        for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+        {
+            normalizedValue += (*splineImp)(iBin - fMinBin) / (double)nBins;
+            normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - (*splineImp)(iBin - fMinBin) * (*splineImp)(iBin - fMinBin), 0.5 ) / (double)nBins;
+        }
 
         //************
         // SNR mode
@@ -572,7 +614,13 @@ namespace Katydid
                 threshold = mean + fSigmaThreshold * sigma;
                 value = (*spectrum)(iBin);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
 

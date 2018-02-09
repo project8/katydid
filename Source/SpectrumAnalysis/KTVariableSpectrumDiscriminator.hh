@@ -73,6 +73,7 @@ namespace Katydid
      - "max-frequency": double -- maximum frequency
      - "min-bin": unsigned -- minimum frequency by bin
      - "max-bin": unsigned -- maximum frequency by bin
+     - "normalize": bool -- Scale mean and variance in sigma-threshold mode
 
      Slots:
      - "fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
@@ -128,6 +129,9 @@ namespace Katydid
             unsigned GetMaxBin() const;
             void SetMaxBin(unsigned bin);
 
+            bool GetNormalize() const;
+            void SetNormalize(bool normalize);
+
         private:
 
             double fSNRThreshold;
@@ -140,6 +144,7 @@ namespace Katydid
             unsigned fMaxBin;
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
+            bool fNormalize;
 
         public:
             bool CheckGVData();
@@ -281,5 +286,17 @@ namespace Katydid
         fCalculateMaxBin = false;
         return;
     }
+
+    inline bool KTVariableSpectrumDiscriminator::GetNormalize() const
+    {
+        return fNormalize;
+    }
+
+    inline void KTVariableSpectrumDiscriminator::SetNormalize(bool normalize)
+    {
+        fNormalize = normalize;
+        return;
+    }
+
 } /* namespace Katydid */
 #endif /* KTVARIABLESPECTRUMDISCRIMINATOR_HH_ */
