@@ -24,6 +24,8 @@ namespace Katydid
     
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
+    class KTConvolvedFrequencySpectrumDataPolar;
+    class KTConvolvedFrequencySpectrumDataFFTW;
     class KTConvolvedPowerSpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
@@ -66,8 +68,10 @@ namespace Katydid
      - "ts-dist": void (Nymph::KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
      - "fs-polar": void (Nymph::KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
      - "fs-fftw": void (Nymph::KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
-     - "conv-ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTConvolvedPowerSpectrumData; Emits signal "conv-ps"
      - "ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTPowerSpectrumData; Emits signal "ps"
+     - "conv-fs-polar": void (Nymph::KTDataPtr) -- add to the fs-polar sum; Requires KTConvolvedFrequencySpectrumDataPolar; Emits signal "conv-fs-polar"
+     - "conv-fs-fftw": void (Nymph::KTDataPtr) -- add to the fs-fftw sum; Requires KTConvolvedFrequencySpectrumDataFFTW; Emits signal "conv-fs-fftw"
+     - "conv-ps": void (Nymph::KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTConvolvedPowerSpectrumData; Emits signal "conv-ps"
 
      Signals:
 
@@ -78,26 +82,15 @@ namespace Katydid
      - "conv-ps": void (Nymph::KTDataPtr) -- emitted when the conv-ps sum is updated; guarantees KTConvolvedPowerSpectrumData
      - "ps": void (Nymph::KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
 
-     - "ts-variance": void (Nymph::KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
-     - "ts-dist-variance": void (Nymph::KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
-     - "fs-polar-variance": void (Nymph::KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
-     - "fs-fftw-variance": void (Nymph::KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
-     - "conv-ps-variance": void (Nymph::KTDataPtr) -- emitted when the conv-ps sum is updated; guarantees KTConvolvedPowerSpectrumData
-     - "ps-variance": void (Nymph::KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
-
      - "ts-finished": void (Nymph::KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
      - "ts-dist-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
      - "fs-polar-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
-     - "conv-ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
      - "ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
-
-     - "ts-variance-finished": void (Nymph::KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
-     - "ts-dist-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
-     - "fs-polar-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
-     - "fs-fftw-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
-     - "conv-ps-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
-     - "ps-variance-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
+     - "conv-fs-polar-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedFrequencySpectrumDataPolar
+     - "conv-fs-fftw-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedFrequencySpectrumDataFFTW
+     - "conv-ps-finished": void (Nymph::KTDataPtr) -- emitted when the last data is received; guarantees KTConvolvedPowerSpectrumData
+     
 
     */
 
@@ -115,11 +108,10 @@ namespace Katydid
             struct Accumulator
             {
                 Nymph::KTDataPtr fData;
-                Nymph::KTDataPtr fVarianceData;
                 KTSliceHeader& fSliceHeader;
 
                 void IncrementSlice();
-                Accumulator() : fData(new Nymph::KTData()), fVarianceData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
+                Accumulator() : fData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
                 {
                 }
                 unsigned GetSliceNumber() const
@@ -140,15 +132,11 @@ namespace Katydid
             {
                     unsigned fSignalCount;
                     Nymph::KTSignalData* fAccumulatingSignal;
-                    Nymph::KTSignalData* fVarianceSignal;
                     Nymph::KTSignalData* fFinishedSignal;
-                    Nymph::KTSignalData* fVarianceFinishedSignal;
-                    SignalSet(Nymph::KTSignalData* accSig, Nymph::KTSignalData* varSig, Nymph::KTSignalData* finishedSig, Nymph::KTSignalData* varFinishedSig) :
+                    SignalSet(Nymph::KTSignalData* accSig, Nymph::KTSignalData* finishedSig) :
                         fSignalCount(0),
                         fAccumulatingSignal(accSig),
-                        fVarianceSignal(varSig),
-                        fFinishedSignal(finishedSig),
-                        fVarianceFinishedSignal(varFinishedSig)
+                        fFinishedSignal(finishedSig)
                     {}
             };
             typedef std::map< const std::type_info*, SignalSet > SignalMap;
@@ -178,8 +166,10 @@ namespace Katydid
             bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
-            bool AddData(KTConvolvedPowerSpectrumData& data);
             bool AddData(KTPowerSpectrumData& data);
+            bool AddData(KTConvolvedFrequencySpectrumDataPolar& data);
+            bool AddData(KTConvolvedFrequencySpectrumDataFFTW& data);
+            bool AddData(KTConvolvedPowerSpectrumData& data);
 
             const AccumulatorMap& GetAccumulators() const;
             template< class XDataType >
@@ -189,10 +179,10 @@ namespace Katydid
             template< class XDataType >
             Accumulator& GetOrCreateAccumulator();
 
-            bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData, KTTimeSeriesData& devData);
-            bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData, KTTimeSeriesData& devData);
+            bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData);
+            bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData);
 
-            bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData, KTTimeSeriesDistData& devData);
+            bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData);
 
             bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData, KTFrequencySpectrumDataPolarCore& devData);
             bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData, KTFrequencySpectrumDataFFTWCore& devData);
@@ -203,9 +193,11 @@ namespace Katydid
             bool Scale(KTTimeSeriesDistData& data, KTSliceHeader& header);
             bool Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header);
             bool Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header);
-            bool Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header);
             bool Scale(KTPowerSpectrumData& data, KTSliceHeader& header);
-
+            bool Scale(KTConvolvedFrequencySpectrumDataPolar& data, KTSliceHeader& header);
+            bool Scale(KTConvolvedFrequencySpectrumDataFFTW& data, KTSliceHeader& header);
+            bool Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header);
+            
             AccumulatorMap fDataMap;
             mutable Accumulator* fLastAccumulatorPtr;
 
@@ -219,29 +211,19 @@ namespace Katydid
             Nymph::KTSignalData fTSDistSignal;
             Nymph::KTSignalData fFSPolarSignal;
             Nymph::KTSignalData fFSFFTWSignal;
-            Nymph::KTSignalData fConvPSSignal;
             Nymph::KTSignalData fPSSignal;
-
-            Nymph::KTSignalData fTSVarianceSignal;
-            Nymph::KTSignalData fTSDistVarianceSignal;
-            Nymph::KTSignalData fFSPolarVarianceSignal;
-            Nymph::KTSignalData fFSFFTWVarianceSignal;
-            Nymph::KTSignalData fConvPSVarianceSignal;
-            Nymph::KTSignalData fPSVarianceSignal;
+            Nymph::KTSignalData fConvFSPolarSignal;
+            Nymph::KTSignalData fConvFSFFTWSignal;
+            Nymph::KTSignalData fConvPSSignal;
 
             Nymph::KTSignalData fTSFinishedSignal;
             Nymph::KTSignalData fTSDistFinishedSignal;
             Nymph::KTSignalData fFSPolarFinishedSignal;
             Nymph::KTSignalData fFSFFTWFinishedSignal;
-            Nymph::KTSignalData fConvPSFinishedSignal;
             Nymph::KTSignalData fPSFinishedSignal;
-
-            Nymph::KTSignalData fTSVarianceFinishedSignal;
-            Nymph::KTSignalData fTSDistVarianceFinishedSignal;
-            Nymph::KTSignalData fFSPolarVarianceFinishedSignal;
-            Nymph::KTSignalData fFSFFTWVarianceFinishedSignal;
-            Nymph::KTSignalData fConvPSVarianceFinishedSignal;
-            Nymph::KTSignalData fPSVarianceFinishedSignal;
+            Nymph::KTSignalData fConvFSPolarFinishedSignal;
+            Nymph::KTSignalData fConvFSFFTWFinishedSignal;
+            Nymph::KTSignalData fConvPSFinishedSignal;
 
             SignalMap fSignalMap;
 
@@ -334,7 +316,6 @@ namespace Katydid
             if (sigCount == fSignalInterval)
             {
                 (*sigIt->second.fAccumulatingSignal)(fLastAccumulatorPtr->fData);
-                (*sigIt->second.fVarianceSignal)(fLastAccumulatorPtr->fVarianceData);
                 sigIt->second.fSignalCount = 0;
             }
             if (data->GetLastData())
@@ -344,12 +325,7 @@ namespace Katydid
                 {
                     KTERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
                 }
-                if (! Scale(fLastAccumulatorPtr->fVarianceData->Of< XDataType >(), fLastAccumulatorPtr->fSliceHeader))
-                {
-                    KTERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
-                }
                 (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
-                (*sigIt->second.fVarianceFinishedSignal)(fLastAccumulatorPtr->fVarianceData);
             }
         }
         return;

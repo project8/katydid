@@ -14,6 +14,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTSpectrumVarianceData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
@@ -41,49 +42,45 @@ namespace Katydid
             fTSDistSignal("ts-dist", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
-            fConvPSSignal("conv-ps", this),
             fPSSignal("ps", this),
-
-            fTSVarianceSignal("ts-variance", this),
-            fTSDistVarianceSignal("ts-dist-variance", this),
-            fFSPolarVarianceSignal("fs-polar-variance", this),
-            fFSFFTWVarianceSignal("fs-fftw-variance", this),
-            fConvPSVarianceSignal("conv-ps-variance", this),
-            fPSVarianceSignal("ps-variance", this),
+            fConvFSPolarSignal("conv-fs-polar", this),
+            fConvFSFFTWSignal("conv-fs-fftw", this),
+            fConvPSSignal("conv-ps", this),
 
             fTSFinishedSignal("ts-finished", this),
             fTSDistFinishedSignal("ts-dist-finished", this),
             fFSPolarFinishedSignal("fs-polar-finished", this),
             fFSFFTWFinishedSignal("fs-fftw-finished", this),
-            fConvPSFinishedSignal("conv-ps-finished", this),
             fPSFinishedSignal("ps-finished", this),
-
-            fTSVarianceFinishedSignal("ts-variance-finished", this),
-            fTSDistVarianceFinishedSignal("ts-dist-variance-finished", this),
-            fFSPolarVarianceFinishedSignal("fs-polar-variance-finished", this),
-            fFSFFTWVarianceFinishedSignal("fs-fftw-variance-finished", this),
-            fConvPSVarianceFinishedSignal("conv-ps-variance-finished", this),
-            fPSVarianceFinishedSignal("ps-variance-finished", this),
+            fConvFSPolarFinishedSignal("conv-fs-polar-finished", this),
+            fConvFSFFTWFinishedSignal("conv-fs-fftw-finished", this),
+            fConvPSFinishedSignal("conv-ps-finished", this),
 
             fSignalMap()
     {
         RegisterSlot("ts", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSVarianceSignal, &fTSFinishedSignal, &fTSVarianceFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSFinishedSignal)));
 
         RegisterSlot("ts-dist", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesDistData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal, &fTSDistVarianceSignal, &fTSDistFinishedSignal, &fTSDistVarianceFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal, &fTSDistFinishedSignal)));
 
         RegisterSlot("fs-polar", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataPolar >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarVarianceSignal, &fFSPolarFinishedSignal, &fFSPolarVarianceFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarFinishedSignal)));
 
         RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWVarianceSignal, &fFSFFTWFinishedSignal, &fFSFFTWVarianceFinishedSignal)));
-
-        RegisterSlot("conv-ps", this, &KTDataAccumulator::SlotFunction< KTConvolvedPowerSpectrumData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSVarianceSignal, &fConvPSFinishedSignal, &fConvPSVarianceFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWFinishedSignal)));
 
         RegisterSlot("ps", this, &KTDataAccumulator::SlotFunction< KTPowerSpectrumData >);
-        fSignalMap.insert(SignalMapValue(&typeid(KTPowerSpectrumData), SignalSet(&fPSSignal, &fPSVarianceSignal, &fPSFinishedSignal, &fPSVarianceFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTPowerSpectrumData), SignalSet(&fPSSignal, &fPSFinishedSignal)));
+
+        RegisterSlot("conv-fs-polar", this, &KTDataAccumulator::SlotFunction< KTConvolvedFrequencySpectrumDataPolar >);
+        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSFinishedSignal)));
+
+        RegisterSlot("conv-fs-fftw", this, &KTDataAccumulator::SlotFunction< KTConvolvedFrequencySpectrumDataFFTW >);
+        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSFinishedSignal)));
+
+        RegisterSlot("conv-ps", this, &KTDataAccumulator::SlotFunction< KTConvolvedPowerSpectrumData >);
+        fSignalMap.insert(SignalMapValue(&typeid(KTConvolvedPowerSpectrumData), SignalSet(&fConvPSSignal, &fConvPSFinishedSignal)));
     }
 
     KTDataAccumulator::~KTDataAccumulator()
@@ -104,14 +101,13 @@ namespace Katydid
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesData >();
         KTTimeSeriesData& accData = accDataStruct.fData->Of<KTTimeSeriesData>();
-        KTTimeSeriesData& devData = accDataStruct.fVarianceData->Of<KTTimeSeriesData>();
         if (dynamic_cast< KTTimeSeriesReal* >(data.GetTimeSeries(0)) != NULL)
         {
-            return CoreAddTSDataReal(data, accDataStruct, accData, devData);
+            return CoreAddTSDataReal(data, accDataStruct, accData);
         }
         else
         {
-            return CoreAddTSDataFFTW(data, accDataStruct, accData, devData);
+            return CoreAddTSDataFFTW(data, accDataStruct, accData);
         }
     }
 
@@ -119,15 +115,14 @@ namespace Katydid
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesDistData >();
         KTTimeSeriesDistData& accData = accDataStruct.fData->Of<KTTimeSeriesDistData>();
-        KTTimeSeriesDistData& devData = accDataStruct.fVarianceData->Of<KTTimeSeriesDistData>();
-        return CoreAddData(data, accDataStruct, accData, devData);
+        return CoreAddData(data, accDataStruct, accData);
     }
 
     bool KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataPolar >();
         KTFrequencySpectrumDataPolar& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataPolar>();
-        KTFrequencySpectrumDataPolar& devData = accDataStruct.fVarianceData->Of<KTFrequencySpectrumDataPolar>();
+        KTFrequencySpectrumVarianceDataPolar& devData = accDataStruct.fData->Of<KTFrequencySpectrumVarianceDataPolar>();
         return CoreAddData(data, accDataStruct, accData, devData);
     }
 
@@ -135,15 +130,7 @@ namespace Katydid
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataFFTW >();
         KTFrequencySpectrumDataFFTW& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataFFTW>();
-        KTFrequencySpectrumDataFFTW& devData = accDataStruct.fVarianceData->Of<KTFrequencySpectrumDataFFTW>();
-        return CoreAddData(data, accDataStruct, accData, devData);
-    }
-
-    bool KTDataAccumulator::AddData(KTConvolvedPowerSpectrumData& data)
-    {
-        Accumulator& accDataStruct = GetOrCreateAccumulator< KTConvolvedPowerSpectrumData >();
-        KTConvolvedPowerSpectrumData& accData = accDataStruct.fData->Of<KTConvolvedPowerSpectrumData>();
-        KTConvolvedPowerSpectrumData& devData = accDataStruct.fVarianceData->Of<KTConvolvedPowerSpectrumData>();
+        KTFrequencySpectrumVarianceDataFFTW& devData = accDataStruct.fData->Of<KTFrequencySpectrumVarianceDataFFTW>();
         return CoreAddData(data, accDataStruct, accData, devData);
     }
 
@@ -151,11 +138,35 @@ namespace Katydid
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTPowerSpectrumData >();
         KTPowerSpectrumData& accData = accDataStruct.fData->Of<KTPowerSpectrumData>();
-        KTPowerSpectrumData& devData = accDataStruct.fVarianceData->Of<KTPowerSpectrumData>();
+        KTPowerSpectrumVarianceData& devData = accDataStruct.fData->Of<KTPowerSpectrumVarianceData>();
         return CoreAddData(data, accDataStruct, accData, devData);
     }
 
-    bool KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData, KTTimeSeriesData& devData)
+    bool KTDataAccumulator::AddData(KTConvolvedFrequencySpectrumDataPolar& data)
+    {
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTConvolvedFrequencySpectrumDataPolar >();
+        KTConvolvedFrequencySpectrumDataPolar& accData = accDataStruct.fData->Of<KTConvolvedFrequencySpectrumDataPolar>();
+        KTConvolvedFrequencySpectrumVarianceDataPolar& devData = accDataStruct.fData->Of<KTConvolvedFrequencySpectrumVarianceDataPolar>();
+        return CoreAddData(data, accDataStruct, accData, devData);
+    }
+
+    bool KTDataAccumulator::AddData(KTConvolvedFrequencySpectrumDataFFTW& data)
+    {
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTConvolvedFrequencySpectrumDataFFTW >();
+        KTConvolvedFrequencySpectrumDataFFTW& accData = accDataStruct.fData->Of<KTConvolvedFrequencySpectrumDataFFTW>();
+        KTConvolvedFrequencySpectrumVarianceDataFFTW& devData = accDataStruct.fData->Of<KTConvolvedFrequencySpectrumVarianceDataFFTW>();
+        return CoreAddData(data, accDataStruct, accData, devData);
+    }
+
+    bool KTDataAccumulator::AddData(KTConvolvedPowerSpectrumData& data)
+    {
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTConvolvedPowerSpectrumData >();
+        KTConvolvedPowerSpectrumData& accData = accDataStruct.fData->Of<KTConvolvedPowerSpectrumData>();
+        KTConvolvedPowerSpectrumVarianceData& devData = accDataStruct.fData->Of<KTConvolvedPowerSpectrumVarianceData>();
+        return CoreAddData(data, accDataStruct, accData, devData);
+    }
+
+    bool KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
         if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
@@ -167,18 +178,12 @@ namespace Katydid
         if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
-            devData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesReal* dataTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
-
                 KTTimeSeriesReal* newTS = new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
                 (*newTS) *= 0.;
-                KTTimeSeriesReal* newVarTS = new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
-                (*newVarTS) *= 0.;
-
                 accData.SetTimeSeries(newTS, iComponent);
-                devData.SetTimeSeries(newVarTS, iComponent);
             }
         }
 
@@ -189,21 +194,11 @@ namespace Katydid
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
-        if (nComponents != devData.GetNComponents())
-        {
-            KTERROR(avlog, "Numbers of components in the variance and in the new data do not match");
-            return false;
-        }
 
         unsigned arraySize = data.GetTimeSeries(0)->GetNTimeBins();
         if (arraySize != accData.GetTimeSeries(0)->GetNTimeBins())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
-            return false;
-        }
-        if (arraySize != devData.GetTimeSeries(0)->GetNTimeBins())
-        {
-            KTERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
             return false;
         }
 
@@ -211,12 +206,10 @@ namespace Katydid
         {
             KTTimeSeriesReal* newTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesReal* avTS = static_cast< KTTimeSeriesReal* >(accData.GetTimeSeries(iComponent));
-            KTTimeSeriesReal* varTS = static_cast< KTTimeSeriesReal* >(devData.GetTimeSeries(iComponent));
             for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 //KTDEBUG(avlog, (*avTS)(iBin) << "  " << (*newTS)(iBin) << "  " << remainingFrac << "  " << fAveragingFrac);
                 (*avTS)(iBin) = (*avTS)(iBin) * remainingFrac + (*newTS)(iBin) * fAveragingFrac;
-                (*varTS)(iBin) = (*varTS)(iBin) * remainingFrac + (*newTS)(iBin) * (*newTS)(iBin) * fAveragingFrac;
                 //KTDEBUG(avlog, (*avTS)(iBin));
             }
         }
@@ -224,7 +217,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData, KTTimeSeriesData& devData)
+    bool KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
         if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
@@ -235,19 +228,12 @@ namespace Katydid
         if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
-            devData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesFFTW* dataTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
-
                 KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
-                KTTimeSeriesFFTW* newVarTS = new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
-
                 (*newTS) *= 0.;
-                (*newVarTS) *= 0.;
-
                 accData.SetTimeSeries(newTS, iComponent);
-                devData.SetTimeSeries(newVarTS, iComponent);
             }
         }
 
@@ -256,11 +242,6 @@ namespace Katydid
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
-            return false;
-        }
-        if (nComponents != devData.GetNComponents())
-        {
-            KTERROR(avlog, "Numbers of components in the variance and in the new data do not match");
             return false;
         }
 
@@ -270,31 +251,22 @@ namespace Katydid
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
-        if (arraySize != devData.GetTimeSeries(0)->GetNTimeBins())
-        {
-            KTERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
-            return false;
-        }
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesFFTW* newTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesFFTW* avTS = static_cast< KTTimeSeriesFFTW* >(accData.GetTimeSeries(iComponent));
-            KTTimeSeriesFFTW* varTS = static_cast< KTTimeSeriesFFTW* >(devData.GetTimeSeries(iComponent));
             for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avTS)(iBin)[0] = (*avTS)(iBin)[0] * remainingFrac + (*newTS)(iBin)[0] * fAveragingFrac;
                 (*avTS)(iBin)[1] = (*avTS)(iBin)[1] * remainingFrac + (*newTS)(iBin)[1] * fAveragingFrac;
-
-                (*varTS)(iBin)[0] = (*varTS)(iBin)[0] * remainingFrac + ((*newTS)(iBin)[0] * (*newTS)(iBin)[0] + (*newTS)(iBin)[1] * (*newTS)(iBin)[1]) * fAveragingFrac;
-                (*varTS)(iBin)[1] = 0.;
             }
         }
 
         return true;
     }
 
-    bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData, KTTimeSeriesDistData& devData)
+    bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData)
     {
         double remainingFrac = 1.;
         if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
@@ -305,19 +277,12 @@ namespace Katydid
         if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
-            devData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesDist* dataFS = data.GetTimeSeriesDist(iComponent);
-
                 KTTimeSeriesDist* newFS = new KTTimeSeriesDist(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
-                KTTimeSeriesDist* newVarFS = new KTTimeSeriesDist(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
-
                 newFS->operator*=(double(0.));
-                newVarFS->operator*=(double(0.));
-
                 accData.SetTimeSeriesDist(newFS, iComponent);
-                devData.SetTimeSeriesDist(newVarFS, iComponent);
             }
         }
 
@@ -328,21 +293,10 @@ namespace Katydid
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
-        if (nComponents != devData.GetNComponents())
-        {
-            KTERROR(avlog, "Numbers of components in the variance and in the new data do not match");
-            return false;
-        }
-
         unsigned arraySize = data.GetTimeSeriesDist(0)->size();
         if (arraySize != accData.GetTimeSeriesDist(0)->size())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
-            return false;
-        }
-        if (arraySize != devData.GetTimeSeriesDist(0)->size())
-        {
-            KTERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
             return false;
         }
 
@@ -350,11 +304,9 @@ namespace Katydid
         {
             KTTimeSeriesDist* newSpect = data.GetTimeSeriesDist(iComponent);
             KTTimeSeriesDist* avSpect = accData.GetTimeSeriesDist(iComponent);
-            KTTimeSeriesDist* varSpect = devData.GetTimeSeriesDist(iComponent);
             for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avSpect)(iBin) = (*avSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * fAveragingFrac;
-                (*varSpect)(iBin) = (*varSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * (*newSpect)(iBin) * fAveragingFrac;
             }
         }
 
@@ -601,53 +553,115 @@ namespace Katydid
 
     bool KTDataAccumulator::Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header)
     {
+        KTFrequencySpectrumVarianceDataPolar& varData = data.Of< KTFrequencySpectrumVarianceDataPolar >();
+        
         double scale = 1. / (double)(header.GetSliceNumber());
-        KTDEBUG(avlog, "Scaling frequency-spectrum polar by " << scale);
+        KTDEBUG(avlog, "Scaling frequency spectrum polar by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
+            KTFrequencySpectrum* varSpect = varData.GetSpectrum(iComponent);
+            
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
         }
+
         return true;
     }
 
     bool KTDataAccumulator::Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header)
     {
+        KTFrequencySpectrumVarianceDataFFTW& varData = data.Of< KTFrequencySpectrumVarianceDataFFTW >();
+
         double scale = 1. / (double)(header.GetSliceNumber());
         KTDEBUG(avlog, "Scaling frequency spectrum fftw by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
-            avSpect->Scale(scale);
-        }
-        return true;
-    }
+            KTFrequencySpectrum* varSpect = varData.GetSpectrum(iComponent);
 
-    bool KTDataAccumulator::Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header)
-    {
-        double scale = 1. / (double)(header.GetSliceNumber());
-        KTDEBUG(avlog, "Scaling power spectrum by " << scale);
-        unsigned nComponents = data.GetNComponents();
-        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
-        {
-            KTPowerSpectrum* avSpect = data.GetSpectrum(iComponent);
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
         }
+
         return true;
     }
 
     bool KTDataAccumulator::Scale(KTPowerSpectrumData& data, KTSliceHeader& header)
     {
+        KTPowerSpectrumVarianceData& varData = data.Of< KTPowerSpectrumVarianceData >();
+
         double scale = 1. / (double)(header.GetSliceNumber());
         KTDEBUG(avlog, "Scaling power spectrum by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* avSpect = data.GetSpectrum(iComponent);
+            KTPowerSpectrum* varSpect = varData.GetSpectrum(iComponent);
+
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
         }
+
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTConvolvedFrequencySpectrumDataPolar& data, KTSliceHeader& header)
+    {
+        KTConvolvedFrequencySpectrumVarianceDataPolar& varData = data.Of< KTConvolvedFrequencySpectrumVarianceDataPolar >();
+        
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling convolved frequency spectrum polar by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
+            KTFrequencySpectrum* varSpect = varData.GetSpectrum(iComponent);
+
+            avSpect->Scale(scale);
+            varSpect->Scale(scale);
+        }
+
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTConvolvedFrequencySpectrumDataFFTW& data, KTSliceHeader& header)
+    {
+        KTConvolvedFrequencySpectrumVarianceDataFFTW& varData = data.Of< KTConvolvedFrequencySpectrumVarianceDataFFTW >();
+
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling power spectrum by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
+            KTFrequencySpectrum* varSpect = data.GetSpectrum(iComponent);
+
+            avSpect->Scale(scale);
+            varSpect->Scale(scale);
+        }
+
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header)
+    {
+        KTConvolvedPowerSpectrumVarianceData& varData = data.Of< KTConvolvedPowerSpectrumVarianceData >();
+
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling power spectrum by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* avSpect = data.GetSpectrum(iComponent);
+            KTPowerSpectrum* varSpect = varData.GetSpectrum(iComponent);
+
+            avSpect->Scale(scale);
+            varSpect->Scale(scale);
+        }
+        
         return true;
     }
 
