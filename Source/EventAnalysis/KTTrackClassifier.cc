@@ -169,8 +169,8 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetAlgorithm(node->get_value< std::string >("algorithm", GetAlgorithm()));
-        SetC(node->get_value< double >("C", GetC()));
-        SetGamma(node->get_value< double >("Gamma", GetGamma()));
+        SetC(node->get_value< double >("c", GetC()));
+        SetGamma(node->get_value< double >("gamma", GetGamma()));
         SetTrainingSet(node->get_value< std::string >("training-set", GetTrainingSet()));
         
         return true;
@@ -178,12 +178,23 @@ namespace Katydid
 
     bool KTDLIBClassifier::Initialize()
     {
+        // Normalize data
+
+        // Train
+
+        // Anything else?
+
         fInitialized = true;
         return true;
     }
 
     bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& trackData, KTPowerFitData& rpData )
     {
+        if( fAlgorithm == "svm" )
+        {
+            // Do some stuff
+        }
+        
         return true;
     }
 
