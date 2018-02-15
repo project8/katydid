@@ -120,6 +120,7 @@ if (Katydid_ENABLE_TESTING)
         )
         
         set( PROGRAMS
+           TestBackgroundFlattening
            TestBasicROOTFileWriter
            TestGainVariation
            TestROOTDictionary
