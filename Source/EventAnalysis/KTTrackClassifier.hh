@@ -44,11 +44,11 @@ namespace Katydid
      - "classify": void (Nymph::KTDataPtr) -- Emitted upon successful classification; Guarantees KTProcessedTrackData and KTPowerFitData
     */
 
-    class KTTrackClassifier : public Nymph::KTProcessor
+    class KTTMVAClassifier : public Nymph::KTProcessor
     {
         public:
-            KTTrackClassifier(const std::string& name = "track-classifier");
-            virtual ~KTTrackClassifier();
+            KTTMVAClassifier(const std::string& name = "tmva-classifier");
+            virtual ~KTTMVAClassifier();
 
             bool Configure(const scarab::param_node* node);
 
@@ -100,117 +100,76 @@ namespace Katydid
 
     };
 
-    inline std::string KTTrackClassifier::GetMVAFile() const
+    inline std::string KTTMVAClassifier::GetMVAFile() const
     {
         return fMVAFile;
     }
 
-    inline void KTTrackClassifier::SetMVAFile(std::string fileName)
+    inline void KTTMVAClassifier::SetMVAFile(std::string fileName)
     {
         fMVAFile = fileName;
         return;
     }
 
-    inline std::string KTTrackClassifier::GetAlgorithm() const
+    inline std::string KTTMVAClassifier::GetAlgorithm() const
     {
         return fAlgorithm;
     }
 
-    inline void KTTrackClassifier::SetAlgorithm(std::string alg)
+    inline void KTTMVAClassifier::SetAlgorithm(std::string alg)
     {
         fAlgorithm = alg;
         return;
     }
 
-    inline double KTTrackClassifier::GetMVACut() const
+    inline double KTTMVAClassifier::GetMVACut() const
     {
         return fMVACut;
     }
 
-    inline void KTTrackClassifier::SetMVACut(double value)
+    inline void KTTMVAClassifier::SetMVACut(double value)
     {
         fMVACut = value;
         return;
     }
 
-    void KTTrackClassifier::SlotFunctionPowerFitData( Nymph::KTDataPtr data )
+    class KTDLIBClassifier : public Nymph::KTProcessor
     {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
+        public:
+            KTDLIBClassifier(const std::string& name = "dlib-classifier");
+            virtual ~KTDLIBClassifier();
 
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
+            bool Configure(const scarab::param_node* node);
 
-        if (! data->Has< KTPowerFitData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTPowerFitData >!");
-            return;
-        }
+            MEMBERVARIABLE( std::string, Algorithm );
+            MEMBERVARIABLE( double, C );
+            MEMBERVARIABLE( double, Gamma );
+            MEMBERVARIABLE( std::string, TrainingSet );
 
-        // Set up reader
+        private:
+            bool fInitialized;
+            // dlib stuff will go here
 
-        reader = new TMVA::Reader();
+        public:
+            bool Initialize();
+            bool ClassifyTrack( KTProcessedTrackData& trackData, KTPowerFitData& rpData );
 
-        reader->AddVariable( "Average", &fAverage );
-        reader->AddVariable( "RMS", &fRMS );
-        reader->AddVariable( "Skewness", &fSkewness );
-        reader->AddVariable( "Kurtosis", &fKurtosis );
-        reader->AddVariable( "NormCentral", &fNormCentral );
-        reader->AddVariable( "MeanCentral", &fMeanCentral );
-        reader->AddVariable( "SigmaCentral", &fSigmaCentral );
-        reader->AddVariable( "NPeaks", &fNPeaks );
-        reader->AddVariable( "CentralPowerRatio", &fCentralPowerRatio );
-        reader->AddVariable( "RMSAwayFromCentral", &fRMSAwayFromCentral );
+            //***************
+            // Signals
+            //***************
 
-        try
-        {
-            KTDEBUG(avlog_hh, "Algorithm = " << fAlgorithm);
-            KTDEBUG(avlog_hh, "MVA File = " << fMVAFile);
+        private:
+            Nymph::KTSignalData fClassifySignal;
 
-            reader->BookMVA( fAlgorithm, fMVAFile );
-        }
-        catch(...)
-        {
-            KTERROR(avlog_hh, "Invalid reader configuration; please make sure the algorithm is correct and the file exists. Aborting");
-            return;
-        }
+            //***************
+            // Slots
+            //***************
 
-        KTINFO(avlog_hh, "Successfully set up TMVA reader");
+        private:
+            void SlotFunctionPowerFitData( Nymph::KTDataPtr data );
 
-        KTPowerFitData& pfData = data->Of< KTPowerFitData >();
+    };
 
-        // Assign variables
-        fAverage = (float)(pfData.GetAverage());
-        fRMS = (float)(pfData.GetRMS());
-        fSkewness = (float)(pfData.GetSkewness());
-        fKurtosis = (float)(pfData.GetKurtosis());
-        fNormCentral = (float)(pfData.GetNormCentral());
-        fMeanCentral = (float)(pfData.GetMeanCentral());
-        fSigmaCentral = (float)(pfData.GetSigmaCentral());
-        fNPeaks = (float)(pfData.GetNPeaks());
-        fCentralPowerRatio = (float)(pfData.GetCentralPowerRatio());
-        fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
-
-        double mvaValue = reader->EvaluateMVA( fAlgorithm );
-        KTDEBUG(avlog_hh, "Evaluated MVA classifier = " << mvaValue);
-
-        // Call function
-        if( !ClassifyTrack( data->Of< KTProcessedTrackData >(), mvaValue ) )
-        {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTProcessedTrackData >");
-            return;
-        }
-
-        KTINFO(avlog_hh, "Classification finished!");
-
-        // Emit signal
-        fClassifySignal( data );
-    
-        return;
-    }
 }
 
 #endif /* KTTRACKCLASSIFIER_HH_ */
