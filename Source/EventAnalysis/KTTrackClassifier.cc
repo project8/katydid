@@ -181,6 +181,15 @@ namespace Katydid
         // Normalize data
 
         // Train
+        if( fAlgorithm == "svm" )
+        {
+            // Do some stuff
+        }
+        else
+        {
+            KTERROR(avlog_hh, "Could not determine the appropriate algorithm; something went wrong");
+            return false;
+        }
 
         // Anything else?
 
@@ -188,13 +197,20 @@ namespace Katydid
         return true;
     }
 
-    bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& trackData, KTPowerFitData& rpData )
+    bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& trackData, KTPowerFitData& rpData, KTClassifierResultsData& resultData )
     {
+        resultData.SetComponent( trackData.GetComponent() );
+        
         if( fAlgorithm == "svm" )
         {
             // Do some stuff
         }
-        
+        else
+        {
+            KTERROR(avlog_hh, "Could not determine the appropriate algorithm; something went wrong");
+            return false;
+        }
+
         return true;
     }
 
@@ -217,10 +233,14 @@ namespace Katydid
 
         if( ! fInitialized )
         {
-            Initialize();
+            if( !Initialize() )
+            {
+                KTERROR(avlog_hh, "Initialization failed; aborting classification. No signal will be emitted");
+                return;
+            }
         }
 
-        if( !ClassifyTrack( data->Of< KTProcessedTrackData >(), data->Of< KTPowerFitData >() ) )
+        if( !ClassifyTrack( data->Of< KTProcessedTrackData >(), data->Of< KTPowerFitData >(), data->Of< KTClassifierResultsData >() ) )
         {
             KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTProcessedTrackData >");
             return;
