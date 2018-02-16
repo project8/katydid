@@ -100,6 +100,7 @@ int main()
     gvProc.SetMinFrequency( minFreq );
     gvProc.SetMaxFrequency( maxFreq);
     gvProc.SetNFitPoints( 10 );
+    gvProc.SetNormalize( false );
 
     KTINFO(testlog, "Calculating gain variation");
 
@@ -151,8 +152,7 @@ int main()
             xx.push_back( (double)iSpectrum );
             yy.push_back( it->second.fAbscissa );
             n++;
-        }        
-        
+        }
     }
 
     KTINFO( testlog, "Converting discriminated points to TGraph");
@@ -197,4 +197,5 @@ int main()
     file->Close();
 #endif
 
+    return 0;
 }
