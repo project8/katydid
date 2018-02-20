@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['nanoflannindex',['NanoflannIndex',['../struct_katydid_1_1_k_t_tree_index_manhattan.html#a053e3c5d9e9e7048a1991e189e306259',1,'Katydid::KTTreeIndexManhattan::NanoflannIndex()'],['../struct_katydid_1_1_k_t_tree_index_euclidean.html#a896e97c230b670c81f0f99ace78fea19',1,'Katydid::KTTreeIndexEuclidean::NanoflannIndex()']]],
-  ['neighbors',['Neighbors',['../struct_katydid_1_1_k_t_tree_index_manhattan.html#aeb41bfaed1cbe059e3ed1332e0d3bb85',1,'Katydid::KTTreeIndexManhattan::Neighbors()'],['../struct_katydid_1_1_k_t_tree_index_euclidean.html#a69ee46869c836172cb1de801a9385832',1,'Katydid::KTTreeIndexEuclidean::Neighbors()'],['../class_katydid_1_1_k_t_d_b_scan.html#a74b3fda09dfb6d226672d7e2215d8f34',1,'Katydid::KTDBScan::Neighbors()'],['../struct_katydid_1_1_k_t_symmetric_distance_matrix.html#ae8cb6068f803c747f602a81c91367d8a',1,'Katydid::KTSymmetricDistanceMatrix::Neighbors()'],['../struct_katydid_1_1_k_t_sparse_distance_matrix.html#a435ec762ace7c34e54354871c2015660',1,'Katydid::KTSparseDistanceMatrix::Neighbors()']]]
-];

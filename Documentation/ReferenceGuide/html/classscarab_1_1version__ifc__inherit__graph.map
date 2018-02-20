@@ -1,6 +1,0 @@
-<map id="scarab::version_ifc" name="scarab::version_ifc">
-<area shape="rect" id="node2" href="$classscarab_1_1version__semantic.html" title="{scarab::version_semantic\n|# f_major_ver\l# f_minor_ver\l# f_patch_ver\l# f_version\l# f_package\l# f_commit\l# f_exe_name\l# f_hostname\l# f_username\l# s_delimeter\l|+ version_semantic()\l+ version_semantic()\l+ version_semantic()\l+ version_semantic()\l+ ~version_semantic()\l+ operator=()\l+ major_version()\l+ minor_version()\l+ patch_version()\l+ version_str()\land 9 more...\l}" alt="" coords="169,300,342,627"/>
-<area shape="rect" id="node3" href="$classmonarch2_1_1_m2_version.html" title="{monarch2::M2Version\n||+ M2Version()\l+ ~M2Version()\l}" alt="" coords="5,675,156,761"/>
-<area shape="rect" id="node4" href="$classmonarch3_1_1_m3_version.html" title="{monarch3::M3Version\n||+ M3Version()\l+ ~M3Version()\l}" alt="" coords="180,675,331,761"/>
-<area shape="rect" id="node5" href="$classscarab_1_1version.html" title="{scarab::version\n||+ version()\l+ ~version()\l}" alt="" coords="356,675,467,761"/>
-</map>

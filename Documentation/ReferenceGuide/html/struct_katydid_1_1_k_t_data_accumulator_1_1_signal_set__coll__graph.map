@@ -1,4 +1,0 @@
-<map id="Katydid::KTDataAccumulator::SignalSet" name="Katydid::KTDataAccumulator::SignalSet">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_signal_data.html" title="Creates a signal that takes a KTDataPtr object as its argument. " alt="" coords="25,195,178,321"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_signal_one_arg.html" title="{Nymph::KTSignalOneArg\l\&lt; KTDataPtr \&gt;\n|# fSignal\l|+ KTSignalOneArg()\l+ ~KTSignalOneArg()\l+ operator()()\l# KTSignalOneArg()\l# KTSignalOneArg()\l}" alt="" coords="16,5,187,145"/>
-</map>

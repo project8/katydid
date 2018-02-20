@@ -66,9 +66,9 @@ namespace Katydid
      - "fs-polar": void (Nymph::KTDataPtr) -- Convolves a frequency spectrum; Requires KTFrequencySpectrumDataPolar; Adds KTConvolvedFrequencySpectrumDataPolar
 
      Signals:
-     - "conv-ps": void (Nymph::KTDataPtr) -- Emitted upon convolution of a power spectrum; Guarantees KTConvolvedPowerSpectrumData
-     - "conv-fs-fftw": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataFFTW
-     - "conv-fs-polar": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataPolar
+     - "ps": void (Nymph::KTDataPtr) -- Emitted upon convolution of a power spectrum; Guarantees KTConvolvedPowerSpectrumData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataFFTW
+     - "fs-polar": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataPolar
     */
 
     class KTConvolution1D : public Nymph::KTProcessor

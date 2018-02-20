@@ -1,5 +1,0 @@
-<map id="Katydid::KTTimeSeriesFFTW" name="Katydid::KTTimeSeriesFFTW">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_time_series.html" title="{Katydid::KTTimeSeries\n||+ KTTimeSeries()\l+ ~KTTimeSeries()\l+ Scale()\l+ GetNTimeBins()\l+ GetTimeBinWidth()\l+ SetValue()\l+ GetValue()\l+ Print()\l}" alt="" coords="5,353,163,520"/>
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_physical_array_3_011_00_01fftw__complex_01_4.html" title="{Katydid::KTPhysicalArray\l\&lt; 1, fftw_complex \&gt;\n|# fData\l# fTempCache\l# fLabel\l|+ KTPhysicalArray()\l+ KTPhysicalArray()\l+ KTPhysicalArray()\l+ ~KTPhysicalArray()\l+ GetData()\l+ GetData()\l+ GetDataLabel()\l+ SetDataLabel()\l+ operator()()\l+ operator()()\land 19 more...\l}" alt="" coords="186,313,358,560"/>
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_axis_properties_3_011_01_4.html" title="Specialization of KTAxisProperties; encapsulates the properties of 1&#45;dimensional binned axes..." alt="" coords="169,5,375,265"/>
-</map>

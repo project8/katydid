@@ -50,7 +50,7 @@ if (ROOT_FOUND)
     )
 
     set (UTILITY_LINKDEF_HEADERFILE LinkDef/UtilityLinkDef.hh)
-    set (UTILITY_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
+    set (UTILITY_SOURCEFILES ${UTILITY_SOURCEFILES} ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
     set (UTILITY_DICT_PCMFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict_rdict.pcm)
 endif (ROOT_FOUND)
 
@@ -64,10 +64,14 @@ if (ROOT_FOUND)
     pbuilder_install_files (${LIB_INSTALL_DIR} ${UTILITY_DICT_PCMFILE})
 endif (ROOT_FOUND)
 
-add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
-target_link_libraries (KatydidUtility ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
+pbuilder_library (KatydidUtility UTILITY_SOURCEFILES "")
+#pbuilder_install_headers(${CICADA_HEADERFILES})
+
+#add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
+#target_link_libraries (KatydidUtility ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${UTILITY_HEADERFILES})
 pbuilder_install_header_dirs ("*.hh" ${UTILITY_HEADER_SUBDIRS})
-pbuilder_install_libraries (KatydidUtility)
+#pbuilder_install_libraries (KatydidUtility)
+
 

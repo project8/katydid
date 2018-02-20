@@ -157,6 +157,8 @@ namespace Katydid
             double fBinWidth;
 
             uint64_t fSliceNumber;
+
+            uint64_t fRecordsProcessed;
     };
 
 
@@ -228,7 +230,7 @@ namespace Katydid
 
     inline double KTEgg3Reader::GetIntegratedTime() const
     {
-        return GetTimeInRun();
+        return (double)fRecordsProcessed * (double)fRecordSize * fBinWidth;
     }
 
     inline unsigned KTEgg3Reader::GetNSlicesProcessed() const
@@ -238,7 +240,7 @@ namespace Katydid
 
     inline unsigned KTEgg3Reader::GetNRecordsProcessed() const
     {
-        return fReadState.fCurrentRecord + 1;
+        return fRecordsProcessed;
     }
 
     inline const KTEgg3Reader::MonarchReadState& KTEgg3Reader::GetReadState() const

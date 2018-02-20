@@ -16,6 +16,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTKDTreeData.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
     SpectrumAnalysis/KTPointCloud.hh
+    SpectrumAnalysis/KTSeqLine.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
@@ -55,6 +56,7 @@ set (DATA_HEADERFILES
     Transform/KTPowerSpectrumUncertaintyData.hh
     Transform/KTMultiFSDataFFTW.hh
     Transform/KTMultiFSDataPolar.hh
+    Transform/KTMultiPSData.hh
     Transform/KTTimeFrequency.hh
     Transform/KTTimeFrequencyDataPolar.hh
     Transform/KTTimeFrequencyPolar.hh
@@ -73,6 +75,7 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
     SpectrumAnalysis/KTNormalizedFSData.cc
+    SpectrumAnalysis/KTSeqLine.cc
     SpectrumAnalysis/KTTimeSeriesDist.cc
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
@@ -109,6 +112,7 @@ set (DATA_SOURCEFILES
     Transform/KTFrequencySpectrumPolar.cc
     Transform/KTMultiFSDataFFTW.cc
     Transform/KTMultiFSDataPolar.cc
+    Transform/KTMultiPSData.cc
     Transform/KTPowerSpectrum.cc
     Transform/KTPowerSpectrumData.cc
     Transform/KTPowerSpectrumUncertaintyData.cc

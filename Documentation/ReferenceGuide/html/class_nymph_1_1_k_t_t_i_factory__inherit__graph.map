@@ -1,3 +1,0 @@
-<map id="Nymph::KTTIFactory&lt; XBaseType &gt;" name="Nymph::KTTIFactory&lt; XBaseType &gt;">
-<area shape="rect" id="node2" href="$classscarab_1_1singleton.html" title="{scarab::singleton\&lt;\l KTTIFactory\&lt; XBaseType \&gt; \&gt;\n|&#45; f_instance\l&#45; f_destroyer\l&#45; f_mutex\l|+ get_instance()\l+ kill_instance()\l# singleton()\l# ~singleton()\l&#45; create_instance()\l&#45; delete_instance()\l}" alt="" coords="5,5,206,185"/>
-</map>

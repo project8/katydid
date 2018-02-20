@@ -53,7 +53,8 @@ namespace Katydid
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(0),
             fBinWidth(0.),
-            fSliceNumber(0)
+            fSliceNumber(0),
+            fRecordsProcessed(0)
     {
         fReadState.fStatus = MonarchReadState::kInvalid;
         fReadState.fStartOfLastSliceRecord = 0;
@@ -238,6 +239,7 @@ namespace Katydid
                     KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();
                 }
+                ++fRecordsProcessed;
 
                 // set fStartOFLastSliceRecord properly, considering that the first record in the file might not be record 0
                 // this has to be done after the first record is read, because Monarch only knows what the first record number is after accessing the records
@@ -296,8 +298,10 @@ namespace Katydid
                         }
                         inNewFile = true;
                     }
+                    ++fRecordsProcessed;
+
                     // set the current record according to what's now loaded
-                    fReadState.fCurrentRecord = fM3Stream->GetRecordCountInFile();
+                    fReadState.fCurrentRecord = fM3Stream->GetAcqFirstRecordId() + fM3Stream->GetRecordCountInAcq();
                     // check if we're in a new acquisition
                     if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId() || inNewFile)
                     {
@@ -439,7 +443,8 @@ namespace Katydid
                         }
                         inNewFile = true;
                     }
-                    fReadState.fCurrentRecord = fM3Stream->GetRecordCountInFile();
+                    ++fRecordsProcessed;
+                    fReadState.fCurrentRecord = fM3Stream->GetAcqFirstRecordId() + fM3Stream->GetRecordCountInAcq();
 
                     readPos = 0; // reset the read position, which is now at the beginning of the new record
 

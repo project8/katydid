@@ -1,7 +1,0 @@
-<map id="Katydid::KTFrequencyCandidateData" name="Katydid::KTFrequencyCandidateData">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTFrequencyCandidateData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="5,247,219,360"/>
-<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTFrequencyCandidateData,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="7,5,212,185"/>
-<area shape="rect" id="node5" href="$struct_katydid_1_1_k_t_frequency_candidate_data_1_1_per_component_data.html" title="{Katydid::KTFrequencyCandidate\lData::PerComponentData\n|+ fThreshold\l|}" alt="" coords="236,52,450,139"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="483,267,562,340"/>
-<area shape="rect" id="node7" title="STL class. " alt="" coords="473,52,599,139"/>
-</map>

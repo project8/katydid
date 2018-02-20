@@ -1,8 +1,0 @@
-<map id="KTRandom.hh" name="KTRandom.hh">
-<area shape="rect" id="node2" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="5,85,138,111"/>
-<area shape="rect" id="node3" href="$param_8hh.html" title="param.hh" alt="" coords="39,165,117,191"/>
-<area shape="rect" id="node6" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="141,165,239,191"/>
-<area shape="rect" id="node8" href="$singleton_8hh.html" title="singleton.hh" alt="" coords="264,85,357,111"/>
-<area shape="rect" id="node9" href="$destroyer_8hh.html" title="destroyer.hh" alt="" coords="263,165,358,191"/>
-<area shape="rect" id="node10" href="$mutex_8hh.html" title="mutex.hh" alt="" coords="434,165,510,191"/>
-</map>

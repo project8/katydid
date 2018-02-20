@@ -1,4 +1,0 @@
-<map id="ESDataD" name="ESDataD">
-<area shape="rect" id="node2" href="$struct_k_d_extensible_struct.html" title="{KDExtensibleStruct\l\&lt; ESDataD \&gt;\n|&#45; fIsCopyDisabled\l|+ KDExtensibleStruct()\l+ KDExtensibleStruct()\l+ ~KDExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l}" alt="" coords="20,260,184,413"/>
-<area shape="rect" id="node3" href="$struct_k_d_extensible_struct_core.html" title="{KDExtensibleStructCore\l\&lt; void \&gt;\n||+ KDExtensibleStructCore()\l+ KDExtensibleStructCore()\l+ ~KDExtensibleStructCore()\l+ operator=()\l+ Clear()\l+ Of()\l+ Of()\l+ Has()\l+ Clone()\l+ Pull()\l}" alt="" coords="5,5,199,212"/>
-</map>

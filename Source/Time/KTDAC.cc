@@ -80,8 +80,13 @@ namespace Katydid
 
     bool KTDAC::InitializeWithHeader(KTEggHeader& header)
     {
-        // setup each channel DAC with header info
         unsigned nComponents = header.GetNChannels();
+        // make sure we have the right number of DACs; copy from the last one if not
+        while (nComponents != fChannelDACs.size())
+        {
+            fChannelDACs.emplace_back(fChannelDACs.back());
+        }
+        // setup each channel DAC with header info
         for (unsigned component = 0; component < nComponents; ++component)
         {
             if (! fChannelDACs[component].InitializeWithHeader(header.GetChannelHeader(component)))

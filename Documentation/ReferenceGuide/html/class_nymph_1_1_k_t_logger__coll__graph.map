@@ -1,3 +1,0 @@
-<map id="Nymph::KTLogger" name="Nymph::KTLogger">
-<area shape="rect" id="node2" href="$struct_nymph_1_1_k_t_logger_1_1_private.html" title="{Nymph::KTLogger::Private\n|+ fLogger\l+ fColored\l+ fThreshold\l+ sDateTimeFormat\l+ sRawTime\l+ sProcessedTime\l+ sTimeBuff\l|+ logCout()\l+ logCerr()\l+ getTimeAbsoluteStr()\l+ level2Str()\l+ level2Color()\l}" alt="" coords="5,5,184,212"/>
-</map>

@@ -18,7 +18,7 @@
 
 #include "KTMultiFSDataPolar.hh"
 #include "KTMultiFSDataFFTW.hh"
-#include "KTMultiPowerSpectrumData.hh"
+#include "KTMultiPSData.hh"
 
 #include <vector>
 #include <cmath>
@@ -152,19 +152,19 @@ namespace Katydid
             
             bool ParseKernel();
 
-            bool Convolve2D( KTMultiPowerSpectrumData& data );
+            bool Convolve2D( KTMultiPSData& data );
             bool Convolve2D( KTMultiFSDataFFTW& data );
             bool Convolve2D( KTMultiFSDataPolar& data );
 
             template< class XMultiSpectrumDataCore, class XConvolvedMultiSpectrumTypeData >
-            bool CoreConvolve1D( XMultiSpectrumDataCore& data, XConvolvedMultiSpectrumTypeData& newData );
+            bool CoreConvolve2D( XMultiSpectrumDataCore& data, XConvolvedMultiSpectrumTypeData& newData );
 
-            const KTPhysicalArray< 1, KTPowerSpectrum* >* GetSpectrum( KTMultiPSDataCore& data, unsigned iComponent );
-            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectrum( KTMultiFSDataFFTWCore& data, unsigned iComponent );
-            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectrum( KTMultiFSDataPolarCore& data, unsigned iComponent );
+            const KTPhysicalArray< 1, KTPowerSpectrum* >* GetSpectra( KTMultiPSDataCore& data, unsigned iComponent );
+            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra( KTMultiFSDataFFTWCore& data, unsigned iComponent );
+            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra( KTMultiFSDataPolarCore& data, unsigned iComponent );
 
-            template< class XMultiSpectraType >
-            XMultiSpectraType* DoConvolution( const XMultiSpectraType* initialSpectrum, const int blockX, const int blockY, const int stepX, const int stepY, const int overlapX, const int overlapY );
+            template< class XSpectraType >
+            KTPhysicalArray< 1, XSpectraType* >* DoConvolution( const KTPhysicalArray< 1, XSpectraType* >* myInitialSpectrum, const int blockX, const int blockY, const int stepX, const int stepY, const int overlapX, const int overlapY );
 
             template< class XMultiSpectraType >
             bool SetUpGeneralVars();
@@ -173,18 +173,18 @@ namespace Katydid
             void ConjugateAndReverse( KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& spectrum );
             void ConjugateAndReverse( KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& spectrum );
 
-            void SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTPowerSpectrum* >* initialSpectrum );
-            void SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* initialSpectrum );
-            void SetInputArray( int positionX, int positionY, int nBinX, int nBinY, const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* initialSpectrum );
+            void SetInputArray( int positionX, int positionY, int nBin, const KTPhysicalArray< 1, KTPowerSpectrum* >* initialSpectrum );
+            void SetInputArray( int positionX, int positionY, int nBin, const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* initialSpectrum );
+            void SetInputArray( int positionX, int positionY, int nBin, const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* initialSpectrum );
 
-            void SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTPowerSpectrum* >& transformedPS, double normX, double normY );
-            void SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& transformedFSFFTW, double normX, double normY );
-            void SetOutputArray( int positionX, int positionY, int nBinX, int nBinY, KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& transformedFSPolar, double normX, double normY );
+            void SetOutputArray( int positionX, int positionY, int nBin, KTPhysicalArray< 1, KTPowerSpectrum* >& transformedPS, double normX, double normY );
+            void SetOutputArray( int positionX, int positionY, int nBin, KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >& transformedFSFFTW, double normX, double normY );
+            void SetOutputArray( int positionX, int positionY, int nBin, KTPhysicalArray< 1, KTFrequencySpectrumPolar* >& transformedFSPolar, double normX, double normY );
 
             void SetupInternalMaps();
 
             bool FinishSetup();
-            void Initialize( int nBinsTotalX, int blockX, int stepX, int overlapX, int nBinsTotalY, int blockX, int stepY, int overlapY );
+            void Initialize( int nBinsTotalX, int blockX, int stepX, int overlapX, int nBinsTotalY, int blockY, int stepY, int overlapY );
 
             void AllocateArrays( int nSizeRegularX, int nSizeShortX, int nSizeRegularY, int nSizeShortY );
             void FreeArrays();
@@ -210,19 +210,19 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTPowerSpectrum* >* KTConvolution2D::GetSpectra( KTMultiPowerSpectrumDataCore& data, unsigned iComponent )
+    inline const KTPhysicalArray< 1, KTPowerSpectrum* >* KTConvolution2D::GetSpectra( KTMultiPSDataCore& data, unsigned iComponent )
     {
         return data.GetSpectra( iComponent );
     }
 
     inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTConvolution2D::GetSpectra( KTMultiFSDataFFTWCore& data, unsigned iComponent )
     {
-        return data.GetSpectraFFTW( iComponent );
+        return data.GetSpectra( iComponent );
     }
 
     inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTConvolution2D::GetSpectra( KTMultiFSDataPolarCore& data, unsigned iComponent )
     {
-        return data.GetSpectraPolar( iComponent );
+        return data.GetSpectra( iComponent );
     }
 
 } /* namespace Katydid */

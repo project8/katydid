@@ -1,5 +1,0 @@
-<map id="Nymph::KTCut" name="Nymph::KTCut">
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_awesome_cut.html" title="{Nymph::KTAwesomeCut\n||+ KTAwesomeCut()\l+ ~KTAwesomeCut()\l+ Configure()\l+ Apply()\l+ Apply()\l+ KTAwesomeCut()\l+ ~KTAwesomeCut()\l+ Configure()\l+ Apply()\l+ Apply()\l+ KTAwesomeCut()\l+ ~KTAwesomeCut()\l+ Configure()\l+ Apply()\l+ Apply()\l}" alt="" coords="5,341,171,601"/>
-<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_not_awesome_cut.html" title="{Nymph::KTNotAwesomeCut\n||+ KTNotAwesomeCut()\l+ ~KTNotAwesomeCut()\l+ Configure()\l+ Apply()\l+ Apply()\l+ KTNotAwesomeCut()\l+ ~KTNotAwesomeCut()\l+ Configure()\l+ Apply()\l+ Apply()\l+ KTNotAwesomeCut()\l+ ~KTNotAwesomeCut()\l+ Configure()\l+ Apply()\l+ Apply()\l}" alt="" coords="196,341,384,601"/>
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_configurable.html" title="{Nymph::KTConfigurable\n|# fCLHandler\l# fConfigName\l|+ KTConfigurable()\l+ ~KTConfigurable()\l+ Configure()\l+ GetConfigName()\l+ SetConfigName()\l}" alt="" coords="107,5,270,145"/>
-</map>

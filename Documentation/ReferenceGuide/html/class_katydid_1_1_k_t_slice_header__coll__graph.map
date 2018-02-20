@@ -1,7 +1,0 @@
-<map id="Katydid::KTSliceHeader" name="Katydid::KTSliceHeader">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTSliceHeader \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="45,233,223,347"/>
-<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTSliceHeader, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,5,220,172"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="266,253,346,327"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="245,45,370,132"/>
-<area shape="rect" id="node7" href="$struct_katydid_1_1_k_t_slice_header_1_1_per_component_data.html" title="{Katydid::KTSliceHeader\l::PerComponentData\n|+ fTimeStamp\l+ fAcquisitionID\l+ fRecordID\l+ fRawDataFormatType\l|}" alt="" coords="395,25,558,152"/>
-</map>
