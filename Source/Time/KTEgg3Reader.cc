@@ -614,8 +614,12 @@ namespace Katydid
                     // NOTE: here we assume that channel's center frequency and frequency width are valid for the whole egg file
                     fHeader.SetMinimumFrequency(channelHeader.GetFrequencyMin());
                     fHeader.SetMaximumFrequency(channelHeader.GetFrequencyMin() + channelHeader.GetFrequencyRange());
-                    fHeader.SetCenterFrequency(0.5 * (fHeader.GetMaximumFrequency() - fHeader.GetMinimumFrequency()));
-                    haveSetHeaderFreqs = false;
+                    fHeader.SetCenterFrequency(0.5 * channelHeader.GetFrequencyRange() + fHeader.GetMinimumFrequency());
+                    KTDEBUG(eggreadlog, "Extracted frequencies from channel (in file) " << iChanInFile <<
+                            ";  min freq: " << fHeader.GetMinimumFrequency() <<
+                            ";  center freq: " << fHeader.GetCenterFrequency() <<
+                            ";  max freq: " << fHeader.GetMaximumFrequency() );
+                    haveSetHeaderFreqs = true;
                 }
                 newChanHeader->SetNumber(iChanInKatydid);
                 newChanHeader->SetSource(channelHeader.GetSource());
