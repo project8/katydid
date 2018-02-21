@@ -56,6 +56,19 @@ Fixes:
 ''''''
 
 
+Version: 2.9.2
+~~~~~~~~~~~~~~
+
+Release Date: February 20, 2018
+'''''''''''''''''''''''''''''''
+
+ 
+Fixes:
+''''''
+
+* Fixed the calculation of the center frequency in the egg3 reader
+    * Validated by reading two egg files with EggScanner and verifying that the printed frequencies (min, max, and center) match what I expect from manually examining the contents of the egg files
+
 Version: 2.9.1
 ~~~~~~~~~~~~~~
 
