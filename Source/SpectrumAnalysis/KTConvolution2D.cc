@@ -43,10 +43,18 @@ namespace Katydid
             fRealToComplexPlan(),
             fC2CForwardPlan(),
             fC2CReversePlan(),
-            fComplexToRealPlanShort(),
-            fRealToComplexPlanShort(),
-            fC2CForwardPlanShort(),
-            fC2CReversePlanShort(),
+            fComplexToRealPlanShortTime(),
+            fRealToComplexPlanShortTime(),
+            fC2CForwardPlanShortTime(),
+            fC2CReversePlanShortTime(),
+            fComplexToRealPlanShortFreq(),
+            fRealToComplexPlanShortFreq(),
+            fC2CForwardPlanShortFreq(),
+            fC2CReversePlanShortFreq(),
+            fComplexToRealPlanShortTimeShortFreq(),
+            fRealToComplexPlanShortTimeShortFreq(),
+            fC2CForwardPlanShortTimeShortFreq(),
+            fC2CReversePlanShortTimeShortFreq(),
             fInputArrayReal(NULL),
             fOutputArrayReal(NULL),
             fInputArrayComplex(NULL),
@@ -66,8 +74,12 @@ namespace Katydid
             nBinLimitShortFreq(0),
             fGeneralForwardPlan(),
             fGeneralReversePlan(),
-            fGeneralForwardPlanShort(),
-            fGeneralReversePlanShort(),
+            fGeneralForwardPlanShortTime(),
+            fGeneralReversePlanShortTime(),
+            fGeneralForwardPlanShortFreq(),
+            fGeneralReversePlanShortFreq(),
+            fGeneralForwardPlanShortTimeShortFreq(),
+            fGeneralReversePlanShortTimeShortFreq(),
             fTransformFlagUnsigned(FFTW_ESTIMATE),
             fKernelSizeX(0),
             fKernelSizeY(0),
@@ -169,10 +181,20 @@ namespace Katydid
         fC2CForwardPlan = fftw_plan_dft_2d( nSizeRegularX, nSizeRegularY, fInputArrayComplex, fTransformedInputArray, FFTW_FORWARD, fTransformFlagUnsigned );
         fC2CReversePlan = fftw_plan_dft_2d( nSizeRegularX, nSizeRegularY, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
 
-        fRealToComplexPlanShort = fftw_plan_dft_r2c_2d( nSizeShortX, nSizeShortY, fInputArrayReal, fTransformedInputArrayFromReal, fTransformFlagUnsigned );
-        fComplexToRealPlanShort = fftw_plan_dft_c2r_2d( nSizeShortX, nSizeShortY, fTransformedOutputArrayFromReal, fOutputArrayReal, fTransformFlagUnsigned );
-        fC2CForwardPlanShort = fftw_plan_dft_2d( nSizeShortX, nSizeShortY, fInputArrayComplex, fTransformedInputArray, FFTW_FORWARD, fTransformFlagUnsigned );
-        fC2CReversePlanShort = fftw_plan_dft_2d( nSizeShortX, nSizeShortY, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
+        fRealToComplexPlanShortTime = fftw_plan_dft_r2c_2d( nSizeShortX, nSizeRegularY, fInputArrayReal, fTransformedInputArrayFromReal, fTransformFlagUnsigned );
+        fComplexToRealPlanShortTime = fftw_plan_dft_c2r_2d( nSizeShortX, nSizeRegularY, fTransformedOutputArrayFromReal, fOutputArrayReal, fTransformFlagUnsigned );
+        fC2CForwardPlanShortTime = fftw_plan_dft_2d( nSizeShortX, nSizeRegularY, fInputArrayComplex, fTransformedInputArray, FFTW_FORWARD, fTransformFlagUnsigned );
+        fC2CReversePlanShortTime = fftw_plan_dft_2d( nSizeShortX, nSizeRegularY, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
+
+        fRealToComplexPlanShortFreq = fftw_plan_dft_r2c_2d( nSizeRegularX, nSizeShortY, fInputArrayReal, fTransformedInputArrayFromReal, fTransformFlagUnsigned );
+        fComplexToRealPlanShortFreq = fftw_plan_dft_c2r_2d( nSizeRegularX, nSizeShortY, fTransformedOutputArrayFromReal, fOutputArrayReal, fTransformFlagUnsigned );
+        fC2CForwardPlanShortFreq = fftw_plan_dft_2d( nSizeRegularX, nSizeShortY, fInputArrayComplex, fTransformedInputArray, FFTW_FORWARD, fTransformFlagUnsigned );
+        fC2CReversePlanShortFreq = fftw_plan_dft_2d( nSizeRegularX, nSizeShortY, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
+
+        fRealToComplexPlanShortTimeShortFreq = fftw_plan_dft_r2c_2d( nSizeShortX, nSizeShortY, fInputArrayReal, fTransformedInputArrayFromReal, fTransformFlagUnsigned );
+        fComplexToRealPlanShortTimeShortFreq = fftw_plan_dft_c2r_2d( nSizeShortX, nSizeShortY, fTransformedOutputArrayFromReal, fOutputArrayReal, fTransformFlagUnsigned );
+        fC2CForwardPlanShortTimeShortFreq = fftw_plan_dft_2d( nSizeShortX, nSizeShortY, fInputArrayComplex, fTransformedInputArray, FFTW_FORWARD, fTransformFlagUnsigned );
+        fC2CReversePlanShortTimeShortFreq = fftw_plan_dft_2d( nSizeShortX, nSizeShortY, fTransformedOutputArray, fOutputArrayComplex, FFTW_BACKWARD, fTransformFlagUnsigned );
 
         // Store these guys
         fRegularSizeTime = nSizeRegularX;
@@ -242,25 +264,67 @@ namespace Katydid
             fC2CReversePlan = nullptr;
         }
 
-        if( fRealToComplexPlanShort != nullptr )
+        if( fRealToComplexPlanShortTime != nullptr )
         {
-            fftw_destroy_plan( fRealToComplexPlanShort );
-            fRealToComplexPlanShort = nullptr;
+            fftw_destroy_plan( fRealToComplexPlanShortTime );
+            fRealToComplexPlanShortTime = nullptr;
         }
-        if( fComplexToRealPlanShort != nullptr )
+        if( fComplexToRealPlanShortTime != nullptr )
         {
-            fftw_destroy_plan( fComplexToRealPlanShort );
-            fComplexToRealPlanShort = nullptr;
+            fftw_destroy_plan( fComplexToRealPlanShortTime );
+            fComplexToRealPlanShortTime = nullptr;
         }
-        if( fC2CForwardPlanShort != nullptr )
+        if( fC2CForwardPlanShortTime != nullptr )
         {
-            fftw_destroy_plan( fC2CForwardPlanShort );
-            fC2CForwardPlanShort = nullptr;
+            fftw_destroy_plan( fC2CForwardPlanShortTime );
+            fC2CForwardPlanShortTime = nullptr;
         }
-        if( fC2CReversePlanShort != nullptr )
+        if( fC2CReversePlanShortTime != nullptr )
         {
-            fftw_destroy_plan( fC2CReversePlanShort );
-            fC2CReversePlanShort = nullptr;
+            fftw_destroy_plan( fC2CReversePlanShortTime );
+            fC2CReversePlanShortTime = nullptr;
+        }
+
+        if( fRealToComplexPlanShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fRealToComplexPlanShortFreq );
+            fRealToComplexPlanShortFreq = nullptr;
+        }
+        if( fComplexToRealPlanShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fComplexToRealPlanShortFreq );
+            fComplexToRealPlanShortFreq = nullptr;
+        }
+        if( fC2CForwardPlanShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fC2CForwardPlanShortFreq );
+            fC2CForwardPlanShortFreq = nullptr;
+        }
+        if( fC2CReversePlanShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fC2CReversePlanShortFreq );
+            fC2CReversePlanShortFreq = nullptr;
+        }
+
+        if( fRealToComplexPlanShortTimeShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fRealToComplexPlanShortTimeShortFreq );
+            fRealToComplexPlanShortTimeShortFreq = nullptr;
+        }
+        if( fComplexToRealPlanShortTimeShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fComplexToRealPlanShortTimeShortFreq );
+            fComplexToRealPlanShortTimeShortFreq = nullptr;
+        }
+        if( fC2CForwardPlanShortTimeShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fC2CForwardPlanShortTimeShortFreq );
+            fC2CForwardPlanShortTimeShortFreq = nullptr;
+        }
+        if( fC2CReversePlanShortTimeShortFreq != nullptr )
+        {
+            fftw_destroy_plan( fC2CReversePlanShortTimeShortFreq );
+            fC2CReversePlanShortTimeShortFreq = nullptr;
         }
 
         fInitialized = false;
@@ -304,7 +368,7 @@ namespace Katydid
             kernelRow.clear();
             for( int jValue = 0; jValue < fKernelSizeX; ++jValue )
             {
-                kernelRow.push_back( (kernel2DArray.get_value< double* >(iValue))[jValue] );
+                kernelRow.push_back( (kernel2DArray[iValue]).as_array().get_value< double >(jValue) );
                 norm += kernelRow[jValue];
             }
             
@@ -575,7 +639,7 @@ namespace Katydid
             KTDEBUG(sdlog, "Initialized short array length = " << fShortSizeFreq);
 
             // FFT of input block
-            fftw_execute( fGeneralForwardPlanShort );
+            fftw_execute( fGeneralForwardPlanShortFreq );
 
             for( int nBinX = 0; nBinX < nBinLimitRegularTime; ++nBinX )
             {
@@ -587,7 +651,7 @@ namespace Katydid
             }
 
             // Reverse FFT of output block
-            fftw_execute( fGeneralReversePlanShort );
+            fftw_execute( fGeneralReversePlanShortFreq );
             
             // Loop over bins in the output block and fill the convolved spectrum
             for( nBinX = overlapX; nBinX < blockX; ++nBinX )
@@ -631,7 +695,7 @@ namespace Katydid
             KTDEBUG(sdlog, "Initialized short array length = " << fShortSizeTime);
 
             // FFT of input block
-            fftw_execute( fGeneralForwardPlanShort );
+            fftw_execute( fGeneralForwardPlanShortTime );
 
             for( int nBinX = 0; nBinX < nBinLimitShortTime; ++nBinX )
             {
@@ -643,7 +707,7 @@ namespace Katydid
             }
 
             // Reverse FFT of output block
-            fftw_execute( fGeneralReversePlanShort );
+            fftw_execute( fGeneralReversePlanShortTime );
             
             // Loop over bins in the output block and fill the convolved spectrum
             for( nBinX = overlapX; nBinX < fShortSizeTime; ++nBinX )
@@ -682,7 +746,7 @@ namespace Katydid
         KTDEBUG(sdlog, "Initialized short array length = " << fShortSizeTime);
 
         // FFT of input block
-        fftw_execute( fGeneralForwardPlanShort );
+        fftw_execute( fGeneralForwardPlanShortTimeShortFreq );
 
         for( int nBinX = 0; nBinX < nBinLimitShortTime; ++nBinX )
         {
@@ -694,7 +758,7 @@ namespace Katydid
         }
 
         // Reverse FFT of output block
-        fftw_execute( fGeneralReversePlanShort );
+        fftw_execute( fGeneralReversePlanShortTimeShortFreq );
         
         // Loop over bins in the output block and fill the convolved spectrum
         for( nBinX = overlapX; nBinX < fShortSizeTime; ++nBinX )
@@ -722,10 +786,14 @@ namespace Katydid
         fGeneralTransformedInputArray = fTransformedInputArrayFromReal;
         fGeneralTransformedOutputArray = fTransformedOutputArrayFromReal;
         fGeneralTransformedKernelArray = fTransformedKernelXYAsReal;
-        fGeneralForwardPlan = fRealToComplexPlan;
-        fGeneralForwardPlanShort = fRealToComplexPlanShort;
-        fGeneralReversePlan = fComplexToRealPlan;
-        fGeneralReversePlanShort = fComplexToRealPlanShort;
+        fGeneralForwardPlan = fC2CForwardPlan;
+        fGeneralReversePlan = fC2CReversePlan;
+        fGeneralForwardPlanShortTime = fC2CForwardPlanShortTime;
+        fGeneralReversePlanShortTime = fC2CReversePlanShortTime;
+        fGeneralForwardPlanShortFreq = fC2CForwardPlanShortFreq;
+        fGeneralReversePlanShortFreq = fC2CReversePlanShortFreq;
+        fGeneralForwardPlanShortTimeShortFreq = fC2CForwardPlanShortTimeShortFreq;
+        fGeneralReversePlanShortTimeShortFreq = fC2CReversePlanShortTimeShortFreq;
         nBinLimitRegularTime = fRegularSizeTime/2 + 1;
         nBinLimitRegularFreq = fRegularSizeFreq/2 + 1;
         nBinLimitShortTime = fShortSizeTime/2 + 1;
@@ -741,9 +809,13 @@ namespace Katydid
         fGeneralTransformedOutputArray = fTransformedOutputArray;
         fGeneralTransformedKernelArray = fTransformedKernelXYAsComplex;
         fGeneralForwardPlan = fC2CForwardPlan;
-        fGeneralForwardPlanShort = fC2CForwardPlanShort;
         fGeneralReversePlan = fC2CReversePlan;
-        fGeneralReversePlanShort = fC2CReversePlanShort;
+        fGeneralForwardPlanShortTime = fC2CForwardPlanShortTime;
+        fGeneralReversePlanShortTime = fC2CReversePlanShortTime;
+        fGeneralForwardPlanShortFreq = fC2CForwardPlanShortFreq;
+        fGeneralReversePlanShortFreq = fC2CReversePlanShortFreq;
+        fGeneralForwardPlanShortTimeShortFreq = fC2CForwardPlanShortTimeShortFreq;
+        fGeneralReversePlanShortTimeShortFreq = fC2CReversePlanShortTimeShortFreq;
         nBinLimitRegularTime = fRegularSizeTime;
         nBinLimitRegularFreq = fRegularSizeFreq;
         nBinLimitShortTime = fShortSizeTime;
@@ -759,9 +831,13 @@ namespace Katydid
         fGeneralTransformedOutputArray = fTransformedOutputArray;
         fGeneralTransformedKernelArray = fTransformedKernelXYAsComplex;
         fGeneralForwardPlan = fC2CForwardPlan;
-        fGeneralForwardPlanShort = fC2CForwardPlanShort;
         fGeneralReversePlan = fC2CReversePlan;
-        fGeneralReversePlanShort = fC2CReversePlanShort;
+        fGeneralForwardPlanShortTime = fC2CForwardPlanShortTime;
+        fGeneralReversePlanShortTime = fC2CReversePlanShortTime;
+        fGeneralForwardPlanShortFreq = fC2CForwardPlanShortFreq;
+        fGeneralReversePlanShortFreq = fC2CReversePlanShortFreq;
+        fGeneralForwardPlanShortTimeShortFreq = fC2CForwardPlanShortTimeShortFreq;
+        fGeneralReversePlanShortTimeShortFreq = fC2CReversePlanShortTimeShortFreq;
         nBinLimitRegularTime = fRegularSizeTime;
         nBinLimitRegularFreq = fRegularSizeFreq;
         nBinLimitShortTime = fShortSizeTime;

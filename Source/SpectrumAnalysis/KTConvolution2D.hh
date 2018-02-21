@@ -113,10 +113,20 @@ namespace Katydid
             fftw_plan fC2CForwardPlan;
             fftw_plan fC2CReversePlan;
 
-            fftw_plan fComplexToRealPlanShort;
-            fftw_plan fRealToComplexPlanShort;
-            fftw_plan fC2CForwardPlanShort;
-            fftw_plan fC2CReversePlanShort;
+            fftw_plan fComplexToRealPlanShortTime;
+            fftw_plan fRealToComplexPlanShortTime;
+            fftw_plan fC2CForwardPlanShortTime;
+            fftw_plan fC2CReversePlanShortTime;
+
+            fftw_plan fComplexToRealPlanShortFreq;
+            fftw_plan fRealToComplexPlanShortFreq;
+            fftw_plan fC2CForwardPlanShortFreq;
+            fftw_plan fC2CReversePlanShortFreq;
+
+            fftw_plan fComplexToRealPlanShortTimeShortFreq;
+            fftw_plan fRealToComplexPlanShortTimeShortFreq;
+            fftw_plan fC2CForwardPlanShortTimeShortFreq;
+            fftw_plan fC2CReversePlanShortTimeShortFreq;
 
             double *fInputArrayReal;
             double *fOutputArrayReal;
@@ -140,8 +150,12 @@ namespace Katydid
             int nBinLimitShortFreq;
             fftw_plan fGeneralForwardPlan;
             fftw_plan fGeneralReversePlan;
-            fftw_plan fGeneralForwardPlanShort;
-            fftw_plan fGeneralReversePlanShort;
+            fftw_plan fGeneralForwardPlanShortTime;
+            fftw_plan fGeneralReversePlanShortTime;
+            fftw_plan fGeneralForwardPlanShortFreq;
+            fftw_plan fGeneralReversePlanShortFreq;
+            fftw_plan fGeneralForwardPlanShortTimeShortFreq;
+            fftw_plan fGeneralReversePlanShortTimeShortFreq;
 
             unsigned fTransformFlagUnsigned;
             int fKernelSizeX;
