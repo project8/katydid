@@ -186,8 +186,9 @@ namespace Katydid
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " ms\n"
                 << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"
+                << "\tMinimum Frequency: " << header.GetMinimumFrequency() << " Hz\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
-                << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n"
+                << "\tMaximum Frequency: " << header.GetMaximumFrequency() << " Hz\n"
                 << "\tTimestamp: " << header.GetTimestamp() << '\n'
                 << "\tDescription: " << header.GetDescription() << '\n';
         for (unsigned iChan = 0; iChan < header.GetNChannels(); ++iChan)
