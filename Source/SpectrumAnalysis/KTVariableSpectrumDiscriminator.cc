@@ -95,7 +95,7 @@ namespace Katydid
         }
 
         // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also set the flag to calculate the minimum bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -106,7 +106,7 @@ namespace Katydid
         }
 
         // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also set the flag to calculate the minimum bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -406,7 +406,7 @@ namespace Katydid
             {
                 splineImpValue = (*splineImp)(iBin - fMinBin);
                 normalizedValue += splineImpValue;
-                normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue, 0.5 );
+                normalizedSigma += sqrt( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue );
             }
             normalizedValue /= (double)nBins;
             normalizedSigma /= (double)nBins;
@@ -443,7 +443,7 @@ namespace Katydid
                     if( fNormalize )
                     {
                         mean = (*splineImp)(iBin - fMinBin);
-                        sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
+                        sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
                         value = normalizedValue + (value - mean) / sigma * normalizedSigma;
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
@@ -460,7 +460,7 @@ namespace Katydid
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 mean = (*splineImp)(iBin - fMinBin);
-                sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
+                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
                 threshold = mean + fSigmaThreshold * sigma;
                 value = (*spectrum)(iBin).abs();
 
@@ -505,7 +505,7 @@ namespace Katydid
             {
                 splineImpValue = (*splineImp)(iBin - fMinBin);
                 normalizedValue += splineImpValue;
-                normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue, 0.5 );
+                normalizedSigma += sqrt( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue );
             }
             normalizedValue /= (double)nBins;
             normalizedSigma /= (double)nBins;
@@ -542,7 +542,7 @@ namespace Katydid
                     if( fNormalize )
                     {
                         mean = (*splineImp)(iBin - fMinBin);
-                        sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
+                        sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
                         value = normalizedValue + (value - mean) / sigma * normalizedSigma;
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
@@ -559,7 +559,7 @@ namespace Katydid
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 mean = (*splineImp)(iBin - fMinBin);
-                sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
+                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
                 threshold = mean + fSigmaThreshold * sigma;
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= threshold)
@@ -603,7 +603,7 @@ namespace Katydid
             {
                 splineImpValue = (*splineImp)(iBin - fMinBin);
                 normalizedValue += splineImpValue;
-                normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue, 0.5 );
+                normalizedSigma += sqrt( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue );
             }
             normalizedValue /= (double)nBins;
             normalizedSigma /= (double)nBins;
@@ -640,7 +640,7 @@ namespace Katydid
                     if( fNormalize )
                     {
                         mean = (*splineImp)(iBin - fMinBin);
-                        sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
+                        sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
                         value = normalizedValue + (value - mean) / sigma * normalizedSigma;
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
@@ -658,7 +658,7 @@ namespace Katydid
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 mean = (*splineImp)(iBin - fMinBin);
-                sigma = pow( (*varSplineImp)(iBin - fMinBin) - mean * mean, 0.5 );
+                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
                 threshold = mean + fSigmaThreshold * sigma;
                 value = (*spectrum)(iBin);
                 if (value >= threshold)
