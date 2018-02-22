@@ -79,6 +79,8 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also change the threshold mode, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("snr-threshold-amplitude"))
         {
             SetSNRAmplitudeThreshold(node->get_value< double >("snr-threshold-amplitude"));
@@ -92,6 +94,8 @@ namespace Katydid
             SetSigmaThreshold(node->get_value< double >("sigma-threshold"));
         }
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flag to calculate the minimum bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -101,6 +105,8 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flag to calculate the minimum bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -110,10 +116,7 @@ namespace Katydid
             SetMaxBin(node->get_value< unsigned >("max-bin"));
         }
 
-        if(node->has("normalize"))
-        {
-            SetNormalize(node->get_value< bool >("normalize"));
-        }
+        SetNormalize(node->get_value< bool >("normalize", fNormalize));
 
         return true;
     }
@@ -396,10 +399,17 @@ namespace Katydid
 
         // Average of each spline
         double normalizedValue = 0., normalizedSigma = 0.;
-        for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+        if (fNormalize)
         {
-            normalizedValue += (*splineImp)(iBin - fMinBin) / (double)nBins;
-            normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - (*splineImp)(iBin - fMinBin) * (*splineImp)(iBin - fMinBin), 0.5 ) / (double)nBins;
+            double splineImpValue = 0.;
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+            {
+                splineImpValue = (*splineImp)(iBin - fMinBin);
+                normalizedValue += splineImpValue;
+                normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue, 0.5 );
+            }
+            normalizedValue /= (double)nBins;
+            normalizedSigma /= (double)nBins;
         }
 
         //************
@@ -429,7 +439,9 @@ namespace Katydid
                 value = (*spectrum)(iBin).abs();
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
         //**************
@@ -480,10 +492,17 @@ namespace Katydid
 
         // Average of each spline
         double normalizedValue = 0., normalizedSigma = 0.;
-        for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+        if (fNormalize)
         {
-            normalizedValue += (*splineImp)(iBin - fMinBin) / (double)nBins;
-            normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - (*splineImp)(iBin - fMinBin) * (*splineImp)(iBin - fMinBin), 0.5 ) / (double)nBins;
+            double splineImpValue = 0.;
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+            {
+                splineImpValue = (*splineImp)(iBin - fMinBin);
+                normalizedValue += splineImpValue;
+                normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue, 0.5 );
+            }
+            normalizedValue /= (double)nBins;
+            normalizedSigma /= (double)nBins;
         }
 
         //************
@@ -513,7 +532,9 @@ namespace Katydid
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
         //**************
@@ -563,10 +584,17 @@ namespace Katydid
 
         // Average of each spline
         double normalizedValue = 0., normalizedSigma = 0.;
-        for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+        if (fNormalize)
         {
-            normalizedValue += (*splineImp)(iBin - fMinBin) / (double)nBins;
-            normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - (*splineImp)(iBin - fMinBin) * (*splineImp)(iBin - fMinBin), 0.5 ) / (double)nBins;
+            double splineImpValue = 0.;
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+            {
+                splineImpValue = (*splineImp)(iBin - fMinBin);
+                normalizedValue += splineImpValue;
+                normalizedSigma += pow( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue, 0.5 );
+            }
+            normalizedValue /= (double)nBins;
+            normalizedSigma /= (double)nBins;
         }
 
         //************
@@ -596,7 +624,9 @@ namespace Katydid
                 value = (*spectrum)(iBin);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
 
