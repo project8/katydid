@@ -85,7 +85,7 @@ The following steps will build Katydid from scratch.  Starting with a terminal w
 
   You should set the CMake variable `CMAKE_BUILD_TYPE` to either `RELEASE`, `STANDARD`, or `DEBUG` (default), in order
   of how much text output you would like (from least to most) and how much compiler optimization
-  should be performed (from most to least).
+  should be performed (from most to least). You may wish to to activate C++14 support with USE_CPP14=ON if your ROOT version was built with C++14 support.
 
   Variables that start with `Katydid_` will control which parts of Katydid are built.
 
