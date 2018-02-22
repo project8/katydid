@@ -97,6 +97,93 @@ namespace Katydid
         return *this;
     }
 
+    const std::string KTConvolvedMultiPSData::sName("convolved-multi-power-spectrum");
+
+    KTConvolvedMultiPSData::KTConvolvedMultiPSData() :
+            KTMultiPSDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTConvolvedMultiPSData::~KTConvolvedMultiPSData()
+    {
+    }
+
+    KTConvolvedMultiPSData& KTConvolvedMultiPSData::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
+    const std::string KTConvolvedMultiFSDataFFTW::sName("convolved-multi-frequency-spectrum-fftw");
+
+    KTConvolvedMultiFSDataFFTW::KTConvolvedMultiFSDataFFTW() :
+            KTMultiFSDataFFTWCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTConvolvedMultiFSDataFFTW::~KTConvolvedMultiFSDataFFTW()
+    {
+    }
+
+    KTConvolvedMultiFSDataFFTW& KTConvolvedMultiFSDataFFTW::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
+    const std::string KTConvolvedMultiFSDataPolar::sName("convolved-multi-frequency-spectrum-polar");
+
+    KTConvolvedMultiFSDataPolar::KTConvolvedMultiFSDataPolar() :
+            KTMultiFSDataPolarCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTConvolvedMultiFSDataPolar::~KTConvolvedMultiFSDataPolar()
+    {
+    }
+
+    KTConvolvedMultiFSDataPolar& KTConvolvedMultiFSDataPolar::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
 
 } /* namespace Katydid */
 

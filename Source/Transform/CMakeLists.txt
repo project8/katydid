@@ -19,6 +19,7 @@ set (TRANSFORM_NODICT_HEADERFILES
 if (FFTW_FOUND)
     set (TRANSFORM_NODICT_HEADERFILES
         ${TRANSFORM_NODICT_HEADERFILES}
+        KTConvolution.hh
         KTForwardFFTW.hh
         KTReverseFFTW.hh
     )
@@ -41,6 +42,7 @@ set (TRANSFORM_SOURCEFILES
 if (FFTW_FOUND)
     set (TRANSFORM_SOURCEFILES
         ${TRANSFORM_SOURCEFILES}
+        KTConvolution.cc
         KTForwardFFTW.cc
         KTReverseFFTW.cc
     )
