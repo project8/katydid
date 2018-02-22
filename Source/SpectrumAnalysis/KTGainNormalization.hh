@@ -23,8 +23,6 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
-    //class KTSlidingWindowFSData;
-    //class KTSlidingWindowFSDataFFTW;
     class KTSpline;
  
 
@@ -94,9 +92,6 @@ namespace Katydid
             bool Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
             bool Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvdata);
 
-            //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
-            //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
-
             KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline);
             KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline);
             KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline, const KTSpline* varSpline);
@@ -113,8 +108,6 @@ namespace Katydid
             Nymph::KTSignalData fFSPolarSignal;
             Nymph::KTSignalData fFSFFTWSignal;
             Nymph::KTSignalData fPSSignal;
-            //Nymph::KTSignalData fSWFSSignal;
-            //Nymph::KTSignalData fSWFSFFTWSignal;
 
             //***************
             // Slots
