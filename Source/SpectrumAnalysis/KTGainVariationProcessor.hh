@@ -33,11 +33,13 @@ namespace Katydid
      @class KTGainVariationProcessor
      @author N. S. Oblath
 
-     @brief Fit the gain variation
+     @brief Fit the background shape using a 3rd-order spline.
 
      @details
-     Fit the gain variation to a parabola using linear regression.
-     The fit is performed between fMinBin and fMaxBin, inclusive.  If the [min,max] range has been set by frequency, those frequencies are turned into bins the first time they're used.
+     The spline fit is performed between fMinBin and fMaxBin, inclusive.
+     If the [min,max] range has been set by frequency, those frequencies are turned into bins the first time they're used.
+
+     There is an option to normalize the fit to the minimum value.
 
      Configuration name: "gain-variation"
 
@@ -109,7 +111,6 @@ namespace Katydid
         private:
             bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
             bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
-            //GainVariation* CreateGainVariation(KTSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const;
             bool CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData);
 
             //***************

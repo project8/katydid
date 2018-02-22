@@ -64,6 +64,8 @@ namespace Katydid
 
         SetNormalize(node->get_value< bool >("normalize", fNormalize));
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -73,6 +75,8 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -171,7 +175,7 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for power spectrum!" );
+            KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum!" );
             return false;
         }
 
@@ -180,7 +184,7 @@ namespace Katydid
         {
             if( ! CoreGainVarCalc( data.Of< KTPowerSpectrumVarianceData >(), *varianceData ) )
             {
-                KTERROR( gvlog, "Something went wrong calcluating gain variation for power spectrum variance!" );
+                KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum variance!" );
                 return false;
             }
 
@@ -197,7 +201,7 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved polar frequency spectrum!" );
+            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum!" );
             return false;
         }
 
@@ -206,7 +210,7 @@ namespace Katydid
         {
             if( ! CoreGainVarCalc( data.Of< KTConvolvedFrequencySpectrumVarianceDataPolar >(), *varianceData ) )
             {
-                KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved polar frequency spectrum variance!" );
+                KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum variance!" );
                 return false;
             }
 
@@ -223,7 +227,7 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved fftw frequency spectrum!" );
+            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved fftw frequency spectrum!" );
             return false;
         }
 
@@ -232,7 +236,7 @@ namespace Katydid
         {
             if( ! CoreGainVarCalc( data.Of< KTConvolvedFrequencySpectrumVarianceDataFFTW >(), *varianceData ) )
             {
-                KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved fftw frequency spectrum variance!" );
+                KTERROR( gvlog, "Something went wrong calculating gain variation for convolved fftw frequency spectrum variance!" );
                 return false;
             }
 
@@ -249,7 +253,7 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved power spectrum!" );
+            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum!" );
             return false;
         }
 
@@ -258,7 +262,7 @@ namespace Katydid
         {
             if( ! CoreGainVarCalc( data.Of< KTConvolvedPowerSpectrumVarianceData >(), *varianceData ) )
             {
-                KTERROR( gvlog, "Something went wrong calcluating gain variation for convolved power spectrum variance!" );
+                KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum variance!" );
                 return false;
             }
 
@@ -306,7 +310,7 @@ namespace Katydid
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
-            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
             {
                 unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
@@ -316,7 +320,7 @@ namespace Katydid
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
                 double mean = 0.;
-                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
+                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; ++iBin)
                 {
                     mean += (*spectrum)(iBin).abs();
                 }
@@ -330,11 +334,11 @@ namespace Katydid
             {
                 // Normalize the fit points to 1
                 double minYVal = yVals[0];
-                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; ++iFitPoint)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
                 }
-                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
                 {
                     yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
                 }
@@ -343,13 +347,11 @@ namespace Katydid
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             spline->SetXMin(fMinFrequency);
             spline->SetXMax(fMaxFrequency);
-            //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             delete [] xVals;
             delete [] yVals;
 
             newData.SetSpline(spline, iComponent);
-            //newData->SetGainVariation(gainVarResult, iComponent);
         }
         KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
@@ -394,7 +396,7 @@ namespace Katydid
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
-            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
             {
                 unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
@@ -404,7 +406,7 @@ namespace Katydid
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
                 double mean = 0.;
-                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
+                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; ++iBin)
                 {
                     mean += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 }
@@ -418,11 +420,11 @@ namespace Katydid
             if (fNormalize)
             {
                 double minYVal = yVals[0];
-                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; ++iFitPoint)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
                 }
-                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
                 {
                     yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
                 }
@@ -431,13 +433,11 @@ namespace Katydid
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             spline->SetXMin(fMinFrequency);
             spline->SetXMax(fMaxFrequency);
-            //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             delete [] xVals;
             delete [] yVals;
 
             newData.SetSpline(spline, iComponent);
-            //newData->SetGainVariation(gainVarResult, iComponent);
         }
         KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
@@ -481,7 +481,7 @@ namespace Katydid
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
-            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
             {
                 unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
@@ -491,7 +491,7 @@ namespace Katydid
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
                 double mean = 0.;
-                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
+                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; ++iBin)
                 {
                     mean += (*spectrum)(iBin);
                 }
@@ -505,11 +505,11 @@ namespace Katydid
             {
                 // Normalize the fit points to 1
                 double minYVal = yVals[0];
-                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; ++iFitPoint)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
                 }
-                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
                 {
                     yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
                 }
@@ -518,54 +518,15 @@ namespace Katydid
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             spline->SetXMin(fMinFrequency);
             spline->SetXMax(fMaxFrequency);
-            //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             delete [] xVals;
             delete [] yVals;
 
             newData.SetSpline(spline, iComponent);
-            //newData->SetGainVariation(gainVarResult, iComponent);
         }
         KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
-
-    /*
-    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const
-    {
-        GainVariation* newGainVar = new GainVariation(nBins, rangeMin, rangeMax);
-
-        // The fit region: [fMinBin, fMaxBin)
-        // Keep track of the minimum value so we can shift it down to 1
-        double minVal = spline->Eval(newGainVar->GetBinCenter(fMinBin));
-        for (unsigned iBin = fMinBin; iBin < fMaxBin; iBin++)
-        {
-            (*newGainVar)(iBin) = spline->Eval(newGainVar->GetBinCenter(iBin));
-            if ((*newGainVar)(iBin) < minVal)
-            {
-                minVal = (*newGainVar)(iBin);
-            }
-        }
-        for (unsigned iBin = fMinBin; iBin < fMaxBin; iBin++)
-        {
-            (*newGainVar)(iBin) = (*newGainVar)(iBin) / minVal;
-        }
-
-        // Before the fit region: [0, fMinBin)
-        for (unsigned iBin = 0; iBin < fMinBin; iBin++)
-        {
-            (*newGainVar)(iBin) = 1.;
-        }
-
-        // After the fit region: [fMaxBin, nBins)
-        for (unsigned iBin = fMaxBin; iBin < nBins; iBin++)
-        {
-            (*newGainVar)(iBin) = 1.;
-        }
-
-        return newGainVar;
-    }
-    */
 
 } /* namespace Katydid */
