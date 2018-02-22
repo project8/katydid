@@ -43,6 +43,9 @@ option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
+set_option( Cicada_ENABLE_KATYDID_NAMESPACE FALSE )
+set_option( Cicada_ADD_CICADA_PY FALSE )
+set_option( Cicada_ENABLE_EXECUTABLES FALSE )
 
 
 ##############
@@ -53,6 +56,11 @@ set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 pbuilder_add_submodule( Nymph Nymph )
 nymph_process_options()
 add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
+
+# Cicada
+if (Katydid_USE_ROOT)
+    pbuilder_add_submodule( Cicada Cicada )
+endif (Katydid_USE_ROOT)
 
 # Mantis
 if (Katydid_USE_MANTIS)
@@ -133,7 +141,7 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 5.28 COMPONENTS Gui Spectrum)
+    find_package (ROOT 6.00 COMPONENTS Gui Spectrum)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)

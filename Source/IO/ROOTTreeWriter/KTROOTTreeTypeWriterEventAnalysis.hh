@@ -11,7 +11,8 @@
 #include "KTROOTTreeWriter.hh"
 
 #include "KTData.hh"
-#include "KTROOTData.hh"
+
+#include "CROOTData.hh"
 
 #include "Rtypes.h"
 
@@ -213,9 +214,9 @@ namespace Katydid
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
-            TProcessedTrackData* fProcessedTrackDataPtr;
+            Cicada::TProcessedTrackData* fProcessedTrackDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
-            TMultiTrackEventData* fMultiTrackEventDataPtr;
+            Cicada::TMultiTrackEventData* fMultiTrackEventDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
 
