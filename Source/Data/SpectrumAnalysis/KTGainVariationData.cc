@@ -36,7 +36,6 @@ namespace Katydid
     {
         while (! fComponentData.empty())
         {
-            //delete fChannelData.back().fGainVar;
             delete fComponentData.back().fSpline;
             delete fComponentData.back().fVarianceSpline;
             fComponentData.pop_back();

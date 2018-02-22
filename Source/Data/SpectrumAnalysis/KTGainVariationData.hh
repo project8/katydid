@@ -10,7 +10,6 @@
 
 #include "KTData.hh"
 
-#include "KTGainVariationProcessor.hh"
 #include "KTSpline.hh"
 
 #ifdef ROOT_FOUND
@@ -25,15 +24,11 @@ namespace Katydid
 
     class KTGainVariationData : public Nymph::KTExtensibleData< KTGainVariationData >
     {
-        public:
-            //typedef KTGainVariationProcessor::GainVariation GainVariation;
-
         protected:
             struct PerComponentData
             {
                 KTSpline* fSpline;
                 KTSpline* fVarianceSpline;
-                //GainVariation* fGainVar;
             };
 
         public:
@@ -43,8 +38,6 @@ namespace Katydid
 
             KTGainVariationData& operator=(const KTGainVariationData& rhs);
 
-            //const GainVariation* GetGainVariation(unsigned component = 0) const;
-            //GainVariation* GetGainVariation(unsigned component = 0);
             const KTSpline* GetSpline(unsigned component = 0) const;
             KTSpline* GetSpline(unsigned component = 0);
 
@@ -53,7 +46,6 @@ namespace Katydid
 
             unsigned GetNComponents() const;
 
-            //void SetGainVariation(GainVariation* record, unsigned component = 0);
             void SetSpline(KTSpline* spline, unsigned component = 0);
             void SetVarianceSpline(KTSpline* spline, unsigned component = 0);
 
@@ -71,17 +63,7 @@ namespace Katydid
             virtual TH1D* CreateGainVariationVarianceHistogram(unsigned nBins, unsigned component = 0, const std::string& name = "hGainVariationVariance") const;
 #endif
     };
-/*
-    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned component) const
-    {
-        return fChannelData[component].fGainVar;
-    }
 
-    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned component)
-    {
-        return fChannelData[component].fGainVar;
-    }
-*/
     inline const KTSpline* KTGainVariationData::GetSpline(unsigned component) const
     {
         return fComponentData[component].fSpline;
@@ -106,13 +88,7 @@ namespace Katydid
     {
         return unsigned(fComponentData.size());
     }
-/*
-    inline void KTGainVariationData::SetGainVariation(GainVariation* record, unsigned component)
-    {
-        if (component >= fChannelData.size()) fChannelData.resize(component+1);
-        fChannelData[component].fGainVar = record;
-    }
-*/
+
     inline void KTGainVariationData::SetSpline(KTSpline* spline, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
