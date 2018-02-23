@@ -55,5 +55,34 @@ namespace Katydid
     }
 
 
+    const std::string KTPowerSpectrumVarianceData::sName("power-spectrum-variance");
+
+    KTPowerSpectrumVarianceData::KTPowerSpectrumVarianceData() :
+            KTPowerSpectrumDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTPowerSpectrumVarianceData::~KTPowerSpectrumVarianceData()
+    {
+    }
+
+    KTPowerSpectrumVarianceData& KTPowerSpectrumVarianceData::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
 } /* namespace Katydid */
 

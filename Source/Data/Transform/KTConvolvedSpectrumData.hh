@@ -61,7 +61,7 @@ namespace Katydid
 
     };
 
-    class KTConvolvedPowerSpectrumVarianceData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTConvolvedPowerSpectrumVarianceData >
+    class KTConvolvedPowerSpectrumVarianceData : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTConvolvedPowerSpectrumVarianceData >
     {
         public:
             KTConvolvedPowerSpectrumVarianceData();
@@ -74,7 +74,7 @@ namespace Katydid
 
     };
 
-    class KTConvolvedFrequencySpectrumVarianceDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumVarianceDataFFTW >
+    class KTConvolvedFrequencySpectrumVarianceDataFFTW : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumVarianceDataFFTW >
     {
         public:
             KTConvolvedFrequencySpectrumVarianceDataFFTW();
@@ -87,7 +87,7 @@ namespace Katydid
 
     };
 
-    class KTConvolvedFrequencySpectrumVarianceDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumVarianceDataPolar >
+    class KTConvolvedFrequencySpectrumVarianceDataPolar : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumVarianceDataPolar >
     {
         public:
             KTConvolvedFrequencySpectrumVarianceDataPolar();

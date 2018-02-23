@@ -100,7 +100,7 @@ namespace Katydid
     const std::string KTConvolvedPowerSpectrumVarianceData::sName("convolved-power-spectrum-variance");
 
     KTConvolvedPowerSpectrumVarianceData::KTConvolvedPowerSpectrumVarianceData() :
-            KTPowerSpectrumDataCore(),
+            KTFrequencySpectrumVarianceDataCore(),
             KTExtensibleData()
     {
     }
@@ -129,7 +129,7 @@ namespace Katydid
     const std::string KTConvolvedFrequencySpectrumVarianceDataFFTW::sName("convolved-frequency-spectrum-variance-fftw");
 
     KTConvolvedFrequencySpectrumVarianceDataFFTW::KTConvolvedFrequencySpectrumVarianceDataFFTW() :
-            KTFrequencySpectrumDataFFTWCore(),
+            KTFrequencySpectrumVarianceDataCore(),
             KTExtensibleData()
     {
     }
@@ -158,7 +158,7 @@ namespace Katydid
     const std::string KTConvolvedFrequencySpectrumVarianceDataPolar::sName("convolved-frequency-spectrum-variance-polar");
 
     KTConvolvedFrequencySpectrumVarianceDataPolar::KTConvolvedFrequencySpectrumVarianceDataPolar() :
-            KTFrequencySpectrumDataPolarCore(),
+            KTFrequencySpectrumVarianceDataCore(),
             KTExtensibleData()
     {
     }
