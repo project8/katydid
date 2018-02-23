@@ -18,15 +18,21 @@ namespace Katydid
 {
     class KTConvolvedFrequencySpectrumDataPolar;
     class KTConvolvedFrequencySpectrumDataFFTW;
+    class KTConvolvedFrequencySpectrumVarianceDataPolar;
+    class KTConvolvedFrequencySpectrumVarianceDataFFTW;
     class KTConvolvedPowerSpectrumData;
+    class KTConvolvedPowerSpectrumVarianceData;
     class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
+    class KTFrequencySpectrumVarianceDataPolar;
+    class KTFrequencySpectrumVarianceDataFFTW;
     class KTGainVariationData;
     class KTPowerSpectrumData;
     class KTPowerSpectrumDataCore;
+    class KTPowerSpectrumVarianceData;
     //class KTSpline;
 
     /*!
@@ -51,13 +57,19 @@ namespace Katydid
      - "max-bin": unsigned -- maximum bin for the fit
 
      Slots:
-     - "fs-polar": void (Nymph::KTDataPtr) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
-     - "fs-fftw": void (Nymph::KTDataPtr) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
-     - "corr": void (Nymph::KTDataPtr) -- Calculates gain variation on a correlation data object; Requires KTCorrlationData; Adds KTGainVariationData
+     - "fs-polar": void (Nymph::KTDataPtr) -- Calculates gain variation on a frequency spectrum (Polar); Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
+     - "fs-fftw": void (Nymph::KTDataPtr) -- Calculates gain variation on a frequency spectrum (FFTW); Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
+     - "corr": void (Nymph::KTDataPtr) -- Calculates gain variation on a correlation spectrum; Requires KTCorrlationData; Adds KTGainVariationData
      - "ps": void (Nymph::KTDataPtr) -- Calculates gain variation on a power spectrum; Requires KTPowerSpectrumData; Adds KTGainVariationData
-     - "conv-fs-polar": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved frequency spectrum; Requires KTConvolvedFrequnecySpectrumDataPolar; Adds KTGainVariationData
-     - "conv-fs-fftw": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved frequency spectrum; Requires KTConvolvedFrequencySpectrumDataFFTW; Adds KTGainVariationData
+     - "conv-fs-polar": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved frequency spectrum (Polar); Requires KTConvolvedFrequnecySpectrumDataPolar; Adds KTGainVariationData
+     - "conv-fs-fftw": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved frequency spectrum (FFTW); Requires KTConvolvedFrequencySpectrumDataFFTW; Adds KTGainVariationData
      - "conv-ps": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved power spectrum; Requires KTConvolvedPowerSpectrumData; Adds KTGainVariationData
+     - "fs-polar-var": void (Nymph::KTDataPtr) -- Calculates gain variation on a frequency spectrum and variance (Polar); Requires KTFrequencySpectrumDataPolar and KTFrequencySpectrumVarianceDataPolar; Adds KTGainVariationData
+     - "fs-fftw-var": void (Nymph::KTDataPtr) -- Calculates gain variation on a frequency spectrum and variance (FFTW); Requires KTFrequencySpectrumDataFFTW and KTFrequencySpectrumVarianceDataFFTW; Adds KTGainVariationData
+     - "ps-var": void (Nymph::KTDataPtr) -- Calculates gain variation on a power spectrum and variance; Requires KTPowerSpectrumData and KTPowerSpectrumVarianceData; Adds KTGainVariationData
+     - "conv-fs-polar-var": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved frequency spectrum and variance (Polar); Requires KTConvolvedFrequnecySpectrumDataPolar and KTConvolvedFrequencySpectrumVarianceDataPolar; Adds KTGainVariationData
+     - "conv-fs-fftw-var": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved frequency spectrum and variance (FFTW); Requires KTConvolvedFrequencySpectrumDataFFTW and KTConvolvedFrequencySpectrumVarianceDataFFTW; Adds KTGainVariationData
+     - "conv-ps-var": void (Nymph::KTDataPtr) -- Calculates gain variation on a convolved power spectrum and variance; Requires KTConvolvedPowerSpectrumData and KTConvolvedPowerSpectrumVarianceData; Adds KTGainVariationData
      
      Signals:
      - "gain-var": void (Nymph::KTDataPtr) emitted upon performance of a fit; Guarantees KTGainVariationData
@@ -108,10 +120,17 @@ namespace Katydid
             bool CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data);
             bool CalculateGainVariation(KTConvolvedPowerSpectrumData& data);
 
+            bool CalculateGainVariation(KTFrequencySpectrumDataPolar& data, KTFrequencySpectrumVarianceDataPolar& varData);
+            bool CalculateGainVariation(KTFrequencySpectrumDataFFTW& data, KTFrequencySpectrumVarianceDataFFTW& varData);
+            bool CalculateGainVariation(KTPowerSpectrumData& data, KTPowerSpectrumVarianceData& varData);
+            bool CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data, KTConvolvedFrequencySpectrumVarianceDataPolar& varData);
+            bool CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data, KTConvolvedFrequencySpectrumVarianceDataFFTW& varData);
+            bool CalculateGainVariation(KTConvolvedPowerSpectrumData& data, KTConvolvedPowerSpectrumVarianceData& varData);
+
         private:
-            bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
-            bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
-            bool CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData, bool isVarianceCalc);
+            bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData, bool isVarianceCalc);
+            bool CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData, bool isVarianceCalc);
 
             //***************
             // Signals
@@ -133,6 +152,12 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTConvolvedFrequencySpectrumDataFFTW > fConvFSFFTWSlot;
             Nymph::KTSlotDataOneType< KTConvolvedPowerSpectrumData > fConvPSSlot;
             
+            Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTFrequencySpectrumVarianceDataPolar > fFSPolarWithVarSlot;
+            Nymph::KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTFrequencySpectrumVarianceDataFFTW > fFSFFTWWithVarSlot;
+            Nymph::KTSlotDataTwoTypes< KTPowerSpectrumData, KTPowerSpectrumVarianceData > fPSWithVarSlot;
+            Nymph::KTSlotDataTwoTypes< KTConvolvedFrequencySpectrumDataPolar, KTConvolvedFrequencySpectrumVarianceDataPolar > fConvFSPolarWithVarSlot;
+            Nymph::KTSlotDataTwoTypes< KTConvolvedFrequencySpectrumDataFFTW, KTConvolvedFrequencySpectrumVarianceDataFFTW > fConvFSFFTWWithVarSlot;
+            Nymph::KTSlotDataTwoTypes< KTConvolvedPowerSpectrumData, KTConvolvedPowerSpectrumVarianceData > fConvPSWithVarSlot;
 
     };
 
