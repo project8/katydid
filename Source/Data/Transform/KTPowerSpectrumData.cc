@@ -58,7 +58,7 @@ namespace Katydid
     const std::string KTPowerSpectrumVarianceData::sName("power-spectrum-variance");
 
     KTPowerSpectrumVarianceData::KTPowerSpectrumVarianceData() :
-            KTPowerSpectrumDataCore(),
+            KTFrequencySpectrumVarianceDataCore(),
             KTExtensibleData()
     {
     }
