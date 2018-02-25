@@ -26,13 +26,20 @@ namespace Katydid
 
     class KTConvolvedFrequencySpectrumDataPolar;
     class KTConvolvedFrequencySpectrumDataFFTW;
+    class KTConvolvedFrequencySpectrumVarianceDataPolar;
+    class KTConvolvedFrequencySpectrumVarianceDataFFTW;
     class KTConvolvedPowerSpectrumData;
+    class KTConvolvedPowerSpectrumVarianceData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
+    class KTFrequencySpectrumVarianceDataFFTW;
+    class KTFrequencySpectrumVarianceDataPolar;
+    class KTFrequencySpectrumVarianceDataCore;
     class KTPowerSpectrumData;
     class KTPowerSpectrumDataCore;
+    class KTPowerSpectrumVarianceData;
     class KTTimeSeriesData;
 
     /*!
@@ -56,6 +63,14 @@ namespace Katydid
      
      The signal interval is how often the output signal will be emitted.  
      If the signal interval is 0, there will be no slice signals.
+
+     During accumulation, the accumulating data object will contain the sum of the accumulated data
+     and, where applicable, the variance-accumulating data object will contain the sum of the squares
+     of the accumulated data.  This means that when the mid-accumulation signals are emitted, if you
+     want to get the mean of the data, divide by the number of slices accumulated, and if you want the
+     variance, subtract the square of the mean and divide by the number of slices accumulated.
+
+     Prior to emitting the "finished" signals, the means and variances are properly calculated.
 
      Configuration name: "data-accumulator"
 
@@ -109,11 +124,12 @@ namespace Katydid
             {
                 Nymph::KTDataPtr fData;
                 KTSliceHeader& fSliceHeader;
+                unsigned fAccumulatorSize;
 
                 void IncrementSlice();
-                Accumulator() : fData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
-                {
-                }
+                Accumulator() : fData(new Nymph::KTData()), fSliceHeader(fData->Of<KTSliceHeader>()), fAccumulatorSize(0) {}
+                virtual ~Accumulator() {}
+
                 unsigned GetSliceNumber() const
                 {
                     return fSliceHeader.GetSliceNumber();
@@ -123,9 +139,22 @@ namespace Katydid
                     fSliceHeader.SetSliceNumber(fSliceHeader.GetSliceNumber() + 1);
                     return;
                 }
+
+                virtual bool Finalize() = 0;
             };
 
-            typedef std::map< const std::type_info*, Accumulator > AccumulatorMap;
+            template< class XDataType >
+            struct AccumulatorType : Accumulator
+            {
+                XDataType& fDataType;
+
+                AccumulatorType() : Accumulator(), fDataType(fData->Of<XDataType>()) {}
+                virtual ~AccumulatorType() {}
+
+                virtual bool Finalize() {}
+            };
+
+            typedef std::map< const std::type_info*, Accumulator* > AccumulatorMap;
             typedef AccumulatorMap::iterator AccumulatorMapIt;
 
             struct SignalSet
@@ -184,20 +213,11 @@ namespace Katydid
 
             bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData);
 
-            bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData, KTFrequencySpectrumDataPolarCore& devData);
-            bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData, KTFrequencySpectrumDataFFTWCore& devData);
+            bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData, KTFrequencySpectrumVarianceDataCore& devData);
+            bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData, KTFrequencySpectrumVarianceDataCore& devData);
 
-            bool CoreAddData(KTPowerSpectrumDataCore& data, Accumulator& accDataStruct, KTPowerSpectrumDataCore& accData, KTPowerSpectrumDataCore& devData);
+            bool CoreAddData(KTPowerSpectrumDataCore& data, Accumulator& accDataStruct, KTPowerSpectrumDataCore& accData, KTFrequencySpectrumVarianceDataCore& devData);
 
-            bool Scale(KTTimeSeriesData& data, KTSliceHeader& header);
-            bool Scale(KTTimeSeriesDistData& data, KTSliceHeader& header);
-            bool Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header);
-            bool Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header);
-            bool Scale(KTPowerSpectrumData& data, KTSliceHeader& header);
-            bool Scale(KTConvolvedFrequencySpectrumDataPolar& data, KTSliceHeader& header);
-            bool Scale(KTConvolvedFrequencySpectrumDataFFTW& data, KTSliceHeader& header);
-            bool Scale(KTConvolvedPowerSpectrumData& data, KTSliceHeader& header);
-            
             AccumulatorMap fDataMap;
             mutable Accumulator* fLastAccumulatorPtr;
 
@@ -236,6 +256,101 @@ namespace Katydid
             void SlotFunction(Nymph::KTDataPtr data);
 
     };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTTimeSeriesData > : Accumulator
+    {
+        KTTimeSeriesData& fDataType;
+
+        AccumulatorType() : Accumulator(), fDataType(fData->Of<KTTimeSeriesData>()) {}
+        virtual ~AccumulatorType() {}
+
+        virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTTimeSeriesDistData > : Accumulator
+    {
+        KTTimeSeriesDistData& fDataType;
+
+        AccumulatorType() : Accumulator(), fDataType(fData->Of<KTTimeSeriesDistData>()) {}
+        virtual ~AccumulatorType() {}
+
+        virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTFrequencySpectrumDataPolar > : Accumulator
+    {
+            KTFrequencySpectrumDataPolar& fDataType;
+            KTFrequencySpectrumVarianceDataPolar& fVarDataType;
+
+            AccumulatorType() : Accumulator(), fDataType(fData->Of<KTFrequencySpectrumDataPolar>()), fVarDataType(fData->Of<KTFrequencySpectrumVarianceDataPolar>()) {}
+            virtual ~AccumulatorType() {}
+
+            virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTFrequencySpectrumDataFFTW > : Accumulator
+    {
+            KTFrequencySpectrumDataFFTW& fDataType;
+            KTFrequencySpectrumVarianceDataFFTW& fVarDataType;
+
+            AccumulatorType() : Accumulator(), fDataType(fData->Of<KTFrequencySpectrumDataFFTW>()), fVarDataType(fData->Of<KTFrequencySpectrumVarianceDataFFTW>()) {}
+            virtual ~AccumulatorType() {}
+
+            virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTPowerSpectrumData > : Accumulator
+    {
+            KTPowerSpectrumData& fDataType;
+            KTPowerSpectrumVarianceData& fVarDataType;
+
+            AccumulatorType() : Accumulator(), fDataType(fData->Of<KTPowerSpectrumData>()), fVarDataType(fData->Of<KTPowerSpectrumVarianceData>()) {}
+            virtual ~AccumulatorType() {}
+
+            virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTConvolvedFrequencySpectrumDataPolar > : Accumulator
+    {
+            KTConvolvedFrequencySpectrumDataPolar& fDataType;
+            KTConvolvedFrequencySpectrumVarianceDataPolar& fVarDataType;
+
+            AccumulatorType() : Accumulator(), fDataType(fData->Of<KTConvolvedFrequencySpectrumDataPolar>()), fVarDataType(fData->Of<KTConvolvedFrequencySpectrumVarianceDataPolar>()) {}
+            virtual ~AccumulatorType() {}
+
+            virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTConvolvedFrequencySpectrumDataFFTW > : Accumulator
+    {
+            KTConvolvedFrequencySpectrumDataFFTW& fDataType;
+            KTConvolvedFrequencySpectrumVarianceDataFFTW& fVarDataType;
+
+            AccumulatorType() : Accumulator(), fDataType(fData->Of<KTConvolvedFrequencySpectrumDataFFTW>()), fVarDataType(fData->Of<KTConvolvedFrequencySpectrumVarianceDataFFTW>()) {}
+            virtual ~AccumulatorType() {}
+
+            virtual bool Finalize();
+    };
+
+    template<>
+    struct KTDataAccumulator::AccumulatorType< KTConvolvedPowerSpectrumData > : Accumulator
+    {
+            KTConvolvedPowerSpectrumData& fDataType;
+            KTConvolvedPowerSpectrumVarianceData& fVarDataType;
+
+            AccumulatorType() : Accumulator(), fDataType(fData->Of<KTConvolvedPowerSpectrumData>()), fVarDataType(fData->Of<KTConvolvedPowerSpectrumVarianceData>()) {}
+            virtual ~AccumulatorType() {}
+
+            virtual bool Finalize();
+    };
+
 
     inline unsigned KTDataAccumulator::GetAccumulatorSize() const
     {
@@ -280,14 +395,19 @@ namespace Katydid
     template< class XDataType >
     const KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulator() const
     {
-        fLastAccumulatorPtr = const_cast< Accumulator* >(&fDataMap.at(&typeid(XDataType)));
+        fLastAccumulatorPtr = const_cast< Accumulator* >(fDataMap.at(&typeid(XDataType)));
         return *fLastAccumulatorPtr;
     }
 
     template< class XDataType >
     KTDataAccumulator::Accumulator& KTDataAccumulator::GetOrCreateAccumulator()
     {
-        fLastAccumulatorPtr = &fDataMap[&typeid(XDataType)];
+        fLastAccumulatorPtr = fDataMap[&typeid(XDataType)];
+        if (fLastAccumulatorPtr == nullptr)
+        {
+            fLastAccumulatorPtr = new KTDataAccumulator::AccumulatorType< XDataType >();
+            fLastAccumulatorPtr->fAccumulatorSize = fAccumulatorSize;
+        }
         return *fLastAccumulatorPtr;
     }
 
@@ -321,7 +441,7 @@ namespace Katydid
             if (data->GetLastData())
             {
                 KTDEBUG(avlog_hh, "Emitting last-data signal");
-                if (! Scale(fLastAccumulatorPtr->fData->Of< XDataType >(), fLastAccumulatorPtr->fSliceHeader))
+                if (! fLastAccumulatorPtr->Finalize())
                 {
                     KTERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
                 }
