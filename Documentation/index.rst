@@ -13,12 +13,11 @@ Contents:
    BigIdea
    Installation
    QuickStart
+   OutputFormats
    UserInterface
    Configuration
    Modules
    Executables
-   OutputFormats
-   Contributing
    DevGuide
    Modules
    
