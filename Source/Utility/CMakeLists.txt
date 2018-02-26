@@ -21,6 +21,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTRandom.hh
     KTSmooth.hh
     KTSpline.hh
+    KTStdComplexFuncs.hh
     KTVarTypePhysicalArray.hh
     # ../../Examples/KTProcessorTemplate.hh
 )

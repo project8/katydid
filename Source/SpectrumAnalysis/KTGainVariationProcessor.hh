@@ -14,6 +14,10 @@
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
 
+#include <fftw3.h>
+
+#include <list>
+
 namespace Katydid
 {
     class KTConvolvedFrequencySpectrumDataPolar;
@@ -27,6 +31,7 @@ namespace Katydid
     class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
+    class KTFrequencySpectrumVarianceDataCore;
     class KTFrequencySpectrumVarianceDataPolar;
     class KTFrequencySpectrumVarianceDataFFTW;
     class KTGainVariationData;
@@ -46,6 +51,8 @@ namespace Katydid
      If the [min,max] range has been set by frequency, those frequencies are turned into bins the first time they're used.
 
      There is an option to normalize the fit to the minimum value.
+
+     For complex data types (e.g. fs-polar, and fs-fftw), the gain variation curve is taken from the modulus of the data.
 
      Configuration name: "gain-variation"
 
@@ -101,6 +108,9 @@ namespace Katydid
             unsigned GetNFitPoints() const;
             void SetNFitPoints(unsigned nPoints);
 
+            unsigned GetVarianceCalcNBins() const;
+            void SetVarianceCalcNBins(unsigned nBins);
+
         private:
             bool fNormalize;
             double fMinFrequency;
@@ -110,6 +120,7 @@ namespace Katydid
             unsigned fNFitPoints;
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
+            unsigned fVarianceCalcNBins;
 
         public:
             bool CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
@@ -122,15 +133,24 @@ namespace Katydid
 
             bool CalculateGainVariation(KTFrequencySpectrumDataPolar& data, KTFrequencySpectrumVarianceDataPolar& varData);
             bool CalculateGainVariation(KTFrequencySpectrumDataFFTW& data, KTFrequencySpectrumVarianceDataFFTW& varData);
+            bool CalculateGainVariation(KTCorrelationData& data, KTFrequencySpectrumVarianceDataPolar& varData); // there's currently no variance data type for KTCorrelationData
             bool CalculateGainVariation(KTPowerSpectrumData& data, KTPowerSpectrumVarianceData& varData);
             bool CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data, KTConvolvedFrequencySpectrumVarianceDataPolar& varData);
             bool CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data, KTConvolvedFrequencySpectrumVarianceDataFFTW& varData);
             bool CalculateGainVariation(KTConvolvedPowerSpectrumData& data, KTConvolvedPowerSpectrumVarianceData& varData);
 
         private:
-            bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData, bool isVarianceCalc);
-            bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData, bool isVarianceCalc);
-            bool CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData, bool isVarianceCalc);
+            bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTFrequencySpectrumVarianceDataCore& data, KTGainVariationData& newData);
+
+            bool CoreVarianceCalc(KTFrequencySpectrumDataPolarCore& data, KTFrequencySpectrumVarianceDataCore& newVarData);
+            bool CoreVarianceCalc(KTFrequencySpectrumDataFFTWCore& data, KTFrequencySpectrumVarianceDataCore& newVarData);
+            bool CoreVarianceCalc(KTPowerSpectrumDataCore& data, KTFrequencySpectrumVarianceDataCore& newVarData);
+
+            double CalculateVariance(const std::list< double >& binValuesInUse, double runningSum, double invNBinsInUse);
+            double CalculateVariance(const std::list< std::complex<double> >& binValuesInUse, std::complex<double> runningSum, double invNBinsInUse);
 
             //***************
             // Signals
@@ -228,6 +248,16 @@ namespace Katydid
     inline void KTGainVariationProcessor::SetNFitPoints(unsigned nPoints)
     {
         fNFitPoints = nPoints;
+    }
+
+    inline unsigned KTGainVariationProcessor::GetVarianceCalcNBins() const
+    {
+        return fVarianceCalcNBins;
+    }
+
+    inline void KTGainVariationProcessor::SetVarianceCalcNBins(unsigned nBins)
+    {
+        fVarianceCalcNBins = nBins;
     }
 
 } /* namespace Katydid */

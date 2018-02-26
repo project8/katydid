@@ -13,10 +13,11 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
 #include "KTPowerSpectrumData.hh"
-#include "KTSpectrumVarianceData.hh"
 #include "KTSpline.hh"
+#include "KTStdComplexFuncs.hh"
 
 #include <cmath>
+#include <complex>
 #include <vector>
 
 #ifdef USE_OPENMP
@@ -43,6 +44,7 @@ namespace Katydid
             fNFitPoints(5),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
+            fVarianceCalcNBins(100),
             fGainVarSignal("gain-var", this),
             fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
@@ -99,29 +101,28 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        KTFrequencySpectrumVarianceDataPolar newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for polar frequency spectrum!" );
+            KTERROR(gvlog, "Something went wrong in calculating the variance for polar frequency spectrum!");
             return false;
         }
-
-        return true;
         
+        return CalculateGainVariation(data, newVarData);
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data, KTFrequencySpectrumVarianceDataPolar& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for polar frequency spectrum!" );
             return false;
         }
 
-        if( ! CoreGainVarCalc( varData, newData, true ) )
+        if( ! CoreGainVarCalc( varData, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for polar frequency spectrum variance!" );
             return false;
@@ -132,28 +133,28 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
     {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        KTFrequencySpectrumVarianceDataFFTW newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for FFTW frequency spectrum!" );
+            KTERROR(gvlog, "Something went wrong in calculating the variance for FFTW frequency spectrum!");
             return false;
         }
 
-        return true;
+        return CalculateGainVariation(data, newVarData);
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data, KTFrequencySpectrumVarianceDataFFTW& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for FFTW frequency spectrum!" );
             return false;
         }
 
-        if( ! CoreGainVarCalc( varData, newData, true ) )
+        if( ! CoreGainVarCalc( varData, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for FFTW frequency spectrum variance!" );
             return false;
@@ -164,11 +165,30 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
     {
+        KTFrequencySpectrumVarianceDataPolar newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
+        {
+            KTERROR(gvlog, "Something went wrong in calculating the variance for correlation spectrum!");
+            return false;
+        }
+
+        return CalculateGainVariation(data, newVarData);
+    }
+
+    bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data, KTFrequencySpectrumVarianceDataPolar& varData)
+    {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calcluating gain variation for correlation data!" );
+            KTERROR( gvlog, "Something went wrong calculating gain variation for correlation spectrum!" );
+            return false;
+        }
+
+        if( ! CoreGainVarCalc( varData, newData ) )
+        {
+            KTERROR( gvlog, "Something went wrong calculating gain variation for correlation spectrum variance!" );
             return false;
         }
 
@@ -177,28 +197,28 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTPowerSpectrumData& data)
     {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        KTPowerSpectrumVarianceData newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum!" );
+            KTERROR(gvlog, "Something went wrong in calculating the variance for power spectrum!");
             return false;
         }
 
-        return true;
+        return CalculateGainVariation(data, newVarData);
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTPowerSpectrumData& data, KTPowerSpectrumVarianceData& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum!" );
             return false;
         }
 
-        if( ! CoreGainVarCalc( varData, newData, true ) )
+        if( ! CoreGainVarCalc( varData, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum variance!" );
             return false;
@@ -209,28 +229,28 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data)
     {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        KTConvolvedFrequencySpectrumVarianceDataPolar newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum!" );
+            KTERROR(gvlog, "Something went wrong in calculating the variance for convolved polar frequency spectrum!");
             return false;
         }
 
-        return true;
+        return CalculateGainVariation(data, newVarData);
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data, KTConvolvedFrequencySpectrumVarianceDataPolar& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum!" );
             return false;
         }
 
-        if( ! CoreGainVarCalc( varData, newData, true ) )
+        if( ! CoreGainVarCalc( varData, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum variance!" );
             return false;
@@ -241,28 +261,28 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data)
     {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        KTConvolvedFrequencySpectrumVarianceDataFFTW newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum!" );
+            KTERROR(gvlog, "Something went wrong in calculating the variance for convolved FFTW frequency spectrum!");
             return false;
         }
 
-        return true;
+        return CalculateGainVariation(data, newVarData);
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data, KTConvolvedFrequencySpectrumVarianceDataFFTW& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum!" );
             return false;
         }
 
-        if( ! CoreGainVarCalc( varData, newData, true ) )
+        if( ! CoreGainVarCalc( varData, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum variance!" );
             return false;
@@ -273,28 +293,28 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data)
     {
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
-
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        KTConvolvedPowerSpectrumVarianceData newVarData;
+        newVarData.SetNComponents(data.GetNComponents());
+        if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum!" );
+            KTERROR(gvlog, "Something went wrong in calculating the variance for convolved power spectrum!");
             return false;
         }
 
-        return true;
+        return CalculateGainVariation(data, newVarData);
     }
 
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data, KTConvolvedPowerSpectrumVarianceData& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
 
-        if( ! CoreGainVarCalc( data, newData, false ) )
+        if( ! CoreGainVarCalc( data, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum!" );
             return false;
         }
 
-        if( ! CoreGainVarCalc( varData, newData, true ) )
+        if( ! CoreGainVarCalc( varData, newData ) )
         {
             KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum variance!" );
             return false;
@@ -303,7 +323,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData, bool isVarianceCalc)
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData)
     {
         if (fCalculateMinBin)
         {
@@ -381,15 +401,14 @@ namespace Katydid
             delete [] xVals;
             delete [] yVals;
 
-            if (isVarianceCalc) newData.SetVarianceSpline(spline, iComponent);
-            else newData.SetSpline(spline, iComponent);
+            newData.SetSpline(spline, iComponent);
         }
         KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
 
-    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData, bool isVarianceCalc)
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData)
     {
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
         if (fCalculateMinBin)
@@ -468,15 +487,14 @@ namespace Katydid
             delete [] xVals;
             delete [] yVals;
 
-            if (isVarianceCalc) newData.SetVarianceSpline(spline, iComponent);
-            else newData.SetSpline(spline, iComponent);
+            newData.SetSpline(spline, iComponent);
         }
         KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
 
-    bool KTGainVariationProcessor::CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData, bool isVarianceCalc)
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTPowerSpectrumDataCore& data, KTGainVariationData& newData)
     {
         if (fCalculateMinBin)
         {
@@ -554,12 +572,342 @@ namespace Katydid
             delete [] xVals;
             delete [] yVals;
 
-            if (isVarianceCalc) newData.SetVarianceSpline(spline, iComponent);
-            else newData.SetSpline(spline, iComponent);
+            newData.SetSpline(spline, iComponent);
         }
         KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
+
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumVarianceDataCore& data, KTGainVariationData& newData)
+    {
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
+        }
+        else
+        {
+            fMinFrequency = data.GetSpectrum(0)->GetBinCenter(fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
+        }
+        else
+        {
+            fMaxFrequency = data.GetSpectrum(0)->GetBinCenter(fMaxBin);
+        }
+        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrum(0)->GetRangeMin() << "; input range min: " << data.GetSpectrum(0)->GetRangeMax());
+
+        unsigned nTotalBins = fMaxBin - fMinBin + 1;
+        unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
+
+        KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+
+        unsigned nComponents = data.GetNComponents();
+
+        //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTFrequencySpectrumVariance* spectrum = data.GetSpectrum(iComponent);
+
+            double* xVals = new double[fNFitPoints];
+            double* yVals = new double[fNFitPoints];
+
+            // Calculate fit points
+#pragma omp parallel for default(shared)
+            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
+            {
+                unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
+                unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
+
+                double leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
+                double rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
+                xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
+
+                double mean = 0.;
+                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; ++iBin)
+                {
+                    mean += (*spectrum)(iBin);
+                }
+                mean /= (double)nBinsPerFitPoint;
+                yVals[iFitPoint] = mean;
+
+                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
+            }
+
+            if (fNormalize)
+            {
+                // Normalize the fit points to 1
+                double minYVal = yVals[0];
+                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; ++iFitPoint)
+                {
+                    if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
+                }
+                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; ++iFitPoint)
+                {
+                    yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+                }
+            }
+
+            KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
+            spline->SetXMin(fMinFrequency);
+            spline->SetXMax(fMaxFrequency);
+
+            delete [] xVals;
+            delete [] yVals;
+
+            newData.SetVarianceSpline(spline, iComponent);
+        }
+        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
+
+        return true;
+    }
+
+    bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataPolarCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
+    {
+        unsigned nComponents = data.GetNComponents();
+
+        unsigned nBins = data.GetSpectrumPolar(0)->GetNBins();
+        unsigned varCalcNBins = fVarianceCalcNBins;
+        if (fVarianceCalcNBins > nBins) varCalcNBins = nBins;
+        unsigned varCalcNBinsToLeft = (varCalcNBins - 1) / 2; // this and the next line are for handling odd and even values of varCalcNBins correctly
+        unsigned varCalcNBinsToRight = varCalcNBins - 1 - varCalcNBinsToLeft;
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
+            KTFrequencySpectrumVariance* varSpect = new KTFrequencySpectrumVariance(spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+
+            std::list< std::complex<double> > binValuesInUse;
+            std::complex<double> runningSum;
+            unsigned nBinsInUse = varCalcNBinsToRight + 1;
+            double invNBinsInUse = 1. / (double)nBinsInUse;
+
+            // for the first bin, we'll only have the bin in question and the bins to the right
+            // <= used to include both the bin in question plus varCalcNBinsToRight bins following that
+            for (unsigned iBin = 0; iBin <= varCalcNBinsToRight; ++iBin)
+            {
+                binValuesInUse.emplace_back(real((*spectrum)(iBin)), imag((*spectrum)(iBin)));
+                runningSum += (*spectrum)(iBin);
+            }
+            (*varSpect)(0) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+
+            std::complex<double> newValue, oldValue;
+
+            // now calculate the variance for all bins up until and including when we have varCalcNBins available
+            for (unsigned iBin = 1; iBin <= varCalcNBinsToLeft; ++iBin)
+            {
+                Assign(newValue, (*spectrum)(iBin + varCalcNBinsToRight));
+                binValuesInUse.push_back(newValue);
+                runningSum += newValue;
+                ++nBinsInUse;
+                invNBinsInUse = 1. / (double)nBinsInUse;
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            // at this point binValuesInUse contains varCalcNBins values, and we're ready to calculate the sliding variance
+            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight; ++iBin)
+            {
+                Assign(newValue, (*spectrum)(iBin + varCalcNBinsToRight));
+                binValuesInUse.push_back(newValue);
+                runningSum += newValue - binValuesInUse.front();
+                binValuesInUse.pop_front();
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            // now we reduce back down until iBin reaches the end
+            for (unsigned iBin = nBins - varCalcNBinsToRight + 1; iBin < nBins; ++iBin)
+            {
+                runningSum -= binValuesInUse.front();
+                binValuesInUse.pop_front();
+                --nBinsInUse;
+                invNBinsInUse = 1. / (double)nBinsInUse;
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            newVarData.SetSpectrum(varSpect, iComponent);
+        }
+
+        return true;
+    }
+
+    bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataFFTWCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
+    {
+        unsigned nComponents = data.GetNComponents();
+
+        unsigned nBins = data.GetSpectrumFFTW(0)->GetNBins();
+        unsigned varCalcNBins = fVarianceCalcNBins;
+        if (fVarianceCalcNBins > nBins) varCalcNBins = nBins;
+        unsigned varCalcNBinsToLeft = (varCalcNBins - 1) / 2; // this and the next line are for handling odd and even values of varCalcNBins correctly
+        unsigned varCalcNBinsToRight = varCalcNBins - 1 - varCalcNBinsToLeft;
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
+            KTFrequencySpectrumVariance* varSpect = new KTFrequencySpectrumVariance(spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+
+            std::list< std::complex<double> > binValuesInUse;
+            std::complex<double> runningSum;
+            unsigned nBinsInUse = varCalcNBinsToRight + 1;
+            double invNBinsInUse = 1. / (double)nBinsInUse;
+
+            // for the first bin, we'll only have the bin in question and the bins to the right
+            // <= used to include both the bin in question plus varCalcNBinsToRight bins following that
+            for (unsigned iBin = 0; iBin <= varCalcNBinsToRight; ++iBin)
+            {
+                binValuesInUse.emplace_back((*spectrum)(iBin)[0], (*spectrum)(iBin)[1]);
+                runningSum += (*spectrum)(iBin);
+            }
+            (*varSpect)(0) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+
+            std::complex<double> newValue, oldValue;
+
+            // now calculate the variance for all bins up until and including when we have varCalcNBins available
+            for (unsigned iBin = 1; iBin <= varCalcNBinsToLeft; ++iBin)
+            {
+                Assign(newValue, (*spectrum)(iBin + varCalcNBinsToRight));
+                binValuesInUse.push_back(newValue);
+                runningSum += newValue;
+                ++nBinsInUse;
+                invNBinsInUse = 1. / (double)nBinsInUse;
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            // at this point binValuesInUse contains varCalcNBins values, and we're ready to calculate the sliding variance
+            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight; ++iBin)
+            {
+                Assign(newValue, (*spectrum)(iBin + varCalcNBinsToRight));
+                binValuesInUse.push_back(newValue);
+                runningSum += newValue - binValuesInUse.front();
+                binValuesInUse.pop_front();
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            // now we reduce back down until iBin reaches the end
+            for (unsigned iBin = nBins - varCalcNBinsToRight + 1; iBin < nBins; ++iBin)
+            {
+                runningSum -= binValuesInUse.front();
+                binValuesInUse.pop_front();
+                --nBinsInUse;
+                invNBinsInUse = 1. / (double)nBinsInUse;
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            newVarData.SetSpectrum(varSpect, iComponent);
+        }
+
+        return true;
+    }
+
+    bool KTGainVariationProcessor::CoreVarianceCalc(KTPowerSpectrumDataCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
+    {
+        unsigned nComponents = data.GetNComponents();
+
+        unsigned nBins = data.GetSpectrum(0)->GetNBins();
+        unsigned varCalcNBins = fVarianceCalcNBins;
+        if (fVarianceCalcNBins > nBins) varCalcNBins = nBins;
+        unsigned varCalcNBinsToLeft = (varCalcNBins - 1) / 2; // this and the next line are for handling odd and even values of varCalcNBins correctly
+        unsigned varCalcNBinsToRight = varCalcNBins - 1 - varCalcNBinsToLeft;
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent);
+            KTFrequencySpectrumVariance* varSpect = new KTFrequencySpectrumVariance(spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+
+            std::list< double > binValuesInUse;
+            double runningSum = 0.;
+            unsigned nBinsInUse = varCalcNBinsToRight + 1;
+            double invNBinsInUse = 1. / (double)nBinsInUse;
+
+            // for the first bin, we'll only have the bin in question and the bins to the right
+            // <= used to include both the bin in question plus varCalcNBinsToRight bins following that
+            for (unsigned iBin = 0; iBin <= varCalcNBinsToRight; ++iBin)
+            {
+                binValuesInUse.push_back((*spectrum)(iBin));
+                runningSum += (*spectrum)(iBin);
+            }
+            (*varSpect)(0) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+
+            double newValue = 0., oldValue = 0.;
+
+            // now calculate the variance for all bins up until and including when we have varCalcNBins available
+            for (unsigned iBin = 1; iBin <= varCalcNBinsToLeft; ++iBin)
+            {
+                newValue = (*spectrum)(iBin + varCalcNBinsToRight);
+                binValuesInUse.push_back(newValue);
+                runningSum += newValue;
+                ++nBinsInUse;
+                invNBinsInUse = 1. / (double)nBinsInUse;
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            // at this point binValuesInUse contains varCalcNBins values, and we're ready to calculate the sliding variance
+            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight; ++iBin)
+            {
+                newValue = (*spectrum)(iBin + varCalcNBinsToRight);
+                binValuesInUse.push_back(newValue);
+                runningSum += newValue - binValuesInUse.front();
+                binValuesInUse.pop_front();
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            // now we reduce back down until iBin reaches the end
+            for (unsigned iBin = nBins - varCalcNBinsToRight + 1; iBin < nBins; ++iBin)
+            {
+                runningSum -= binValuesInUse.front();
+                binValuesInUse.pop_front();
+                --nBinsInUse;
+                invNBinsInUse = 1. / (double)nBinsInUse;
+
+                (*varSpect)(iBin) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
+            }
+
+            newVarData.SetSpectrum(varSpect, iComponent);
+        }
+
+        return true;
+    }
+
+    double KTGainVariationProcessor::CalculateVariance(const std::list< double >& binValuesInUse, double runningSum, double invNBinsInUse)
+    {
+        // Var[x] = E[(x - E[x])^2]
+        double mean = runningSum * invNBinsInUse;
+        double variance = 0.;
+        double diff = 0.;
+
+        for (auto&& value : binValuesInUse)
+        {
+            diff = value - mean;
+            variance += diff * diff;
+        }
+
+        return variance * invNBinsInUse;
+    }
+
+    double KTGainVariationProcessor::CalculateVariance(const std::list< std::complex<double> >& binValuesInUse, std::complex<double> runningSum, double invNBinsInUse)
+    {
+        // E[Z] = E[R{Z}] + iE[I{Z}]
+        // Var[Z] = E[|Z|^2] - |E[Z]|^2
+        double meanSq = std::norm(runningSum) * invNBinsInUse * invNBinsInUse;
+        double variance = 0.;
+        double diff = 0.;
+
+        for (auto&& value : binValuesInUse)
+        {
+            variance += std::norm(value);
+        }
+
+        return variance * invNBinsInUse - meanSq;
+    }
+
 
 } /* namespace Katydid */
