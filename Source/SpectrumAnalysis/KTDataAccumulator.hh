@@ -11,6 +11,7 @@
 #include "KTProcessor.hh"
 
 #include "KTData.hh"
+#include "KTDemangle.hh"
 #include "KTLogger.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
@@ -395,11 +396,14 @@ namespace Katydid
     template< class XDataType >
     KTDataAccumulator::Accumulator& KTDataAccumulator::GetOrCreateAccumulator()
     {
-        fLastAccumulatorPtr = fDataMap[&typeid(XDataType)];
+        const std::type_info& dataType = typeid(XDataType);
+        fLastAccumulatorPtr = fDataMap[&dataType];
         if (fLastAccumulatorPtr == nullptr)
         {
+            KTDEBUG(avlog_hh, "Creating new Accumulator for " << DemangledName(dataType));
             fLastAccumulatorPtr = new KTDataAccumulator::AccumulatorType< XDataType >();
             fLastAccumulatorPtr->fAccumulatorSize = fAccumulatorSize;
+            fDataMap[&dataType] = fLastAccumulatorPtr;
         }
         return *fLastAccumulatorPtr;
     }
@@ -411,13 +415,13 @@ namespace Katydid
         // Check to ensure that the required data type is present
         if (! data->Has< XDataType >())
         {
-            KTERROR(avlog_hh, "Data not found with type <" << typeid(XDataType).name() << ">");
+            KTERROR(avlog_hh, "Data not found with type <" << DemangledName(typeid(XDataType)) << ">");
             return;
         }
         // Call the function
         if (! AddData(data->Of< XDataType >()))
         {
-            KTERROR(avlog_hh, "Something went wrong while analyzing data with type <" << typeid(XDataType).name() << ">");
+            KTERROR(avlog_hh, "Something went wrong while analyzing data with type <" << DemangledName(typeid(XDataType)) << ">");
             return;
         }
         // If there's a signal pointer, emit the signal
