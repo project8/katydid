@@ -7,19 +7,6 @@
 
 #include "KTDataAccumulator.hh"
 
-#include "KTConvolvedSpectrumData.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
-#include "KTFrequencySpectrumFFTW.hh"
-#include "KTFrequencySpectrumPolar.hh"
-#include "KTPowerSpectrum.hh"
-#include "KTPowerSpectrumData.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
-#include "KTTimeSeriesReal.hh"
-
-
-
 using std::map;
 using std::string;
 

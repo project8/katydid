@@ -11,13 +11,14 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTGainVariationProcessor.hh"
-#include "KTLogger.hh"
-#include "KTSpectrumVarianceData.hh"
+#include "KTGainVariationData.hh"
 #include "KTVariableSpectrumDiscriminator.hh"
+#include "KTLogger.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
 #include "TH1.h"
+#include "TGraph.h"
 #include "TRandom3.h"
 #endif
 
@@ -169,11 +170,11 @@ int main()
 
     KTDEBUG(testlog, "Getting spectra");
     KTFrequencySpectrumPolar* meanSpectrum = mean.GetSpectrumPolar(0);
-    KTFrequencySpectrumPolar* varianceSpectrum = variance.GetSpectrumPolar(0);
+    KTFrequencySpectrumVariance* varianceSpectrum = variance.GetSpectrum(0);
 
     KTDEBUG(testlog, "Creating histograms");
     TH1D* histFreqSpec = KT2ROOT::CreateMagnitudeHistogram(meanSpectrum, "hFreqSpectrum");
-    TH1D* histFreqVarSpec = KT2ROOT::CreateMagnitudeHistogram(varianceSpectrum, "hFreqVarSpectrum");
+    TH1D* histFreqVarSpec = KT2ROOT::CreateHistogram(varianceSpectrum, "hFreqVarSpectrum");
     
     KTDEBUG(testlog, "Appending histograms to TFile");
     //file->Append( histFreqSpec );

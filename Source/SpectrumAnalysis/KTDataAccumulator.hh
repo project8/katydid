@@ -14,7 +14,18 @@
 #include "KTLogger.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
+
+#include "KTConvolvedSpectrumData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumPolar.hh"
+#include "KTPowerSpectrum.hh"
+#include "KTPowerSpectrumData.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesDistData.hh"
+#include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include <map>
 #include <typeinfo>
@@ -23,24 +34,6 @@ namespace Katydid
 {
     
     KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
-
-    class KTConvolvedFrequencySpectrumDataPolar;
-    class KTConvolvedFrequencySpectrumDataFFTW;
-    class KTConvolvedFrequencySpectrumVarianceDataPolar;
-    class KTConvolvedFrequencySpectrumVarianceDataFFTW;
-    class KTConvolvedPowerSpectrumData;
-    class KTConvolvedPowerSpectrumVarianceData;
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumDataFFTWCore;
-    class KTFrequencySpectrumDataPolar;
-    class KTFrequencySpectrumDataPolarCore;
-    class KTFrequencySpectrumVarianceDataFFTW;
-    class KTFrequencySpectrumVarianceDataPolar;
-    class KTFrequencySpectrumVarianceDataCore;
-    class KTPowerSpectrumData;
-    class KTPowerSpectrumDataCore;
-    class KTPowerSpectrumVarianceData;
-    class KTTimeSeriesData;
 
     /*!
      @class KTDataAccumulator
