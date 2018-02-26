@@ -61,7 +61,6 @@ if (Katydid_ENABLE_TESTING)
     set( PROGRAMS
         Test2DDiscrim
         TestConsensusThresholding
-        TestConvolution1D
         TestCorrelator
         TestDataAccumulator
         TestDBScan
@@ -98,6 +97,7 @@ if (Katydid_ENABLE_TESTING)
         )
         
         set( PROGRAMS
+           TestConvolution1D
            TestForwardFFTW
            TestWignerVille
         )

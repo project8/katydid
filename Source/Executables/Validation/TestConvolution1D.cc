@@ -1,4 +1,5 @@
 #include "KTConvolution.hh"
+#include "KTConvolvedSpectrumData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
@@ -79,15 +80,26 @@ int main()
 	convProcessor.SetNormalizeKernel( true );
 	convProcessor.FinishSetup();
 
-    int block = convProcessor.GetBlockSize();
-    int overlap = nKernelBins - 1;
-    int step = block - overlap;
+    const int block = convProcessor.GetBlockSize();
+    const int overlap = nKernelBins - 1;
+    const int step = block - overlap;
 
     convProcessor.Initialize( nBins, block, step, overlap );
 
-    KTPowerSpectrum* convolvedPowerSpect = convProcessor.DoConvolution( powerSpect, block, step, overlap );
-    KTFrequencySpectrumFFTW* convolvedFFTWSpect = convProcessor.DoConvolution( fftwSpect, block, step, overlap );
-    KTFrequencySpectrumPolar* convolvedPolarSpect = convProcessor.DoConvolution( polarSpect, block, step, overlap );
+    KTPowerSpectrumData psData;
+    psData.SetSpectrum( powerSpect );
+    convProcessor.Convolve1D( psData );
+    KTConvolvedPowerSpectrumData& convolvedPowerSpect = psData.Of< KTConvolvedPowerSpectrumData >();
+    
+    KTFrequencySpectrumDataFFTW fsfftwData;
+    fsfftwData.SetSpectrum( fftwSpect );
+    convProcessor.Convolve1D( fsfftwData );
+    KTConvolvedFrequencySpectrumDataFFTW& convolvedFFTWSpect = fsfftwData.Of< KTConvolvedFrequencySpectrumDataFFTW >();
+    
+    KTFrequencySpectrumDataPolar fspolarData;
+    fspolarData.SetSpectrum( polarSpect );
+    convProcessor.Convolve1D( fspolarData );
+    KTConvolvedFrequencySpectrumDataPolar& convolvedPolarSpect = fspolarData.Of< KTConvolvedFrequencySpectrumDataPolar >();
 /*
     for( int i = 0; i < nBins; ++i )
     {
@@ -99,11 +111,11 @@ int main()
     #ifdef ROOT_FOUND
 	    TFile* file = new TFile("TestConvolution1D.root", "recreate");
 	    TH1D* psInitial = KT2ROOT::CreatePowerHistogram( powerSpect, "hPowerSpectrum" );
-	    TH1D* psFinal = KT2ROOT::CreatePowerHistogram( convolvedPowerSpect, "hConvolvedPowerSpectrum" );
+	    TH1D* psFinal = KT2ROOT::CreatePowerHistogram( convolvedPowerSpect.GetSpectrum(), "hConvolvedPowerSpectrum" );
 	    TH1D* fsfftwInitial = KT2ROOT::CreateMagnitudeHistogram( fftwSpect, "hFFTWSpectrum" );
-	    TH1D* fsfftwFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedFFTWSpect, "hConvolvedFFTWSpectrum" );
+	    TH1D* fsfftwFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedFFTWSpect.GetSpectrumFFTW(), "hConvolvedFFTWSpectrum" );
 	    TH1D* fsPolarInitial = KT2ROOT::CreateMagnitudeHistogram( polarSpect, "hPolarSpectrum" );
-	    TH1D* fsPolarFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedPolarSpect, "hConvolvedPolarSpectrum" );
+	    TH1D* fsPolarFinal = KT2ROOT::CreateMagnitudeHistogram( convolvedPolarSpect.GetSpectrumPolar(), "hConvolvedPolarSpectrum" );
 	    
 	    psInitial->SetDirectory(file);
 	    psFinal->SetDirectory(file);

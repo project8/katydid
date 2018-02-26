@@ -1,13 +1,13 @@
 /**
- @file KTConvolution1D.hh
+ @file KTConvolution.hh
  @brief Contains KTConvolution1D
  @details Performs 1D discrete convolution
  @author: E. Zayas
  @date: Aug 25, 2017
  */
 
-#ifndef KTCONVOLUTION1D_HH_
-#define KTCONVOLUTION1D_HH_
+#ifndef KTCONVOLUTION_HH_
+#define KTCONVOLUTION_HH_
 
 #include "KTProcessor.hh"
 #include "KTSlot.hh"
@@ -216,4 +216,4 @@ namespace Katydid
 
 } /* namespace Katydid */
 
-#endif /* KTCONVOLUTION1D_HH_ */
+#endif /* KTCONVOLUTION_HH_ */
