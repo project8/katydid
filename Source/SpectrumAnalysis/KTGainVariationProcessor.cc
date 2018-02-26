@@ -95,6 +95,7 @@ namespace Katydid
         }
 
         SetNFitPoints(node->get_value< unsigned >("fit-points", fNFitPoints));
+        SetVarianceCalcNBins(node->get_value< unsigned >("variance-n-bins", fVarianceCalcNBins));
 
         return true;
     }
