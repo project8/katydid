@@ -204,7 +204,7 @@ namespace Katydid
 
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
-        double normalizedSigma = sqrt(varSplineImp->GetMean());
+        double normalizedVariance = varSplineImp->GetMean();
 
         unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
@@ -216,7 +216,6 @@ namespace Katydid
 
         // First directly copy data that's outside the scaling range
         unsigned iBin;
-        double mean = 0., sigma = 0., threshold = 0., value = 0.;
 #pragma omp parallel default(shared)
         {
 #pragma omp for private(iBin)
@@ -234,11 +233,7 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                value = (*frequencySpectrum)(iBin).abs();
-
-                (*newSpectrum)(iBin).set_polar(normalizedValue + (value - mean) / sigma * normalizedSigma, (*frequencySpectrum)(iBin).arg());
+                (*newSpectrum)(iBin).set_polar(normalizedValue + ((*frequencySpectrum)(iBin).abs() - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin)), (*frequencySpectrum)(iBin).arg());
             }
         }
 
@@ -261,7 +256,7 @@ namespace Katydid
 
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
-        double normalizedSigma = sqrt(varSplineImp->GetMean());
+        double normalizedVariance = varSplineImp->GetMean();
 
         unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
@@ -276,7 +271,6 @@ namespace Katydid
 
         // First directly copy data that's outside the scaling range
         unsigned iBin;
-        double mean = 0., sigma = 0., threshold = 0., value = 0.;
 #pragma omp parallel default(shared)
         {
 #pragma omp for private(iBin)
@@ -293,16 +287,14 @@ namespace Katydid
             }
 
             // Then scale the bins within the scaling range
-            double scaling;
-#pragma omp for private(iBin, scaling)
+            complexpolar<double> value;
+#pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                value = sqrt( (*frequencySpectrum)(iBin)[0] * (*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1] * (*frequencySpectrum)(iBin)[1] );
-
-                (*newSpectrum)(iBin)[0] = (normalizedValue + (value - mean) / sigma * normalizedSigma) * (*frequencySpectrum)(iBin)[0] / value;
-                (*newSpectrum)(iBin)[1] = (normalizedValue + (value - mean) / sigma * normalizedSigma) * (*frequencySpectrum)(iBin)[1] / value;
+                value.set_rect((*frequencySpectrum)(iBin)[0], (*frequencySpectrum)(iBin)[1]);
+                value.set_polar(normalizedValue + (value.abs() - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin)), value.arg());
+                (*newSpectrum)(iBin)[0] = real(value);
+                (*newSpectrum)(iBin)[1] = imag(value);
             }
         }
 
@@ -325,7 +317,7 @@ namespace Katydid
 
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
-        double normalizedSigma = sqrt(varSplineImp->GetMean());
+        double normalizedVariance = varSplineImp->GetMean();
 
         unsigned nSpectrumBins = powerSpectrum->size();
         double freqSpectrumMin = powerSpectrum->GetRangeMin();
@@ -337,7 +329,6 @@ namespace Katydid
 
         // First directly copy data that's outside the scaling range
         unsigned iBin;
-        double mean = 0., sigma = 0., threshold = 0., value = 0.;
 #pragma omp parallel default(shared)
         {
 #pragma omp for private(iBin)
@@ -355,11 +346,7 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                value = (*powerSpectrum)(iBin);
-
-                (*newSpectrum)(iBin) = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                (*newSpectrum)(iBin) = normalizedValue + ((*powerSpectrum)(iBin) - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin));
             }
         }
 
