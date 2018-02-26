@@ -8,6 +8,8 @@
 #ifndef KTSPLINE_HH_
 #define KTSPLINE_HH_
 
+#include "KTPhysicalArray.hh"
+
 #ifdef ROOT_FOUND
 #include "TSpline.h"
 #endif
@@ -17,13 +19,24 @@
 
 namespace Katydid
 {
-    template< size_t, typename T>
-    class KTPhysicalArray;
-
     class KTSpline
     {
         public:
-            typedef KTPhysicalArray< 1, double > Implementation;
+            class Implementation : public KTPhysicalArray< 1, double >
+            {
+                public:
+                    Implementation(size_t nBins, double rangeMin=0., double rangeMax=1.) :
+                        KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax),
+                        fMean(0.)
+                    {}
+                    virtual ~Implementation() {}
+
+                    double GetMean() const {return fMean;}
+                    void SetMean(double mean) {fMean = mean;}
+
+                private:
+                    double fMean;
+            };
 
         private:
             typedef std::list< Implementation* > ImplementationCache;

@@ -64,17 +64,20 @@ namespace Katydid
         return fSpline.Eval(xValue);
     }
 
-    KTPhysicalArray< 1, double >* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
+    KTSpline::Implementation* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
     {
         Implementation* imp = GetFromCache(nBins, xMin, xMax);
         if (imp != NULL) return imp;
 
         KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
-        imp = new KTPhysicalArray< 1, double >(nBins, xMin, xMax);
+        imp = new Implementation(nBins, xMin, xMax);
+        unsigned mean = 0., variance = 0.;
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
             (*imp)(iBin) = Evaluate(imp->GetBinCenter(iBin));
+            mean += (*imp)(iBin);
         }
+        imp->SetMean(mean / (double)nBins);
         return imp;
     }
 
