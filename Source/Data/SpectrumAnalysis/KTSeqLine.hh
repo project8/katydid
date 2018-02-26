@@ -112,12 +112,12 @@ namespace Katydid {
         double fSumXX;
 
 
-        LineRef(const double& initialSlope, const unsigned& lineWidth);
-        void InsertPoint(const Point& point, const double& referenceThreshold);
+        LineRef(const double& initialSlope);
+        void InsertPoint(const Point& point);
         void LineTrimming(const double& trimminFactor, const unsigned& minPoints);
         //void (LineRef::*f_calc_slope_func)();
-        void CalculateSlope();
-        void CalculateNewSlope();
+        //void CalculateSlope();
+        //void CalculateNewSlope();
         void UpdateLineProperties();
         void FinishTrack();
         void Clear();

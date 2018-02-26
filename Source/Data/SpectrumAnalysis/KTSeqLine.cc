@@ -19,7 +19,7 @@ namespace Katydid
 
 
 
-    LineRef::LineRef(const double& initialSlope, const unsigned& lineWidth):
+    LineRef::LineRef(const double& initialSlope):
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
         fEndTimeInRunC(0.0),
@@ -63,26 +63,20 @@ namespace Katydid
     LineRef::~LineRef()
     {}
 
-    void LineRef::InsertPoint(const Point& point, const double& referenceThreshold)
+    void LineRef::InsertPoint(const Point& point)
     {
-        // correct for the background shape
-        double correctedPower = 0.0;
-        //double correctedThreshold = 0.0;
 
-        correctedPower = point.fAmplitude/point.fThreshold * referenceThreshold;
-        //correctedThreshold = referenceThreshold;
+        fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
+        fAmplitudeList.push_back(point.fAmplitude);
 
-        fTrimmingLimits.push_back(referenceThreshold * fLineWidth); //new_trimming_limits);
-        fAmplitudeList.push_back(correctedPower * fLineWidth);
-
-        fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, correctedPower * fLineWidth, referenceThreshold * fLineWidth, point.fAcquisitionID, point.fComponent);
-        KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
+        fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
+        //KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();
         //this->*f_calc_slope_func();
     }
 
 
-    inline void LineRef::CalculateNewSlope()
+    /*inline void LineRef::CalculateNewSlope()
     {
         fSumX = 0.0;
         fSumY = 0.0;
@@ -147,7 +141,7 @@ namespace Katydid
             {
                 fSlope = fInitialSlope;
             }
-        }
+        }*/
 
     void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
     {

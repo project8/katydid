@@ -77,13 +77,6 @@ namespace Katydid
     {
 
         private:
-            // actually, currently only the eSNR_Power mode is implemented
-            enum ThresholdMode
-            {
-                eSNR_Amplitude,
-                eSNR_Power,
-                eSigma
-            };
             enum class slopeMethod
             {
                 weighted_first_point_ref,
@@ -100,21 +93,33 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
         public:
-            MEMBERVARIABLE(ThresholdMode, Mode);
-            MEMBERVARIABLE(double, TrimmingFactor);
-            MEMBERVARIABLE(int, LinePowerWidth);
-            MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
-            MEMBERVARIABLE(int, MinFreqBinDistance);
-            MEMBERVARIABLE(double, TimeGapTolerance);
-            MEMBERVARIABLE(double, FrequencyAcceptance);
-            MEMBERVARIABLE(double, InitialFrequencyAcceptance);
-            MEMBERVARIABLE(double, SNRPowerThreshold);
-            MEMBERVARIABLE(double, ReferenceThreshold);
+            //MEMBERVARIABLE(ThresholdMode, Mode);
+
+            // Parameters for point update before adding point to line
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
+            MEMBERVARIABLE(int, LinePowerRadius);
+            MEMBERVARIABLE(double, PointAmplitudeAfterVisit);
+            MEMBERVARIABLE(int, MinFreqBinDistance);
+
+            // Parameters for point collection
+            MEMBERVARIABLE(double, InitialSlope);
+            MEMBERVARIABLE(slopeMethod, SlopeMethod);
+            MEMBERVARIABLE(double, FrequencyAcceptance);
+            MEMBERVARIABLE(double, InitialFrequencyAcceptance);
+            MEMBERVARIABLE(double, TimeGapTolerance);
+
+            // Parameters for line post-processing
+            MEMBERVARIABLE(double, TrimmingFactor);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, MinSlope);
-            MEMBERVARIABLE(double, InitialSlope);
+            MEMBERVARIABLE(bool, ApplyPowerCut);
+            MEMBERVARIABLE(bool, ApplyDensityCut);
+            MEMBERVARIABLE(double, PowerThreshold);
+            MEMBERVARIABLE(double, DensityThreshold);
+
+            // Others
+            MEMBERVARIABLE(unsigned, NLines);
             MEMBERVARIABLE(unsigned, MinBin);
             MEMBERVARIABLE(bool, CalculateMinBin);
             MEMBERVARIABLE(unsigned, MaxBin);
@@ -122,31 +127,21 @@ namespace Katydid
             MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
-            MEMBERVARIABLE(slopeMethod, SlopeMethod);
-            MEMBERVARIABLE(unsigned, NLines);
-            MEMBERVARIABLE(bool, ApplyPowerCut);
-            MEMBERVARIABLE(bool, ApplyDensityCut);
-            MEMBERVARIABLE(double, PowerThreshold);
-            MEMBERVARIABLE(double, DensityThreshold);
-
 
 
         private:
             std::vector< LineRef> fActiveLines;
 
-
         public:
-            bool SetPreCalcGainVar(KTGainVariationData& gvData);
-            bool CollectPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
+            //bool SetPreCalcGainVar(KTGainVariationData& gvData);
+            //bool CollectPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTGainVariationData& gvData);
+            //bool CollectPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTGainVariationData& gvData);
             bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
             //bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
             bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
 
-            //void SearchTrueLinePoint(Point& point, std::vector<double>& slice);
             void SearchTrueLinePoint(Point& point, KTPowerSpectrum& slice);
-            //void WeightedAverage(const std::vector<double>& slice, unsigned& frequencyBin, double& frequency);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
             void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
             void CalculateSlope(LineRef& Line);
@@ -172,8 +167,8 @@ namespace Katydid
 
         private:
             //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
-            Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
-            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
+            //Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
+            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
             Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimSlot;
             Nymph::KTSlotDone fDoneSlot;
 
