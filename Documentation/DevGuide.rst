@@ -25,6 +25,18 @@ More about Data
 --------------
 A Data class is meant to be a set of data that all go together.  For example, there's a time series Data class called KTProgenitorTimeSeriesData that has the time series information plus all of the other associated information from the egg file.  For the most part, there's a close pairing between Data classes and Processor classes, because a Processor typically produces a particular type of Data.  KTCorrelator produces KTCorrelationData, and KTHoughTransform produces KTHoughData.  There are also cases where types of Data are produced by different Processors: KTWignerVille and KTSlidingWindowFFTW produce KTSlidingWindowFSDataFFTW.
 
+Modules
+---------------
+
+Katydid is divided into several modules, each of which builds a shared-object library.  Each module has a general purpose, and the classes that go into each module pertain primarily to that purpose.
+
+Dependencies between the modules are certainly allowed, though care should be taken to ensure that those dependencies go only in one direction (i.e. be careful to avoid circular dependencies!).
+
+The library filenames are libKatydid[ModuleName].so (or .dylib).
+
+Modules in Katydid each have source files, and you can find conventions of different types of modules in the README of the "Source" directory. 
+
+
 Configuration Mechanism
 --------------
 The purpose of the Configuration mechanism is to allow objects to be setup at runtime via a [JSON](http://www.json.org) file passed to the executable by the user.  A class is made a part of the Configuration mechanism by inheriting it from KTConfigurable (KTProcessor inherits from KTConfigurable, so all Processors are part of the Configuration system).  Please see [[Processors]] for further information. 
