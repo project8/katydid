@@ -7,6 +7,6 @@ The master branch of the source code can be cloned from the Github repository in
 
     > git clone https://github.com/project8/katydid.git
 
-Follow the installation instructions in the top-level README file, which also shows up on the front page of the Github Katydid webpage. 
+Follow the installation instructions in the top-level [README file](https://github.com/project8/katydid/README.md), which also shows up on the front page of the Github Katydid webpage. 
 
 
