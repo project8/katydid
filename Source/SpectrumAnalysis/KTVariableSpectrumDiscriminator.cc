@@ -398,19 +398,8 @@ namespace Katydid
         KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
         // Average of each spline
-        double normalizedValue = 0., normalizedSigma = 0.;
-        if (fNormalize)
-        {
-            double splineImpValue = 0.;
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-            {
-                splineImpValue = (*splineImp)(iBin - fMinBin);
-                normalizedValue += splineImpValue;
-                normalizedSigma += sqrt( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue );
-            }
-            normalizedValue /= (double)nBins;
-            normalizedSigma /= (double)nBins;
-        }
+        double normalizedValue = splineImp->GetMean();
+        double normalizedVariance = varSplineImp->GetMean();
 
         //************
         // SNR mode
@@ -432,7 +421,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., sigma = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -443,8 +432,8 @@ namespace Katydid
                     if( fNormalize )
                     {
                         mean = (*splineImp)(iBin - fMinBin);
-                        sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                        variance = (*varSplineImp)(iBin - fMinBin);
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -455,20 +444,20 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., sigma = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 mean = (*splineImp)(iBin - fMinBin);
-                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                threshold = mean + fSigmaThreshold * sigma;
+                variance = (*varSplineImp)(iBin - fMinBin);
+                threshold = mean + fSigmaThreshold * sqrt( variance );
                 value = (*spectrum)(iBin).abs();
 
                 if (value >= threshold)
                 {
                     if( fNormalize )
                     {
-                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -497,19 +486,8 @@ namespace Katydid
         KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
         // Average of each spline
-        double normalizedValue = 0., normalizedSigma = 0.;
-        if (fNormalize)
-        {
-            double splineImpValue = 0.;
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-            {
-                splineImpValue = (*splineImp)(iBin - fMinBin);
-                normalizedValue += splineImpValue;
-                normalizedSigma += sqrt( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue );
-            }
-            normalizedValue /= (double)nBins;
-            normalizedSigma /= (double)nBins;
-        }
+        double normalizedValue = splineImp->GetMean();
+        double normalizedVariance = varSplineImp->GetMean();
 
         //************
         // SNR mode
@@ -531,7 +509,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., sigma = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -542,8 +520,8 @@ namespace Katydid
                     if( fNormalize )
                     {
                         mean = (*splineImp)(iBin - fMinBin);
-                        sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                        variance = (*varSplineImp)(iBin - fMinBin);
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -554,19 +532,19 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., sigma = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 mean = (*splineImp)(iBin - fMinBin);
-                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                threshold = mean + fSigmaThreshold * sigma;
+                variance = (*varSplineImp)(iBin - fMinBin);
+                threshold = mean + fSigmaThreshold * sqrt( variance );
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= threshold)
                 {
                     if( fNormalize )
                     {
-                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -595,19 +573,8 @@ namespace Katydid
         KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
         // Average of each spline
-        double normalizedValue = 0., normalizedSigma = 0.;
-        if (fNormalize)
-        {
-            double splineImpValue = 0.;
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-            {
-                splineImpValue = (*splineImp)(iBin - fMinBin);
-                normalizedValue += splineImpValue;
-                normalizedSigma += sqrt( (*varSplineImp)(iBin - fMinBin) - splineImpValue * splineImpValue );
-            }
-            normalizedValue /= (double)nBins;
-            normalizedSigma /= (double)nBins;
-        }
+        double normalizedValue = splineImp->GetMean();
+        double normalizedVariance = varSplineImp->GetMean();
 
         //************
         // SNR mode
@@ -629,7 +596,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., sigma = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -640,8 +607,8 @@ namespace Katydid
                     if( fNormalize )
                     {
                         mean = (*splineImp)(iBin - fMinBin);
-                        sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                        variance = (*varSplineImp)(iBin - fMinBin);
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -653,19 +620,19 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., sigma = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 mean = (*splineImp)(iBin - fMinBin);
-                sigma = sqrt( (*varSplineImp)(iBin - fMinBin) - mean * mean );
-                threshold = mean + fSigmaThreshold * sigma;
+                variance = (*varSplineImp)(iBin - fMinBin);
+                threshold = mean + fSigmaThreshold * sqrt( variance );
                 value = (*spectrum)(iBin);
                 if (value >= threshold)
                 {
                     if( fNormalize )
                     {
-                        value = normalizedValue + (value - mean) / sigma * normalizedSigma;
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
