@@ -211,14 +211,13 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0., diff;
-#pragma omp parallel for private(diff) reduction(+:sigma)
+                double sigma = 0.;
+#pragma omp parallel for reduction(+:sigma)
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
-                    diff = magnitude[iBin] - mean;
-                    sigma += diff * diff;
+                    sigma += magnitude[iBin] * magnitude[iBin];
                 }
-                sigma = sqrt(sigma * sigmaNorm);
+                sigma = sqrt((sigma - mean*mean) * sigmaNorm);
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
@@ -294,13 +293,12 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0., diff;
+                double sigma = 0.;
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
-                    diff = (*spectrum)(iBin).abs() - mean;
-                    sigma += diff * diff;
+                    sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
                 }
-                sigma = sqrt(sigma * sigmaNorm);
+                sigma = sqrt((sigma - mean*mean) * sigmaNorm);
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
@@ -382,14 +380,13 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0., diff;
-#pragma omp parallel for private(diff) reduction(+:sigma)
+                double sigma = 0.;
+#pragma omp parallel for reduction(+:sigma)
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
-                    diff = (*spectrum)(iBin) - mean;
-                    sigma += diff * diff;
+                    sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
                 }
-                sigma = sqrt(sigma * sigmaNorm);
+                sigma = sqrt((sigma - mean*mean) * sigmaNorm);
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
