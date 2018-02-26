@@ -44,7 +44,9 @@ namespace Katydid
 
      Slots:
      - "fs-polar": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
+     - "fs-polar-pre": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum based on the pre-calculated gain variation; Requires KTFrequencySpectrumDataPolar; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
      - "fs-fftw": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
+     - "fs-fftw-pre": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum based on the pre-calculated gain variation; Requires KTFrequencySpectrumDataFFTW; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
      - "ps": void (Nymph::KTDataPtr) -- Normalizes a power spectrum; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTNormalizedPSData; Emits signal norm-ps
      - "ps-pre": void (Nymph::KTDataPtr) -- Normalizes a power spectrum based on the pre-calculated gain variation; Requires KTPowerSpectrumData; Adds KTNormalizedPSData; Emits signal norm-ps
      - "gv": void (Nymph::KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
@@ -86,6 +88,8 @@ namespace Katydid
         public:
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
 
+            bool Normalize(KTFrequencySpectrumDataPolar& fsData);
+            bool Normalize(KTFrequencySpectrumDataFFTW& fsData);
             bool Normalize(KTPowerSpectrumData& psData);
 
             bool Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
@@ -120,6 +124,8 @@ namespace Katydid
 
             Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
 
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarPreCalcSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWPreCalcSlot;
             Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
 
     };

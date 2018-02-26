@@ -44,6 +44,8 @@ namespace Katydid
             fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal),
             fPSSlot("ps", this, &KTGainNormalization::Normalize, &fPSSignal),
             fPreCalcSlot("gv", this, &KTGainNormalization::SetPreCalcGainVar),
+            fPSPreCalcSlot("fs-polar-pre", this, &KTGainNormalization::Normalize, &fFSPolarSignal),
+            fPSPreCalcSlot("fs-fftw-pre", this, &KTGainNormalization::Normalize, &fFSFFTWSignal),
             fPSPreCalcSlot("ps-pre", this, &KTGainNormalization::Normalize, &fPSSignal)
     {
     }
@@ -86,6 +88,16 @@ namespace Katydid
     {
         fGVData = gvData;
         return true;
+    }
+
+    bool KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData)
+    {
+        return Normalize(fsData, fGVData);
+    }
+
+    bool KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData)
+    {
+        return Normalize(fsData, fGVData);
     }
 
     bool KTGainNormalization::Normalize(KTPowerSpectrumData& psData)
