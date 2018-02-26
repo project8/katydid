@@ -103,6 +103,8 @@ namespace Katydid
         private:
             KTGainVariationData fGVData;
             std::vector< double > fMagnitudeCache;
+            double fMeanGV;
+            double fMeanGVVariance;
 
             //***************
             // Signals
