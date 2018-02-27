@@ -25,6 +25,7 @@ namespace Katydid
 
             virtual unsigned GetNFrequencyBins() const;
             virtual double GetFrequencyBinWidth() const;
+            KTFrequencySpectrumVariance& Scale(double scale);
 
             virtual const KTAxisProperties< 1 >& GetAxis() const;
             virtual KTAxisProperties< 1 >& GetAxis();

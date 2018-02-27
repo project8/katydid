@@ -563,12 +563,13 @@ namespace Katydid
             KTFrequencySpectrumPolar* avSpect = fDataType.GetSpectrumPolar(iComponent);
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
-            avSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin).abs() * (*avSpect)(iBin).abs()) * scale;
+                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin).abs() * (*avSpect)(iBin).abs();
             }
+            avSpect->Scale(scale);
+            varSpect->Scale(scale * scale);
         }
         return true;
     }
@@ -584,10 +585,11 @@ namespace Katydid
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin)[0] * (*avSpect)(iBin)[0] - (*avSpect)(iBin)[1] * (*avSpect)(iBin)[1]) * scale;
+                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin)[0] * (*avSpect)(iBin)[0] - (*avSpect)(iBin)[1] * (*avSpect)(iBin)[1];
             }
         }
         return true;
@@ -604,10 +606,11 @@ namespace Katydid
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin) * (*avSpect)(iBin)) * scale;
+                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin) * (*avSpect)(iBin);
             }
         }
         return true;
@@ -624,10 +627,11 @@ namespace Katydid
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin).abs() * (*avSpect)(iBin).abs()) * scale;
+                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin).abs() * (*avSpect)(iBin).abs();
             }
         }
         return true;
@@ -644,10 +648,11 @@ namespace Katydid
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin)[0] * (*avSpect)(iBin)[0] - (*avSpect)(iBin)[1] * (*avSpect)(iBin)[1])  * scale;
+                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin)[0] * (*avSpect)(iBin)[0] - (*avSpect)(iBin)[1] * (*avSpect)(iBin)[1];
             }
         }
         return true;
@@ -664,10 +669,11 @@ namespace Katydid
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
             avSpect->Scale(scale);
+            varSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin) * (*avSpect)(iBin)) * scale;
+                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin) * (*avSpect)(iBin);
             }
         }
         return true;

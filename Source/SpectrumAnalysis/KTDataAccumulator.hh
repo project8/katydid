@@ -197,6 +197,8 @@ namespace Katydid
             const AccumulatorMap& GetAccumulators() const;
             template< class XDataType >
             const Accumulator& GetAccumulator() const;
+            template< class XDataType >
+            Accumulator& GetAccumulatorNonConst() const;
 
         private:
             template< class XDataType >
@@ -390,6 +392,13 @@ namespace Katydid
     const KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulator() const
     {
         fLastAccumulatorPtr = const_cast< Accumulator* >(fDataMap.at(&typeid(XDataType)));
+        return *fLastAccumulatorPtr;
+    }
+
+    template< class XDataType >
+    KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulatorNonConst() const
+    {
+        fLastAccumulatorPtr = fDataMap.at(&typeid(XDataType));
         return *fLastAccumulatorPtr;
     }
 

@@ -34,4 +34,10 @@ namespace Katydid
         return *this;
     }
 
+    KTFrequencySpectrumVariance& KTFrequencySpectrumVariance::Scale(double scale)
+    {
+        (*this) *= scale;
+        return *this;
+    }
+
 } /* namespace Katydid */
