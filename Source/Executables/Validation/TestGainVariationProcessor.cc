@@ -3,6 +3,13 @@
  *
  *  Created on: Feb 26, 2018
  *      Author: N.S. Oblath
+ *
+ *  Intended results
+ *    From the ROOT file, you can make the following plots:
+ *      - hFSAndVarFS + hFSOnlySpline + hFSAndVarSpline: The splines should sit right on top of the mean of hFSAndVarFS.
+ *      - hFSAndVarVar + hFSOnlyVarianceSpline + hFSAndVarVarianceSpline: The splines should sit right on top of the mean of hFSAndVarVar.
+ *        At the time of this writing, though, hFSAndVarVarSpline had a significant bias high.
+ *    Note that hFSOnlyFS and hFSAndVarFS are explicitly exactly the same.
  */
 
 #include "KT2ROOT.hh"
@@ -26,7 +33,6 @@ int main()
 {
 
     unsigned nBins = 8192;
-    unsigned nSpectra = 200;
     double minFreq = 0., maxFreq = 100.;
 
     double meanValue = 10.;
@@ -63,7 +69,7 @@ int main()
         (*fsAndVarVar)(iBin) = noiseSigma * noiseSigma;
     }
 
-    fsData.SetNComponents( 1 );
+    fsDataOnly.SetNComponents( 1 );
     fsDataOnly.SetSpectrum( fsOnlyFS, 0 );
 
     fsData.SetNComponents( 1 );
