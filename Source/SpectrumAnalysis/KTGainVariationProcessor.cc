@@ -780,7 +780,7 @@ namespace Katydid
             }
 
             // at this point binValuesInUse contains varCalcNBins values, and we're ready to calculate the sliding variance
-            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight; ++iBin)
+            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight - 1; ++iBin)
             {
                 Assign(newValue, (*spectrum)(iBin + varCalcNBinsToRight));
                 binValuesInUse.push_back(newValue);
@@ -791,7 +791,7 @@ namespace Katydid
             }
 
             // now we reduce back down until iBin reaches the end
-            for (unsigned iBin = nBins - varCalcNBinsToRight + 1; iBin < nBins; ++iBin)
+            for (unsigned iBin = nBins - varCalcNBinsToRight; iBin < nBins; ++iBin)
             {
                 runningSum -= binValuesInUse.front();
                 binValuesInUse.pop_front();
@@ -851,7 +851,7 @@ namespace Katydid
             }
 
             // at this point binValuesInUse contains varCalcNBins values, and we're ready to calculate the sliding variance
-            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight; ++iBin)
+            for (unsigned iBin = varCalcNBinsToLeft + 1; iBin <= nBins - varCalcNBinsToRight - 1; ++iBin)
             {
                 newValue = (*spectrum)(iBin + varCalcNBinsToRight);
                 binValuesInUse.push_back(newValue);
@@ -862,7 +862,7 @@ namespace Katydid
             }
 
             // now we reduce back down until iBin reaches the end
-            for (unsigned iBin = nBins - varCalcNBinsToRight + 1; iBin < nBins; ++iBin)
+            for (unsigned iBin = nBins - varCalcNBinsToRight; iBin < nBins; ++iBin)
             {
                 runningSum -= binValuesInUse.front();
                 binValuesInUse.pop_front();

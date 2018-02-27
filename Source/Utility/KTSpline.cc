@@ -71,13 +71,15 @@ namespace Katydid
 
         KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
         imp = new Implementation(nBins, xMin, xMax);
-        unsigned mean = 0., variance = 0.;
+        double mean = 0.;
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
             (*imp)(iBin) = Evaluate(imp->GetBinCenter(iBin));
             mean += (*imp)(iBin);
+            //KTWARN(splinelog, (*imp)(iBin) << "  " << mean);
         }
         imp->SetMean(mean / (double)nBins);
+        KTDEBUG(splinelog, "Calculated implementation mean: " << imp->GetMean());
         return imp;
     }
 

@@ -6,15 +6,11 @@
  *
  *  Intended results
  *    From the ROOT file, you can make the following plots:
- *      - hFSAndVarFS + hFSOnlySpline + hFSAndVarSpline: The splines should sit right on top of the mean of hFSAndVarFS.
- *      - hFSAndVarVar + hFSOnlyVarianceSpline + hFSAndVarVarianceSpline: The splines should sit right on top of the mean of hFSAndVarVar.
- *        At the time of this writing, though, hFSAndVarVarSpline had a significant bias high.
- *    Note that hFSOnlyFS and hFSAndVarFS are explicitly exactly the same.
+ *      - hPS + hNormPS: hNormPS will have a normalized mean and variance relative to hPS.
+ *    Note that hPSOnlyPS and hPSAndVarPS are explicitly exactly the same.
  */
 
 #include "KT2ROOT.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
-#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumVarianceData.hh"
 #include "KTFrequencySpectrumVariance.hh"
 #include "KTGainNormalization.hh"
@@ -22,6 +18,8 @@
 #include "KTGainVariationProcessor.hh"
 #include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
+#include "KTPowerSpectrum.hh"
+#include "KTPowerSpectrumData.hh"
 #include "KTRandom.hh"
 
 #include "TFile.h"
@@ -53,10 +51,10 @@ int main()
 
     KTINFO(testlog, "Setting up input data");
 
-    KTFrequencySpectrumDataPolar fsData;
-    KTFrequencySpectrumPolar* fs = new KTFrequencySpectrumPolar( nBins, minFreq, maxFreq );
+    KTPowerSpectrumData psData;
+    KTPowerSpectrum* ps = new KTPowerSpectrum( nBins, minFreq, maxFreq );
 
-    KTFrequencySpectrumVarianceDataPolar& varData = fsData.Of< KTFrequencySpectrumVarianceDataPolar >();
+    KTPowerSpectrumVarianceData& varData = psData.Of< KTPowerSpectrumVarianceData >();
     KTFrequencySpectrumVariance* var = new KTFrequencySpectrumVariance( nBins, minFreq, maxFreq );
 
     double meanValue = 0.;
@@ -67,12 +65,12 @@ int main()
         noiseSigma = noiseSigmaLow + (double)iBin * noiseSigmaSlope;
         rand.param( KTRNGGaussian<>::param_type( meanValue, noiseSigma ) );
         value = rand();
-        (*fs)(iBin).set_polar( value, 0. );
+        (*ps)(iBin) = value;
         (*var)(iBin) = noiseSigma * noiseSigma;
     }
 
-    fsData.SetNComponents( 1 );
-    fsData.SetSpectrum( fs, 0 );
+    psData.SetNComponents( 1 );
+    psData.SetSpectrum( ps, 0 );
 
     varData.SetNComponents( 1 );
     varData.SetSpectrum( var, 0 );
@@ -87,9 +85,9 @@ int main()
     gvProc.SetVarianceCalcNBins(100);
 
     KTINFO(testlog, "Processing gain variation");
-    gvProc.CalculateGainVariation(fsData, varData);
+    gvProc.CalculateGainVariation(psData, varData);
 
-    KTGainVariationData& gvData = fsData.Of< KTGainVariationData >();
+    KTGainVariationData& gvData = psData.Of< KTGainVariationData >();
 
     KTINFO(testlog, "Initializing gain normalization");
 
@@ -99,35 +97,35 @@ int main()
 
     KTINFO(testlog, "Processing normalization");
 
-    gainNorm.Normalize(fsData, gvData);
+    gainNorm.Normalize(psData, gvData);
 
-    KTNormalizedFSDataPolar& normFSData = fsData.Of< KTNormalizedFSDataPolar >();
-    KTFrequencySpectrumPolar* normFS = normFSData.GetSpectrumPolar(0);
+    KTNormalizedPSData& normPSData = psData.Of< KTNormalizedPSData >();
+    KTPowerSpectrum* normPS = normPSData.GetSpectrum(0);
 
 #ifdef ROOT_FOUND
     KTINFO(testlog, "Writing histograms to a ROOT file");
 
     TFile* file = new TFile("gain_norm_test.root", "recreate");
 
-    TH1D* fsHist = KT2ROOT::CreateMagnitudeHistogram(fs, "hFS");
-    fsHist->SetDirectory(file);
-    fsHist->SetLineColor(kBlue-4);
+    TH1D* psHist = KT2ROOT::CreatePowerHistogram(ps, "hPS");
+    psHist->SetDirectory(file);
+    psHist->SetLineColor(kBlue-4);
 
     TH1D* varHist = KT2ROOT::CreateHistogram(var, "hVar");
     varHist->SetDirectory(file);
     varHist->SetLineColor(kBlue-4);
 
-    TH1D* fsSplineHist = gvData.CreateGainVariationHistogram(nBins, 0, "hFSSpline");
-    fsSplineHist->SetDirectory(file);
-    fsSplineHist->SetLineColor(kRed);
+    TH1D* psSplineHist = gvData.CreateGainVariationHistogram(nBins, 0, "hPSSpline");
+    psSplineHist->SetDirectory(file);
+    psSplineHist->SetLineColor(kRed);
 
     TH1D* varSplineHist = gvData.CreateGainVariationVarianceHistogram(nBins, 0, "hVarSpline");
     varSplineHist->SetDirectory(file);
     varSplineHist->SetLineColor(kRed);
 
-    TH1D* normFSHist = KT2ROOT::CreateMagnitudeHistogram(normFS, "hNormFS");
-    normFSHist->SetDirectory(file);
-    normFSHist->SetLineColor(kGreen+2);
+    TH1D* normPSHist = KT2ROOT::CreatePowerHistogram(normPS, "hNormPS");
+    normPSHist->SetDirectory(file);
+    normPSHist->SetLineColor(kGreen+2);
 
     file->Write();
     file->Close();

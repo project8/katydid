@@ -205,6 +205,7 @@ namespace Katydid
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
         double normalizedVariance = varSplineImp->GetMean();
+        KTDEBUG(gnlog, "Normalized mean and variance: " << normalizedValue << "  " << normalizedVariance);
 
         unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
