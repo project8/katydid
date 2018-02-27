@@ -2,7 +2,7 @@
  * KTTrackClassifier.cc
  *
  *  Created on: Dec 13, 2016
- *      Author: ezayas
+ *      Author: ezayas, L. Saldana
  */
 
 #include "KTTrackClassifier.hh"
@@ -150,11 +150,7 @@ namespace Katydid
 
     KTDLIBClassifier::KTDLIBClassifier(const std::string& name) :
             KTProcessor(name),
-            fAlgorithm("svm"),
-            fC(0.1),
-            fGamma(0.2),
-            fTrainingSet("placeholder"),
-            fInitialized(false),
+            fDFFile("foo_df.dat"),
             fClassifySignal("classify", this)
     {
         RegisterSlot( "power-fit", this, &KTDLIBClassifier::SlotFunctionPowerFitData );
@@ -168,46 +164,28 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetAlgorithm(node->get_value< std::string >("algorithm", GetAlgorithm()));
-        SetC(node->get_value< double >("c", GetC()));
-        SetGamma(node->get_value< double >("gamma", GetGamma()));
-        SetTrainingSet(node->get_value< std::string >("training-set", GetTrainingSet()));
+        SetDFFile(node->get_value< std::string >("df-file",GetDFFile()));
         
         return true;
     }
 
-    bool KTDLIBClassifier::Initialize()
-    {
-        // Normalize data
-
-        // Train
-        if( fAlgorithm == "svm" )
+    bool KTDLIBClassifier::ClassifyTrack(KTClassifierResultsData& resultData, double label )
+    {   
+        if( label == 0 )
         {
-            // Do some stuff
+            resultData.SetMCH( true );
+        }
+        else if( label == 1 )
+        {
+            resultData.SetMCL( true );
+        }
+        else if( label == 2 )
+        {
+            resultData.SetSB( true );
         }
         else
         {
-            KTERROR(avlog_hh, "Could not determine the appropriate algorithm; something went wrong");
-            return false;
-        }
-
-        // Anything else?
-
-        fInitialized = true;
-        return true;
-    }
-
-    bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& trackData, KTPowerFitData& rpData, KTClassifierResultsData& resultData )
-    {
-        resultData.SetComponent( trackData.GetComponent() );
-        
-        if( fAlgorithm == "svm" )
-        {
-            // Do some stuff
-        }
-        else
-        {
-            KTERROR(avlog_hh, "Could not determine the appropriate algorithm; something went wrong");
+            KTERROR(avlog_hh, "Could not assign appropriate classification label; something went wrong");
             return false;
         }
 
@@ -231,18 +209,64 @@ namespace Katydid
             return;
         }
 
-        if( ! fInitialized )
+        KTProcessedTrackData& ptData = data->Of<KTProcessedTrackData>();
+        KTPowerFitData& pfData = data->Of< KTPowerFitData>();
+        
+        // Set up classifier features
+        fPower = (float)(ptData.GetTotalPower());
+        fSlope = (float)(ptData.GetSlope());
+        fTimeLength = (float)(ptData.GetTimeLength());
+        fAverage = (float)(pfData.GetAverage());
+        fRMS = (float)(pfData.GetRMS());
+        fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
+        fKurtosis = (float)(pfData.GetKurtosis());
+        fSkewness = (float)(pfData.GetSkewness());
+        fCentralPowerFraction = (float)(pfData.GetCentralPowerFraction()); 
+        fNPeaks = (float)(pfData.GetNPeaks());
+        fMaxCentral = (float)(pfData.GetMaximumCentral());
+        fMeanCentral = (float)(pfData.GetMeanCentral());
+        fNormCentral = (float)(pfData.GetNormCentral());
+        fSigmaCentral = (float)(pfData.GetSigmaCentral());
+        
+        typedef matrix<double,14,1> sample_type;
+        sample_type classifierFeatures; // set up 14-dim vector of classification features
+        classifierFeatures(0) = fPower;
+        classifierFeatures(1) = fSlope;
+        classifierFeatures(2) = fTimeLength;
+        classifierFeatures(3) = fAverage;
+        classifierFeatures(4) = fRMS;
+        classifierFeatures(5) = fRMSAwayFromCentral;
+        classifierFeatures(6) = fKurtosis;
+        classifierFeatures(7) = fSkewness;
+        classifierFeatures(8) = fCentralPowerFraction;
+        classifierFeatures(9) = fNPeaks;
+        classifierFeatures(10) = fMaxCentral;
+        classifierFeatures(11) = fMeanCentral;
+        classifierFeatures(12) = fNormCentral;
+        classifierFeatures(13) = fSigmaCentral;
+        
+        // Some helpful type definitions from dlib
+        typedef one_vs_all_trainer<any_trainer< sample_type, double > > ova_trainer;
+        typedef radial_basis_kernel<sample_type> rbf_kernel;
+        typedef one_vs_all_decision_function<ova_trainer,decision_function<rbf_kernel>> decision_funct_type;
+        typedef normalized_function<decision_funct_type> normalized_decision_funct_type;
+        normalized_decision_funct_type decisionFunction; // declare normalized ova decision function for SVM with radial basis kernel
+        try
         {
-            if( !Initialize() )
-            {
-                KTERROR(avlog_hh, "Initialization failed; aborting classification. No signal will be emitted");
-                return;
-            }
+            KTDEBUG(avlog_hh,"DF File = " << fDFFile);
+            deserialize(fDFFile) >> decisionFunction; // load train decision function
+        }
+        catch(...)
+        {
+            KTERROR(avlog_hh, "Unable to read the decision function from file. Aborting");
+            return
         }
 
-        if( !ClassifyTrack( data->Of< KTProcessedTrackData >(), data->Of< KTPowerFitData >(), data->Of< KTClassifierResultsData >() ) )
+        double classificationLabel = decisionFunction(classifierFeatures); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
+
+        if( !ClassifyTrack( data->Of< KTClassifierResultsData >(), classificationLabel) )
         {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTProcessedTrackData >");
+            KTERROR(avlog_hh, "Something went wrong with assigning classification label to track");
             return;
         }
 
