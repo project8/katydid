@@ -248,7 +248,7 @@ namespace Katydid
              }
              else
              {
-                 this->SearchTrueLinePoint(*pointIt, slice);
+                 this->UpdateLinePoint(*pointIt, slice);
                  newFreq = pointIt->fPointFreq;
              }
              if (newFreq == 0.0 or pointIt->fAmplitude==0.0)
@@ -399,7 +399,7 @@ namespace Katydid
 
     }
 
-    void KTSequentialTrackFinder::SearchTrueLinePoint(Point& point, KTPowerSpectrum& slice)
+    void KTSequentialTrackFinder::UpdateLinePoint(Point& point, KTPowerSpectrum& slice)
     {
         double Delta = fConvergeDelta + 1.0;
         unsigned loopCounter = 0;
@@ -445,11 +445,21 @@ namespace Katydid
         }
         else
         {
-            amplitude = slice(frequencyBin) * fLinePowerRadius;
+            amplitude = slice(frequencyBin);
             slice(frequencyBin) = fPointAmplitudeAfterVisit;
         }
 
-        // Set larger area to zero if possible
+        // Set area around point to zero to prevent the area from being revisited
+        for (int it = -1* fMinFreqBinDistance; it <= fMinFreqBinDistance; it++)
+        {
+            int iBin = frequencyBin + it;
+            if ( iBin > fMinBin and iBin < fMaxBin )
+            {
+                slice(iBin) = fPointAmplitudeAfterVisit;
+            }
+        }
+
+        /*
         if (frequencyBin > fMinBin + fMinFreqBinDistance and frequencyBin < fMaxBin - fMinFreqBinDistance)
         {
             for (int iBin = frequencyBin - fMinFreqBinDistance; iBin <= frequencyBin + fMinFreqBinDistance; ++iBin)
@@ -457,16 +467,16 @@ namespace Katydid
                 slice(iBin)=fPointAmplitudeAfterVisit;
             }
         }
-        // if point was to close to edge, try again with smaller range
+        // if point was to close to edge, try to set smaller range to zero
         else if (frequencyBin > fMinBin + fSearchRadius and frequencyBin < fMaxBin - fSearchRadius)
         {
             for (int iBin = frequencyBin - fSearchRadius; iBin <= frequencyBin + fSearchRadius; ++iBin)
             {
                 slice(iBin) = fPointAmplitudeAfterVisit;
             }
-        }
+        }*/
 
-        // Correct values currently still stored in discPoint
+        // Replace values stored in discPoint
         point.fBinInSlice = frequencyBin;
         point.fPointFreq = frequency;
         point.fAmplitude = amplitude;

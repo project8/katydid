@@ -141,7 +141,7 @@ namespace Katydid
             //bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
             bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
 
-            void SearchTrueLinePoint(Point& point, KTPowerSpectrum& slice);
+            void UpdateLinePoint(Point& point, KTPowerSpectrum& slice);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
             void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
             void CalculateSlope(LineRef& Line);
