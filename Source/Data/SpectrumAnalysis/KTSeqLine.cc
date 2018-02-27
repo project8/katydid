@@ -26,7 +26,7 @@ namespace Katydid
         fEndTimeInAcq(0.0),
         fStartFrequency(0.0),
         fEndFrequency(0.0),
-        fLineWidth(lineWidth),
+        fLineWidth(0.0),
         fInitialSlope(initialSlope),
         fSlope(0.0),
         fNPoints(0),
