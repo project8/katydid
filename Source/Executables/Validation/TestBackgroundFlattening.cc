@@ -85,8 +85,18 @@ int main()
     KTINFO(testlog, "Grabbing results from accumulator");
 
     const KTDataAccumulator::Accumulator& accResults = acc.GetAccumulator< KTFrequencySpectrumDataPolar >();
+    //accResults.Finalize();
+
     KTFrequencySpectrumDataPolar& mean = accResults.fData->Of< KTFrequencySpectrumDataPolar >();
     KTFrequencySpectrumVarianceDataPolar& variance = accResults.fData->Of< KTFrequencySpectrumVarianceDataPolar >();
+
+    // Reproduce the important bit of the Finalize() function to complete the variance calculation
+    KTFrequencySpectrumPolar* avSpect = mean.GetSpectrumPolar(0);
+    KTFrequencySpectrumVariance* varSpect = variance.GetSpectrum(0);
+    for (unsigned iBin = 0; iBin < nBins; ++iBin)
+    {
+        (*varSpect)(iBin) = ((*varSpect)(iBin) - (*avSpect)(iBin).abs() * (*avSpect)(iBin).abs());
+    }
 /*
     for( unsigned iBin = 0; iBin < nBins; iBin++ )
     {
@@ -112,7 +122,7 @@ int main()
 
     discrim.SetMinBin( 0 );
     discrim.SetMaxBin( nBins - 1 );
-    discrim.SetSigmaThreshold( 2 );
+    discrim.SetSigmaThreshold( 3 );
     discrim.SetNormalize( true );
     
     vector<double> xPoints;
