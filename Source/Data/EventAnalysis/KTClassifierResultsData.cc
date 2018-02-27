@@ -2,7 +2,7 @@
  * KTClassifierResultsData.cc
  *
  *  Created on: Feb 16, 2018
- *      Author: ezayas
+ *      Author: ezayas, L. Saldana
  */
 
 #include "KTClassifierResultsData.hh"
@@ -15,14 +15,17 @@ namespace Katydid
 
     KTClassifierResultsData::KTClassifierResultsData() :
             KTExtensibleData< KTClassifierResultsData >(),
-            fComponent(0)
+            MCH(false),
+            MCL(false),
+            SB(false)    
     {
     }
 
     KTClassifierResultsData::KTClassifierResultsData(const KTClassifierResultsData& orig) :
-            KTExtensibleData< KTClassifierResultsData >(orig),
-            
-            fComponent(orig.fComponent)
+            KTExtensibleData< KTClassifierResultsData >(orig),            
+            fMCH(orig.fMCH),
+            fMCL(orig.fMCL),
+            fSB(orig.fSB)
     {
     }
 
@@ -33,7 +36,9 @@ namespace Katydid
     KTClassifierResultsData& KTClassifierResultsData::operator=(const KTClassifierResultsData& rhs)
     {
         KTExtensibleData< KTClassifierResultsData >::operator=(rhs);
-        fComponent = rhs.fComponent;
+        fMCH = rhs.fMCH;
+        fMCL = rhs.fMCL;
+        fSB = rhs.SB;
         return *this;
     }
 

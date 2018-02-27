@@ -2,7 +2,7 @@
  * KTClassifierResultsData.hh
  *
  *  Created on: Feb 16, 2018
- *      Author: ezayas
+ *      Author: ezayas, L. Saldana
  */
 
 #ifndef KTCLASSIFIERRESULTSDATA_HH_
@@ -24,8 +24,10 @@ namespace Katydid
             KTClassifierResultsData& operator=(const KTClassifierResultsData& rhs);
 
         public:
-            MEMBERVARIABLE( unsigned, Component );
-            // Other member variable(s) to describe classification
+            // member variable(s) to describe classification
+            MEMBERVARIABLE( bool, MCH ); // main carrier high theta
+            MEMBERVARIABLE( bool, MCL ); // main carrier low theta
+            MEMBERVARIABLE( bool, SB );  // sideband
           
         public:
             static const std::string sName;
