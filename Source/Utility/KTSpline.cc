@@ -64,13 +64,13 @@ namespace Katydid
         return fSpline.Eval(xValue);
     }
 
-    KTSpline::Implementation* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
+    std::shared_ptr< KTSpline::Implementation > KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
     {
-        Implementation* imp = GetFromCache(nBins, xMin, xMax);
+        std::shared_ptr< Implementation > imp = GetFromCache(nBins, xMin, xMax);
         if (imp != NULL) return imp;
 
         KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
-        imp = new Implementation(nBins, xMin, xMax);
+        imp = std::make_shared< Implementation >(nBins, xMin, xMax);
         double mean = 0.;
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
@@ -80,6 +80,7 @@ namespace Katydid
         }
         imp->SetMean(mean / (double)nBins);
         KTDEBUG(splinelog, "Calculated implementation mean: " << imp->GetMean());
+        AddToCache(imp);
         return imp;
     }
 
@@ -134,37 +135,40 @@ namespace Katydid
 
 #endif
 
-    void KTSpline::AddToCache(Implementation* imp) const
+    void KTSpline::AddToCache(std::shared_ptr< Implementation > imp) const
     {
-        Implementation* oldImp = GetFromCache(imp->size(), imp->GetRangeMin(), imp->GetRangeMax());
-        if (oldImp != NULL) delete oldImp;
+        ImplementationCache::iterator it = FindInCache(imp->size(), imp->GetRangeMin(), imp->GetRangeMax());
+        if (it != fCache.end()) fCache.erase(it);
 
-        fCache.push_front(imp);
+        fCache.insert(imp);
         return;
     }
 
-    KTSpline::Implementation* KTSpline::GetFromCache(unsigned nBins, double xMin, double xMax) const
+    std::shared_ptr< KTSpline::Implementation > KTSpline::GetFromCache(unsigned nBins, double xMin, double xMax) const
+    {
+        ImplementationCache::iterator it = FindInCache(nBins, xMin, xMax);
+        if (it != fCache.end())
+        {
+            std::shared_ptr< Implementation > imp = *it;
+            return imp;
+        }
+        return std::shared_ptr< Implementation >();
+    }
+
+    void KTSpline::ClearCache() const
+    {
+        fCache.clear();
+    }
+
+    KTSpline::ImplementationCache::iterator KTSpline::FindInCache(unsigned nBins, double xMin, double xMax) const
     {
         for (ImplementationCache::iterator it = fCache.begin(); it != fCache.end(); it++)
         {
             if ((*it)->size() == nBins && (*it)->GetRangeMin() == xMin && (*it)->GetRangeMax() == xMax)
             {
-                Implementation* imp = *it;
-                fCache.erase(it);
-                return imp;
+                return it;
             }
         }
-        return NULL;
+        return fCache.end();
     }
-
-    void KTSpline::ClearCache() const
-    {
-        while (! fCache.empty())
-        {
-            delete fCache.back();
-            fCache.pop_back();
-        }
-    }
-
-
 } /* namespace Katydid */

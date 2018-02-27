@@ -394,8 +394,8 @@ namespace Katydid
         double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
-        KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
@@ -463,9 +463,6 @@ namespace Katydid
                 }
             }
         }
-
-        spline->AddToCache(splineImp);
-        varSpline->AddToCache(varSplineImp);
 
         return true;
     }
@@ -482,8 +479,8 @@ namespace Katydid
         double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + binWidth;
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
-        KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
@@ -550,9 +547,6 @@ namespace Katydid
                 }
             }
         }
-
-        spline->AddToCache(splineImp);
-        varSpline->AddToCache(varSplineImp);
 
         return true;
     }
@@ -569,8 +563,8 @@ namespace Katydid
         double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
-        KTSpline::Implementation* varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
 
         // Average of each spline
         double normalizedValue = splineImp->GetMean();
@@ -638,9 +632,6 @@ namespace Katydid
                 }
             }
         }
-
-        spline->AddToCache(splineImp);
-        varSpline->AddToCache(varSplineImp);
 
         return true;
 
