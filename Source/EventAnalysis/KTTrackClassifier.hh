@@ -176,7 +176,7 @@ namespace Katydid
 
         public:
             bool Initialize();
-            bool ClassifyTrack( KTProcessedTrackData& trackData, KTPowerFitData& rpData, KTClassifierResultsData& resultData );
+            bool ClassifyTrack(KTClassifierResultsData& resultData, double label);
 
             //***************
             // Signals
