@@ -529,7 +529,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTTimeSeriesData >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling time series by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -542,7 +542,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTTimeSeriesDistData >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling time series dist by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -555,7 +555,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTFrequencySpectrumDataPolar >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling freq spect polar by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -563,20 +563,20 @@ namespace Katydid
             KTFrequencySpectrumPolar* avSpect = fDataType.GetSpectrumPolar(iComponent);
             KTFrequencySpectrumVariance* varSpect = fVarDataType.GetSpectrum(iComponent);
 
+            avSpect->Scale(scale);
+            varSpect->Scale(scale);
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
                 (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin).abs() * (*avSpect)(iBin).abs();
             }
-            avSpect->Scale(scale);
-            varSpect->Scale(scale * scale);
         }
         return true;
     }
 
     bool KTDataAccumulator::AccumulatorType< KTFrequencySpectrumDataFFTW >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling freq spect fftw by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -597,7 +597,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTPowerSpectrumData >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling power spect by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -618,7 +618,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTConvolvedFrequencySpectrumDataPolar >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling conv freq spect polar by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -639,7 +639,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTConvolvedFrequencySpectrumDataFFTW >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling conv freq spect fftw by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -660,7 +660,7 @@ namespace Katydid
 
     bool KTDataAccumulator::AccumulatorType< KTConvolvedPowerSpectrumData >::Finalize()
     {
-        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1. / (double)fAccumulatorSize;
+        double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
         KTDEBUG(avlog, "Scaling conv power spect by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
