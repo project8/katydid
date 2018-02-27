@@ -102,7 +102,7 @@ int main()
 
     KTINFO(testlog, "Calculating gain variation");
 
-    gvProc.CalculateGainVariation( mean );
+    gvProc.CalculateGainVariation( mean, variance );
 
     KTINFO(testlog, "Grabbing results from gain variation");
 
