@@ -217,10 +217,10 @@ namespace Katydid
                 {
                     sigma += magnitude[iBin] * magnitude[iBin];
                 }
-                sigma = sqrt((sigma - mean*mean) * sigmaNorm);
+                sigma = sqrt(sigma*sigmaNorm  - mean*mean);
 
                 threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
             }
 
             // loop over bins, checking against the threshold
@@ -298,10 +298,10 @@ namespace Katydid
                 {
                     sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
                 }
-                sigma = sqrt((sigma - mean*mean) * sigmaNorm);
+                sigma = sqrt(sigma*sigmaNorm - mean*mean);
 
                 threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
             }
 
             // loop over bins, checking against the threshold
@@ -386,10 +386,10 @@ namespace Katydid
                 {
                     sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
                 }
-                sigma = sqrt((sigma - mean*mean) * sigmaNorm);
+                sigma = sqrt(sigma*sigmaNorm - mean*mean);
 
                 threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
             }
 
             // loop over bins, checking against the threshold
