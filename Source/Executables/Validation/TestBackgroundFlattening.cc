@@ -14,12 +14,12 @@
 #include "KTGainVariationData.hh"
 #include "KTVariableSpectrumDiscriminator.hh"
 #include "KTLogger.hh"
+#include "KTRandom.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
 #include "TH1.h"
 #include "TGraph.h"
-#include "TRandom3.h"
 #endif
 
 using namespace Katydid;
@@ -38,9 +38,9 @@ int main()
     double noiseSigmaHigh = 15.;
     double noiseSigma = 0.;
 
-#ifdef ROOT_FOUND
-    TRandom3 rand(0);
-#endif
+    KTRNGEngine* engine = KTGlobalRNGEngine::get_instance();
+    engine->SetSeed(20398);
+    KTRNGGaussian<> rand( meanValue, noiseSigma );
 
     KTINFO(testlog, "Initializing data accumulator");
 
@@ -66,16 +66,12 @@ int main()
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             noiseSigma = noiseSigmaLow + (double)(iBin)/nBins * (noiseSigmaHigh - noiseSigmaLow);
-        #ifdef ROOT_FOUND
-            value = rand.Gaus( meanValue, noiseSigma );
+            value = rand();
             if( value < 0.0 )
             {
                 value = 0.0;
             }
             (*newFS)(iBin).set_polar( value, 0. );
-        #else
-            (*newFS)(iBin).set_polar( 0., 0. );
-        #endif
         }
 
         newData.SetNComponents( 1 );
@@ -87,13 +83,13 @@ int main()
 
     KTINFO(testlog, "Grabbing results from accumulator");
 
-    const Katydid::KTDataAccumulator::Accumulator& accResults = acc.GetAccumulator< KTFrequencySpectrumDataPolar >();
-    KTFrequencySpectrumDataPolar mean = accResults.fData->Of< KTFrequencySpectrumDataPolar >();
-    KTFrequencySpectrumVarianceDataPolar variance = accResults.fData->Of< KTFrequencySpectrumVarianceDataPolar >();
+    const KTDataAccumulator::Accumulator& accResults = acc.GetAccumulator< KTFrequencySpectrumDataPolar >();
+    KTFrequencySpectrumDataPolar& mean = accResults.fData->Of< KTFrequencySpectrumDataPolar >();
+    KTFrequencySpectrumVarianceDataPolar& variance = accResults.fData->Of< KTFrequencySpectrumVarianceDataPolar >();
 /*
     for( unsigned iBin = 0; iBin < nBins; iBin++ )
     {
-        KTDEBUG(testlog, (*variance.GetSpectrumPolar(0))(iBin));
+        KTDEBUG(testlog, (*variance.GetSpectrum(0))(iBin));
     }
 */
     KTINFO(testlog, "Initializing gain variation");
@@ -118,9 +114,8 @@ int main()
     discrim.SetSigmaThreshold( 2 );
     discrim.SetNormalize( true );
     
-    vector< double > xx;
-    vector< double > yy;
-    int n = 0;
+    vector<double> xPoints;
+    vector<double> yPoints;
 
     KTINFO(testlog, "Performing discrimination");
 
@@ -131,16 +126,12 @@ int main()
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             noiseSigma = noiseSigmaLow + (double)(iBin)/nBins * (noiseSigmaHigh - noiseSigmaLow);
-        #ifdef ROOT_FOUND
-            value = rand.Gaus( meanValue, noiseSigma );
+            value = rand();
             if( value < 0.0 )
             {
                 value = 0.0;
             }
             (*newFS)(iBin).set_polar( value, 0. );
-        #else
-            (*newFS)(iBin).set_polar( 0., 0. );
-        #endif
         }
 
         newData.SetNComponents( 1 );
@@ -150,21 +141,16 @@ int main()
 
         for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newData.Of< KTDiscriminatedPoints1DData >().GetSetOfPoints(0).begin(); it != newData.Of< KTDiscriminatedPoints1DData >().GetSetOfPoints(0).end(); ++it )
         {
-            xx.push_back( (double)iSpectrum );
-            yy.push_back( it->second.fAbscissa );
-            n++;
+            xPoints.push_back( (double)iSpectrum );
+            yPoints.push_back( it->second.fAbscissa );
         }
     }
 
-    KTINFO( testlog, "Converting discriminated points to TGraph");
 
-    // Actually we need physical arrays lol
-    double* xArray = &xx[0];
-    double* yArray = &yy[0];
-
-    KTINFO(testlog, "Writing to file");
 
 #ifdef ROOT_FOUND
+    KTINFO(testlog, "Writing to ROOT file");
+
     KTDEBUG(testlog, "Creating TFile");
     TFile* file = new TFile("background_flattening_test.root", "recreate");
 
@@ -182,9 +168,8 @@ int main()
     histFreqSpec->SetDirectory( file );
     histFreqVarSpec->SetDirectory( file );
 
-    KTDEBUG(testlog, "Creating TGraph");
-    TGraph* plot;
-    plot = new TGraph( n, xArray, yArray );
+    KTDEBUG( testlog, "Converting discriminated points to TGraph");
+    TGraph* plot = new TGraph( xPoints.size(), xPoints.data(), yPoints.data() );
 
     KTDEBUG(testlog, "Appending TGraph to TFile");
     file->Append( plot );
@@ -192,7 +177,7 @@ int main()
     KTDEBUG(testlog, "Writing objects");
     histFreqSpec->Write();
     histFreqVarSpec->Write();
-    plot->Write( "thresholded-points" );
+    plot->Write( "thresholded_points" );
     
     KTDEBUG(testlog, "Closing file");
     file->Close();
