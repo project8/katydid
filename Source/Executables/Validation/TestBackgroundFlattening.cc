@@ -65,7 +65,8 @@ int main()
         KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar( nBins, minFreq, maxFreq );
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            noiseSigma = noiseSigmaLow + (double)(iBin)/nBins * (noiseSigmaHigh - noiseSigmaLow);
+            noiseSigma = noiseSigmaLow + (double)(iBin)/(double)nBins * (noiseSigmaHigh - noiseSigmaLow);
+            rand.param( KTRNGGaussian<>::param_type( meanValue, noiseSigma ) );
             value = rand();
             if( value < 0.0 )
             {
@@ -126,6 +127,7 @@ int main()
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             noiseSigma = noiseSigmaLow + (double)(iBin)/nBins * (noiseSigmaHigh - noiseSigmaLow);
+            rand.param( KTRNGGaussian<>::param_type( meanValue, noiseSigma ) );
             value = rand();
             if( value < 0.0 )
             {
@@ -159,8 +161,8 @@ int main()
     KTFrequencySpectrumVariance* varianceSpectrum = variance.GetSpectrum(0);
 
     KTDEBUG(testlog, "Creating histograms");
-    TH1D* histFreqSpec = KT2ROOT::CreateMagnitudeHistogram(meanSpectrum, "hFreqSpectrum");
-    TH1D* histFreqVarSpec = KT2ROOT::CreateHistogram(varianceSpectrum, "hFreqVarSpectrum");
+    TH1D* histFreqSpec = KT2ROOT::CreateMagnitudeHistogram(meanSpectrum, "hMeanSpectrum");
+    TH1D* histFreqVarSpec = KT2ROOT::CreateHistogram(varianceSpectrum, "hVarianceSpectrum");
     
     KTDEBUG(testlog, "Appending histograms to TFile");
     //file->Append( histFreqSpec );
