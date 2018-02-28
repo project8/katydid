@@ -56,6 +56,35 @@ namespace Katydid
     }
 
 
+    const std::string KTFrequencySpectrumVarianceDataFFTW::sName("frequency-spectrum-variance-fftw");
+
+    KTFrequencySpectrumVarianceDataFFTW::KTFrequencySpectrumVarianceDataFFTW() :
+            KTFrequencySpectrumVarianceDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTFrequencySpectrumVarianceDataFFTW::~KTFrequencySpectrumVarianceDataFFTW()
+    {
+    }
+
+    KTFrequencySpectrumVarianceDataFFTW& KTFrequencySpectrumVarianceDataFFTW::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
 
 } /* namespace Katydid */
 

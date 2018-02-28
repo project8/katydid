@@ -67,6 +67,8 @@ if (Katydid_ENABLE_TESTING)
         TestDBScan
         TestDBScanTrackClustering
         TestDistanceClustering
+        TestGainNormalization
+        TestGainVariationProcessor
         #TestHoughTransform  # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
         TestKDTree
         TestKDTreeData
@@ -120,6 +122,7 @@ if (Katydid_ENABLE_TESTING)
         )
         
         set( PROGRAMS
+           TestBackgroundFlattening
            TestBasicROOTFileWriter
            TestGainVariation
            TestROOTDictionary

@@ -8,25 +8,39 @@
 #ifndef KTSPLINE_HH_
 #define KTSPLINE_HH_
 
+#include "KTPhysicalArray.hh"
+
 #ifdef ROOT_FOUND
 #include "TSpline.h"
 #endif
 
-#include <list>
+#include <set>
 #include <cstddef>
+#include <memory>
 
 namespace Katydid
 {
-    template< size_t, typename T>
-    class KTPhysicalArray;
-
     class KTSpline
     {
         public:
-            typedef KTPhysicalArray< 1, double > Implementation;
+            class Implementation : public KTPhysicalArray< 1, double >
+            {
+                public:
+                    Implementation(size_t nBins, double rangeMin=0., double rangeMax=1.) :
+                        KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax),
+                        fMean(0.)
+                    {}
+                    virtual ~Implementation() {}
+
+                    double GetMean() const {return fMean;}
+                    void SetMean(double mean) {fMean = mean;}
+
+                private:
+                    double fMean;
+            };
 
         private:
-            typedef std::list< Implementation* > ImplementationCache;
+            typedef std::set< std::shared_ptr< Implementation > > ImplementationCache;
 
         public:
             KTSpline();
@@ -39,7 +53,7 @@ namespace Katydid
             double Evaluate(double xValue);
             double Evaluate(double xValue) const;
 
-            Implementation* Implement(unsigned nBins, double xMin, double xMax) const;
+            std::shared_ptr< Implementation > Implement(unsigned nBins, double xMin, double xMax) const;
 
             double GetXMin() const;
             void SetXMin(double min);
@@ -60,14 +74,16 @@ namespace Katydid
             double fXMax;
 
         public:
-            /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.  Ownership of the new implementation is taken by the cache.
-            void AddToCache(Implementation* imp) const;
             /// Retrieves a matching implementation from the cache; returns NULL if one does not exist. The matching implementation is removed from the cache and ownership is transferred to the caller.
-            Implementation* GetFromCache(unsigned nBins, double xMin, double xMax) const;
+            std::shared_ptr< Implementation > GetFromCache(unsigned nBins, double xMin, double xMax) const;
 
             void ClearCache() const;
 
         private:
+            /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.
+            void AddToCache(std::shared_ptr< Implementation > imp) const;
+            ImplementationCache::iterator FindInCache(unsigned nBins, double xMin, double XMax) const;
+
             mutable ImplementationCache fCache;
 
     };

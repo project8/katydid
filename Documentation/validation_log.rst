@@ -51,6 +51,18 @@ Release Date: TBD
 
 New Features:
 '''''''''''''
+
+* Updates to data accumulator, gain variation processor, gain normalization, and spectrum discriminator
+    * Modernized processors that have not been updated in a long time
+    * Data accumulator now accumulates variance for frequency-type data
+    * Gain variation data now includes variance, which is calculated in gain variation processor
+    * Gain normalization is updated to do normalization properly and includes both the  mean and variance
+    * Normalized FS data now stores the normalized mean and variance, which can be used by the spectrum discriminator
+    * Spectrum discriminator has been modernized and the sigma thresholding fixed
+    * Validation scripts added/used: TestBackgroundFlattening, TestDataAccumulator, TestGainNormalization, and TestGainVariationProcessor
+* Added some utilities
+    * Functions to convert between different complex representations in KTStdComplexFuncs.hh
+    * C++ name demangling in KTDemangle.hh
   
 Fixes:
 ''''''

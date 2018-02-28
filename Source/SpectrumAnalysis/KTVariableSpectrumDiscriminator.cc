@@ -51,6 +51,7 @@ namespace Katydid
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
+            fNormalize(false),
             fMagnitudeCache(),
             fDiscrim1DSignal("disc-1d", this),
             fDiscrim2DSignal("disc-2d", this),
@@ -78,6 +79,8 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also change the threshold mode, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("snr-threshold-amplitude"))
         {
             SetSNRAmplitudeThreshold(node->get_value< double >("snr-threshold-amplitude"));
@@ -91,6 +94,8 @@ namespace Katydid
             SetSigmaThreshold(node->get_value< double >("sigma-threshold"));
         }
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -100,6 +105,8 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -107,6 +114,24 @@ namespace Katydid
         if (node->has("max-bin"))
         {
             SetMaxBin(node->get_value< unsigned >("max-bin"));
+        }
+
+        SetNormalize(node->get_value< bool >("normalize", fNormalize));
+
+        return true;
+    }
+
+    bool KTVariableSpectrumDiscriminator::CheckGVData()
+    {
+        if( fGVData.GetSpline() == nullptr )
+        {
+            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
+            return false;
+        }
+        if( fGVData.GetVarianceSpline() == nullptr && fThresholdMode == eSigma )
+        {
+            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
+            return false;
         }
 
         return true;
@@ -120,16 +145,23 @@ namespace Katydid
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTConvolvedPowerSpectrumData& data)
     {
+        
+        if( ! CheckGVData() ){ return false; }
+
         return Discriminate(data, fGVData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data)
     {
+        if( ! CheckGVData() ){ return false; }
+        
         return Discriminate(data, fGVData);
     }
 
     bool KTVariableSpectrumDiscriminator::Discriminate(KTPSCollectionData& data)
     {
+        if( ! CheckGVData() ){ return false; }
+        
         return Discriminate(data, fGVData);
     }
 
@@ -231,7 +263,7 @@ namespace Katydid
             newDataSlice.SetNComponents( sliceNumber + 1 );
 
             // Discriminate the 1D spectrum
-            if (! DiscriminateSpectrum(it->second, gvData.GetSpline(0), newDataSlice, sliceNumber))
+            if (! DiscriminateSpectrum(it->second, gvData.GetSpline(0), gvData.GetVarianceSpline(0), newDataSlice, sliceNumber))
             {
                 KTERROR(sdlog, "Discrimination on spectrogram (slice " << sliceNumber << ") failed");
                 return false;
@@ -272,7 +304,7 @@ namespace Katydid
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            if (! DiscriminateSpectrum(data.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
+            if (! DiscriminateSpectrum(data.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), newData, iComponent))
             {
                 KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;
@@ -306,7 +338,7 @@ namespace Katydid
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            if (! DiscriminateSpectrum(data.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
+            if (! DiscriminateSpectrum(data.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), newData, iComponent))
             {
                 KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;
@@ -338,7 +370,7 @@ namespace Katydid
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            if (! DiscriminateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
+            if (! DiscriminateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), newData, iComponent))
             {
                 KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;
@@ -350,7 +382,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {
@@ -362,7 +394,12 @@ namespace Katydid
         double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        double normalizedValue = splineImp->GetMean();
+        double normalizedVariance = varSplineImp->GetMean();
 
         //************
         // SNR mode
@@ -384,14 +421,22 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double threshold, value;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin).abs();
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        mean = (*splineImp)(iBin - fMinBin);
+                        variance = (*varSplineImp)(iBin - fMinBin);
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
         //**************
@@ -399,38 +444,30 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double sigmaNorm = 1. / double(nBins - 1);
-            double sigma = 0., diff;
-#pragma omp parallel for private(diff) reduction(+:sigma)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-            {
-                diff = (*spectrum)(iBin).abs() - (*splineImp)(iBin - fMinBin);
-                sigma += diff * diff;
-            }
-            sigma = sqrt(sigma * sigmaNorm);
-
-            double thresholdAdd = fSigmaThreshold * sigma;
-            KTDEBUG(sdlog, "Discriminator threshold diff for component " << component << " set at <" << thresholdAdd << "> (Sigma mode)");
-
-            // loop over bins, checking against the threshold
-            double value, threshold;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
+                mean = (*splineImp)(iBin - fMinBin);
+                variance = (*varSplineImp)(iBin - fMinBin);
+                threshold = mean + fSigmaThreshold * sqrt( variance );
                 value = (*spectrum)(iBin).abs();
-                threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
+
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
 
-        spline->AddToCache(splineImp);
-
         return true;
-
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {
@@ -442,7 +479,12 @@ namespace Katydid
         double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + binWidth;
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        double normalizedValue = splineImp->GetMean();
+        double normalizedVariance = varSplineImp->GetMean();
 
         //************
         // SNR mode
@@ -464,14 +506,22 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double value, threshold;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        mean = (*splineImp)(iBin - fMinBin);
+                        variance = (*varSplineImp)(iBin - fMinBin);
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
         //**************
@@ -479,42 +529,29 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            if (spectrum->size() != fMagnitudeCache.size())
-            {
-                fMagnitudeCache.resize(spectrum->size());
-            }
-            double sigmaNorm = 1. / double(nBins - 1);
-            double sigma = 0., diff;
-#pragma omp parallel for private(diff) reduction(+:sigma)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-            {
-                fMagnitudeCache[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
-                diff = fMagnitudeCache[iBin] - (*splineImp)(iBin - fMinBin);
-                sigma += diff * diff;
-            }
-            sigma = sqrt(sigma * sigmaNorm);
-
-            double thresholdAdd = fSigmaThreshold * sigma;
-            KTDEBUG(sdlog, "Discriminator threshold diff for component " << component << " set at <" << thresholdAdd << "> (Sigma mode)");
-
-            // loop over bins, checking against the threshold
-            double value, threshold;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = fMagnitudeCache[iBin];
-                threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
+                mean = (*splineImp)(iBin - fMinBin);
+                variance = (*varSplineImp)(iBin - fMinBin);
+                threshold = mean + fSigmaThreshold * sqrt( variance );
+                value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
-
-        spline->AddToCache(splineImp);
 
         return true;
     }
 
-    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTPowerSpectrum* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component)
+    bool KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTPowerSpectrum* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component)
     {
         if (spectrum == NULL)
         {
@@ -526,7 +563,12 @@ namespace Katydid
         double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        double normalizedValue = splineImp->GetMean();
+        double normalizedVariance = varSplineImp->GetMean();
 
         //************
         // SNR mode
@@ -548,14 +590,22 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double threshold, value;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        mean = (*splineImp)(iBin - fMinBin);
+                        variance = (*varSplineImp)(iBin - fMinBin);
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
 
@@ -564,32 +614,24 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double sigmaNorm = 1. / double(nBins - 1);
-            double sigma = 0., diff;
-#pragma omp parallel for private(diff) reduction(+:sigma)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-            {
-                diff = (*spectrum)(iBin) - (*splineImp)(iBin - fMinBin);
-                sigma += diff * diff;
-            }
-            sigma = sqrt(sigma * sigmaNorm);
-
-            double thresholdAdd = fSigmaThreshold * sigma;
-            KTDEBUG(sdlog, "Discriminator threshold diff for component " << component << " set at <" << thresholdAdd << "> (Sigma mode)");
-
-            // loop over bins, checking against the threshold
-            double value, threshold;
+            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
+                mean = (*splineImp)(iBin - fMinBin);
+                variance = (*varSplineImp)(iBin - fMinBin);
+                threshold = mean + fSigmaThreshold * sqrt( variance );
                 value = (*spectrum)(iBin);
-                threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
+                {
+                    if( fNormalize )
+                    {
+                        value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                    }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                }
             }
         }
-
-        spline->AddToCache(splineImp);
 
         return true;
 

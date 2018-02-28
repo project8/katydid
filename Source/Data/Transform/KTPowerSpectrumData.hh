@@ -10,6 +10,7 @@
 
 #include "KTData.hh"
 
+#include "KTFrequencySpectrumVarianceData.hh"
 #include "KTPowerSpectrum.hh"
 
 #include <vector>
@@ -43,6 +44,36 @@ namespace Katydid
             std::vector< KTPowerSpectrum* > fSpectra;
     };
 
+
+    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumData >
+    {
+        public:
+            KTPowerSpectrumData();
+            virtual ~KTPowerSpectrumData();
+
+            KTPowerSpectrumData& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
+
+    class KTPowerSpectrumVarianceData : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumVarianceData >
+    {
+        public:
+            KTPowerSpectrumVarianceData();
+            virtual ~KTPowerSpectrumVarianceData();
+
+            KTPowerSpectrumVarianceData& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
+
+
     inline const KTPowerSpectrum* KTPowerSpectrumDataCore::GetSpectrum(unsigned component) const
     {
         return fSpectra[component];
@@ -75,20 +106,6 @@ namespace Katydid
         fSpectra[component] = spectrum;
         return;
     }
-
-    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumData >
-    {
-        public:
-            KTPowerSpectrumData();
-            virtual ~KTPowerSpectrumData();
-
-            KTPowerSpectrumData& SetNComponents(unsigned channels);
-
-        public:
-            static const std::string sName;
-
-    };
-
 
 
 } /* namespace Katydid */
