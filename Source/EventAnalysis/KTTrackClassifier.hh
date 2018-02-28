@@ -24,8 +24,7 @@
 #include <dlib/matrix.h>
 #include <dlib/svm_threaded.h>
 #include <dlib/svm.h>
-using namespace dlib;
-
+#include <dlib/logger.h>
 
 namespace Katydid
 {
