@@ -103,52 +103,73 @@ namespace Katydid
     bool KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataPolar& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        return CoreDiscriminate(data, newData, std::vector< PerComponentInfo >());
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataFFTW& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        return CoreDiscriminate(data, newData, std::vector< PerComponentInfo >());
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataPolar& data)
     {
-        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        unsigned nComponents = data.GetNComponents();
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
+        std::vector< PerComponentInfo > pcData(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            pcData[iComponent].fMean = data.GetNormalizedMean(iComponent);
+            pcData[iComponent].fVariance = data.GetNormalizedVariance(iComponent);
+        }
+        return CoreDiscriminate(data, newData, pcData);
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataFFTW& data)
     {
-        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        unsigned nComponents = data.GetNComponents();
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
+        std::vector< PerComponentInfo > pcData(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            pcData[iComponent].fMean = data.GetNormalizedMean(iComponent);
+            pcData[iComponent].fVariance = data.GetNormalizedVariance(iComponent);
+        }
+        return CoreDiscriminate(data, newData, pcData);
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTNormalizedPSData& data)
     {
-        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        unsigned nComponents = data.GetNComponents();
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
+        std::vector< PerComponentInfo > pcData(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            pcData[iComponent].fMean = data.GetNormalizedMean(iComponent);
+            pcData[iComponent].fVariance = data.GetNormalizedVariance(iComponent);
+        }
+        return CoreDiscriminate(data, newData, pcData);
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTPowerSpectrumData& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        return CoreDiscriminate(data, newData, std::vector< PerComponentInfo >());
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTCorrelationData& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        return CoreDiscriminate(data, newData, std::vector< PerComponentInfo >());
     }
 
     bool KTSpectrumDiscriminator::Discriminate(KTWignerVilleData& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
-        return CoreDiscriminate(data, newData);
+        return CoreDiscriminate(data, newData, std::vector< PerComponentInfo >());
     }
 
-    bool KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData)
+    bool KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData, std::vector< PerComponentInfo > pcData)
     {
         if (fCalculateMinBin)
         {
@@ -188,13 +209,20 @@ namespace Katydid
             }
 
             double mean = 0.;
-#pragma omp parallel for reduction(+:mean)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+            if (! pcData.empty())
             {
-                magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
-                mean += magnitude[iBin];
+                mean = pcData[iComponent].fMean;
             }
-            mean *= norm;
+            else
+            {
+#pragma omp parallel for reduction(+:mean)
+                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                {
+                    magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                    mean += magnitude[iBin];
+                }
+                mean *= norm;
+            }
 
             double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
@@ -212,12 +240,19 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 double sigma = 0.;
-#pragma omp parallel for reduction(+:sigma)
-                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                if (! pcData.empty())
                 {
-                    sigma += magnitude[iBin] * magnitude[iBin];
+                    sigma = sqrt(pcData[iComponent].fVariance);
                 }
-                sigma = sqrt(sigma*norm  - mean*mean);
+                else
+                {
+#pragma omp parallel for reduction(+:sigma)
+                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                    {
+                        sigma += magnitude[iBin] * magnitude[iBin];
+                    }
+                    sigma = sqrt(sigma*norm  - mean*mean);
+                }
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
@@ -239,7 +274,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData)
+    bool KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData, std::vector< PerComponentInfo > pcData)
     {
         if (fCalculateMinBin)
         {
@@ -272,11 +307,18 @@ namespace Katydid
             }
 
             double mean = 0.;
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+            if (! pcData.empty())
             {
-                mean += (*spectrum)(iBin).abs();
+                mean = pcData[iComponent].fMean;
             }
-            mean *= norm;
+            else
+            {
+                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                {
+                    mean += (*spectrum)(iBin).abs();
+                }
+                mean *= norm;
+            }
 
             double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
@@ -294,11 +336,18 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 double sigma = 0.;
-                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                if (! pcData.empty())
                 {
-                    sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
+                    sigma = sqrt(pcData[iComponent].fVariance);
                 }
-                sigma = sqrt(sigma*norm - mean*mean);
+                else
+                {
+                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                    {
+                        sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
+                    }
+                    sigma = sqrt(sigma*norm - mean*mean);
+                }
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
@@ -325,7 +374,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTSpectrumDiscriminator::CoreDiscriminate(KTPowerSpectrumDataCore& data, KTDiscriminatedPoints1DData& newData)
+    bool KTSpectrumDiscriminator::CoreDiscriminate(KTPowerSpectrumDataCore& data, KTDiscriminatedPoints1DData& newData, std::vector< PerComponentInfo > pcData)
     {
         if (fCalculateMinBin)
         {
@@ -358,12 +407,19 @@ namespace Katydid
             }
 
             double mean = 0.;
-#pragma omp parallel for reduction(+:mean)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+            if (! pcData.empty())
             {
-                mean += (*spectrum)(iBin);
+                mean = pcData[iComponent].fMean;
             }
-            mean *= norm;
+            else
+            {
+#pragma omp parallel for reduction(+:mean)
+                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                {
+                    mean += (*spectrum)(iBin);
+                }
+                mean *= norm;
+            }
 
             double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
@@ -381,12 +437,19 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 double sigma = 0.;
-#pragma omp parallel for reduction(+:sigma)
-                for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                if (! pcData.empty())
                 {
-                    sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
+                    sigma = sqrt(pcData[iComponent].fVariance);
                 }
-                sigma = sqrt(sigma*norm - mean*mean);
+                else
+                {
+#pragma omp parallel for reduction(+:sigma)
+                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
+                    {
+                        sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
+                    }
+                    sigma = sqrt(sigma*norm - mean*mean);
+                }
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
