@@ -16,15 +16,17 @@
 #include "KTPowerFitData.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
 
 #include "TMVA/Reader.h"
 
-// dlib stuff
-#include <dlib/matrix.h>
-#include <dlib/svm_threaded.h>
-#include <dlib/svm.h>
-#include <dlib/logger.h>
+#undef LINFO
+#undef LPROG
+#undef LWARN
+#undef LERROR
+#undef LFATAL
+#undef LASSERT
+#undef LTRACE
+#undef LDEBUG
 
 namespace Katydid
 {
@@ -172,6 +174,20 @@ namespace Katydid
             std::string fDFFile;
 
             // Dlib stuff
+            float fPower;
+            float fSlope;
+            float fTimeLength;
+            float fAverage;
+            float fRMS;
+            float fSkewness;
+            float fKurtosis;
+            float fNormCentral;
+            float fMeanCentral;
+            float fSigmaCentral;
+            float fMaxCentral;
+            float fNPeaks;
+            float fCentralPowerFraction;
+            float fRMSAwayFromCentral;
 
         public:
             bool Initialize();

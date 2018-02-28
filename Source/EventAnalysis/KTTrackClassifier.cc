@@ -9,6 +9,11 @@
 
 #include "KTLogger.hh"
 
+// dlib stuff
+#include <dlib/matrix.h>
+#include <dlib/svm_threaded.h>
+#include <dlib/svm.h>
+
 namespace Katydid
 {
     KTLOGGER(evlog, "KTTrackClassifier");
@@ -221,14 +226,14 @@ namespace Katydid
         fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
         fKurtosis = (float)(pfData.GetKurtosis());
         fSkewness = (float)(pfData.GetSkewness());
-        fCentralPowerFraction = (float)(pfData.GetCentralPowerFraction()); 
+        fCentralPowerFraction = (float)(pfData.GetCentralPowerRatio()); 
         fNPeaks = (float)(pfData.GetNPeaks());
         fMaxCentral = (float)(pfData.GetMaximumCentral());
         fMeanCentral = (float)(pfData.GetMeanCentral());
         fNormCentral = (float)(pfData.GetNormCentral());
         fSigmaCentral = (float)(pfData.GetSigmaCentral());
         
-        typedef matrix<double,14,1> sample_type;
+        typedef dlib::matrix<double,14,1> sample_type;
         sample_type classifierFeatures; // set up 14-dim vector of classification features
         classifierFeatures(0) = fPower;
         classifierFeatures(1) = fSlope;
@@ -246,20 +251,20 @@ namespace Katydid
         classifierFeatures(13) = fSigmaCentral;
         
         // Some helpful type definitions from dlib
-        typedef one_vs_all_trainer<any_trainer< sample_type, double > > ova_trainer;
-        typedef radial_basis_kernel<sample_type> rbf_kernel;
-        typedef one_vs_all_decision_function<ova_trainer,decision_function<rbf_kernel>> decision_funct_type;
-        typedef normalized_function<decision_funct_type> normalized_decision_funct_type;
+        typedef dlib::one_vs_all_trainer<dlib::any_trainer< sample_type, double > > ova_trainer;
+        typedef dlib::radial_basis_kernel<sample_type> rbf_kernel;
+        typedef dlib::one_vs_all_decision_function<ova_trainer,dlib::decision_function<rbf_kernel>> decision_funct_type;
+        typedef dlib::normalized_function<decision_funct_type> normalized_decision_funct_type;
         normalized_decision_funct_type decisionFunction; // declare normalized ova decision function for SVM with radial basis kernel
         try
         {
             KTDEBUG(avlog_hh,"DF File = " << fDFFile);
-            deserialize(fDFFile) >> decisionFunction; // load train decision function
+            dlib::deserialize(fDFFile) >> decisionFunction; // load train decision function
         }
         catch(...)
         {
             KTERROR(avlog_hh, "Unable to read the decision function from file. Aborting");
-            return
+            return;
         }
 
         double classificationLabel = decisionFunction(classifierFeatures); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
