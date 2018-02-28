@@ -36,7 +36,7 @@ namespace Katydid
 
     KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
             KTProcessor(name),
-            fNormalize(true),
+            fNormalize(false),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
