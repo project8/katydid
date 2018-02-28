@@ -96,9 +96,9 @@ namespace Katydid
             bool Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
             bool Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvdata);
 
-            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline);
-            KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline);
-            KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline, const KTSpline* varSpline);
+            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance);
+            KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance);
+            KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance);
 
         private:
             KTGainVariationData fGVData;
