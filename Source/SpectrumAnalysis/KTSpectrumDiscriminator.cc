@@ -169,7 +169,7 @@ namespace Katydid
 
         // Interval: [fMinBin, fMaxBin)
         unsigned nBins = fMaxBin - fMinBin + 1;
-        double sigmaNorm = 1. / double(nBins - 1);
+        double norm = 1. / double(nBins);
 
         // Temporary storage for magnitude values
         vector< double > magnitude(data.GetSpectrumFFTW(0)->size());
@@ -194,7 +194,7 @@ namespace Katydid
                 magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 mean += magnitude[iBin];
             }
-            mean /= (double)nBins;
+            mean *= norm;
 
             double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
@@ -217,7 +217,7 @@ namespace Katydid
                 {
                     sigma += magnitude[iBin] * magnitude[iBin];
                 }
-                sigma = sqrt(sigma*sigmaNorm  - mean*mean);
+                sigma = sqrt(sigma*norm  - mean*mean);
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
@@ -260,7 +260,7 @@ namespace Katydid
 
         // Interval: [fMinBin, fMaxBin)
         unsigned nBins = fMaxBin - fMinBin + 1;
-        double sigmaNorm = 1. / double(nBins - 1);
+        double norm = 1. / (double)nBins;
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
@@ -276,7 +276,7 @@ namespace Katydid
             {
                 mean += (*spectrum)(iBin).abs();
             }
-            mean /= (double)nBins;
+            mean *= norm;
 
             double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
@@ -298,7 +298,7 @@ namespace Katydid
                 {
                     sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
                 }
-                sigma = sqrt(sigma*sigmaNorm - mean*mean);
+                sigma = sqrt(sigma*norm - mean*mean);
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
@@ -346,7 +346,7 @@ namespace Katydid
 
         // Interval: [fMinBin, fMaxBin)
         unsigned nBins = fMaxBin - fMinBin + 1;
-        double sigmaNorm = 1. / double(nBins - 1);
+        double norm = 1. / double(nBins - 1);
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
@@ -363,7 +363,7 @@ namespace Katydid
             {
                 mean += (*spectrum)(iBin);
             }
-            mean /= (double)nBins;
+            mean *= norm;
 
             double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
@@ -386,7 +386,7 @@ namespace Katydid
                 {
                     sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
                 }
-                sigma = sqrt(sigma*sigmaNorm - mean*mean);
+                sigma = sqrt(sigma*norm - mean*mean);
 
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");

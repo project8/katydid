@@ -35,8 +35,8 @@ int main()
     unsigned nSpectra = 200;
     double minFreq = 0., maxFreq = 100.;
 
-    double meanValueLow = 8.;
-    double meanValueHigh = 32.;
+    double meanValueLow = 800.;
+    double meanValueHigh = 3200.;
     double noiseSigmaLow = 5.;
     double noiseSigmaHigh = 15.;
 
@@ -71,8 +71,6 @@ int main()
         {
             meanValue = meanValueLow + (double)iBin * meanValueSlope;
             noiseSigma = noiseSigmaLow + (double)iBin * noiseSigmaSlope;
-            if (iBin < 10)
-                KTWARN(testlog, "meanValue and noiseSigma: " << meanValue << "  " << noiseSigma);
             rand.param( KTRNGGaussian<>::param_type( meanValue, noiseSigma ) );
             value = rand();
             if( value < 0.0 )
@@ -96,12 +94,12 @@ int main()
 
     KTFrequencySpectrumDataPolar& accData = accResults.fData->Of< KTFrequencySpectrumDataPolar >();
     KTFrequencySpectrumVarianceDataPolar& accVarData = accResults.fData->Of< KTFrequencySpectrumVarianceDataPolar >();
-/**/
+/*
     for( unsigned iBin = 0; iBin < 20; iBin++ )
     {
         KTDEBUG(testlog, (*(accVarData.GetSpectrum(0)))(iBin));
     }
-/**/
+*/
     KTINFO(testlog, "Initializing gain variation");
 
     KTGainVariationProcessor gvProc;
@@ -136,9 +134,9 @@ int main()
 
     KTINFO(testlog, "Performing discrimination");
 
-    KTFrequencySpectrumPolar* lastFS = nullptr;
-    KTFrequencySpectrumPolar* lastNormFS = nullptr;
-    for( unsigned iSpectrum = 0; iSpectrum < 1; ++iSpectrum )
+    KTFrequencySpectrumPolar* firstFS = nullptr;
+    KTFrequencySpectrumPolar* firstNormFS = nullptr;
+    for( unsigned iSpectrum = 0; iSpectrum < nSpectra; ++iSpectrum )
     {
         KTFrequencySpectrumDataPolar newData;
         KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar( nBins, minFreq, maxFreq );
@@ -146,8 +144,6 @@ int main()
         {
             meanValue = meanValueLow + (double)iBin * meanValueSlope;
             noiseSigma = noiseSigmaLow + (double)iBin * noiseSigmaSlope;
-            if (iBin < 10)
-                KTWARN(testlog, "meanValue and noiseSigma: " << meanValue << "  " << noiseSigma);
             rand.param( KTRNGGaussian<>::param_type( meanValue, noiseSigma ) );
             value = rand();
             if( value < 0.0 )
@@ -170,9 +166,9 @@ int main()
             //{
             //    KTWARN(testlog, (*newFS)(iBin) << "  " << (*(normData.GetSpectrumPolar(0)))(iBin) );
             //}
-            lastFS = new KTFrequencySpectrumPolar(*newFS);
-            lastNormFS = new KTFrequencySpectrumPolar(*(normData.GetSpectrumPolar(0)));
-            KTWARN(testlog, lastFS << "  " << lastNormFS);
+            firstFS = new KTFrequencySpectrumPolar(*newFS);
+            firstNormFS = new KTFrequencySpectrumPolar(*(normData.GetSpectrumPolar(0)));
+            //KTWARN(testlog, firstFS << "  " << firstNormFS);
         }
 
         discrim.Discriminate( normData );
@@ -184,9 +180,10 @@ int main()
         }
     }
 
+    unsigned nDiscPoints = xPoints.size();
     KTINFO(testlog, "Discriminator threshold is at " << discrim.GetSigmaThreshold() << " sigma");
     KTINFO(testlog, "Total number of points tested: " << nSpectra * nBins);
-    KTINFO(testlog, "Points above threshold: " << xPoints.size() << " (" << (double)xPoints.size() / (double)(nSpectra * nBins) * 100. << "%)");
+    KTINFO(testlog, "Points above threshold: " << nDiscPoints << " (" << (double)nDiscPoints/ (double)(nSpectra * nBins) * 100. << "%)");
 
 #ifdef ROOT_FOUND
     KTINFO(testlog, "Writing to ROOT file");
@@ -207,16 +204,22 @@ int main()
     histFreqVarSpec->SetDirectory( file );
     histFreqVarSpec->SetLineColor(kMagenta+2);
 
-    TH1D* histLastFS = KT2ROOT::CreateMagnitudeHistogram(lastFS, "hPreNormFS");
+    TH1D* histLastFS = KT2ROOT::CreateMagnitudeHistogram(firstFS, "hPreNormFS");
     histLastFS->SetDirectory( file );
     histLastFS->SetLineColor(kBlue-4);
 
-    TH1D* histLastNormFS = KT2ROOT::CreateMagnitudeHistogram(lastNormFS, "hNormFS");
+    TH1D* histLastNormFS = KT2ROOT::CreateMagnitudeHistogram(firstNormFS, "hNormFS");
     histLastNormFS->SetDirectory( file );
     histLastNormFS->SetLineColor(kGreen+2);
     
     KTDEBUG( testlog, "Converting discriminated points to TGraph");
     TGraph* plot = new TGraph( xPoints.size(), xPoints.data(), yPoints.data() );
+
+    TH1I* histDiscPointDist = new TH1I("hDiscPointDist", "Discriminated Points", 100, minFreq, maxFreq);
+    for (const double& value : yPoints)
+    {
+        histDiscPointDist->Fill(value);
+    }
 
     KTDEBUG(testlog, "Appending TGraph to TFile");
     //file->Append( plot );
@@ -227,6 +230,7 @@ int main()
     histLastFS->Write();
     histLastNormFS->Write();
     plot->Write( "thresholded_points" );
+    histDiscPointDist->Write();
     
     KTDEBUG(testlog, "Closing file");
     file->Close();
