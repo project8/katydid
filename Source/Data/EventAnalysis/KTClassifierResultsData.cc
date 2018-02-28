@@ -15,9 +15,9 @@ namespace Katydid
 
     KTClassifierResultsData::KTClassifierResultsData() :
             KTExtensibleData< KTClassifierResultsData >(),
-            MCH(false),
-            MCL(false),
-            SB(false)    
+            fMCH(false),
+            fMCL(false),
+            fSB(false)    
     {
     }
 
@@ -38,7 +38,7 @@ namespace Katydid
         KTExtensibleData< KTClassifierResultsData >::operator=(rhs);
         fMCH = rhs.fMCH;
         fMCL = rhs.fMCL;
-        fSB = rhs.SB;
+        fSB = rhs.fSB;
         return *this;
     }
 
