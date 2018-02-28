@@ -35,9 +35,11 @@ namespace Katydid
      @class KTSpectrumDiscriminator
      @author N. S. Oblath
 
-     @brief .
+     @brief Flat cut on spectrum data objects.
 
      @details
+     The threshold can be specified as a power or amplitude SNR, or as a number of standard deviations (sigma).
+
      Abscissa values in the output are the bin centers of the frequency axis.
   
      Configuration name: "spectrum-discriminator"

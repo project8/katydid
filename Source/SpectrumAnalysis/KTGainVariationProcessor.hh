@@ -44,7 +44,7 @@ namespace Katydid
      @class KTGainVariationProcessor
      @author N. S. Oblath
 
-     @brief Fit the background shape using a 3rd-order spline.
+     @brief Fit the background shape and variance using 3rd-order splines.
 
      @details
      The spline fit is performed between fMinBin and fMaxBin, inclusive.

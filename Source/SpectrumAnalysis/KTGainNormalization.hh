@@ -30,9 +30,19 @@ namespace Katydid
      @class KTGainNormalization
      @author N. S. Oblath
 
-     @brief Normalizes a frequency spectrum using a KTGainVariationData object.
+     @brief Normalizes spectrum data using the background shape and variance.
 
      @details
+     Background shape and variance are supplied in a KTGainVariation object.  That can be either pre-calculated and provided using
+     the SetPreCalcGainVar() function ("gv" slot), or provided with each slice to be normalized.  When using the pre-calculated gain variation,
+     use one of the "-pre" slots / Normalize() functions with a single data object argument.
+
+     The normalized bin value, \f$\hat{x}\f$ is calculated as follows:
+     \f[
+         \hat{x} = \langle\mu\rangle + (x - \mu) * \sqrt{\frac{\langle\sigma^2\rangle}{\sigma^2}},
+     \f]
+     where \f$x\f$ is the unnormalized bin value, \f$\mu\f$ is the background mean at that bin, \f$\sigma^2\f$ is the background variance at
+     that bin, \f$\langle\mu\rangle\f$ is the mean of the background mean, and \f$\langle\sigma^2\rangle\f$ is the mean of the background variance.
  
      Configuration name: "gain-normalization"
 

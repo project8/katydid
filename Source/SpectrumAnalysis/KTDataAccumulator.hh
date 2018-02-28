@@ -58,7 +58,8 @@ namespace Katydid
      The signal interval is how often the output signal will be emitted.  
      If the signal interval is 0, there will be no slice signals.
 
-     During accumulation, the accumulating data object will contain the sum of the accumulated data
+     When the size of the accumulator is not specified, and during accumulation,
+     the accumulating data object will contain the sum of the accumulated data
      and, where applicable, the variance-accumulating data object will contain the sum of the squares
      of the accumulated data.  This means that when the mid-accumulation signals are emitted, if you
      want to get the mean of the data, divide by the number of slices accumulated, and if you want the
