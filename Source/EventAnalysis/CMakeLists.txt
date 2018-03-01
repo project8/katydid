@@ -64,14 +64,25 @@ if (ROOT_FOUND)
     set (EVENTANALYSIS_HEADERFILES 
         ${EVENTANALYSIS_HEADERFILES}   
         KTLinearDensityProbeFit.hh
-        KTTrackClassifier.hh
+        KTTMVAClassifier.hh
     )
     set (EVENTANALYSIS_SOURCEFILES
         ${EVENTANALYSIS_SOURCEFILES}
         KTLinearDensityProbeFit.cc
-        KTTrackClassifier.cc
+        KTTMVAClassifier.cc
     )
 endif (ROOT_FOUND)
+
+if (DLIB_FOUND)
+    set (EVENTANALYSIS_HEADERFILES
+        ${EVENTANALYSIS_HEADERFILES}
+        KTDLIBClassifier.hh
+    )
+    set (EVENTANALYSIS_SOURCEFILES
+        ${EVENTANALYSIS_SOURCEFILES}
+        KTDLIBClassifier.cc
+    )
+endif (DLIB_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
