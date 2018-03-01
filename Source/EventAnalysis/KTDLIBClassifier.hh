@@ -11,9 +11,9 @@
 #include "KTProcessor.hh"
 #include "KTData.hh"
 
-#include "KTSlot.hh"
-
 #include "KTClassifierResultsData.hh"
+
+#include "KTSlot.hh"
 
 namespace Katydid
 {

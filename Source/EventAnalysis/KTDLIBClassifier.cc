@@ -30,7 +30,7 @@
 namespace Katydid
 {
 
-    KTLOGGER(avlog_hh, "KTDLIBClassifier.hh");
+    KTLOGGER(evlog_hh, "KTDLIBClassifier");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTDLIBClassifier, "dlib-classifier");
