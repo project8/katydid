@@ -1,6 +1,0 @@
-<map id="Nymph::KTReader" name="Nymph::KTReader">
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_multi_file_j_s_o_n_reader.html" title="JSON file reader for reading multiple files, and emitting a signal for each. " alt="" coords="5,583,225,976"/>
-<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_multi_file_r_o_o_t_tree_reader.html" title="ROOT file reader for reading multiple files, extracting data from TTrees, and emitting a signal for e..." alt="" coords="249,629,474,929"/>
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="141,287,335,400"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_processor.html" title="{Nymph::KTProcessor\n|# fSignalMap\l# fSlotMap\l|+ KTProcessor()\l+ ~KTProcessor()\l+ ConnectASlot()\l+ ConnectASignal()\l+ ConnectSignalToSlot()\l+ RegisterSignal()\l+ RegisterSlot()\l+ RegisterSlot()\l+ RegisterSlot()\l+ GetSignal()\l+ GetSlot()\l+ RegisterSignal()\l}" alt="" coords="155,5,320,239"/>
-</map>

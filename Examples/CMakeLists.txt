@@ -6,23 +6,24 @@
 
 # Config files
 set (EXAMPLE_CONFIGFILES
-    ConfigFiles/DisplayFFT.json
-    ConfigFiles/DisplaySpectrograms.yaml
     ConfigFiles/EvaluateCandidates.json
     ConfigFiles/FSPeakAnalysisConfig.json
     ConfigFiles/KatydidPSAnalysisTemplate.json
     ConfigFiles/KatydidPSComplexConfig.json
-    ConfigFiles/KatydidPSConfig.json
-    ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/KatydidWVConfig.json
-    ConfigFiles/PrintInfo.json
-    ConfigFiles/SidebandTrackAnalysis.yaml
-    ConfigFiles/SpectrogramConfig.json
     ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
     ConfigFiles/HDF5/AverageFFT.json
     ConfigFiles/HDF5/AveragePS.json
     ConfigFiles/HDF5/ConvertEggToHDF5.json
+    
+    ConfigFiles/DisplayFFT.yaml
+    ConfigFiles/DisplaySpectrograms.yaml
+    ConfigFiles/KatydidPSConfig.yaml
+    ConfigFiles/PrintInfo.yaml
+    ConfigFiles/SidebandTrackAnalysis.yaml    
+    ConfigFiles/SpectrogramConfig.yaml
+    ConfigFiles/SpectrogramImageConfig.yaml
 )
 
 pbuilder_install_config (${EXAMPLE_CONFIGFILES})

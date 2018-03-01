@@ -13,9 +13,9 @@ processor-toolbox:
       - signal: "egg:header"
         slot: "fft:header"
       - signal: "egg:ts"
-        slot: "fft:ts-real"
+        slot: "fft:ts-fftw"
       - signal: "fft:fft"
-        slot: "to-ps:fs-polar-to-psd"
+        slot: "to-ps:fs-fftw-to-psd"
       - signal: "to-ps:psd"
         slot: "writer:ps"
 

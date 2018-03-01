@@ -1,4 +1,0 @@
-<map id="Nymph::KTExtensibleData&lt; XDerivedType &gt;" name="Nymph::KTExtensibleData&lt; XDerivedType &gt;">
-<area shape="rect" id="node2" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; XDerivedType, KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,340,215,507"/>
-<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct_core.html" title="{Nymph::KTExtensibleStruct\lCore\&lt; KTDataCore \&gt;\n||+ KTExtensibleStructCore()\l+ KTExtensibleStructCore()\l+ ~KTExtensibleStructCore()\l+ operator=()\l+ Clear()\l+ Of()\l+ Of()\l+ Has()\l+ Detatch()\l+ Clone()\l+ Pull()\l+ Next()\l+ Prev()\l+ Last()\l+ First()\l# SetPrevPtrInNext()\l}" alt="" coords="14,5,206,292"/>
-</map>

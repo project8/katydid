@@ -37,6 +37,10 @@ namespace Katydid
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
+            fGVData(),
+            fMagnitudeCache(),
+            fMeanGV(0.),
+            fMeanGVVariance(-1.), // negative variance is used to indicate that variance has not yet been calculated, in which case it should be calculated for every slice, assuming we're not using the pre-calculated GV
             fFSPolarSignal("norm-fs-polar", this),
             fFSFFTWSignal("norm-fs-fftw", this),
             fPSSignal("norm-ps", this),
@@ -44,6 +48,8 @@ namespace Katydid
             fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal),
             fPSSlot("ps", this, &KTGainNormalization::Normalize, &fPSSignal),
             fPreCalcSlot("gv", this, &KTGainNormalization::SetPreCalcGainVar),
+            fFSPolarPreCalcSlot("fs-polar-pre", this, &KTGainNormalization::Normalize, &fFSPolarSignal),
+            fFSFFTWPreCalcSlot("fs-fftw-pre", this, &KTGainNormalization::Normalize, &fFSFFTWSignal),
             fPSPreCalcSlot("ps-pre", this, &KTGainNormalization::Normalize, &fPSSignal)
     {
     }
@@ -56,6 +62,8 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -65,6 +73,8 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
+        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -84,6 +94,16 @@ namespace Katydid
         return true;
     }
 
+    bool KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData)
+    {
+        return Normalize(fsData, fGVData);
+    }
+
+    bool KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData)
+    {
+        return Normalize(fsData, fGVData);
+    }
+
     bool KTGainNormalization::Normalize(KTPowerSpectrumData& psData)
     {
         return Normalize(psData, fGVData);
@@ -91,9 +111,6 @@ namespace Katydid
 
     bool KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData)
     {
-        if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumPolar(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
-
         unsigned nComponents = fsData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
@@ -103,9 +120,10 @@ namespace Katydid
 
         KTNormalizedFSDataPolar& newData = fsData.Of< KTNormalizedFSDataPolar >().SetNComponents(nComponents);
 
+        double normalizedMean = 0., normalizedVariance = 0.;
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent));
+            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), normalizedMean, normalizedVariance);
             if (newSpectrum == NULL)
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
@@ -113,6 +131,8 @@ namespace Katydid
             }
             KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             newData.SetSpectrum(newSpectrum, iComponent);
+            newData.SetNormalizedMean(normalizedMean, iComponent);
+            newData.SetNormalizedVariance(normalizedVariance, iComponent);
         }
         KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
 
@@ -121,9 +141,6 @@ namespace Katydid
 
     bool KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData)
     {
-        if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
-
         unsigned nComponents = fsData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
@@ -133,16 +150,19 @@ namespace Katydid
 
         KTNormalizedFSDataFFTW& newData = fsData.Of< KTNormalizedFSDataFFTW >().SetNComponents(nComponents);
 
+        double normalizedMean = 0., normalizedVariance = 0.;
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent));
+            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), normalizedMean, normalizedVariance);
             if (newSpectrum == NULL)
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
             KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
-             newData.SetSpectrum(newSpectrum, iComponent);
+            newData.SetSpectrum(newSpectrum, iComponent);
+            newData.SetNormalizedMean(normalizedMean, iComponent);
+            newData.SetNormalizedVariance(normalizedVariance, iComponent);
         }
         KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
 
@@ -151,9 +171,6 @@ namespace Katydid
 
     bool KTGainNormalization::Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvData)
     {
-        if (fCalculateMinBin) SetMinBin(psData.GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(psData.GetSpectrum(0)->FindBin(fMaxFrequency));
-
         unsigned nComponents = psData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
@@ -163,29 +180,41 @@ namespace Katydid
 
         KTNormalizedPSData& newData = psData.Of< KTNormalizedPSData >().SetNComponents(nComponents);
 
+        double normalizedMean = 0., normalizedVariance = 0.;
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            KTPowerSpectrum* newSpectrum = Normalize(psData.GetSpectrum(iComponent), gvData.GetSpline(iComponent));
+            KTPowerSpectrum* newSpectrum = Normalize(psData.GetSpectrum(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), normalizedMean, normalizedVariance);
             if (newSpectrum == NULL)
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
             KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
-             newData.SetSpectrum(newSpectrum, iComponent);
+            newData.SetSpectrum(newSpectrum, iComponent);
+            newData.SetNormalizedMean(normalizedMean, iComponent);
+            newData.SetNormalizedVariance(normalizedVariance, iComponent);
         }
         KTINFO(gnlog, "Completed gain normalization of " << nComponents << " power spectra");
 
         return true;
     }
 
-    KTFrequencySpectrumPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline)
+    KTFrequencySpectrumPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance)
     {
+        if (fCalculateMinBin) SetMinBin(frequencySpectrum->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(frequencySpectrum->FindBin(fMaxFrequency));
+
         unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
         double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
 
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        normalizedMean = splineImp->GetMean();
+        normalizedVariance = varSplineImp->GetMean();
+        KTDEBUG(gnlog, "Normalized mean and variance: " << normalizedMean << "  " << normalizedVariance);
 
         unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
@@ -214,22 +243,28 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin - fMinBin), (*frequencySpectrum)(iBin).arg());
+                (*newSpectrum)(iBin).set_polar(normalizedMean + ((*frequencySpectrum)(iBin).abs() - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin)), (*frequencySpectrum)(iBin).arg());
             }
         }
-
-        spline->AddToCache(splineImp);
 
         return newSpectrum;
     }
 
-    KTFrequencySpectrumFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline)
+    KTFrequencySpectrumFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance)
     {
+        if (fCalculateMinBin) SetMinBin(frequencySpectrum->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(frequencySpectrum->FindBin(fMaxFrequency));
+
         unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
         double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
 
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        normalizedMean = splineImp->GetMean();
+        normalizedVariance = varSplineImp->GetMean();
 
         unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
@@ -260,28 +295,35 @@ namespace Katydid
             }
 
             // Then scale the bins within the scaling range
-            double scaling;
-#pragma omp for private(iBin, scaling)
+            complexpolar<double> value;
+#pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                scaling = 1. / (*splineImp)(iBin);
-                (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0] * scaling;
-                (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1] * scaling;
+                value.set_rect((*frequencySpectrum)(iBin)[0], (*frequencySpectrum)(iBin)[1]);
+                value.set_polar(normalizedMean + (value.abs() - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin)), value.arg());
+                (*newSpectrum)(iBin)[0] = real(value);
+                (*newSpectrum)(iBin)[1] = imag(value);
             }
         }
-
-        spline->AddToCache(splineImp);
 
         return newSpectrum;
     }
 
-    KTPowerSpectrum* KTGainNormalization::Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline)
+    KTPowerSpectrum* KTGainNormalization::Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance)
     {
+        if (fCalculateMinBin) SetMinBin(powerSpectrum->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(powerSpectrum->FindBin(fMaxFrequency));
+
         unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = powerSpectrum->GetBinLowEdge(fMinBin);
         double freqMax = powerSpectrum->GetBinLowEdge(fMaxBin) + powerSpectrum->GetBinWidth();
 
-        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
+        std::shared_ptr< KTSpline::Implementation > varSplineImp = varSpline->Implement(nBins, freqMin, freqMax);
+
+        // Average of each spline
+        normalizedMean = splineImp->GetMean();
+        normalizedVariance = varSplineImp->GetMean();
 
         unsigned nSpectrumBins = powerSpectrum->size();
         double freqSpectrumMin = powerSpectrum->GetRangeMin();
@@ -310,11 +352,9 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                (*newSpectrum)(iBin) = (*powerSpectrum)(iBin) / (*splineImp)(iBin - fMinBin);
+                (*newSpectrum)(iBin) = normalizedMean + ((*powerSpectrum)(iBin) - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin));
             }
         }
-
-        spline->AddToCache(splineImp);
 
         return newSpectrum;
     }

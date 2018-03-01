@@ -27,102 +27,112 @@ namespace Katydid
     template< typename XType >
     struct KTVTPATypeInfo
     {
-            static bool IsUsable() {return false;}
-            static size_t Size() {return sizeof( XType );}
-            static bool IsSigned() {return false;}
-            static uint32_t DataFormat() {return sInvalidFormat;}
+            static constexpr bool IsUsable() {return false;}
+            static constexpr size_t Size() {return sizeof( XType );}
+            static constexpr bool IsSigned() {return false;}
+            static constexpr uint32_t DataFormat() {return sInvalidFormat;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< uint8_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 1;}
-            static bool IsSigned() {return false;}
-            static uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 1;}
+            static constexpr bool IsSigned() {return false;}
+            static constexpr uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< uint16_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 2;}
-            static bool IsSigned() {return false;}
-            static uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 2;}
+            static constexpr bool IsSigned() {return false;}
+            static constexpr uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< uint32_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 4;}
-            static bool IsSigned() {return false;}
-            static uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 4;}
+            static constexpr bool IsSigned() {return false;}
+            static constexpr uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< uint64_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 8;}
-            static bool IsSigned() {return false;}
-            static uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 8;}
+            static constexpr bool IsSigned() {return false;}
+            static constexpr uint32_t DataFormat() {return sDigitizedUS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< int8_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 1;}
-            static bool IsSigned() {return true;}
-            static uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 1;}
+            static constexpr bool IsSigned() {return true;}
+            static constexpr uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< int16_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 2;}
-            static bool IsSigned() {return true;}
-            static uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 2;}
+            static constexpr bool IsSigned() {return true;}
+            static constexpr uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< int32_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 4;}
-            static bool IsSigned() {return true;}
-            static uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 4;}
+            static constexpr bool IsSigned() {return true;}
+            static constexpr uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< int64_t >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 8;}
-            static bool IsSigned() {return true;}
-            static uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 8;}
+            static constexpr bool IsSigned() {return true;}
+            static constexpr uint32_t DataFormat() {return sDigitizedS;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< float >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 4;}
-            static bool IsSigned() {return true;}
-            static uint32_t DataFormat() {return sAnalog;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 4;}
+            static constexpr bool IsSigned() {return true;}
+            static constexpr uint32_t DataFormat() {return sAnalog;}
+            static constexpr bool IsComplex() {return false;}
     };
 
     template<>
     struct KTVTPATypeInfo< double >
     {
-            static bool IsUsable() {return true;}
-            static size_t Size() {return 8;}
-            static bool IsSigned() {return true;}
-            static uint32_t DataFormat() {return sAnalog;}
+            static constexpr bool IsUsable() {return true;}
+            static constexpr size_t Size() {return 8;}
+            static constexpr bool IsSigned() {return true;}
+            static constexpr uint32_t DataFormat() {return sAnalog;}
+            static constexpr bool IsComplex() {return false;}
     };
-
 
 
     //*************************
@@ -152,12 +162,6 @@ namespace Katydid
             typedef uint8_t storage_value_type;
             typedef uint8_t* storage_type;
             typedef XInterfaceType ifc_value_type;
-            /*
-            typedef const fftw_complex* const_iterator;
-            typedef fftw_complex* iterator;
-            typedef const fftw_complex* const_reverse_iterator;
-            typedef fftw_complex* reverse_iterator;
-            */
 
         private:
             typedef KTNBinsInArray< 1, FixedSize > XNBinsFunctor;
@@ -246,39 +250,6 @@ namespace Katydid
             void SetAtF8( ifc_value_type value, unsigned index );
 
             void (KTVarTypePhysicalArray< XInterfaceType >::*fArraySetFcn)( XInterfaceType, unsigned );
-
-
-
-
-            /*
-        public:
-            bool IsCompatibleWith(const KTPhysicalArray< 1, fftw_complex >& rhs) const;
-
-            KTPhysicalArray< 1, fftw_complex >& operator=(const KTPhysicalArray< 1, fftw_complex >& rhs);
-
-            KTPhysicalArray< 1, fftw_complex >& operator+=(const KTPhysicalArray< 1, fftw_complex >& rhs);
-            KTPhysicalArray< 1, fftw_complex >& operator-=(const KTPhysicalArray< 1, fftw_complex >& rhs);
-            KTPhysicalArray< 1, fftw_complex >& operator*=(const KTPhysicalArray< 1, fftw_complex >& rhs);
-            KTPhysicalArray< 1, fftw_complex >& operator/=(const KTPhysicalArray< 1, fftw_complex >& rhs);
-
-            KTPhysicalArray< 1, fftw_complex >& operator+=(const fftw_complex& rhs);
-            KTPhysicalArray< 1, fftw_complex >& operator-=(const fftw_complex& rhs);
-            KTPhysicalArray< 1, fftw_complex >& operator*=(const fftw_complex& rhs);
-            KTPhysicalArray< 1, fftw_complex >& operator/=(const fftw_complex& rhs);
-
-            KTPhysicalArray< 1, fftw_complex >& operator*=(double rhs);
-
-        public:
-            const_iterator begin() const;
-            const_iterator end() const;
-            iterator begin();
-            iterator end();
-
-            const_reverse_iterator rbegin() const;
-            const_reverse_iterator rend() const;
-            reverse_iterator rbegin();
-            reverse_iterator rend();
-            */
 
     };
 
@@ -645,221 +616,6 @@ namespace Katydid
     {
         fF8BytesData[ index ] = value;
     }
-
-
-
-    //****************************************
-    // Operator definitions for fftw_complex
-    //****************************************
-
-    //std::ostream& operator<< (std::ostream& ostr, const fftw_complex& rhs);
-
-
-
-    /*
-    bool KTVarTypePhysicalArray< XInterfaceType >::IsCompatibleWith(const KTVarTypePhysicalArray& rhs) const
-    {
-        //return (this->size() == rhs.size() && this->GetRangeMin() == rhs.GetRangeMin() && this->GetRangeMax() == GetRangeMax());
-        return (this->size() == rhs.size());
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator=(const KTPhysicalArray< 1, fftw_complex>& rhs)
-    {
-        if (fData != NULL)
-        {
-            fftw_free(fData);
-        }
-        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(rhs.size()));
-        fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size());
-        memcpy( fData, rhs.fData, rhs.size() * sizeof( fftw_complex ) );
-        KTAxisProperties< 1 >::operator=(rhs);
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator+=(const KTPhysicalArray< 1, fftw_complex>& rhs)
-    {
-        if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBin=0; iBin<rhs.size(); ++iBin)
-        {
-            fData[iBin][0] = fData[iBin][0] + rhs.fData[iBin][0];
-            fData[iBin][1] = fData[iBin][1] + rhs.fData[iBin][1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator-=(const KTPhysicalArray< 1, fftw_complex>& rhs)
-    {
-        if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            fData[iBin][0] = fData[iBin][0] - rhs.fData[iBin][0];
-            fData[iBin][1] = fData[iBin][1] - rhs.fData[iBin][1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator*=(const KTPhysicalArray< 1, fftw_complex>& rhs)
-    {
-        if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            fTempCache[0] = fData[iBin][0] * rhs.fData[iBin][0] - fData[iBin][1] * rhs.fData[iBin][1];
-            fTempCache[1] = fData[iBin][0] * rhs.fData[iBin][1] + fData[iBin][1] * rhs.fData[iBin][0];
-            fData[iBin][0] = fTempCache[0];
-            fData[iBin][1] = fTempCache[1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator/=(const KTPhysicalArray< 1, fftw_complex>& rhs)
-    {
-        if (! this->IsCompatibleWith(rhs)) return *this;
-        double abs, arg;
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / (rhs.fData[iBin][0]*rhs.fData[iBin][0] + rhs.fData[iBin][1]*rhs.fData[iBin][1]));
-            arg = std::atan2(fData[iBin][1], fData[iBin][0]) - std::atan2(rhs.fData[iBin][1], rhs.fData[iBin][0]);
-            fTempCache[0] = abs * std::cos(arg);
-            fTempCache[1] = abs * std::sin(arg);
-            fData[iBin][0] = fTempCache[0];
-            fData[iBin][1] = fTempCache[1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator+=(const fftw_complex& rhs)
-    {
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            fData[iBin][0] = fData[iBin][0] + rhs[0];
-            fData[iBin][1] = fData[iBin][1] + rhs[1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator-=(const fftw_complex& rhs)
-    {
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            fData[iBin][0] = fData[iBin][0] - rhs[0];
-            fData[iBin][1] = fData[iBin][1] - rhs[1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator*=(const fftw_complex& rhs)
-    {
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            fTempCache[0] = fData[iBin][0] * rhs[0] - fData[iBin][1] * rhs[1];
-            fTempCache[1] = fData[iBin][0] * rhs[1] + fData[iBin][1] * rhs[0];
-            fData[iBin][0] = fTempCache[0];
-            fData[iBin][1] = fTempCache[1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator/=(const fftw_complex& rhs)
-    {
-        double abs, arg;
-        double rhsabs = rhs[0]*rhs[0] + rhs[1]*rhs[1];
-        double rhsarg = std::atan2(rhs[1], rhs[0]);
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / rhsabs);
-            arg = std::atan2(fData[iBin][1], fData[iBin][0]) - rhsarg;
-            fTempCache[0] = abs * std::cos(arg);
-            fTempCache[1] = abs * std::sin(arg);
-            fData[iBin][0] = fTempCache[0];
-            fData[iBin][1] = fTempCache[1];
-        }
-        return *this;
-    }
-
-
-    KTVarTypePhysicalArray& KTVarTypePhysicalArray< XInterfaceType >::operator*=(double rhs)
-    {
-        for (size_t iBin=0; iBin<size(); ++iBin)
-        {
-            fData[iBin][0] = fData[iBin][0] * rhs;
-            fData[iBin][1] = fData[iBin][1] * rhs;
-        }
-        return *this;
-    }
-
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::const_iterator KTVarTypePhysicalArray< XInterfaceType >::begin() const
-    {
-        return fData;
-    }
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::const_iterator KTVarTypePhysicalArray< XInterfaceType >::end() const
-    {
-        return fData + size();
-    }
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::iterator KTVarTypePhysicalArray< XInterfaceType >::begin()
-    {
-        return fData;
-    }
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::iterator KTVarTypePhysicalArray< XInterfaceType >::end()
-    {
-        return fData + size();
-    }
-
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::const_reverse_iterator KTVarTypePhysicalArray< XInterfaceType >::rbegin() const
-    {
-        return fData + size() - 1;
-    }
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::const_reverse_iterator KTVarTypePhysicalArray< XInterfaceType >::rend() const
-    {
-        return fData - 1;
-    }
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::reverse_iterator KTVarTypePhysicalArray< XInterfaceType >::rbegin()
-    {
-        return fData + size() - 1;
-    }
-
-
-    KTVarTypePhysicalArray< XInterfaceType >::reverse_iterator KTVarTypePhysicalArray< XInterfaceType >::rend()
-    {
-        return fData - 1;
-    }
-*/
-
-
-
-    //********************************************
-    // Operator implementations for fftw_complex
-    //********************************************
-/*
-    std::ostream&
-        operator<< (std::ostream& ostr, const fftw_complex& rhs)
-    {
-        ostr << "(" << rhs[0] << "," << rhs[1] << ")";
-        return ostr;
-    }
-*/
 
 } /* namespace Katydid */
 #endif /* KTVARTYPEPHYSICALARRAY_HH_ */

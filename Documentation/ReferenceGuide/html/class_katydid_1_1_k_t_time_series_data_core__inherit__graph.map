@@ -1,5 +1,0 @@
-<map id="Katydid::KTTimeSeriesDataCore" name="Katydid::KTTimeSeriesDataCore">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_analytic_associate_data.html" title="{Katydid::KTAnalyticAssociateData\n|+ sName\l|+ KTAnalyticAssociateData()\l+ ~KTAnalyticAssociateData()\l+ SetNComponents()\l}" alt="" coords="5,227,227,327"/>
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_correlation_t_s_data.html" title="{Katydid::KTCorrelationTSData\n|+ sName\l&#45; fComponentData\l|+ KTCorrelationTSData()\l+ ~KTCorrelationTSData()\l+ GetInputPair()\l+ SetInputPair()\l+ SetNComponents()\l}" alt="" coords="251,207,451,347"/>
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_time_series_data.html" title="{Katydid::KTTimeSeriesData\n|+ sName\l|+ KTTimeSeriesData()\l+ ~KTTimeSeriesData()\l+ SetNComponents()\l}" alt="" coords="476,227,661,327"/>
-</map>

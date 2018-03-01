@@ -680,8 +680,11 @@ namespace Katydid
         newData.SetRMSAwayFromCentral( nonCentralRMS );
         newData.SetCentralPowerRatio( centralMean / nonCentralMean );
 
-        // Lastly we copy the track intercept to newData
+        // We copy the track intercept to newData
         newData.SetTrackIntercept( data.GetIntercept() );
+
+        // Lastly we copy the track ID to newData
+        newData.SetTrackID( data.GetTrackID() );
 
         KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 
@@ -700,5 +703,46 @@ namespace Katydid
         return true;
     }
     
+    void KTLinearDensityProbeFit::SlotFunctionThreshPoints( Nymph::KTDataPtr data )
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data types are present
+        if (! data->Has< KTProcessedTrackData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
+            return;
+        }
+        if (! data->Has< KTDiscriminatedPoints2DData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTDiscriminatedPoints2DData >!");
+            return;
+        }
+        if (! data->Has< KTPSCollectionData >())
+        {
+            KTERROR(avlog_hh, "Data not found with type < KTPSCollectionData >!");
+            return;
+        }
+
+        // Call the function
+        if( !ChooseAlgorithm( data->Of< KTProcessedTrackData >(), data->Of< KTDiscriminatedPoints2DData >(), data->Of< KTPSCollectionData >() ) )
+        {
+            KTERROR(avlog_hh, "Density probe analysis failed.");
+            return;
+        }
+
+        // Emit appropriate signal
+        if( fAlgorithm != 2 )
+        {
+            fLinearDensityFitSignal( data );
+        }
+        if( fAlgorithm != 1 )
+        {
+            fPowerFitSignal( data );
+        }
+
+        return;
+    }
+
+
 
 } /* namespace Katydid */

@@ -3,12 +3,17 @@
  *
  *  Created on: Dec 23, 2013
  *      Author: nsoblath
+ *
+ *  NOTE: For complex sampling, KTRawTimeSeries consists of a single array with interleaved real and imaginary samples.
+ *        A KTRawTimeSeries with N complex samples will have 2*N bins.
  */
 
 #ifndef KTRAWTIMESERIES_HH_
 #define KTRAWTIMESERIES_HH_
 
 #include "KTVarTypePhysicalArray.hh"
+
+#include "KTMemberVariable.hh"
 
 namespace Katydid
 {
@@ -27,6 +32,8 @@ namespace Katydid
             /// Create an interface object with a different interface type
             template< typename XInterfaceType >
             KTVarTypePhysicalArray< XInterfaceType > CreateInterface() const;
+
+            MEMBERVARIABLE(size_t, SampleSize);
 
     };
 

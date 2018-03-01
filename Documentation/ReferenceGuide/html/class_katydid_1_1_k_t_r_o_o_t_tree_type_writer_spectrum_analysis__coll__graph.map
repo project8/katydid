@@ -1,9 +1,0 @@
-<map id="Katydid::KTROOTTreeTypeWriterSpectrumAnalysis" name="Katydid::KTROOTTreeTypeWriterSpectrumAnalysis">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{KTROOTTreeTypeWriter\n||+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="60,233,236,333"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_type_writer.html" title="{Nymph::KTTypeWriter\n||+ KTTypeWriter()\l+ ~KTTypeWriter()\l+ RegisterSlots()\l}" alt="" coords="5,5,158,105"/>
-<area shape="rect" id="node5" href="$struct_katydid_1_1_t_discriminated_points1_d_data.html" title="{Katydid::TDiscriminatedPoints1\lDData\n|+ fSlice\l+ fTimeInRunC\l+ fComponent\l+ fBin\l+ fAbscissa\l+ fOrdinate\l+ fThreshold\l|}" alt="" coords="261,200,467,367"/>
-<area shape="rect" id="node6" href="$struct_katydid_1_1_t_hough_data.html" title="{Katydid::THoughData\n|+ fComponent\l+ fTransform\l+ fXOffset\l+ fXScale\l+ fYOffset\l+ fYScale\l|}" alt="" coords="491,213,640,353"/>
-<area shape="rect" id="node7" href="$struct_katydid_1_1_t_amplitude_distribution_data.html" title="{Katydid::TAmplitudeDistributionData\n|+ fComponent\l+ fFreqBin\l+ fDistribution\l|}" alt="" coords="664,233,899,333"/>
-<area shape="rect" id="node8" href="$struct_katydid_1_1_t_linear_fit_result_data.html" title="{Katydid::TLinearFitResultData\n|+ fComponent\l+ fSlope\l+ fSlopeSigma\l+ fIntercept\l+ fIntercept_deviation\l+ fStartingFrequency\l+ fTrackDuration\l+ fSidebandSeparation\l+ fFineProbe_sigma_1\l+ fFineProbe_sigma_2\land 7 more...\l|}" alt="" coords="923,180,1122,387"/>
-<area shape="rect" id="node9" href="$struct_katydid_1_1_t_k_d_tree_point_data.html" title="{Katydid::TKDTreePointData\n|+ fComponent\l+ fSlice\l+ fTimeInRunC\l+ fFrequency\l+ fAmplitude\l+ fNoiseFlag\l+ fNNDistance\l+ fKNNWithin0p22\l+ fKNNWithin0p32\l+ fKNNWithin0p45\l+ fKNNWithin0p7\l+ fKNNWithin1p0\l+ fKNNWithin1p4\l|}" alt="" coords="1146,167,1331,400"/>
-</map>

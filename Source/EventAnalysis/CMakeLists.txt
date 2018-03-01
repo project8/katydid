@@ -7,6 +7,7 @@
 set (EVENTANALYSIS_HEADERFILES
     KTCandidateCleaner.hh
     KTCandidateTrackFinder.hh
+    KTCollinearTrackClustering.hh
     KTDataCutter.hh
     KTDBScan.hh
     KTDistanceMatrix.hh
@@ -14,6 +15,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTDBScanTrackClustering.hh
     KTEventTimeCut.hh
     KTFrequencyCandidateIdentifier.hh
+    KTIterativeTrackClustering.hh
     KTLinearFitCut.hh
     KTMultiPeakEventBuilder.hh
     KTMultiPeakTrackProcessing.hh
@@ -21,6 +23,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTMultiPeakTrackEventSequenceIDCut.hh
     KTMultiPeakTrackMultiplicityCut.hh
     KTMultiSliceClustering.hh
+    KTOverlappingTrackClustering.hh
     KTPowerFitCut.hh
     KTProcessedTrackCut.hh
     KTQuadraticPhaseShift.hh
@@ -36,11 +39,13 @@ set (EVENTANALYSIS_HEADERFILES
 set (EVENTANALYSIS_SOURCEFILES
     KTCandidateCleaner.cc
     KTCandidateTrackFinder.cc
+    KTCollinearTrackClustering.cc
     KTDataCutter.cc
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
     KTEventTimeCut.cc
     KTFrequencyCandidateIdentifier.cc
+    KTIterativeTrackClustering.cc
     KTLinearFitCut.cc
     KTMultiPeakEventBuilder.cc
     KTMultiPeakTrackProcessing.cc
@@ -48,6 +53,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTMultiPeakTrackEventSequenceIDCut.cc
     KTMultiPeakTrackMultiplicityCut.cc
     KTMultiSliceClustering.cc
+    KTOverlappingTrackClustering.cc
     KTPowerFitCut.cc
     KTProcessedTrackCut.cc
     KTQuadraticPhaseShift.cc

@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
     uint64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
-    Nymph::KTDataPtr headerPtr = reader->BreakEgg(filename);
+    Nymph::KTDataPtr headerPtr = reader->BreakAnEgg(filename);
     if (! headerPtr)
     {
         KTERROR(eggscan, "Egg file was not opened and no header was received");

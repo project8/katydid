@@ -1,4 +1,0 @@
-<map id="Katydid::KTMultiSliceROOTTypeWriterTransform" name="Katydid::KTMultiSliceROOTTypeWriterTransform">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_m_e_r_o_o_t_type_writer_base.html" title="{Katydid::KTMEROOTTypeWriterBase\n||+ KTMEROOTTypeWriterBase()\l+ ~KTMEROOTTypeWriterBase()\l+ StartNewHistograms()\l+ FinishHistograms()\l}" alt="" coords="9,153,252,267"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{KTMultiSliceROOTTypeWriter\n|# fWriter\l|+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="31,5,229,105"/>
-</map>

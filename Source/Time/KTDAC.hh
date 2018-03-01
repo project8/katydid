@@ -78,10 +78,10 @@ namespace Katydid
             std::vector< KTSingleChannelDAC > fChannelDACs;
 
         public:
-            void Initialize();
-            void InitializeWithHeader(KTEggHeader* header);
+            bool Initialize();
+            bool InitializeWithHeader(KTEggHeader& header);
 
-            void UpdateEggHeader(KTEggHeader* header);
+            bool UpdateEggHeader(KTEggHeader& header);
 
             bool ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData);
 
@@ -91,7 +91,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            Nymph::KTSignalData fHeaderSignal;
             Nymph::KTSignalData fTimeSeriesSignal;
 
             //***************
@@ -99,8 +99,8 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
-            Nymph::KTSlotOneArg< void (KTEggHeader*) > fNoInitHeaderSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fNoInitHeaderSlot;
             Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTRawTimeSeriesData > fRawTSSlot;
 
     };

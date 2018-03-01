@@ -88,7 +88,7 @@ namespace Katydid
         return true;
     }
 
-    Nymph::KTDataPtr KTEgg2Reader::BreakEgg(const string& filename)
+    Nymph::KTDataPtr KTEgg2Reader::BreakEgg(const path_vec& filenames)
     {
         if (fStride == 0) fStride = fSliceSize;
 
@@ -99,10 +99,14 @@ namespace Katydid
         }
 
         // open the file
-        KTINFO(eggreadlog, "Opening egg file <" << filename << ">");
+        if (filenames.size() > 1)
+        {
+            KTWARN(eggreadlog, "Egg2 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+        }
+        KTINFO(eggreadlog, "Opening egg file <" << filenames[0] << ">");
         try
         {
-            fMonarch = Monarch2::OpenForReading(filename);
+            fMonarch = Monarch2::OpenForReading(filenames[0].native());
         }
         catch (M2Exception& e)
         {
@@ -156,8 +160,6 @@ namespace Katydid
         fMonarch->SetInterface(monarch2::sInterfaceSeparate);
 
         fSliceNumber = 0;
-
-        fHeader.SetTSDataType(KTEggHeader::kReal);
 
         return fHeaderPtr;
     }
@@ -441,6 +443,7 @@ namespace Katydid
             newChanHeader->SetVoltageOffset(monarchHeader->GetVoltageMin());
             newChanHeader->SetVoltageRange(monarchHeader->GetVoltageRange());
             newChanHeader->SetDACGain(monarchHeader->GetVoltageRange() / (double)(1 << monarchHeader->GetBitDepth()));
+            newChanHeader->SetTSDataType(KTChannelHeader::kReal);
             fHeader.SetChannelHeader(newChanHeader, iChannel);
         }
         return;

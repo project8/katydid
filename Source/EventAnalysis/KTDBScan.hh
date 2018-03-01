@@ -84,6 +84,10 @@ namespace Katydid
             unsigned fMinPoints;
 
         public:
+            void UniformPartition();
+
+            Neighbors FindNeighbors(PointId pid/*, double threshold*/);
+
             bool DoClustering(const DistanceData& dist, DBSResults& results);
 
         private:

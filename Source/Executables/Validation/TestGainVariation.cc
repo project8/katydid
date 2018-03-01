@@ -13,6 +13,7 @@
 #include "KT2ROOT.hh"
 #include "KTGainNormalization.hh"
 #include "KTGainVariationData.hh"
+#include "KTGainVariationProcessor.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTLogger.hh"
 

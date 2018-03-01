@@ -1,5 +1,0 @@
-<map id="Katydid::KTROOTSpectrogramTypeWriter" name="Katydid::KTROOTSpectrogramTypeWriter">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_derived_type_writer.html" title="{Nymph::KTDerivedTypeWriter\l\&lt; KTROOTSpectrogramWriter \&gt;\n||+ KTDerivedTypeWriter()\l+ ~KTDerivedTypeWriter()\l+ SetWriter()\l}" alt="" coords="80,287,291,400"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_type_writer.html" title="{Nymph::KTTypeWriter\n||+ KTTypeWriter()\l+ ~KTTypeWriter()\l+ RegisterSlots()\l}" alt="" coords="5,65,158,165"/>
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_r_o_o_t_spectrogram_writer.html" title="Outputs a spectrogram in the form of a 2D histogram to a ROOT file. " alt="" coords="181,5,398,225"/>
-</map>

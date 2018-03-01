@@ -31,7 +31,8 @@ namespace Katydid
             fBitAlignment(sBitsAlignedLeft),
             fVoltageOffset(0),
             fVoltageRange(0.),
-            fDACGain(0.)
+            fDACGain(0.),
+            fTSDataType(kUnknown)
     {
     }
 
@@ -49,7 +50,8 @@ namespace Katydid
             fBitAlignment(orig.fBitAlignment),
             fVoltageOffset(orig.fVoltageOffset),
             fVoltageRange(orig.fVoltageRange),
-            fDACGain(orig.fDACGain)
+            fDACGain(orig.fDACGain),
+            fTSDataType(orig.fTSDataType)
     {
     }
 
@@ -73,6 +75,7 @@ namespace Katydid
         fVoltageOffset = rhs.fVoltageOffset;
         fVoltageRange = rhs.fVoltageRange;
         fDACGain = rhs.fDACGain;
+        fTSDataType = rhs.fTSDataType;
         return *this;
     }
 
@@ -90,7 +93,6 @@ namespace Katydid
             fMaximumFrequency(0.0),
             fTimestamp(),
             fDescription(),
-            fTSDataType(kReal),
             fChannelHeaders()
     {
     }
@@ -105,7 +107,6 @@ namespace Katydid
             fMaximumFrequency(orig.fMaximumFrequency),
             fTimestamp(orig.fTimestamp),
             fDescription(orig.fDescription),
-            fTSDataType(orig.fTSDataType),
             fChannelHeaders()
     {
         for( vector< KTChannelHeader* >::const_iterator chIt = orig.fChannelHeaders.begin(); chIt != orig.fChannelHeaders.end(); ++chIt)
@@ -129,7 +130,6 @@ namespace Katydid
         fMaximumFrequency = rhs.fMaximumFrequency;
         fTimestamp = rhs.fTimestamp;
         fDescription = rhs.fDescription;
-        fTSDataType = rhs.fTSDataType;
         fChannelHeaders.clear();
         fChannelHeaders.resize(rhs.fChannelHeaders.size());
         for( vector< KTChannelHeader* >::const_iterator chIt = rhs.fChannelHeaders.begin(); chIt != rhs.fChannelHeaders.end(); ++chIt)
@@ -173,7 +173,8 @@ namespace Katydid
                 << "\tBit Alignment: " << header.GetBitAlignment() << '\n'
                 << "\tVoltage Offset: " << header.GetVoltageOffset() << " V\n"
                 << "\tVoltage Range: " << header.GetVoltageRange() << " V\n"
-                << "\tDAC Gain: " << header.GetDACGain() << '\n';
+                << "\tDAC Gain: " << header.GetDACGain() << '\n'
+                << "\tTS Data Type: " << header.GetTSDataType() << '\n';
         return out;
     }
 
@@ -185,11 +186,11 @@ namespace Katydid
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " ms\n"
                 << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"
+                << "\tMinimum Frequency: " << header.GetMinimumFrequency() << " Hz\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
-                << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n"
+                << "\tMaximum Frequency: " << header.GetMaximumFrequency() << " Hz\n"
                 << "\tTimestamp: " << header.GetTimestamp() << '\n'
-                << "\tDescription: " << header.GetDescription() << '\n'
-                << "\tTS Data Type: " << header.GetTSDataType() << '\n';
+                << "\tDescription: " << header.GetDescription() << '\n';
         for (unsigned iChan = 0; iChan < header.GetNChannels(); ++iChan)
         {
             out << *header.GetChannelHeader(iChan);

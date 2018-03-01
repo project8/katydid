@@ -1,7 +1,0 @@
-<map id="Katydid::KTFrequencySpectrumPolar" name="Katydid::KTFrequencySpectrumPolar">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_physical_array.html" title="{Katydid::KTPhysicalArray\l\&lt; 1, complexpolar\&lt; double \&gt; \&gt;\n|# fData\l|+ KTPhysicalArray()\l+ KTPhysicalArray()\l+ ~KTPhysicalArray()\l+ GetData()\l+ GetData()\l+ GetDataLabel()\l+ SetDataLabel()\l+ operator()()\l+ operator()()\l+ IsCompatibleWith()\land 9 more...\l}" alt="" coords="68,456,270,676"/>
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_axis_properties.html" title="Encapsulates the properties of n&#45;dimensional binned axes. " alt="" coords="90,140,265,400"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="30,5,109,79"/>
-<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_frequency_spectrum.html" title="{Katydid::KTFrequencySpectrum\n||+ KTFrequencySpectrum()\l+ ~KTFrequencySpectrum()\l+ GetNTimeBins()\l+ SetNTimeBins()\l+ GetReal()\l+ GetImag()\l+ SetRect()\l+ GetAbs()\l+ GetArg()\l+ SetPolar()\l+ CConjugate()\l+ Scale()\l+ CreatePowerSpectrum()\l}" alt="" coords="293,449,504,683"/>
-<area shape="rect" id="node6" href="$class_katydid_1_1_k_t_frequency_domain_array.html" title="{Katydid::KTFrequencyDomain\lArray\n||+ KTFrequencyDomainArray()\l+ ~KTFrequencyDomainArray()\l+ GetNFrequencyBins()\l+ GetFrequencyBinWidth()\l+ GetAxis()\l+ GetAxis()\l+ GetOrdinateLabel()\l}" alt="" coords="295,187,502,353"/>
-</map>

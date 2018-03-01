@@ -29,7 +29,7 @@ namespace Katydid
             fDACGain(-1.),
             fBitAlignment(sBitsAlignedLeft),
             fDigitizedDataFormat(sInvalidFormat),
-            fTimeSeriesType(kRealTimeSeries),
+            fTimeSeriesType(kUnknownTimeSeries),
             fBitDepthMode(kNoChange),
             fEmulatedNBits(fNBits),
             fShouldRunInitialize(true),
@@ -38,6 +38,26 @@ namespace Katydid
             fConvertTSFunc(NULL),
             fOversamplingBins(1),
             fOversamplingScaleFactor(1.)
+    {
+    }
+
+    KTSingleChannelDAC::KTSingleChannelDAC(const KTSingleChannelDAC& orig) :
+            fDataTypeSize(orig.fDataTypeSize),
+            fNBits(orig.fNBits),
+            fVoltageOffset(orig.fVoltageOffset),
+            fVoltageRange(orig.fVoltageRange),
+            fDACGain(orig.fDACGain),
+            fBitAlignment(orig.fBitAlignment),
+            fDigitizedDataFormat(orig.fDigitizedDataFormat),
+            fTimeSeriesType(orig.fTimeSeriesType),
+            fBitDepthMode(orig.fBitDepthMode),
+            fEmulatedNBits(orig.fEmulatedNBits),
+            fShouldRunInitialize(orig.fShouldRunInitialize),
+            fVoltages(orig.fVoltages),
+            fIntLevelOffset(orig.fIntLevelOffset),
+            fConvertTSFunc(orig.fConvertTSFunc),
+            fOversamplingBins(orig.fOversamplingBins),
+            fOversamplingScaleFactor(orig.fOversamplingScaleFactor)
     {
     }
 
@@ -103,7 +123,7 @@ namespace Katydid
         fNBits = nBits;
         fVoltageOffset = voltageOffset;
         fVoltageRange = voltageRange;
-        fDACGain = -1.;
+        fDACGain = -1.; // will be updated in Initialize()
         fBitAlignment = bitAlignment;
         fShouldRunInitialize = true;
         return;
@@ -121,22 +141,39 @@ namespace Katydid
         return;
     }
 
-    void KTSingleChannelDAC::InitializeWithHeader(KTChannelHeader* header)
+    bool KTSingleChannelDAC::InitializeWithHeader(KTChannelHeader* header)
     {
         SetInputParameters(header->GetDataTypeSize(), header->GetBitDepth(), header->GetVoltageOffset(), header->GetVoltageRange(), header->GetDACGain(), header->GetBitAlignment());
         fDigitizedDataFormat = header->GetDataFormat();
-        Initialize();
-        return;
+        if (fTimeSeriesType == kUnknownTimeSeries)
+        {
+            if (header->GetTSDataType() == KTChannelHeader::kReal)
+            {
+                KTDEBUG(egglog_scdac, "Initializing for real TS data via the egg header");
+                fTimeSeriesType = kRealTimeSeries;
+            } else if (header->GetTSDataType() == KTChannelHeader::kIQ || header->GetTSDataType() == KTChannelHeader::kComplex)
+            {
+                KTDEBUG(egglog_scdac, "Initializing for FFTW TS data via the egg header");
+                fTimeSeriesType = kFFTWTimeSeries;
+            }
+        }
+        return Initialize();;
     }
 
-    void KTSingleChannelDAC::Initialize()
+    bool KTSingleChannelDAC::Initialize()
     {
         if (! fShouldRunInitialize)
         {
-            return;
+            return true;
         }
 
         KTDEBUG(egglog_scdac, "Initializing single-channel DAC");
+
+        if (fTimeSeriesType == kUnknownTimeSeries)
+        {
+            KTERROR(egglog_scdac, "Time series type is not set; cannot initialize DAC");
+            return false;
+        }
 
         if (! fVoltages.empty())
         {
@@ -182,7 +219,7 @@ namespace Katydid
             if (fNBits >= fEmulatedNBits)
             {
                 KTERROR(egglog_scdac, "Increasing-bit-depth mode was indicated, but emulated bits (" << fEmulatedNBits << ") <= actual bits (" << fNBits << ")");
-                return;
+                return false;
             }
             unsigned additionalBits = fEmulatedNBits - fNBits;
             fOversamplingBins = pow(2, 2 * additionalBits);
@@ -198,7 +235,7 @@ namespace Katydid
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
                 "\tReduced levels: " << params.levels << '\n' <<
-                "\tVoltage range: " << params.v_range << '\n' <<
+                "\tVoltage range: " << params.v_range << "V\n" <<
                 "\tVoltage offset: " << params.v_offset << " V\n" <<
                 "\tDAC gain: " << params.dac_gain << " V\n" <<
                 "\tOversampling bins: " << fOversamplingBins << '\n' <<
@@ -216,7 +253,8 @@ namespace Katydid
             double valueHoldNeg = valueHoldPos;
             KTDEBUG( egglog_scdac, "Calculating voltage conversion for signed integers; integer level offset: " << fIntLevelOffset );
             fVoltages[fIntLevelOffset] = valueHoldPos;
-            unsigned levelSkipCounter = 1;
+            unsigned levelSkipCounter = 1; // starting this at 1 is effectively ++levelSkipCounter after filling in the bin at fIntLevelOffset
+            if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             for (int64_t level = 1; level < fIntLevelOffset; ++level)
             {
                 if (levelSkipCounter == 0)
@@ -226,8 +264,8 @@ namespace Katydid
                 }
                 fVoltages[fIntLevelOffset + level] = valueHoldPos;
                 fVoltages[fIntLevelOffset - level] = valueHoldNeg;
-                KTWARN( egglog_scdac, "level <" << fIntLevelOffset + level << "> = " << fVoltages[fIntLevelOffset + level] );
-                KTWARN( egglog_scdac, "level <" << fIntLevelOffset - level << "> = " << fVoltages[fIntLevelOffset - level] );
+                KTTRACE( egglog_scdac, "level <" << fIntLevelOffset + level << "> = " << fVoltages[fIntLevelOffset + level] );
+                KTTRACE( egglog_scdac, "level <" << fIntLevelOffset - level << "> = " << fVoltages[fIntLevelOffset - level] );
                 ++levelSkipCounter;
                 if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             }
@@ -247,7 +285,7 @@ namespace Katydid
             {
                 if (levelSkipCounter == 0) valueHold = scarab::d2a< uint64_t, double >(level, &params);
                 fVoltages[level] = valueHold;
-                KTWARN(egglog_scdac, "level <" << level << "> = voltage " << fVoltages[level]);
+                KTTRACE(egglog_scdac, "level <" << level << "> = voltage " << fVoltages[level]);
                 ++levelSkipCounter;
                 if (levelSkipCounter == levelRepeat) levelSkipCounter = 0;
             }
@@ -313,9 +351,8 @@ namespace Katydid
             }
         }
 
-
         fShouldRunInitialize = false;
-        return;
+        return true;
     }
 
     bool KTSingleChannelDAC::SetEmulatedNBits(unsigned nBits)

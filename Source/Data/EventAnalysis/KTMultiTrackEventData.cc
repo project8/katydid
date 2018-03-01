@@ -53,6 +53,7 @@ namespace Katydid
     KTMultiTrackEventData::KTMultiTrackEventData(const KTMultiTrackEventData& orig) :
             KTExtensibleData< KTMultiTrackEventData >(orig),
             fComponent(orig.fComponent),
+            fAcquisitionID(orig.fAcquisitionID),
             fEventID(orig.fEventID),
             fTotalEventSequences(orig.fTotalEventSequences),
             fStartTimeInAcq(orig.fStartTimeInAcq),
@@ -76,6 +77,7 @@ namespace Katydid
             fFirstTrackSlope(orig.fFirstTrackSlope),
             fFirstTrackIntercept(orig.fFirstTrackIntercept),
             fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
+            fUnknownEventTopology(orig.fUnknownEventTopology),
             fTracks()
     {
         for (TrackSetCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
@@ -94,6 +96,11 @@ namespace Katydid
         ClearTracks();
 
         fComponent = rhs.fComponent;
+
+        fAcquisitionID = rhs.fAcquisitionID;
+        fEventID = rhs.fEventID;
+
+        fTotalEventSequences = rhs.fTotalEventSequences;
 
         fStartTimeInAcq = rhs.fStartTimeInAcq;
         fStartTimeInRunC = rhs.fStartTimeInRunC;
@@ -118,6 +125,8 @@ namespace Katydid
         fFirstTrackSlope = rhs.fFirstTrackSlope;
         fFirstTrackIntercept = rhs.fFirstTrackIntercept;
         fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
+
+        fUnknownEventTopology = rhs.fUnknownEventTopology;
 
         for (TrackSetCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
@@ -312,8 +321,8 @@ namespace Katydid
         fTimeLength = fEndTimeInRunC - fStartTimeInRunC;
         fTimeLengthSigma = sqrt(fEndTimeInRunCSigma * fEndTimeInRunCSigma + fStartTimeInRunCSigma * fStartTimeInRunCSigma);
 
-        fFrequencyWidth = fEndFrequency - fStartFrequency;
-        fFrequencyWidthSigma = sqrt(fEndFrequencySigma * fEndFrequencySigma + fStartFrequencySigma * fStartFrequencySigma);
+        fFrequencyWidth = fMaximumFrequency - fMinimumFrequency;
+        fFrequencyWidthSigma = sqrt(fMaximumFrequency * fEndFrequencySigma + fMinimumFrequency * fMinimumFrequency);
 
         return;
     }

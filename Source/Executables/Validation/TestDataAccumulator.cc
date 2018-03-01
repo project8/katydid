@@ -55,7 +55,7 @@ int main()
         accumulator.AddData(newData);
     }
 
-    const KTDataAccumulator::Accumulator tsAcc = accumulator.GetAccumulator< KTTimeSeriesData >();
+    const KTDataAccumulator::Accumulator& tsAcc = accumulator.GetAccumulator< KTTimeSeriesData >();
     KTINFO(vallog, "The TS accumulator has added " << tsAcc.GetSliceNumber() << " time series");
 
 #ifdef ROOT_FOUND
