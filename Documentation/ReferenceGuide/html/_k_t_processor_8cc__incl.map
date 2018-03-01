@@ -1,9 +1,0 @@
-<map id="KTProcessor.cc" name="KTProcessor.cc">
-<area shape="rect" id="node2" href="$_k_t_processor_8hh.html" title="Contains KTProcessor. " alt="" coords="491,79,607,104"/>
-<area shape="rect" id="node3" href="$_k_t_configurable_8hh.html" title="KTConfigurable.hh" alt="" coords="26,152,159,177"/>
-<area shape="rect" id="node5" href="$_k_t_connection_8hh.html" title="KTConnection.hh" alt="" coords="683,225,807,251"/>
-<area shape="rect" id="node7" href="$_k_t_logger_8hh.html" title="Contains the logger class and macros, based on Kasper&#39;s KLogger class. " alt="" coords="235,152,332,177"/>
-<area shape="rect" id="node9" href="$_k_t_signal_wrapper_8hh.html" title="KTSignalWrapper.hh" alt="" coords="831,225,975,251"/>
-<area shape="rect" id="node10" href="$_k_t_slot_wrapper_8hh.html" title="KTSlotWrapper.hh" alt="" coords="948,152,1078,177"/>
-<area shape="rect" id="node12" href="$factory_8hh.html" title="factory.hh" alt="" coords="356,152,435,177"/>
-</map>

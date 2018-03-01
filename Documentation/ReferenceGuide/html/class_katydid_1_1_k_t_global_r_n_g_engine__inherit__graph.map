@@ -1,5 +1,0 @@
-<map id="Katydid::KTGlobalRNGEngine" name="Katydid::KTGlobalRNGEngine">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_r_n_g_engine.html" title="{Katydid::KTRNGEngine\n|&#45; fGenerator\l|+ KTRNGEngine()\l+ ~KTRNGEngine()\l+ Configure()\l+ IsReady()\l+ SetSeed()\l+ GetGenerator()\l}" alt="" coords="18,213,179,353"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_self_configurable.html" title="{Nymph::KTSelfConfigurable\n|&#45; fIsConfigured\l|+ KTSelfConfigurable()\l+ ~KTSelfConfigurable()\l+ Configure()\l+ Configure()\l+ IsReady()\l+ GetIsConfigured()\l}" alt="" coords="5,5,192,145"/>
-<area shape="rect" id="node4" href="$classscarab_1_1singleton.html" title="{scarab::singleton\&lt;\l KTGlobalRNGEngine \&gt;\n|&#45; f_instance\l&#45; f_destroyer\l&#45; f_mutex\l|+ get_instance()\l+ kill_instance()\l# singleton()\l# ~singleton()\l&#45; create_instance()\l&#45; delete_instance()\l}" alt="" coords="204,193,367,373"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="Katydid::KTDiscriminatedPoints2DData" name="Katydid::KTDiscriminatedPoints2DData">
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTDiscriminatedPoints2DData \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="5,247,230,360"/>
-<area shape="rect" id="node3" href="$struct_nymph_1_1_k_t_extensible_struct.html" title="{Nymph::KTExtensibleStruct\l\&lt; KTDiscriminatedPoints2DData,\l KTDataCore \&gt;\n|&#45; fIsCopyDisabled\l|+ KTExtensibleStruct()\l+ KTExtensibleStruct()\l+ ~KTExtensibleStruct()\l+ operator=()\l+ Clone()\l+ Pull()\l+ SetIsCopyDisabled()\l}" alt="" coords="5,5,222,185"/>
-<area shape="rect" id="node5" href="$struct_katydid_1_1_k_t_discriminated_points2_d_data_1_1_per_component_data.html" title="{Katydid::KTDiscriminated\lPoints2DData::PerComponentData\n||}" alt="" coords="246,52,475,139"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="507,267,587,340"/>
-<area shape="rect" id="node7" title="STL class. " alt="" coords="499,52,624,139"/>
-</map>

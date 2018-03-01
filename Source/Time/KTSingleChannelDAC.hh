@@ -50,6 +50,7 @@ namespace Katydid
 
         public:
             KTSingleChannelDAC(/*const std::string& name = "dac"*/);
+            KTSingleChannelDAC(const KTSingleChannelDAC& orig);
             virtual ~KTSingleChannelDAC();
 
             bool Configure(const scarab::param_node* node);

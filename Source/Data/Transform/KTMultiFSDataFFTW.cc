@@ -18,19 +18,16 @@ namespace Katydid
     KTLOGGER(datalog, "KTMultiFSDataFFTW");
 
     KTMultiFSDataFFTWCore::KTMultiFSDataFFTWCore() :
-            fSpectra(1)
+            fSpectra()
     {
-        fSpectra[0] = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(1, 0., 1.);
-
-        (*fSpectra[0])(0) = NULL;
     }
 
     KTMultiFSDataFFTWCore::~KTMultiFSDataFFTWCore()
     {
         while (! fSpectra.empty())
         {
-            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* backSpectra = fSpectra.back();
-            for (KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
+            KTMultiFSFFTW* backSpectra = fSpectra.back();
+            for (KTMultiFSFFTW::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
             {
                 delete *iter;
             }
@@ -49,9 +46,21 @@ namespace Katydid
         if (fSpectra[component] == NULL)
         {
             KTDEBUG(datalog, "Pointer to spectra is NULL; adding new spectra with " << iSpect + 1 << "bins");
-            fSpectra[component] = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(iSpect+1, 0., 1.);
+            fSpectra[component] = new KTMultiFSFFTW(iSpect+1, 0., 1.);
         }
         (*fSpectra[component])(iSpect) = spectrum;
+        return;
+    }
+
+    void KTMultiFSDataFFTWCore::DeleteSpectra(unsigned component)
+    {
+        if (component >= fSpectra.size() || fSpectra[component] == NULL) return;
+        for (KTMultiFSFFTW::iterator iter = fSpectra[component]->begin(); iter != fSpectra[component]->end(); ++iter)
+        {
+            delete *iter;
+        }
+        delete fSpectra[component];
+        fSpectra[component] = NULL;
         return;
     }
 
@@ -68,11 +77,11 @@ namespace Katydid
         KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
             if (fs == NULL) continue;
-            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
             {
                 hist->SetBinContent(iBinX, iBinY, sqrt((*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]));
             }
@@ -95,11 +104,11 @@ namespace Katydid
         KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
             if (fs == NULL) continue;
-            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
             {
                 hist->SetBinContent(iBinX, iBinY, atan2((*fs)(iBinY-1)[1], (*fs)(iBinY-1)[0]));
             }
@@ -123,11 +132,11 @@ namespace Katydid
         KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         double value;
-        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
             if (fs == NULL) continue;
-            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
             {
                 value = (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1];
                 hist->SetBinContent(iBinX, iBinY, value);

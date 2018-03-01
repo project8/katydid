@@ -164,7 +164,7 @@ namespace Katydid
             unsigned nBins = fMaxBin - fMinBin + 1;
             double freqMin = powerSpectrum.GetBinLowEdge(fMinBin);
             double freqMax = powerSpectrum.GetBinLowEdge(fMaxBin) + powerSpectrum.GetBinWidth();
-            KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+            std::shared_ptr< KTSpline::Implementation > splineImp = spline->Implement(nBins, freqMin, freqMax);
 
 
             fBinWidth = powerSpectrum.GetBinWidth();

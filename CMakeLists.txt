@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.7.2)
+project (Katydid VERSION 2.9.2)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -40,8 +40,6 @@ option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
 option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
 option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
-option (Katydid_BUILD_DOC "Enable the options to build the documentation (requires Doxygen and Sphinx (optional) with Breathe)" OFF)
-option (Katydid_USE_SPHINX "Flag to optionall use Sphinx documentation" OFF)
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
@@ -293,12 +291,6 @@ nymph_build_executables()
 if (Katydid_USE_PYTHON)
     python_package_add_module( Source/KatydidPy.cc )
 endif (Katydid_USE_PYTHON)
-
-# Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
-# By default it builds in the source tree.
-if (Katydid_BUILD_DOC)
-    add_subdirectory (Documentation)
-endif (Katydid_BUILD_DOC)
 
 # Extract compile definitions to pass to config files
 get_directory_property (Katydid_COMP_DEFS COMPILE_DEFINITIONS)

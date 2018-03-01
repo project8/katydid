@@ -38,7 +38,11 @@ namespace Katydid
         fSlopeSigma(0.),
         fInterceptSigma(0.),
         fStartFrequencySigma(0.),
-        fEndFrequencySigma(0.)
+        fEndFrequencySigma(0.),
+        fSumX(0.),
+        fSumY(0.),
+        fSumXY(0.),
+        fSumXX(0.)
         {}
 
     LineRef::~LineRef()
@@ -50,7 +54,7 @@ namespace Katydid
         fAmplitudeList.push_back(point.fAmplitude);
 
         fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
-
+        KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineParameters();
         this->CalculateSlope();
     }
@@ -189,6 +193,14 @@ namespace Katydid
         //KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
         double wSum = 0.0;
+        fNPoints = fLinePoints.size();
+
+        fSumX += fLinePoints.back().fTimeInRunC; 
+        fSumY += fLinePoints.back().fPointFreq;
+        fSumXY += fLinePoints.back().fTimeInRunC * fLinePoints.back().fPointFreq;
+        fSumXX += fLinePoints.back().fTimeInRunC * fLinePoints.back().fTimeInRunC;
+        fAmplitudeSum += fLinePoints.back().fAmplitude;
+
 
         if (fNPoints > 1)
         {
@@ -202,7 +214,12 @@ namespace Katydid
             }
             fSlope = weightedSlope/wSum;
         }
-        else
+        /*if (fNPoints > 1)
+        {
+            fSlope = (fNPoints * fSumXY - fSumX * fSumY)/(fSumXX * fNPoints - fSumX * fSumX);
+            KTDEBUG( seqlog, "New slope "<<fSlope);
+        }*/
+        if (fNPoints <= 1)
         {
             fSlope = fInitialSlope;
         }
@@ -230,28 +247,32 @@ namespace Katydid
             }
         }        
         this->UpdateLineParameters();
-        this->CalculateSlope();
+        //this->CalculateSlope();
     }
         
 
-    inline void (LineRef::UpdateLineParameters())
+    inline void LineRef::UpdateLineParameters()
     {
         //KTDEBUG(seqlog, "Updating line parameters");
-        fAcquisitionID = fLinePoints.front().fAcquisitionID;
-        fComponent = fLinePoints.front().fComponent;
-        fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
-        fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+        fNPoints = fLinePoints.size();
+        if (fNPoints == 1)
+            {
+                fAcquisitionID = fLinePoints.front().fAcquisitionID;
+                fComponent = fLinePoints.front().fComponent;
+                fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
+                fStartFrequency = fLinePoints.front().fPointFreq;
+                fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+            }
         fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
         fEndTimeInAcq = fLinePoints.back().fTimeInAcq;
-        fStartFrequency = fLinePoints.front().fPointFreq;
         fEndFrequency = fLinePoints.back().fPointFreq;
-        fNPoints = fLinePoints.size();
 
-        fAmplitudeSum = 0.0;
 
+        //fAmplitudeSum = 0.0;
+        /*
         for (std::vector<LinePoint>::iterator PointIt=fLinePoints.begin(); PointIt != fLinePoints.end(); PointIt++)
         {
-            fAmplitudeSum += PointIt->fAmplitude;
+            //fAmplitudeSum += PointIt->fAmplitude;
 
             if (PointIt->fTimeInRunC < fStartTimeInRunC)
             {
@@ -265,7 +286,7 @@ namespace Katydid
                 fEndTimeInAcq = PointIt->fTimeInAcq;
                 fEndFrequency = PointIt->fPointFreq;
             }
-        }
+        }*/
     }
 } /* namespace Katydid */
 

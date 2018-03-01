@@ -1,5 +1,0 @@
-<map id="Katydid::KTDataAccumulator::Accumulator" name="Katydid::KTDataAccumulator::Accumulator">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_slice_header.html" title="{Katydid::KTSliceHeader\n|&#45; fTemp1\l&#45; fTemp2\l&#45; fTemp3\l|+ KTSliceHeader()\l+ KTSliceHeader()\l+ ~KTSliceHeader()\l+ operator=()\l+ CopySliceHeaderOnly()\l+ GetNComponents()\l+ SetNComponents()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\l+ MEMBERVARIABLE()\land 27 more...\l}" alt="" coords="160,180,333,413"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_extensible_data.html" title="{Nymph::KTExtensibleData\l\&lt; KTSliceHeader \&gt;\n||+ KTExtensibleData()\l+ ~KTExtensibleData()\l+ Name()\l}" alt="" coords="5,5,183,119"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="207,25,286,99"/>
-</map>

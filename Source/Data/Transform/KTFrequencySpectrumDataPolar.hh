@@ -11,6 +11,7 @@
 #include "KTData.hh"
 
 #include "KTFrequencySpectrumPolar.hh"
+#include "KTFrequencySpectrumVarianceData.hh"
 
 #include <vector>
 
@@ -20,6 +21,9 @@ namespace Katydid
 
     class KTFrequencySpectrumDataPolarCore : public KTFrequencySpectrumData
     {
+        public:
+            typedef KTFrequencySpectrumPolar spectrum_type;
+
         public:
             KTFrequencySpectrumDataPolarCore();
             virtual ~KTFrequencySpectrumDataPolarCore();
@@ -43,6 +47,35 @@ namespace Katydid
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
 
     };
+
+
+    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataPolar >
+    {
+        public:
+            KTFrequencySpectrumDataPolar();
+            virtual ~KTFrequencySpectrumDataPolar();
+
+            KTFrequencySpectrumDataPolar& SetNComponents(unsigned component);
+
+        public:
+            static const std::string sName;
+
+    };
+
+
+    class KTFrequencySpectrumVarianceDataPolar : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTFrequencySpectrumVarianceDataPolar >
+    {
+        public:
+            KTFrequencySpectrumVarianceDataPolar();
+            virtual ~KTFrequencySpectrumVarianceDataPolar();
+
+            KTFrequencySpectrumVarianceDataPolar& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
 
     inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(unsigned component) const
     {
@@ -87,19 +120,6 @@ namespace Katydid
         return;
     }
 
-
-    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataPolar >
-    {
-        public:
-            KTFrequencySpectrumDataPolar();
-            virtual ~KTFrequencySpectrumDataPolar();
-
-            KTFrequencySpectrumDataPolar& SetNComponents(unsigned component);
-
-        public:
-            static const std::string sName;
-
-    };
 
 } /* namespace Katydid */
 

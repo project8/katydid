@@ -32,6 +32,7 @@ namespace Katydid
     {
         fClusterFlag = false;
         fTerminateFlag = false;
+        fWorstTrack = -1;
 
         RegisterSlot("do-clustering", this, &KTCollinearTrackClustering::DoClusteringSlot);
     }
@@ -233,7 +234,6 @@ namespace Katydid
         // Stuff for finding the worst track
         double delta = 0.;
         double bestDelta = 0.;
-        int worstTrack = -1;
 
         // Having nUngrouped will be handy without calling the thing all the time
         // Make it a double because I want to divide by it often
@@ -296,7 +296,7 @@ namespace Katydid
 
             fClusterFlag = true;
             bestDelta = 1.0e9;
-            worstTrack = -1;
+            fWorstTrack = -1;
 
             for( int i = 0; i < nTracks; ++i )
             {
@@ -313,11 +313,11 @@ namespace Katydid
                 if( delta < bestDelta )
                 {
                     bestDelta = delta;
-                    worstTrack = i; // best track
+                    fWorstTrack = i; // best track
                 }
             }
 
-            if( worstTrack == -1 )
+            if( fWorstTrack == -1 )
             {
                 KTDEBUG(tclog, "Didn't find any REMOVED tracks. Terminating cluster search");
 
@@ -334,13 +334,13 @@ namespace Katydid
             }
             else
             {
-                KTDEBUG(tclog, "Best track index = " << worstTrack);
+                KTDEBUG(tclog, "Best track index = " << fWorstTrack);
                 KTDEBUG(tclog, "Best delta = " << bestDelta);
 
                 // Reinstate this track
-                fGroupingStatuses[worstTrack] = fUNGROUPED;
+                fGroupingStatuses[fWorstTrack] = fUNGROUPED;
 
-                KTDEBUG(tclog, "Added best track, with intercept " << fIntercepts[worstTrack] << ". Recursively continuing the cluster search");
+                KTDEBUG(tclog, "Added best track, with intercept " << fIntercepts[fWorstTrack] << ". Recursively continuing the cluster search");
                 fTerminateFlag = false;
             }
         }
@@ -350,6 +350,8 @@ namespace Katydid
             {
                 // Variance is too big
                 KTDEBUG(tclog, "Tracks not yet clustered. Finding worst track");
+
+                fWorstTrack = -1;
 
                 // Find the track which is contributing the most to the variance
                 for( int i = 0; i < nTracks; ++i )
@@ -367,31 +369,31 @@ namespace Katydid
                     if( delta > bestDelta )
                     {
                         bestDelta = delta;
-                        worstTrack = i;
+                        fWorstTrack = i;
                     }
                 }
 
-                KTDEBUG(tclog, "Worst track index = " << worstTrack);
+                KTDEBUG(tclog, "Worst track index = " << fWorstTrack);
                 KTDEBUG(tclog, "Best delta = " << bestDelta);
 
                 // Set this one's status to REMOVED.
-                fGroupingStatuses[worstTrack] = fREMOVED;
+                fGroupingStatuses[fWorstTrack] = fREMOVED;
 
                 // Now we will recursively repeat this calculation. The track which has just been set to REMOVED will now be skipped
                 // Note that if there is only 1 track which is ungrouped, the variances will be zero and necessarily below the threshold
 
-                KTDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[worstTrack] << ". Recursively continuing the cluster search");
+                KTDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[fWorstTrack] << ". Recursively continuing the cluster search");
                 fTerminateFlag = false;
             }
             else
             {
                 KTDEBUG(tclog, "Variance exceeded limit; removing most recent track and terminating cluster search");
 
-                fGroupingStatuses[worstTrack] = fREMOVED;
+                fGroupingStatuses[fWorstTrack] = fREMOVED;
                 
                 for( std::vector< int >::iterator it = fCluster.begin(); it != fCluster.end(); ++it )
                 {
-                    if( *it == worstTrack )
+                    if( *it == fWorstTrack )
                     {
                         KTDEBUG(tclog, "Found worst track. Removing it now");
                         fCluster.erase( it );

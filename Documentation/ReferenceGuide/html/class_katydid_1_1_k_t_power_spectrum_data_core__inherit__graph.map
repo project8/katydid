@@ -1,6 +1,0 @@
-<map id="Katydid::KTPowerSpectrumDataCore" name="Katydid::KTPowerSpectrumDataCore">
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_normalized_p_s_data.html" title="{Katydid::KTNormalizedPSData\n|+ sName\l|+ KTNormalizedPSData()\l+ ~KTNormalizedPSData()\l+ SetNComponents()\l}" alt="" coords="5,428,209,528"/>
-<area shape="rect" id="node4" href="$class_katydid_1_1_k_t_power_spectrum_data.html" title="{Katydid::KTPowerSpectrumData\n|+ sName\l|+ KTPowerSpectrumData()\l+ ~KTPowerSpectrumData()\l+ SetNComponents()\l}" alt="" coords="233,428,446,528"/>
-<area shape="rect" id="node5" href="$class_katydid_1_1_k_t_power_spectrum_uncertainty_data.html" title="{Katydid::KTPowerSpectrum\lUncertaintyData\n|+ sName\l|+ KTPowerSpectrumUncertaintyData()\l+ ~KTPowerSpectrumUncertaintyData()\l+ SetNComponents()\l}" alt="" coords="469,421,726,535"/>
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_frequency_domain_array_data.html" title="{Katydid::KTFrequencyDomain\lArrayData\n||+ KTFrequencyDomainArrayData()\l+ ~KTFrequencyDomainArrayData()\l+ GetArray()\l+ GetArray()\l}" alt="" coords="221,5,457,132"/>
-</map>

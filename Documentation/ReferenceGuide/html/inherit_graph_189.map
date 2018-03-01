@@ -1,8 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_nymph_1_1_k_t_signal_wrapper_1_1_k_t_internal_signal_wrapper.html" title="Nymph::KTSignalWrapper\l::KTInternalSignalWrapper" alt="" coords="5,12,184,51"/>
-<area shape="rect" id="node2" href="$class_nymph_1_1_k_t_signal_wrapper_1_1_k_t_specified_internal_signal_wrapper.html" title="Nymph::KTSignalWrapper\l::KTSpecifiedInternalSignalWrapper\l\&lt; XSignature \&gt;" alt="" coords="232,5,465,57"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_slot_wrapper_1_1_k_t_internal_slot_wrapper.html" title="Nymph::KTSlotWrapper\l::KTInternalSlotWrapper" alt="" coords="12,88,176,127"/>
-<area shape="rect" id="node4" href="$class_nymph_1_1_k_t_slot_wrapper_1_1_k_t_specified_internal_slot_wrapper.html" title="Nymph::KTSlotWrapper\l::KTSpecifiedInternalSlotWrapper\l\&lt; XSignature, XTypeContainer \&gt;" alt="" coords="239,81,458,133"/>
-<area shape="rect" id="node6" href="$class_nymph_1_1_k_t_signal_wrapper.html" title="Nymph::KTSignalWrapper" alt="" coords="260,157,436,183"/>
-<area shape="rect" id="node7" href="$class_nymph_1_1_k_t_slot_wrapper.html" title="Nymph::KTSlotWrapper" alt="" coords="267,207,429,232"/>
-</map>

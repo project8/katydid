@@ -1,4 +1,0 @@
-<map id="Katydid::KTGaussianNoiseGenerator" name="Katydid::KTGaussianNoiseGenerator">
-<area shape="rect" id="node2" href="$class_katydid_1_1_k_t_t_s_generator.html" title="Base class for generating time series data. " alt="" coords="11,167,217,520"/>
-<area shape="rect" id="node3" href="$class_nymph_1_1_k_t_primary_processor.html" title="{Nymph::KTPrimaryProcessor\n||+ KTPrimaryProcessor()\l+ ~KTPrimaryProcessor()\l+ operator()()\l+ Run()\l}" alt="" coords="17,5,211,119"/>
-</map>

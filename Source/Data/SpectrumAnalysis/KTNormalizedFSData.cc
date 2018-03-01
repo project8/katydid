@@ -11,7 +11,8 @@ namespace Katydid
 {
     const std::string KTNormalizedFSDataPolar::sName("normalized-fs-polar");
 
-    KTNormalizedFSDataPolar::KTNormalizedFSDataPolar()
+    KTNormalizedFSDataPolar::KTNormalizedFSDataPolar() :
+            fComponentData()
     {}
     KTNormalizedFSDataPolar::~KTNormalizedFSDataPolar()
     {}
@@ -25,6 +26,7 @@ namespace Katydid
             delete fSpectra[iComponent];
         }
         fSpectra.resize(components);
+        fComponentData.resize(components);
         // if components > oldSize
         for (unsigned iComponent = oldSize; iComponent < components; ++iComponent)
         {
@@ -36,7 +38,8 @@ namespace Katydid
 
     const std::string KTNormalizedFSDataFFTW::sName("normalized-fs-fftw");
 
-    KTNormalizedFSDataFFTW::KTNormalizedFSDataFFTW()
+    KTNormalizedFSDataFFTW::KTNormalizedFSDataFFTW() :
+            fComponentData()
     {}
     KTNormalizedFSDataFFTW::~KTNormalizedFSDataFFTW()
     {}
@@ -52,6 +55,7 @@ namespace Katydid
             }
         }
         fSpectra.resize(components);
+        fComponentData.resize(components);
         if (components > oldSize)
         {
             for (unsigned iComponent = oldSize; iComponent < components; ++iComponent)
@@ -65,7 +69,8 @@ namespace Katydid
 
     const std::string KTNormalizedPSData::sName("normalized-ps");
 
-    KTNormalizedPSData::KTNormalizedPSData()
+    KTNormalizedPSData::KTNormalizedPSData() :
+            fComponentData()
     {}
     KTNormalizedPSData::~KTNormalizedPSData()
     {}
@@ -81,6 +86,7 @@ namespace Katydid
             }
         }
         fSpectra.resize(components);
+        fComponentData.resize(components);
         if (components > oldSize)
         {
             for (unsigned iComponent = oldSize; iComponent < components; ++iComponent)

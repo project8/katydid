@@ -1,3 +1,0 @@
-<map id="Katydid::KTFrequencyCandidateData::PerComponentData" name="Katydid::KTFrequencyCandidateData::PerComponentData">
-<area shape="rect" id="node3" href="$class_katydid_1_1_k_t_frequency_candidate.html" title="{Katydid::KTFrequencyCandidate\n|&#45; fFirstBin\l&#45; fLastBin\l&#45; fMeanFrequency\l&#45; fPeakAmplitude\l&#45; fAmplitudeSum\l|+ KTFrequencyCandidate()\l+ KTFrequencyCandidate()\l+ ~KTFrequencyCandidate()\l+ operator=()\l+ GetFirstBin()\l+ SetFirstBin()\l+ GetLastBin()\l+ SetLastBin()\l+ GetMeanFrequency()\l+ SetMeanFrequency()\l+ GetPeakAmplitude()\l+ SetPeakAmplitude()\l+ GetAmplitudeSum()\l+ SetAmplitudeSum()\l}" alt="" coords="5,5,219,305"/>
-</map>

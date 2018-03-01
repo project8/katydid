@@ -68,7 +68,6 @@ namespace Katydid
                     RangeIteratorWrapper(const XRangeIteratorType& original, int position);
                     ~RangeIteratorWrapper();
 
-                    bool operator<(RangeIteratorWrapper& rhs);
                     bool operator<(const RangeIteratorWrapper& rhs) const;
 
                     const XRangeIteratorType& Iterator() const;
@@ -257,12 +256,6 @@ namespace Katydid
     template< class XObjectType, class XRangeIteratorType >
     KTCutable< XObjectType, XRangeIteratorType >::RangeIteratorWrapper::~RangeIteratorWrapper()
     {
-    }
-
-    template< class XObjectType, class XRangeIteratorType >
-    bool KTCutable< XObjectType, XRangeIteratorType >::RangeIteratorWrapper::operator<(KTCutable< XObjectType, XRangeIteratorType >::RangeIteratorWrapper& rhs)
-    {
-        return fPosition < rhs.GetPosition();
     }
 
     template< class XObjectType, class XRangeIteratorType >

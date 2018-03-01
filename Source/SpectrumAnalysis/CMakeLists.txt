@@ -5,6 +5,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
     KTConsensusThresholding.hh
+    KTConvolution.hh
     KTCorrelator.hh
     KTCreateKDTree.hh
     KTDataAccumulator.hh
@@ -16,6 +17,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTNNFilter.hh
     KTSequentialTrackFinder.hh
     KTSpectrumDiscriminator.hh
+    KTSpectrogramStriper.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
     #KTAutoCorrMatrix.hh
@@ -26,6 +28,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTAmplitudeDistributor.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc
+    KTConvolution.cc
     KTCreateKDTree.cc
     KTDataAccumulator.cc
     KTDistanceClustering.cc
@@ -36,6 +39,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTNNFilter.cc
     KTSequentialTrackFinder.cc
     KTSpectrumDiscriminator.cc
+    KTSpectrogramStriper.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
     #KTAutoCorrMatrix.cc
@@ -45,11 +49,13 @@ if (FFTW_FOUND)
     set (SPECTRUMANALYSIS_HEADERFILES
         ${SPECTRUMANALYSIS_HEADERFILES}
         KTAnalyticAssociator.hh
+        KTConvolution.hh
         KTWignerVille.hh
     )
     set (SPECTRUMANALYSIS_SOURCEFILES
         ${SPECTRUMANALYSIS_SOURCEFILES}
         KTAnalyticAssociator.cc
+        KTConvolution.cc
         KTWignerVille.cc
     )
 endif (FFTW_FOUND)
