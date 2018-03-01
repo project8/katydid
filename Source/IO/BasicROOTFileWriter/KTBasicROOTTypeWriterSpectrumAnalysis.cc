@@ -14,6 +14,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTGainVariationData.hh"
 #include "KTHoughData.hh"
+#include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPowerSpectrumData.hh"
@@ -75,6 +76,7 @@ namespace Katydid
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleData);
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
+        fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
 #ifdef ENABLE_TUTORIAL
         fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar);
         fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW);
@@ -706,6 +708,46 @@ namespace Katydid
             mfsHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
+        return;
+    }
+
+    //************************
+    // KDTree Data
+    //************************
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        static unsigned kdTreeSpectNum = 0;
+
+        KTKDTreeData& kdtData = data->Of< KTKDTreeData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iComponent = 0; iComponent < kdtData.GetNComponents(); iComponent++)
+        {
+            const KTKDTreeData::SetOfPoints& points = kdtData.GetSetOfPoints(iComponent);
+            const KTKDTreeData::TreeIndex* index = kdtData.GetTreeIndex(iComponent);
+            unsigned pid = 0;
+
+            TGraph* grSpectrogram = new TGraph(points.size());
+            stringstream conv;
+            conv << "grKDTreeSSpect_" << kdTreeSpectNum << "_" << iComponent;
+            string grName;
+            conv >> grName;
+            grSpectrogram->SetName(grName.c_str());
+            grSpectrogram->SetTitle("Sparse Spectrogram (from KDTree)");
+
+            for (KTKDTreeData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
+            {
+                grSpectrogram->SetPoint(pid, it->fCoords[0], it->fCoords[1]);
+                ++pid;
+            }
+
+            fWriter->GetFile()->cd();
+            grSpectrogram->Write();
+        }
+
         return;
     }
 

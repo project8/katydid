@@ -25,6 +25,7 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/PrintInfo.yaml
     ConfigFiles/SidebandTrackAnalysis.yaml    
     ConfigFiles/SparseSpectrogramAsTTree.yaml
+    ConfigFiles/SparseSpectrogramFromKDTree.yaml
     ConfigFiles/SpectrogramConfig.yaml
     ConfigFiles/SpectrogramImageConfig.yaml
 )
