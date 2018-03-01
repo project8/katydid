@@ -9,11 +9,7 @@
 
 #include "KTLogger.hh"
 
-#include "KTClassifierResultsData.hh"
-#include "KTProcessedTrackData.hh"
 #include "KTPowerFitData.hh"
-
-#include "TMVA/Reader.h"
 
 namespace Katydid
 {

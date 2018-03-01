@@ -13,6 +13,8 @@
 
 #include "KTSlot.hh"
 
+#include "KTClassifierResultsData.hh"
+
 namespace Katydid
 {
     

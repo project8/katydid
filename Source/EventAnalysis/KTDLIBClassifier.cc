@@ -9,7 +9,6 @@
 
 #include "KTLogger.hh"
 
-#include "KTClassifierResultsData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTPowerFitData.hh"
 
@@ -142,7 +141,7 @@ namespace Katydid
         try
         {
             KTDEBUG(avlog_hh,"DF File = " << fDFFile);
-            deserialize(fDFFile) >> decisionFunction; // load train decision function
+            dlib::deserialize(fDFFile) >> decisionFunction; // load train decision function
         }
         catch(...)
         {

@@ -13,6 +13,10 @@
 
 #include "KTSlot.hh"
 
+#include "KTProcessedTrackData.hh"
+
+#include "TMVA/Reader.h"
+
 namespace Katydid
 {
     
