@@ -19,6 +19,7 @@ set (EXAMPLE_CONFIGFILES
     
     ConfigFiles/DisplayFFT.yaml
     ConfigFiles/DisplaySpectrograms.yaml
+    ConfigFiles/GainVariation.yaml
     ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/PrintInfo.yaml
     ConfigFiles/SidebandTrackAnalysis.yaml    
