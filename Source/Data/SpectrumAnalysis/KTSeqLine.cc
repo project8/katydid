@@ -145,12 +145,13 @@ namespace Katydid
 
     void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
     {
-        KTDEBUG(seqlog, "Trimming line edges");
+        KTDEBUG(seqlog, "Trimming line edges. Trimming factor is "<<trimmingFactor);
 
         if (!fAmplitudeList.empty())
         {
             while (fAmplitudeList.back() < trimmingFactor * fTrimmingLimits.back() and fNPoints >= minPoints)
             {
+                KTDEBUG(seqlog, "Amplitude is "<<fAmplitudeList.back()<<" Threshold is "<<fTrimmingLimits.back());
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fTrimmingLimits.erase(fTrimmingLimits.end() -1);
                 fLinePoints.erase(fLinePoints.end() - 1);

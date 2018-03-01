@@ -302,6 +302,7 @@ namespace Katydid
                          // if this line consists of only one point so far, try again with different radius
                          else if (lineIt->fNPoints == 1 and timeCondition and secondPointCondition)
                          {
+                             KTDEBUG(stflog, "Trying initial-frequency-acceptance "<<fInitialFrequencyAcceptance);
                              lineIt->InsertPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
@@ -436,7 +437,7 @@ namespace Katydid
         if (frequencyBin > fMinBin + fLinePowerRadius and frequencyBin < fMaxBin - fLinePowerRadius)
         {
             amplitude = 0;
-            for (int iBin = frequencyBin - fLinePowerRadius; iBin <= frequencyBin + fLinePowerRadius; ++iBin)
+            for (int iBin = frequencyBin - fLinePowerRadius; iBin <= frequencyBin + fLinePowerRadius; iBin++)
             {
                 amplitude += slice(iBin);
                 slice(iBin) = fPointAmplitudeAfterVisit;
@@ -480,7 +481,7 @@ namespace Katydid
         point.fBinInSlice = frequencyBin;
         point.fPointFreq = frequency;
         point.fAmplitude = amplitude;
-        point.fThreshold *= fLinePowerRadius; //assuming thresholds are flat over small region
+        //point.fThreshold *= 2*fLinePowerRadius; //assuming thresholds are flat over small region
     }
 
     inline void KTSequentialTrackFinder::WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency)
@@ -550,7 +551,7 @@ namespace Katydid
                    SumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC *weight;
             }
             Line.fSlope = (Line.fNPoints * SumXY - SumX * SumY)/(SumXX * Line.fNPoints - SumX * SumX);
-            KTDEBUG( stflog, "New slope "<<Line.fSlope);
+            KTDEBUG( stflog, "Weighted slope method. New slope "<<Line.fSlope);
         }
         if (Line.fNPoints <= 1)
         {
@@ -576,38 +577,39 @@ namespace Katydid
         {
             Line.fSlope = fInitialSlope;
         }
-        KTDEBUG( stflog, "New slope "<<Line.fSlope);
+        KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.fSlope);
     }
 
     void KTSequentialTrackFinder::CalculateSlope(LineRef& Line)
     {
 
-            //KTDEBUG(seqlog, "Calculating line slope");
-            double slope = 0.0;
-            double weightedSlope = 0.0;
-            double wSum = 0.0;
-            Line.fNPoints = Line.fLinePoints.size();
+        //KTDEBUG(seqlog, "Calculating line slope");
+        double slope = 0.0;
+        double weightedSlope = 0.0;
+        double wSum = 0.0;
+        Line.fNPoints = Line.fLinePoints.size();
 
 
-            //slope = (fLinePoints.back().fPointFreq - fStartFrequency)/(fLinePoints.back().fTimeInRunC - fStartTimeInRunC);
-            //weight = fLinePoints.back().fAmplitude/fLinePoints.back().fThreshold;
-            //weightedSlope += slope * weight;
+        //slope = (fLinePoints.back().fPointFreq - fStartFrequency)/(fLinePoints.back().fTimeInRunC - fStartTimeInRunC);
+        //weight = fLinePoints.back().fAmplitude/fLinePoints.back().fThreshold;
+        //weightedSlope += slope * weight;
 
-            if (Line.fNPoints > 1)
+        if (Line.fNPoints > 1)
+        {
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+                if (pointIt->fPointFreq > Line.fStartFrequency)
                 {
-                    if (pointIt->fPointFreq > Line.fStartFrequency)
-                    {
-                        weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
-                        wSum += pointIt->fAmplitude;
-                    }
+                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
                 }
-                Line.fSlope = weightedSlope/wSum;
             }
-            else
-            {
-                Line.fSlope = fInitialSlope;
-            }
+            Line.fSlope = weightedSlope/wSum;
         }
+        else
+        {
+            Line.fSlope = fInitialSlope;
+        }
+        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
+    }
 } /* namespace Katydid */
