@@ -63,6 +63,9 @@ New Features:
 * Added some utilities
     * Functions to convert between different complex representations in KTStdComplexFuncs.hh
     * C++ name demangling in KTDemangle.hh
+* Added the ability to write out sparse spectrograms from KTKDTreeData in KTBasicROOTWriter
+    * Slot is "kd-tree-ss"
+    * Validated by comparing to KDTree data written to a ROOT TTree
   
 Fixes:
 ''''''
