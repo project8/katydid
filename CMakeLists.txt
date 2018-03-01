@@ -256,7 +256,6 @@ if (Katydid_ENABLE_EXECUTABLES)
     add_subdirectory (Source/Executables/Validation)
 endif (Katydid_ENABLE_EXECUTABLES)
 add_subdirectory (Examples)
-add_subdirectory(../dlib build)
 
 # Build the main executables (from Nymph, but linked to all of the Katydid libraries)
 nymph_build_executables()
