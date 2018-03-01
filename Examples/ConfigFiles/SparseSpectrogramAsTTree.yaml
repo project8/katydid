@@ -83,11 +83,10 @@ gainvar:
 egg2:
     filename: "my_data_file.egg"
     egg-reader: egg3
-    number-of-slices: 5000 # to cover a nice track in 3870
+    number-of-slices: 5000
     slice-size: 8192
     stride: 8192
     progress-report-interval: 1000
-    start-time: 1.9 # to start at a nice track in run 3870
 
 fft2:
     transform-flag: "ESTIMATE"
