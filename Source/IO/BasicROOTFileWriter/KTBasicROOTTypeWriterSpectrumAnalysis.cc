@@ -724,11 +724,15 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
+        double xScaling = kdtData.GetXScaling();
+        double yScaling = kdtData.GetYScaling();
         for (unsigned iComponent = 0; iComponent < kdtData.GetNComponents(); iComponent++)
         {
             const KTKDTreeData::SetOfPoints& points = kdtData.GetSetOfPoints(iComponent);
             const KTKDTreeData::TreeIndex* index = kdtData.GetTreeIndex(iComponent);
             unsigned pid = 0;
+
+            KTDEBUG(publog, "Creating sparse spectrogram graph from KDTree with " << points.size() << " points");
 
             TGraph* grSpectrogram = new TGraph(points.size());
             stringstream conv;
@@ -740,12 +744,13 @@ namespace Katydid
 
             for (KTKDTreeData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
             {
-                grSpectrogram->SetPoint(pid, it->fCoords[0], it->fCoords[1]);
+                grSpectrogram->SetPoint(pid, it->fCoords[0] * xScaling, it->fCoords[1] * yScaling);
                 ++pid;
             }
 
             fWriter->GetFile()->cd();
             grSpectrogram->Write();
+            KTDEBUG(publog, "Graph <" << grName << "> written to ROOT file");
         }
 
         return;
