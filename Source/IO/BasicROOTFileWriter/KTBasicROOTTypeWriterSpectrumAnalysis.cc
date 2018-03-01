@@ -585,6 +585,13 @@ namespace Katydid
             TH1D* gvHist = gvData.CreateGainVariationHistogram(300, iPlot, histName);
             gvHist->SetDirectory(fWriter->GetFile());
             gvHist->Write();
+            histName.clear();
+            stringstream convVar;
+            convVar << "histGVVar_" << sliceNumber << "_" << iPlot;
+            convVar >> histName;
+            TH1D* gvVarHist = gvData.CreateGainVariationVarianceHistogram(300, iPlot, histName);
+            gvVarHist->SetDirectory(fWriter->GetFile());
+            gvVarHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
 
             /*
