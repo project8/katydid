@@ -543,13 +543,17 @@ namespace Katydid
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                   weight = pointIt->fAmplitude/Line.fAmplitudeSum; //*Line.fNPoints;
+                   weight = pointIt->fAmplitude;
 
-                   SumX += Line.fLinePoints.back().fTimeInRunC * weight;
+                   SumX += Line.fLinePoints.back().fTimeInRunC *weight;
                    SumY += Line.fLinePoints.back().fPointFreq * weight;
-                   SumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq * weight * weight;
+                   SumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq * weight *weight;
                    SumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC * weight * weight;
             }
+            SumX = SumX/Line.fAmplitudeSum;
+            SumY = SumY/Line.fAmplitudeSum;
+            SumXY = SumXY/(Line.fAmplitudeSum*Line.fAmplitudeSum);
+            SumXX = SumXX/(Line.fAmplitudeSum*Line.fAmplitudeSum);
             Line.fSlope = (Line.fNPoints * SumXY - SumX * SumY)/(SumXX * Line.fNPoints - SumX * SumX);
             KTDEBUG( stflog, "Weighted slope method. New slope "<<Line.fSlope);
         }
