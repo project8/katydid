@@ -20,6 +20,8 @@
 #include "M3DataInterface.hh"
 #include "M3Exception.hh"
 
+#include "scarab_version.hh"
+
 using namespace monarch3;
 
 using std::map;
@@ -47,7 +49,7 @@ namespace Katydid
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fMasterSliceHeader(),
             fReadState(),
-            fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFirstCall),
+            fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFromMonarch),
             fT0Offset(0),
             fAcqTimeInRun(0),
             fSampleRateUnitsInHz(1.e6),
@@ -116,6 +118,28 @@ namespace Katydid
             delete fMonarch;
             fMonarch = NULL;
             return Nymph::KTDataPtr();
+        }
+
+        // Check that this is an egg version 3 file
+        scarab::version_semantic eggVersion(fMonarch->GetHeader()->GetEggVersion());
+        if (eggVersion.major_version() != 3)
+        {
+            KTERROR(eggreadlog, "Cannot read egg version " << eggVersion.version_str());
+            delete fMonarch;
+            fMonarch = NULL;
+            return Nymph::KTDataPtr();
+        }
+
+        // Set the appropriate time-in-run calculation function based on the egg version
+        if (eggVersion < scarab::version_semantic("3.2.0"))
+        {
+            KTDEBUG(eggreadlog, "Egg version is " << eggVersion.version_str() << "; switching GetTIR function to manual");
+            fGetTimeInRun = &KTEgg3Reader::GetTimeInRunManually;
+        }
+        else
+        {
+            KTDEBUG(eggreadlog, "Egg version is " << eggVersion.version_str() << "; switching GetTIR function to from-monarch");
+            fGetTimeInRun = &KTEgg3Reader::GetTimeInRunFromMonarch;
         }
 
         // Temporary assumption: using channel 0 + any other channels in the same stream
@@ -240,6 +264,10 @@ namespace Katydid
                     return Nymph::KTDataPtr();
                 }
                 ++fRecordsProcessed;
+
+                // set the time offset for the run based on the first channel
+                fT0Offset = fM3Stream->GetAcqFirstRecordTime();
+                KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
 
                 // set fStartOFLastSliceRecord properly, considering that the first record in the file might not be record 0
                 // this has to be done after the first record is read, because Monarch only knows what the first record number is after accessing the records
@@ -649,23 +677,6 @@ namespace Katydid
 
         // set the TS data type size based on channel 0 (by Katydid's channel counting)
         return;
-    }
-
-    double KTEgg3Reader::GetTimeInRunFirstCall() const
-    {
-        fT0Offset = fM3Stream->GetChannelRecord(0)->GetTime();
-        KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
-        if (fT0Offset == 0)
-        {
-            KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is 0; switching GetTIR function to manual");
-            fGetTimeInRun = &KTEgg3Reader::GetTimeInRunManually;
-        }
-        else
-        {
-            KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is not 0; switching GetTIR function to from-monarch");
-            fGetTimeInRun = &KTEgg3Reader::GetTimeInRunFromMonarch;
-        }
-        return GetTimeInRun();
     }
 
 
