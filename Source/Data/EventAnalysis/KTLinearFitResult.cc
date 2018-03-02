@@ -15,15 +15,14 @@ namespace Katydid
 
     KTLinearFitResult::KTLinearFitResult() :
             KTExtensibleData< KTLinearFitResult >(),
-            fComponent(0),
-            fFitData(1)
+            fComponentData(1)
     {
     }
 
     KTLinearFitResult::KTLinearFitResult(const KTLinearFitResult& orig) :
             KTExtensibleData< KTLinearFitResult >(orig),
             
-            fFitData(orig.fFitData)
+            fComponentData(orig.fComponentData)
     {
     }
 
@@ -34,29 +33,29 @@ namespace Katydid
     KTLinearFitResult& KTLinearFitResult::operator=(const KTLinearFitResult& rhs)
     {
         KTExtensibleData< KTLinearFitResult >::operator=(rhs);
-        fFitData = rhs.fFitData;
+        fComponentData = rhs.fComponentData;
         return *this;
     }
 
     std::ostream& operator<<(std::ostream& out, const KTLinearFitResult& hdr)
     {
-        out << "# of Components: " << hdr.GetNFits() << '\n';
-        for (unsigned iFit = 0; iFit < hdr.GetNFits(); ++iFit)
+        out << "# of Components: " << hdr.GetNComponents() << '\n';
+        for (unsigned iComponent = 0; iComponent < hdr.GetNComponents(); ++iComponent)
         {
             out << "Linear Fit Result Contents:\n" <<
-                "\tSlope: " << hdr.GetSlope(iFit) << '\n' <<
-                "\tIntercept: " << hdr.GetIntercept(iFit) << '\n' <<
-                /*"\tFirst local min deviation (sigma): " << hdr.GetFineProbe_sigma_1(iFit) << '\n' <<
-                "\tSecond local min deviation (sigma): " << hdr.GetFineProbe_sigma_2(iFit) << '\n' <<
-                "\tFirst local min deviation (SNR): " << hdr.GetFineProbe_SNR_1(iFit) << '\n' <<
-                "\tSecond local min deviation (SNR): " << hdr.GetFineProbe_SNR_2(iFit) << '\n' <<
-                "\tMagnetron peak: " << hdr.GetFFT_peak(iFit) << '\n' <<
-                "\tMagnetron peak uncertainty: " << hdr.GetFFT_peak_uncertainty(iFit) << '\n' <<
-                "\tMagnetron peak significance (sigma): " << hdr.GetFFT_sigma(iFit) << '\n' <<
-                "\tMagnetron peak significance (SNR): " << hdr.GetFFT_SNR(iFit) << '\n' <<
-                */"\tFit bandwidth: " << hdr.GetFit_width(iFit) << '\n' <<
-                "\tPoints in fit: " << hdr.GetNPoints(iFit) << '\n' <<
-                "\tProbe width: " << hdr.GetProbeWidth(iFit) << '\n';
+                "\tSlope: " << hdr.GetSlope(iComponent) << '\n' <<
+                "\tIntercept: " << hdr.GetIntercept(iComponent) << '\n' <<
+                /*"\tFirst local min deviation (sigma): " << hdr.GetFineProbe_sigma_1(iComponent) << '\n' <<
+                "\tSecond local min deviation (sigma): " << hdr.GetFineProbe_sigma_2(iComponent) << '\n' <<
+                "\tFirst local min deviation (SNR): " << hdr.GetFineProbe_SNR_1(iComponent) << '\n' <<
+                "\tSecond local min deviation (SNR): " << hdr.GetFineProbe_SNR_2(iComponent) << '\n' <<
+                "\tMagnetron peak: " << hdr.GetFFT_peak(iComponent) << '\n' <<
+                "\tMagnetron peak uncertainty: " << hdr.GetFFT_peak_uncertainty(iComponent) << '\n' <<
+                "\tMagnetron peak significance (sigma): " << hdr.GetFFT_sigma(iComponent) << '\n' <<
+                "\tMagnetron peak significance (SNR): " << hdr.GetFFT_SNR(iComponent) << '\n' <<
+                */"\tFit bandwidth: " << hdr.GetFit_width(iComponent) << '\n' <<
+                "\tPoints in fit: " << hdr.GetNPoints(iComponent) << '\n' <<
+                "\tProbe width: " << hdr.GetProbeWidth(iComponent) << '\n';
         }
         return out;
     }

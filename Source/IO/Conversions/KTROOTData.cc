@@ -300,7 +300,7 @@ namespace Katydid
         Int_t iTrack = 0;
         for (TrackSetCIt trIt = data.GetTracksBegin(); trIt != data.GetTracksEnd(); ++trIt)
         {
-            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(trIt->fProcTrack);
+            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(*trIt);
             ++iTrack;
         }
         return;
@@ -315,15 +315,11 @@ namespace Katydid
         data.SetStartFrequencySigma(fStartFrequencySigma); data.SetEndFrequencySigma(fEndFrequencySigma); data.SetFrequencyWidthSigma(fFrequencyWidthSigma);
         data.SetFirstTrackID(fFirstTrackID); data.SetFirstTrackTimeLength(fFirstTrackTimeLength); data.SetFirstTrackFrequencyWidth(fFirstTrackFrequencyWidth); data.SetFirstTrackSlope(fFirstTrackSlope); data.SetFirstTrackIntercept(fFirstTrackIntercept); data.SetFirstTrackTotalPower(fFirstTrackTotalPower);
         data.SetUnknownEventTopology(fUnknownEventTopology);
-
         Int_t nTracks = fTracks->GetSize();
-        Nymph::KTDataPtr dummyData;
-        KTProcessedTrackData& procTrack = dummyData->Of< KTProcessedTrackData >();
-        AllTrackData track( dummyData, procTrack );
-
+        KTProcessedTrackData track;
         for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)
         {
-            ((TProcessedTrackData*)((*fTracks)[iTrack]))->Unload(procTrack);
+            ((TProcessedTrackData*)((*fTracks)[iTrack]))->Unload(track);
             data.AddTrack(track);
         }
         return;

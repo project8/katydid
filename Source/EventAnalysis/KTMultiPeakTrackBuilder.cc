@@ -38,10 +38,10 @@ namespace Katydid
             fCompTracks(1),
             fMPTracks(1),
             fMPTSignal("mpt", this),
-            fDoneSignal("mpt-done", this)
+            fDoneSignal("mpt-done", this),
+            fTakeTrackSlot("track", this, &KTMultiPeakTrackBuilder::TakeTrack)
     {
         RegisterSlot("do-clustering", this, &KTMultiPeakTrackBuilder::DoClusteringSlot);
-        RegisterSlot("track", this, &KTMultiPeakTrackBuilder::SlotFunctionTakeTrack);
     }
 
     KTMultiPeakTrackBuilder::~KTMultiPeakTrackBuilder()
@@ -57,30 +57,22 @@ namespace Katydid
         return true;
     }
 
-    void KTMultiPeakTrackBuilder::SlotFunctionTakeTrack(Nymph::KTDataPtr data)
+    bool KTMultiPeakTrackBuilder::TakeTrack(KTProcessedTrackData& track)
     {
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(tclog, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
-
-        KTProcessedTrackData& track = data->Of< KTProcessedTrackData >();
-
         if (track.GetAcquisitionID() != fCurrentAcquisitionID)
         {
             KTINFO(tclog, "Incoming track has a new acquisition ID (new: " << track.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
             if (! DoClustering())
             {
                 KTERROR(tclog, "An error occurred while running the event clustering");
-                return;
+                return false;
             }
             fCurrentAcquisitionID = track.GetAcquisitionID();
             KTDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
         }
 
         // ignore the track if it's been cut
-        if (track.GetIsCut()) return;
+        if (track.GetIsCut()) return true;
 
         // verify that we have the right number of components
         if (track.GetComponent() >= fCompTracks.size())
@@ -91,12 +83,9 @@ namespace Katydid
         KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         // copy the full track data
-        AllTrackData trackObject( data, track );
-        fCompTracks[track.GetComponent()].insert(trackObject);
+        fCompTracks[track.GetComponent()].insert(track);
 
-        KTINFO(tclog, "Successfully took track. Total tracks stored: " << fCompTracks.size());
-
-        return;
+        return true;
     }
 
     void KTMultiPeakTrackBuilder::DoClusteringSlot()
@@ -165,7 +154,7 @@ namespace Katydid
                 while (mptrIt != activeTrackRefs.end())
                 {
                     KTDEBUG(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
-                    double deltaStartT = trackIt->fProcTrack.GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
+                    double deltaStartT = trackIt->GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
 
                     // check to see if this track ref should no longer be active
                     if (deltaStartT > fSidebandTimeTolerance)
@@ -178,7 +167,7 @@ namespace Katydid
                     }
                     else
                     {
-                        double deltaEndT = trackIt->fProcTrack.GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
+                        double deltaEndT = trackIt->GetEndTimeInRunC() - mptrIt->fMeanEndTimeInRunC;
                         // check if this track should be added to this track ref
                         if ( !trackHasBeenAdded &&
                              (fabs(deltaStartT) <= fSidebandTimeTolerance || fabs(deltaEndT) < fSidebandTimeTolerance)
@@ -199,7 +188,7 @@ namespace Katydid
                 {
                     activeTrackRefs.push_back(MultiPeakTrackRef());
                     activeTrackRefs.rbegin()->InsertTrack(trackIt);
-                    activeTrackRefs.rbegin()->fAcquisitionID = trackIt->fProcTrack.GetAcquisitionID();
+                    activeTrackRefs.rbegin()->fAcquisitionID = trackIt->GetAcquisitionID();
                     trackHasBeenAdded = true;
                 }
                 ++trackIt;

@@ -186,7 +186,6 @@ int main()
         ps->ConvertToPowerSpectrum();
         psData->SetSpectrum( ps, 0 );
         s->SetTimeInRun( t );
-        s->SetTimeInAcq( t );
         s->SetSliceLength( t_bin );
 
         // Add to vectors

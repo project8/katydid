@@ -65,13 +65,7 @@ namespace Katydid
         KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         // copy the full track data
-
-        Nymph::KTDataPtr data;
-        KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
-        newTrack = track;
-
-        AllTrackData trackObject( data, newTrack );
-        fCompTracks[track.GetComponent()].insert(trackObject);
+        fCompTracks[track.GetComponent()].insert(track);
 
         return true;
     }
@@ -123,10 +117,10 @@ namespace Katydid
             KTDEBUG(tclog, "Filling vectors with slope and intercept");
             for( TrackSetCIt trackIt = compIt->begin(); trackIt != compIt->end(); ++trackIt )
             {
-                fSlopes.push_back( trackIt->fProcTrack.GetSlope() );
-                fIntercepts.push_back( trackIt->fProcTrack.GetIntercept() );
-                fTimeLengths.push_back( trackIt->fProcTrack.GetTimeLength() );
-                fStartTimes.push_back( trackIt->fProcTrack.GetStartTimeInRunC() );
+                fSlopes.push_back( trackIt->GetSlope() );
+                fIntercepts.push_back( trackIt->GetIntercept() );
+                fTimeLengths.push_back( trackIt->GetTimeLength() );
+                fStartTimes.push_back( trackIt->GetStartTimeInRunC() );
                 fGroupingStatuses.push_back( fUNGROUPED );
             }
 
@@ -171,21 +165,21 @@ namespace Katydid
 
                     // Assign start and end time/frequency
 
-                    if( i == 0 || trackIt->fProcTrack.GetStartTimeInRunC() < newTrack.GetStartTimeInRunC() )
+                    if( i == 0 || trackIt->GetStartTimeInRunC() < newTrack.GetStartTimeInRunC() )
                     {
-                        newTrack.SetStartTimeInRunC( trackIt->fProcTrack.GetStartTimeInRunC() );
+                        newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC() );
                     }
-                    if( i == 0 || trackIt->fProcTrack.GetEndTimeInRunC() > newTrack.GetEndTimeInRunC() )
+                    if( i == 0 || trackIt->GetEndTimeInRunC() > newTrack.GetEndTimeInRunC() )
                     {
-                        newTrack.SetEndTimeInRunC( trackIt->fProcTrack.GetEndTimeInRunC() );
+                        newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC() );
                     }
-                    if( i == 0 || trackIt->fProcTrack.GetStartFrequency() < newTrack.GetStartFrequency() )
+                    if( i == 0 || trackIt->GetStartFrequency() < newTrack.GetStartFrequency() )
                     {
-                        newTrack.SetStartFrequency( trackIt->fProcTrack.GetStartFrequency() );
+                        newTrack.SetStartFrequency( trackIt->GetStartFrequency() );
                     }
-                    if( i == 0 || trackIt->fProcTrack.GetEndFrequency() > newTrack.GetEndFrequency() )
+                    if( i == 0 || trackIt->GetEndFrequency() > newTrack.GetEndFrequency() )
                     {
-                        newTrack.SetEndFrequency( trackIt->fProcTrack.GetEndFrequency() );
+                        newTrack.SetEndFrequency( trackIt->GetEndFrequency() );
                     }
 
                     KTDEBUG(tclog, "Assigned time and frequency");

@@ -41,24 +41,26 @@ namespace Katydid
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterEventAnalysis::KTROOTTreeTypeWriterEventAnalysis() :
-                    KTROOTTreeTypeWriter(),
-                    //KTTypeWriterEventAnalysis()
-                    fFreqCandidateTree(NULL),
-                    fWaterfallCandidateTree(NULL),
-                    fSparseWaterfallCandidateTree(NULL),
-                    fProcessedTrackTree(NULL),
-                    fMultiPeakTrackTree(NULL),
-                    fMultiTrackEventTree(NULL),
-                    fLinearFitResultTree(NULL),
-                    fPowerFitDataTree(NULL),
-                    fFreqCandidateData(),
-                    fWaterfallCandidateData(),
-                    fSparseWaterfallCandidateData(),
-                    fProcessedTrackDataPtr(NULL),
-                    fMultiPeakTrackData(),
-                    fMultiTrackEventDataPtr(NULL),
-                    fLineFitData(),
-                    fPowerFitData()
+            KTROOTTreeTypeWriter(),
+            //KTTypeWriterEventAnalysis()
+            fFreqCandidateTree(NULL),
+            fWaterfallCandidateTree(NULL),
+            fSparseWaterfallCandidateTree(NULL),
+            fProcessedMPTTree(NULL),
+            fProcessedTrackTree(NULL),
+            fMultiPeakTrackTree(NULL),
+            fMultiTrackEventTree(NULL),
+            fLinearFitResultTree(NULL),
+            fPowerFitDataTree(NULL),
+            fFreqCandidateData(),
+            fWaterfallCandidateData(),
+            fSparseWaterfallCandidateData(),
+            fProcessedMPTDataPtr(NULL),
+            fProcessedTrackDataPtr(NULL),
+            fMultiPeakTrackData(),
+            fMultiTrackEventDataPtr(NULL),
+            fLineFitData(),
+            fPowerFitData()
     {
     }
 
@@ -122,7 +124,7 @@ namespace Katydid
                 fFreqCandidateData.fAmplitudeSum = it->GetAmplitudeSum();
 
                 fFreqCandidateTree->Fill();
-            }
+           }
         }
 
         return;
@@ -328,8 +330,8 @@ namespace Katydid
         fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
         KTDEBUG(publog, "Candidate info:\n"
                 << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
-        //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
-        //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
+                //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
+                //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
 
         fSparseWaterfallCandidateTree->Fill();
 
@@ -559,7 +561,7 @@ namespace Katydid
         }
 
         fMultiPeakTrackTree->Fill();
-
+        
         return;
     }
 
@@ -688,22 +690,22 @@ namespace Katydid
             }
         }
 
-        for (fLineFitData.fFitNumber = 0; fLineFitData.fFitNumber < lfData.GetNFits(); fLineFitData.fFitNumber++)
+        for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
         {
-            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fFitNumber );
-            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fFitNumber );
-            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fFitNumber );
-            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fFitNumber );
-            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fFitNumber );
-            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fFitNumber );
-            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fFitNumber );
-            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fFitNumber );
-            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fFitNumber );
-            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fFitNumber );
-            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fFitNumber );
-            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fFitNumber );
-            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fFitNumber );
-            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fFitNumber );
+            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fComponent );
+            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fComponent );
+            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fComponent );
+            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fComponent );
+            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
+            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fComponent );
+            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fComponent );
+            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fComponent );
+            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fComponent );
+            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fComponent );
+            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fComponent );
 
             fLinearFitResultTree->Fill();
         }
@@ -722,7 +724,7 @@ namespace Katydid
                 KTINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fLinearFitResultTree );
 
-                fLinearFitResultTree->SetBranchAddress( "FitNumber", &fLineFitData.fFitNumber );
+                fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
                 fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
                 fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
                 fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
@@ -750,7 +752,7 @@ namespace Katydid
         }
         fWriter->AddTree( fLinearFitResultTree );
 
-        fLinearFitResultTree->Branch( "FitNumber", &fLineFitData.fFitNumber, "fFitNumber/i" );
+        fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
         fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
         fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
         fLinearFitResultTree->Branch( "StartingFrequency", &fLineFitData.fStartingFrequency, "fStartingFrequency/d" );
@@ -773,6 +775,16 @@ namespace Katydid
     // Power Fit Data
     //**************************
 
+    std::vector<double> * pNorm;
+    std::vector<double> * pMean;
+    std::vector<double> * pSigma;
+    std::vector<double> * pMaximum;
+    
+    std::vector<double> * pNormErr;
+    std::vector<double> * pMeanErr;
+    std::vector<double> * pSigmaErr;
+    std::vector<double> * pMaximumErr;
+
     void KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to power fit data root tree");
@@ -789,53 +801,56 @@ namespace Katydid
             }
         }
 
-        fPowerFitData.fNorm = pfData.GetNorm();
-        fPowerFitData.fMean = pfData.GetMean();
-        fPowerFitData.fSigma = pfData.GetSigma();
-        fPowerFitData.fMaximum = pfData.GetMaximum();
-
-        fPowerFitData.fNormErr = pfData.GetNormErr();
-        fPowerFitData.fMeanErr = pfData.GetMeanErr();
-        fPowerFitData.fSigmaErr = pfData.GetSigmaErr();
-        fPowerFitData.fMaximumErr = pfData.GetMaximumErr();
-
-        fPowerFitData.fIsValid = pfData.GetIsValid();
-        fPowerFitData.fMainPeak = pfData.GetMainPeak();
-        fPowerFitData.fNPeaks = pfData.GetNPeaks();
-
-        fPowerFitData.fAverage = pfData.GetAverage();
-        fPowerFitData.fRMS = pfData.GetRMS();
-        fPowerFitData.fSkewness = pfData.GetSkewness();
-        fPowerFitData.fKurtosis = pfData.GetKurtosis();
-
-        fPowerFitData.fNormCentral = pfData.GetNormCentral();
-        fPowerFitData.fMeanCentral = pfData.GetMeanCentral();
-        fPowerFitData.fSigmaCentral = pfData.GetSigmaCentral();
-        fPowerFitData.fMaximumCentral = pfData.GetMaximumCentral();
-
-        fPowerFitData.fRMSAwayFromCentral = pfData.GetRMSAwayFromCentral();
-        fPowerFitData.fCentralPowerFraction = pfData.GetCentralPowerFraction();
-
-        fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept();
-
-        const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints();
-
-        if (points.size() == 0)
+        for (fPowerFitData.fComponent = 0; fPowerFitData.fComponent < pfData.GetNComponents(); fPowerFitData.fComponent++)
         {
-            KTWARN(publog, "No points in power fit data; nothing written to ROOT file");
-            return;
-        }
+            fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
+            fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
+            fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
+            fPowerFitData.fMaximum = pfData.GetMaximum( fPowerFitData.fComponent );
 
-        fPowerFitData.fPoints = new TGraph(points.size());
-        unsigned iPoint = 0;
-        for (KTPowerFitData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
-        {
-            fPowerFitData.fPoints->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
-            ++iPoint;
-        }
-        //fPowerFitData.fPoints->SetDirectory(NULL);
+            fPowerFitData.fNormErr = pfData.GetNormErr( fPowerFitData.fComponent );
+            fPowerFitData.fMeanErr = pfData.GetMeanErr( fPowerFitData.fComponent );
+            fPowerFitData.fSigmaErr = pfData.GetSigmaErr( fPowerFitData.fComponent );
+            fPowerFitData.fMaximumErr = pfData.GetMaximumErr( fPowerFitData.fComponent );
 
-        fPowerFitDataTree->Fill();
+            fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
+            fPowerFitData.fMainPeak = pfData.GetMainPeak( fPowerFitData.fComponent );
+            fPowerFitData.fNPeaks = pfData.GetNPeaks( fPowerFitData.fComponent );
+
+            fPowerFitData.fAverage = pfData.GetAverage( fPowerFitData.fComponent );
+            fPowerFitData.fRMS = pfData.GetRMS( fPowerFitData.fComponent );
+            fPowerFitData.fSkewness = pfData.GetSkewness( fPowerFitData.fComponent );
+            fPowerFitData.fKurtosis = pfData.GetKurtosis( fPowerFitData.fComponent );
+
+            fPowerFitData.fNormCentral = pfData.GetNormCentral( fPowerFitData.fComponent );
+            fPowerFitData.fMeanCentral = pfData.GetMeanCentral( fPowerFitData.fComponent );
+            fPowerFitData.fSigmaCentral = pfData.GetSigmaCentral( fPowerFitData.fComponent );
+            fPowerFitData.fMaximumCentral = pfData.GetMaximumCentral( fPowerFitData.fComponent );
+
+            fPowerFitData.fRMSAwayFromCentral = pfData.GetRMSAwayFromCentral( fPowerFitData.fComponent );
+            fPowerFitData.fCentralPowerRatio = pfData.GetCentralPowerRatio( fPowerFitData.fComponent );
+
+            fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept( fPowerFitData.fComponent );
+
+            const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints( fPowerFitData.fComponent );
+
+            if (points.size() == 0)
+            {
+                KTWARN(publog, "No points in power fit data; nothing written to ROOT file");
+                return;
+            }
+
+            fPowerFitData.fPoints = new TGraph(points.size());
+            unsigned iPoint = 0;
+            for (KTPowerFitData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+            {
+                fPowerFitData.fPoints->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
+                ++iPoint;
+            }
+            //fPowerFitData.fPoints->SetDirectory(NULL);
+
+            fPowerFitDataTree->Fill();
+        }
 
         return;
     }
@@ -851,6 +866,8 @@ namespace Katydid
                 KTINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fPowerFitDataTree );
 
+                fPowerFitDataTree->SetBranchAddress( "Component", &fPowerFitData.fComponent );
+
                 fPowerFitData.fNorm.push_back(0.);
                 fPowerFitData.fMean.push_back(0.);
                 fPowerFitData.fSigma.push_back(0.);
@@ -861,15 +878,25 @@ namespace Katydid
                 fPowerFitData.fSigmaErr.push_back(0.);
                 fPowerFitData.fMaximumErr.push_back(0.);
 
-                fPowerFitDataTree->SetBranchAddress( "Norm", &fPowerFitData.fNorm );
-                fPowerFitDataTree->SetBranchAddress( "Mean", &fPowerFitData.fMean );
-                fPowerFitDataTree->SetBranchAddress( "Sigma", &fPowerFitData.fSigma );
-                fPowerFitDataTree->SetBranchAddress( "Maximum", &fPowerFitData.fMaximum );
+                pNorm = &fPowerFitData.fNorm;
+                pMean = &fPowerFitData.fMean;
+                pSigma = &fPowerFitData.fSigma;
+                pMaximum = &fPowerFitData.fMaximum;
+                
+                pNormErr = &fPowerFitData.fNormErr;
+                pMeanErr = &fPowerFitData.fMeanErr;
+                pSigmaErr = &fPowerFitData.fSigmaErr;
+                pMaximumErr = &fPowerFitData.fMaximumErr;
 
-                fPowerFitDataTree->SetBranchAddress( "NormErr", &fPowerFitData.fNormErr );
-                fPowerFitDataTree->SetBranchAddress( "MeanErr", &fPowerFitData.fMeanErr );
-                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &fPowerFitData.fSigmaErr );
-                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &fPowerFitData.fMaximumErr);
+                fPowerFitDataTree->SetBranchAddress( "Norm", &pNorm );
+                fPowerFitDataTree->SetBranchAddress( "Mean", &pMean );
+                fPowerFitDataTree->SetBranchAddress( "Sigma", &pSigma );
+                fPowerFitDataTree->SetBranchAddress( "Maximum", &pMaximum );
+
+                fPowerFitDataTree->SetBranchAddress( "NormErr", &pNormErr );
+                fPowerFitDataTree->SetBranchAddress( "MeanErr", &pMeanErr );
+                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &pSigmaErr );
+                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &pMaximumErr);
 
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
@@ -888,7 +915,7 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "MaximumCentral", &fPowerFitData.fMaximumCentral );
 
                 fPowerFitDataTree->SetBranchAddress( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral );
-                fPowerFitDataTree->SetBranchAddress( "CentralPowerFraction", &fPowerFitData.fCentralPowerFraction );
+                fPowerFitDataTree->SetBranchAddress( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio );
 
                 fPowerFitDataTree->SetBranchAddress( "TrackIntercept", &fPowerFitData.fTrackIntercept );
 
@@ -904,6 +931,8 @@ namespace Katydid
         }
         fWriter->AddTree( fPowerFitDataTree );
 
+        fPowerFitDataTree->Branch( "Component", &fPowerFitData.fComponent, "fComponent/i" );
+
         fPowerFitData.fNorm.push_back(0.);
         fPowerFitData.fMean.push_back(0.);
         fPowerFitData.fSigma.push_back(0.);
@@ -914,16 +943,26 @@ namespace Katydid
         fPowerFitData.fSigmaErr.push_back(0.);
         fPowerFitData.fMaximumErr.push_back(0.);
 
-        fPowerFitDataTree->Branch( "Norm", "std::vector<double>", &fPowerFitData.fNorm );
-        fPowerFitDataTree->Branch( "Mean", "std::vector<double>", &fPowerFitData.fMean );
-        fPowerFitDataTree->Branch( "Sigma", "std::vector<double>", &fPowerFitData.fSigma );
-        fPowerFitDataTree->Branch( "Maximum", "std::vector<double>", &fPowerFitData.fMaximum );
+        pNorm = &fPowerFitData.fNorm;
+        pMean = &fPowerFitData.fMean;
+        pSigma = &fPowerFitData.fSigma;
+        pMaximum = &fPowerFitData.fMaximum;
+        
+        pNormErr = &fPowerFitData.fNormErr;
+        pMeanErr = &fPowerFitData.fMeanErr;
+        pSigmaErr = &fPowerFitData.fSigmaErr;
+        pMaximumErr = &fPowerFitData.fMaximumErr;
 
-        fPowerFitDataTree->Branch( "NormErr", "std::vector<double>", &fPowerFitData.fNormErr );
-        fPowerFitDataTree->Branch( "MeanErr", "std::vector<double>", &fPowerFitData.fMeanErr );
-        fPowerFitDataTree->Branch( "SigmaErr", "std::vector<double>", &fPowerFitData.fSigmaErr );
-        fPowerFitDataTree->Branch( "MaximumErr", "std::vector<double>", &fPowerFitData.fMaximumErr );
+        fPowerFitDataTree->Branch( "Norm", "std::vector<double>", &pNorm );
+        fPowerFitDataTree->Branch( "Mean", "std::vector<double>", &pMean );
+        fPowerFitDataTree->Branch( "Sigma", "std::vector<double>", &pSigma );
+        fPowerFitDataTree->Branch( "Maximum", "std::vector<double>", &pMaximum );
 
+        fPowerFitDataTree->Branch( "NormErr", "std::vector<double>", &pNormErr );
+        fPowerFitDataTree->Branch( "MeanErr", "std::vector<double>", &pMeanErr );
+        fPowerFitDataTree->Branch( "SigmaErr", "std::vector<double>", &pSigmaErr );
+        fPowerFitDataTree->Branch( "MaximumErr", "std::vector<double>", &pMaximumErr );
+                
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
         fPowerFitDataTree->Branch( "NPeaks", &fPowerFitData.fNPeaks, "fNPeaks/i" );
@@ -941,7 +980,7 @@ namespace Katydid
         fPowerFitDataTree->Branch( "MaximumCentral", &fPowerFitData.fMaximumCentral, "fMaximumCentral/d" );
 
         fPowerFitDataTree->Branch( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral, "fRMSAwayFromCentral/d" );
-        fPowerFitDataTree->Branch( "CentralPowerFraction", &fPowerFitData.fCentralPowerFraction, "fCentralPowerFraction/d" );
+        fPowerFitDataTree->Branch( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio, "fCentralPowerRatio/d" );
 
         fPowerFitDataTree->Branch( "TrackIntercept", &fPowerFitData.fTrackIntercept, "fTrackIntercept/d" );
 

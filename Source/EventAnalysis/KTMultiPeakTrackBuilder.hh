@@ -98,7 +98,7 @@ namespace Katydid
             //***************
 
         private:
-            void SlotFunctionTakeTrack( Nymph::KTDataPtr data );
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
 
             void DoClusteringSlot();
 

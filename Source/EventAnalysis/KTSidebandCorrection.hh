@@ -27,17 +27,23 @@ namespace Katydid
     /*
      @class KTSidebandCorrection
      @author E. Zayas
+
      @brief Corrects track frequency using sideband frequency and the Gabrielese theorem
+
      @details
      This processor will specifically use the results of KTLinearDensityProbe to correct a track frequency if both signal and sideband peaks are
      found with high confidence. The correction follows from the Gabrielese theorem, which states that cyclotron, axial, and magnetron frequencies
      add in quadrature (to leading order) to give the true frequency of interest in a harmonic trap.
+
      Configuration name: "sideband-correction"
+
      Available configuration values:
      (none)
+
      Slots:
      - "fit-result": void (Nymph::KTDataPtr) -- Adds a track and fit result for analysis; Requires KTLinearFitResult and KTProcessedTrackData; Adds nothing
      - "header": void (Nymph::KTDataPtr) -- Determines the true cyclotron frequency to correctly adjust for down-mixing from hardware; Requires KTEggHeader; Adds nothing
+
      Signals:
      - "track": void (Nymph::KTDataPtr) -- Emitted upon successful analysis and correction of a track; Guarantees KTProcessedTrackData
     */

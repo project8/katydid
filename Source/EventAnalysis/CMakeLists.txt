@@ -27,7 +27,6 @@ set (EVENTANALYSIS_HEADERFILES
     KTPowerFitCut.hh
     KTProcessedTrackCut.hh
     KTQuadraticPhaseShift.hh
-    KTRPClassifier.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
     KTTrackMainbandCut.hh
@@ -57,7 +56,6 @@ set (EVENTANALYSIS_SOURCEFILES
     KTOverlappingTrackClustering.cc
     KTPowerFitCut.cc
     KTProcessedTrackCut.cc
-    KTRPClassifier.cc
     KTQuadraticPhaseShift.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
