@@ -46,12 +46,13 @@ namespace Katydid
      - "min-bin": can be set instead of min frequency
      - "max-bin": can be set instead of  max frequency
      - "trimming-factor": before a line is converted to a track its edges get trimmed. If the last or first line point power is less than the trimming-factor times the power threshold of the points frequency bins in the power spectrum slice, these points get cut off the line
-     - "half-line-width": the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
+     - "line-power-radius": the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
      - "time-gap-tolerance": maximum gap between points in a line (in seconds)
-     - "minimum-line-bin-distance": if a point is less than this distance (in bins) away from the last point it will be skipped
+     - "minimum-line-distance": if a point is less than this distance (in bins) away from the last point it will be skipped
      - "search-radius": before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
      - "converge-delta": defines when convergence has been reached (in bins)
      - "frequency-acceptance": maximum allowed frequency distance of point to an extrapolated line (in Hz)
+     - "initial-frequency-acceptance": if the line that a point is being compared to, only has a single point so far, this is the accepted frequency acceptance. Default isfrequency_acceptance
      - "initial-slope": if a line has only one point, this is the line's slope
      - "min-points": a line only gets converted to a track if it has collected more than this many number of points
      - "min-slope": a line only gets converted to a track if its slope is > than this slope (in Hz/s)

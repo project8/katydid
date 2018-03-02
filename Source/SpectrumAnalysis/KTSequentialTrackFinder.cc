@@ -345,7 +345,7 @@ namespace Katydid
         }
         if (fApplyDensityCut)
         {
-            if ((double)line.fNPoints/(line.fEndTimeInRunC-line.fStartTimeInRunC)*1000.0 <= fDensityThreshold)
+            if ((double)line.fAmplitudeSum/(line.fEndTimeInRunC-line.fStartTimeInRunC) <= fDensityThreshold)
             {
                 lineIsTrack = false;
             }
@@ -496,7 +496,7 @@ namespace Katydid
             wSum +=slice(frequencyBin+iBin);
         }
         newFrequencyBin = unsigned(weightedBin/wSum);
-        newFrequency = fBinWidth * ((double)newFrequencyBin + 0.5);
+        newFrequency = fBinWidth * ((weightedBin/wSum)+0.5); //((double)newFrequencyBin + 0.5);
 
         frequency = newFrequency;
         frequencyBin = newFrequencyBin;
@@ -542,12 +542,12 @@ namespace Katydid
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                   weight = pointIt->fAmplitude/Line.fAmplitudeSum*Line.fNPoints;
+                   weight = pointIt->fAmplitude/Line.fAmplitudeSum; //*Line.fNPoints;
 
                    SumX += Line.fLinePoints.back().fTimeInRunC * weight;
                    SumY += Line.fLinePoints.back().fPointFreq * weight;
-                   SumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq * weight;
-                   SumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC *weight;
+                   SumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq * weight * weight;
+                   SumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC * weight * weight;
             }
             Line.fSlope = (Line.fNPoints * SumXY - SumX * SumY)/(SumXX * Line.fNPoints - SumX * SumX);
             KTDEBUG( stflog, "New slope "<<Line.fSlope);
@@ -589,11 +589,18 @@ namespace Katydid
             Line.fNPoints = Line.fLinePoints.size();
 
 
-            //slope = (fLinePoints.back().fPointFreq - fStartFrequency)/(fLinePoints.back().fTimeInRunC - fStartTimeInRunC);
-            //weight = fLinePoints.back().fAmplitude/fLinePoints.back().fThreshold;
-            //weightedSlope += slope * weight;
-
-            if (Line.fNPoints > 1)
+            if (Line.fNPoints > 10)
+            {
+                for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
+                {
+                    if (pointIt->fPointFreq > Line.fStartFrequency)
+                    {
+                        weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
+                        wSum += pointIt->fAmplitude;
+                    }
+                }
+            }
+            else if (Line.fNPoints > 1)
             {
                 for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
                 {
