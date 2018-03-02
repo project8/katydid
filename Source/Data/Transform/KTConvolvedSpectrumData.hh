@@ -61,6 +61,45 @@ namespace Katydid
 
     };
 
+    class KTConvolvedPowerSpectrumVarianceData : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTConvolvedPowerSpectrumVarianceData >
+    {
+        public:
+            KTConvolvedPowerSpectrumVarianceData();
+            virtual ~KTConvolvedPowerSpectrumVarianceData();
+
+            KTConvolvedPowerSpectrumVarianceData& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
+    class KTConvolvedFrequencySpectrumVarianceDataFFTW : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumVarianceDataFFTW >
+    {
+        public:
+            KTConvolvedFrequencySpectrumVarianceDataFFTW();
+            virtual ~KTConvolvedFrequencySpectrumVarianceDataFFTW();
+
+            KTConvolvedFrequencySpectrumVarianceDataFFTW& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
+    class KTConvolvedFrequencySpectrumVarianceDataPolar : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTConvolvedFrequencySpectrumVarianceDataPolar >
+    {
+        public:
+            KTConvolvedFrequencySpectrumVarianceDataPolar();
+            virtual ~KTConvolvedFrequencySpectrumVarianceDataPolar();
+
+            KTConvolvedFrequencySpectrumVarianceDataPolar& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
 
 } /* namespace Katydid */
 

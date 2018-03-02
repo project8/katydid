@@ -51,9 +51,55 @@ Release Date: TBD
 
 New Features:
 '''''''''''''
+
+* Updates to data accumulator, gain variation processor, gain normalization, and spectrum discriminator
+    * Modernized processors that have not been updated in a long time
+    * Data accumulator now accumulates variance for frequency-type data
+    * Gain variation data now includes variance, which is calculated in gain variation processor
+    * Gain normalization is updated to do normalization properly and includes both the  mean and variance
+    * Normalized FS data now stores the normalized mean and variance, which can be used by the spectrum discriminator
+    * Spectrum discriminator has been modernized and the sigma thresholding fixed
+    * Validation scripts added/used: TestBackgroundFlattening, TestDataAccumulator, TestGainNormalization, and TestGainVariationProcessor
+* Added some utilities
+    * Functions to convert between different complex representations in KTStdComplexFuncs.hh
+    * C++ name demangling in KTDemangle.hh
+* Added the ability to write out sparse spectrograms from KTKDTreeData in KTBasicROOTWriter
+    * Slot is "kd-tree-ss"
+    * Validated by comparing to KDTree data written to a ROOT TTree
   
 Fixes:
 ''''''
+
+
+Version: 2.10.0
+~~~~~~~~~~~~~~~
+
+Release Date: TBD
+'''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
+  
+Fixes:
+''''''
+
+
+Version: 2.9.2
+~~~~~~~~~~~~~~
+
+Release Date: February 20, 2018
+'''''''''''''''''''''''''''''''
+
+ 
+Fixes:
+''''''
+
+* Fixed the calculation of the center frequency in the egg3 reader
+    * Validated by reading two egg files with EggScanner and verifying that the printed frequencies (min, max, and center) match what I expect from manually examining the contents of the egg files
 
 
 Version: 2.9.1

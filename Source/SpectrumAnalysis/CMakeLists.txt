@@ -17,6 +17,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTNNFilter.hh
     KTSequentialTrackFinder.hh
     KTSpectrumDiscriminator.hh
+    KTSpectrogramStriper.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
     #KTAutoCorrMatrix.hh
@@ -38,6 +39,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTNNFilter.cc
     KTSequentialTrackFinder.cc
     KTSpectrumDiscriminator.cc
+    KTSpectrogramStriper.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
     #KTAutoCorrMatrix.cc
