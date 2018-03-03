@@ -43,6 +43,8 @@ namespace Katydid
             fTrailFreq(0.),
             fUseTrackFreqs(false),
             fFullEvent(false),
+            fPrevSliceTimeInRun(0.),
+            fPrevSliceTimeInAcq(0.),
             fWaterfallSignal("ps-coll", this),
             fTimeSeriesSignal("ts-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
@@ -55,6 +57,12 @@ namespace Katydid
 
     KTSpectrogramCollector::~KTSpectrogramCollector()
     {
+    }
+
+    // Emit Signal
+    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data )
+    {
+        fWaterfallSignal( data );
     }
 
     bool KTSpectrogramCollector::Configure(const scarab::param_node* node)
@@ -95,6 +103,9 @@ namespace Katydid
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
+
+        KTINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
+        KTINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
 
         // Configure PSCollectionData frequency bounds
         if( GetUseTrackFreqs() )
@@ -404,7 +415,8 @@ namespace Katydid
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
-                it->second->AddSpectrum( slice.GetTimeInRun(), &ps );
+                KTDEBUG(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
+                it->second->AddSpectrum( slice.GetTimeInAcq(), &ps );
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );
             }
@@ -425,38 +437,32 @@ namespace Katydid
             }
         }
 
-        return true;
-    }
+                    KTINFO(evlog, "Old start time: " << it->second->GetStartTime());
+                    KTINFO(evlog, "Old end time: " << it->second->GetEndTime());
 
-    bool KTSpectrogramCollector::ConsiderTimeSeries( KTTimeSeriesFFTW& ts, KTSliceHeader& slice, unsigned component, bool forceEmit )
-    {
-        // Iterate through each track which has been added
-        for( std::set< std::pair< Nymph::KTDataPtr, KTTSCollectionData* >, KTTrackCompare >::const_iterator it = fTimeSeriesSets[component].begin(); it != fTimeSeriesSets[component].end(); ++it )
-        {
-            // If the slice time coincides with the track time window, add the spectrum
-            // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
-            if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
-            {
-                it->second->AddTimeSeries( &slice, &ts );
-                it->second->SetDeltaT( slice.GetSliceLength() );
-                it->second->SetFilling( true );
-            }
-            else
-            {
-                // If GetFilling() is true, we've reached the end of the track time window
-                // forceEmit=true sends all tracks to this clause, and those still filling will be closed & signals emitted
-                if( it->second->GetFilling() )
-                {
-                    it->second->SetFilling( false );
+                    KTINFO(evlog, "Slice acquisition time:" << slice.GetTimeInAcq());
 
-                    // Emit signal
-                    KTINFO(evlog, "Finished a track; emitting signal");
-                    fTimeSeriesSignal( it->first );
+                    // Convert start and end times from run to acquistion
+                    it->second->SetStartTime( it->second->GetStartTime() - it->second->GetEndTime() + fPrevSliceTimeInAcq );
+                    it->second->SetEndTime( fPrevSliceTimeInAcq );
+
+                    KTINFO(evlog, "New start time: " << it->second->GetStartTime());
+                    KTINFO(evlog, "New end time: " << it->second->GetEndTime());
+
+                    FinishSC( it->first );
                 }
                 else
+                {
                     it->second->SetFilling( false );
+                }
             }
         }
+
+        SetPrevSliceTimeInRun( slice.GetTimeInRun() );
+        SetPrevSliceTimeInAcq( slice.GetTimeInAcq() );
+
+        KTDEBUG(evlog, "Set previous slice time in run to " << fPrevSliceTimeInRun);
+        KTDEBUG(evlog, "Set previous slice time in acq to " << fPrevSliceTimeInAcq);
 
         return true;
     }

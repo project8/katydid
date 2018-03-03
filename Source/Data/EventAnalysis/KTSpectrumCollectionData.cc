@@ -110,7 +110,7 @@ namespace Katydid
         // This ensures all spectra have the same frequency bounds and number of bins
 
         // nBins is the number of bins in the new spectrum
-        int nBins = GetMaxBin() - GetMinBin() + 1;
+        int nBins = GetMaxBin() - GetMinBin();
 
         // initialize new spectrum
         KTPowerSpectrum* newSpectrum = new KTPowerSpectrum( nBins, GetMinFreq(), GetMaxFreq() );
@@ -120,7 +120,7 @@ namespace Katydid
         }
 
         // fill new spectrum
-        for( int i = GetMinBin(); i <= GetMaxBin(); ++i )
+        for( int i = GetMinBin(); i < GetMaxBin(); ++i )
         {
             (*newSpectrum)(i - GetMinBin()) = (*spectrum)(i);
         }
