@@ -75,7 +75,7 @@ namespace Katydid
             float fMeanCentral;
             float fSigmaCentral;
             float fNPeaks;
-            float fCentralPowerRatio;
+            float fCentralPowerFraction;
             float fRMSAwayFromCentral;
 
         public:

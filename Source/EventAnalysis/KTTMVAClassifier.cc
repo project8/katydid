@@ -97,7 +97,7 @@ namespace Katydid
         reader->AddVariable( "MeanCentral", &fMeanCentral );
         reader->AddVariable( "SigmaCentral", &fSigmaCentral );
         reader->AddVariable( "NPeaks", &fNPeaks );
-        reader->AddVariable( "CentralPowerRatio", &fCentralPowerRatio );
+        reader->AddVariable( "CentralPowerFraction", &fCentralPowerFraction );
         reader->AddVariable( "RMSAwayFromCentral", &fRMSAwayFromCentral );
 
         try
@@ -126,7 +126,7 @@ namespace Katydid
         fMeanCentral = (float)(pfData.GetMeanCentral());
         fSigmaCentral = (float)(pfData.GetSigmaCentral());
         fNPeaks = (float)(pfData.GetNPeaks());
-        fCentralPowerRatio = (float)(pfData.GetCentralPowerRatio());
+        fCentralPowerFraction = (float)(pfData.GetCentralPowerFraction());
         fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
 
         double mvaValue = reader->EvaluateMVA( fAlgorithm );

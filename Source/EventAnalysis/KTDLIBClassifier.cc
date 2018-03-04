@@ -108,7 +108,7 @@ namespace Katydid
         fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
         fKurtosis = (float)(pfData.GetKurtosis());
         fSkewness = (float)(pfData.GetSkewness());
-        fCentralPowerRatio = (float)(pfData.GetCentralPowerRatio()); 
+        fCentralPowerFraction = (float)(pfData.GetCentralPowerFraction()); 
         fNPeaks = (float)(pfData.GetNPeaks());
         fMaxCentral = (float)(pfData.GetMaximumCentral());
         fMeanCentral = (float)(pfData.GetMeanCentral());
@@ -125,7 +125,7 @@ namespace Katydid
         classifierFeatures(5) = fRMSAwayFromCentral;
         classifierFeatures(6) = fKurtosis;
         classifierFeatures(7) = fSkewness;
-        classifierFeatures(8) = fCentralPowerRatio;
+        classifierFeatures(8) = fCentralPowerFraction;
         classifierFeatures(9) = fNPeaks;
         classifierFeatures(10) = fMaxCentral;
         classifierFeatures(11) = fMeanCentral;

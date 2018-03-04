@@ -9,14 +9,11 @@
 
 #include "KTLogger.hh"
 
-#include "KTSliceHeader.hh"
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
 #include "KTData.hh"
 
 #include <set>
@@ -46,13 +43,11 @@ namespace Katydid
             fPrevSliceTimeInRun(0.),
             fPrevSliceTimeInAcq(0.),
             fWaterfallSignal("ps-coll", this),
-            fTimeSeriesSignal("ts-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
             fMPTrackSlot("mp-track", this, &KTSpectrogramCollector::ReceiveMPTrack),
             fMPEventSlot("mp-event", this, &KTSpectrogramCollector::ReceiveMPEvent)
     {
         RegisterSlot( "ps", this, &KTSpectrogramCollector::SlotFunctionPSData );
-        RegisterSlot( "ts", this, &KTSpectrogramCollector::SlotFunctionTSData );
     }
 
     KTSpectrogramCollector::~KTSpectrogramCollector()
@@ -165,13 +160,13 @@ namespace Katydid
         {
             // Get track time and frequency info
             KTProcessedTrackData aTrack;
-            aTrack.SetEventSequenceID( (**it).GetEventSequenceID() );
-            aTrack.SetStartTimeInRunC( (**it).GetStartTimeInRunC() );
-            aTrack.SetEndTimeInRunC( (**it).GetEndTimeInRunC() );
-            aTrack.SetStartFrequency( (**it).GetStartFrequency() );
-            aTrack.SetEndFrequency( (**it).GetEndFrequency() );
-            aTrack.SetSlope( (**it).GetSlope() );
-            aTrack.SetIntercept( (**it).GetIntercept() );
+            aTrack.SetEventSequenceID( (**it).fProcTrack.GetEventSequenceID() );
+            aTrack.SetStartTimeInRunC( (**it).fProcTrack.GetStartTimeInRunC() );
+            aTrack.SetEndTimeInRunC( (**it).fProcTrack.GetEndTimeInRunC() );
+            aTrack.SetStartFrequency( (**it).fProcTrack.GetStartFrequency() );
+            aTrack.SetEndFrequency( (**it).fProcTrack.GetEndFrequency() );
+            aTrack.SetSlope( (**it).fProcTrack.GetSlope() );
+            aTrack.SetIntercept( (**it).fProcTrack.GetIntercept() );
 
             // Assign overall start/end time and frequency
             if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
@@ -295,13 +290,13 @@ namespace Katydid
             for( TrackSet::const_iterator it = allTracks.begin(); it != allTracks.end(); ++it )
             {
                 KTProcessedTrackData aTrack;// = KTProcessedTrackData(*it);
-                aTrack.SetEventSequenceID( it->GetEventSequenceID() );
-                aTrack.SetStartTimeInRunC( it->GetStartTimeInRunC() );
-                aTrack.SetEndTimeInRunC( it->GetEndTimeInRunC() );
-                aTrack.SetStartFrequency( it->GetStartFrequency() );
-                aTrack.SetEndFrequency( it->GetEndFrequency() );
-                aTrack.SetSlope( it->GetSlope() );
-                aTrack.SetIntercept( it->GetIntercept() );
+                aTrack.SetEventSequenceID( it->fProcTrack.GetEventSequenceID() );
+                aTrack.SetStartTimeInRunC( it->fProcTrack.GetStartTimeInRunC() );
+                aTrack.SetEndTimeInRunC( it->fProcTrack.GetEndTimeInRunC() );
+                aTrack.SetStartFrequency( it->fProcTrack.GetStartFrequency() );
+                aTrack.SetEndFrequency( it->fProcTrack.GetEndFrequency() );
+                aTrack.SetSlope( it->fProcTrack.GetSlope() );
+                aTrack.SetIntercept( it->fProcTrack.GetIntercept() );
                 
                 // Skip tracks with fEventSequenceID != 0
                 if( aTrack.GetEventSequenceID() != 0 )
@@ -408,6 +403,7 @@ namespace Katydid
 
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit )
     {
+        KTDEBUG(evlog, "Now cross-checking slice timestamp with known tracks");
         // Iterate through each track which has been added
         for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
@@ -430,12 +426,6 @@ namespace Katydid
 
                     // Emit signal
                     KTINFO(evlog, "Finished a track; emitting signal");
-                    fWaterfallSignal( it->first );
-                }
-                else
-                    it->second->SetFilling( false );
-            }
-        }
 
                     KTINFO(evlog, "Old start time: " << it->second->GetStartTime());
                     KTINFO(evlog, "Old end time: " << it->second->GetEndTime());
@@ -564,39 +554,4 @@ namespace Katydid
 
         return true;
     }
-
-    bool KTSpectrogramCollector::ReceiveTimeSeries( KTTimeSeriesData& data, KTSliceHeader& sliceData, bool forceEmit )
-    {
-        KTDEBUG(evlog, "Receiving Time Series");
-       
-        if( fTimeSeriesSets.empty() )
-        {
-            KTWARN(evlog, "I have no tracks to receive a time series! Did you remember to send me processed tracks first? Continuing anyway...");
-            return true;
-        }
-
-        int nComponents = data.GetNComponents();
-
-        if( nComponents > fTimeSeriesSets.size() )
-        {
-            KTINFO(evlog, "Receiving time series with " << nComponents << " components but limiting to " << fTimeSeriesSets.size() << " from list of tracks");
-            nComponents = fTimeSeriesSets.size();
-        }
-
-        KTTimeSeriesFFTW* tsFFTW;
-        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-        {
-            tsFFTW = dynamic_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
-            
-            if (! ConsiderTimeSeries(*tsFFTW, sliceData, iComponent, forceEmit))
-            {
-                KTERROR(evlog, "Spectrogram collector could not receive time series! (component " << iComponent << ")");
-                return false;
-            }
-        }
-        KTINFO(evlog, "Time series finished processing. Awaiting next slice");
-
-        return true;
-    }
-
 } // namespace Katydid
