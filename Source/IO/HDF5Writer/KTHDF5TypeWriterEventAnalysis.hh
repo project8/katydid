@@ -518,7 +518,192 @@ namespace Katydid
         H5::PredType::NATIVE_DOUBLE
     };
 
+    // Classified Rotate-Project-Track-Data
 
+    typedef struct 
+    {
+        // processed track stuff
+
+        unsigned Component;
+        uint64_t AcquisitionID;
+        unsigned TrackID;
+        unsigned EventID;
+        unsigned EventSequenceID;
+        bool IsCut;
+        double StartTimeInAcq;
+        double StartTimeInRunC;
+        double EndTimeInRunC;
+        double TimeLength;
+        double StartFrequency;
+        double EndFrequency;
+        double FrequencyWidth;
+        double Slope;
+        double Intercept;
+        double TotalPower;
+        double StartTimeInRunCSigma;
+        double EndTimeInRunCSigma;
+        double TimeLengthSigma;
+        double StartFrequencySigma;
+        double EndFrequencySigma;
+        double FrequencyWidthSigma;
+        double SlopeSigma;
+        double InterceptSigma;
+        double TotalPowerSigma;
+
+        // additional power-fit results
+
+        int IsValid;
+        int NPeaks;
+        double Average;
+        double RMS;
+        double Skewness;
+        double Kurtosis;
+        double NormCentral;
+        double MeanCentral;
+        double SigmaCentral;
+        double MaximumCentral;
+        double RMSAwayFromCentral;
+        double CentralPowerFraction;
+
+        // classification label
+        int MCH;
+        int MCL;
+        int SB; 
+
+    } CRPTData;
+
+    const size_t CRPTNFields = 40;
+    size_t CRPTSize = sizeof(CRPTData);
+    const char* CRPTFieldNames[CRPTNFields] = 
+    {
+        "Component",
+        "AcquisitionID",
+        "TrackID",
+        "EventID",
+        "EventSequenceID",
+        "IsCut",
+        "StartTimeInAcq",
+        "StartTimeInRunC",
+        "EndTimeInRunC",
+        "TimeLength",
+        "StartFrequency",
+        "EndFrequency",
+        "FrequencyWidth",
+        "Slope",
+        "Intercept",
+        "TotalPower",
+        "StartTimeInRunCSigma",
+        "EndTimeInRunCSigma",
+        "TimeLengthSigma",
+        "StartFrequencySigma",
+        "EndFrequencySigma",
+        "FrequencyWidthSigma",
+        "SlopeSigma",
+        "InterceptSigma",
+        "TotalPowerSigma",
+        "IsValid",
+        "NPeaks",
+        "Average",
+        "RMS",
+        "Skewness",
+        "Kurtosis",
+        "NormCentral",
+        "MeanCentral",
+        "SigmaCentral",
+        "MaximumCentral",
+        "RMSAwayFromCentral",
+        "CentralPowerFraction",
+        "MCH",
+        "MCL",
+        "SB"
+    };
+
+    size_t CRPTFieldOffsets[CRPTNFields] = 
+    {
+        HOFFSET(CRPTData, Component),
+        HOFFSET(CRPTData, AcquisitionID),
+        HOFFSET(CRPTData, TrackID),
+        HOFFSET(CRPTData, EventID),
+        HOFFSET(CRPTData, EventSequenceID),
+        HOFFSET(CRPTData, IsCut),
+        HOFFSET(CRPTData, StartTimeInAcq),
+        HOFFSET(CRPTData, StartTimeInRunC),
+        HOFFSET(CRPTData, EndTimeInRunC),
+        HOFFSET(CRPTData, TimeLength),
+        HOFFSET(CRPTData, StartFrequency),
+        HOFFSET(CRPTData, EndFrequency),
+        HOFFSET(CRPTData, FrequencyWidth),
+        HOFFSET(CRPTData, Slope),
+        HOFFSET(CRPTData, Intercept),
+        HOFFSET(CRPTData, TotalPower),
+        HOFFSET(CRPTData, StartTimeInRunCSigma),
+        HOFFSET(CRPTData, EndTimeInRunCSigma),
+        HOFFSET(CRPTData, TimeLengthSigma),
+        HOFFSET(CRPTData, StartFrequencySigma),
+        HOFFSET(CRPTData, EndFrequencySigma),
+        HOFFSET(CRPTData, FrequencyWidthSigma),
+        HOFFSET(CRPTData, SlopeSigma),
+        HOFFSET(CRPTData, InterceptSigma),
+        HOFFSET(CRPTData, TotalPowerSigma),
+        HOFFSET(CRPTData, IsValid),
+        HOFFSET(CRPTData, NPeaks),
+        HOFFSET(CRPTData, Average),
+        HOFFSET(CRPTData, RMS),
+        HOFFSET(CRPTData, Skewness),
+        HOFFSET(CRPTData, Kurtosis),
+        HOFFSET(CRPTData, NormCentral),
+        HOFFSET(CRPTData, MeanCentral),
+        HOFFSET(CRPTData, SigmaCentral),
+        HOFFSET(CRPTData, MaximumCentral),
+        HOFFSET(CRPTData, RMSAwayFromCentral),
+        HOFFSET(CRPTData, CentralPowerFraction),
+        HOFFSET(CRPTData, MCH),
+        HOFFSET(CRPTData, MCL),
+        HOFFSET(CRPTData, SB)
+    };
+    H5::PredType CRPTFieldTypes[CRPTNFields] = 
+    {
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT64,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_INT8,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT
+    };
 
     class KTHDF5TypeWriterEventAnalysis: public KTHDF5TypeWriter
     {
@@ -541,10 +726,12 @@ namespace Katydid
         void WriteMultiTrackEvent(Nymph::KTDataPtr data);
         void WritePowerFitData(Nymph::KTDataPtr data);
         void WriteRPTrackEventData(Nymph::KTDataPtr data);
+        void WriteCRPTrackEventData(Nymph::KTDataPtr data);
         void WriteMTEBuffer();
         void WritePTBuffer();
         void WritePFBuffer();
         void WriteMTERPTracksBuffer();
+        void WriteMTECRPTracksBuffer();
 
     private:
         std::vector<MTEData> fMTEDataBuffer;
@@ -557,6 +744,9 @@ namespace Katydid
         std::vector<RPTData> fMTERPTracksDataBuffer;
         std::vector<RPTData> fRPTDataBuffer;
         H5::CompType* fRPTType;
+        std::vector<CRPTData> fMTECRPTracksDataBuffer;
+        H5::CompType* fCRPTType;
+        
 
         unsigned fFlushMTEIdx;
         unsigned fFlushPTIdx;
