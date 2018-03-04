@@ -15,9 +15,9 @@ namespace Katydid
 
     KTClassifierResultsData::KTClassifierResultsData() :
             KTExtensibleData< KTClassifierResultsData >(),
-            fMCH(false),
-            fMCL(false),
-            fSB(false)    
+            fMCH(0),
+            fMCL(0),
+            fSB(0)    
     {
     }
 

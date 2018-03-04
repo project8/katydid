@@ -60,15 +60,15 @@ namespace Katydid
     {   
         if( label == 0 )
         {
-            resultData.SetMCH( true );
+            resultData.SetMCH( 1 );
         }
         else if( label == 1 )
         {
-            resultData.SetMCL( true );
+            resultData.SetMCL( 1 );
         }
         else if( label == 2 )
         {
-            resultData.SetSB( true );
+            resultData.SetSB( 1 );
         }
         else
         {

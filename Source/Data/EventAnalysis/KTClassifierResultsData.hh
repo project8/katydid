@@ -25,9 +25,9 @@ namespace Katydid
 
         public:
             // member variable(s) to describe classification
-            MEMBERVARIABLE( bool, MCH ); // main carrier high theta
-            MEMBERVARIABLE( bool, MCL ); // main carrier low theta
-            MEMBERVARIABLE( bool, SB );  // sideband
+            MEMBERVARIABLE( int, MCH ); // main carrier high theta
+            MEMBERVARIABLE( int, MCL ); // main carrier low theta
+            MEMBERVARIABLE( int, SB );  // sideband
           
         public:
             static const std::string sName;
