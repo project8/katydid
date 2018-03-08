@@ -42,7 +42,7 @@ namespace Katydid
         // Determine number of mainband tracks
         for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
         {
-            if( (*it)->GetMainband() )
+            if( (*it)->fProcTrack.GetMainband() )
             {
                 ++nMainband;
             }
@@ -94,9 +94,9 @@ namespace Katydid
             // We have a mainband track, let's find it
             for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
             {
-                if( (*it)->GetMainband() )
+                if( (*it)->fProcTrack.GetMainband() )
                 {
-                    procData.SetMainTrack( **it );
+                    procData.SetMainTrack( (*it)->fProcTrack );
                 }
             }
 
@@ -104,9 +104,9 @@ namespace Katydid
             double avgAxialFrequency = 0.;
             for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
             {
-                if( ! (*it)->GetMainband() )
+                if( ! (*it)->fProcTrack.GetMainband() )
                 {
-                    avgAxialFrequency += std::abs( (*it)->GetStartFrequency() - procData.GetMainTrack().GetStartFrequency() );
+                    avgAxialFrequency += std::abs( (*it)->fProcTrack.GetStartFrequency() - procData.GetMainTrack().GetStartFrequency() );
                 }
             }
             avgAxialFrequency /= (double)(mult - nMainband);
@@ -120,8 +120,8 @@ namespace Katydid
                 return false;
             }
 
-            double startFreqOne = (*allTracks.begin())->GetStartFrequency();
-            double startFreqTwo = (*allTracks.rbegin())->GetStartFrequency();
+            double startFreqOne = (*allTracks.begin())->fProcTrack.GetStartFrequency();
+            double startFreqTwo = (*allTracks.rbegin())->fProcTrack.GetStartFrequency();
 
             // Create a new track to represent the absent mainband
             // For now I will only set the start frequency
