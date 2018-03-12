@@ -255,7 +255,7 @@ namespace Katydid
 
         private:
             TClonesArray* fTracks; //->
-            TClonesArray* fClassifierResults;
+            TClonesArray* fClassifierResults; //->
 
         public:
             TClassifiedEventData();
