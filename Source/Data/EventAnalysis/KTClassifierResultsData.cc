@@ -15,6 +15,7 @@ namespace Katydid
 
     KTClassifierResultsData::KTClassifierResultsData() :
             KTExtensibleData< KTClassifierResultsData >(),
+            fComponent(0),
             fMCH(0),
             fMCL(0),
             fSB(0)    
@@ -22,7 +23,8 @@ namespace Katydid
     }
 
     KTClassifierResultsData::KTClassifierResultsData(const KTClassifierResultsData& orig) :
-            KTExtensibleData< KTClassifierResultsData >(orig),            
+            KTExtensibleData< KTClassifierResultsData >(orig),
+            fComponent(orig.fComponent),         
             fMCH(orig.fMCH),
             fMCL(orig.fMCL),
             fSB(orig.fSB)
@@ -36,6 +38,7 @@ namespace Katydid
     KTClassifierResultsData& KTClassifierResultsData::operator=(const KTClassifierResultsData& rhs)
     {
         KTExtensibleData< KTClassifierResultsData >::operator=(rhs);
+        fComponent = rhs.fComponent;
         fMCH = rhs.fMCH;
         fMCL = rhs.fMCL;
         fSB = rhs.fSB;
