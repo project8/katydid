@@ -6,7 +6,7 @@
  */
 
 #include "KTMultiTrackEventData.hh"
-
+#include "KTClassifierResultsData.hh"
 #include "KTLogger.hh"
 
 #include <algorithm>
@@ -185,6 +185,35 @@ namespace Katydid
 
     void KTMultiPeakTrackData::ProcessTracks()
     {
+        unsigned nMainband = 0, nSideband = 0;
+        double minDistance = 1000.0e6, axial = 0.0;
+
+        TrackSetCItSet allTracks = fMPTrack.fTrackRefs;
+        KTClassifierResultsData& classData;
+
+        // Determine number of mainband tracks
+        for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+        {
+            if( ! (*it)->fData->Has< KTClassifierResultsData >() )
+            {
+                continue;
+            }
+
+            classData = (*it)->fData->Of< KTClassifierResultsData >()
+            
+            if( classData.GetMCH() == 1 || classData.GetMCL() == 1 )
+            {
+                nMainband++;
+            }
+            if( classData.GetSB() == 1 )
+            {
+                nSideband++;
+            }
+        }
+
+        fNumberOfMainCarriers = nMainband;
+        fNumberOfSidebands = nSideband;
+
         return;
     }
 
