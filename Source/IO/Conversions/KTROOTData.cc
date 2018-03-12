@@ -7,6 +7,7 @@
 
 #include "KTROOTData.hh"
 
+#include "KTClassifierResultsData.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTProcessedTrackData.hh"
 
@@ -19,6 +20,8 @@
 ClassImp(Katydid::TProcessedMPTData);
 ClassImp(Katydid::TProcessedTrackData);
 ClassImp(Katydid::TMultiTrackEventData);
+ClassImp(Katydid::TClassifiedEventData);
+ClassImp(Katydid::TClassifierResultsData);
 
 namespace Katydid
 {
@@ -112,6 +115,53 @@ namespace Katydid
         data.SetStartTimeInRunCSigma(fStartTimeInRunCSigma); data.SetEndTimeInRunCSigma(fEndTimeInRunCSigma); data.SetTimeLengthSigma(fTimeLengthSigma);
         data.SetStartFrequencySigma(fStartFrequencySigma); data.SetEndFrequencySigma(fEndFrequencySigma); data.SetFrequencyWidthSigma(fFrequencyWidthSigma);
         data.SetSlopeSigma(fSlopeSigma); data.SetInterceptSigma(fInterceptSigma); data.SetTotalPowerSigma(fTotalPowerSigma);
+        return;
+    }
+
+    //***********************
+    // TClassifierResultsData
+    //***********************
+
+    TClassifierResultsData::TClassifierResultsData() :
+            TObject(),
+            fComponent(0), fMCH(0), fMCL(0), fSB(0)
+    {}
+
+    TClassifierResultsData::TClassifierResultsData(const KTClassifierResultsData& orig) :
+            TObject(),
+            fComponent(0), fMCH(0), fMCL(0), fSB(0)
+    {
+        Load(orig);
+    }
+
+    TClassifierResultsData::TClassifierResultsData(const TClassifierResultsData& orig) :
+            TObject(orig),
+            fComponent(orig.fComponent), fMCH(orig.fMCH), fMCL(orig.fMCL), fSB(orig.fSB)
+    {}
+
+    TClassifierResultsData::~TClassifierResultsData()
+    {}
+
+    TObject* TClassifierResultsData::Clone(const char* newname)
+    {
+        TClassifierResultsData* newData = new TClassifierResultsData(*this);
+        return newData;
+    }
+
+    TClassifierResultsData& TClassifierResultsData::operator=(const TClassifierResultsData& rhs)
+    {
+        fComponent = rhs.fComponent; fMCH = rhs.fMCH; fMCL = rhs.fMCL; fSB = rhs.fSB;
+        return *this;
+    }
+
+    void TClassifierResultsData::Load(const KTClassifierResultsData& data)
+    {
+        fComponent = data.GetComponent(); fMCH = data.GetMCH(); fMCL = data.GetMCL(); fSB = data.GetSB();
+        return;
+    }
+    void TClassifierResultsData::Unload(KTClassifierResultsData& data) const
+    {
+        data.SetComponent(fComponent); data.SetMCH(fMCH); data.SetMCL(fMCL); data.SetSB(fSB);
         return;
     }
 
@@ -324,6 +374,126 @@ namespace Katydid
         for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)
         {
             ((TProcessedTrackData*)((*fTracks)[iTrack]))->Unload(procTrack);
+            data.AddTrack(track);
+        }
+        return;
+    }
+
+    //************************
+    // TClassifiedEventData
+    //************************
+
+    TClassifiedEventData::TClassifiedEventData() :
+            fComponent(0), fAcquisitionID(0), fEventID(0), fTotalEventSequences(0),
+            fStartTimeInRunC(0.), fStartTimeInAcq(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fMinimumFrequency(0.), fMaximumFrequency(0.), fFrequencyWidth(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fFirstTrackID(0), fFirstTrackTimeLength(0.), fFirstTrackFrequencyWidth(0.), fFirstTrackSlope(0.), fFirstTrackIntercept(0.), fFirstTrackTotalPower(0.),
+            fUnknownEventTopology(false)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fTracks = new TClonesArray("Katydid::TProcessedTrackData", 20);
+        fClassifierResults = new TClonesArray("Katydid::TClassifierResultsData", 20);
+    }
+
+    TClassifiedEventData::TClassifiedEventData(const TClassifiedEventData& orig) :
+            fComponent(orig.fComponent), fAcquisitionID(orig.fAcquisitionID), fEventID(orig.fEventID), fTotalEventSequences(orig.fTotalEventSequences),
+            fStartTimeInRunC(orig.fStartTimeInRunC), fStartTimeInAcq(orig.fStartTimeInAcq), fEndTimeInRunC(orig.fEndTimeInRunC),fTimeLength(orig.fTimeLength),
+            fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fMinimumFrequency(orig.fMaximumFrequency), fMaximumFrequency(orig.fMinimumFrequency), fFrequencyWidth(orig.fFrequencyWidth),
+            fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma), fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma), fTimeLengthSigma(orig.fTimeLengthSigma),
+            fStartFrequencySigma(orig.fStartFrequencySigma), fEndFrequencySigma(orig.fEndFrequencySigma), fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
+            fFirstTrackID(orig.fFirstTrackID), fFirstTrackTimeLength(orig.fFirstTrackTimeLength), fFirstTrackFrequencyWidth(orig.fFirstTrackFrequencyWidth), fFirstTrackSlope(orig.fFirstTrackSlope), fFirstTrackIntercept(orig.fFirstTrackIntercept), fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
+            fUnknownEventTopology(orig.fUnknownEventTopology)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fTracks = new TClonesArray(*orig.fTracks);
+        fClassifierResults = new TClonesArray(*orig.fClassifierResults);
+    }
+
+    TClassifiedEventData::TClassifiedEventData(const KTMultiTrackEventData& orig) :
+            fComponent(0), fAcquisitionID(0), fEventID(0), fTotalEventSequences(0),
+            fStartTimeInRunC(0.), fStartTimeInAcq(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fMinimumFrequency(0.), fMaximumFrequency(0.), fFrequencyWidth(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fFirstTrackID(0), fFirstTrackTimeLength(0.), fFirstTrackFrequencyWidth(0.), fFirstTrackSlope(0.), fFirstTrackIntercept(0.), fFirstTrackTotalPower(0.),
+            fUnknownEventTopology(false)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fTracks = new TClonesArray("Katydid::TProcessedTrackData", 20);
+        fClassifierResults = new TClonesArray("Katydid::TClassifierResultsData", 20);
+        Load(orig);
+    }
+
+    TClassifiedEventData::~TClassifiedEventData()
+    {
+        fTracks->Clear();
+        fClassifierResults->Clear();
+    }
+
+    TObject* TClassifiedEventData::Clone(const char* newname)
+    {
+        TClassifiedEventData* newData = new TClassifiedEventData(*this);
+        return newData;
+    }
+
+    TClassifiedEventData& TClassifiedEventData::operator=(const TClassifiedEventData& rhs)
+    {
+        fComponent = rhs.fComponent; fAcquisitionID = rhs.fAcquisitionID; fEventID = rhs.fEventID; fTotalEventSequences = rhs.fTotalEventSequences;
+        fStartTimeInRunC = rhs.fStartTimeInRunC; fStartTimeInAcq = rhs.fStartTimeInAcq; fEndTimeInRunC = rhs.fEndTimeInRunC;fTimeLength = rhs.fTimeLength;
+        fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fMinimumFrequency = rhs.fMinimumFrequency; fMaximumFrequency = rhs.fMaximumFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
+        fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma; fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma; fTimeLengthSigma = rhs.fTimeLengthSigma;
+        fStartFrequencySigma = rhs.fStartFrequencySigma; fEndFrequencySigma = rhs.fEndFrequencySigma; fFrequencyWidthSigma = rhs.fFrequencyWidthSigma;
+        fFirstTrackID = rhs.fFirstTrackID; fFirstTrackTimeLength = rhs.fFirstTrackTimeLength; fFirstTrackFrequencyWidth = rhs.fFirstTrackFrequencyWidth; fFirstTrackSlope = rhs.fFirstTrackSlope; fFirstTrackIntercept = rhs.fFirstTrackIntercept; fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
+        fUnknownEventTopology = rhs.fUnknownEventTopology;
+        fTracks->Clear(); (*fTracks) = *(rhs.fTracks);
+        fClassifierResults->Clear(); (*fClassifierResults) = *(rhs.fClassifierResults);
+        return *this;
+    }
+
+    void TClassifiedEventData::Load(const KTMultiTrackEventData& data)
+    {
+        fComponent = data.GetComponent(); fAcquisitionID = data.GetAcquisitionID(); fEventID = data.GetEventID(); fTotalEventSequences = data.GetTotalEventSequences();
+        fStartTimeInRunC = data.GetStartTimeInRunC(); fStartTimeInAcq = data.GetStartTimeInAcq(); fEndTimeInRunC = data.GetEndTimeInRunC();fTimeLength = data.GetTimeLength();
+        fStartFrequency = data.GetStartFrequency(); fEndFrequency = data.GetEndFrequency(); fMinimumFrequency = data.GetMinimumFrequency(); fMaximumFrequency = data.GetMaximumFrequency(); fFrequencyWidth = data.GetFrequencyWidth();
+        fStartTimeInRunCSigma = data.GetStartTimeInRunCSigma(); fEndTimeInRunCSigma = data.GetEndTimeInRunCSigma(); fTimeLengthSigma = data.GetTimeLengthSigma();
+        fStartFrequencySigma = data.GetStartFrequencySigma(); fEndFrequencySigma = data.GetEndFrequencySigma(); fFrequencyWidthSigma = data.GetFrequencyWidthSigma();
+        fFirstTrackID = data.GetFirstTrackID(); fFirstTrackTimeLength = data.GetFirstTrackTimeLength(); fFirstTrackFrequencyWidth = data.GetFirstTrackFrequencyWidth(); fFirstTrackSlope = data.GetFirstTrackSlope(); fFirstTrackIntercept = data.GetFirstTrackIntercept(); fFirstTrackTotalPower = data.GetFirstTrackTotalPower();
+        fUnknownEventTopology = data.GetUnknownEventTopology();
+        Int_t nTracks = (Int_t)data.GetNTracks();
+        fTracks->Clear(); fTracks->Expand(nTracks);
+        fClassifierResults->Clear(); fClassifierResults->Expand(nTracks);
+        Int_t iTrack = 0;
+        for (TrackSetCIt trIt = data.GetTracksBegin(); trIt != data.GetTracksEnd(); ++trIt)
+        {
+            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(trIt->fProcTrack);
+            TClassifierResultsData* classifier = new((*fClassifierResults)[iTrack]) TClassifierResultsData(trIt->fData->Of< KTClassifierResultsData >());
+            ++iTrack;
+        }
+        return;
+    }
+    void TClassifiedEventData::Unload(KTMultiTrackEventData& data) const
+    {
+        data.ClearTracks(); // do this first, since it clears some of the member variables other than just fTracks
+        data.SetComponent(fComponent); data.SetAcquisitionID(fAcquisitionID); data.SetEventID(fEventID); data.SetTotalEventSequences(fTotalEventSequences);
+        data.SetStartTimeInRunC(fStartTimeInRunC); data.SetStartTimeInAcq(fStartTimeInAcq); data.SetEndTimeInRunC(fEndTimeInRunC); data.SetTimeLength(fTimeLength);
+        data.SetStartFrequency(fStartFrequency); data.SetEndFrequency(fEndFrequency); data.SetMinimumFrequency(fMinimumFrequency); data.SetMaximumFrequency(fMaximumFrequency); data.SetFrequencyWidth(fFrequencyWidth);
+        data.SetStartTimeInRunCSigma(fStartTimeInRunCSigma); data.SetEndTimeInRunCSigma(fEndTimeInRunCSigma); data.SetTimeLengthSigma(fTimeLengthSigma);
+        data.SetStartFrequencySigma(fStartFrequencySigma); data.SetEndFrequencySigma(fEndFrequencySigma); data.SetFrequencyWidthSigma(fFrequencyWidthSigma);
+        data.SetFirstTrackID(fFirstTrackID); data.SetFirstTrackTimeLength(fFirstTrackTimeLength); data.SetFirstTrackFrequencyWidth(fFirstTrackFrequencyWidth); data.SetFirstTrackSlope(fFirstTrackSlope); data.SetFirstTrackIntercept(fFirstTrackIntercept); data.SetFirstTrackTotalPower(fFirstTrackTotalPower);
+        data.SetUnknownEventTopology(fUnknownEventTopology);
+
+        Int_t nTracks = fTracks->GetSize();
+        Nymph::KTDataPtr dummyData;
+        KTProcessedTrackData& procTrack = dummyData->Of< KTProcessedTrackData >();
+        KTClassifierResultsData& classData = dummyData->Of< KTClassifierResultsData >();
+        AllTrackData track( dummyData, procTrack );
+
+        for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)
+        {
+            ((TProcessedTrackData*)((*fTracks)[iTrack]))->Unload(procTrack);
+            ((TClassifierResultsData*)((*fClassifierResults)[iTrack]))->Unload(classData);
             data.AddTrack(track);
         }
         return;

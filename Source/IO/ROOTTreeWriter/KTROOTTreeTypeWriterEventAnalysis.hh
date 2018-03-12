@@ -178,6 +178,7 @@ namespace Katydid
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
+            void WriteClassifiedEvent(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
             void WritePowerFitData(Nymph::KTDataPtr data);
 
@@ -189,6 +190,7 @@ namespace Katydid
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
+            TTree* GetClassifiedEventTree() const;
             TTree* GetLinearFitResultTree() const;
             TTree* GetPowerFitDataTree() const;
 
@@ -200,6 +202,7 @@ namespace Katydid
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
+            bool SetupClassifiedEventTree();
             bool SetupLinearFitResultTree();
             bool SetupPowerFitDataTree();
 
@@ -210,6 +213,7 @@ namespace Katydid
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
+            TTree* fClassifiedEventTree;
             TTree* fLinearFitResultTree;
             TTree* fPowerFitDataTree;
 
@@ -220,6 +224,7 @@ namespace Katydid
             TProcessedTrackData* fProcessedTrackDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
             TMultiTrackEventData* fMultiTrackEventDataPtr;
+            TClassifiedEventData* fClassifiedEventDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
 
@@ -258,6 +263,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiTrackEventTree() const
     {
         return fMultiTrackEventTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetClassifiedEventTree() const
+    {
+        return fClassifiedEventTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetLinearFitResultTree() const
