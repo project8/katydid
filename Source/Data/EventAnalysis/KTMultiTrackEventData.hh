@@ -205,9 +205,16 @@ namespace Katydid
 
             bool GetUnknownEventTopology() const;
             void SetUnknownEventTopology(bool b);
+
+            MEMBERVARIABLE( unsigned, NumberOfMainCarriers );
+            MEMBERVARIABLE( unsigned, NumberOfSidebands );
+            MEMBERVARIABLE( double, MinimumDistanceToBWEdge );
+            MEMBERVARIABLE( double, AxialFrequency );
  
         public:
             static const std::string sName;
+
+            void ProcessTracks();
     };
 
     std::ostream& operator<<(std::ostream& out, const KTMultiPeakTrackData& hdr);

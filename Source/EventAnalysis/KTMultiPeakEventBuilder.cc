@@ -300,6 +300,8 @@ namespace Katydid
                 KTDEBUG(tclog, "Emitting MPT signal with multiplicity " << newMPT.GetMultiplicity());
                 KTDEBUG(tclog, "Original MPT had multiplicity " << allMPTracks[iMPT].GetMultiplicity());
 
+                newMPT.ProcessTracks();
+
                 fMPTSignal( mptData );
             }
         }

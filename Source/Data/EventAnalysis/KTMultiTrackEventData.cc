@@ -143,6 +143,11 @@ namespace Katydid
             KTExtensibleData< KTMultiPeakTrackData >(),
             fComponent(0),
             fEventSequenceID(-1),
+            fNumberOfMainCarriers(0),
+            fNumberOfSidebands(0),
+            fMinimumDistanceToBWEdge(0.),
+            fAxialFrequency(0.),
+
             fMPTrack()
     {
     }
@@ -152,6 +157,11 @@ namespace Katydid
             
             fComponent(orig.fComponent),
             fEventSequenceID(orig.fEventSequenceID),
+            fNumberOfMainCarriers(0),
+            fNumberOfSidebands(0),
+            fMinimumDistanceToBWEdge(0.),
+            fAxialFrequency(0.),
+
             fMPTrack(orig.fMPTrack)
     {
     }
@@ -165,8 +175,17 @@ namespace Katydid
         KTExtensibleData< KTMultiPeakTrackData >::operator=(rhs);
         fComponent = rhs.fComponent;
         fEventSequenceID = rhs.fEventSequenceID;
+        fNumberOfMainCarriers = rhs.fNumberOfMainCarriers;
+        fNumberOfSidebands = rhs.fNumberOfSidebands;
+        fMinimumDistanceToBWEdge = rhs.fMinimumDistanceToBWEdge;
+        fAxialFrequency = rhs.fAxialFrequency;
         fMPTrack = rhs.fMPTrack;
         return *this;
+    }
+
+    void KTMultiPeakTrackData::ProcessTracks()
+    {
+        return;
     }
 
     void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
