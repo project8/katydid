@@ -18,6 +18,8 @@
 namespace Katydid
 {
     class KTPowerSpectrum;
+    class KTTimeSeriesFFTW;
+    class KTSliceHeader;
 
     class KTPSCollectionData : public Nymph::KTExtensibleData< KTPSCollectionData >
     {
@@ -46,5 +48,28 @@ namespace Katydid
 
     };
 
+    class KTTSCollectionData : public Nymph::KTExtensibleData< KTTSCollectionData >
+    {
+        public:
+            typedef std::vector< std::pair< KTSliceHeader*, KTTimeSeriesFFTW* > > collection;
+
+            KTTSCollectionData();
+            KTTSCollectionData(const KTTSCollectionData& orig);
+            virtual ~KTTSCollectionData();
+
+            KTTSCollectionData& operator=(const KTTSCollectionData& rhs);
+
+            void AddTimeSeries( KTSliceHeader* slice, KTTimeSeriesFFTW* ts );
+            MEMBERVARIABLEREF_NOSET(collection, Series);
+            MEMBERVARIABLEREF(double, StartTime);
+            MEMBERVARIABLEREF(double, EndTime);
+            MEMBERVARIABLEREF(double, DeltaT);
+            MEMBERVARIABLEREF(bool, Filling);
+
+        public:
+            static const std::string sName;
+    };
+
 } /* namespace Katydid */
+
 #endif /* KTSPECTRUMCOLLECTIONDATA_HH_ */

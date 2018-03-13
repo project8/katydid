@@ -75,6 +75,7 @@ namespace Katydid
             //const KTProcessedTrackData& GetTrack(unsigned id) const;
             //KTProcessedTrackData& GetTrack(unsigned id);
 
+            void AddTrack(const AllTrackData& track);
             void AddTrack(const KTProcessedTrackData& track);
             /// Add a collection of tracks to the next EventSequenceID
             void AddTracks(TrackSetCItSet tracks);
@@ -161,6 +162,66 @@ namespace Katydid
 
     };
 
+    class KTProcessedMPTData : public Nymph::KTExtensibleData< KTProcessedMPTData >
+    {
+
+        private:
+            unsigned fComponent;
+            KTProcessedTrackData fMainTrack;
+            double fAxialFrequency;
+
+        public:
+            KTProcessedMPTData();
+            KTProcessedMPTData(const KTProcessedMPTData& orig);
+            virtual ~KTProcessedMPTData();
+
+            KTProcessedMPTData& operator=(const KTProcessedMPTData& rhs);
+
+        public:
+
+            unsigned GetComponent() const;
+            void SetComponent(unsigned component);
+
+            KTProcessedTrackData GetMainTrack() const;
+            void SetMainTrack( const KTProcessedTrackData& track );
+
+            double GetAxialFrequency() const;
+            void SetAxialFrequency( double f );
+
+        public:
+            static const std::string sName;
+
+    };
+
+    inline unsigned KTProcessedMPTData::GetComponent() const
+    {
+        return fComponent;
+    }
+
+    inline void KTProcessedMPTData::SetComponent(unsigned component)
+    {
+        fComponent = component;
+    }
+
+    inline KTProcessedTrackData KTProcessedMPTData::GetMainTrack() const
+    {
+        return fMainTrack;
+    }
+
+    inline void KTProcessedMPTData::SetMainTrack( const KTProcessedTrackData& track )
+    {
+        fMainTrack = track;
+    }
+
+    inline double KTProcessedMPTData::GetAxialFrequency() const
+    {
+        return fAxialFrequency;
+    }
+
+    inline void KTProcessedMPTData::SetAxialFrequency(double f)
+    {
+        fAxialFrequency = f;
+    }
 
     class KTMultiPeakTrackData : public Nymph::KTExtensibleData< KTMultiPeakTrackData >
     {

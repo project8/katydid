@@ -275,7 +275,7 @@ namespace Katydid
             // Iterate through all tracks
             for( TrackSetCIt it = allTracks.begin(); it != allTracks.end(); ++it )
             {
-                currentMPT = (*it).GetEventSequenceID();
+                currentMPT = it->fProcTrack.GetEventSequenceID();
                 KTDEBUG(tclog, "Current event sequence = " << currentMPT);
                 // Fill the appropriate MPT
                 allMPTracks[currentMPT].AddToMPTrack( it );

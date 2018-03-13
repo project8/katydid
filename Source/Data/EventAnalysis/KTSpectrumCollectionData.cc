@@ -8,6 +8,8 @@
 #include "KTSpectrumCollectionData.hh"
 
 #include "KTPowerSpectrum.hh"
+#include "KTTimeSeriesFFTW.hh"
+#include "KTSliceHeader.hh"
 
 namespace Katydid
 {
@@ -108,7 +110,7 @@ namespace Katydid
         // This ensures all spectra have the same frequency bounds and number of bins
 
         // nBins is the number of bins in the new spectrum
-        int nBins = GetMaxBin() - GetMinBin() + 1;
+        int nBins = GetMaxBin() - GetMinBin();
 
         // initialize new spectrum
         KTPowerSpectrum* newSpectrum = new KTPowerSpectrum( nBins, GetMinFreq(), GetMaxFreq() );
@@ -118,7 +120,7 @@ namespace Katydid
         }
 
         // fill new spectrum
-        for( int i = GetMinBin(); i <= GetMaxBin(); ++i )
+        for( int i = GetMinBin(); i < GetMaxBin(); ++i )
         {
             (*newSpectrum)(i - GetMinBin()) = (*spectrum)(i);
         }
@@ -126,6 +128,88 @@ namespace Katydid
         // add new spectrum to fSpectra
         fSpectra.erase(t);
         fSpectra[t] = new KTPowerSpectrum(*newSpectrum);
+
+        return;
+    }
+
+    const std::string KTTSCollectionData::sName("ts-collection");
+
+    KTTSCollectionData::KTTSCollectionData() :
+            KTExtensibleData< KTTSCollectionData >(),
+            fSeries(),
+            fStartTime(0.),
+            fEndTime(0.001),
+            fDeltaT(1e-6),
+            fFilling(false)
+    {
+    }
+
+    KTTSCollectionData::KTTSCollectionData(const KTTSCollectionData& orig) :
+            KTExtensibleData< KTTSCollectionData >(orig),
+            fSeries(),
+            fStartTime(orig.fStartTime),
+            fEndTime(orig.fEndTime),
+            fDeltaT(orig.fDeltaT),
+            fFilling(orig.fFilling)
+    {
+        for (collection::const_iterator it = orig.fSeries.begin(); it != orig.fSeries.end(); ++it)
+        {
+            fSeries.push_back( std::make_pair( new KTSliceHeader(*it->first), new KTTimeSeriesFFTW(*it->second) ) );
+        }
+    }
+
+    KTTSCollectionData::~KTTSCollectionData()
+    {
+        for (collection::iterator it = fSeries.begin(); it != fSeries.end(); ++it)
+        {
+            delete it->second;
+        }
+    }
+
+    KTTSCollectionData& KTTSCollectionData::operator=(const KTTSCollectionData& rhs)
+    {
+        fStartTime = rhs.fStartTime;
+        fEndTime = rhs.fEndTime;
+        fDeltaT = rhs.fDeltaT;
+        fFilling = rhs.fFilling;
+        
+        for (collection::iterator it = fSeries.begin(); it != fSeries.end(); ++it)
+        {
+            delete it->second;
+        }
+
+        fSeries.clear();
+
+        for (collection::const_iterator it = rhs.fSeries.begin(); it != rhs.fSeries.end(); ++it)
+        {
+            fSeries.push_back( std::make_pair( new KTSliceHeader(*it->first), new KTTimeSeriesFFTW(*it->second) ) );
+        }
+        return *this;
+    }
+
+    void KTTSCollectionData::AddTimeSeries(KTSliceHeader* slice, KTTimeSeriesFFTW* ts)
+    {
+        // nBins is the number of bins in the new time series
+        int nBins = ts->GetNTimeBins();
+
+        // initialize new time series
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW( nBins, slice->GetTimeInAcq(), slice->GetTimeInAcq() + slice->GetSliceLength() );
+        for( int i = 0; i < nBins; i++ )
+        {
+            (*newTS)(i)[0] = 0.;
+            (*newTS)(i)[1] = 0.;
+        }
+
+        // fill new time series
+        for( int i = 0; i <= nBins; ++i )
+        {
+            (*newTS)(i)[0] = (*ts)(i)[0];
+            (*newTS)(i)[1] = (*ts)(i)[1];
+        }
+
+        // add new time series to fSeries
+        fSeries.push_back( std::make_pair( slice, newTS ) );
+
         return;
     }
 

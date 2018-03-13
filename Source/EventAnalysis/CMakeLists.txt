@@ -18,6 +18,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTIterativeTrackClustering.hh
     KTLinearFitCut.hh
     KTMultiPeakEventBuilder.hh
+    KTMultiPeakTrackProcessing.hh
     KTMultiPeakTrackBuilder.hh
     KTMultiPeakTrackEventSequenceIDCut.hh
     KTMultiPeakTrackMultiplicityCut.hh
@@ -25,8 +26,12 @@ set (EVENTANALYSIS_HEADERFILES
     KTOverlappingTrackClustering.hh
     KTPowerFitCut.hh
     KTProcessedTrackCut.hh
+    KTQuadraticPhaseShift.hh
+    KTRPClassifier.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
+    KTTrackMainbandCut.hh
+    KTTrackMVACut.hh
     KTTrackProcessing.hh
     KTTrackFreqCut.hh
     KTTrackTimeCut.hh
@@ -44,6 +49,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTIterativeTrackClustering.cc
     KTLinearFitCut.cc
     KTMultiPeakEventBuilder.cc
+    KTMultiPeakTrackProcessing.cc
     KTMultiPeakTrackBuilder.cc
     KTMultiPeakTrackEventSequenceIDCut.cc
     KTMultiPeakTrackMultiplicityCut.cc
@@ -51,8 +57,12 @@ set (EVENTANALYSIS_SOURCEFILES
     KTOverlappingTrackClustering.cc
     KTPowerFitCut.cc
     KTProcessedTrackCut.cc
+    KTRPClassifier.cc
+    KTQuadraticPhaseShift.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
+    KTTrackMainbandCut.cc
+    KTTrackMVACut.cc
     KTTrackProcessing.cc
     KTTrackFreqCut.cc
     KTTrackTimeCut.cc
@@ -62,12 +72,25 @@ if (ROOT_FOUND)
     set (EVENTANALYSIS_HEADERFILES 
         ${EVENTANALYSIS_HEADERFILES}   
         KTLinearDensityProbeFit.hh
+        KTTMVAClassifier.hh
     )
     set (EVENTANALYSIS_SOURCEFILES
         ${EVENTANALYSIS_SOURCEFILES}
         KTLinearDensityProbeFit.cc
+        KTTMVAClassifier.cc
     )
 endif (ROOT_FOUND)
+
+if (DLIB_FOUND)
+    set (EVENTANALYSIS_HEADERFILES
+        ${EVENTANALYSIS_HEADERFILES}
+        KTDLIBClassifier.hh
+    )
+    set (EVENTANALYSIS_SOURCEFILES
+        ${EVENTANALYSIS_SOURCEFILES}
+        KTDLIBClassifier.cc
+    )
+endif (DLIB_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility

@@ -96,7 +96,7 @@ namespace Katydid
 
     struct TLinearFitResult
     {
-        UInt_t fComponent;
+        UInt_t fFitNumber;
         Double_t fSlope;
         Double_t fIntercept;
         Double_t fStartingFrequency;
@@ -115,7 +115,6 @@ namespace Katydid
 
     struct TPowerFitData
     {
-        UInt_t fComponent;
 /*
         Double_t fScale;
         Double_t fBackground;
@@ -157,7 +156,7 @@ namespace Katydid
         Double_t fMaximumCentral;
 
         Double_t fRMSAwayFromCentral;
-        Double_t fCentralPowerRatio;
+        Double_t fCentralPowerFraction;
 
         Double_t fTrackIntercept;
     };
@@ -175,9 +174,11 @@ namespace Katydid
             void WriteFrequencyCandidates(Nymph::KTDataPtr data);
             void WriteWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+            void WriteProcessedMPT(Nymph::KTDataPtr data);
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
+            void WriteClassifiedEvent(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
             void WritePowerFitData(Nymph::KTDataPtr data);
 
@@ -185,9 +186,11 @@ namespace Katydid
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
+            TTree* GetProcessedMPTTree() const;
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
+            TTree* GetClassifiedEventTree() const;
             TTree* GetLinearFitResultTree() const;
             TTree* GetPowerFitDataTree() const;
 
@@ -195,27 +198,33 @@ namespace Katydid
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
+            bool SetupProcessedMPTTree();
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
+            bool SetupClassifiedEventTree();
             bool SetupLinearFitResultTree();
             bool SetupPowerFitDataTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
+            TTree* fProcessedMPTTree;
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
+            TTree* fClassifiedEventTree;
             TTree* fLinearFitResultTree;
             TTree* fPowerFitDataTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
+            TProcessedMPTData* fProcessedMPTDataPtr;
             TProcessedTrackData* fProcessedTrackDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
             TMultiTrackEventData* fMultiTrackEventDataPtr;
+            TClassifiedEventData* fClassifiedEventDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
 
@@ -236,6 +245,11 @@ namespace Katydid
         return fSparseWaterfallCandidateTree;
     }
 
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedMPTTree() const
+    {
+        return fProcessedMPTTree;
+    }
+
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedTrackTree() const
     {
         return fProcessedTrackTree;
@@ -249,6 +263,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiTrackEventTree() const
     {
         return fMultiTrackEventTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetClassifiedEventTree() const
+    {
+        return fClassifiedEventTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetLinearFitResultTree() const
