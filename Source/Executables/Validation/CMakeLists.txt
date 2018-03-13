@@ -117,12 +117,14 @@ if (Katydid_ENABLE_TESTING)
             KatydidIO
             KatydidTransform
             KatydidSpectrumAnalysis
+            KatydidEventAnalysis
         )
         
         set( PROGRAMS
            TestBasicROOTFileWriter
            TestGainVariation
            TestROOTDictionary
+           TestROOTTreeWritingViaCicada
            TestROOTWriterFileManager
            TestROOTWritingToSameFile
         )
