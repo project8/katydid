@@ -219,6 +219,7 @@ namespace Katydid
     {
         unsigned nMainband = 0, nSideband = 0;
         double minDistance = 1000.0e6, axial = 0.0;
+        double mcFrequency = 0.0;
 
         TrackSetCItSet allTracks = fMPTrack.fTrackRefs;
         KTClassifierResultsData* classData = new KTClassifierResultsData();
@@ -236,6 +237,7 @@ namespace Katydid
             if( classData->GetMCH() == 1 || classData->GetMCL() == 1 )
             {
                 nMainband++;
+                mcFrequency = (*it)->fProcTrack.GetStartFrequency();
             }
             if( classData->GetSB() == 1 )
             {
@@ -245,6 +247,26 @@ namespace Katydid
 
         fNumberOfMainCarriers = nMainband;
         fNumberOfSidebands = nSideband;
+
+        if( nMainband == 1 && nSideband > 0 )
+        {
+            for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
+            {
+                if( ! (*it)->fData->Has< KTClassifierResultsData >() )
+                {
+                    continue;
+                }
+
+                classData = &(*it)->fData->Of< KTClassifierResultsData >();
+                if( classData->GetSB() == 1 )
+                {
+                    axial += (*it)->fProcTrack.GetStartFrequency();   
+                }
+            }
+
+            axial /= (double)nSideband;
+            fAxialFrequency = axial;
+        }
 
         return;
     }
