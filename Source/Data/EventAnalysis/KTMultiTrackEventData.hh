@@ -269,8 +269,10 @@ namespace Katydid
 
             MEMBERVARIABLE( unsigned, NumberOfMainCarriers );
             MEMBERVARIABLE( unsigned, NumberOfSidebands );
-            MEMBERVARIABLE( double, MinimumDistanceToBWEdge );
+            MEMBERVARIABLE( double, MinimumDistanceToBWEdgeRSA );
+            MEMBERVARIABLE( double, MinimumDistanceToBWEdgeROACH );
             MEMBERVARIABLE( double, AxialFrequency );
+            MEMBERVARIABLE( double, SlopeDeviation );
  
         public:
             static const std::string sName;

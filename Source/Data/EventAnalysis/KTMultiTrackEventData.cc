@@ -177,8 +177,10 @@ namespace Katydid
             fEventSequenceID(-1),
             fNumberOfMainCarriers(0),
             fNumberOfSidebands(0),
-            fMinimumDistanceToBWEdge(0.),
+            fMinimumDistanceToBWEdgeRSA(0.),
+            fMinimumDistanceToBWEdgeROACH(0.),
             fAxialFrequency(0.),
+            fSlopeDeviation(0.),
 
             fMPTrack()
     {
@@ -191,8 +193,10 @@ namespace Katydid
             fEventSequenceID(orig.fEventSequenceID),
             fNumberOfMainCarriers(0),
             fNumberOfSidebands(0),
-            fMinimumDistanceToBWEdge(0.),
+            fMinimumDistanceToBWEdgeRSA(0.),
+            fMinimumDistanceToBWEdgeROACH(0.),
             fAxialFrequency(0.),
+            fSlopeDeviation(0.),
 
             fMPTrack(orig.fMPTrack)
     {
@@ -209,17 +213,20 @@ namespace Katydid
         fEventSequenceID = rhs.fEventSequenceID;
         fNumberOfMainCarriers = rhs.fNumberOfMainCarriers;
         fNumberOfSidebands = rhs.fNumberOfSidebands;
-        fMinimumDistanceToBWEdge = rhs.fMinimumDistanceToBWEdge;
+        fMinimumDistanceToBWEdgeRSA = rhs.fMinimumDistanceToBWEdgeRSA;
+        fMinimumDistanceToBWEdgeROACH = rhs.fMinimumDistanceToBWEdgeROACH;
         fAxialFrequency = rhs.fAxialFrequency;
+        fSlopeDeviation = rhs.fSlopeDeviation;
         fMPTrack = rhs.fMPTrack;
         return *this;
     }
 
     void KTMultiPeakTrackData::ProcessTracks()
     {
-        unsigned nMainband = 0, nSideband = 0;
-        double minDistance = 1000.0e6, axial = 0.0;
+        unsigned nMainband = 0, nSideband = 0, nTotal = 0;
+        double minDistance1 = 1000.0e6, minDistance2 = 1000.0e6, axial = 0.0;
         double mcFrequency = 0.0;
+        double slopeMean = 0.0, slopeVariance = 0.0;
 
         TrackSetCItSet allTracks = fMPTrack.fTrackRefs;
         KTClassifierResultsData* classData = new KTClassifierResultsData();
@@ -227,6 +234,20 @@ namespace Katydid
         // Determine number of mainband tracks
         for( TrackSetCItSet::iterator it = allTracks.begin(); it != allTracks.end(); ++it)
         {
+            if( std::min( 150.0e6 - (*it)->fProcTrack.GetEndFrequency(), (*it)->fProcTrack.GetStartFrequency() - 50.0e6 ) < minDistance1 )
+            {
+                minDistance1 = std::min( 150.0e6 - (*it)->fProcTrack.GetEndFrequency(), (*it)->fProcTrack.GetStartFrequency() - 50.0e6 );
+            }
+
+            if( std::min( 100.0e6 - (*it)->fProcTrack.GetEndFrequency(), (*it)->fProcTrack.GetStartFrequency() ) < minDistance2 )
+            {
+                minDistance2 = std::min( 100.0e6 - (*it)->fProcTrack.GetEndFrequency(), (*it)->fProcTrack.GetStartFrequency() );
+            }
+
+            slopeMean += (*it)->fProcTrack.GetSlope();
+            slopeVariance += (*it)->fProcTrack.GetSlope() * (*it)->fProcTrack.GetSlope();
+            nTotal++;
+
             if( ! (*it)->fData->Has< KTClassifierResultsData >() )
             {
                 continue;
@@ -247,6 +268,9 @@ namespace Katydid
 
         fNumberOfMainCarriers = nMainband;
         fNumberOfSidebands = nSideband;
+        fSlopeDeviation = std::sqrt( slopeVariance / (double)nTotal - slopeMean * slopeMean / (double)(nTotal * nTotal) );
+        fMinimumDistanceToBWEdgeRSA = minDistance1;
+        fMinimumDistanceToBWEdgeROACH = minDistance2;
 
         if( nMainband == 1 && nSideband > 0 )
         {
