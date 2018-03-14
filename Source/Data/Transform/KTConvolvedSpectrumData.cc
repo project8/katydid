@@ -97,6 +97,92 @@ namespace Katydid
         return *this;
     }
 
+    const std::string KTConvolvedPowerSpectrumVarianceData::sName("convolved-power-spectrum-variance");
+
+    KTConvolvedPowerSpectrumVarianceData::KTConvolvedPowerSpectrumVarianceData() :
+            KTFrequencySpectrumVarianceDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTConvolvedPowerSpectrumVarianceData::~KTConvolvedPowerSpectrumVarianceData()
+    {
+    }
+
+    KTConvolvedPowerSpectrumVarianceData& KTConvolvedPowerSpectrumVarianceData::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
+    const std::string KTConvolvedFrequencySpectrumVarianceDataFFTW::sName("convolved-frequency-spectrum-variance-fftw");
+
+    KTConvolvedFrequencySpectrumVarianceDataFFTW::KTConvolvedFrequencySpectrumVarianceDataFFTW() :
+            KTFrequencySpectrumVarianceDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTConvolvedFrequencySpectrumVarianceDataFFTW::~KTConvolvedFrequencySpectrumVarianceDataFFTW()
+    {
+    }
+
+    KTConvolvedFrequencySpectrumVarianceDataFFTW& KTConvolvedFrequencySpectrumVarianceDataFFTW::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
+    const std::string KTConvolvedFrequencySpectrumVarianceDataPolar::sName("convolved-frequency-spectrum-variance-polar");
+
+    KTConvolvedFrequencySpectrumVarianceDataPolar::KTConvolvedFrequencySpectrumVarianceDataPolar() :
+            KTFrequencySpectrumVarianceDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTConvolvedFrequencySpectrumVarianceDataPolar::~KTConvolvedFrequencySpectrumVarianceDataPolar()
+    {
+    }
+
+    KTConvolvedFrequencySpectrumVarianceDataPolar& KTConvolvedFrequencySpectrumVarianceDataPolar::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = fSpectra.size();
+        // if num < oldSize
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fSpectra[iComponent];
+        }
+        fSpectra.resize(num);
+        // if num > oldSize
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fSpectra[iComponent] = NULL;
+        }
+        return *this;
+    }
+
 
 } /* namespace Katydid */
-

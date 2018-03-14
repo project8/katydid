@@ -19,9 +19,13 @@ set (EXAMPLE_CONFIGFILES
     
     ConfigFiles/DisplayFFT.yaml
     ConfigFiles/DisplaySpectrograms.yaml
+    ConfigFiles/GainVariation.yaml
     ConfigFiles/KatydidPSConfig.yaml
+    ConfigFiles/NormalizedPS.yaml
     ConfigFiles/PrintInfo.yaml
     ConfigFiles/SidebandTrackAnalysis.yaml    
+    ConfigFiles/SparseSpectrogramAsTTree.yaml
+    ConfigFiles/SparseSpectrogramFromKDTree.yaml
     ConfigFiles/SpectrogramConfig.yaml
     ConfigFiles/SpectrogramImageConfig.yaml
 )

@@ -29,6 +29,7 @@ namespace Katydid
     
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
+    class KTFrequencySpectrumVariance;
     class KTPowerSpectrum;
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
@@ -92,6 +93,7 @@ namespace Katydid
             static TH1D* CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumMagDist");
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
 
+            static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");
 
             //***************
             // Power Spectrum

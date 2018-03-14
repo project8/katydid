@@ -51,6 +51,8 @@ set (DATA_HEADERFILES
     Transform/KTFrequencySpectrumDataPolar.hh
     Transform/KTFrequencySpectrumFFTW.hh
     Transform/KTFrequencySpectrumPolar.hh
+    Transform/KTFrequencySpectrumVariance.hh
+    Transform/KTFrequencySpectrumVarianceData.hh
     Transform/KTPowerSpectrum.hh
     Transform/KTPowerSpectrumData.hh
     Transform/KTPowerSpectrumUncertaintyData.hh
@@ -110,6 +112,8 @@ set (DATA_SOURCEFILES
     Transform/KTFrequencySpectrumDataPolar.cc
     Transform/KTFrequencySpectrumFFTW.cc
     Transform/KTFrequencySpectrumPolar.cc
+    Transform/KTFrequencySpectrumVariance.cc
+    Transform/KTFrequencySpectrumVarianceData.cc
     Transform/KTMultiFSDataFFTW.cc
     Transform/KTMultiFSDataPolar.cc
     Transform/KTMultiPSData.cc

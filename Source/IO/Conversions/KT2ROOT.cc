@@ -14,6 +14,7 @@
 #include "KTHoughData.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
+#include "KTFrequencySpectrumVariance.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTRawTimeSeries.hh"
@@ -462,6 +463,19 @@ namespace Katydid
             hist->Fill(value * scaling);
         }
         hist->SetXTitle("Power (W)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum Variance", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*fs)(iBin));
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Voltage^{2} (V^{2})");
         return hist;
     }
 
