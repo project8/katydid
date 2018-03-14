@@ -15,6 +15,7 @@
 #include "KTClassifierResultsData.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
+#include "KTProcessedMPTData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"

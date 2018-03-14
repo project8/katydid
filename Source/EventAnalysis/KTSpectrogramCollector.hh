@@ -37,6 +37,7 @@ namespace Katydid
      Supports an arbitrary number of tracks to collect simultaneously. Collection begins when a spectrum is received which matches the timestamp
      of the beginning of a track. A signal is emitted when the spectrum matches the end time.
      Configuration name: "spectrogram-collector"
+     
      Available configuration values:
      - "min-frequency": double -- minimum frequency
      - "max-frequency": double -- maximum frequency
@@ -48,11 +49,13 @@ namespace Katydid
      - "trail-freq": double -- frequency above the track to end collection
      - "use-track-freqs": bool -- if true, the min/max frequencies are calculated from the track and the lead/trail frequencies; if false, min/max-frequency is used
      - "full-event": bool -- if true, collect the full spectrogram of an MP-event. If false, collect only the first track grouping (fEventSequenceID==0)
+     
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Adds a track to the list of active spectrogram collections; Requires KTProcessedTrackData; Adds nothing
      - "mp-track": void (Nymph::KTDataPtr) -- Adds a multi-peak track to the list of active spectrogram collections; Requires KTMultiPeakTrackData; Adds nothing
      - "mp-event": void (Nymph::KTDatPtr) -- Adds a multi-peak event to the list of active spectrogram collections; Requires KTMultiTrackEventData; Adds nothing
      - "ps": void (Nymph::KTDataPtr) -- Adds a power spectrum to the appropriate spectrogram(s), if any; Requires KTPowerSpectrumData and KTSliceHeader; Adds nothing
+     
      Signals:
      - "ps-coll": void (Nymph::KTDataPtr) -- Emitted upon completion of a spectrogram (waterfall plot); Guarantees KTPSCollectionData
     */
@@ -65,10 +68,10 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            MEMBERVARIABLE(double, MinFrequency);
-            MEMBERVARIABLE(double, MaxFrequency);
-            MEMBERVARIABLE(unsigned, MinBin);
-            MEMBERVARIABLE(unsigned, MaxBin);
+            MEMBERVARIABLE_NOSET(double, MinFrequency);
+            MEMBERVARIABLE_NOSET(double, MaxFrequency);
+            MEMBERVARIABLE_NOSET(unsigned, MinBin);
+            MEMBERVARIABLE_NOSET(unsigned, MaxBin);
             MEMBERVARIABLE(double, LeadTime);
             MEMBERVARIABLE(double, TrailTime);
             MEMBERVARIABLE(double, LeadFreq);
@@ -111,6 +114,11 @@ namespace Katydid
             std::vector< std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
 
         private:
+
+            void SetMinFrequency( double freq );
+            void SetMaxFrequency( double freq );
+            void SetMinBin( unsigned bin );
+            void SetMaxBin( unsigned bin );
 
             //***************
             // Signals
@@ -160,6 +168,34 @@ namespace Katydid
             return;
         }
     
+        return;
+    }
+
+    inline void KTSpectrogramCollector::SetMinFrequency(double freq)
+    {
+        fMinFrequency = freq;
+        fCalculateMinBin = true;
+        return;
+    }
+
+    inline void KTSpectrogramCollector::SetMaxFrequency(double freq)
+    {
+        fMaxFrequency = freq;
+        fCalculateMaxBin = true;
+        return;
+    }
+
+    inline void KTSpectrogramCollector::SetMinBin(unsigned bin)
+    {
+        fMinBin = bin;
+        fCalculateMinBin = false;
+        return;
+    }
+
+    inline void KTSpectrogramCollector::SetMaxBin(unsigned bin)
+    {
+        fMaxBin = bin;
+        fCalculateMaxBin = false;
         return;
     }
 }

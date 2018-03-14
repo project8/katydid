@@ -47,7 +47,7 @@ namespace Katydid
             static const std::string sName;
 
     };
-
+/*
     class KTTSCollectionData : public Nymph::KTExtensibleData< KTTSCollectionData >
     {
         public:
@@ -69,7 +69,7 @@ namespace Katydid
         public:
             static const std::string sName;
     };
-
+*/
 } /* namespace Katydid */
 
 #endif /* KTSPECTRUMCOLLECTIONDATA_HH_ */

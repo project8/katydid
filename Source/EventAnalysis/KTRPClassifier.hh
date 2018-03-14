@@ -10,15 +10,10 @@
 
 #include "KTProcessor.hh"
 #include "KTData.hh"
-
 #include "KTSlot.hh"
-#include "KTLogger.hh"
-
 
 namespace Katydid
 {
-    
-    KTLOGGER(avlog_hh, "KTRPClassifier.hh");
 
     class KTPowerFitData;
     class KTProcessedTrackData;
@@ -54,7 +49,7 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
         public:
-            bool FillRPTrack( KTProcessedTrackData& trackData, KTPowerFitData& pfData, KTRPTrackData& rpTrackData );
+            bool FillRPTrack( KTProcessedTrackData& trackData, KTPowerFitData& pfData );
 
             //***************
             // Signals
@@ -68,38 +63,9 @@ namespace Katydid
             //***************
 
         private:
-            void SlotFunctionTrack( Nymph::KTDataPtr data );
+            Nymph::KTSlotDataTwoTypes< KTProcessedTrackData, KTPowerFitData > fTrackSlot;
 
     };
-
-    void KTRPClassifier::SlotFunctionTrack( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
-
-        if (! data->Has< KTPowerFitData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTPowerFitData >!");
-            return;
-        }
-        
-        // Call function
-        if( !FillRPTrack( data->Of< KTProcessedTrackData >(), data->Of< KTPowerFitData >(), data->Of< KTRPTrackData >() ) )
-        {
-            KTERROR(avlog_hh, "Something went wrong while analyzing data!");
-            return;
-        }
-
-        // Emit signal
-        fRPTrackSignal( data );
-    
-        return;
-    }
 
 }
 

@@ -8,6 +8,11 @@
 #include "KTMultiPeakTrackProcessing.hh"
 
 #include "KTLogger.hh"
+#include "KTProcessedTrackData.hh"
+#include "KTProcessedMPTData.hh"
+#include "KTMultiTrackEventData.hh"
+
+#include <cmath>
 
 namespace Katydid
 {
@@ -18,9 +23,9 @@ namespace Katydid
 
     KTMultiPeakTrackProcessing::KTMultiPeakTrackProcessing(const std::string& name) :
             KTProcessor(name),
-            fProcessedMPTSignal("proc-mpt", this)
+            fProcessedMPTSignal("proc-mpt", this),
+            fMPTSlot("mpt", this, &KTMultiPeakTrackProcessing::AnalyzeMPT, &fProcessedMPTSignal)
     {
-        RegisterSlot( "mpt", this, &KTMultiPeakTrackProcessing::SlotFunctionMPTData );
     }
 
     KTMultiPeakTrackProcessing::~KTMultiPeakTrackProcessing()

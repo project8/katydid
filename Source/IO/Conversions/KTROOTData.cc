@@ -9,6 +9,7 @@
 
 #include "KTClassifierResultsData.hh"
 #include "KTMultiTrackEventData.hh"
+#include "KTProcessedMPTData.hh"
 #include "KTProcessedTrackData.hh"
 
 #include "logger.hh"

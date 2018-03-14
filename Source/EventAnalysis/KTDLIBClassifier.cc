@@ -21,9 +21,9 @@ namespace Katydid
     KTDLIBClassifier::KTDLIBClassifier(const std::string& name) :
             KTProcessor(name),
             fDFFile("foo_df.dat"),
-            fClassifiedSignal("classified", this)
+            fClassifiedSignal("classified", this),
+            fPowerFitSlot("power-fit", this, &KTDLIBClassifier::ClassifyTrack, &fClassifiedSignal)
     {
-        RegisterSlot( "power-fit", this, &KTDLIBClassifier::SlotFunctionPowerFitData );
     }
 
     KTDLIBClassifier::~KTDLIBClassifier()
@@ -39,26 +39,8 @@ namespace Katydid
         return true;
     }
 
-    void KTDLIBClassifier::SlotFunctionPowerFitData( Nymph::KTDataPtr data )
+    bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData )
     {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
-
-        if (! data->Has< KTPowerFitData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTPowerFitData >!");
-            return;
-        }
-
-        KTProcessedTrackData& ptData = data->Of<KTProcessedTrackData>();
-        KTPowerFitData& pfData = data->Of< KTPowerFitData>();
-        
         sample_type classifierFeatures; // set up 14-dim vector of classification features
         classifierFeatures(0) = (double)(ptData.GetTotalPower());
         classifierFeatures(1) = (double)(ptData.GetSlope());
@@ -84,13 +66,13 @@ namespace Katydid
         catch(...)
         {
             KTERROR(avlog_hh, "Unable to read the decision function from file. Aborting");
-            return;
+            return false;
         }
 
         double classificationLabel = decisionFunction(classifierFeatures); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
         classificationLabel = std::round(classificationLabel); // round to nearest integer for comparison
 
-        KTClassifierResultsData& resultData = data->Of< KTClassifierResultsData >();
+        KTClassifierResultsData& resultData = pfData->Of< KTClassifierResultsData >();
         if( classificationLabel == 0 )
         {
             resultData.SetMainCarrierHigh( 1 );
@@ -106,12 +88,11 @@ namespace Katydid
         else
         {
             KTERROR(avlog_hh, "Could not assign appropriate classification label; something went wrong");
+            return false;
         }
 
         KTINFO(avlog_hh, "Classification finished!");
-
-        // Emit signal
-        fClassifiedSignal( data );
+        return true;
     }
 
 } // namespace Katydid

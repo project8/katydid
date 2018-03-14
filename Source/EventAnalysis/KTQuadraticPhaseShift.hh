@@ -10,9 +10,7 @@
 
 #include "KTProcessor.hh"
 #include "KTData.hh"
-
 #include "KTSlot.hh"
-#include "KTLogger.hh"
 
 
 namespace Katydid
@@ -62,7 +60,6 @@ namespace Katydid
         private:
             double fSlope;
 
-
         public:
             bool AssignPhase( KTProcessedTrackData& trackData );
             bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTSliceHeader& slice );
@@ -79,8 +76,8 @@ namespace Katydid
             //***************
 
         private:
-            void SlotFunctionTimeSeries( Nymph::KTDataPtr data );
-            void SlotFunctionTrack( Nymph::KTDataPtr data );
+            Nymph::KTSlotDataTwoTypes< KTTimeSeriesData, KTSliceHeader > fTSSlot;
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fProcTrackSlot;
 
     };
 
@@ -93,54 +90,6 @@ namespace Katydid
     {
         fSlope = q;
         return;
-    }
-
-    void KTQuadraticPhaseShift::SlotFunctionTimeSeries( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTTimeSeriesData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTTimeSeriesData >!");
-            return;
-        }
-        if (! data->Has< KTSliceHeader >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
-            return;
-        }
-
-        // Use a copy of the original data pointer rather than alter it
-        Nymph::KTDataPtr newData = data;
-
-        // Call function
-        if(! ProcessTimeSeries( newData->Of< KTTimeSeriesData >(), newData->Of< KTSliceHeader >() ))
-        {
-            KTERROR(avlog_hh, "Something went wrong while analyzing time series data!");
-            return;
-        }
-
-        // Emit signal
-        fTSSignal( newData );
-    
-        return;
-    }
-
-    void KTQuadraticPhaseShift::SlotFunctionTrack( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
-
-        if(! AssignPhase( data->Of< KTProcessedTrackData >() ))
-        {
-            KTERROR(avlog_hh, "Something went wrong setting the phase slope!");
-            return;
-        }
     }
 }
 

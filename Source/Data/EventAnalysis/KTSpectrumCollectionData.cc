@@ -110,7 +110,7 @@ namespace Katydid
         // This ensures all spectra have the same frequency bounds and number of bins
 
         // nBins is the number of bins in the new spectrum
-        int nBins = GetMaxBin() - GetMinBin();
+        int nBins = GetMaxBin() - GetMinBin() + 1;
 
         // initialize new spectrum
         KTPowerSpectrum* newSpectrum = new KTPowerSpectrum( nBins, GetMinFreq(), GetMaxFreq() );
@@ -120,7 +120,7 @@ namespace Katydid
         }
 
         // fill new spectrum
-        for( int i = GetMinBin(); i < GetMaxBin(); ++i )
+        for( int i = GetMinBin(); i <= GetMaxBin(); ++i )
         {
             (*newSpectrum)(i - GetMinBin()) = (*spectrum)(i);
         }
@@ -131,7 +131,7 @@ namespace Katydid
 
         return;
     }
-
+/*
     const std::string KTTSCollectionData::sName("ts-collection");
 
     KTTSCollectionData::KTTSCollectionData() :
@@ -211,6 +211,6 @@ namespace Katydid
         fSeries.push_back( std::make_pair( slice, newTS ) );
 
         return;
-    }
+    }*/
 
 } /* namespace Katydid */

@@ -10,21 +10,10 @@
 
 #include "KTProcessor.hh"
 #include "KTData.hh"
-
-#include "KTProcessedTrackData.hh"
-#include "KTMultiTrackEventData.hh"
-
 #include "KTSlot.hh"
-#include "KTLogger.hh"
-
-#include "TMVA/Reader.h"
-
 
 namespace Katydid
 {
-    
-    KTLOGGER(avlog_hh, "KTMultiPeakTrackProcessing.hh");
-
     /*
      @class KTMultiPeakTrackProcessing
      @author E. Zayas
@@ -41,6 +30,8 @@ namespace Katydid
      Signals:
      - "proc-mpt": void (Nymph::KTDataPtr) -- Emitted upon successful determination of the mainband track and axial frequency; Guarantees KTProcessedMPTData
     */
+
+    class KTMultiPeakTrackData;
 
     class KTMultiPeakTrackProcessing : public Nymph::KTProcessor
     {
@@ -65,33 +56,10 @@ namespace Katydid
             //***************
 
         private:
-            void SlotFunctionMPTData( Nymph::KTDataPtr data );
+            Nymph::KTSlotDataOneType< KTMultiPeakTrackData > fMPTSlot;
 
     };
 
-    void KTMultiPeakTrackProcessing::SlotFunctionMPTData( Nymph::KTDataPtr data )
-    {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
-
-        if (! data->Has< KTMultiPeakTrackData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTMultiPeakTrackData >!");
-            return;
-        }
-
-        // Call function
-        if( !AnalyzeMPT( data->Of< KTMultiPeakTrackData >() ) )
-        {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTMultiPeakTrackData >");
-            return;
-        }
-
-        // Emit signal
-        fProcessedMPTSignal( data );
-    
-        return;
-    }
 }
 
 #endif /* KTMULTIPEAKTRACKPROCESSING_HH_ */

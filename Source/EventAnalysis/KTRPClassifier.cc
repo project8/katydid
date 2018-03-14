@@ -24,9 +24,9 @@ namespace Katydid
 
     KTRPClassifier::KTRPClassifier(const std::string& name) :
             KTProcessor(name),
-            fRPTrackSignal("rp-track", this)
+            fRPTrackSignal("rp-track", this),
+            fTrackSlot("track", this, &KTRPClassifier::FillRPTrack, &fRPTrackSignal)
     {
-        RegisterSlot( "track", this, &KTRPClassifier::SlotFunctionTrack );
     }
 
     KTRPClassifier::~KTRPClassifier()
@@ -40,8 +40,9 @@ namespace Katydid
         return true;
     }
 
-    bool KTRPClassifier::FillRPTrack( KTProcessedTrackData& trackData, KTPowerFitData& pfData, KTRPTrackData& rpTrackData )
+    bool KTRPClassifier::FillRPTrack( KTProcessedTrackData& trackData, KTPowerFitData& pfData )
     {
+        KTRPTrackData& rpTrackData = pfData.Of< KTRPTrackData >();
         rpTrackData = trackData;
 
         rpTrackData.SetIsValid( pfData.GetIsValid() );
