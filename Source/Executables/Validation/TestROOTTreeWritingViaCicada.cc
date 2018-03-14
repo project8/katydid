@@ -5,6 +5,7 @@
  *      Author: N.S. Oblath
  */
 
+#include "KTMultiTrackEventData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTROOTTreeTypeWriterEventAnalysis.hh"
 
@@ -32,11 +33,18 @@ int main()
 
     Nymph::KTDataPtr data(new Nymph::KTData());
     KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
+    KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
     ptData.SetAcquisitionID(10);
 
+    mteData.SetAcquisitionID(11);
+    mteData.AddTrack(ptData);
+
     KTINFO(testlog, "Writing processed track data");
     typeWriter.WriteProcessedTrack(data);
+
+    KTINFO(testlog, "Writing multi-track event data");
+    typeWriter.WriteMultiTrackEvent(data);
 
     KTINFO(testlog, "Done with tests; closing file");
 
