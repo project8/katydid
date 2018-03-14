@@ -92,6 +92,13 @@ namespace Katydid
         Double_t fSumEndTimeInRunC;
         UInt_t fAcquisitionID;
         UInt_t fUnknownEventTopology;
+
+        UInt_t fNumberOfMainCarriers;
+        UInt_t fNumberOfSidebands;
+        Double_t fMinimumDistanceToBWEdgeRSA;
+        Double_t fMinimumDistanceToBWEdgeROACH;
+        Double_t fAxialFrequency;
+        Double_t fSlopeDeviation;
     };
 
     struct TLinearFitResult

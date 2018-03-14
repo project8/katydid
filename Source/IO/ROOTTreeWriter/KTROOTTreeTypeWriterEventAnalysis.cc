@@ -554,6 +554,13 @@ namespace Katydid
         fMultiPeakTrackData.fSumEndTimeInRunC = mptData.GetSumEndTimeInRunC();
         fMultiPeakTrackData.fAcquisitionID = mptData.GetAcquisitionID();
 
+        fMultiPeakTrackData.fNumberOfMainCarriers = mptData.GetNumberOfMainCarriers();
+        fMultiPeakTrackData.fNumberOfSidebands = mptData.GetNumberOfSidebands();
+        fMultiPeakTrackData.fMinimumDistanceToBWEdgeRSA = mptData.GetMinimumDistanceToBWEdgeRSA();
+        fMultiPeakTrackData.fMinimumDistanceToBWEdgeROACH = mptData.GetMinimumDistanceToBWEdgeROACH();
+        fMultiPeakTrackData.fAxialFrequency = mptData.GetAxialFrequency();
+        fMultiPeakTrackData.fSlopeDeviation = mptData.GetSlopeDeviation();
+
         if( mptData.GetUnknownEventTopology() )
         {
             fMultiPeakTrackData.fUnknownEventTopology = 1;
@@ -589,6 +596,13 @@ namespace Katydid
                 fMultiPeakTrackTree->SetBranchAddress( "AcquisitionID", &fMultiPeakTrackData.fAcquisitionID );
                 fMultiPeakTrackTree->SetBranchAddress( "UnknownEventTopology", &fMultiPeakTrackData.fUnknownEventTopology );
 
+                fMultiPeakTrackTree->SetBranchAddress( "NumberOfMainCarriers", &fMultiPeakTrackData.fNumberOfMainCarriers );
+                fMultiPeakTrackTree->SetBranchAddress( "NumberOfSidebands", &fMultiPeakTrackData.fNumberOfSidebands );
+                fMultiPeakTrackTree->SetBranchAddress( "MinimumDistanceToBWEdgeRSA", &fMultiPeakTrackData.fMinimumDistanceToBWEdgeRSA );
+                fMultiPeakTrackTree->SetBranchAddress( "MinimumDistanceToBWEdgeROACH", &fMultiPeakTrackData.fMinimumDistanceToBWEdgeROACH );
+                fMultiPeakTrackTree->SetBranchAddress( "AxialFrequency", &fMultiPeakTrackData.fAxialFrequency );
+                fMultiPeakTrackTree->SetBranchAddress( "SlopeDeviation", &fMultiPeakTrackData.fSlopeDeviation );
+
                 return true;
             }
         }
@@ -610,6 +624,13 @@ namespace Katydid
         fMultiPeakTrackTree->Branch( "SumEndTimeInRunC", &fMultiPeakTrackData.fSumEndTimeInRunC, "fSumEndTimeInRunC/d" );
         fMultiPeakTrackTree->Branch( "AcquisitionID", &fMultiPeakTrackData.fAcquisitionID, "fAcquisitionID/i" );
         fMultiPeakTrackTree->Branch( "UnknownEventTopology", &fMultiPeakTrackData.fUnknownEventTopology, "fUnknownEventTopology/i" );
+
+        fMultiPeakTrackTree->Branch( "NumberOfMainCarriers", &fMultiPeakTrackData.fNumberOfMainCarriers, "fNumberOfMainCarriers/i" );
+        fMultiPeakTrackTree->Branch( "NumberOfSidebands", &fMultiPeakTrackData.fNumberOfSidebands, "fNumberOfSidebands/i" );
+        fMultiPeakTrackTree->Branch( "MinimumDistanceToBWEdgeRSA", &fMultiPeakTrackData.fMinimumDistanceToBWEdgeRSA, "fMinimumDistanceToBWEdgeRSA/d" );
+        fMultiPeakTrackTree->Branch( "MinimumDistanceToBWEdgeROACH", &fMultiPeakTrackData.fMinimumDistanceToBWEdgeROACH, "fMinimumDistanceToBWEdgeROACH/d" );
+        fMultiPeakTrackTree->Branch( "AxialFrequency", &fMultiPeakTrackData.fAxialFrequency, "fAxialFrequency/d" );
+        fMultiPeakTrackTree->Branch( "SlopeDeviation", &fMultiPeakTrackData.fSlopeDeviation, "fSlopeDeviation/d" );
 
         return true;
     }
