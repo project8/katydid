@@ -14,6 +14,22 @@
 #include "KTClassifierResultsData.hh"
 
 #include "KTSlot.hh"
+#include "KTLogger.hh"
+
+// Undefine to avoid conflict between dlib and scarab logger macros
+#undef LINFO
+#undef LPROG
+#undef LWARN
+#undef LERROR
+#undef LFATAL
+#undef LASSERT
+#undef LTRACE
+#undef LDEBUG
+
+// dlib stuff
+#include <dlib/matrix.h>
+#include <dlib/svm_threaded.h>
+#include <dlib/svm.h>
 
 namespace Katydid
 {
@@ -33,7 +49,7 @@ namespace Katydid
      Slots:
      - "power-fit": void (Nymph::KTDataPtr) -- Performs SVM classification with all classifier features (power, slope, time length, and rotate-project parameters); Requires KTProcessedTrackData and KTPowerFitData; Adds KTClassifierResultsData
      Signals:
-     - "classify": void (Nymph::KTDataPtr) -- Emitted upon successful classification; Guarantees KTProcessedTrackData, KTPowerFitData and KTClassifierResultsData
+     - "classified": void (Nymph::KTDataPtr) -- Emitted upon successful classification; Guarantees KTProcessedTrackData, KTPowerFitData and KTClassifierResultsData
     */
 
     class KTDLIBClassifier : public Nymph::KTProcessor
@@ -49,33 +65,22 @@ namespace Katydid
 
         private:
             std::string fDFFile;
-
-            // Dlib stuff
-            float fPower;
-            float fSlope;
-            float fTimeLength;
-            float fAverage;
-            float fRMS;
-            float fSkewness;
-            float fKurtosis;
-            float fNormCentral;
-            float fMeanCentral;
-            float fSigmaCentral;
-            float fMaxCentral;
-            float fNPeaks;
-            float fCentralPowerFraction;
-            float fRMSAwayFromCentral;
+            // Some helpful type definitions from dlib
+            typedef dlib::matrix<double,14,1> sample_type;
+            typedef dlib::one_vs_all_trainer<dlib::any_trainer< sample_type, double > > ova_trainer;
+            typedef dlib::radial_basis_kernel<sample_type> rbf_kernel;
+            typedef dlib::one_vs_all_decision_function<ova_trainer,dlib::decision_function<rbf_kernel>> decision_funct_type;
+            typedef dlib::normalized_function<decision_funct_type> normalized_decision_funct_type;
 
         public:
             bool Initialize();
-            bool ClassifyTrack(KTClassifierResultsData& resultData, double label);
 
             //***************
             // Signals
             //***************
 
         private:
-            Nymph::KTSignalData fClassifySignal;
+            Nymph::KTSignalData fClassifiedSignal;
 
             //***************
             // Slots

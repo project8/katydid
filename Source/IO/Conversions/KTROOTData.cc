@@ -124,19 +124,19 @@ namespace Katydid
 
     TClassifierResultsData::TClassifierResultsData() :
             TObject(),
-            fComponent(0), fMCH(0), fMCL(0), fSB(0)
+            fComponent(0), fMainCarrierHigh(0), fMainCarrierLow(0), fSideBand(0)
     {}
 
     TClassifierResultsData::TClassifierResultsData(const KTClassifierResultsData& orig) :
             TObject(),
-            fComponent(0), fMCH(0), fMCL(0), fSB(0)
+            fComponent(0), fMainCarrierHigh(0), fMainCarrierLow(0), fSideBand(0)
     {
         Load(orig);
     }
 
     TClassifierResultsData::TClassifierResultsData(const TClassifierResultsData& orig) :
             TObject(orig),
-            fComponent(orig.fComponent), fMCH(orig.fMCH), fMCL(orig.fMCL), fSB(orig.fSB)
+            fComponent(orig.fComponent), fMainCarrierHigh(orig.fMainCarrierHigh), fMainCarrierLow(orig.fMainCarrierLow), fSideBand(orig.fSideBand)
     {}
 
     TClassifierResultsData::~TClassifierResultsData()
@@ -150,18 +150,18 @@ namespace Katydid
 
     TClassifierResultsData& TClassifierResultsData::operator=(const TClassifierResultsData& rhs)
     {
-        fComponent = rhs.fComponent; fMCH = rhs.fMCH; fMCL = rhs.fMCL; fSB = rhs.fSB;
+        fComponent = rhs.fComponent; fMainCarrierHigh = rhs.fMainCarrierHigh; fMainCarrierLow = rhs.fMainCarrierLow; fSideBand = rhs.fSideBand;
         return *this;
     }
 
     void TClassifierResultsData::Load(const KTClassifierResultsData& data)
     {
-        fComponent = data.GetComponent(); fMCH = data.GetMCH(); fMCL = data.GetMCL(); fSB = data.GetSB();
+        fComponent = data.GetComponent(); fMainCarrierHigh = data.GetMainCarrierHigh(); fMainCarrierLow = data.GetMainCarrierLow(); fSideBand = data.GetSideBand();
         return;
     }
     void TClassifierResultsData::Unload(KTClassifierResultsData& data) const
     {
-        data.SetComponent(fComponent); data.SetMCH(fMCH); data.SetMCL(fMCL); data.SetSB(fSB);
+        data.SetComponent(fComponent); data.SetMainCarrierHigh(fMainCarrierHigh); data.SetMainCarrierLow(fMainCarrierLow); data.SetSideBand(fSideBand);
         return;
     }
 

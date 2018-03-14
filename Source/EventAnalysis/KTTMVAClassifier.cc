@@ -43,31 +43,6 @@ namespace Katydid
         return true;
     }
 
-    bool KTTMVAClassifier::ClassifyTrack( KTProcessedTrackData& trackData, double mva )
-    {
-        KTINFO(evlog, "Classifying track with MVA classifier = " << mva);
-        trackData.SetMVAClassifier( mva );
-
-        if( mva >= GetMVACut() )
-        {
-            KTDEBUG(evlog, "Classifying track as a signal peak");
-            trackData.SetMainband( true );
-        }
-        else
-        {
-            KTDEBUG(evlog, "Classifying track as a sideband peak");
-            trackData.SetMainband( false );
-        }
-
-        if( mva <= -999 )
-        {
-            KTWARN(evlog, "Classifier value is -999; something probably went wrong computing it");
-            return false;
-        }
-
-        return true;
-    }
-
     void KTTMVAClassifier::SlotFunctionPowerFitData( Nymph::KTDataPtr data )
     {
         // Standard data slot pattern:
@@ -116,6 +91,7 @@ namespace Katydid
         KTINFO(avlog_hh, "Successfully set up TMVA reader");
 
         KTPowerFitData& pfData = data->Of< KTPowerFitData >();
+        KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         // Assign variables
         fAverage = (float)(pfData.GetAverage());
@@ -132,13 +108,25 @@ namespace Katydid
         double mvaValue = reader->EvaluateMVA( fAlgorithm );
         KTDEBUG(avlog_hh, "Evaluated MVA classifier = " << mvaValue);
 
-        // Call function
-        if( !ClassifyTrack( data->Of< KTProcessedTrackData >(), mvaValue ) )
+        // Classify
+        KTINFO(evlog, "Classifying track with MVA classifier = " << mvaValue);
+        ptData.SetMVAClassifier( mvaValue );
+
+        if( mvaValue >= GetMVACut() )
         {
-            KTERROR(avlog_hh, "Something went wrong analyzing data of type < KTProcessedTrackData >");
-            return;
+            KTDEBUG(evlog, "Classifying track as a signal peak");
+            ptData.SetMainband( true );
+        }
+        else
+        {
+            KTDEBUG(evlog, "Classifying track as a sideband peak");
+            ptData.SetMainband( false );
         }
 
+        if( mvaValue <= -999 )
+        {
+            KTWARN(evlog, "Classifier value is -999; something probably went wrong computing it");
+        }
         KTINFO(avlog_hh, "Classification finished!");
 
         // Emit signal

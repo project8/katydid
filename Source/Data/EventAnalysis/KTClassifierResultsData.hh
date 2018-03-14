@@ -26,15 +26,13 @@ namespace Katydid
         public:
             // member variable(s) to describe classification
             MEMBERVARIABLE( unsigned, Component );
-            MEMBERVARIABLE( int, MCH ); // main carrier high theta
-            MEMBERVARIABLE( int, MCL ); // main carrier low theta
-            MEMBERVARIABLE( int, SB );  // sideband
+            MEMBERVARIABLE( int, MainCarrierHigh ); // main carrier high theta
+            MEMBERVARIABLE( int, MainCarrierLow ); // main carrier low theta
+            MEMBERVARIABLE( int, SideBand );  // sideband
           
         public:
             static const std::string sName;
     };
-
-    std::ostream& operator<<(std::ostream& out, const KTClassifierResultsData& hdr);
 
 } /* namespace Katydid */
 #endif /* KTCLASSIFIERRESULTSDATA_HH_ */

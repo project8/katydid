@@ -7,8 +7,6 @@
 
 #include "KTClassifierResultsData.hh"
 
-#include <ostream>
-
 namespace Katydid
 {
     const std::string KTClassifierResultsData::sName("classifier-results");
@@ -16,18 +14,18 @@ namespace Katydid
     KTClassifierResultsData::KTClassifierResultsData() :
             KTExtensibleData< KTClassifierResultsData >(),
             fComponent(0),
-            fMCH(0),
-            fMCL(0),
-            fSB(0)    
+            fMainCarrierHigh(0),
+            fMainCarrierLow(0),
+            fSideBand(0)    
     {
     }
 
     KTClassifierResultsData::KTClassifierResultsData(const KTClassifierResultsData& orig) :
             KTExtensibleData< KTClassifierResultsData >(orig),
             fComponent(orig.fComponent),         
-            fMCH(orig.fMCH),
-            fMCL(orig.fMCL),
-            fSB(orig.fSB)
+            fMainCarrierHigh(orig.fMainCarrierHigh),
+            fMainCarrierLow(orig.fMainCarrierLow),
+            fSideBand(orig.fSideBand)
     {
     }
 
@@ -39,9 +37,9 @@ namespace Katydid
     {
         KTExtensibleData< KTClassifierResultsData >::operator=(rhs);
         fComponent = rhs.fComponent;
-        fMCH = rhs.fMCH;
-        fMCL = rhs.fMCL;
-        fSB = rhs.fSB;
+        fMainCarrierHigh = rhs.fMainCarrierHigh;
+        fMainCarrierLow = rhs.fMainCarrierLow;
+        fSideBand = rhs.fSideBand;
         return *this;
     }
 

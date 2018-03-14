@@ -7,8 +7,6 @@
 
 #include "KTRPTrackData.hh"
 
-#include <ostream>
-
 namespace Katydid
 {
     const std::string KTRPTrackData::sName("rp-track-data");

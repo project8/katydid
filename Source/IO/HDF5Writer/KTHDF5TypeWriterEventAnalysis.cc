@@ -570,9 +570,9 @@ namespace Katydid
             track.RMSAwayFromCentral = CRPTrackIt->fData->Of< KTPowerFitData >().GetRMSAwayFromCentral();
             track.CentralPowerFraction = CRPTrackIt->fData->Of< KTPowerFitData >().GetCentralPowerFraction();
 
-            track.MCH = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetMCH();
-            track.MCL = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetMCL();
-            track.SB = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetSB();            
+            track.MainCarrierHigh = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetMainCarrierHigh();
+            track.MainCarrierLow = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetMainCarrierLow();
+            track.SideBand = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetSideBand();            
 
             fMTECRPTracksDataBuffer.push_back(track);
             KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");

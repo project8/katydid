@@ -7,25 +7,8 @@
 
 #include "KTDLIBClassifier.hh"
 
-#include "KTLogger.hh"
-
 #include "KTProcessedTrackData.hh"
 #include "KTPowerFitData.hh"
-
-// Undefine to avoid conflict between dlib and scarab logger macros
-#undef LINFO
-#undef LPROG
-#undef LWARN
-#undef LERROR
-#undef LFATAL
-#undef LASSERT
-#undef LTRACE
-#undef LDEBUG
-
-// dlib stuff
-#include <dlib/matrix.h>
-#include <dlib/svm_threaded.h>
-#include <dlib/svm.h>
 
 namespace Katydid
 {
@@ -38,7 +21,7 @@ namespace Katydid
     KTDLIBClassifier::KTDLIBClassifier(const std::string& name) :
             KTProcessor(name),
             fDFFile("foo_df.dat"),
-            fClassifySignal("classify", this)
+            fClassifiedSignal("classified", this)
     {
         RegisterSlot( "power-fit", this, &KTDLIBClassifier::SlotFunctionPowerFitData );
     }
@@ -53,29 +36,6 @@ namespace Katydid
 
         SetDFFile(node->get_value< std::string >("df-file",GetDFFile()));
         
-        return true;
-    }
-
-    bool KTDLIBClassifier::ClassifyTrack(KTClassifierResultsData& resultData, double label )
-    {   
-        if( label == 0 )
-        {
-            resultData.SetMCH( 1 );
-        }
-        else if( label == 1 )
-        {
-            resultData.SetMCL( 1 );
-        }
-        else if( label == 2 )
-        {
-            resultData.SetSB( 1 );
-        }
-        else
-        {
-            KTERROR(avlog_hh, "Could not assign appropriate classification label; something went wrong");
-            return false;
-        }
-
         return true;
     }
 
@@ -99,44 +59,22 @@ namespace Katydid
         KTProcessedTrackData& ptData = data->Of<KTProcessedTrackData>();
         KTPowerFitData& pfData = data->Of< KTPowerFitData>();
         
-        // Set up classifier features
-        fPower = (float)(ptData.GetTotalPower());
-        fSlope = (float)(ptData.GetSlope());
-        fTimeLength = (float)(ptData.GetTimeLength());
-        fAverage = (float)(pfData.GetAverage());
-        fRMS = (float)(pfData.GetRMS());
-        fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
-        fKurtosis = (float)(pfData.GetKurtosis());
-        fSkewness = (float)(pfData.GetSkewness());
-        fCentralPowerFraction = (float)(pfData.GetCentralPowerFraction()); 
-        fNPeaks = (float)(pfData.GetNPeaks());
-        fMaxCentral = (float)(pfData.GetMaximumCentral());
-        fMeanCentral = (float)(pfData.GetMeanCentral());
-        fNormCentral = (float)(pfData.GetNormCentral());
-        fSigmaCentral = (float)(pfData.GetSigmaCentral());
-        
-        typedef dlib::matrix<double,14,1> sample_type;
         sample_type classifierFeatures; // set up 14-dim vector of classification features
-        classifierFeatures(0) = fPower;
-        classifierFeatures(1) = fSlope;
-        classifierFeatures(2) = fTimeLength;
-        classifierFeatures(3) = fAverage;
-        classifierFeatures(4) = fRMS;
-        classifierFeatures(5) = fRMSAwayFromCentral;
-        classifierFeatures(6) = fKurtosis;
-        classifierFeatures(7) = fSkewness;
-        classifierFeatures(8) = fCentralPowerFraction;
-        classifierFeatures(9) = fNPeaks;
-        classifierFeatures(10) = fMaxCentral;
-        classifierFeatures(11) = fMeanCentral;
-        classifierFeatures(12) = fNormCentral;
-        classifierFeatures(13) = fSigmaCentral;
+        classifierFeatures(0) = (double)(ptData.GetTotalPower());
+        classifierFeatures(1) = (double)(ptData.GetSlope());
+        classifierFeatures(2) = (double)(ptData.GetTimeLength());
+        classifierFeatures(3) = (double)(pfData.GetAverage());
+        classifierFeatures(4) = (double)(pfData.GetRMS());
+        classifierFeatures(5) = (double)(pfData.GetRMSAwayFromCentral());
+        classifierFeatures(6) = (double)(pfData.GetKurtosis());
+        classifierFeatures(7) = (double)(pfData.GetSkewness());
+        classifierFeatures(8) = (double)(pfData.GetCentralPowerFraction());
+        classifierFeatures(9) = (double)(pfData.GetNPeaks());
+        classifierFeatures(10) = (double)(pfData.GetMaximumCentral());
+        classifierFeatures(11) = (double)(pfData.GetMeanCentral());
+        classifierFeatures(12) = (double)(pfData.GetNormCentral());
+        classifierFeatures(13) = (double)(pfData.GetSigmaCentral());
         
-        // Some helpful type definitions from dlib
-        typedef dlib::one_vs_all_trainer<dlib::any_trainer< sample_type, double > > ova_trainer;
-        typedef dlib::radial_basis_kernel<sample_type> rbf_kernel;
-        typedef dlib::one_vs_all_decision_function<ova_trainer,dlib::decision_function<rbf_kernel>> decision_funct_type;
-        typedef dlib::normalized_function<decision_funct_type> normalized_decision_funct_type;
         normalized_decision_funct_type decisionFunction; // declare normalized ova decision function for SVM with radial basis kernel
         try
         {
@@ -150,17 +88,30 @@ namespace Katydid
         }
 
         double classificationLabel = decisionFunction(classifierFeatures); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
+        classificationLabel = std::round(classificationLabel); // round to nearest integer for comparison
 
-        if( !ClassifyTrack( data->Of< KTClassifierResultsData >(), classificationLabel) )
+        KTClassifierResultsData& resultData = data->Of< KTClassifierResultsData >();
+        if( classificationLabel == 0 )
         {
-            KTERROR(avlog_hh, "Something went wrong with assigning classification label to track");
-            return;
+            resultData.SetMainCarrierHigh( 1 );
+        }
+        else if( classificationLabel == 1 )
+        {
+            resultData.SetMainCarrierLow( 1 );
+        }
+        else if( classificationLabel == 2 )
+        {
+            resultData.SetSideBand( 1 );
+        }
+        else
+        {
+            KTERROR(avlog_hh, "Could not assign appropriate classification label; something went wrong");
         }
 
         KTINFO(avlog_hh, "Classification finished!");
 
         // Emit signal
-        fClassifySignal( data );
+        fClassifiedSignal( data );
     }
 
 } // namespace Katydid

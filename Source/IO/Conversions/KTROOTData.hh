@@ -133,9 +133,9 @@ namespace Katydid
     class TClassifierResultsData : public TObject
     {
             MEMBERVARIABLE(UInt_t, Component);
-            MEMBERVARIABLE(Int_t, MCH);
-            MEMBERVARIABLE(Int_t, MCL);
-            MEMBERVARIABLE(Int_t, SB);
+            MEMBERVARIABLE(Int_t, MainCarrierHigh);
+            MEMBERVARIABLE(Int_t, MainCarrierLow);
+            MEMBERVARIABLE(Int_t, SideBand);
 
         public:
             TClassifierResultsData();

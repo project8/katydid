@@ -136,3 +136,4 @@ namespace Katydid
 }
 
 #endif /* KTSIDEBANDCORRECTION_HH_ */
+

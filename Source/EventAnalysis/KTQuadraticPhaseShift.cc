@@ -27,7 +27,7 @@ namespace Katydid
     KTQuadraticPhaseShift::KTQuadraticPhaseShift(const std::string& name) :
             KTProcessor(name),
             fSlope(0.),
-            fTSSignal("time-series", this)
+            fTSSignal("ts", this)
     {
         RegisterSlot( "ts", this, &KTQuadraticPhaseShift::SlotFunctionTimeSeries );
         RegisterSlot( "track", this, &KTQuadraticPhaseShift::SlotFunctionTrack );

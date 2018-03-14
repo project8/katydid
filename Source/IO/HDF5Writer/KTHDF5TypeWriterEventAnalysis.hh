@@ -566,9 +566,9 @@ namespace Katydid
         double CentralPowerFraction;
 
         // classification label
-        int MCH;
-        int MCL;
-        int SB; 
+        int MainCarrierHigh;
+        int MainCarrierLow;
+        int SideBand; 
 
     } CRPTData;
 
@@ -613,9 +613,9 @@ namespace Katydid
         "MaximumCentral",
         "RMSAwayFromCentral",
         "CentralPowerFraction",
-        "MCH",
-        "MCL",
-        "SB"
+        "MainCarrierHigh",
+        "MainCarrierLow",
+        "SideBand"
     };
 
     size_t CRPTFieldOffsets[CRPTNFields] = 
@@ -657,9 +657,9 @@ namespace Katydid
         HOFFSET(CRPTData, MaximumCentral),
         HOFFSET(CRPTData, RMSAwayFromCentral),
         HOFFSET(CRPTData, CentralPowerFraction),
-        HOFFSET(CRPTData, MCH),
-        HOFFSET(CRPTData, MCL),
-        HOFFSET(CRPTData, SB)
+        HOFFSET(CRPTData, MainCarrierHigh),
+        HOFFSET(CRPTData, MainCarrierLow),
+        HOFFSET(CRPTData, SideBand)
     };
     H5::PredType CRPTFieldTypes[CRPTNFields] = 
     {
