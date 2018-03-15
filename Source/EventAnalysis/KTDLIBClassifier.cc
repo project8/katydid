@@ -7,9 +7,6 @@
 
 #include "KTDLIBClassifier.hh"
 
-#include "KTProcessedTrackData.hh"
-#include "KTPowerFitData.hh"
-
 namespace Katydid
 {
 

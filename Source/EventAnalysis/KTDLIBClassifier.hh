@@ -11,6 +11,8 @@
 #include "KTProcessor.hh"
 #include "KTData.hh"
 
+#include "KTProcessedTrackData.hh"
+#include "KTPowerFitData.hh"
 #include "KTClassifierResultsData.hh"
 
 #include "KTSlot.hh"
