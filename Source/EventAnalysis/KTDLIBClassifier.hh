@@ -78,7 +78,7 @@ namespace Katydid
             typedef dlib::normalized_function<decision_funct_type> normalized_decision_funct_type;
 
         public:
-            bool ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData );
+            bool ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData, KTClassifierResultsData& resultData );
 
             //***************
             // Signals
@@ -90,7 +90,7 @@ namespace Katydid
             //***************
             // Slots
             //***************
-            Nymph::KTSlotDataTwoTypes< KTProcessedTrackData, KTPowerFitData > fPowerFitSlot;
+            Nymph::KTSlotDataThreeTypes< KTProcessedTrackData, KTPowerFitData, KTClassifierResultsData > fPowerFitSlot;
 
     };
 
