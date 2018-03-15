@@ -9,6 +9,7 @@
 
 #include "KT2ROOT.hh"
 #include "KTAnalyticAssociateData.hh"
+#include "KTBilateralFilteredData.hh"
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
 #include "KTFrequencySpectrumPolar.hh"
@@ -77,6 +78,8 @@ namespace Katydid
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
         fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
+
+        fWriter->RegisterSlot("blf-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteBilateralFilteredFSDataFFTW);
 #ifdef ENABLE_TUTORIAL
         fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar);
         fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW);
@@ -785,6 +788,36 @@ namespace Katydid
         }
         return;
     }
+
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteBilateralFilteredFSDataFFTW(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTBilateralFilteredFSDataFFTW& fsData = data->Of<KTBilateralFilteredFSDataFFTW>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histBLFFSfftw_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
 
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW(Nymph::KTDataPtr data)
     {

@@ -4,6 +4,7 @@
 set (DATA_HEADERFILES
     SpectrumAnalysis/KTAmplitudeDistribution.hh
     SpectrumAnalysis/KTAnalyticAssociateData.hh
+    SpectrumAnalysis/KTBilateralFilteredData.hh
     SpectrumAnalysis/KTCluster1DData.hh
     SpectrumAnalysis/KTCorrelationData.hh
     SpectrumAnalysis/KTCorrelationTSData.hh
@@ -67,6 +68,7 @@ set (DATA_HEADERFILES
 set (DATA_SOURCEFILES
     SpectrumAnalysis/KTAmplitudeDistribution.cc
     SpectrumAnalysis/KTAnalyticAssociateData.cc
+    SpectrumAnalysis/KTBilateralFilteredData.cc
     SpectrumAnalysis/KTCluster1DData.cc
     SpectrumAnalysis/KTCorrelationData.cc
     SpectrumAnalysis/KTCorrelationTSData.cc

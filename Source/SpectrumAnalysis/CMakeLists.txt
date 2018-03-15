@@ -49,12 +49,14 @@ if (FFTW_FOUND)
     set (SPECTRUMANALYSIS_HEADERFILES
         ${SPECTRUMANALYSIS_HEADERFILES}
         KTAnalyticAssociator.hh
+        KTBilateralFilter.hh
         KTConvolution.hh
         KTWignerVille.hh
     )
     set (SPECTRUMANALYSIS_SOURCEFILES
         ${SPECTRUMANALYSIS_SOURCEFILES}
         KTAnalyticAssociator.cc
+        KTBilateralFilter.cc
         KTConvolution.cc
         KTWignerVille.cc
     )
