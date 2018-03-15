@@ -36,7 +36,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData, KTClassifierResultsData& resultData)
+    bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData )
     {
         sample_type classifierFeatures; // set up 14-dim vector of classification features
         classifierFeatures(0) = (double)(ptData.GetTotalPower());
@@ -66,6 +66,8 @@ namespace Katydid
             return false;
         }
 
+
+        KTClassifierResultsData& resultData = pf.Of< KTClassifierResultsData >();
         int classificationLabel = std::round(decisionFunction(classifierFeatures)); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
                                                                                     // round to nearest integer for comparison
 
