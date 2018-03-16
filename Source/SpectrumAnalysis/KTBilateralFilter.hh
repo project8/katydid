@@ -1,7 +1,7 @@
 /**
  @file KTBilateralFilter.hh
  @brief Contains KTBilateralFilter
- @details Applies a direct bilateral filter to time-freq plane
+ @details Applies a direct bilateral filter to time-frequency plane
  @author: N. Buzinsky
  @date: Mar 7, 2018
  */
@@ -34,19 +34,19 @@ namespace Katydid
      @brief Applies a bilateral filter
 
      @details
-     Approximate implementation of a bilateral filter processor.
+     Approximate implementation of a bilateral filter processor: https://en.wikipedia.org/wiki/Bilateral_filter 
 
      Configuration name: "bilateral-filter"
 
      Available configuration values:
-     - "sigmaPixels": double -- width of gaussian spatial
-     - "sigmaRange": double -- width of gaussian for coloring
+     - "sigma-pixels": double -- width of gaussian for averaging, in pixels
+     - "sigma-range": double -- width of gaussian for averaging, in terms of differences in power
 
      Slots:
-     - "str-fs-fftw": void (KTDataPtr) -- Applies a bilateral filter; Requires KTFrequencySpectrumDataFFTW; Adds KTBilateralFilteredFSDataFFTW; Emits signal "fs-fftw"
+     - "str-fs-fftw": void (KTDataPtr) -- Applies a bilateral filter; Requires KTMultiFSDataFFTW; Adds KTBilateralFilteredFSDataFFTW; Emits signal "fs-fftw"
 
      Signals:
-     - "fs-fftw": void (KTDataPtr) -- Emitted upon bilateral filtering; Guarantees KTBilateralFilteredFSDataFFTW.
+     - "fs-fftw": void (KTDataPtr) -- Emitted upon bilateral filtering; Guarantees KTBilateralFilteredFSDataFFTW. 
     */
     class KTBilateralFilter : public Nymph::KTProcessor
     {
@@ -58,8 +58,6 @@ namespace Katydid
 
             MEMBERVARIABLE(double, SigmaPixels);
             MEMBERVARIABLE(double, SigmaRange);
-            int nIters;
-
 
         public:
             bool Filter(KTMultiFSDataFFTW& fsData);
@@ -78,8 +76,10 @@ namespace Katydid
             //***************
 
         private:
-            //Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
             Nymph::KTSlotDataOneType< KTMultiFSDataFFTW > fFSFFTWSlot;
+            double GaussianWeightRange(const fftw_complex &I1, const fftw_complex &I2) const; //Weight due to difference in powers between pixels
+            double GaussianWeightPixels(const double &i, const double &j,const double &k,const double &l) const; //Weight between pixels at (i,j) and (k,l) due to spacing
+
 
     };
 
