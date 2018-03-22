@@ -48,6 +48,7 @@ namespace Katydid
                     fFreqCandidateTree(NULL),
                     fWaterfallCandidateTree(NULL),
                     fSparseWaterfallCandidateTree(NULL),
+                    fProcessedMPTTree(NULL),
                     fProcessedTrackTree(NULL),
                     fMultiPeakTrackTree(NULL),
                     fMultiTrackEventTree(NULL),

@@ -15,8 +15,6 @@
 
 namespace Katydid
 {
-    
-    KTLOGGER(avlog_hh, "KTQuadraticPhaseShift.hh");
 
     class KTSliceHeader;
     class KTProcessedTrackData;

@@ -165,10 +165,10 @@ namespace Katydid
     double KTLinearDensityProbeFit::FindIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width )
     {
         double alpha = fMinFrequency;
-        double bestAlpha = 0., bestError = 0., error = 0.;
+        double bestAlpha = 0., bestError = 0.;
         while( alpha <= fMaxFrequency )
         {
-            error = 0.;
+            double error = 0.;
 
             // Calculate the associated error to the current value of alpha
             for( KTDiscriminatedPoints2DData::SetOfPoints::const_iterator it = pts.GetSetOfPoints(0).begin(); it != pts.GetSetOfPoints(0).end(); ++it )
@@ -338,7 +338,6 @@ namespace Katydid
         // Discrete Cosine Transform (real -> real) of type I
         // Explicit, not fast (i.e. n^2 operations)
         vector< double > fourier(xWindow);
-        double temp = 0.;
         int sign = 1;
         for( int xBin = 0; xBin < xWindow; ++xBin )
         {
@@ -348,7 +347,7 @@ namespace Katydid
                 cumulative += weighted[xxBin] * cos( xxBin * xBin * KTMath::Pi() / (xWindow - 1) );
             }
 
-            temp = 0.5 * (weighted[0] + double(sign) * weighted[xWindow - 1]) + cumulative;
+            double temp = 0.5 * (weighted[0] + double(sign) * weighted[xWindow - 1]) + cumulative;
             fourier[xBin] = temp * temp;
             sign *= -1;
         }
@@ -665,11 +664,10 @@ namespace Katydid
     bool KTLinearDensityProbeFit::PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component)
     {
         double alpha = fMinFrequency;
-        double bestAlpha = 0.;
-
+        
         KTINFO(evlog, "Performing density probe test with fProbeWidth = " << fProbeWidth << " and fStepSize = " << fStepSize);
 
-        bestAlpha = FindIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
+        double bestAlpha = FindIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
 
         return true;

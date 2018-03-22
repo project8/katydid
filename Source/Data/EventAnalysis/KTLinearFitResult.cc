@@ -22,7 +22,7 @@ namespace Katydid
 
     KTLinearFitResult::KTLinearFitResult(const KTLinearFitResult& orig) :
             KTExtensibleData< KTLinearFitResult >(orig),
-            
+            fComponent(orig.fComponent),
             fFitData(orig.fFitData)
     {
     }

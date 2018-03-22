@@ -18,6 +18,8 @@ namespace Katydid
     KTDLIBClassifier::KTDLIBClassifier(const std::string& name) :
             KTProcessor(name),
             fDFFile("foo_df.dat"),
+            fDecisionFunction(),
+            fIsInitialized(false),
             fClassifiedSignal("classified", this),
             fPowerFitSlot("power-fit", this, &KTDLIBClassifier::ClassifyTrack, &fClassifiedSignal)
     {
@@ -36,8 +38,33 @@ namespace Katydid
         return true;
     }
 
+    bool KTDLIBClassifier::Initialize()
+    {
+        if( ! fIsInitialized )
+        {
+            try
+            {
+                KTDEBUG(avlog_hh,"DF File = " << fDFFile);
+                dlib::deserialize(fDFFile) >> fDecisionFunction; // load train decision function
+                fIsInitialized = true;
+            }
+            catch(dlib::serialization_error& e)
+            {
+                KTERROR(avlog_hh, "Unable to read the decision function from file. Aborting\n" + e.info);
+                fIsInitialized = false;
+            }
+        }
+
+        return fIsInitialized;
+    }
+
     bool KTDLIBClassifier::ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData )
     {
+        if( ! Initialize() )
+        {
+            return false;
+        }
+
         sample_type classifierFeatures; // set up 14-dim vector of classification features
         classifierFeatures(0) = (double)(ptData.GetTotalPower());
         classifierFeatures(1) = (double)(ptData.GetSlope());
@@ -54,17 +81,7 @@ namespace Katydid
         classifierFeatures(12) = (double)(pfData.GetNormCentral());
         classifierFeatures(13) = (double)(pfData.GetSigmaCentral());
         
-        normalized_decision_funct_type decisionFunction; // declare normalized ova decision function for SVM with radial basis kernel
-        try
-        {
-            KTDEBUG(avlog_hh,"DF File = " << fDFFile);
-            dlib::deserialize(fDFFile) >> decisionFunction; // load train decision function
-        }
-        catch(...)
-        {
-            KTERROR(avlog_hh, "Unable to read the decision function from file. Aborting");
-            return false;
-        }
+        
 
 
         KTClassifierResultsData& resultData = pfData.Of< KTClassifierResultsData >();

@@ -77,7 +77,11 @@ namespace Katydid
             typedef dlib::one_vs_all_decision_function<ova_trainer,dlib::decision_function<rbf_kernel>> decision_funct_type;
             typedef dlib::normalized_function<decision_funct_type> normalized_decision_funct_type;
 
+            normalized_decision_funct_type fDecisionFunction;
+            bool fIsInitialized;
+
         public:
+            bool Initialize();
             bool ClassifyTrack( KTProcessedTrackData& ptData, KTPowerFitData& pfData );
 
             //***************
