@@ -6,13 +6,11 @@
  */
 
 #include "KTLogger.hh"
-#include "KTROOTData.hh"
+#include "CROOTData.hh"
 
 #include "TH1.h"
 #include "TClass.h"
 #include "TROOT.h"
-
-using namespace Katydid;
 
 KTLOGGER(testlog, "TestROOTDictionary");
 
@@ -30,7 +28,7 @@ KTLOGGER(testlog, "TestROOTDictionary");
 
 int main()
 {
-    TProcessedTrackData data;
+    Cicada::TProcessedTrackData data;
     KTWARN(testlog, "proc data class name: " << data.ClassName());
 
     TH1D hist("hist", "hist", 10, 0., 1.);
@@ -43,8 +41,8 @@ int main()
 
     TESTCLASS("TClass");
     TESTCLASS("TH1D");
-    TESTCLASS("Katydid::TProcessedTrackData");
-    TESTCLASS("Katydid::TMultiTrackEventData");
+    TESTCLASS("Cicada::TProcessedTrackData");
+    TESTCLASS("Cicada::TMultiTrackEventData");
 
     return 0;
 }

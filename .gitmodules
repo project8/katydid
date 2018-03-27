@@ -4,3 +4,6 @@
 [submodule "Nymph"]
 	path = Nymph
 	url = https://github.com/project8/nymph
+[submodule "Cicada"]
+	path = Cicada
+	url = https://github.com/project8/cicada

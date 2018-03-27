@@ -66,6 +66,8 @@ New Features:
 * Added the ability to write out sparse spectrograms from KTKDTreeData in KTBasicROOTWriter
     * Slot is "kd-tree-ss"
     * Validated by comparing to KDTree data written to a ROOT TTree
+* Added and implemented the use of the Cicada library for ROOT TTree writing.
+    * Validated by adding and running TestROOTTreeWritingViaCicada.cc
   
 Fixes:
 ''''''

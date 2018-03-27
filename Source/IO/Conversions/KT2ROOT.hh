@@ -18,6 +18,12 @@ class TH1I;
 class TH1D;
 class TH2D;
 
+namespace Cicada
+{
+    class TProcessedTrackData;
+    class TMultiTrackEventData;
+}
+
 namespace Katydid
 {
     
@@ -29,6 +35,8 @@ namespace Katydid
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
     class KTPowerFitData;
+    class KTProcessedTrackData;
+    class KTMultiTrackEventData;
 
     class KT2ROOT
     {
@@ -108,6 +116,22 @@ namespace Katydid
             //***************
 
             static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName);
+
+
+            //**********************
+            // Processed Track Data
+            //**********************
+
+            static void LoadProcTrackData(const KTProcessedTrackData& ptData, Cicada::TProcessedTrackData& rootPTData);
+            static void UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData);
+
+
+            //************************
+            // Multi-Track Event Data
+            //************************
+
+            static void LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData);
+            static void UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData);
 
     };
 
