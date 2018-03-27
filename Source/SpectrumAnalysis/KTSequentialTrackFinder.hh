@@ -81,6 +81,7 @@ namespace Katydid
             enum class slopeMethod
             {
                 weighted_first_point_ref,
+                weighted_last_point_ref,
                 weighted,
                 unweighted
             };
@@ -146,6 +147,7 @@ namespace Katydid
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
             void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
             void CalculateSlope(LineRef& Line);
+            void CalculateSlopeLastRef(LineRef& Line);
             void CalculateWeightedSlope(LineRef& Line);
             void CalculateUnweightedSlope(LineRef& Line);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );

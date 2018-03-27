@@ -128,6 +128,10 @@ namespace Katydid
             {
                 SetSlopeMethod(slopeMethod::weighted_first_point_ref);
             }
+            if (node->get_value("slope-method") == "weighted_last_point_ref")
+            {
+                SetSlopeMethod(slopeMethod::weighted_last_point_ref);
+            }
             else if (node->get_value("slope-method") == "weighted")
             {
                  SetSlopeMethod(slopeMethod::weighted);
@@ -144,6 +148,10 @@ namespace Katydid
         if (fSlopeMethod == slopeMethod::weighted_first_point_ref)
         {
             fCalcSlope = &KTSequentialTrackFinder::CalculateSlope;
+        }
+        if (fSlopeMethod == slopeMethod::weighted_last_point_ref)
+        {
+            fCalcSlope = &KTSequentialTrackFinder::CalculateSlopeLastRef;
         }
         if (fSlopeMethod == slopeMethod::weighted)
         {
@@ -611,6 +619,45 @@ namespace Katydid
                 if (pointIt->fPointFreq > Line.fStartFrequency)
                 {
                     weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
+                }
+            }
+            Line.fSlope = weightedSlope/wSum;
+        }
+        else
+        {
+            Line.fSlope = fInitialSlope;
+        }
+        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
+    }
+
+    void KTSequentialTrackFinder::CalculateSlopeLastRef(LineRef& Line)
+    {
+
+        //KTDEBUG(seqlog, "Calculating line slope");
+        double slope = 0.0;
+        double weightedSlope = 0.0;
+        double wSum = 0.0;
+        Line.fNPoints = Line.fLinePoints.size();
+
+        if (Line.fNPoints > 10)
+        {
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.back(); ++pointIt)
+            {
+                if (pointIt->fPointFreq > Line.fStartFrequency)
+                {
+                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
+                }
+            }
+        }
+        else if (Line.fNPoints > 1)
+        {
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.back(); ++pointIt)
+            {
+                if (pointIt->fPointFreq > Line.fStartFrequency)
+                {
+                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
                 }
             }
