@@ -7,6 +7,7 @@
 
 #include "KTROOTTreeTypeWriterEventAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTFrequencyCandidate.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
@@ -59,6 +60,7 @@ namespace Katydid
                     fWaterfallCandidateData(),
                     fSparseWaterfallCandidateData(),
                     fProcessedTrackDataPtr(NULL),
+                    fProcessedMPTDataPtr(NULL),
                     fMultiPeakTrackData(),
                     fMultiTrackEventDataPtr(NULL),
                     fClassifiedEventDataPtr(NULL),
@@ -421,7 +423,7 @@ namespace Katydid
             fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
         }
 
-        fProcessedTrackDataPtr->Load(ptData);
+        KT2ROOT::LoadProcTrackData(ptData, *fProcessedTrackDataPtr);
 
         fProcessedTrackTree->Fill();
 
@@ -453,9 +455,9 @@ namespace Katydid
         }
         fWriter->AddTree(fProcessedTrackTree);
 
-        //fProcessedTrackDataPtr = new TProcessedTrackData();
+        //fProcessedTrackDataPtr = new Cicada::TProcessedTrackData();
 
-        fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
+        fProcessedTrackTree->Branch("Track", "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
 
         return true;
     }
@@ -636,7 +638,7 @@ namespace Katydid
             }
         }
 
-        fMultiTrackEventDataPtr->Load(mteData);
+        KT2ROOT::LoadMultiTrackEventData(mteData, *fMultiTrackEventDataPtr);
 
         fMultiTrackEventTree->Fill();
 
@@ -668,9 +670,9 @@ namespace Katydid
         }
         fWriter->AddTree(fMultiTrackEventTree);
 
-        fMultiTrackEventDataPtr = new TMultiTrackEventData();
+        fMultiTrackEventDataPtr = new Cicada::TMultiTrackEventData();
 
-        fMultiTrackEventTree->Branch("Event", "Katydid::TMultiTrackEventData", &fMultiTrackEventDataPtr);
+        fMultiTrackEventTree->Branch("Event", "Cicada::TMultiTrackEventData", &fMultiTrackEventDataPtr);
 
         return true;
     }

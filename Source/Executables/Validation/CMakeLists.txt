@@ -119,6 +119,7 @@ if (Katydid_ENABLE_TESTING)
             KatydidIO
             KatydidTransform
             KatydidSpectrumAnalysis
+            KatydidEventAnalysis
         )
         
         set( PROGRAMS
@@ -126,6 +127,7 @@ if (Katydid_ENABLE_TESTING)
            TestBasicROOTFileWriter
            TestGainVariation
            TestROOTDictionary
+           TestROOTTreeWritingViaCicada
            TestROOTWriterFileManager
            TestROOTWritingToSameFile
         )

@@ -18,6 +18,14 @@ class TH1I;
 class TH1D;
 class TH2D;
 
+namespace Cicada
+{
+    class TProcessedTrackData;
+    class TProcessedMPTData;
+    class TMultiTrackEventData;
+    class TClassifiedEventData;
+}
+
 namespace Katydid
 {
     
@@ -29,6 +37,10 @@ namespace Katydid
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
     class KTPowerFitData;
+    class KTProcessedTrackData;
+    class KTProcessedMPTData;
+    class KTMultiTrackEventData;
+    class KTClassifiedEventData;
 
     class KT2ROOT
     {
@@ -108,6 +120,39 @@ namespace Katydid
             //***************
 
             static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName);
+
+
+            //**********************
+            // Processed Track Data
+            //**********************
+
+            static void LoadProcTrackData(const KTProcessedTrackData& ptData, Cicada::TProcessedTrackData& rootPTData);
+            static void UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData);
+
+
+            //********************
+            // Processed MPT Data
+            //********************
+
+            static void LoadProcMPTData(const KTProcessedMPTData& ptData, Cicada::TProcessedMPTData& rootPTData);
+            static void UnloadProcMPTData(KTProcessedMPTData& ptData, const Cicada::TProcessedMPTData& rootPTData);
+
+
+            //************************
+            // Multi-Track Event Data
+            //************************
+
+            static void LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData);
+            static void UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData);
+
+
+            //***********************
+            // Classified Event Data
+            //***********************
+
+            static void LoadClassifiedEventData(const KTClassifiedEventData& mteData, Cicada::TClassifiedEventData& rootMTEData);
+            static void UnloadClassifiedEventData(KTClassifiedEventData& mteData, const Cicada::TClassifiedEventData& rootMTEData);
+
 
     };
 
