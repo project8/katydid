@@ -605,7 +605,7 @@ namespace Katydid
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq > Line.fStartFrequency)
+                if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
                     weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
@@ -616,7 +616,7 @@ namespace Katydid
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq > Line.fStartFrequency)
+                if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
                     weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
@@ -642,9 +642,9 @@ namespace Katydid
 
         if (Line.fNPoints > 10)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.back(); ++pointIt)
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq > Line.fStartFrequency)
+                if (pointIt->fPointFreq < Line.fEndFrequency)
                 {
                     weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
@@ -653,9 +653,9 @@ namespace Katydid
         }
         else if (Line.fNPoints > 1)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.back(); ++pointIt)
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq > Line.fStartFrequency)
+                if (pointIt->fPointFreq < Line.fEndFrequency)
                 {
                     weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
