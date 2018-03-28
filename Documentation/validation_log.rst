@@ -68,6 +68,11 @@ New Features:
     * Validated by comparing to KDTree data written to a ROOT TTree
 * Added and implemented the use of the Cicada library for ROOT TTree writing.
     * Validated by adding and running TestROOTTreeWritingViaCicada.cc
+* Update of sequential track building
+    * Configurable slope method
+    * Configurable number of points used by slope methods
+    * Different frequency acceptance can be set for second point in line
+    * Validation by processing test run (3004) with newly available settings
   
 Fixes:
 ''''''
