@@ -52,8 +52,10 @@ namespace Katydid
      - "search-radius": before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
      - "converge-delta": defines when convergence has been reached (in bins)
      - "frequency-acceptance": maximum allowed frequency distance of point to an extrapolated line (in Hz)
+     - "slope-method": method to update the line slope after point collection
      - "initial-frequency-acceptance": if the line that a point is being compared to, only has a single point so far, this is the accepted frequency acceptance. Default isfrequency_acceptance
      - "initial-slope": if a line has only one point, this is the line's slope
+     - "n-slope-points": maximum number of points to include in the slope calculation
      - "min-points": a line only gets converted to a track if it has collected more than this many number of points
      - "min-slope": a line only gets converted to a track if its slope is > than this slope (in Hz/s)
      - "apply-power-cut" (bool): if true, a power threshold will be applied to a line before converting it to a processed track
@@ -82,7 +84,6 @@ namespace Katydid
             {
                 weighted_first_point_ref,
                 weighted_last_point_ref,
-                weighted,
                 unweighted
             };
 
@@ -147,9 +148,9 @@ namespace Katydid
             void UpdateLinePoint(Point& point, KTPowerSpectrum& slice);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
             void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
-            void CalculateSlope(LineRef& Line);
+            void CalculateSlopeFirstRef(LineRef& Line);
             void CalculateSlopeLastRef(LineRef& Line);
-            void CalculateWeightedSlope(LineRef& Line);
+            //void CalculateWeightedSlope(LineRef& Line);
             void CalculateUnweightedSlope(LineRef& Line);
             void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef line);

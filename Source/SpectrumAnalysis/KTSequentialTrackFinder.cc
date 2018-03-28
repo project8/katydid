@@ -51,7 +51,7 @@ namespace Katydid
             fApplyDensityCut(false),
             fPowerThreshold(0.0),
             fDensityThreshold(0.0),
-            fCalcSlope(&KTSequentialTrackFinder::CalculateSlope),
+            fCalcSlope(&KTSequentialTrackFinder::CalculateSlopeFirstRef),
             fTrackSignal("pre-candidate", this),
             fClusterDoneSignal("clustering-done", this),
             //fGainVarSlot("gv", this, &KTSequentialTrackFinder::SetPreCalcGainVar),
@@ -137,10 +137,10 @@ namespace Katydid
             {
                 SetSlopeMethod(slopeMethod::weighted_last_point_ref);
             }
-            else if (node->get_value("slope-method") == "weighted")
-            {
-                 SetSlopeMethod(slopeMethod::weighted);
-            }
+            //else if (node->get_value("slope-method") == "weighted")
+            //{
+            //     SetSlopeMethod(slopeMethod::weighted);
+            //}
             else if (node->get_value("slope-method") == "unweighted")
                 {
                  SetSlopeMethod(slopeMethod::unweighted);
@@ -152,16 +152,16 @@ namespace Katydid
         }
         if (fSlopeMethod == slopeMethod::weighted_first_point_ref)
         {
-            fCalcSlope = &KTSequentialTrackFinder::CalculateSlope;
+            fCalcSlope = &KTSequentialTrackFinder::CalculateSlopeFirstRef;
         }
         if (fSlopeMethod == slopeMethod::weighted_last_point_ref)
         {
             fCalcSlope = &KTSequentialTrackFinder::CalculateSlopeLastRef;
         }
-        if (fSlopeMethod == slopeMethod::weighted)
-        {
-            fCalcSlope = &KTSequentialTrackFinder::CalculateWeightedSlope;
-        }
+        //if (fSlopeMethod == slopeMethod::weighted)
+        //{
+        //    fCalcSlope = &KTSequentialTrackFinder::CalculateWeightedSlope;
+        //}
         if (fSlopeMethod == slopeMethod::unweighted)
         {
             fCalcSlope = &KTSequentialTrackFinder::CalculateUnweightedSlope;
@@ -539,7 +539,7 @@ namespace Katydid
         KTDEBUG(stflog, "Now there should be no lines left over " << fActiveLines.empty());
     }
 
-    void KTSequentialTrackFinder::CalculateWeightedSlope(LineRef& Line)
+    /*void KTSequentialTrackFinder::CalculateWeightedSlope(LineRef& Line)
     {
         double SumX = 0.0;
         double SumY = 0.0;
@@ -574,7 +574,7 @@ namespace Katydid
         {
             Line.fSlope = fInitialSlope;
         }
-    }
+    }*/
     void KTSequentialTrackFinder::CalculateUnweightedSlope(LineRef& Line)
     {
 
@@ -597,7 +597,7 @@ namespace Katydid
         KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.fSlope);
     }
 
-    void KTSequentialTrackFinder::CalculateSlope(LineRef& Line)
+    void KTSequentialTrackFinder::CalculateSlopeFirstRef(LineRef& Line)
     {
 
         //KTDEBUG(seqlog, "Calculating line slope");
