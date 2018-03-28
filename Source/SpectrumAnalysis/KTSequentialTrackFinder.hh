@@ -107,6 +107,7 @@ namespace Katydid
             // Parameters for point collection
             MEMBERVARIABLE(double, InitialSlope);
             MEMBERVARIABLE(slopeMethod, SlopeMethod);
+            MEMBERVARIABLE(unsigned, NSlopePoints);
             MEMBERVARIABLE(double, FrequencyAcceptance);
             MEMBERVARIABLE(double, InitialFrequencyAcceptance);
             MEMBERVARIABLE(double, TimeGapTolerance);

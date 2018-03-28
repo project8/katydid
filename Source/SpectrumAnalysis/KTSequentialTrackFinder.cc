@@ -36,6 +36,7 @@ namespace Katydid
             fMinPoints(3),
             fMinSlope(0.0),
             fInitialSlope(3.0*pow(10,8)),
+            fNSlopePoints(10),
             fMinBin(0),
             fMaxBin(1),
             fBinWidth(0.0),
@@ -121,6 +122,10 @@ namespace Katydid
         {
             SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
             SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
+        }
+        if (node->has("n-slope-points"))
+        {
+            SetNSlopePoints(node->get_value("n-slope-points", GetNSlopePoints()));
         }
         if (node->has("slope-method"))
         {
@@ -601,7 +606,7 @@ namespace Katydid
         double wSum = 0.0;
         Line.fNPoints = Line.fLinePoints.size();
 
-        if (Line.fNPoints > 10)
+        if (Line.fNPoints > fNSlopePoints)
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
@@ -640,11 +645,11 @@ namespace Katydid
         double wSum = 0.0;
         Line.fNPoints = Line.fLinePoints.size();
 
-        if (Line.fNPoints > 10)
+        if (Line.fNPoints > fNSlopePoints)
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq < Line.fEndFrequency)
+                if (pointIt->fPointFreq != Line.fEndFrequency)
                 {
                     weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
@@ -655,7 +660,7 @@ namespace Katydid
         {
             for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq < Line.fEndFrequency)
+                if (pointIt->fPointFreq != Line.fEndFrequency)
                 {
                     weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
                     wSum += pointIt->fAmplitude;
