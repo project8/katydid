@@ -563,10 +563,10 @@ namespace Katydid
                    SumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq * weight *weight;
                    SumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC * weight * weight;
             }
-            SumX = SumX/Line.fAmplitudeSum;
-            SumY = SumY/Line.fAmplitudeSum;
-            SumXY = SumXY/(Line.fAmplitudeSum*Line.fAmplitudeSum);
-            SumXX = SumXX/(Line.fAmplitudeSum*Line.fAmplitudeSum);
+            //SumX = SumX/Line.fAmplitudeSum;
+            //SumY = SumY/Line.fAmplitudeSum;
+            //SumXY = SumXY/(Line.fAmplitudeSum*Line.fAmplitudeSum);
+            //SumXX = SumXX/(Line.fAmplitudeSum*Line.fAmplitudeSum);
             Line.fSlope = (Line.fNPoints * SumXY - SumX * SumY)/(SumXX * Line.fNPoints - SumX * SumX);
             KTDEBUG( stflog, "Weighted slope method. New slope "<<Line.fSlope);
         }
@@ -608,7 +608,7 @@ namespace Katydid
 
         if (Line.fNPoints > fNSlopePoints)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
                 if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
@@ -616,6 +616,7 @@ namespace Katydid
                     wSum += pointIt->fAmplitude;
                 }
             }
+            Line.fSlope = weightedSlope/wSum;
         }
         else if (Line.fNPoints > 1)
         {
@@ -647,7 +648,7 @@ namespace Katydid
 
         if (Line.fNPoints > fNSlopePoints)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - 10; pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
                 if (pointIt->fPointFreq != Line.fEndFrequency)
                 {
@@ -655,6 +656,7 @@ namespace Katydid
                     wSum += pointIt->fAmplitude;
                 }
             }
+            Line.fSlope = weightedSlope/wSum;
         }
         else if (Line.fNPoints > 1)
         {
@@ -672,6 +674,6 @@ namespace Katydid
         {
             Line.fSlope = fInitialSlope;
         }
-        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
+        KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.fSlope);
     }
 } /* namespace Katydid */
