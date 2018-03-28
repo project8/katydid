@@ -601,7 +601,6 @@ namespace Katydid
     {
 
         //KTDEBUG(seqlog, "Calculating line slope");
-        double slope = 0.0;
         double weightedSlope = 0.0;
         double wSum = 0.0;
         Line.fNPoints = Line.fLinePoints.size();
@@ -641,7 +640,6 @@ namespace Katydid
     {
 
         //KTDEBUG(seqlog, "Calculating line slope");
-        double slope = 0.0;
         double weightedSlope = 0.0;
         double wSum = 0.0;
         Line.fNPoints = Line.fLinePoints.size();
