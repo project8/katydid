@@ -71,6 +71,11 @@ New Features:
     * Validated by comparing to KDTree data written to a ROOT TTree
 * Added and implemented the use of the Cicada library for ROOT TTree writing.
     * Validated by adding and running TestROOTTreeWritingViaCicada.cc
+* Classifier and Rotate-and-Project Updates
+    * Added data structure in the event builder to store the KTDataPtr associated to each track. This allows the propagation of other data objects (specifically of interest are the classifier calculations) through the event builder
+    * Added classifiers built on TMVA and DLIB libraries
+    * Added a slot in the ROOT Tree writer to simultaneously write tracks and classifier results within each event
+    * Moved ROOT-based IO classes to submodule Cicada
   
 Fixes:
 ''''''
