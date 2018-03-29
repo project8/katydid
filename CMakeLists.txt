@@ -40,6 +40,7 @@ option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
 option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
 option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
+option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
@@ -141,7 +142,7 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 6.00 COMPONENTS Gui Spectrum)
+    find_package (ROOT 6.00 COMPONENTS Gui Spectrum TMVA)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)
@@ -191,6 +192,21 @@ if (EIGEN3_FOUND)
    message (STATUS "Eigen found.")
    include_directories (${EIGEN3_INCLUDE_DIR})
 endif (EIGEN3_FOUND)
+
+# dlib
+if (Katydid_USE_DLIB)
+    find_package(DLIB)
+endif (Katydid_USE_DLIB)
+if (DLIB_FOUND)
+    message (STATUS "DLIB include dir: ${DLIB_INCLUDE_DIR}")
+    message (STATUS "DLIB libraries: ${DLIB_LIBRARIES}")
+    add_definitions(-DUSE_DLIB)
+    include_directories (${DLIB_INCLUDE_DIR})
+    pbuilder_add_ext_libraries (${DLIB_LIBRARIES})
+else (DLIB_FOUND)
+    message (STATUS "Building without DLIB")
+    remove_definitions(-DUSE_DLIB)
+endif (DLIB_FOUND)
 
 # OpenMP
 #find_package (OpenMP)

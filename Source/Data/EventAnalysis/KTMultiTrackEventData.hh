@@ -75,6 +75,7 @@ namespace Katydid
             //const KTProcessedTrackData& GetTrack(unsigned id) const;
             //KTProcessedTrackData& GetTrack(unsigned id);
 
+            void AddTrack(const AllTrackData& track);
             void AddTrack(const KTProcessedTrackData& track);
             /// Add a collection of tracks to the next EventSequenceID
             void AddTracks(TrackSetCItSet tracks);
@@ -160,7 +161,6 @@ namespace Katydid
         }
 
     };
-
 
     class KTMultiPeakTrackData : public Nymph::KTExtensibleData< KTMultiPeakTrackData >
     {

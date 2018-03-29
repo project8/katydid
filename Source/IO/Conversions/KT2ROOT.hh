@@ -20,13 +20,16 @@ class TH2D;
 
 namespace Cicada
 {
+    class TClassifierResultsData;
     class TProcessedTrackData;
+    class TProcessedMPTData;
+    class TMTEWithClassifierResultsData;
     class TMultiTrackEventData;
 }
 
 namespace Katydid
 {
-    
+    class KTClassifierResultsData;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumVariance;
@@ -36,7 +39,9 @@ namespace Katydid
     class KTTimeSeriesReal;
     class KTPowerFitData;
     class KTProcessedTrackData;
+    class KTProcessedMPTData;
     class KTMultiTrackEventData;
+    class KTClassifiedEventData;
 
     class KT2ROOT
     {
@@ -126,12 +131,37 @@ namespace Katydid
             static void UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData);
 
 
+            //*************************
+            // Classifier Results Data
+            //*************************
+
+            static void LoadClassifierResultsData(const KTClassifierResultsData& crData, Cicada::TClassifierResultsData& rootCRData);
+            static void UnloadClassifierResultsData(KTClassifierResultsData& crData, const Cicada::TClassifierResultsData& rootCRData);
+
+
+            //********************
+            // Processed MPT Data
+            //********************
+
+            static void LoadProcMPTData(const KTProcessedMPTData& ptData, Cicada::TProcessedMPTData& rootPTData);
+            static void UnloadProcMPTData(KTProcessedMPTData& ptData, const Cicada::TProcessedMPTData& rootPTData);
+
+
             //************************
             // Multi-Track Event Data
             //************************
 
             static void LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData);
             static void UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData);
+
+
+            //**********************************
+            // MTE Data with Classifier Results
+            //**********************************
+
+            static void LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData);
+            static void UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData);
+
 
     };
 

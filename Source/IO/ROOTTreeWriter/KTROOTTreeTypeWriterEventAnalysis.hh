@@ -12,8 +12,6 @@
 
 #include "KTData.hh"
 
-#include "CROOTData.hh"
-
 #include "Rtypes.h"
 
 #include <vector>
@@ -22,6 +20,14 @@ class TGraph;
 class TGraph2D;
 class TH2D;
 class TTree;
+
+namespace Cicada
+{
+    class TProcessedTrackData;
+    class TProcessedMPTData;
+    class TMultiTrackEventData;
+    class TMTEWithClassifierResultsData;
+}
 
 namespace Katydid
 {
@@ -97,7 +103,7 @@ namespace Katydid
 
     struct TLinearFitResult
     {
-        UInt_t fComponent;
+        UInt_t fFitNumber;
         Double_t fSlope;
         Double_t fIntercept;
         Double_t fStartingFrequency;
@@ -116,7 +122,6 @@ namespace Katydid
 
     struct TPowerFitData
     {
-        UInt_t fComponent;
 /*
         Double_t fScale;
         Double_t fBackground;
@@ -158,7 +163,7 @@ namespace Katydid
         Double_t fMaximumCentral;
 
         Double_t fRMSAwayFromCentral;
-        Double_t fCentralPowerRatio;
+        Double_t fCentralPowerFraction;
 
         Double_t fTrackIntercept;
     };
@@ -176,9 +181,11 @@ namespace Katydid
             void WriteFrequencyCandidates(Nymph::KTDataPtr data);
             void WriteWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+            void WriteProcessedMPT(Nymph::KTDataPtr data);
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
+            void WriteMTEWithClassifierResults(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
             void WritePowerFitData(Nymph::KTDataPtr data);
 
@@ -186,9 +193,11 @@ namespace Katydid
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
+            TTree* GetProcessedMPTTree() const;
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
+            TTree* GetMTEWithClassifierResultsTree() const;
             TTree* GetLinearFitResultTree() const;
             TTree* GetPowerFitDataTree() const;
 
@@ -196,18 +205,22 @@ namespace Katydid
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
+            bool SetupProcessedMPTTree();
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
+            bool SetupMTEWithClassifierResultsTree();
             bool SetupLinearFitResultTree();
             bool SetupPowerFitDataTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
+            TTree* fProcessedMPTTree;
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
+            TTree* fMTEWithClassifierResultsTree;
             TTree* fLinearFitResultTree;
             TTree* fPowerFitDataTree;
 
@@ -215,8 +228,10 @@ namespace Katydid
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
             Cicada::TProcessedTrackData* fProcessedTrackDataPtr;
+            Cicada::TProcessedMPTData* fProcessedMPTDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
             Cicada::TMultiTrackEventData* fMultiTrackEventDataPtr;
+            Cicada::TMTEWithClassifierResultsData* fMTEWithClassifierResultsDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
 
@@ -237,6 +252,11 @@ namespace Katydid
         return fSparseWaterfallCandidateTree;
     }
 
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedMPTTree() const
+    {
+        return fProcessedMPTTree;
+    }
+
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedTrackTree() const
     {
         return fProcessedTrackTree;
@@ -250,6 +270,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMultiTrackEventTree() const
     {
         return fMultiTrackEventTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMTEWithClassifierResultsTree() const
+    {
+        return fMTEWithClassifierResultsTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetLinearFitResultTree() const
