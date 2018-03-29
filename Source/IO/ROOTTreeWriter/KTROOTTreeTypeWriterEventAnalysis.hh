@@ -12,10 +12,6 @@
 
 #include "KTData.hh"
 
-#include "CROOTData.hh"
-#include "CProcessedMPTData.hh"
-#include "CClassifiedEventData.hh"
-
 #include "Rtypes.h"
 
 #include <vector>
@@ -24,6 +20,14 @@ class TGraph;
 class TGraph2D;
 class TH2D;
 class TTree;
+
+namespace Cicada
+{
+    class TProcessedTrackData;
+    class TProcessedMPTData;
+    class TMultiTrackEventData;
+    class TMTEWithClassifierResultsData;
+}
 
 namespace Katydid
 {
@@ -181,7 +185,7 @@ namespace Katydid
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
-            void WriteClassifiedEvent(Nymph::KTDataPtr data);
+            void WriteMTEWithClassifierResults(Nymph::KTDataPtr data);
             void WriteLinearFitResultData(Nymph::KTDataPtr data);
             void WritePowerFitData(Nymph::KTDataPtr data);
 
@@ -193,7 +197,7 @@ namespace Katydid
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
-            TTree* GetClassifiedEventTree() const;
+            TTree* GetMTEWithClassifierResultsTree() const;
             TTree* GetLinearFitResultTree() const;
             TTree* GetPowerFitDataTree() const;
 
@@ -205,7 +209,7 @@ namespace Katydid
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
-            bool SetupClassifiedEventTree();
+            bool SetupMTEWithClassifierResultsTree();
             bool SetupLinearFitResultTree();
             bool SetupPowerFitDataTree();
 
@@ -216,7 +220,7 @@ namespace Katydid
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
-            TTree* fClassifiedEventTree;
+            TTree* fMTEWithClassifierResultsTree;
             TTree* fLinearFitResultTree;
             TTree* fPowerFitDataTree;
 
@@ -227,7 +231,7 @@ namespace Katydid
             Cicada::TProcessedMPTData* fProcessedMPTDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
             Cicada::TMultiTrackEventData* fMultiTrackEventDataPtr;
-            Cicada::TClassifiedEventData* fClassifiedEventDataPtr;
+            Cicada::TMTEWithClassifierResultsData* fMTEWithClassifierResultsDataPtr;
             TLinearFitResult fLineFitData;
             TPowerFitData fPowerFitData;
 
@@ -268,9 +272,9 @@ namespace Katydid
         return fMultiTrackEventTree;
     }
 
-    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetClassifiedEventTree() const
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetMTEWithClassifierResultsTree() const
     {
-        return fClassifiedEventTree;
+        return fMTEWithClassifierResultsTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetLinearFitResultTree() const

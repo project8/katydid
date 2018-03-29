@@ -20,15 +20,16 @@ class TH2D;
 
 namespace Cicada
 {
+    class TClassifierResultsData;
     class TProcessedTrackData;
     class TProcessedMPTData;
+    class TMTEWithClassifierResultsData;
     class TMultiTrackEventData;
-    class TClassifiedEventData;
 }
 
 namespace Katydid
 {
-    
+    class KTClassifierResultsData;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumVariance;
@@ -130,6 +131,14 @@ namespace Katydid
             static void UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData);
 
 
+            //*************************
+            // Classifier Results Data
+            //*************************
+
+            static void LoadClassifierResultsData(const KTClassifierResultsData& crData, Cicada::TClassifierResultsData& rootCRData);
+            static void UnloadClassifierResultsData(KTClassifierResultsData& crData, const Cicada::TClassifierResultsData& rootCRData);
+
+
             //********************
             // Processed MPT Data
             //********************
@@ -146,12 +155,12 @@ namespace Katydid
             static void UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData);
 
 
-            //***********************
-            // Classified Event Data
-            //***********************
+            //**********************************
+            // MTE Data with Classifier Results
+            //**********************************
 
-            static void LoadClassifiedEventData(const KTClassifiedEventData& mteData, Cicada::TClassifiedEventData& rootMTEData);
-            static void UnloadClassifiedEventData(KTClassifiedEventData& mteData, const Cicada::TClassifiedEventData& rootMTEData);
+            static void LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData);
+            static void UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData);
 
 
     };

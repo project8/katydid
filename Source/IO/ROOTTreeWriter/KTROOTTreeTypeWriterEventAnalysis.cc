@@ -22,7 +22,10 @@
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
 
-//#include "TFrequencyCandidateData.hh"
+#include "CClassifierResultsData.hh"
+#include "CMTEWithClassifierResultsData.hh"
+#include "CProcessedMPTData.hh"
+#include "CROOTData.hh"
 
 #include "TFile.h"
 #include "TGraph.h"
@@ -53,7 +56,7 @@ namespace Katydid
                     fProcessedTrackTree(NULL),
                     fMultiPeakTrackTree(NULL),
                     fMultiTrackEventTree(NULL),
-                    fClassifiedEventTree(NULL),
+                    fMTEWithClassifierResultsTree(NULL),
                     fLinearFitResultTree(NULL),
                     fPowerFitDataTree(NULL),
                     fFreqCandidateData(),
@@ -63,7 +66,7 @@ namespace Katydid
                     fProcessedMPTDataPtr(NULL),
                     fMultiPeakTrackData(),
                     fMultiTrackEventDataPtr(NULL),
-                    fClassifiedEventDataPtr(NULL),
+                    fMTEWithClassifierResultsDataPtr(NULL),
                     fLineFitData(),
                     fPowerFitData()
     {
@@ -74,7 +77,7 @@ namespace Katydid
         delete fProcessedMPTDataPtr;
         delete fProcessedTrackDataPtr;
         delete fMultiTrackEventDataPtr;
-        delete fClassifiedEventDataPtr;
+        delete fMTEWithClassifierResultsDataPtr;
     }
 
 
@@ -87,7 +90,7 @@ namespace Katydid
         fWriter->RegisterSlot("proc-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("mp-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
         fWriter->RegisterSlot("mt-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
-        fWriter->RegisterSlot("classified-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteClassifiedEvent);
+        fWriter->RegisterSlot("mte-with-cr", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMTEWithClassifierResults);
         fWriter->RegisterSlot("density-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
         fWriter->RegisterSlot("power-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData);
         return;
@@ -482,15 +485,8 @@ namespace Katydid
                 return;
             }
         }
-        else
-        {
-            KTINFO(publog, "Tree already exists!");
-            fWriter->AddTree( fProcessedMPTTree );
 
-            fProcessedMPTTree->SetBranchAddress("MultiPeakTrack", &fProcessedMPTDataPtr);
-        }
-
-        fProcessedMPTDataPtr->Load(pMPTData);
+        KT2ROOT::LoadProcMPTData(pMPTData, *fProcessedMPTDataPtr);
 
         fProcessedMPTTree->Fill();
 
@@ -677,61 +673,62 @@ namespace Katydid
         return true;
     }
 
-    //******************
-    // Classified Event
-    //******************
+    //*****************************
+    // MTE with Classifier Results
+    //*****************************
 
-    void KTROOTTreeTypeWriterEventAnalysis::WriteClassifiedEvent(Nymph::KTDataPtr data)
+    void KTROOTTreeTypeWriterEventAnalysis::WriteMTEWithClassifierResults(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to classified event root tree");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        if (fClassifiedEventTree == NULL)
+        if (fMTEWithClassifierResultsTree == NULL)
         {
-            if (! SetupClassifiedEventTree())
+            if (! SetupMTEWithClassifierResultsTree())
             {
                 KTERROR(publog, "Something went wrong while setting up the classified event tree! Nothing was written.");
                 return;
             }
         }
 
-        fClassifiedEventDataPtr->Load(mteData);
+        KT2ROOT::LoadMTEWithClassifierResultsData(mteData, *fMTEWithClassifierResultsDataPtr);
+        //fClassifiedEventDataPtr->Load(mteData);
 
-        fClassifiedEventTree->Fill();
+        fMTEWithClassifierResultsTree->Fill();
 
         return;
     }
 
-    bool KTROOTTreeTypeWriterEventAnalysis::SetupClassifiedEventTree()
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupMTEWithClassifierResultsTree()
     {
         if( fWriter->GetAccumulate() )
         {
-            fWriter->GetFile()->GetObject( "classifiedEvents", fClassifiedEventTree );
+            fWriter->GetFile()->GetObject( "MTEWithClassifierResults", fMTEWithClassifierResultsTree );
 
-            if( fClassifiedEventTree != NULL )
+            if( fMTEWithClassifierResultsTree != NULL )
             {
                 KTINFO( publog, "Tree already exists; will add to it" );
-                fWriter->AddTree( fClassifiedEventTree );
+                fWriter->AddTree( fMTEWithClassifierResultsTree );
 
-                fClassifiedEventTree->SetBranchAddress("Event", &fClassifiedEventDataPtr);
+                fMTEWithClassifierResultsTree->SetBranchAddress("Event", &fMTEWithClassifierResultsDataPtr);
 
                 return true;
             }
         }
 
-        fClassifiedEventTree = new TTree("classifiedEvents", "Classified Events");
-        if (fClassifiedEventTree == NULL)
+        fMTEWithClassifierResultsTree = new TTree("MTEWithClassifierResults", "Multi-Track Events with Classifier Results");
+        if (fMTEWithClassifierResultsTree == NULL)
         {
             KTERROR(publog, "Tree was not created!");
             return false;
         }
-        fWriter->AddTree(fClassifiedEventTree);
+        fWriter->AddTree(fMTEWithClassifierResultsTree);
 
-        fClassifiedEventDataPtr = new TClassifiedEventData();
+        fMTEWithClassifierResultsDataPtr = new Cicada::TMTEWithClassifierResultsData();
 
-        fClassifiedEventTree->Branch("Event", "Katydid::TClassifiedEventData", &fClassifiedEventDataPtr);
+        fMTEWithClassifierResultsTree->Branch("Event", "Cicada::TMTEWithClassifierResultsData", &fMTEWithClassifierResultsDataPtr);
 
         return true;
     }
