@@ -13,12 +13,16 @@
 
 #include "KTSlot.hh"
 
-#include "KTProcessedTrackData.hh"
 
-#include "TMVA/Reader.h"
+namespace TMVA
+{
+    class Reader;
+}
 
 namespace Katydid
 {
+    class KTProcessedTrackData;
+    class KTPowerFitData;
     
     KTLOGGER(avlog_hh, "KTTMVAClassifier.hh");
 
@@ -64,7 +68,7 @@ namespace Katydid
             double fMVACut;
 
             // MVA Reader
-            TMVA::Reader* reader;
+            TMVA::Reader* fReader;
 
             // Variables for power-fit slot
             float fAverage;
@@ -79,7 +83,8 @@ namespace Katydid
             float fRMSAwayFromCentral;
 
         public:
-            bool ClassifyTrack( KTProcessedTrackData& trackData, double mva );
+            //bool ClassifyTrack( KTProcessedTrackData& trackData, double mva );
+            bool ClassifyTrack(KTProcessedTrackData& trackData, KTPowerFitData& powerFitData);
 
             //***************
             // Signals
@@ -93,7 +98,7 @@ namespace Katydid
             //***************
 
         private:
-            void SlotFunctionPowerFitData( Nymph::KTDataPtr data );
+            Nymph::KTSlotDataTwoTypes< KTProcessedTrackData, KTPowerFitData > fClassifySlot;
 
     };
 

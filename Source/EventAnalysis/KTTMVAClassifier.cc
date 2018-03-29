@@ -10,6 +10,9 @@
 #include "KTLogger.hh"
 
 #include "KTPowerFitData.hh"
+#include "KTProcessedTrackData.hh"
+
+#include "TMVA/Reader.h"
 
 namespace Katydid
 {
@@ -23,13 +26,25 @@ namespace Katydid
             fMVAFile("foo.weights.xml"),
             fAlgorithm("SomeAlgorithm"),
             fMVACut(0.),
-            fClassifySignal("classify", this)
+            fReader(nullptr),
+            fAverage(0.),
+            fRMS(0.),
+            fSkewness(0.),
+            fKurtosis(0.),
+            fNormCentral(0.),
+            fMeanCentral(0.),
+            fSigmaCentral(0.),
+            fNPeaks(0.),
+            fCentralPowerFraction(0.),
+            fRMSAwayFromCentral(0.),
+            fClassifySignal("classify", this),
+            fClassifySlot("power-fit", this, &KTTMVAClassifier::ClassifyTrack, &fClassifySignal)
     {
-        RegisterSlot( "power-fit", this, &KTTMVAClassifier::SlotFunctionPowerFitData );
     }
 
     KTTMVAClassifier::~KTTMVAClassifier()
     {
+        delete fReader;
     }
 
     bool KTTMVAClassifier::Configure(const scarab::param_node* node)
@@ -43,84 +58,70 @@ namespace Katydid
         return true;
     }
 
-    void KTTMVAClassifier::SlotFunctionPowerFitData( Nymph::KTDataPtr data )
+    bool KTTMVAClassifier::ClassifyTrack(KTProcessedTrackData& trackData, KTPowerFitData& powerFitData)
     {
-        // Standard data slot pattern:
-        // Check to ensure that the required data types are present
 
-        if (! data->Has< KTProcessedTrackData >())
+        if (fReader == nullptr)
         {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
+            // Set up reader
 
-        if (! data->Has< KTPowerFitData >())
-        {
-            KTERROR(avlog_hh, "Data not found with type < KTPowerFitData >!");
-            return;
-        }
+            fReader = new TMVA::Reader();
 
-        // Set up reader
+            fReader->AddVariable( "Average", &fAverage );
+            fReader->AddVariable( "RMS", &fRMS );
+            fReader->AddVariable( "Skewness", &fSkewness );
+            fReader->AddVariable( "Kurtosis", &fKurtosis );
+            fReader->AddVariable( "NormCentral", &fNormCentral );
+            fReader->AddVariable( "MeanCentral", &fMeanCentral );
+            fReader->AddVariable( "SigmaCentral", &fSigmaCentral );
+            fReader->AddVariable( "NPeaks", &fNPeaks );
+            fReader->AddVariable( "CentralPowerFraction", &fCentralPowerFraction );
+            fReader->AddVariable( "RMSAwayFromCentral", &fRMSAwayFromCentral );
 
-        reader = new TMVA::Reader();
+            try
+            {
+                KTDEBUG(avlog_hh, "Algorithm = " << fAlgorithm);
+                KTDEBUG(avlog_hh, "MVA File = " << fMVAFile);
 
-        reader->AddVariable( "Average", &fAverage );
-        reader->AddVariable( "RMS", &fRMS );
-        reader->AddVariable( "Skewness", &fSkewness );
-        reader->AddVariable( "Kurtosis", &fKurtosis );
-        reader->AddVariable( "NormCentral", &fNormCentral );
-        reader->AddVariable( "MeanCentral", &fMeanCentral );
-        reader->AddVariable( "SigmaCentral", &fSigmaCentral );
-        reader->AddVariable( "NPeaks", &fNPeaks );
-        reader->AddVariable( "CentralPowerFraction", &fCentralPowerFraction );
-        reader->AddVariable( "RMSAwayFromCentral", &fRMSAwayFromCentral );
-
-        try
-        {
-            KTDEBUG(avlog_hh, "Algorithm = " << fAlgorithm);
-            KTDEBUG(avlog_hh, "MVA File = " << fMVAFile);
-
-            reader->BookMVA( fAlgorithm, fMVAFile );
-        }
-        catch(...)
-        {
-            KTERROR(avlog_hh, "Invalid reader configuration; please make sure the algorithm is correct and the file exists. Aborting");
-            return;
+                fReader->BookMVA( fAlgorithm, fMVAFile );
+            }
+            catch(...)
+            {
+                KTERROR(avlog_hh, "Invalid reader configuration; please make sure the algorithm is correct and the file exists. Aborting");
+                return false;
+            }
         }
 
         KTINFO(avlog_hh, "Successfully set up TMVA reader");
 
-        KTPowerFitData& pfData = data->Of< KTPowerFitData >();
-        KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
-
         // Assign variables
-        fAverage = (float)(pfData.GetAverage());
-        fRMS = (float)(pfData.GetRMS());
-        fSkewness = (float)(pfData.GetSkewness());
-        fKurtosis = (float)(pfData.GetKurtosis());
-        fNormCentral = (float)(pfData.GetNormCentral());
-        fMeanCentral = (float)(pfData.GetMeanCentral());
-        fSigmaCentral = (float)(pfData.GetSigmaCentral());
-        fNPeaks = (float)(pfData.GetNPeaks());
-        fCentralPowerFraction = (float)(pfData.GetCentralPowerFraction());
-        fRMSAwayFromCentral = (float)(pfData.GetRMSAwayFromCentral());
+        fAverage = powerFitData.GetAverage();
+        fRMS = powerFitData.GetRMS();
+        fSkewness = powerFitData.GetSkewness();
+        fKurtosis = powerFitData.GetKurtosis();
+        fNormCentral = powerFitData.GetNormCentral();
+        fMeanCentral = powerFitData.GetMeanCentral();
+        fSigmaCentral = powerFitData.GetSigmaCentral();
+        fNPeaks = powerFitData.GetNPeaks();
+        fCentralPowerFraction = powerFitData.GetCentralPowerFraction();
+        fRMSAwayFromCentral = powerFitData.GetRMSAwayFromCentral();
 
-        double mvaValue = reader->EvaluateMVA( fAlgorithm );
+        double mvaValue = fReader->EvaluateMVA( fAlgorithm );
         KTDEBUG(avlog_hh, "Evaluated MVA classifier = " << mvaValue);
 
         // Classify
         KTINFO(evlog, "Classifying track with MVA classifier = " << mvaValue);
-        ptData.SetMVAClassifier( mvaValue );
+        trackData.SetMVAClassifier( mvaValue );
 
         if( mvaValue >= GetMVACut() )
         {
             KTDEBUG(evlog, "Classifying track as a signal peak");
-            ptData.SetMainband( true );
+            trackData.SetMainband( true );
         }
         else
         {
             KTDEBUG(evlog, "Classifying track as a sideband peak");
-            ptData.SetMainband( false );
+            trackData.SetMainband( false );
         }
 
         if( mvaValue <= -999 )
@@ -128,10 +129,7 @@ namespace Katydid
             KTWARN(evlog, "Classifier value is -999; something probably went wrong computing it");
         }
         KTINFO(avlog_hh, "Classification finished!");
-
-        // Emit signal
-        fClassifySignal( data );
     
-        return;
+        return true;
     }
 } // namespace Katydid
