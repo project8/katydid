@@ -52,6 +52,9 @@ Release Date: TBD
 New Features:
 '''''''''''''
 
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
 * Updates to data accumulator, gain variation processor, gain normalization, and spectrum discriminator
     * Modernized processors that have not been updated in a long time
     * Data accumulator now accumulates variance for frequency-type data
@@ -68,23 +71,6 @@ New Features:
     * Validated by comparing to KDTree data written to a ROOT TTree
 * Added and implemented the use of the Cicada library for ROOT TTree writing.
     * Validated by adding and running TestROOTTreeWritingViaCicada.cc
-  
-Fixes:
-''''''
-
-
-Version: 2.10.0
-~~~~~~~~~~~~~~~
-
-Release Date: TBD
-'''''''''''''''''
-
-New Features:
-'''''''''''''
-
-* Spectrogram Striper
-    * Accepts frequency spectra and groups them into stripes with a given width and stride.
-    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
   
 Fixes:
 ''''''
