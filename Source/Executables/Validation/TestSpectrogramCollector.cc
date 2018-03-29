@@ -226,7 +226,7 @@ int main()
 
     // Fill the result vector and count the number of plots
     int nPlots = 0;
-    for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = spec.fWaterfallSets[0].begin(); it != spec.fWaterfallSets[0].end(); ++it )
+    for( KTSpectrogramCollector::WaterfallSet::const_iterator it = spec.WaterfallSets()[0].begin(); it != spec.WaterfallSets()[0].end(); ++it )
     {
         result.push_back( it->first->Of< KTPSCollectionData >() );
         nPlots++;

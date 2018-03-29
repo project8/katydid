@@ -81,6 +81,12 @@ namespace Katydid
             MEMBERVARIABLE(double, PrevSliceTimeInRun);
             MEMBERVARIABLE(double, PrevSliceTimeInAcq);
 
+        public:
+            void SetMinFrequency( double freq );
+            void SetMaxFrequency( double freq );
+            void SetMinBin( unsigned bin );
+            void SetMaxBin( unsigned bin );
+
         private:
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
@@ -96,6 +102,7 @@ namespace Katydid
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
             void FinishSC( Nymph::KTDataPtr data );
 
+        private:
             struct KTTrackCompare
             {
                 bool operator() (const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > rhs) const
@@ -104,6 +111,13 @@ namespace Katydid
                 }
             };
 
+        public:
+            typedef std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > WaterfallSet;
+
+            const std::vector< WaterfallSet >& WaterfallSets() const;
+            std::vector< WaterfallSet >& WaterfallSets();
+
+        private:
             // The spectrograms are stored in a vector of sets of pairs of Nymph::KTDataPtr and KTPSCollectionData. The levels to this hierarchy are:
             //      Vector - each element corresponds to a component
             //      Set    - each element corresponds to a track
@@ -112,13 +126,6 @@ namespace Katydid
             // unique associated Nymph::KTDataPtr
 
             std::vector< std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
-
-        private:
-
-            void SetMinFrequency( double freq );
-            void SetMaxFrequency( double freq );
-            void SetMinBin( unsigned bin );
-            void SetMaxBin( unsigned bin );
 
             //***************
             // Signals
@@ -138,6 +145,16 @@ namespace Katydid
             void SlotFunctionPSData( Nymph::KTDataPtr data );
 
     };
+
+    inline const std::vector< KTSpectrogramCollector::WaterfallSet >& KTSpectrogramCollector::WaterfallSets() const
+    {
+        return fWaterfallSets;
+    }
+
+    inline std::vector< KTSpectrogramCollector::WaterfallSet>& KTSpectrogramCollector::WaterfallSets()
+    {
+        return fWaterfallSets;
+    }
 
     void KTSpectrogramCollector::SlotFunctionPSData( Nymph::KTDataPtr data )
     {
