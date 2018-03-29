@@ -85,7 +85,7 @@ namespace Katydid
 
 
         KTClassifierResultsData& resultData = pfData.Of< KTClassifierResultsData >();
-        int classificationLabel = std::round(decisionFunction(classifierFeatures)); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
+        int classificationLabel = std::round(fDecisionFunction(classifierFeatures)); // classify track with trained decision function, i.e gives label for example 0, 1 or 2
                                                                                     // round to nearest integer for comparison
 
         if( classificationLabel == 0 )
