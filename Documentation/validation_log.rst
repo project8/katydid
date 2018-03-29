@@ -71,6 +71,14 @@ New Features:
     * Validated by comparing to KDTree data written to a ROOT TTree
 * Added and implemented the use of the Cicada library for ROOT TTree writing.
     * Validated by adding and running TestROOTTreeWritingViaCicada.cc
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
+* Update of sequential track building
+    * Configurable slope method
+    * Configurable number of points used by slope methods
+    * Different frequency acceptance can be set for second point in line
+    * Validation by processing test run (3004) with newly available settings
 * Classifier and Rotate-and-Project Updates
     * Added data structure in the event builder to store the KTDataPtr associated to each track. This allows the propagation of other data objects (specifically of interest are the classifier calculations) through the event builder
     * Added classifiers built on TMVA and DLIB libraries
@@ -79,7 +87,6 @@ New Features:
   
 Fixes:
 ''''''
-
 
 Version: 2.9.2
 ~~~~~~~~~~~~~~
