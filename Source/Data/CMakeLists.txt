@@ -21,12 +21,15 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
     SpectrumAnalysis/KTWignerVilleData.hh
+    EventAnalysis/KTClassifierResultsData.hh
     EventAnalysis/KTFrequencyCandidate.hh
     EventAnalysis/KTFrequencyCandidateData.hh
     EventAnalysis/KTLinearFitResult.hh
     EventAnalysis/KTMultiTrackEventData.hh
     EventAnalysis/KTPowerFitData.hh
+    EventAnalysis/KTProcessedMPTData.hh
     EventAnalysis/KTProcessedTrackData.hh
+    EventAnalysis/KTRPTrackData.hh
     EventAnalysis/KTSparseWaterfallCandidateData.hh
     EventAnalysis/KTSpectrumCollectionData.hh
     EventAnalysis/KTWaterfallCandidateData.hh
@@ -51,11 +54,14 @@ set (DATA_HEADERFILES
     Transform/KTFrequencySpectrumDataPolar.hh
     Transform/KTFrequencySpectrumFFTW.hh
     Transform/KTFrequencySpectrumPolar.hh
+    Transform/KTFrequencySpectrumVariance.hh
+    Transform/KTFrequencySpectrumVarianceData.hh
     Transform/KTPowerSpectrum.hh
     Transform/KTPowerSpectrumData.hh
     Transform/KTPowerSpectrumUncertaintyData.hh
     Transform/KTMultiFSDataFFTW.hh
     Transform/KTMultiFSDataPolar.hh
+    Transform/KTMultiPSData.hh
     Transform/KTTimeFrequency.hh
     Transform/KTTimeFrequencyDataPolar.hh
     Transform/KTTimeFrequencyPolar.hh
@@ -79,12 +85,15 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
     SpectrumAnalysis/KTWignerVilleData.cc
+    EventAnalysis/KTClassifierResultsData.cc
     EventAnalysis/KTFrequencyCandidate.cc
     EventAnalysis/KTFrequencyCandidateData.cc
     EventAnalysis/KTLinearFitResult.cc
     EventAnalysis/KTMultiTrackEventData.cc
     EventAnalysis/KTPowerFitData.cc
+    EventAnalysis/KTProcessedMPTData.cc
     EventAnalysis/KTProcessedTrackData.cc
+    EventAnalysis/KTRPTrackData.cc
     EventAnalysis/KTSparseWaterfallCandidateData.cc
     EventAnalysis/KTSpectrumCollectionData.cc
     EventAnalysis/KTWaterfallCandidateData.cc
@@ -109,8 +118,11 @@ set (DATA_SOURCEFILES
     Transform/KTFrequencySpectrumDataPolar.cc
     Transform/KTFrequencySpectrumFFTW.cc
     Transform/KTFrequencySpectrumPolar.cc
+    Transform/KTFrequencySpectrumVariance.cc
+    Transform/KTFrequencySpectrumVarianceData.cc
     Transform/KTMultiFSDataFFTW.cc
     Transform/KTMultiFSDataPolar.cc
+    Transform/KTMultiPSData.cc
     Transform/KTPowerSpectrum.cc
     Transform/KTPowerSpectrumData.cc
     Transform/KTPowerSpectrumUncertaintyData.cc

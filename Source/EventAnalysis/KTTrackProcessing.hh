@@ -33,7 +33,7 @@ namespace Katydid
      Configuration name: "track-proc"
 
      Available configuration values:
-     - "algorithm": string -- Select the track processing algorithm: "double-cuts" or "weighted-slope" (default)
+     - "algorithm": string -- Select the track processing algorithm: "double-cuts" (default) or "weighted-slope"
      - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
      - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
      - "slope-min": double -- Minimum track slope to keep (Hz/s)

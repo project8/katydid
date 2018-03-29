@@ -9,7 +9,4 @@
 
 #pragma link C++ namespace Katydid;
 
-#pragma link C++ class Katydid::TProcessedTrackData+;
-#pragma link C++ class Katydid::TMultiTrackEventData+;
-
 #endif

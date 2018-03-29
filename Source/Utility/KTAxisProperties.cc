@@ -136,7 +136,9 @@ namespace Katydid
 
     ssize_t KTAxisProperties< 1 >::FindBin(double pos) const
     {
-        return (ssize_t)(floor((pos - fRangeMin) / fBinWidth));
+        return pos < fRangeMin ? 0 :
+                pos >= fRangeMax ? size() - 1 :
+                        (ssize_t)(floor((pos - fRangeMin) / fBinWidth));
     }
 
     const std::string& KTAxisProperties< 1 >::GetAxisLabel() const

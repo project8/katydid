@@ -14,6 +14,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTGainVariationData.hh"
 #include "KTHoughData.hh"
+#include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPowerSpectrumData.hh"
@@ -75,6 +76,7 @@ namespace Katydid
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleData);
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
+        fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
 #ifdef ENABLE_TUTORIAL
         fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar);
         fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW);
@@ -585,6 +587,13 @@ namespace Katydid
             TH1D* gvHist = gvData.CreateGainVariationHistogram(300, iPlot, histName);
             gvHist->SetDirectory(fWriter->GetFile());
             gvHist->Write();
+            histName.clear();
+            stringstream convVar;
+            convVar << "histGVVar_" << sliceNumber << "_" << iPlot;
+            convVar >> histName;
+            TH1D* gvVarHist = gvData.CreateGainVariationVarianceHistogram(300, iPlot, histName);
+            gvVarHist->SetDirectory(fWriter->GetFile());
+            gvVarHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
 
             /*
@@ -699,6 +708,51 @@ namespace Katydid
             mfsHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
+        return;
+    }
+
+    //************************
+    // KDTree Data
+    //************************
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        static unsigned kdTreeSpectNum = 0;
+
+        KTKDTreeData& kdtData = data->Of< KTKDTreeData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        double xScaling = kdtData.GetXScaling();
+        double yScaling = kdtData.GetYScaling();
+        for (unsigned iComponent = 0; iComponent < kdtData.GetNComponents(); iComponent++)
+        {
+            const KTKDTreeData::SetOfPoints& points = kdtData.GetSetOfPoints(iComponent);
+            const KTKDTreeData::TreeIndex* index = kdtData.GetTreeIndex(iComponent);
+            unsigned pid = 0;
+
+            KTDEBUG(publog, "Creating sparse spectrogram graph from KDTree with " << points.size() << " points");
+
+            TGraph* grSpectrogram = new TGraph(points.size());
+            stringstream conv;
+            conv << "grKDTreeSSpect_" << kdTreeSpectNum << "_" << iComponent;
+            string grName;
+            conv >> grName;
+            grSpectrogram->SetName(grName.c_str());
+            grSpectrogram->SetTitle("Sparse Spectrogram (from KDTree)");
+
+            for (KTKDTreeData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
+            {
+                grSpectrogram->SetPoint(pid, it->fCoords[0] * xScaling, it->fCoords[1] * yScaling);
+                ++pid;
+            }
+
+            fWriter->GetFile()->cd();
+            grSpectrogram->Write();
+            KTDEBUG(publog, "Graph <" << grName << "> written to ROOT file");
+        }
+
         return;
     }
 

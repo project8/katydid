@@ -26,55 +26,61 @@ namespace Katydid
 
             KTLinearFitResult& operator=(const KTLinearFitResult& rhs);
 
-            unsigned GetNComponents() const;
-            KTLinearFitResult& SetNComponents(unsigned num);
+            unsigned GetComponent() const;
+            void SetComponent(unsigned iComponent);
+
+            unsigned GetNFits() const;
+            void SetNFits(unsigned num);
 
         public:
 
-            double GetSlope(unsigned component = 0) const;
-            void SetSlope(double slope, unsigned component = 0);
+            double GetSlope(unsigned fit = 0) const;
+            void SetSlope(double slope, unsigned fit = 0);
 
-            double GetIntercept(unsigned component = 0) const;
-            void SetIntercept(double intercept, unsigned component = 0);
+            double GetIntercept(unsigned fit = 0) const;
+            void SetIntercept(double intercept, unsigned fit = 0);
 
-            double GetStartingFrequency(unsigned component = 0) const;
-            void SetStartingFrequency(double freq, unsigned component = 0);
+            double GetStartingFrequency(unsigned fit = 0) const;
+            void SetStartingFrequency(double freq, unsigned fit = 0);
 
-            double GetTrackDuration(unsigned component = 0) const;
-            void SetTrackDuration(double deltaT, unsigned component = 0);
+            double GetTrackDuration(unsigned fit = 0) const;
+            void SetTrackDuration(double deltaT, unsigned fit = 0);
 
-            double GetSidebandSeparation(unsigned component = 0) const;
-            void SetSidebandSeparation(double freq, unsigned component = 0);
+            double GetSidebandSeparation(unsigned fit = 0) const;
+            void SetSidebandSeparation(double freq, unsigned fit = 0);
 
-            double GetFineProbe_sigma_1(unsigned component = 0) const;
-            void SetFineProbe_sigma_1(double sigma, unsigned component = 0);
+            double GetFineProbe_sigma_1(unsigned fit = 0) const;
+            void SetFineProbe_sigma_1(double sigma, unsigned fit = 0);
 
-            double GetFineProbe_sigma_2(unsigned component = 0) const;
-            void SetFineProbe_sigma_2(double sigma, unsigned component = 0);
+            double GetFineProbe_sigma_2(unsigned fit = 0) const;
+            void SetFineProbe_sigma_2(double sigma, unsigned fit = 0);
 
-            double GetFineProbe_SNR_1(unsigned component = 0) const;
-            void SetFineProbe_SNR_1(double snr, unsigned component = 0);
+            double GetFineProbe_SNR_1(unsigned fit = 0) const;
+            void SetFineProbe_SNR_1(double snr, unsigned fit = 0);
 
-            double GetFineProbe_SNR_2(unsigned component = 0) const;
-            void SetFineProbe_SNR_2(double snr, unsigned component = 0);
+            double GetFineProbe_SNR_2(unsigned fit = 0) const;
+            void SetFineProbe_SNR_2(double snr, unsigned fit = 0);
 
-            double GetFFT_peak(unsigned component = 0) const;
-            void SetFFT_peak(double amp, unsigned component = 0);
+            double GetFFT_peak(unsigned fit = 0) const;
+            void SetFFT_peak(double amp, unsigned fit = 0);
 
-            double GetFFT_SNR(unsigned component = 0) const;
-            void SetFFT_SNR(double snr, unsigned component = 0);
+            double GetFFT_SNR(unsigned fit = 0) const;
+            void SetFFT_SNR(double snr, unsigned fit = 0);
 
-            double GetFit_width(unsigned component = 0) const;
-            void SetFit_width(double freq, unsigned component = 0);
+            double GetFit_width(unsigned fit = 0) const;
+            void SetFit_width(double freq, unsigned fit = 0);
 
-            double GetNPoints(unsigned component = 0) const;
-            void SetNPoints(double n, unsigned component = 0);
+            double GetNPoints(unsigned fit = 0) const;
+            void SetNPoints(double n, unsigned fit = 0);
 
-            double GetProbeWidth(unsigned component = 0) const;
-            void SetProbeWidth(double s, unsigned component = 0);
+            double GetProbeWidth(unsigned fit = 0) const;
+            void SetProbeWidth(double s, unsigned fit = 0);
 
         private:
-            struct PerComponentData
+
+            unsigned fComponent;
+
+            struct PerFitData
             {
                 double fSlope;
                 double fIntercept;
@@ -92,7 +98,7 @@ namespace Katydid
                 double fProbeWidth;
             };
 
-            std::vector< PerComponentData > fComponentData;
+            std::vector< PerFitData > fFitData;
 
         public:
             static const std::string sName;
@@ -100,182 +106,193 @@ namespace Katydid
 
     std::ostream& operator<<(std::ostream& out, const KTLinearFitResult& hdr);
 
-    inline unsigned KTLinearFitResult::GetNComponents() const
+    inline unsigned KTLinearFitResult::GetComponent() const
     {
-        return unsigned(fComponentData.size());
+        return fComponent;
     }
 
-    inline KTLinearFitResult& KTLinearFitResult::SetNComponents(unsigned num)
+    inline void KTLinearFitResult::SetComponent(unsigned iComponent)
     {
-        fComponentData.resize(num);
-        return *this;
-    }
-
-    inline double KTLinearFitResult::GetSlope(unsigned component) const
-    {
-        return fComponentData[component].fSlope;
-    }
-
-    inline void KTLinearFitResult::SetSlope(double slope, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fSlope = slope;
+        fComponent = iComponent;
         return;
     }
 
-    inline double KTLinearFitResult::GetIntercept(unsigned component) const
+    inline unsigned KTLinearFitResult::GetNFits() const
     {
-        return fComponentData[component].fIntercept;
+        return unsigned(fFitData.size());
     }
 
-    inline void KTLinearFitResult::SetIntercept(double intercept, unsigned component)
+    inline void KTLinearFitResult::SetNFits(unsigned num)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fIntercept = intercept;
+        fFitData.resize(num);
         return;
     }
 
-    inline double KTLinearFitResult::GetStartingFrequency(unsigned component) const
+    inline double KTLinearFitResult::GetSlope(unsigned fit) const
     {
-        return fComponentData[component].fStartingFrequency;
+        return fFitData[fit].fSlope;
     }
 
-    inline void KTLinearFitResult::SetStartingFrequency(double freq, unsigned component)
+    inline void KTLinearFitResult::SetSlope(double slope, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fStartingFrequency = freq;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fSlope = slope;
         return;
     }
 
-    inline double KTLinearFitResult::GetTrackDuration(unsigned component) const
+    inline double KTLinearFitResult::GetIntercept(unsigned fit) const
     {
-        return fComponentData[component].fTrackDuration;
+        return fFitData[fit].fIntercept;
     }
 
-    inline void KTLinearFitResult::SetTrackDuration(double deltaT, unsigned component)
+    inline void KTLinearFitResult::SetIntercept(double intercept, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fTrackDuration = deltaT;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fIntercept = intercept;
         return;
     }
 
-    inline double KTLinearFitResult::GetSidebandSeparation(unsigned component) const
+    inline double KTLinearFitResult::GetStartingFrequency(unsigned fit) const
     {
-        return fComponentData[component].fSidebandSeparation;
+        return fFitData[fit].fStartingFrequency;
     }
 
-    inline void KTLinearFitResult::SetSidebandSeparation(double freq, unsigned component)
+    inline void KTLinearFitResult::SetStartingFrequency(double freq, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fSidebandSeparation = freq;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fStartingFrequency = freq;
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_sigma_1(unsigned component) const
+    inline double KTLinearFitResult::GetTrackDuration(unsigned fit) const
     {
-        return fComponentData[component].fFineProbe_sigma_1;
+        return fFitData[fit].fTrackDuration;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_sigma_1(double sigma, unsigned component)
+    inline void KTLinearFitResult::SetTrackDuration(double deltaT, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFineProbe_sigma_1 = sigma;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fTrackDuration = deltaT;
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_sigma_2(unsigned component) const
+    inline double KTLinearFitResult::GetSidebandSeparation(unsigned fit) const
     {
-        return fComponentData[component].fFineProbe_sigma_2;
+        return fFitData[fit].fSidebandSeparation;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_sigma_2(double sigma, unsigned component)
+    inline void KTLinearFitResult::SetSidebandSeparation(double freq, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFineProbe_sigma_2 = sigma;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fSidebandSeparation = freq;
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_SNR_1(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_sigma_1(unsigned fit) const
     {
-        return fComponentData[component].fFineProbe_SNR_1;
+        return fFitData[fit].fFineProbe_sigma_1;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_SNR_1(double snr, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_sigma_1(double sigma, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFineProbe_SNR_1 = snr;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFineProbe_sigma_1 = sigma;
         return;
     }
 
-    inline double KTLinearFitResult::GetFineProbe_SNR_2(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_sigma_2(unsigned fit) const
     {
-        return fComponentData[component].fFineProbe_SNR_2;
+        return fFitData[fit].fFineProbe_sigma_2;
     }
 
-    inline void KTLinearFitResult::SetFineProbe_SNR_2(double snr, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_sigma_2(double sigma, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFineProbe_SNR_2 = snr;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFineProbe_sigma_2 = sigma;
         return;
     }
 
-    inline double KTLinearFitResult::GetFFT_peak(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_SNR_1(unsigned fit) const
     {
-        return fComponentData[component].fFFT_peak;
+        return fFitData[fit].fFineProbe_SNR_1;
     }
 
-    inline void KTLinearFitResult::SetFFT_peak(double freq, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_SNR_1(double snr, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFFT_peak = freq;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFineProbe_SNR_1 = snr;
         return;
     }
 
-    inline double KTLinearFitResult::GetFFT_SNR(unsigned component) const
+    inline double KTLinearFitResult::GetFineProbe_SNR_2(unsigned fit) const
     {
-        return fComponentData[component].fFFT_SNR;
+        return fFitData[fit].fFineProbe_SNR_2;
     }
 
-    inline void KTLinearFitResult::SetFFT_SNR(double snr, unsigned component)
+    inline void KTLinearFitResult::SetFineProbe_SNR_2(double snr, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFFT_SNR = snr;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFineProbe_SNR_2 = snr;
         return;
     }
 
-    inline double KTLinearFitResult::GetFit_width(unsigned component) const
+    inline double KTLinearFitResult::GetFFT_peak(unsigned fit) const
     {
-        return fComponentData[component].fFit_width;
+        return fFitData[fit].fFFT_peak;
     }
 
-    inline void KTLinearFitResult::SetFit_width(double w, unsigned component)
+    inline void KTLinearFitResult::SetFFT_peak(double freq, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fFit_width = w;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFFT_peak = freq;
         return;
     }
 
-    inline double KTLinearFitResult::GetNPoints(unsigned component) const
+    inline double KTLinearFitResult::GetFFT_SNR(unsigned fit) const
     {
-        return fComponentData[component].fNPoints;
+        return fFitData[fit].fFFT_SNR;
     }
 
-    inline void KTLinearFitResult::SetNPoints(double n, unsigned component)
+    inline void KTLinearFitResult::SetFFT_SNR(double snr, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fNPoints = n;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFFT_SNR = snr;
         return;
     }
 
-    inline double KTLinearFitResult::GetProbeWidth(unsigned component) const
+    inline double KTLinearFitResult::GetFit_width(unsigned fit) const
     {
-        return fComponentData[component].fProbeWidth;
+        return fFitData[fit].fFit_width;
     }
 
-    inline void KTLinearFitResult::SetProbeWidth(double s, unsigned component)
+    inline void KTLinearFitResult::SetFit_width(double w, unsigned fit)
     {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fProbeWidth = s;
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fFit_width = w;
+        return;
+    }
+
+    inline double KTLinearFitResult::GetNPoints(unsigned fit) const
+    {
+        return fFitData[fit].fNPoints;
+    }
+
+    inline void KTLinearFitResult::SetNPoints(double n, unsigned fit)
+    {
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fNPoints = n;
+        return;
+    }
+
+    inline double KTLinearFitResult::GetProbeWidth(unsigned fit) const
+    {
+        return fFitData[fit].fProbeWidth;
+    }
+
+    inline void KTLinearFitResult::SetProbeWidth(double s, unsigned fit)
+    {
+        if (fit >= fFitData.size()) fFitData.resize(fit+1);
+        fFitData[fit].fProbeWidth = s;
         return;
     }
     

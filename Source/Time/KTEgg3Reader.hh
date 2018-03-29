@@ -145,7 +145,6 @@ namespace Katydid
 
         private:
             mutable GetTIRFunction fGetTimeInRun;
-            double GetTimeInRunFirstCall() const;
             double GetTimeInRunFromMonarch() const;
             double GetTimeInRunManually() const;
             mutable monarch3::TimeType fT0Offset; /// Time of the first record
@@ -220,7 +219,7 @@ namespace Katydid
 
     inline double KTEgg3Reader::GetTimeInRunFromMonarch() const
     {
-        return double(fM3Stream->GetChannelRecord(0)->GetTime() - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fStartOfLastSliceReadPtr);
+        return double(fM3Stream->GetChannelRecord(0)->GetTime()) * SEC_PER_NSEC + fBinWidth * double(fReadState.fStartOfLastSliceReadPtr);
     }
 
     inline double KTEgg3Reader::GetTimeInRunManually() const

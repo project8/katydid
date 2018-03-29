@@ -74,6 +74,12 @@ namespace Katydid {
 
     struct LineRef
     {
+        /*enum class slope_method
+        {
+            weighted_first_point_ref,
+            weighted,
+            unweighted
+        };*/
 
         std::vector<double> fTrimmingLimits;
         std::vector<LinePoint> fLinePoints;
@@ -85,8 +91,9 @@ namespace Katydid {
         double fEndTimeInAcq;
         double fStartFrequency;
         double fEndFrequency;
-        double fSlope;
+        unsigned fLineWidth;
         double fInitialSlope;
+        double fSlope;
         unsigned fComponent;
         double fAmplitudeSum;
         unsigned fNPoints;
@@ -108,8 +115,10 @@ namespace Katydid {
         LineRef(const double& initialSlope);
         void InsertPoint(const Point& point);
         void LineTrimming(const double& trimminFactor, const unsigned& minPoints);
-        void CalculateSlope();
-        void UpdateLineParameters();
+        //void (LineRef::*f_calc_slope_func)();
+        //void CalculateSlope();
+        //void CalculateNewSlope();
+        void UpdateLineProperties();
         void FinishTrack();
         void Clear();
         virtual ~LineRef();

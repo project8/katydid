@@ -25,7 +25,7 @@ KTLOGGER(testlog, "TestSpectrumDiscriminator");
 
 int main()
 {
-    unsigned nBins = 1000000;
+    unsigned nBins = 1000;
     double minFreq = 0., maxFreq = 100.;
 
     double meanValue = 5.;
@@ -98,7 +98,7 @@ int main()
     KTINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        KTINFO(testlog, "Bin " << it->first << " = " << it->second.fAbscissa);
+        KTINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ")");
     }
 
 #ifdef ROOT_FOUND
@@ -108,7 +108,7 @@ int main()
     histPoints->SetLineColor(2);
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        histPoints->SetBinContent(it->first + 1, it->second.fAbscissa);
+        histPoints->SetBinContent(it->first + 1, it->second.fOrdinate);
     }
     histPoints->Write();
 #endif

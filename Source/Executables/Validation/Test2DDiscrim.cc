@@ -190,8 +190,7 @@ int main()
     }
 
     // The result is a KTPSCollectionData
-    KTPSCollectionData* psColl;
-    psColl = spec.fWaterfallSets[0].begin()->second;
+    KTPSCollectionData* psColl = spec.WaterfallSets()[0].begin()->second;
     
     KTINFO(testlog, "Retrieved spectrogram. Delta T = " << psColl->GetDeltaT());
 

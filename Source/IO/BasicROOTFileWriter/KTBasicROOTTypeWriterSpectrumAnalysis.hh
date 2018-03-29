@@ -83,6 +83,12 @@ namespace Katydid
             void WriteWignerVilleDataDistribution(Nymph::KTDataPtr data);
             void WriteWV2DData(Nymph::KTDataPtr data);
 
+            //************************
+            // KDTree Data
+            //************************
+        public:
+            void WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data);
+
 #ifdef ENABLE_TUTORIAL
             //************************
             // LPF Tutorial Data

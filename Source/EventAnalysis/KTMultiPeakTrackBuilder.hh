@@ -47,7 +47,7 @@ namespace Katydid
 
      Signals:
      - "mpt": void (shared_ptr<KTData>) -- Emitted for each group found; Guarantees KTMultiPeakTrackData.
-     - "clustering-done": void () -- Emitted when track clustering is complete
+     - "mpt-done": void () -- Emitted when track clustering is complete
     */
 
     class KTMultiPeakTrackBuilder : public Nymph::KTPrimaryProcessor
@@ -98,7 +98,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
+            void SlotFunctionTakeTrack( Nymph::KTDataPtr data );
 
             void DoClusteringSlot();
 

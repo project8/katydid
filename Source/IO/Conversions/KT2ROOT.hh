@@ -18,16 +18,30 @@ class TH1I;
 class TH1D;
 class TH2D;
 
+namespace Cicada
+{
+    class TClassifierResultsData;
+    class TProcessedTrackData;
+    class TProcessedMPTData;
+    class TMTEWithClassifierResultsData;
+    class TMultiTrackEventData;
+}
+
 namespace Katydid
 {
-    
+    class KTClassifierResultsData;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
+    class KTFrequencySpectrumVariance;
     class KTPowerSpectrum;
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
     class KTPowerFitData;
+    class KTProcessedTrackData;
+    class KTProcessedMPTData;
+    class KTMultiTrackEventData;
+    class KTClassifiedEventData;
 
     class KT2ROOT
     {
@@ -84,6 +98,7 @@ namespace Katydid
             static TH1D* CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumMagDist");
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
 
+            static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");
 
             //***************
             // Power Spectrum
@@ -106,6 +121,47 @@ namespace Katydid
             //***************
 
             static TH1D* CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName);
+
+
+            //**********************
+            // Processed Track Data
+            //**********************
+
+            static void LoadProcTrackData(const KTProcessedTrackData& ptData, Cicada::TProcessedTrackData& rootPTData);
+            static void UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData);
+
+
+            //*************************
+            // Classifier Results Data
+            //*************************
+
+            static void LoadClassifierResultsData(const KTClassifierResultsData& crData, Cicada::TClassifierResultsData& rootCRData);
+            static void UnloadClassifierResultsData(KTClassifierResultsData& crData, const Cicada::TClassifierResultsData& rootCRData);
+
+
+            //********************
+            // Processed MPT Data
+            //********************
+
+            static void LoadProcMPTData(const KTProcessedMPTData& ptData, Cicada::TProcessedMPTData& rootPTData);
+            static void UnloadProcMPTData(KTProcessedMPTData& ptData, const Cicada::TProcessedMPTData& rootPTData);
+
+
+            //************************
+            // Multi-Track Event Data
+            //************************
+
+            static void LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData);
+            static void UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData);
+
+
+            //**********************************
+            // MTE Data with Classifier Results
+            //**********************************
+
+            static void LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData);
+            static void UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData);
+
 
     };
 

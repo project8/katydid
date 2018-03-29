@@ -43,18 +43,50 @@ Fixes:
 Log
 ---
 
-Version: *Upcoming Releases*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version: 2.10.0
+~~~~~~~~~~~~~~~
 
-Release Date: TBD
-'''''''''''''''''
+Release Date: March 29, 2018
+''''''''''''''''''''''''''''
 
 New Features:
 '''''''''''''
+
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
+* Updates to data accumulator, gain variation processor, gain normalization, and spectrum discriminator
+    * Modernized processors that have not been updated in a long time
+    * Data accumulator now accumulates variance for frequency-type data
+    * Gain variation data now includes variance, which is calculated in gain variation processor
+    * Gain normalization is updated to do normalization properly and includes both the  mean and variance
+    * Normalized FS data now stores the normalized mean and variance, which can be used by the spectrum discriminator
+    * Spectrum discriminator has been modernized and the sigma thresholding fixed
+    * Validation scripts added/used: TestBackgroundFlattening, TestDataAccumulator, TestGainNormalization, and TestGainVariationProcessor
+* Added some utilities
+    * Functions to convert between different complex representations in KTStdComplexFuncs.hh
+    * C++ name demangling in KTDemangle.hh
+* Added the ability to write out sparse spectrograms from KTKDTreeData in KTBasicROOTWriter
+    * Slot is "kd-tree-ss"
+    * Validated by comparing to KDTree data written to a ROOT TTree
+* Added and implemented the use of the Cicada library for ROOT TTree writing.
+    * Validated by adding and running TestROOTTreeWritingViaCicada.cc
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
+* Update of sequential track building
+    * Configurable slope method
+    * Configurable number of points used by slope methods
+    * Different frequency acceptance can be set for second point in line
+    * Validation by processing test run (3004) with newly available settings
+* Classifier and Rotate-and-Project Updates
+    * Added data structure in the event builder to store the KTDataPtr associated to each track. This allows the propagation of other data objects (specifically of interest are the classifier calculations) through the event builder
+    * Added classifiers built on TMVA and DLIB libraries
+    * Added a slot in the ROOT Tree writer to simultaneously write tracks and classifier results within each event
+    * Moved ROOT-based IO classes to submodule Cicada
   
 Fixes:
 ''''''
-
 
 Version: 2.9.2
 ~~~~~~~~~~~~~~
@@ -68,6 +100,7 @@ Fixes:
 
 * Fixed the calculation of the center frequency in the egg3 reader
     * Validated by reading two egg files with EggScanner and verifying that the printed frequencies (min, max, and center) match what I expect from manually examining the contents of the egg files
+
 
 Version: 2.9.1
 ~~~~~~~~~~~~~~

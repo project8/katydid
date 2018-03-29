@@ -8,9 +8,21 @@ For this tutorial, your goal is to add to Katydid the ability to apply a low-pas
 3. Create a branch for your development work: git checkout -b tutorial
 
 
-## Setup
+## Build Katydid
+1. Create a build directory: mkdir build-tutorial
+2. Enter that directory: cd build-tutorial
+3. Run ccmake: ccmake ..
+4. Run the initial configuration step by pressing 'c'
+5. Change the build type to DEBUG
+6. Configure by pressing 'c'
+7. Generate the build files and exit by pressing 'g'
+8. Build Katydid: make install
+   To speed the build process, if you have multiple cores, you can add a -j argument.
+
+## Development Setup
 1. Copy KTProcessorTemplate.hh/cc files to the appropriate location (Source/SpectrumAnalysis) and new filenames (best practice: something that indicates what the processor will do).
 2. Copy a data class files (e.g. Source/Data/SpectrumAnalysis/KTNormalizedFSData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames (best practice: something that indicates what the data represents).
+3. Build again, to make sure there are no errors. 
 
 
 ## Data
@@ -44,18 +56,6 @@ For this tutorial, your goal is to add to Katydid the ability to apply a low-pas
 3. Change the class names in the functions appropriately.
 4. Add a #include line for the data class header.
 5. Add Register lines for the new functions (i.e. copy and modify the relevant WriteNormalized lines)
-
-
-## Build Katydid
-1. Create a build directory: mkdir build-tutorial
-2. Enter that directory: cd build-tutorial
-3. Run ccmake: ccmake ..
-4. Run the initial configuration step by pressing 'c'
-5. Change the build type to DEBUG
-6. Configure by pressing 'c'
-7. Generate the build files and exit by pressing 'g'
-8. Build Katydid: make install
-   To speed the build process, if you have multiple cores, you can add a -j argument.
 
 
 ## Config

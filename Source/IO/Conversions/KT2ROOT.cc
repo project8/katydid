@@ -9,21 +9,33 @@
 
 #include "KTLogger.hh"
 
-#include "KTHoughData.hh"
+#include "KTClassifierResultsData.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
+#include "KTHoughData.hh"
+#include "KTMultiTrackEventData.hh"
+#include "KTPowerFitData.hh"
+#include "KTFrequencySpectrumVariance.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTProcessedMPTData.hh"
+#include "KTProcessedTrackData.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
-#include "KTPowerFitData.hh"
 
+#include "CClassifierResultsData.hh"
+#include "CMTEWithClassifierResultsData.hh"
+#include "CProcessedMPTData.hh"
+#include "CROOTData.hh"
+
+#include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
 
 #include <cfloat>
 #include "stdint.h"
+
 #ifndef UINT16_MAX
 #define UINT16_MAX (32767)
 #endif
@@ -460,6 +472,19 @@ namespace Katydid
         return hist;
     }
 
+    TH1D* KT2ROOT::CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum Variance", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*fs)(iBin));
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Voltage^{2} (V^{2})");
+        return hist;
+    }
+
     TH1D* KT2ROOT::CreatePowerHistogram(const KTPowerSpectrum* ps, const std::string& name)
     {
         unsigned nBins = ps->size();
@@ -578,6 +603,140 @@ namespace Katydid
         
         return hist;
 
+    }
+
+    void KT2ROOT::LoadProcTrackData(const KTProcessedTrackData& ptData, Cicada::TProcessedTrackData& rootPTData)
+    {
+        rootPTData.SetComponent(ptData.GetComponent()); rootPTData.SetAcquisitionID(ptData.GetAcquisitionID()); rootPTData.SetTrackID(ptData.GetTrackID()); rootPTData.SetEventID(ptData.GetEventID()); rootPTData.SetEventSequenceID(ptData.GetEventSequenceID()); rootPTData.SetIsCut(ptData.GetIsCut());
+        rootPTData.SetStartTimeInRunC(ptData.GetStartTimeInRunC()); rootPTData.SetStartTimeInAcq(ptData.GetStartTimeInAcq()); rootPTData.SetEndTimeInRunC(ptData.GetEndTimeInRunC()); rootPTData.SetTimeLength(ptData.GetTimeLength());
+        rootPTData.SetStartFrequency(ptData.GetStartFrequency()); rootPTData.SetEndFrequency(ptData.GetEndFrequency()); rootPTData.SetFrequencyWidth(ptData.GetFrequencyWidth());
+        rootPTData.SetSlope(ptData.GetSlope()); rootPTData.SetIntercept(ptData.GetIntercept()); rootPTData.SetTotalPower(ptData.GetTotalPower());
+        rootPTData.SetStartTimeInRunCSigma(ptData.GetStartTimeInRunCSigma()); rootPTData.SetEndTimeInRunCSigma(ptData.GetEndTimeInRunCSigma()); rootPTData.SetTimeLengthSigma(ptData.GetTimeLengthSigma());
+        rootPTData.SetStartFrequencySigma(ptData.GetStartFrequencySigma()); rootPTData.SetEndFrequencySigma(ptData.GetEndFrequencySigma()); rootPTData.SetFrequencyWidthSigma(ptData.GetFrequencyWidthSigma());
+        rootPTData.SetSlopeSigma(ptData.GetSlopeSigma()); rootPTData.SetInterceptSigma(ptData.GetInterceptSigma()); rootPTData.SetTotalPowerSigma(ptData.GetTotalPowerSigma());
+        return;
+    }
+
+    void KT2ROOT::UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData)
+    {
+        ptData.SetComponent(rootPTData.GetComponent()); ptData.SetAcquisitionID(rootPTData.GetAcquisitionID()); ptData.SetTrackID(rootPTData.GetTrackID()); ptData.SetEventID(rootPTData.GetEventID()); ptData.SetEventSequenceID(rootPTData.GetEventSequenceID()); ptData.SetIsCut(rootPTData.GetIsCut());
+        ptData.SetStartTimeInRunC(rootPTData.GetStartTimeInRunC()); ptData.SetStartTimeInAcq(rootPTData.GetStartTimeInAcq()); ptData.SetEndTimeInRunC(rootPTData.GetEndTimeInRunC()); ptData.SetTimeLength(rootPTData.GetTimeLength());
+        ptData.SetStartFrequency(rootPTData.GetStartFrequency()); ptData.SetEndFrequency(rootPTData.GetEndFrequency()); ptData.SetFrequencyWidth(rootPTData.GetFrequencyWidth());
+        ptData.SetSlope(rootPTData.GetSlope()); ptData.SetIntercept(rootPTData.GetIntercept()); ptData.SetTotalPower(rootPTData.GetTotalPower());
+        ptData.SetStartTimeInRunCSigma(rootPTData.GetStartTimeInRunCSigma()); ptData.SetEndTimeInRunCSigma(rootPTData.GetEndTimeInRunCSigma()); ptData.SetTimeLengthSigma(rootPTData.GetTimeLengthSigma());
+        ptData.SetStartFrequencySigma(rootPTData.GetStartFrequencySigma()); ptData.SetEndFrequencySigma(rootPTData.GetEndFrequencySigma()); ptData.SetFrequencyWidthSigma(rootPTData.GetFrequencyWidthSigma());
+        ptData.SetSlopeSigma(rootPTData.GetSlopeSigma()); ptData.SetInterceptSigma(rootPTData.GetInterceptSigma()); ptData.SetTotalPowerSigma(rootPTData.GetTotalPowerSigma());
+    }
+
+    void KT2ROOT::LoadClassifierResultsData(const KTClassifierResultsData& crData, Cicada::TClassifierResultsData& rootCRData)
+    {
+        rootCRData.SetComponent(crData.GetComponent());
+        rootCRData.SetMainCarrierHigh(crData.GetMainCarrierHigh());
+        rootCRData.SetMainCarrierLow(crData.GetMainCarrierLow());
+        rootCRData.SetSideBand(crData.GetSideBand());
+        return;
+    }
+
+    void KT2ROOT::UnloadClassifierResultsData(KTClassifierResultsData& crData, const Cicada::TClassifierResultsData& rootCRData)
+    {
+        crData.SetComponent(rootCRData.GetComponent());
+        crData.SetMainCarrierHigh(rootCRData.GetMainCarrierHigh());
+        crData.SetMainCarrierLow(rootCRData.GetMainCarrierLow());
+        crData.SetSideBand(rootCRData.GetSideBand());
+        return;
+    }
+
+    void KT2ROOT::LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData)
+    {
+        rootMTEData.SetComponent(mteData.GetComponent()); rootMTEData.SetAcquisitionID(mteData.GetAcquisitionID()); rootMTEData.SetEventID(mteData.GetEventID()); rootMTEData.SetTotalEventSequences(mteData.GetTotalEventSequences());
+        rootMTEData.SetStartTimeInRunC(mteData.GetStartTimeInRunC()); rootMTEData.SetStartTimeInAcq(mteData.GetStartTimeInAcq()); rootMTEData.SetEndTimeInRunC(mteData.GetEndTimeInRunC()); rootMTEData.SetTimeLength(mteData.GetTimeLength());
+        rootMTEData.SetStartFrequency(mteData.GetStartFrequency()); rootMTEData.SetEndFrequency(mteData.GetEndFrequency()); rootMTEData.SetMinimumFrequency(mteData.GetMinimumFrequency()); rootMTEData.SetMaximumFrequency(mteData.GetMaximumFrequency()); rootMTEData.SetFrequencyWidth(mteData.GetFrequencyWidth());
+        rootMTEData.SetStartTimeInRunCSigma(mteData.GetStartTimeInRunCSigma()); rootMTEData.SetEndTimeInRunCSigma(mteData.GetEndTimeInRunCSigma()); rootMTEData.SetTimeLengthSigma(mteData.GetTimeLengthSigma());
+        rootMTEData.SetStartFrequencySigma(mteData.GetStartFrequencySigma()); rootMTEData.SetEndFrequencySigma(mteData.GetEndFrequencySigma()); rootMTEData.SetFrequencyWidthSigma(mteData.GetFrequencyWidthSigma());
+        rootMTEData.SetFirstTrackID(mteData.GetFirstTrackID()); rootMTEData.SetFirstTrackTimeLength(mteData.GetFirstTrackTimeLength()); rootMTEData.SetFirstTrackFrequencyWidth(mteData.GetFirstTrackFrequencyWidth()); rootMTEData.SetFirstTrackSlope(mteData.GetFirstTrackSlope()); rootMTEData.SetFirstTrackIntercept(mteData.GetFirstTrackIntercept()); rootMTEData.SetFirstTrackTotalPower(mteData.GetFirstTrackTotalPower());
+        rootMTEData.SetUnknownEventTopology(mteData.GetUnknownEventTopology());
+        Int_t nTracks = (Int_t)mteData.GetNTracks();
+        TClonesArray* tracks = rootMTEData.GetTracks();
+        tracks->Clear(); tracks->Expand(nTracks);
+        Int_t iTrack = 0;
+        for (TrackSetCIt trIt = mteData.GetTracksBegin(); trIt != mteData.GetTracksEnd(); ++trIt)
+        {
+            Cicada::TProcessedTrackData* track = new((*tracks)[iTrack]) Cicada::TProcessedTrackData;
+            KT2ROOT::LoadProcTrackData(trIt->fProcTrack, *track);
+            ++iTrack;
+        }
+        return;
+    }
+
+    void KT2ROOT::UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData)
+    {
+        mteData.ClearTracks(); // do this first, since it clears some of the member variables other than just fTracks
+        mteData.SetComponent(rootMTEData.GetComponent()); mteData.SetAcquisitionID(rootMTEData.GetAcquisitionID()); mteData.SetEventID(rootMTEData.GetEventID()); mteData.SetTotalEventSequences(rootMTEData.GetTotalEventSequences());
+        mteData.SetStartTimeInRunC(rootMTEData.GetStartTimeInRunC()); mteData.SetStartTimeInAcq(rootMTEData.GetStartTimeInAcq()); mteData.SetEndTimeInRunC(rootMTEData.GetEndTimeInRunC()); mteData.SetTimeLength(rootMTEData.GetTimeLength());
+        mteData.SetStartFrequency(rootMTEData.GetStartFrequency()); mteData.SetEndFrequency(rootMTEData.GetEndFrequency()); mteData.SetMinimumFrequency(rootMTEData.GetMinimumFrequency()); mteData.SetMaximumFrequency(rootMTEData.GetMaximumFrequency()); mteData.SetFrequencyWidth(rootMTEData.GetFrequencyWidth());
+        mteData.SetStartTimeInRunCSigma(rootMTEData.GetStartTimeInRunCSigma()); mteData.SetEndTimeInRunCSigma(rootMTEData.GetEndTimeInRunCSigma()); mteData.SetTimeLengthSigma(rootMTEData.GetTimeLengthSigma());
+        mteData.SetStartFrequencySigma(rootMTEData.GetStartFrequencySigma()); mteData.SetEndFrequencySigma(rootMTEData.GetEndFrequencySigma()); mteData.SetFrequencyWidthSigma(rootMTEData.GetFrequencyWidthSigma());
+        mteData.SetFirstTrackID(rootMTEData.GetFirstTrackID()); mteData.SetFirstTrackTimeLength(rootMTEData.GetFirstTrackTimeLength()); mteData.SetFirstTrackFrequencyWidth(rootMTEData.GetFirstTrackFrequencyWidth()); mteData.SetFirstTrackSlope(rootMTEData.GetFirstTrackSlope()); mteData.SetFirstTrackIntercept(rootMTEData.GetFirstTrackIntercept()); mteData.SetFirstTrackTotalPower(rootMTEData.GetFirstTrackTotalPower());
+        mteData.SetUnknownEventTopology(rootMTEData.GetUnknownEventTopology());
+        const TClonesArray* tracks = rootMTEData.GetTracks();
+        Int_t nTracks = tracks->GetSize();
+        KTProcessedTrackData track;
+        for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)
+        {
+            KT2ROOT::UnloadProcTrackData(track, *(Cicada::TProcessedTrackData*)((*tracks)[iTrack]));
+            mteData.AddTrack(track);
+        }
+        return;
+    }
+
+    void KT2ROOT::LoadProcMPTData(const KTProcessedMPTData& mptData, Cicada::TProcessedMPTData& rootMPTData)
+    {
+        rootMPTData.SetComponent(mptData.GetComponent());
+        KT2ROOT::LoadProcTrackData(mptData.GetMainTrack(), rootMPTData.MainTrack());
+        rootMPTData.SetAxialFrequency(mptData.GetAxialFrequency());
+        return;
+    }
+    void KT2ROOT::UnloadProcMPTData(KTProcessedMPTData& mptData, const Cicada::TProcessedMPTData& rootMPTData)
+    {
+        mptData.SetComponent(rootMPTData.GetComponent());
+        KT2ROOT::UnloadProcTrackData(mptData.GetMainTrack(), rootMPTData.MainTrack());
+        mptData.SetAxialFrequency(rootMPTData.GetAxialFrequency());
+        return;
+    }
+
+    void KT2ROOT::LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData)
+    {
+        LoadMultiTrackEventData(mteData, rootMTECRData);
+
+        Int_t nTracks = (Int_t)mteData.GetNTracks();
+        TClonesArray* classifierResults = rootMTECRData.GetClassifierResults();
+        classifierResults->Clear(); classifierResults->Expand(nTracks);
+        Int_t iTrack = 0;
+        for (TrackSetCIt trIt = mteData.GetTracksBegin(); trIt != mteData.GetTracksEnd(); ++trIt)
+        {
+            Cicada::TClassifierResultsData* classifierResult = new((*classifierResults)[iTrack]) Cicada::TClassifierResultsData;
+            // get the classifier results data from the proc track object for loading
+            KT2ROOT::LoadClassifierResultsData(trIt->fProcTrack.Of< KTClassifierResultsData >(), *classifierResult);
+            ++iTrack;
+        }
+        return;
+    }
+    void KT2ROOT::UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData)
+    {
+        UnloadMultiTrackEventData(mteData, rootMTECRData);
+
+        const TClonesArray* classifierResults = rootMTECRData.GetClassifierResults();
+        Int_t nTracks = classifierResults->GetSize();
+        // loop over tracks that have already been unloaded so we can add to each track
+        Int_t iTrack = 0;
+        for (TrackSetCIt trIt = mteData.GetTracksBegin(); trIt != mteData.GetTracksEnd(); ++trIt)
+        {
+            // add the classifier results data to the proc track object
+            KTClassifierResultsData& crData = trIt->fProcTrack.Of< KTClassifierResultsData >();
+            KT2ROOT::UnloadClassifierResultsData(crData, *(Cicada::TClassifierResultsData*)((*classifierResults)[iTrack]));
+            ++iTrack;
+        }
+        return;
     }
 
 } /* namespace Katydid */

@@ -82,7 +82,7 @@ namespace Katydid
             double GetBinLowEdge(size_t dim, size_t bin) const;
             double GetBinCenter(size_t dim, size_t bin) const;
 
-            // from physical value to bin number
+            // from physical value to bin number, bounded by range (i.e. will return 0 or the last bin if pos is out of range)
         public:
             ssize_t FindBin(size_t dim, double pos) const;
 
@@ -302,7 +302,9 @@ namespace Katydid
     template< size_t NDims >
     ssize_t KTAxisProperties< NDims >::FindBin(size_t dim, double pos) const
     {
-        return (ssize_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
+        return pos < fRangeMin[dim-1] ? 0 :
+                pos >= fRangeMax[dim-1] ? size(dim-1) - 1 :
+                        (ssize_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
     }
 
     template< size_t NDims >
