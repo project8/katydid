@@ -52,6 +52,9 @@ Release Date: TBD
 New Features:
 '''''''''''''
 
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
 * Updates to data accumulator, gain variation processor, gain normalization, and spectrum discriminator
     * Modernized processors that have not been updated in a long time
     * Data accumulator now accumulates variance for frequency-type data
@@ -68,32 +71,22 @@ New Features:
     * Validated by comparing to KDTree data written to a ROOT TTree
 * Added and implemented the use of the Cicada library for ROOT TTree writing.
     * Validated by adding and running TestROOTTreeWritingViaCicada.cc
+* Spectrogram Striper
+    * Accepts frequency spectra and groups them into stripes with a given width and stride.
+    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
 * Update of sequential track building
     * Configurable slope method
     * Configurable number of points used by slope methods
     * Different frequency acceptance can be set for second point in line
     * Validation by processing test run (3004) with newly available settings
+* Classifier and Rotate-and-Project Updates
+    * Added data structure in the event builder to store the KTDataPtr associated to each track. This allows the propagation of other data objects (specifically of interest are the classifier calculations) through the event builder
+    * Added classifiers built on TMVA and DLIB libraries
+    * Added a slot in the ROOT Tree writer to simultaneously write tracks and classifier results within each event
+    * Moved ROOT-based IO classes to submodule Cicada
   
 Fixes:
 ''''''
-
-
-Version: 2.10.0
-~~~~~~~~~~~~~~~
-
-Release Date: TBD
-'''''''''''''''''
-
-New Features:
-'''''''''''''
-
-* Spectrogram Striper
-    * Accepts frequency spectra and groups them into stripes with a given width and stride.
-    * Validation programs: TestSpectrogramStriper, TestSpectrogramStriperSwaps
-  
-Fixes:
-''''''
-
 
 Version: 2.9.2
 ~~~~~~~~~~~~~~

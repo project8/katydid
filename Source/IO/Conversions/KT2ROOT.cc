@@ -9,6 +9,7 @@
 
 #include "KTLogger.hh"
 
+#include "KTClassifierResultsData.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTHoughData.hh"
@@ -16,12 +17,16 @@
 #include "KTPowerFitData.hh"
 #include "KTFrequencySpectrumVariance.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTProcessedMPTData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
+#include "CClassifierResultsData.hh"
+#include "CMTEWithClassifierResultsData.hh"
+#include "CProcessedMPTData.hh"
 #include "CROOTData.hh"
 
 #include "TClonesArray.h"
@@ -30,6 +35,7 @@
 
 #include <cfloat>
 #include "stdint.h"
+
 #ifndef UINT16_MAX
 #define UINT16_MAX (32767)
 #endif
@@ -602,7 +608,7 @@ namespace Katydid
     void KT2ROOT::LoadProcTrackData(const KTProcessedTrackData& ptData, Cicada::TProcessedTrackData& rootPTData)
     {
         rootPTData.SetComponent(ptData.GetComponent()); rootPTData.SetAcquisitionID(ptData.GetAcquisitionID()); rootPTData.SetTrackID(ptData.GetTrackID()); rootPTData.SetEventID(ptData.GetEventID()); rootPTData.SetEventSequenceID(ptData.GetEventSequenceID()); rootPTData.SetIsCut(ptData.GetIsCut());
-        rootPTData.SetStartTimeInRunC(ptData.GetStartTimeInRunC()); rootPTData.SetStartTimeInAcq(ptData.GetStartTimeInAcq()); rootPTData.SetEndTimeInRunC(ptData.GetEndTimeInRunC());rootPTData.SetTimeLength(ptData.GetTimeLength());
+        rootPTData.SetStartTimeInRunC(ptData.GetStartTimeInRunC()); rootPTData.SetStartTimeInAcq(ptData.GetStartTimeInAcq()); rootPTData.SetEndTimeInRunC(ptData.GetEndTimeInRunC()); rootPTData.SetTimeLength(ptData.GetTimeLength());
         rootPTData.SetStartFrequency(ptData.GetStartFrequency()); rootPTData.SetEndFrequency(ptData.GetEndFrequency()); rootPTData.SetFrequencyWidth(ptData.GetFrequencyWidth());
         rootPTData.SetSlope(ptData.GetSlope()); rootPTData.SetIntercept(ptData.GetIntercept()); rootPTData.SetTotalPower(ptData.GetTotalPower());
         rootPTData.SetStartTimeInRunCSigma(ptData.GetStartTimeInRunCSigma()); rootPTData.SetEndTimeInRunCSigma(ptData.GetEndTimeInRunCSigma()); rootPTData.SetTimeLengthSigma(ptData.GetTimeLengthSigma());
@@ -622,6 +628,24 @@ namespace Katydid
         ptData.SetSlopeSigma(rootPTData.GetSlopeSigma()); ptData.SetInterceptSigma(rootPTData.GetInterceptSigma()); ptData.SetTotalPowerSigma(rootPTData.GetTotalPowerSigma());
     }
 
+    void KT2ROOT::LoadClassifierResultsData(const KTClassifierResultsData& crData, Cicada::TClassifierResultsData& rootCRData)
+    {
+        rootCRData.SetComponent(crData.GetComponent());
+        rootCRData.SetMainCarrierHigh(crData.GetMainCarrierHigh());
+        rootCRData.SetMainCarrierLow(crData.GetMainCarrierLow());
+        rootCRData.SetSideBand(crData.GetSideBand());
+        return;
+    }
+
+    void KT2ROOT::UnloadClassifierResultsData(KTClassifierResultsData& crData, const Cicada::TClassifierResultsData& rootCRData)
+    {
+        crData.SetComponent(rootCRData.GetComponent());
+        crData.SetMainCarrierHigh(rootCRData.GetMainCarrierHigh());
+        crData.SetMainCarrierLow(rootCRData.GetMainCarrierLow());
+        crData.SetSideBand(rootCRData.GetSideBand());
+        return;
+    }
+
     void KT2ROOT::LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData)
     {
         rootMTEData.SetComponent(mteData.GetComponent()); rootMTEData.SetAcquisitionID(mteData.GetAcquisitionID()); rootMTEData.SetEventID(mteData.GetEventID()); rootMTEData.SetTotalEventSequences(mteData.GetTotalEventSequences());
@@ -638,7 +662,7 @@ namespace Katydid
         for (TrackSetCIt trIt = mteData.GetTracksBegin(); trIt != mteData.GetTracksEnd(); ++trIt)
         {
             Cicada::TProcessedTrackData* track = new((*tracks)[iTrack]) Cicada::TProcessedTrackData;
-            KT2ROOT::LoadProcTrackData(*trIt, *track);
+            KT2ROOT::LoadProcTrackData(trIt->fProcTrack, *track);
             ++iTrack;
         }
         return;
@@ -665,5 +689,54 @@ namespace Katydid
         return;
     }
 
+    void KT2ROOT::LoadProcMPTData(const KTProcessedMPTData& mptData, Cicada::TProcessedMPTData& rootMPTData)
+    {
+        rootMPTData.SetComponent(mptData.GetComponent());
+        KT2ROOT::LoadProcTrackData(mptData.GetMainTrack(), rootMPTData.MainTrack());
+        rootMPTData.SetAxialFrequency(mptData.GetAxialFrequency());
+        return;
+    }
+    void KT2ROOT::UnloadProcMPTData(KTProcessedMPTData& mptData, const Cicada::TProcessedMPTData& rootMPTData)
+    {
+        mptData.SetComponent(rootMPTData.GetComponent());
+        KT2ROOT::UnloadProcTrackData(mptData.GetMainTrack(), rootMPTData.MainTrack());
+        mptData.SetAxialFrequency(rootMPTData.GetAxialFrequency());
+        return;
+    }
+
+    void KT2ROOT::LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData)
+    {
+        LoadMultiTrackEventData(mteData, rootMTECRData);
+
+        Int_t nTracks = (Int_t)mteData.GetNTracks();
+        TClonesArray* classifierResults = rootMTECRData.GetClassifierResults();
+        classifierResults->Clear(); classifierResults->Expand(nTracks);
+        Int_t iTrack = 0;
+        for (TrackSetCIt trIt = mteData.GetTracksBegin(); trIt != mteData.GetTracksEnd(); ++trIt)
+        {
+            Cicada::TClassifierResultsData* classifierResult = new((*classifierResults)[iTrack]) Cicada::TClassifierResultsData;
+            // get the classifier results data from the proc track object for loading
+            KT2ROOT::LoadClassifierResultsData(trIt->fProcTrack.Of< KTClassifierResultsData >(), *classifierResult);
+            ++iTrack;
+        }
+        return;
+    }
+    void KT2ROOT::UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData)
+    {
+        UnloadMultiTrackEventData(mteData, rootMTECRData);
+
+        const TClonesArray* classifierResults = rootMTECRData.GetClassifierResults();
+        Int_t nTracks = classifierResults->GetSize();
+        // loop over tracks that have already been unloaded so we can add to each track
+        Int_t iTrack = 0;
+        for (TrackSetCIt trIt = mteData.GetTracksBegin(); trIt != mteData.GetTracksEnd(); ++trIt)
+        {
+            // add the classifier results data to the proc track object
+            KTClassifierResultsData& crData = trIt->fProcTrack.Of< KTClassifierResultsData >();
+            KT2ROOT::UnloadClassifierResultsData(crData, *(Cicada::TClassifierResultsData*)((*classifierResults)[iTrack]));
+            ++iTrack;
+        }
+        return;
+    }
 
 } /* namespace Katydid */

@@ -18,7 +18,7 @@ namespace Katydid {
 	 */
 	typedef struct {
 		unsigned fSlice;
-		double fTimeInRunCenter;
+		double fTimeInRunC;
 		unsigned fComponent;
 		unsigned fBin;
 		double fAbscissa;
@@ -29,7 +29,7 @@ namespace Katydid {
 	size_t DiscPointSize = sizeof(DiscPoint);
 	size_t DiscPointFieldOffset[7] = {
 		HOFFSET(DiscPoint, fSlice),
-		HOFFSET(DiscPoint, fTimeInRunCenter),
+		HOFFSET(DiscPoint, fTimeInRunC),
 		HOFFSET(DiscPoint, fComponent),
 		HOFFSET(DiscPoint, fBin),
 		HOFFSET(DiscPoint, fAbscissa),
@@ -39,7 +39,7 @@ namespace Katydid {
 
 	const char* DiscPointFieldName[7] = {
 		"Slice",
-		"TimeInRunCenter",
+		"TimeInRunC",
 		"Component",
 		"Bin",
 		"Abscissa",

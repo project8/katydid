@@ -61,8 +61,8 @@ namespace Katydid {
 
 		DiscPoint point;
 		point.fSlice = header.GetSliceNumber();
-		point.fTimeInRunCenter = header.GetTimeInRun();
-		for (point.fComponent = 0; point.fComponent < fcData.GetNComponents(); ++(point.fComponent) )
+		point.fTimeInRunC = header.GetTimeInRun() + 0.5*header.GetSliceLength();
+		for (point.fComponent = 0; point.fComponent < fcData.GetNComponents(); point.fComponent++)
 		{
 			const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(point.fComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
@@ -71,6 +71,7 @@ namespace Katydid {
                 point.fAbscissa = it->second.fAbscissa;
                 point.fOrdinate = it->second.fOrdinate;
                 point.fThreshold = it->second.fThreshold;
+                
                 fDiscPointBuffer.push_back(point);
            }
 		}
@@ -90,9 +91,9 @@ namespace Katydid {
 		hsize_t* dims = new hsize_t(fDiscPointBuffer.size());
 		H5::DataSpace dspace(1, dims);
 
-		if (fWriter->OpenAndVerifyFile() == false) return;
+		if ( !fWriter->OpenAndVerifyFile() ) return;
 
-		// Make a group
+		// Make a group for the disciminated points
 		H5::Group* swfGroup = fWriter->AddGroup("sparsewf");
 
 		// Ok, create the dataset and write it down.
