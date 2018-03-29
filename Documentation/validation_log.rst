@@ -43,11 +43,11 @@ Fixes:
 Log
 ---
 
-Version: *Upcoming Releases*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version: 2.10.0
+~~~~~~~~~~~~~~~
 
-Release Date: TBD
-'''''''''''''''''
+Release Date: March 29, 2018
+''''''''''''''''''''''''''''
 
 New Features:
 '''''''''''''
