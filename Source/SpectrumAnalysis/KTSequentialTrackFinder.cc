@@ -103,7 +103,7 @@ namespace Katydid
         }
         if (node->has("converge-delta"))
         {
-            SetConvergeDelta(node->get_value<int>("converge_delta"));
+            SetConvergeDelta(node->get_value<int>("converge-delta"));
         }
         if (node->has("initial-frequency-acceptance"))
         {
