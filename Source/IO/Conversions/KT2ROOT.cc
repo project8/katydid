@@ -699,7 +699,9 @@ namespace Katydid
     void KT2ROOT::UnloadProcMPTData(KTProcessedMPTData& mptData, const Cicada::TProcessedMPTData& rootMPTData)
     {
         mptData.SetComponent(rootMPTData.GetComponent());
-        KT2ROOT::UnloadProcTrackData(mptData.GetMainTrack(), rootMPTData.MainTrack());
+        KTProcessedTrackData track;
+        KT2ROOT::UnloadProcTrackData(track, rootMPTData.MainTrack());
+        mptData.SetMainTrack(track);
         mptData.SetAxialFrequency(rootMPTData.GetAxialFrequency());
         return;
     }
