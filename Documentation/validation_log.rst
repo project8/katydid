@@ -43,6 +43,18 @@ Fixes:
 Log
 ---
 
+Version: 2.10.1
+~~~~~~~~~~~~~~~
+
+Release Date: March 30, 2018
+''''''''''''''''''''''''''''
+
+Fixes:
+''''''
+
+* Fixed Cicada and Nymph branches that had somehow been reverted to older versions in the merges before the last commit.
+* Fixed a config error in the STF
+
 Version: 2.10.0
 ~~~~~~~~~~~~~~~
 
