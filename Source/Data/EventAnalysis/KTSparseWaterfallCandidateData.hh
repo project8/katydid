@@ -30,7 +30,7 @@ namespace Katydid
 
             struct PointCompare
             {
-                bool operator() (const Point& lhs, const Point& rhs)
+                bool operator() (const Point& lhs, const Point& rhs) const
                 {
                     return lhs.fTimeInRunC < rhs.fTimeInRunC || (lhs.fTimeInRunC == rhs.fTimeInRunC && lhs.fFrequency < rhs.fFrequency);
                 }
