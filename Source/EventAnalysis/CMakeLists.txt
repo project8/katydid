@@ -11,6 +11,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTDistanceMatrix.hh
     KTDBScanEventClustering.hh
     KTDBScanTrackClustering.hh
+    KTEventFirstTrackPowerCut.hh
     KTEventTimeCut.hh
     KTFrequencyCandidateIdentifier.hh
     KTIterativeTrackClustering.hh
@@ -40,6 +41,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTDataCutter.cc
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
+    KTEventFirstTrackPowercut.cc
     KTEventTimeCut.cc
     KTFrequencyCandidateIdentifier.cc
     KTIterativeTrackClustering.cc
