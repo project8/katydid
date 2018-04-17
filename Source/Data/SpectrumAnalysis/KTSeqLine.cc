@@ -76,7 +76,7 @@ namespace Katydid
     }
 
 
-    /*inline void LineRef::CalculateNewSlope()
+    /*inline void LineRef::CalculateUnweightedSlope()
     {
         fSumX = 0.0;
         fSumY = 0.0;
@@ -171,6 +171,11 @@ namespace Katydid
         fStartFrequency = fLinePoints.front().fPointFreq;
         fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
 
+        for(std::vector<LinePoint>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        {
+            fAmplitudeSum += pointIt->fAmplitude;
+        }
+
         this->UpdateLineProperties();
         //this->CalculateSlope();
     }
@@ -191,7 +196,7 @@ namespace Katydid
         fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
         fEndTimeInAcq = fLinePoints.back().fTimeInAcq;
         fEndFrequency = fLinePoints.back().fPointFreq;
-        fAmplitudeSum += fLinePoints.back().fAmplitude;
+        //fAmplitudeSum += fLinePoints.back().fAmplitude;
     }
 } /* namespace Katydid */
 
