@@ -44,8 +44,8 @@ option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for clas
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
-#set_option( Cicada_ENABLE_KATYDID_NAMESPACE FALSE )
-#set_option( Cicada_ADD_CICADA_PY FALSE )
+set_option( Cicada_ENABLE_KATYDID_NAMESPACE FALSE )
+set_option( Cicada_ADD_CICADA_PY TRUE )
 set_option( Cicada_ENABLE_EXECUTABLES FALSE )
 
 
