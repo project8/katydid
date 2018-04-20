@@ -14,7 +14,7 @@ namespace Katydid
 {
     KTLOGGER(exlog, "KTEventFitTrackPowerCut");
 
-    const std::string KTEventFirstTrackPowerCut::Result::sName = "event-time-cut";
+    const std::string KTEventFirstTrackPowerCut::Result::sName = "event-first-track-power-cut";
 
     KT_REGISTER_CUT(KTEventFirstTrackPowerCut);
 

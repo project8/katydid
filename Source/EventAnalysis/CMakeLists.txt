@@ -41,7 +41,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTDataCutter.cc
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
-    KTEventFirstTrackPowercut.cc
+    KTEventFirstTrackPowerCut.cc
     KTEventTimeCut.cc
     KTFrequencyCandidateIdentifier.cc
     KTIterativeTrackClustering.cc
