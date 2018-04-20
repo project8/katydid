@@ -40,7 +40,7 @@ namespace Katydid
         };
 
     public:
-        KTEventFirstTrackPowerCut(const std::string& name = "event-first-time-power-cut");
+        KTEventFirstTrackPowerCut(const std::string& name = "event-first-track-power-cut");
         ~KTEventFirstTrackPowerCut();
 
         bool Configure(const scarab::param_node* node);
