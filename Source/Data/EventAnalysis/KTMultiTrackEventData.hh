@@ -154,7 +154,7 @@ namespace Katydid
 
     struct MTRComp
     {
-        bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+        bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs) const
         {
             if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
             return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;

@@ -5,14 +5,13 @@
 #set (EVENTANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EventAnalysisDict.cxx)
 
 set (EVENTANALYSIS_HEADERFILES
-    KTCandidateCleaner.hh
-    KTCandidateTrackFinder.hh
     KTCollinearTrackClustering.hh
     KTDataCutter.hh
     KTDBScan.hh
     KTDistanceMatrix.hh
     KTDBScanEventClustering.hh
     KTDBScanTrackClustering.hh
+    KTEventFirstTrackPowerCut.hh
     KTEventTimeCut.hh
     KTFrequencyCandidateIdentifier.hh
     KTIterativeTrackClustering.hh
@@ -38,12 +37,11 @@ set (EVENTANALYSIS_HEADERFILES
 )
 
 set (EVENTANALYSIS_SOURCEFILES
-    KTCandidateCleaner.cc
-    KTCandidateTrackFinder.cc
     KTCollinearTrackClustering.cc
     KTDataCutter.cc
     KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
+    KTEventFirstTrackPowerCut.cc
     KTEventTimeCut.cc
     KTFrequencyCandidateIdentifier.cc
     KTIterativeTrackClustering.cc
