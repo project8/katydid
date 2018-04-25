@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.10.1)
+project (Katydid VERSION 2.11.0)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -45,7 +45,7 @@ option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for clas
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 set_option( Cicada_ENABLE_KATYDID_NAMESPACE FALSE )
-set_option( Cicada_ADD_CICADA_PY FALSE )
+set_option( Cicada_ADD_CICADA_PY TRUE )
 set_option( Cicada_ENABLE_EXECUTABLES FALSE )
 
 

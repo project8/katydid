@@ -25,7 +25,7 @@ namespace Katydid
         protected:
             struct ClusterCompare
             {
-                    bool operator() (const Cluster& lhs, const Cluster& rhs)
+                    bool operator() (const Cluster& lhs, const Cluster& rhs) const
                     {
                         return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
                     }

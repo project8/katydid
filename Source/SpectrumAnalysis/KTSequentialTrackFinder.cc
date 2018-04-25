@@ -291,6 +291,7 @@ namespace Katydid
                              if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
                              {
                                  KTINFO(stflog, "Found track candidate");
+                                 (this->*fCalcSlope)(*lineIt);
                                  this->EmitPreCandidate(*lineIt);
                              }
                          }

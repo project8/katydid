@@ -44,9 +44,9 @@ set (DATA_HEADERFILES
     Time/KTTimeSeriesData.hh
     Time/KTTimeSeriesFFTW.hh
     Time/KTTimeSeriesReal.hh
-    Evaluation/KTAnalysisCandidates.hh
-    Evaluation/KTCCResults.hh
-    Evaluation/KTMCTruthEvents.hh
+    #Evaluation/KTAnalysisCandidates.hh
+    #Evaluation/KTCCResults.hh
+    #Evaluation/KTMCTruthEvents.hh
     Transform/KTConvolvedSpectrumData.hh
     Transform/KTFrequencyDomainArray.hh
     Transform/KTFrequencySpectrum.hh
@@ -108,9 +108,9 @@ set (DATA_SOURCEFILES
     Time/KTTimeSeriesData.cc
     Time/KTTimeSeriesFFTW.cc
     Time/KTTimeSeriesReal.cc
-    Evaluation/KTAnalysisCandidates.cc
-    Evaluation/KTCCResults.cc
-    Evaluation/KTMCTruthEvents.cc
+    #Evaluation/KTAnalysisCandidates.cc
+    #Evaluation/KTCCResults.cc
+    #Evaluation/KTMCTruthEvents.cc
     Transform/KTConvolvedSpectrumData.cc
     Transform/KTFrequencyDomainArray.cc
     Transform/KTFrequencySpectrum.cc

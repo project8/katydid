@@ -43,6 +43,27 @@ Fixes:
 Log
 ---
 
+Version: 2.11.0
+~~~~~~~~~~~~~~~
+
+Release Date: April 25, 2018
+''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Added KTEventFirstTrackPowerCut
+    * Cuts multi-track events with low power/length.
+    * Validated by seeing that the threshold changes the number of events passing in a reasonable way.
+
+Fixes:
+''''''
+
+* Nymph upgraded to v1.4.4 (Scarab update to v1.5.4)
+* Fixed Cicada options
+* Improved power calculation in the STF
+
+
 Version: 2.10.1
 ~~~~~~~~~~~~~~~
 
