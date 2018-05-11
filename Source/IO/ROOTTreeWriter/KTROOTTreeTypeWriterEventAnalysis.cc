@@ -423,7 +423,7 @@ namespace Katydid
             KTINFO(publog, "Tree already exists!");
             fWriter->AddTree( fProcessedTrackTree );
 
-            fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
+            fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetDefaultObjectName(), &fProcessedTrackDataPtr);
         }
 
         KT2ROOT::LoadProcTrackData(ptData, *fProcessedTrackDataPtr);
@@ -444,7 +444,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedTrackTree );
 
-                fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
+                fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetDefaultObjectName(), &fProcessedTrackDataPtr);
 
                 return true;
             }
@@ -460,7 +460,7 @@ namespace Katydid
 
         //fProcessedTrackDataPtr = new Cicada::TProcessedTrackData();
 
-        fProcessedTrackTree->Branch("Track", "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
+        fProcessedTrackTree->Branch(fProcessedTrackDataPtr->GetDefaultObjectName(), "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
 
         return true;
     }
@@ -504,7 +504,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedMPTTree );
 
-                fProcessedMPTTree->SetBranchAddress("MultiPeakTrack", &fProcessedMPTDataPtr);
+                fProcessedMPTTree->SetBranchAddress(fProcessedMPTDataPtr->GetDefaultObjectName(), &fProcessedMPTDataPtr);
 
                 return true;
             }
@@ -520,7 +520,7 @@ namespace Katydid
 
         //fProcessedTrackDataPtr = new TProcessedTrackData();
 
-        fProcessedMPTTree->Branch("MultiPeakTrack", "Katydid::TProcessedMPTData", &fProcessedMPTDataPtr);
+        fProcessedMPTTree->Branch(fProcessedMPTDataPtr->GetDefaultObjectName(), "Katydid::TProcessedMPTData", &fProcessedMPTDataPtr);
 
         return true;
     }
@@ -652,7 +652,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMultiTrackEventTree );
 
-                fMultiTrackEventTree->SetBranchAddress("Event", &fMultiTrackEventDataPtr);
+                fMultiTrackEventTree->SetBranchAddress(fMultiTrackEventDataPtr->GetDefaultObjectName(), &fMultiTrackEventDataPtr);
 
                 return true;
             }
@@ -668,7 +668,7 @@ namespace Katydid
 
         fMultiTrackEventDataPtr = new Cicada::TMultiTrackEventData();
 
-        fMultiTrackEventTree->Branch("Event", "Cicada::TMultiTrackEventData", &fMultiTrackEventDataPtr);
+        fMultiTrackEventTree->Branch(fMultiTrackEventDataPtr->GetDefaultObjectName(), "Cicada::TMultiTrackEventData", &fMultiTrackEventDataPtr);
 
         return true;
     }
@@ -712,7 +712,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMTEWithClassifierResultsTree );
 
-                fMTEWithClassifierResultsTree->SetBranchAddress("Event", &fMTEWithClassifierResultsDataPtr);
+                fMTEWithClassifierResultsTree->SetBranchAddress(fMTEWithClassifierResultsDataPtr->GetDefaultObjectName(), &fMTEWithClassifierResultsDataPtr);
 
                 return true;
             }
@@ -728,7 +728,7 @@ namespace Katydid
 
         fMTEWithClassifierResultsDataPtr = new Cicada::TMTEWithClassifierResultsData();
 
-        fMTEWithClassifierResultsTree->Branch("Event", "Cicada::TMTEWithClassifierResultsData", &fMTEWithClassifierResultsDataPtr);
+        fMTEWithClassifierResultsTree->Branch(fMTEWithClassifierResultsDataPtr->GetDefaultObjectName(), "Cicada::TMTEWithClassifierResultsData", &fMTEWithClassifierResultsDataPtr);
 
         return true;
     }
