@@ -622,6 +622,7 @@ namespace Katydid
                 variance = (*varSplineImp)(iBin - fMinBin);
                 threshold = mean + fSigmaThreshold * sqrt( variance );
                 value = (*spectrum)(iBin);
+                KTWARN(sdlog, iBin << "  variance: " << variance << "  fSigmaThreshold: " << fSigmaThreshold << "  threshold: " << threshold);
                 if (value >= threshold)
                 {
                     if( fNormalize )
