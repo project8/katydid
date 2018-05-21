@@ -13,6 +13,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
 #    KTGainVarChi2Test.hh
     KTGainVariationProcessor.hh
     KTHoughTransform.hh
+    KTMatchedFilter.cc
     KTMergeKDTree.hh
     KTNNFilter.hh
     KTSequentialTrackFinder.hh
@@ -35,6 +36,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
 #    KTGainVarChi2Test.cc
     KTGainVariationProcessor.cc
     KTHoughTransform.cc
+    KTMatchedFilter.cc
     KTMergeKDTree.cc
     KTNNFilter.cc
     KTSequentialTrackFinder.cc
