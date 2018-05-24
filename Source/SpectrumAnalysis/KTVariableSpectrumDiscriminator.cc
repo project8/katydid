@@ -44,6 +44,7 @@ namespace Katydid
             KTProcessor(name),
             fSNRThreshold(10.),
             fSigmaThreshold(5.),
+            fPowerRadius(2.),
             fThresholdMode(eSigma),
             fMinFrequency(0.),
             fMaxFrequency(1.),
@@ -590,7 +591,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0., summedpower = 0;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -600,14 +601,18 @@ namespace Katydid
                 variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
+                    // Add summing over adjacent bins here
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fpowerRadius * normalizedValue;
                         variance = normalizedVariance;
                         mean = normalizedValue;
+                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fpowerRadius * normalizedValue;
                     }
-                    // second value to be replaced by summed power
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    summedpower = summedpower - (2* fPowerRadius - 1) * mean;
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, summedpower), component);
                 }
             }
         }
