@@ -26,7 +26,10 @@ namespace Katydid
                 double fAbscissa;
                 double fOrdinate;
                 double fThreshold;
-                Point(double abscissa, double ordinate, double threshold) : fAbscissa(abscissa), fOrdinate(ordinate), fThreshold(threshold) {}
+                double fBackground;
+                double fSigma;
+                double fSummedPower;
+                Point(double abscissa, double ordinate, double threshold, double background, double sigma, double summedpower) : fAbscissa(abscissa), fOrdinate(ordinate), fThreshold(threshold), fBackground(background), fSigma(sigma), fSummedPower(summedpower) {}
             };
             typedef std::map< unsigned, Point > SetOfPoints;
 
