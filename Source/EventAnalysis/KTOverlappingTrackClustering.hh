@@ -15,6 +15,7 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 
 #include <vector>
 
@@ -68,19 +69,25 @@ namespace Katydid
         public:
             // Store point information locally
             bool TakeTrack(KTProcessedTrackData& track);
-
+            bool TakeSWFCandidate(KTSparseWaterfallCandidateData& swfCand);
             //void SetNComponents(unsigned nComps);
-            bool DoClustering();
+            bool DoTrackClustering();
+            bool DoSWFClustering();
             bool Run();
 
 
         private:
             bool OverlapClustering();
+            bool OverlapSWFClustering();
             bool DoTheyOverlap(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
-            bool DoTheyCross(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
+            bool DoTheyOverlap(KTSparseWaterfallCandidateData& track1, KTSparseWaterfallCandidateData& track2);
+            //bool DoTheyCross(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
             const void CombineTracks(const KTProcessedTrackData& track1, KTProcessedTrackData& track2);
+            const void CombineSWFCandidates(const KTSparseWaterfallCandidateData& track1, KTSparseWaterfallCandidateData& track2);
             bool FindMatchingTracks();
+            bool FindMatchingSWFCands();
             void EmitTrackCandidates();
+            void EmitSWFCandidates();
             const void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
 
             //std::vector< TrackSet > fCompTracks; // input tracks
@@ -89,6 +96,8 @@ namespace Katydid
             std::vector<KTProcessedTrackData> fCompTracks;
             std::vector<KTProcessedTrackData> fNewTracks;
 
+            std::vector<KTSparseWaterfallCandidateData> fCompSWFCands;
+            std::vector<KTSparseWaterfallCandidateData> fNewSWFCands;
 
             //***************
             // Signals
@@ -96,6 +105,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTrackSignal;
+            Nymph::KTSignalData fSWFCandSignal;
             Nymph::KTSignalOneArg< void > fDoneSignal;
 
             //***************
@@ -104,6 +114,7 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
+            Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fTakeSWFCandSlot;
 
             void DoClusteringSlot();
 
