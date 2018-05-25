@@ -54,9 +54,6 @@ namespace Katydid
             fCalcSlope(&KTSequentialTrackFinder::CalculateSlopeFirstRef),
             fTrackSignal("pre-candidate", this),
             fClusterDoneSignal("clustering-done", this),
-            //fGainVarSlot("gv", this, &KTSequentialTrackFinder::SetPreCalcGainVar),
-            //fPSPreCalcSlot("ps-pre", this, &KTSeqTrack::PointLineAssignment),
-            //fPSSlot("ps-in", this, &KTSequentialTrackFinder::CollectPointsFromSlice),
             fDiscrimPowerSlot("disc-1d-ps", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
             fDiscrimSlot("disc-1d", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
             fDoneSlot("done", this, &KTSequentialTrackFinder::AcquisitionIsOver, &fClusterDoneSignal)
@@ -230,7 +227,7 @@ namespace Katydid
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
             {
                 //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
-                Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, acqID, iComponent);
+                Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
                 points.push_back(newPoint);
             }
 
@@ -529,12 +526,13 @@ namespace Katydid
         if (lineIsTrack == true)
         {
 
-            // Set up new data object
+            /*// Set up new data object
             Nymph::KTDataPtr data( new Nymph::KTData() );
             KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
             newTrack.SetComponent( line.fComponent );
             newTrack.SetTrackID(fNLines);
             ++fNLines;
+
 
             newTrack.SetStartTimeInRunC( line.fStartTimeInRunC );
             newTrack.SetEndTimeInRunC( line.fEndTimeInRunC );
@@ -546,12 +544,39 @@ namespace Katydid
             newTrack.SetInterceptSigma(line.fInterceptSigma);
             newTrack.SetStartFrequencySigma(line.fStartFrequencySigma);
             newTrack.SetEndFrequencySigma(line.fEndFrequencySigma);
-            newTrack.SetTotalPower(line.fAmplitudeSum);
+            newTrack.SetTotalPower(line.fAmplitudeSum);*/
+
+            // Set up new data object
+            Nymph::KTDataPtr data( new Nymph::KTData() );
+            KTSparseWaterfallCandidateData& newSwfCand = data->Of< KTSparseWaterfallCandidateData >();
+            newSwfCand.SetComponent( line.fComponent );
+            newSwfCand.SetAcquisitionID( line.fAcquisitionID);
+            newSwfCand.SetCandidateID( fNLines );
+            newSwfCand.SetMinimumFrequency( line.fStartFrequency );
+            newSwfCand.SetMaximumFrequency( line.fEndFrequency );
+            newSwfCand.SetTimeInRunC( line.fStartTimeInRunC );
+            newSwfCand.SetTimeInAcq( line.fStartTimeInAcq );
+            newSwfCand.SetMinimumTimeInRunC( line.fStartTimeInRunC );
+            newSwfCand.SetMinimumTimeInAcq( line.fStartTimeInAcq );
+            newSwfCand.SetMaximumTimeInRunC( line.fEndTimeInRunC );
+            newSwfCand.SetMaximumTimeInAcq( line.fEndTimeInAcq );
+            newSwfCand.SetFrequencyWidth( line.fEndFrequency - line.fStartFrequency );
+            newSwfCand.SetSlope( line.fSlope );
+            ++fNLines;
+
+            // Add line points to swf candidate
+            for(std::vector<Point>::iterator pointIt = line.fLinePoints.begin(); pointIt != line.fLinePoints.end(); ++pointIt )
+            {
+                KTBEBUG( stflog, "Adding points from SeqLine to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fPointFreq<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
+                KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fPointFreq, pointIt->fAmplitude, pointIt->fTimeInAcq );
+                newSwfCand.AddPoint(newSwfPoint);
+            }
+
 
             // Process & emit new track
 
-            KTINFO(stflog, "Now processing track candidate");
-            ProcessNewTrack( newTrack );
+            //KTINFO(stflog, "Now processing track candidate");
+            //ProcessNewTrack( newTrack );
 
             KTDEBUG(stflog, "Emitting track signal");
             fTrackSignal( data );
@@ -768,7 +793,7 @@ namespace Katydid
 
         if (Line.fNPoints > fNSlopePoints)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
                 if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
@@ -780,7 +805,7 @@ namespace Katydid
         }
         else if (Line.fNPoints > 1)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
                 if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
@@ -807,7 +832,7 @@ namespace Katydid
 
         if (Line.fNPoints > fNSlopePoints)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
                 if (pointIt->fPointFreq != Line.fEndFrequency)
                 {
@@ -819,7 +844,7 @@ namespace Katydid
         }
         else if (Line.fNPoints > 1)
         {
-            for(std::vector<LinePoint>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
                 if (pointIt->fPointFreq != Line.fEndFrequency)
                 {

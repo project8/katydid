@@ -62,6 +62,11 @@ namespace Katydid
             //MEMBERVARIABLE(uint64_t, LastSliceNumber);
             MEMBERVARIABLE(double, MinimumFrequency);
             MEMBERVARIABLE(double, MaximumFrequency);
+            MEMBERVARIABLE(double, MinimumTimeInRunC);
+            MEMBERVARIABLE(double, MaximumTimeInRunC);
+            MEMBERVARIABLE(double, MinimumTimeInAcq);
+            MEMBERVARIABLE(double, MaximumTimeInAcq);
+            MEMBERVARIABLE(double, Slope);
             //MEMBERVARIABLE(double, MeanStartFrequency);
             //MEMBERVARIABLE(double, MeanEndFrequency);
             MEMBERVARIABLE(double, FrequencyWidth);

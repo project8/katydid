@@ -19,7 +19,8 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTGainVariationData.hh"
 #include "KTSeqLine.hh"
-#include "KTProcessedTrackData.hh"
+//#include "KTProcessedTrackData.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 
 #include <iostream>

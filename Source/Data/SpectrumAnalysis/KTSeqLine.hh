@@ -29,12 +29,12 @@ namespace Katydid {
         double fThreshold;
         double fMean;
         double fVariance;
-        double fCombinedRegionalAmplitude;
+        double fNeighborhoodAmplitude;
         uint64_t fAcquisitionID;
         double fComponent;
 
-        Point(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, double mean, double variance, double combinedamplitude, uint64_t acqID, unsigned iComponent) : fBinInSlice(binInSclice), fPointFreq(pointFreq),
-                fTimeInAcq(timeInAcq), fTimeInRunC(timeInRunC), fAmplitude(amplitude), fThreshold(threshold), fMean(mean), fVariance(variance), fCombinedRegionalAmplitude(combinedamplitude), fAcquisitionID(acqID), fComponent(iComponent) {}
+        Point(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, double mean, double variance, double neighborhoodamplitude, uint64_t acqID, unsigned iComponent) : fBinInSlice(binInSclice), fPointFreq(pointFreq),
+                fTimeInAcq(timeInAcq), fTimeInRunC(timeInRunC), fAmplitude(amplitude), fThreshold(threshold), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodamplitude), fAcquisitionID(acqID), fComponent(iComponent) {}
 
         void Clear();
         bool operator > (const Point& str) const
