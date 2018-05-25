@@ -344,7 +344,7 @@ namespace Katydid
                          {
                              lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
 
-                             if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
+                             if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope >= fMinSlope)
                              {
                                  KTINFO(stflog, "Found track candidate");
                                  (this->*fCalcSlope)(*lineIt);
@@ -445,7 +445,7 @@ namespace Katydid
                          {
                              lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
 
-                             if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
+                             if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope >= fMinSlope)
                              {
                                  KTINFO(stflog, "Found track candidate");
                                  (this->*fCalcSlope)(*lineIt);
