@@ -63,8 +63,16 @@ namespace Katydid
             MEMBERVARIABLE(double, MaxTrackWidth);
             MEMBERVARIABLE(bool, ApplyPowerCut);
             MEMBERVARIABLE(bool, ApplyDensityCut);
+            MEMBERVARIABLE(bool, ApplyTotalSNRCut);
+            MEMBERVARIABLE(bool, ApplyAverageSNRCut);
+            MEMBERVARIABLE(bool, ApplyTotalNUPCut);
+            MEMBERVARIABLE(bool, ApplyAverageNUPCut);
             MEMBERVARIABLE(double, PowerThreshold);
             MEMBERVARIABLE(double, DensityThreshold);
+            MEMBERVARIABLE(double, TotalSNRThreshold);
+            MEMBERVARIABLE(double, AverageSNRThreshold);
+            MEMBERVARIABLE(double, TotalNUPThreshold);
+            MEMBERVARIABLE(double, AverageNUPThreshold);
             MEMBERVARIABLE(unsigned, NTracks);
 
 

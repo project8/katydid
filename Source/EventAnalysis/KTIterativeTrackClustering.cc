@@ -33,8 +33,16 @@ namespace Katydid
             fNTracks(0),
             fApplyPowerCut(false),
             fApplyDensityCut(false),
+            fApplyTotalSNRCut(false),
+            fApplyAverageSNRCut(false),
+            fApplyTotalNUPCut(false),
+            fApplyAverageNUPCut(false),
             fPowerThreshold(0.0),
             fDensityThreshold(0.0),
+            fTotalSNRThreshold(0.0),
+            fAverageSNRThreshold(0.0),
+            fTotalNUPThreshold(0.0),
+            fAverageNUPThreshold(0.0),
             fTrackSignal("track", this),
             fDoneSignal("tracks-done", this),
             fTakeTrackSlot("track", this, &KTIterativeTrackClustering::TakeTrack)
@@ -66,6 +74,26 @@ namespace Katydid
         {
             SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
             SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
+        }
+        if (node->has("apply-total-snr-cut"))
+        {
+            SetApplyTotalSNRCut(node->get_value("apply-total-snr-cut", GetApplyDensityCut()));
+            SetTotalSNRThreshold(node->get_value("total-snr-threshold", GetDensityThreshold()));
+        }
+        if (node->has("apply-average-snr-cut"))
+        {
+            SetApplyAverageSNRCut(node->get_value("apply-average-snr-cut", GetApplyDensityCut()));
+            SetAverageSNRThreshold(node->get_value("average-snr-threshold", GetDensityThreshold()));
+        }
+        if (node->has("apply-total-unitless-residual-cut"))
+        {
+            SetApplyTotalNUPCut(node->get_value("apply-total-unitless-residual-cut", GetApplyDensityCut()));
+            SetTotalNUPThreshold(node->get_value("total-unitless-residual-threshold", GetDensityThreshold()));
+        }
+        if (node->has("apply-average-unitless-residual-cut"))
+        {
+            SetApplyAverageNUPCut(node->get_value("apply-average-unitless-residual-cut", GetApplyDensityCut()));
+            SetAverageNUPThreshold(node->get_value("average-unitless-residual-threshold", GetDensityThreshold()));
         }
 
         return true;
@@ -311,7 +339,39 @@ namespace Katydid
             {
                 if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fDensityThreshold)
                 {
-                    KTDEBUG(itclog, "track power density below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fDensityThreshold);
+                    KTDEBUG(itclog, "average track power below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fDensityThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyTotalSNRCut)
+            {
+                if (trackIt->GetTotalPower() <= fTotalSNRThreshold)
+                {
+                    KTDEBUG(itclog, "total track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalSNRThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyAverageSNRCut)
+            {
+                if (trackIt->GetTotalPower() <= fAverageSNRThreshold)
+                {
+                    KTDEBUG(itclog, "average track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageSNRThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyTotalNUPCut)
+            {
+                if (trackIt->GetTotalPower() <= fTotalNUPThreshold)
+                {
+                    KTDEBUG(itclog, "total track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalNUPThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyAverageNUPCut)
+            {
+                if (trackIt->GetTotalPower() <= fAverageNUPThreshold)
+                {
+                    KTDEBUG(itclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageNUPThreshold);
                     lineIsTrack = false;
                 }
             }
