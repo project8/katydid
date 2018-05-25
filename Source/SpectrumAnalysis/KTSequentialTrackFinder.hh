@@ -140,8 +140,10 @@ namespace Katydid
             //bool SetPreCalcGainVar(KTGainVariationData& gvData);
             //bool CollectPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
             //bool CollectPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTGainVariationData& gvData);
             bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
             //bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
             bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
 
@@ -174,7 +176,8 @@ namespace Katydid
             //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
             //Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
             //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
-            Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimSlot;
+            Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimPowerSlot;
+            Nymph::KTSlotDataTwoTypes < KTSliceHeader, KTDiscriminatedPoints1DData > fDiscrimSlot;
             Nymph::KTSlotDone fDoneSlot;
 
     };

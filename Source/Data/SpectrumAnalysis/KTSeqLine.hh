@@ -27,11 +27,14 @@ namespace Katydid {
         double fTimeInRunC;
         double fAmplitude;
         double fThreshold;
+        double fMean;
+        double fVariance;
+        double fCombinedRegionalAmplitude;
         uint64_t fAcquisitionID;
         double fComponent;
 
-        Point(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, uint64_t acqID, unsigned iComponent) : fBinInSlice(binInSclice), fPointFreq(pointFreq),
-                fTimeInAcq(timeInAcq), fTimeInRunC(timeInRunC), fAmplitude(amplitude), fThreshold(threshold), fAcquisitionID(acqID), fComponent(iComponent) {}
+        Point(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, double mean, double variance, double combinedamplitude, uint64_t acqID, unsigned iComponent) : fBinInSlice(binInSclice), fPointFreq(pointFreq),
+                fTimeInAcq(timeInAcq), fTimeInRunC(timeInRunC), fAmplitude(amplitude), fThreshold(threshold), fMean(mean), fVariance(variance), fCombinedRegionalAmplitude(combinedamplitude), fAcquisitionID(acqID), fComponent(iComponent) {}
 
         void Clear();
         bool operator > (const Point& str) const
@@ -46,7 +49,7 @@ namespace Katydid {
 
     // this is a line point. Its amplitude is the sum of all bins in the power slice of its frequency +/- the line width
     // sort by time
-    struct LinePoint
+/*    struct LinePoint
     {
         double fBinInSlice;
         double fPointFreq;
@@ -69,8 +72,7 @@ namespace Katydid {
         {
             return (fTimeInRunC < str.fTimeInRunC);
         }
-    };
-
+    };*/
 
     struct LineRef
     {
@@ -82,7 +84,7 @@ namespace Katydid {
         };*/
 
         std::vector<double> fTrimmingLimits;
-        std::vector<LinePoint> fLinePoints;
+        std::vector<Point> fLinePoints;
         std::vector<double> fAmplitudeList;
 
         double fStartTimeInRunC;
@@ -91,18 +93,13 @@ namespace Katydid {
         double fEndTimeInAcq;
         double fStartFrequency;
         double fEndFrequency;
-        unsigned fLineWidth;
         double fInitialSlope;
         double fSlope;
         unsigned fComponent;
         double fAmplitudeSum;
         unsigned fNPoints;
         uint64_t fAcquisitionID;
-        unsigned fProcTrackMinPoints;
-        double fProcTrackAssError;
-        double fIntercept;
-        double fSlopeSigma;
-        double fInterceptSigma;
+        unsigned fMinPoints;
         double fStartFrequencySigma;
         double fEndFrequencySigma;
 

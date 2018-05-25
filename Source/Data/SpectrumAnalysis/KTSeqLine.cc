@@ -26,18 +26,13 @@ namespace Katydid
         fEndTimeInAcq(0.0),
         fStartFrequency(0.0),
         fEndFrequency(0.0),
-        fLineWidth(0.0),
         fInitialSlope(initialSlope),
         fSlope(0.0),
         fNPoints(0),
         fComponent(0),
         fAmplitudeSum(0.0),
         fAcquisitionID(0),
-        fProcTrackMinPoints(0),
-        fProcTrackAssError(0.),
-        fIntercept(0.),
-        fSlopeSigma(0.),
-        fInterceptSigma(0.),
+        fMinPoints(0),
         fStartFrequencySigma(0.),
         fEndFrequencySigma(0.),
         fSumX(0.),
@@ -45,19 +40,6 @@ namespace Katydid
         fSumXY(0.),
         fSumXX(0.)
         {
-           /*
-           if (slopeMethod == slope_method::weighted_first_point_ref)
-            {
-                f_calc_slope_func = &LineRef::CalculateSlope();
-            }
-            if (slopeMethod == slope_method::weighted)
-            {
-                f_calc_slope_func = &LineRef::CalculateNewSlope();
-            }
-            if (slopeMethod == slope_method::unweighted)
-            {
-                f_calc_slope_func = &LineRef::CalculateUnweightedSlope();
-            }*/
         }
 
     LineRef::~LineRef()
@@ -69,7 +51,8 @@ namespace Katydid
         fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(point.fAmplitude);
 
-        fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
+        //fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
+        fLinePoints.push_back(point);
         //KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();
         //this->*f_calc_slope_func();
@@ -171,7 +154,7 @@ namespace Katydid
         fStartFrequency = fLinePoints.front().fPointFreq;
         fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
 
-        for(std::vector<LinePoint>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        for(std::vector<Point>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
         {
             fAmplitudeSum += pointIt->fAmplitude;
         }
