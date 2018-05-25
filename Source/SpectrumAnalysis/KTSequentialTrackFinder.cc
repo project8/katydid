@@ -588,6 +588,7 @@ namespace Katydid
         return true;
     }
 
+    /*
     void KTSequentialTrackFinder::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
     {
         myNewTrack.SetTimeLength( myNewTrack.GetEndTimeInRunC() - myNewTrack.GetStartTimeInRunC() );
@@ -597,7 +598,7 @@ namespace Katydid
         //myNewTrack.SetSlope( myNewTrack.GetFrequencyWidth() / myNewTrack.GetTimeLength() );
         myNewTrack.SetIntercept( myNewTrack.GetStartFrequency() - myNewTrack.GetSlope() * myNewTrack.GetStartTimeInRunC() );
 
-    }
+    }*/
 
     void KTSequentialTrackFinder::UpdateLinePoint(Point& point, KTPowerSpectrum& slice)
     {

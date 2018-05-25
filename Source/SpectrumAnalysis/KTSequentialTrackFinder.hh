@@ -138,15 +138,13 @@ namespace Katydid
             std::vector< LineRef> fActiveLines;
 
         public:
-            //bool SetPreCalcGainVar(KTGainVariationData& gvData);
-            //bool CollectPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
-            //bool CollectPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTGainVariationData& gvData);
             bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
-            //bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
             bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
+            bool LoopOverHighPowerPoints(std::vector<Point>& points, unsigned component);
+
 
             void UpdateLinePoint(Point& point, KTPowerSpectrum& slice);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
@@ -155,7 +153,7 @@ namespace Katydid
             void CalculateSlopeLastRef(LineRef& Line);
             //void CalculateWeightedSlope(LineRef& Line);
             void CalculateUnweightedSlope(LineRef& Line);
-            void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
+            //void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
             bool EmitPreCandidate(LineRef line);
             void AcquisitionIsOver();
 
