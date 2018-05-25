@@ -353,7 +353,7 @@ namespace Katydid
             }
             if (fApplyAverageSNRCut)
             {
-                if (trackIt->GetTotalPower() <= fAverageSNRThreshold)
+                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
                 {
                     KTDEBUG(itclog, "average track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageSNRThreshold);
                     lineIsTrack = false;
@@ -369,7 +369,7 @@ namespace Katydid
             }
             if (fApplyAverageNUPCut)
             {
-                if (trackIt->GetTotalPower() <= fAverageNUPThreshold)
+                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageNUPThreshold)
                 {
                     KTDEBUG(itclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageNUPThreshold);
                     lineIsTrack = false;
