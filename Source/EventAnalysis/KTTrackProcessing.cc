@@ -61,26 +61,22 @@ namespace Katydid
         SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
         SetProcTrackAssignedError(node->get_value("assigned-error", GetProcTrackAssignedError()));
 
-        // if (node->has("algorithm"))
+        // KTDEBUG(tlog, "Making track reconstruction");
+        // if (fTrackProcAlgorithm == "double-cuts")
         // {
-        //     KTDEBUG(tlog, "Making track reconstruction");
-
-        //     if (fTrackProcAlgorithm == "double-cuts")
-        //     {
-        //         KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
-        //         fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
-        //     }
-        //     else if (fTrackProcAlgorithm == "weighted-slope")
-        //     {
-        //         KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
-        //         fTrackProcPtr = &KTTrackProcessing::ProcessTrackWeightedSlope;
-        //         fTrackProc2Ptr = &KTTrackProcessing::ProcessTrackWeightedSlope;
-        //     }
-        //     else
-        //     {
-        //         KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
-        //         return false;
-        //     }
+        //     KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
+        //     fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
+        // }
+        // else if (fTrackProcAlgorithm == "weighted-slope")
+        // {
+        //     KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+        //     fTrackProcPtr = &KTTrackProcessing::ProcessTrackWeightedSlope;
+        //     fTrackProc2Ptr = &KTTrackProcessing::ProcessTrackWeightedSlope;
+        // }
+        // else
+        // {
+        //     KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
+        //     return false;
         // }
 
         return true;
@@ -114,6 +110,7 @@ namespace Katydid
             KTERROR(tlog, "Cannot use " << fTrackProcAlgorithm << "algorithm with only SparseWaterfallCandidate!");
             return false;
         }
+        KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
         return KTTrackProcessing::ProcessTrackWeightedSlope(swfData);
     }
 
