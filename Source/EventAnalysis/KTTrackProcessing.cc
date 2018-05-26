@@ -38,9 +38,9 @@ namespace Katydid
             fProcTrackMinPoints(0),
             fProcTrackAssError(0.),
             fTrackSignal("track", this),
-            fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
-            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal),
-            fSWFSlot("swfc", this, &KTTrackProcessing::ProcessTrack2, &fTrackSignal)
+            // fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
+            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrackSWFAndHough, &fTrackSignal),
+            fSWFSlot("swfc", this, &KTTrackProcessing::ProcessTrackSWF, &fTrackSignal)
     {
     }
 
@@ -82,7 +82,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTTrackProcessing::ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
+    bool KTTrackProcessing::ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
     {
         KTDEBUG(tlog, "Track processing");
         if (fTrackProcAlgorithm == "double-cuts")
@@ -103,7 +103,7 @@ namespace Katydid
         // return (this->*fTrackProcPtr)(swfData,htData);
     }
 
-    bool KTTrackProcessing::ProcessTrack2(KTSparseWaterfallCandidateData& swfData)
+    bool KTTrackProcessing::ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData)
     {
         KTDEBUG(tlog, "Track processing");
         if (fTrackProcAlgorithm=="double-cuts") {

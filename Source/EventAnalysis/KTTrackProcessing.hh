@@ -75,9 +75,10 @@ namespace Katydid
             void SetProcTrackAssignedError(double err);
 
         private:
+            std::string fTrackProcAlgorithm;
+
             double fPointLineDistCut1;
             double fPointLineDistCut2;
-            std::string fTrackProcAlgorithm;
 
             double fSlopeMinimum;
 
@@ -85,8 +86,8 @@ namespace Katydid
             double fProcTrackAssError;
 
         public:
-            bool ProcessTrack2(KTSparseWaterfallCandidateData& swfData);
-            bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            bool ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData);
+            bool ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData);
 
@@ -94,10 +95,10 @@ namespace Katydid
         private:
             /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
-            typedef bool (KTTrackProcessing::*TrackProcPtr)(KTSparseWaterfallCandidateData& , KTHoughData& );
-            typedef bool (KTTrackProcessing::*TrackProc2Ptr)(KTSparseWaterfallCandidateData& );
-            TrackProcPtr fTrackProcPtr;
-            TrackProcPtr fTrackProc2Ptr;
+            // typedef bool (KTTrackProcessing::*TrackProcPtr)(KTSparseWaterfallCandidateData& , KTHoughData& );
+            // typedef bool (KTTrackProcessing::*TrackProcPtr)(KTSparseWaterfallCandidateData& );
+            // TrackProcPtr fTrackProcPtr;
+            // TrackProcPtr fTrackProc2Ptr;
 
             //***************
             // Signals
