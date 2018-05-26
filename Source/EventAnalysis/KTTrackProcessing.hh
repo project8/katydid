@@ -24,7 +24,7 @@ namespace Katydid
 
     /*!
      @class KTTrackProcessing
-     @author N.S. Oblath & B. LaRoque
+     @author N.S. Oblath, B. LaRoque & M. Guigue
 
      @brief Extracts physics-relevant information about tracks
 
@@ -41,6 +41,7 @@ namespace Katydid
      - "assigned-error": double -- Error assigned to the points in case of perfectly aligned points
 
      Slots:
+     - "swfc": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData; Adds KTProcessedTrackData; Emits signal "track"
      - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
 
      Signals:
@@ -54,6 +55,9 @@ namespace Katydid
             virtual ~KTTrackProcessing();
 
             bool Configure(const scarab::param_node* node);
+
+            std::string GetTrackProcAlgorithm() const;
+            void SetTrackProcAlgorithm(std::string algorithm);
 
             double GetPointLineDistCut1() const;
             void SetPointLineDistCut1(double dist);
@@ -73,6 +77,7 @@ namespace Katydid
         private:
             double fPointLineDistCut1;
             double fPointLineDistCut2;
+            std::string fTrackProcAlgorithm;
 
             double fSlopeMinimum;
 
@@ -80,16 +85,19 @@ namespace Katydid
             double fProcTrackAssError;
 
         public:
+            bool ProcessTrack2(KTSparseWaterfallCandidateData& swfData);
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData);
 
 
         private:
             /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
             typedef bool (KTTrackProcessing::*TrackProcPtr)(KTSparseWaterfallCandidateData& , KTHoughData& );
+            typedef bool (KTTrackProcessing::*TrackProc2Ptr)(KTSparseWaterfallCandidateData& );
             TrackProcPtr fTrackProcPtr;
+            TrackProcPtr fTrackProc2Ptr;
 
             //***************
             // Signals
@@ -103,9 +111,20 @@ namespace Katydid
             //***************
 
         private:
+            Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFSlot;
             Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
 
     };
+
+    inline std::string KTTrackProcessing::GetTrackProcAlgorithm() const
+    {
+        return fTrackProcAlgorithm;
+    }
+    inline void KTTrackProcessing::SetTrackProcAlgorithm(std::string algorithm)
+    {
+        fTrackProcAlgorithm = algorithm;
+        return;
+    }
 
     inline double KTTrackProcessing::GetPointLineDistCut1() const
     {

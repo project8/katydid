@@ -31,6 +31,7 @@ namespace Katydid
 
     KTTrackProcessing::KTTrackProcessing(const std::string& name) :
             KTProcessor(name),
+            fTrackProcAlgorithm("weighted-slope"),
             fPointLineDistCut1(0.1),
             fPointLineDistCut2(0.05),
             fSlopeMinimum(-std::numeric_limits< double >::max()),
@@ -38,7 +39,8 @@ namespace Katydid
             fProcTrackAssError(0.),
             fTrackSignal("track", this),
             fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
-            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
+            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal),
+            fSWFSlot("swfc", this, &KTTrackProcessing::ProcessTrack2, &fTrackSignal)
     {
     }
 
@@ -50,6 +52,8 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
+        SetTrackProcAlgorithm(node->get_value("algorithm", GetTrackProcAlgorithm()));
+
         SetPointLineDistCut1(node->get_value("pl-dist-cut1", GetPointLineDistCut1()));
         SetPointLineDistCut2(node->get_value("pl-dist-cut2", GetPointLineDistCut2()));
 
@@ -57,27 +61,27 @@ namespace Katydid
         SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
         SetProcTrackAssignedError(node->get_value("assigned-error", GetProcTrackAssignedError()));
 
-        if (node->has("algorithm"))
-        {
-            KTDEBUG(tlog, "Making track reconstruction");
+        // if (node->has("algorithm"))
+        // {
+        //     KTDEBUG(tlog, "Making track reconstruction");
 
-            string procTrackAlgorithm(node->get_value("algorithm"));
-            if (procTrackAlgorithm == "double-cuts")
-            {
-                KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
-                fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
-            }
-            else if (procTrackAlgorithm == "weighted-slope")
-            {
-                KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
-                fTrackProcPtr = &KTTrackProcessing::ProcessTrackWeightedSlope;
-            }
-            else
-            {
-                KTERROR(tlog, "Invalid value for \"track-slope\": <" << procTrackAlgorithm << ">");
-                return false;
-            }
-        }
+        //     if (fTrackProcAlgorithm == "double-cuts")
+        //     {
+        //         KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
+        //         fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
+        //     }
+        //     else if (fTrackProcAlgorithm == "weighted-slope")
+        //     {
+        //         KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+        //         fTrackProcPtr = &KTTrackProcessing::ProcessTrackWeightedSlope;
+        //         fTrackProc2Ptr = &KTTrackProcessing::ProcessTrackWeightedSlope;
+        //     }
+        //     else
+        //     {
+        //         KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
+        //         return false;
+        //     }
+        // }
 
         return true;
     }
@@ -85,7 +89,32 @@ namespace Katydid
     bool KTTrackProcessing::ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
     {
         KTDEBUG(tlog, "Track processing");
-        return (this->*fTrackProcPtr)(swfData,htData);
+        if (fTrackProcAlgorithm == "double-cuts")
+        {
+            KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
+            return KTTrackProcessing::ProcessTrackDoubleCuts(swfData,htData);
+            // fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
+        }
+        else if (fTrackProcAlgorithm == "weighted-slope")
+        {
+            KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+            return KTTrackProcessing::ProcessTrackWeightedSlope(swfData);
+
+        }
+        KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
+        return false;
+
+        // return (this->*fTrackProcPtr)(swfData,htData);
+    }
+
+    bool KTTrackProcessing::ProcessTrack2(KTSparseWaterfallCandidateData& swfData)
+    {
+        KTDEBUG(tlog, "Track processing");
+        if (fTrackProcAlgorithm=="double-cuts") {
+            KTERROR(tlog, "Cannot use " << fTrackProcAlgorithm << "algorithm with only SparseWaterfallCandidate!");
+            return false;
+        }
+        return KTTrackProcessing::ProcessTrackWeightedSlope(swfData);
     }
 
     bool KTTrackProcessing::ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
@@ -275,7 +304,7 @@ namespace Katydid
     }
 
 
-    bool KTTrackProcessing::ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
+    bool KTTrackProcessing::ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData)
     {
         unsigned component = swfData.GetComponent();
         unsigned trackID = swfData.GetCandidateID();
@@ -402,7 +431,8 @@ namespace Katydid
         // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
 
         // Adding resuts to ProcessedTrackData object
-        KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
+        Nymph::KTDataPtr data(new Nymph::KTData());
+        KTProcessedTrackData& procTrack = data->Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
         procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
         procTrack.SetTrackID(trackID);
