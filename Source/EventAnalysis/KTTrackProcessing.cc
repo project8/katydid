@@ -36,7 +36,7 @@ namespace Katydid
             fPointLineDistCut2(0.05),
             fSlopeMinimum(-std::numeric_limits< double >::max()),
             fProcTrackMinPoints(0),
-            fProcTrackAssError(0.),
+            fProcTrackAssignedError(0.),
             fTrackSignal("track", this),
             // fTrackProcPtr(&KTTrackProcessing::ProcessTrackDoubleCuts),
             fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrackSWFAndHough, &fTrackSignal),
@@ -54,9 +54,11 @@ namespace Katydid
 
         SetTrackProcAlgorithm(node->get_value("algorithm", GetTrackProcAlgorithm()));
 
-        SetPointLineDistCut1(node->get_value("pl-dist-cut1", GetPointLineDistCut1()));
-        SetPointLineDistCut2(node->get_value("pl-dist-cut2", GetPointLineDistCut2()));
-
+        if (fTrackProcAlgorithm == "weighted-slope")
+        {
+            SetPointLineDistCut1(node->get_value("pl-dist-cut1", GetPointLineDistCut1()));
+            SetPointLineDistCut2(node->get_value("pl-dist-cut2", GetPointLineDistCut2()));
+        };
         SetSlopeMinimum(node->get_value("min-slope", GetSlopeMinimum()));
         SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
         SetProcTrackAssignedError(node->get_value("assigned-error", GetProcTrackAssignedError()));
@@ -404,9 +406,9 @@ namespace Katydid
 
             if (chi2min < 0.1)
             {
-                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssError << ")");
-                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
-                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
+                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssignedError << ")");
+                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssignedError);
+                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssignedError);
             }
             else
             {
