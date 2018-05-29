@@ -115,7 +115,8 @@ namespace Katydid
             MEMBERVARIABLE(double, TimeGapTolerance);
 
             // Parameters for line post-processing
-            MEMBERVARIABLE(double, TrimmingFactor);
+            //MEMBERVARIABLE(double, TrimmingFactor);
+            MEMBERVARIABLE(double, TrimmingThreshold);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, MinSlope);
             MEMBERVARIABLE(bool, ApplyTotalPowerCut);

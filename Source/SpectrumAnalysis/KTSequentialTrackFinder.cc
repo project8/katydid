@@ -24,7 +24,7 @@ namespace Katydid
 
     KTSequentialTrackFinder::KTSequentialTrackFinder(const std::string& name) :
             KTProcessor(name),
-            fTrimmingFactor(3.2),
+            fTrimmingThreshold(6),
             fLinePowerRadius(4),
             fPointAmplitudeAfterVisit(0),
             fMinFreqBinDistance(10),
@@ -79,7 +79,7 @@ namespace Katydid
         SetMinFrequency(node->get_value("min-frequency", GetMinFrequency()));
         SetMaxFrequency(node->get_value("max-frequency", GetMaxFrequency()));
 
-        SetTrimmingFactor(node->get_value("trimming-factor", GetTrimmingFactor()));
+        SetTrimmingThreshold(node->get_value("trimming-threshold", GetTrimmingThreshold()));
         SetLinePowerRadius(node->get_value("line-power-radius", GetLinePowerRadius()));
         SetMinPoints(node->get_value("min-points", GetMinPoints()));
         SetMinSlope(node->get_value("min-slope", GetMinSlope()));
@@ -370,7 +370,7 @@ namespace Katydid
                      {
                          if (lineIt->fNPoints >= fMinPoints)
                          {
-                             lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+                             lineIt->LineSNRTrimming(fTrimmingThreshold, fMinPoints);
 
                              if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope >= fMinSlope)
                              {
@@ -471,7 +471,7 @@ namespace Katydid
                      {
                          if (lineIt->fNPoints >= fMinPoints)
                          {
-                             lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+                             lineIt->LineSNRTrimming(fTrimmingThreshold, fMinPoints);
 
                              if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope >= fMinSlope)
                              {
@@ -753,7 +753,7 @@ namespace Katydid
         {
             if (lineIt->fNPoints >= fMinPoints)
             {
-                lineIt->LineTrimming(fTrimmingFactor, fMinPoints);
+                lineIt->LineSNRTrimming(fTrimmingThreshold, fMinPoints);
 
                 if (lineIt->fNPoints >= fMinPoints and lineIt->fSlope > fMinSlope)
                 {

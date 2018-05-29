@@ -129,7 +129,7 @@ namespace Katydid
             }
         }*/
 
-    void LineRef::LineTrimming( const double& trimmingFactor, const unsigned& minPoints )
+    /*void LineRef::LineTrimming( const double& trimmingFactor, const unsigned& minPoints )
     {
         KTDEBUG( seqlog, "Trimming line edges. Trimming factor is "<<trimmingFactor );
 
@@ -168,7 +168,7 @@ namespace Katydid
 
         this->UpdateLineProperties();
         //this->CalculateSlope();
-    }
+    }*/
     void LineRef::LineSNRTrimming( const double& trimmingThreshold, const unsigned& minPoints )
     {
         KTDEBUG( seqlog, "Trimming line edges. Trimming SNR threshold is "<<trimmingThreshold );
