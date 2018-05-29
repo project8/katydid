@@ -612,7 +612,7 @@ namespace Katydid
                     }
                     summedpower = summedpower - (2* fPowerRadius - 1) * mean;
 
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, summedpower), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
             }
         }
@@ -638,7 +638,7 @@ namespace Katydid
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
             }
         }
