@@ -31,13 +31,21 @@ namespace Katydid
             fCompTracks(),
             fNewTracks(),
             fNTracks(0),
-            fApplyPowerCut(false),
-            fApplyDensityCut(false),
-            fPowerThreshold(0.0),
-            fDensityThreshold(0.0),
+            fApplyTotalPowerCut(false),
+            fApplyAveragePowerCut(false),
+            fApplyTotalSNRCut(false),
+            fApplyAverageSNRCut(false),
+            fApplyTotalUnitlessResidualCut(false),
+            fApplyAverageUnitlessResidualCut(false),
+            fTotalPowerThreshold(0.0),
+            fAveragePowerThreshold(0.0),
+            fTotalSNRThreshold(0.0),
+            fAverageSNRThreshold(0.0),
+            fTotalUnitlessResidualThreshold(0.0),
+            fAverageUnitlessResidualThreshold(0.0),
             fTrackSignal("track", this),
             fSWFCandSignal("swf-cand", this),
-            fDoneSignal("tracks-done", this),
+            fDoneSignal("clustering-done", this),
             fTakeTrackSlot("track", this, &KTOverlappingTrackClustering::TakeTrack),
             fTakeSWFCandSlot("swf-cand", this, &KTOverlappingTrackClustering::TakeSWFCandidate)
     {
@@ -58,13 +66,33 @@ namespace Katydid
         }
         if (node->has("apply-power-cut"))
         {
-            SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
-            SetPowerThreshold(node->get_value("power-threshold", GetPowerThreshold()));
+            SetApplyTotalPowerCut(node->get_value("apply-power-cut", GetApplyTotalPowerCut()));
+            SetTotalPowerThreshold(node->get_value("power-threshold", GetTotalPowerThreshold()));
         }
         if (node->has("apply-power-density-cut"))
         {
-            SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
-            SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
+            SetApplyAveragePowerCut(node->get_value("apply-power-density-cut", GetApplyAveragePowerCut()));
+            SetAveragePowerThreshold(node->get_value("power-density-threshold", GetAveragePowerThreshold()));
+        }
+        if (node->has("apply-total-snr-cut"))
+        {
+            SetApplyTotalSNRCut(node->get_value("apply-total-snr-cut", GetApplyTotalSNRCut()));
+            SetTotalSNRThreshold(node->get_value("total-snr-threshold", GetTotalSNRThreshold()));
+        }
+        if (node->has("apply-average-snr-cut"))
+        {
+            SetApplyAverageSNRCut(node->get_value("apply-average-snr-cut", GetApplyAverageSNRCut()));
+            SetAverageSNRThreshold(node->get_value("average-snr-threshold", GetAverageSNRThreshold()));
+        }
+        if (node->has("apply-total-unitless-residual-cut"))
+        {
+            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-unitless-residual-cut", GetApplyTotalUnitlessResidualCut()));
+            SetTotalUnitlessResidualThreshold(node->get_value("total-unitless-residual-threshold", GetTotalUnitlessResidualThreshold()));
+        }
+        if (node->has("apply-average-unitless-residual-cut"))
+        {
+            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-unitless-residual-cut", GetApplyAverageUnitlessResidualCut()));
+            SetAverageUnitlessResidualThreshold(node->get_value("average-unitless-residual-threshold", GetAverageUnitlessResidualThreshold()));
         }
         return true;
     }
@@ -487,19 +515,51 @@ namespace Katydid
         {
             lineIsTrack = true;
 
-            if (fApplyPowerCut)
+            if (fApplyTotalPowerCut)
             {
-                if (trackIt->GetTotalPower() <= fPowerThreshold)
+                if (trackIt->GetTotalPower() <= fTotalPowerThreshold)
                 {
-                    KTDEBUG(otclog, "Track total power below threshold: "<<trackIt->GetTotalPower()<<" "<<fPowerThreshold);
+                    KTDEBUG(otclog, "track power below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalPowerThreshold);
                     lineIsTrack = false;
                 }
             }
-            if (fApplyDensityCut)
+            if (fApplyAveragePowerCut)
             {
-                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fDensityThreshold)
+                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAveragePowerThreshold)
                 {
-                    KTDEBUG(otclog, "Track power density below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fDensityThreshold);
+                    KTDEBUG(otclog, "average track power below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fAveragePowerThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyTotalSNRCut)
+            {
+                if (trackIt->GetTotalPower() <= fTotalSNRThreshold)
+                {
+                    KTDEBUG(otclog, "total track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalSNRThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyAverageSNRCut)
+            {
+                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
+                {
+                    KTDEBUG(otclog, "average track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageSNRThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyTotalUnitlessResidualCut)
+            {
+                if (trackIt->GetTotalPower() <= fTotalUnitlessResidualThreshold)
+                {
+                    KTDEBUG(otclog, "total track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalUnitlessResidualThreshold);
+                    lineIsTrack = false;
+                }
+            }
+            if (fApplyAverageUnitlessResidualCut)
+            {
+                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
+                {
+                    KTDEBUG(otclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageUnitlessResidualThreshold);
                     lineIsTrack = false;
                 }
             }
