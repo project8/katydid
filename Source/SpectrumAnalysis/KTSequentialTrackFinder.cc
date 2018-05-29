@@ -47,10 +47,18 @@ namespace Katydid
             fCalculateMaxBin(true),
             fActiveLines(),
             fNLines(0),
-            fApplyPowerCut(false),
-            fApplyDensityCut(false),
-            fPowerThreshold(0.0),
-            fDensityThreshold(0.0),
+            fApplyTotalPowerCut(false),
+            fApplyAveragePowerCut(false),
+            fApplyTotalSNRCut(false),
+            fApplyAverageSNRCut(false),
+            fApplyTotalUnitlessResidualCut(false),
+            fApplyAverageUnitlessResidualCut(false),
+            fTotalPowerThreshold(0.0),
+            fAveragePowerThreshold(0.0),
+            fTotalSNRThreshold(0.0),
+            fAverageSNRThreshold(0.0),
+            fTotalUnitlessResidualThreshold(0.0),
+            fAverageUnitlessResidualThreshold(0.0),
             fCalcSlope(&KTSequentialTrackFinder::CalculateSlopeFirstRef),
             fTrackSignal("pre-candidate", this),
             fClusterDoneSignal("clustering-done", this),
@@ -113,13 +121,33 @@ namespace Katydid
         }
         if (node->has("apply-power-cut"))
         {
-            SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
-            SetPowerThreshold(node->get_value("power-threshold", GetPowerThreshold()));
+            SetApplyTotalPowerCut(node->get_value("apply-power-cut", GetApplyTotalPowerCut()));
+            SetTotalPowerThreshold(node->get_value("power-threshold", GetTotalPowerThreshold()));
         }
         if (node->has("apply-power-density-cut"))
         {
-            SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
-            SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
+            SetApplyAveragePowerCut(node->get_value("apply-power-density-cut", GetApplyAveragePowerCut()));
+            SetAveragePowerThreshold(node->get_value("power-density-threshold", GetAveragePowerThreshold()));
+        }
+        if (node->has("apply-total-snr-cut"))
+        {
+            SetApplyTotalSNRCut(node->get_value("apply-total-snr-cut", GetApplyTotalSNRCut()));
+            SetTotalSNRThreshold(node->get_value("total-snr-threshold", GetTotalSNRThreshold()));
+        }
+        if (node->has("apply-average-snr-cut"))
+        {
+            SetApplyAverageSNRCut(node->get_value("apply-average-snr-cut", GetApplyAverageSNRCut()));
+            SetAverageSNRThreshold(node->get_value("power-average-snr-threshold", GetAverageSNRThreshold()));
+        }
+        if (node->has("apply-total-residual-cut"))
+        {
+            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-residual-cut", GetApplyTotalUnitlessResidualCut()));
+            SetTotalUnitlessResidualThreshold(node->get_value("total-residual-threshold", GetTotalUnitlessResidualThreshold()));
+        }
+        if (node->has("apply-average-residual-cut"))
+        {
+            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-residual-cut", GetApplyAverageUnitlessResidualCut()));
+            SetAverageUnitlessResidualThreshold(node->get_value("power-average-residual-threshold", GetAverageUnitlessResidualThreshold()));
         }
         if (node->has("n-slope-points"))
         {
@@ -506,24 +534,52 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::EmitPreCandidate(LineRef line)
     {
-        bool lineIsTrack = true;
+        bool lineIsCandidate = true;
 
-        if (fApplyPowerCut)
+        if ( fApplyTotalPowerCut )
         {
-            if (line.fAmplitudeSum <= fPowerThreshold)
+            if ( line.fAmplitudeSum <= fTotalPowerThreshold )
             {
-                lineIsTrack = false;
+                lineIsCandidate = false;
             }
         }
-        if (fApplyDensityCut)
+        if ( fApplyAveragePowerCut )
         {
-            if ((double)line.fAmplitudeSum/(line.fEndTimeInRunC-line.fStartTimeInRunC) <= fDensityThreshold)
+            if ( line.fAmplitudeSum/(line.fEndTimeInRunC-line.fStartTimeInRunC) <= fAveragePowerThreshold )
             {
-                lineIsTrack = false;
+                lineIsCandidate = false;
             }
         }
-
-        if (lineIsTrack == true)
+        if ( fApplyTotalSNRCut )
+        {
+            if ( line.fSNRSum <= fTotalSNRThreshold)
+            {
+                lineIsCandidate = false;
+            }
+        }
+        if ( fApplyAverageSNRCut )
+        {
+            if ( line.fSNRSum / ( line.fEndTimeInRunC - line.fStartTimeInRunC ) <= fAverageSNRThreshold )
+            {
+                lineIsCandidate = false;
+            }
+        }
+        if ( fApplyTotalUnitlessResidualCut )
+        {
+            if ( line.fNUPSum <= fTotalUnitlessResidualThreshold )
+            {
+                lineIsCandidate = false;
+            }
+        }
+        if ( fApplyAverageUnitlessResidualCut )
+        {
+            if ( line.fNUPSum / ( line.fEndTimeInRunC - line.fStartTimeInRunC ) <= fAverageUnitlessResidualThreshold )
+            {
+                lineIsCandidate = false;
+            }
+        }
+        // after all cuts have been applied and point cluster is still a candidate, create SparseWaterfallCandidateData
+        if (lineIsCandidate == true)
         {
 
             /*// Set up new data object

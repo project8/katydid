@@ -86,6 +86,7 @@ namespace Katydid {
         std::vector<double> fTrimmingLimits;
         std::vector<Point> fLinePoints;
         std::vector<double> fAmplitudeList;
+        std::vector<double> fSNRList;
 
         double fStartTimeInRunC;
         double fEndTimeInRunC;
@@ -97,6 +98,8 @@ namespace Katydid {
         double fSlope;
         unsigned fComponent;
         double fAmplitudeSum;
+        double fSNRSum;
+        double fNUPSum;
         unsigned fNPoints;
         uint64_t fAcquisitionID;
         unsigned fMinPoints;
@@ -111,7 +114,8 @@ namespace Katydid {
 
         LineRef(const double& initialSlope);
         void InsertPoint(const Point& point);
-        void LineTrimming(const double& trimminFactor, const unsigned& minPoints);
+        void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
+        void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
         //void (LineRef::*f_calc_slope_func)();
         //void CalculateSlope();
         //void CalculateNewSlope();

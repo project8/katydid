@@ -31,6 +31,8 @@ namespace Katydid
         fNPoints(0),
         fComponent(0),
         fAmplitudeSum(0.0),
+        fSNRSum(0.0),
+        fNUPSum(0.0),
         fAcquisitionID(0),
         fMinPoints(0),
         fStartFrequencySigma(0.),
@@ -45,11 +47,12 @@ namespace Katydid
     LineRef::~LineRef()
     {}
 
-    void LineRef::InsertPoint(const Point& point)
+    void LineRef::InsertPoint( const Point& point )
     {
 
         fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(point.fNeighborhoodAmplitude);
+        fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
 
         //fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
         fLinePoints.push_back(point);
@@ -126,23 +129,65 @@ namespace Katydid
             }
         }*/
 
-    void LineRef::LineTrimming(const double& trimmingFactor, const unsigned& minPoints)
+    void LineRef::LineTrimming( const double& trimmingFactor, const unsigned& minPoints )
     {
-        KTDEBUG(seqlog, "Trimming line edges. Trimming factor is "<<trimmingFactor);
+        KTDEBUG( seqlog, "Trimming line edges. Trimming factor is "<<trimmingFactor );
 
-        if (!fAmplitudeList.empty())
+        if ( !fAmplitudeList.empty() )
         {
-            while (fAmplitudeList.back() < trimmingFactor * fTrimmingLimits.back() and fNPoints >= minPoints)
+            while ( fAmplitudeList.back() < trimmingFactor * fTrimmingLimits.back() and fNPoints >= minPoints )
             {
-                KTDEBUG(seqlog, "Amplitude is "<<fAmplitudeList.back()<<" Threshold is "<<fTrimmingLimits.back());
+                KTDEBUG( seqlog, "Amplitude is "<<fAmplitudeList.back()<<" Threshold is "<<fTrimmingLimits.back() );
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
+                fSNRList.erase(fSNRList.end() -1);
                 fTrimmingLimits.erase(fTrimmingLimits.end() -1);
                 fLinePoints.erase(fLinePoints.end() - 1);
                 fNPoints = fLinePoints.size();
             }
-            while (fAmplitudeList.front() < trimmingFactor * fTrimmingLimits.front() and fNPoints >= minPoints)
+            while ( fAmplitudeList.front() < trimmingFactor * fTrimmingLimits.front() and fNPoints >= minPoints )
             {
                 fAmplitudeList.erase(fAmplitudeList.begin());
+                fSNRList.erase(fSNRList.begin());
+                fTrimmingLimits.erase(fTrimmingLimits.begin());
+                fLinePoints.erase(fLinePoints.begin());
+                fNPoints = fLinePoints.size();
+            }
+        }
+        fAcquisitionID = fLinePoints.front().fAcquisitionID;
+        fComponent = fLinePoints.front().fComponent;
+        fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
+        fStartFrequency = fLinePoints.front().fPointFreq;
+        fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+
+        for( std::vector<Point>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt )
+        {
+            fAmplitudeSum += pointIt->fNeighborhoodAmplitude;
+            fSNRSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
+            fNUPSum += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
+        }
+
+        this->UpdateLineProperties();
+        //this->CalculateSlope();
+    }
+    void LineRef::LineSNRTrimming( const double& trimmingThreshold, const unsigned& minPoints )
+    {
+        KTDEBUG( seqlog, "Trimming line edges. Trimming SNR threshold is "<<trimmingThreshold );
+
+        if ( !fSNRList.empty() )
+        {
+            while ( fSNRList.back() < trimmingThreshold and fNPoints >= minPoints )
+            {
+                KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
+                fAmplitudeList.erase(fAmplitudeList.end() -1);
+                fSNRList.erase(fSNRList.end() -1);
+                fTrimmingLimits.erase(fTrimmingLimits.end() -1);
+                fLinePoints.erase(fLinePoints.end() - 1);
+                fNPoints = fLinePoints.size();
+            }
+            while ( fSNRList.front() < trimmingThreshold and fNPoints >= minPoints )
+            {
+                fAmplitudeList.erase(fAmplitudeList.begin());
+                fSNRList.erase(fSNRList.begin());
                 fTrimmingLimits.erase(fTrimmingLimits.begin());
                 fLinePoints.erase(fLinePoints.begin());
                 fNPoints = fLinePoints.size();
@@ -157,18 +202,20 @@ namespace Katydid
         for(std::vector<Point>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
         {
             fAmplitudeSum += pointIt->fNeighborhoodAmplitude;
+            fSNRSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
+            fNUPSum += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
         }
 
         this->UpdateLineProperties();
         //this->CalculateSlope();
     }
-        
+
 
     inline void LineRef::UpdateLineProperties()
     {
         //KTDEBUG(seqlog, "Updating line parameters");
         fNPoints = fLinePoints.size();
-        if (fNPoints == 1)
+        if ( fNPoints == 1 )
             {
                 fAcquisitionID = fLinePoints.front().fAcquisitionID;
                 fComponent = fLinePoints.front().fComponent;
@@ -179,7 +226,6 @@ namespace Katydid
         fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
         fEndTimeInAcq = fLinePoints.back().fTimeInAcq;
         fEndFrequency = fLinePoints.back().fPointFreq;
-        //fAmplitudeSum += fLinePoints.back().fAmplitude;
     }
 } /* namespace Katydid */
 

@@ -118,10 +118,18 @@ namespace Katydid
             MEMBERVARIABLE(double, TrimmingFactor);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, MinSlope);
-            MEMBERVARIABLE(bool, ApplyPowerCut);
-            MEMBERVARIABLE(bool, ApplyDensityCut);
-            MEMBERVARIABLE(double, PowerThreshold);
-            MEMBERVARIABLE(double, DensityThreshold);
+            MEMBERVARIABLE(bool, ApplyTotalPowerCut);
+            MEMBERVARIABLE(bool, ApplyAveragePowerCut);
+            MEMBERVARIABLE(bool, ApplyTotalSNRCut);
+            MEMBERVARIABLE(bool, ApplyAverageSNRCut);
+            MEMBERVARIABLE(bool, ApplyTotalUnitlessResidualCut);
+            MEMBERVARIABLE(bool, ApplyAverageUnitlessResidualCut);
+            MEMBERVARIABLE(double, TotalPowerThreshold);
+            MEMBERVARIABLE(double, AveragePowerThreshold);
+            MEMBERVARIABLE(double, TotalSNRThreshold);
+            MEMBERVARIABLE(double, AverageSNRThreshold);
+            MEMBERVARIABLE(double, TotalUnitlessResidualThreshold);
+            MEMBERVARIABLE(double, AverageUnitlessResidualThreshold);
 
             // Others
             MEMBERVARIABLE(unsigned, NLines);
