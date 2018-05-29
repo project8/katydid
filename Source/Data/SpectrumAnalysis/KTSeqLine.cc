@@ -49,7 +49,7 @@ namespace Katydid
     {
 
         fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
-        fAmplitudeList.push_back(point.fAmplitude);
+        fAmplitudeList.push_back(point.fNeighborhoodAmplitude);
 
         //fLinePoints.emplace_back(point.fBinInSlice, point.fPointFreq, point.fTimeInAcq, point.fTimeInRunC, point.fAmplitude, point.fThreshold, point.fAcquisitionID, point.fComponent);
         fLinePoints.push_back(point);
@@ -156,7 +156,7 @@ namespace Katydid
 
         for(std::vector<Point>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
         {
-            fAmplitudeSum += pointIt->fAmplitude;
+            fAmplitudeSum += pointIt->fNeighborhoodAmplitude;
         }
 
         this->UpdateLineProperties();

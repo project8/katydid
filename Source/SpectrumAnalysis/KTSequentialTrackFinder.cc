@@ -642,6 +642,7 @@ namespace Katydid
                 amplitude += slice(iBin);
                 slice(iBin) = fPointAmplitudeAfterVisit;
             }
+            amplitude = amplitude - ( 2 * fLinePowerRadius - 1 ) * point.fMean;
             //amplitude = amplitude / fLinePowerRadius;
         }
         else
@@ -659,29 +660,11 @@ namespace Katydid
                 slice(iBin) = fPointAmplitudeAfterVisit;
             }
         }
-
-        /*
-        if (frequencyBin > fMinBin + fMinFreqBinDistance and frequencyBin < fMaxBin - fMinFreqBinDistance)
-        {
-            for (int iBin = frequencyBin - fMinFreqBinDistance; iBin <= frequencyBin + fMinFreqBinDistance; ++iBin)
-            {
-                slice(iBin)=fPointAmplitudeAfterVisit;
-            }
-        }
-        // if point was to close to edge, try to set smaller range to zero
-        else if (frequencyBin > fMinBin + fSearchRadius and frequencyBin < fMaxBin - fSearchRadius)
-        {
-            for (int iBin = frequencyBin - fSearchRadius; iBin <= frequencyBin + fSearchRadius; ++iBin)
-            {
-                slice(iBin) = fPointAmplitudeAfterVisit;
-            }
-        }*/
-
         // Replace values stored in discPoint
         point.fBinInSlice = frequencyBin;
         point.fPointFreq = frequency;
-        point.fAmplitude = amplitude;
-        //point.fThreshold *= 2*fLinePowerRadius; //assuming thresholds are flat over small region
+        point.fNeighborhoodAmplitude = amplitude;
+
     }
 
     inline void KTSequentialTrackFinder::WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency)
@@ -798,8 +781,8 @@ namespace Katydid
             {
                 if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
-                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
+                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fNeighborhoodAmplitude;
+                    wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
             Line.fSlope = weightedSlope/wSum;
@@ -810,8 +793,8 @@ namespace Katydid
             {
                 if (pointIt->fPointFreq != Line.fStartFrequency)
                 {
-                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
+                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fNeighborhoodAmplitude;
+                    wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
             Line.fSlope = weightedSlope/wSum;
@@ -837,8 +820,8 @@ namespace Katydid
             {
                 if (pointIt->fPointFreq != Line.fEndFrequency)
                 {
-                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
+                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
+                    wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
             Line.fSlope = weightedSlope/wSum;
@@ -849,8 +832,8 @@ namespace Katydid
             {
                 if (pointIt->fPointFreq != Line.fEndFrequency)
                 {
-                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
+                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
+                    wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
             Line.fSlope = weightedSlope/wSum;
