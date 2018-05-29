@@ -605,10 +605,9 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fpowerRadius * normalizedValue;
+                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
                         variance = normalizedVariance;
                         mean = normalizedValue;
-                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fpowerRadius * normalizedValue;
                     }
                     summedpower = summedpower - (2* fPowerRadius - 1) * mean;
 

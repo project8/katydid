@@ -43,7 +43,7 @@ namespace Katydid
                     fApplicate( applicate ),
                     fThreshold( threshold ),
                     fMean( 0.0 ),
-                    fVariance( 0.0 ),
+                    fVariance( 1.0 ),
                     fNeighborhoodAmplitude( abscissa )
                 {}
             };

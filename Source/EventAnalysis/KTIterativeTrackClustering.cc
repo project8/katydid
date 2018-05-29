@@ -334,9 +334,9 @@ namespace Katydid
 
             if (fApplyTotalPowerCut)
             {
-                if (trackIt->GetTotalPower() <= fPowerTotalThreshold)
+                if (trackIt->GetTotalPower() <= fTotalPowerThreshold)
                 {
-                    KTDEBUG(itclog, "track power below threshold: "<<trackIt->GetTotalTotalPower()<<" "<<fTotalPowerThreshold);
+                    KTDEBUG(itclog, "track power below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalPowerThreshold);
                     lineIsTrack = false;
                 }
             }
@@ -376,7 +376,7 @@ namespace Katydid
             {
                 if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
                 {
-                    KTDEBUG(itclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageNUPThreshold);
+                    KTDEBUG(itclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageUnitlessResidualThreshold);
                     lineIsTrack = false;
                 }
             }

@@ -104,7 +104,7 @@ namespace Katydid
 
     bool KTOverlappingTrackClustering::Run()
     {
-        if (fCompTracks.size != 0 )
+        if (fCompTracks.size() != 0 )
         {
             KTINFO( otclog, "Clustering procTracks");
             return DoTrackClustering();
@@ -325,11 +325,13 @@ namespace Katydid
 
         }
         newSWFCand.SetFrequencyWidth( newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency());
-        for(std::vector<KTSparseWaterfallCandidateData::Point>::iterator pointIt = oldSWFCand.fPoints.begin(); pointIt != oldSWFCand.fPoints.end(); ++pointIt )
+
+        KTSparseWaterfallCandidateData::Points points = oldSWFCand.GetPoints();
+        for(KTSparseWaterfallCandidateData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
         {
-            KTDEBUG( otclog, "Adding points from oldSwfCand to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-            KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
-            newSWFCand.AddPoint(newSwfPoint);
+            KTDEBUG( otclog, "Adding points from oldSwfCand to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
+            //KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
+            newSWFCand.AddPoint(*pointIt);
         }
     }
 
@@ -561,11 +563,12 @@ namespace Katydid
             newSWFCand.SetFrequencyWidth( candIt->GetFrequencyWidth());
             newSWFCand.SetSlope(candIt->GetSlope());
 
-            for(std::vector<KTSparseWaterfallCandidateData::Point>::iterator pointIt = candIt->fPoints.begin(); pointIt != candIt->fPoints.end(); ++pointIt )
+            KTSparseWaterfallCandidateData::Points& points = candIt->GetPoints();
+            for(KTSparseWaterfallCandidateData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
-                KTDEBUG( otclog, "Adding points to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-                KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
-                newSWFCand.AddPoint(newSwfPoint);
+                KTDEBUG( otclog, "Adding points to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
+                //KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
+                newSWFCand.AddPoint( *pointIt );
             }
 
 
