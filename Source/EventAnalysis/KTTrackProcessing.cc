@@ -1,8 +1,9 @@
-/*
- * KTTrackProcessing.cc
- *
- *  Created on: July 22, 2013
- *      Author: N.S. Oblath & B. LaRoque
+/**
+ @file KTTrackProcessing.hh
+ @brief Contains KTTrackProcessing
+ @details Extracts physics-relevant information about tracks
+ @author: N.S. Oblath & B. LaRoque
+ @date: July 22, 2013
  */
 
 #include "KTTrackProcessing.hh"
@@ -54,7 +55,8 @@ namespace Katydid
 
         SetTrackProcAlgorithm(node->get_value("algorithm", GetTrackProcAlgorithm()));
 
-        if (fTrackProcAlgorithm == "weighted-slope")
+        // Setting parameters if the algorithm is "double-cuts"
+        if (fTrackProcAlgorithm == "double-cuts")
         {
             SetPointLineDistCut1(node->get_value("pl-dist-cut1", GetPointLineDistCut1()));
             SetPointLineDistCut2(node->get_value("pl-dist-cut2", GetPointLineDistCut2()));
@@ -62,24 +64,6 @@ namespace Katydid
         SetSlopeMinimum(node->get_value("min-slope", GetSlopeMinimum()));
         SetProcTrackMinPoints(node->get_value("min-points", GetProcTrackMinPoints()));
         SetProcTrackAssignedError(node->get_value("assigned-error", GetProcTrackAssignedError()));
-
-        // KTDEBUG(tlog, "Making track reconstruction");
-        // if (fTrackProcAlgorithm == "double-cuts")
-        // {
-        //     KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
-        //     fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
-        // }
-        // else if (fTrackProcAlgorithm == "weighted-slope")
-        // {
-        //     KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
-        //     fTrackProcPtr = &KTTrackProcessing::ProcessTrackWeightedSlope;
-        //     fTrackProc2Ptr = &KTTrackProcessing::ProcessTrackWeightedSlope;
-        // }
-        // else
-        // {
-        //     KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
-        //     return false;
-        // }
 
         return true;
     }
@@ -91,7 +75,6 @@ namespace Katydid
         {
             KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
             return KTTrackProcessing::ProcessTrackDoubleCuts(swfData,htData);
-            // fTrackProcPtr = &KTTrackProcessing::ProcessTrackDoubleCuts;
         }
         else if (fTrackProcAlgorithm == "weighted-slope")
         {
@@ -102,7 +85,6 @@ namespace Katydid
         KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
         return false;
 
-        // return (this->*fTrackProcPtr)(swfData,htData);
     }
 
     bool KTTrackProcessing::ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData)
@@ -312,13 +294,13 @@ namespace Katydid
         // not const because points will be removed later
         Points& points = swfData.GetPoints();
 
-        // Makes a first loop over the points to calculate the weighted average in one time slice
         vector< double > timeBinInAcq;
         vector< double > timeBinInRunC;
         vector< double > sumPf;
         vector< double > sumP;
         vector< double > average;
 
+        // Makes a first loop over the points to calculate the weighted average in one time slice
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             bool addToList = true;
@@ -339,12 +321,14 @@ namespace Katydid
             }
         }
 
+        // Initialize the list of weighted points
         for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
         {
             sumPf.push_back(0.);
             sumP.push_back(0.);
         }
 
+        // Calculate the averaged points
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
@@ -430,8 +414,7 @@ namespace Katydid
         // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
 
         // Adding resuts to ProcessedTrackData object
-        Nymph::KTDataPtr data(new Nymph::KTData());
-        KTProcessedTrackData& procTrack = data->Of< KTProcessedTrackData >();
+        KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
         procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
         procTrack.SetTrackID(trackID);

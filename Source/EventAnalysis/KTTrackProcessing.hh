@@ -2,7 +2,7 @@
  @file KTTrackProcessing.hh
  @brief Contains KTTrackProcessing
  @details Extracts physics-relevant information about tracks
- @author: N.S. Oblath & B. LaRoque
+ @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */
 
@@ -35,7 +35,7 @@ namespace Katydid
      Configuration name: "track-proc"
 
      Available configuration values:
-     - "algorithm": string -- Select the track processing algorithm: "double-cuts" (default) or "weighted-slope"
+     - "algorithm": string -- Select the track processing algorithm: "weighted-slope" (default) or "double-cuts"
      - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
      - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
      - "slope-min": double -- Minimum track slope to keep (Hz/s)
