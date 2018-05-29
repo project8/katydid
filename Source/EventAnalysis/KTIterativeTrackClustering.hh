@@ -61,18 +61,18 @@ namespace Katydid
             MEMBERVARIABLE(double, TimeGapTolerance);
             MEMBERVARIABLE(double, FrequencyAcceptance);
             MEMBERVARIABLE(double, MaxTrackWidth);
-            MEMBERVARIABLE(bool, ApplyPowerCut);
-            MEMBERVARIABLE(bool, ApplyDensityCut);
+            MEMBERVARIABLE(bool, ApplyTotalPowerCut);
+            MEMBERVARIABLE(bool, ApplyAveragePowerCut);
             MEMBERVARIABLE(bool, ApplyTotalSNRCut);
             MEMBERVARIABLE(bool, ApplyAverageSNRCut);
-            MEMBERVARIABLE(bool, ApplyTotalNUPCut);
-            MEMBERVARIABLE(bool, ApplyAverageNUPCut);
-            MEMBERVARIABLE(double, PowerThreshold);
-            MEMBERVARIABLE(double, DensityThreshold);
+            MEMBERVARIABLE(bool, ApplyTotalUnitlessResidualCut);
+            MEMBERVARIABLE(bool, ApplyAverageUnitlessResidualCut);
+            MEMBERVARIABLE(double, TotalPowerThreshold);
+            MEMBERVARIABLE(double, AveragePowerThreshold);
             MEMBERVARIABLE(double, TotalSNRThreshold);
             MEMBERVARIABLE(double, AverageSNRThreshold);
-            MEMBERVARIABLE(double, TotalNUPThreshold);
-            MEMBERVARIABLE(double, AverageNUPThreshold);
+            MEMBERVARIABLE(double, TotalUnitlessResidualThreshold);
+            MEMBERVARIABLE(double, AverageUnitlessResidualThreshold);
             MEMBERVARIABLE(unsigned, NTracks);
 
 
