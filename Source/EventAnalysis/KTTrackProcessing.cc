@@ -1,8 +1,8 @@
 /**
- @file KTTrackProcessing.hh
+ @file KTTrackProcessing.cc
  @brief Contains KTTrackProcessing
  @details Extracts physics-relevant information about tracks
- @author: N.S. Oblath & B. LaRoque
+ @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */
 

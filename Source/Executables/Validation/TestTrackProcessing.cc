@@ -8,25 +8,25 @@ This executable tests the Track processing processor by faking a SparseWaterfall
 and tests the behavior of the algorithms in this processor.
 */
 
-
 #include "KTLogger.hh"
 
 #include "KTTrackProcessing.hh"
+#include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTRandom.hh"
+
+#include <cmath>        // std::abs
 
 // Define the parameters of the fake track to generate
 double trackSlope = 100e6; // [Hz/s]
 double trackIntercept = 1e5; // [Hz]
-double trackStart = 1.; //[s] 
-double trackLength = 1.; //[s]
+double trackStart = 0.1; //[s] 
+double trackLength = 0.1; //[s]
 double trackSigma = 20000.; // [Hz]
 double trackPowerMean = 1e-10;
 double trackPowerStd = 1e-11;
 int nSlices = 20;
 int avgPointsPerSlice = 1;
-
-
 
 using namespace Katydid;
 
@@ -66,15 +66,26 @@ int main()
 
     KTINFO(testlog, "Finally, a customer!");
 
+    // Processor definition
     KTTrackProcessing trackProc;
     trackProc.SetTrackProcAlgorithm("weighted-slope");
     trackProc.SetSlopeMinimum(0);
     trackProc.SetProcTrackMinPoints(1);
     trackProc.SetProcTrackAssignedError(12000);
 
-    KTSparseWaterfallCandidateData sftData = createFakeData();
-    trackProc.ProcessTrackWeightedSlope(sftData);
+    // Execute the Processing step
+    KTSparseWaterfallCandidateData swfData = createFakeData();
+    trackProc.ProcessTrackWeightedSlope(swfData);
 
-
+    // Check the results of the processing
+    KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
+    double foundFrequency = procTrack.GetStartFrequency();
+    double toBeFoundFrequency = trackIntercept + trackSlope*trackStart;
+    double diff = foundFrequency - toBeFoundFrequency;
+    KTINFO(testlog, "Found a track with start frequency: " << foundFrequency << "; should be close to " << toBeFoundFrequency );
+    if (std::abs(diff)>1.e5){
+        KTERROR(testlog, "The difference seems too large (>1e5 Hz)! " );
+        return -1;
+    }
     return 0;
 }
