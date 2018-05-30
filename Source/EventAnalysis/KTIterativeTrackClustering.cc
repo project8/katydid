@@ -615,7 +615,7 @@ namespace Katydid
             trackIt = fCompTracks.erase(trackIt);
         }
     }
-    void KTOverlappingTrackClustering::EmitSWFCandidates()
+    void KTIterativeTrackClustering::EmitSWFCandidates()
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompSWFCands.size());
         KTINFO(itclog, "Clustering done.");
@@ -634,9 +634,9 @@ namespace Katydid
             KTSparseWaterfallCandidateData::Points& swfPoints = candIt->GetPoints();
             for (KTSparseWaterfallCandidateData::Points::const_iterator pointIt = swfPoints.begin(); pointIt != swfPoints.end(); ++pointIt )
             {
-                summedPower += pointIt->fAmplitude;
-                // add summedSNR
-                //add summed NUP
+                summedPower += pointIt->fNeighborhoodAmplitude;
+                summedSNR += pointIt->fNeighborhoodAmplitude / pointIt->fMean;
+                summedUnitlessResidual += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / pointIt->fVariance;
             }
 
             if (fApplyTotalPowerCut)
