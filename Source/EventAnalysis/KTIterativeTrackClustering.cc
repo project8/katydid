@@ -350,16 +350,13 @@ namespace Katydid
             newSWFCand.SetMinimumTimeInRunC( oldSWFCand.GetMinimumTimeInRunC() );
             newSWFCand.SetMinimumTimeInAcq( oldSWFCand.GetMinimumTimeInAcq() );
             newSWFCand.SetMinimumFrequency( oldSWFCand.GetMinimumFrequency() );
-            newSWFCand.SetSlope( (newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency())/(newSWFCand.GetMaximumTimeInRunC() - newSWFCand.GetMinimumTimeInRunC()) );
-
         }
         if (oldSWFCand.GetMaximumTimeInRunC() > newSWFCand.GetMaximumTimeInRunC())
         {
             newSWFCand.SetMaximumTimeInRunC( oldSWFCand.GetMaximumTimeInRunC());
             newSWFCand.SetMaximumFrequency( oldSWFCand.GetMaximumFrequency());
-            newSWFCand.SetSlope( (newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency())/(newSWFCand.GetMaximumTimeInRunC() - newSWFCand.GetMinimumTimeInRunC()) );
-
         }
+        newSWFCand.SetSlope( (newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency())/(newSWFCand.GetMaximumTimeInRunC() - newSWFCand.GetMinimumTimeInRunC()) );
         newSWFCand.SetFrequencyWidth( newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency());
 
         KTSparseWaterfallCandidateData::Points points = oldSWFCand.GetPoints();
@@ -518,21 +515,21 @@ namespace Katydid
     void KTIterativeTrackClustering::EmitTrackCandidates()
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
-        bool lineIsTrack = true;
+        bool emitThisCandidate = true;
         KTINFO(itclog, "Clustering done.");
 
         std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();
 
         while(trackIt!=fCompTracks.end())
         {
-            lineIsTrack = true;
+            emitThisCandidate = true;
 
             if (fApplyTotalPowerCut)
             {
                 if (trackIt->GetTotalPower() <= fTotalPowerThreshold)
                 {
                     KTDEBUG(itclog, "track power below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalPowerThreshold);
-                    lineIsTrack = false;
+                    emitThisCandidate = false;
                 }
             }
             if (fApplyAveragePowerCut)
@@ -540,7 +537,7 @@ namespace Katydid
                 if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAveragePowerThreshold)
                 {
                     KTDEBUG(itclog, "average track power below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fAveragePowerThreshold);
-                    lineIsTrack = false;
+                    emitThisCandidate = false;
                 }
             }
             if (fApplyTotalSNRCut)
@@ -548,7 +545,7 @@ namespace Katydid
                 if (trackIt->GetTotalPower() <= fTotalSNRThreshold)
                 {
                     KTDEBUG(itclog, "total track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalSNRThreshold);
-                    lineIsTrack = false;
+                    emitThisCandidate = false;
                 }
             }
             if (fApplyAverageSNRCut)
@@ -556,7 +553,7 @@ namespace Katydid
                 if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
                 {
                     KTDEBUG(itclog, "average track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageSNRThreshold);
-                    lineIsTrack = false;
+                    emitThisCandidate = false;
                 }
             }
             if (fApplyTotalUnitlessResidualCut)
@@ -564,7 +561,7 @@ namespace Katydid
                 if (trackIt->GetTotalPower() <= fTotalUnitlessResidualThreshold)
                 {
                     KTDEBUG(itclog, "total track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalUnitlessResidualThreshold);
-                    lineIsTrack = false;
+                    emitThisCandidate = false;
                 }
             }
             if (fApplyAverageUnitlessResidualCut)
@@ -572,27 +569,39 @@ namespace Katydid
                 if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
                 {
                     KTDEBUG(itclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageUnitlessResidualThreshold);
-                    lineIsTrack = false;
+                    emitThisCandidate = false;
                 }
             }
 
-            if (lineIsTrack == true)
+            if (emitThisCandidate == true)
             {
                 // Set up new data object
                 Nymph::KTDataPtr data( new Nymph::KTData() );
                 KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
                 newTrack.SetComponent( trackIt->GetComponent() );
-                newTrack.SetAcquisitionID( trackIt->GetAcquisitionID());
-                newTrack.SetTrackID(fNTracks);
+                newTrack.SetAcquisitionID( trackIt->GetAcquisitionID() );
+                newTrack.SetTrackID( fNTracks );
                 fNTracks++;
 
-                newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC());
-                newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC());
-                newTrack.SetStartTimeInAcq( trackIt->GetStartTimeInAcq());
-                newTrack.SetStartFrequency( trackIt->GetStartFrequency());
-                newTrack.SetEndFrequency( trackIt->GetEndFrequency());
-                newTrack.SetSlope(trackIt->GetSlope());
-                newTrack.SetTotalPower(trackIt->GetTotalPower());
+                newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC() );
+                newTrack.SetStartTimeInRunCSigma( trackIt->GetStartTimeInRunCSigma() );
+                newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC() );
+                newTrack.SetEndTimeInRunCSigma( trackIt->GetEndTimeInRunCSigma() );
+                newTrack.SetStartTimeInAcq( trackIt->GetStartTimeInAcq() );
+                newTrack.SetTimeLength( trackIt->GetTimeLength() );
+                newTrack.SetTimeLengthSigma( trackIt->GetTimeLengthSigma() );
+                newTrack.SetStartFrequency( trackIt->GetStartFrequency() );
+                newTrack.SetStartFrequency( trackIt->GetStartFrequencySigma() );
+                newTrack.SetEndFrequency( trackIt->GetEndFrequency() );
+                newTrack.SetEndFrequencySigma( trackIt->GetEndFrequencySigma() );
+                newTrack.SetSlope( trackIt->GetSlope() );
+                newTrack.SetSlopeSigma( trackIt->GetSlopeSigma() );
+                newTrack.SetTotalPower( trackIt->GetTotalPower() );
+                newTrack.SetTotalPowerSigma( trackIt->GetTotalPowerSigma() );
+                newTrack.SetFrequencyWidth( trackIt->GetFrequencyWidth() );
+                newTrack.SetFrequencyWidthSigma( trackIt->GetFrequencyWidthSigma() );
+                newTrack.SetIntercept( trackIt->GetFrequencyWidth() );
+                newTrack.SetInterceptSigma( trackIt->GetInterceptSigma() );
 
 
                 // Process & emit new track
@@ -606,48 +615,111 @@ namespace Katydid
             trackIt = fCompTracks.erase(trackIt);
         }
     }
-    void KTIterativeTrackClustering::EmitSWFCandidates()
+    void KTOverlappingTrackClustering::EmitSWFCandidates()
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompSWFCands.size());
         KTINFO(itclog, "Clustering done.");
+
+        bool emitThisCandidate = true;
 
         std::vector<KTSparseWaterfallCandidateData>::iterator candIt = fCompSWFCands.begin();
 
         while( candIt!=fCompSWFCands.end() )
         {
-            // Set up new data object
-            Nymph::KTDataPtr data( new Nymph::KTData() );
-            KTSparseWaterfallCandidateData& newSWFCand = data->Of< KTSparseWaterfallCandidateData >();
-            newSWFCand.SetComponent( candIt->GetComponent() );
-            newSWFCand.SetAcquisitionID( candIt->GetAcquisitionID() );
-            newSWFCand.SetCandidateID( fNTracks );
-            fNTracks++;
+            emitThisCandidate = true;
+            double summedPower = 0.0;
+            double summedSNR = 0.0;
+            double summedUnitlessResidual = 0.0;
 
-            newSWFCand.SetTimeInRunC( candIt->GetTimeInRunC() );
-            newSWFCand.SetTimeInAcq( candIt->GetTimeInAcq() );
-            newSWFCand.SetMinimumTimeInRunC( candIt->GetMinimumTimeInRunC() );
-            newSWFCand.SetMaximumTimeInRunC( candIt->GetMaximumTimeInRunC() );
-            newSWFCand.SetMinimumTimeInAcq( candIt->GetMinimumTimeInAcq() );
-            newSWFCand.SetMaximumTimeInAcq( candIt->GetMaximumTimeInAcq() );
-            newSWFCand.SetMinimumFrequency( candIt->GetMinimumFrequency() );
-            newSWFCand.SetMaximumFrequency( candIt->GetMaximumFrequency() );
-            newSWFCand.SetFrequencyWidth( candIt->GetFrequencyWidth());
-            newSWFCand.SetSlope(candIt->GetSlope());
-
-            KTSparseWaterfallCandidateData::Points& points = candIt->GetPoints();
-            for(KTSparseWaterfallCandidateData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+            KTSparseWaterfallCandidateData::Points& swfPoints = candIt->GetPoints();
+            for (KTSparseWaterfallCandidateData::Points::const_iterator pointIt = swfPoints.begin(); pointIt != swfPoints.end(); ++pointIt )
             {
-                KTDEBUG( itclog, "Adding points to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
-                //KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
-                newSWFCand.AddPoint( *pointIt );
+                summedPower += pointIt->fAmplitude;
+                // add summedSNR
+                //add summed NUP
             }
 
+            if (fApplyTotalPowerCut)
+            {
+                if (summedPower <= fTotalPowerThreshold)
+                {
+                    KTDEBUG(itclog, "track power below threshold: "<<summedPower<<" "<<fTotalPowerThreshold);
+                    emitThisCandidate = false;
+                }
+            }
+            if (fApplyAveragePowerCut)
+            {
+                if (summedPower/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <= fAveragePowerThreshold)
+                {
+                    KTDEBUG(itclog, "average track power below threshold: "<<summedPower/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <<" "<< fAveragePowerThreshold);
+                    emitThisCandidate = false;
+                }
+            }
+            if (fApplyTotalSNRCut)
+            {
+                if (summedSNR <= fTotalSNRThreshold)
+                {
+                    KTDEBUG(itclog, "total track snr below threshold: "<<summedSNR<<" "<<fTotalSNRThreshold);
+                    emitThisCandidate = false;
+                }
+            }
+            if (fApplyAverageSNRCut)
+            {
+                if (summedSNR/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <= fAverageSNRThreshold)
+                {
+                    KTDEBUG(itclog, "average track snr below threshold: "<<summedSNR/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC())<<" "<<fAverageSNRThreshold);
+                    emitThisCandidate = false;
+                }
+            }
+            if (fApplyTotalUnitlessResidualCut)
+            {
+                if (summedUnitlessResidual <= fTotalUnitlessResidualThreshold)
+                {
+                    KTDEBUG(itclog, "total track residuals below threshold: "<<summedUnitlessResidual<<" "<<fTotalUnitlessResidualThreshold);
+                    emitThisCandidate = false;
+                }
+            }
+            if (fApplyAverageUnitlessResidualCut)
+            {
+                if (summedUnitlessResidual/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <= fAverageUnitlessResidualThreshold)
+                {
+                    KTDEBUG(itclog, "average track residuals below threshold: "<<summedUnitlessResidual/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC())<<" "<<fAverageUnitlessResidualThreshold);
+                    emitThisCandidate = false;
+                }
+            }
+            if (emitThisCandidate == true )
+            {
 
+                // Set up new data object
+                Nymph::KTDataPtr data( new Nymph::KTData() );
+                KTSparseWaterfallCandidateData& newSWFCand = data->Of< KTSparseWaterfallCandidateData >();
+                newSWFCand.SetComponent( candIt->GetComponent() );
+                newSWFCand.SetAcquisitionID( candIt->GetAcquisitionID() );
+                newSWFCand.SetCandidateID( fNTracks );
+                fNTracks++;
 
-            KTDEBUG( itclog, "Emitting swf signal" );
-            fSWFCandSignal( data );
+                newSWFCand.SetTimeInRunC( candIt->GetTimeInRunC() );
+                newSWFCand.SetTimeInAcq( candIt->GetTimeInAcq() );
+                newSWFCand.SetMinimumTimeInRunC( candIt->GetMinimumTimeInRunC() );
+                newSWFCand.SetMaximumTimeInRunC( candIt->GetMaximumTimeInRunC() );
+                newSWFCand.SetMinimumTimeInAcq( candIt->GetMinimumTimeInAcq() );
+                newSWFCand.SetMaximumTimeInAcq( candIt->GetMaximumTimeInAcq() );
+                newSWFCand.SetMinimumFrequency( candIt->GetMinimumFrequency() );
+                newSWFCand.SetMaximumFrequency( candIt->GetMaximumFrequency() );
+                newSWFCand.SetFrequencyWidth( candIt->GetFrequencyWidth());
+                newSWFCand.SetSlope(candIt->GetSlope());
 
-            candIt = fCompSWFCands.erase(candIt);
+                KTSparseWaterfallCandidateData::Points& points = candIt->GetPoints();
+                for(KTSparseWaterfallCandidateData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+                {
+                    KTDEBUG( itclog, "Adding points to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
+                    //KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
+                    newSWFCand.AddPoint( *pointIt );
+                }
+                KTDEBUG( itclog, "Emitting swf signal" );
+                fSWFCandSignal( data );
+            }
+        candIt = fCompSWFCands.erase(candIt);
         }
     }
     const void KTIterativeTrackClustering::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
