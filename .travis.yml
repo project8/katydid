@@ -10,7 +10,7 @@ ruby: 2.2.0
 before_install:
 - echo $LANG
 - echo $LC_ALL
-- if [ $TRAVIS_OS_NAME == osx ]; then rm '/usr/local/include/c++' && brew update && brew upgrade python && brew install root --with-python --without-python@2 && brew install hdf5 fftw ; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then rm '/usr/local/include/c++' && brew update && brew upgrade python && brew install root hdf5 fftw libmatio ; fi
 script:
 # - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --llvm-config=llvm-config --cc=clang --cxx=clang++; fi
 - if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/build.sh ; fi
