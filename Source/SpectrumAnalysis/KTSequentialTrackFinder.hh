@@ -2,7 +2,7 @@
  @file KTSequentialTrackFinder.hh
  @brief Contains KTSeqTrackFinder
  @details Creates a track
- @author: Christine
+ @author: C. Claessens
  @date: Aug 4, 2017
  */
 
@@ -31,27 +31,26 @@ namespace Katydid
 {
     /*!
      @class KTSeqTrackFinder
-     @author E. Christine
+     @author C. Claessens
 
-     @brief Implementation of a slightly modified version of Dan Furse's algorithm
+     @brief Implementation of Dan Furse's algorithm with some modifiactions
 
      @details
      Collects points on a linear track
 
-     Configuration name: "dans-track-finding-algorithm"
+     Configuration name: "sequential-track-finder"
 
      Available configuration values:
-     - "snr-threshold-power": discrimination snr for point candidates
      - "min-frequency": minimum allowed frequency (has to be set)
      - "max-frequency": max allowed frequency (has to be set)
      - "min-bin": can be set instead of min frequency
      - "max-bin": can be set instead of  max frequency
-     - "trimming-factor": before a line is converted to a track its edges get trimmed. If the last or first line point power is less than the trimming-factor times the power threshold of the points frequency bins in the power spectrum slice, these points get cut off the line
-     - "line-power-radius": the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
+     - "trimming-threshold": before a line is converted to a sparse waterfall candidate its edges get trimmed. If the last or first line point snr is less than the trimming-threshold, they get removed
+     - "line-power-radius": only valid for disc1d-ps slot. the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
      - "time-gap-tolerance": maximum gap between points in a line (in seconds)
-     - "minimum-line-distance": if a point is less than this distance (in bins) away from the last point it will be skipped
-     - "search-radius": before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
-     - "converge-delta": defines when convergence has been reached (in bins)
+     - "minimum-line-distance": requires some thought for disc1d-slot!!! For disc1d-ps slot: if a point is less than this distance (in bins) away from the last point it will be skipped
+     - "search-radius": for disc1d-ps slot: before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
+     - "converge-delta": for disc1d-ps slot: defines when convergence has been reached (in bins)
      - "frequency-acceptance": maximum allowed frequency distance of point to an extrapolated line (in Hz)
      - "slope-method": method to update the line slope after point collection
      - "initial-frequency-acceptance": if the line that a point is being compared to, only has a single point so far, this is the accepted frequency acceptance. Default isfrequency_acceptance
@@ -59,20 +58,27 @@ namespace Katydid
      - "n-slope-points": maximum number of points to include in the slope calculation
      - "min-points": a line only gets converted to a track if it has collected more than this many number of points
      - "min-slope": a line only gets converted to a track if its slope is > than this slope (in Hz/s)
-     - "apply-power-cut" (bool): if true, a power threshold will be applied to a line before converting it to a processed track
-     - "apply-point-density-cut" (bool): if true, a number-of-points/time-length threshold will be applied to a line before converting it to a processed track
-     - "power-threshold": threshold for power cut
-     - "point-density-threshold": threshold for point density cut in points/millisecond
+     - "apply-power-cut": default false; if true, the summed-power has to be > total-power-threshold; uses fNeighborhoodAmplitude
+     - "apply-point-density-cut": default false; if true, the summed-power/time-length has to be > average-power-threshold; uses fNeighborhoodAmplitude
+     - "apply-total-snr-cut": default false; if true, the summed-snr has to be > total-snr-threshold; uses fNeighborhoodAmplitude
+     - "apply-average-snr-cut": default false; if true, the summed-snr/time-length has to be > average-snr-threshold; uses fNeighborhoodAmplitude
+     - "apply-total-residual-cut: default false; if true, the summed-unitless-residual has to be > total-residual-threshold; uses fNeighborhoodAmplitude
+     - "apply-average-residual-cut: default false; if true, the summed-unitless-residual/time-length has to be > average-residual-threshold; uses fNeighborhoodAmplitude
+     - "total-power-threshold": threshold for apply-total-power-cut
+     - "average-power-threshold": threshold for apply-average-power-cut
+     - "total-snr-threshold": threshold for apply-total-snr-cut
+     - "average-snr-threshold": threshold for apply-average-snr-cut
+     - "total-residual-threshold": threshold for apply-total-residual-cut
+     - "average-residual-threshold": threshold for apply-average-residual
 
 
      Slots:
-     - "disc-1d": needs sparse spectrogram for thresholding 
-     - "gv": needs gain variation for thresholding
-     - "ps-in": power spectrum to collect points from
+     - "disc1d": clusters discriminated points to sparse waterfall candidates
+     - "disc1d-ps": clusters discriminated points to sparsewaterfall candidates; updates point properties using power spectrum slice
      - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "pre-candidate": KTProcessedTrackData
+     - "swf-cand": KTSparseWaterfallCandidateData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
@@ -181,9 +187,6 @@ namespace Katydid
             //***************
 
         private:
-            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
-            //Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
-            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
             Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimPowerSlot;
             Nymph::KTSlotDataTwoTypes < KTSliceHeader, KTDiscriminatedPoints1DData > fDiscrimSlot;
             Nymph::KTSlotDone fDoneSlot;

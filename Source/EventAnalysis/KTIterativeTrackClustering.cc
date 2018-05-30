@@ -69,13 +69,13 @@ namespace Katydid
         }
         if (node->has("apply-power-cut"))
         {
-            SetApplyTotalPowerCut(node->get_value("apply-power-cut", GetApplyTotalPowerCut()));
-            SetTotalPowerThreshold(node->get_value("power-threshold", GetTotalPowerThreshold()));
+            SetApplyTotalPowerCut(node->get_value("apply-total-power-cut", GetApplyTotalPowerCut()));
+            SetTotalPowerThreshold(node->get_value("total-power-threshold", GetTotalPowerThreshold()));
         }
         if (node->has("apply-power-density-cut"))
         {
-            SetApplyAveragePowerCut(node->get_value("apply-power-density-cut", GetApplyAveragePowerCut()));
-            SetAveragePowerThreshold(node->get_value("power-density-threshold", GetAveragePowerThreshold()));
+            SetApplyAveragePowerCut(node->get_value("apply-average-power-cut", GetApplyAveragePowerCut()));
+            SetAveragePowerThreshold(node->get_value("average-power-threshold", GetAveragePowerThreshold()));
         }
         if (node->has("apply-total-snr-cut"))
         {

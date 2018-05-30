@@ -26,10 +26,11 @@ namespace Katydid
      @class KTIterativeLineClustering
      @author C. Claessens
 
-     @brief merges track segments until number of lines stops decreasing
+     @brief merges track segments until number of tracks stops decreasing
 
      @details
-     Checks whether track start/ends matches another track's extrapolation
+     Checks whether track start/ends match another track's extrapolation.
+     Can work with KTProcessedTracksData or KTSparseWaterfallCandidateData
 
      Configuration name: "iterative-track-clustering"
 
@@ -37,18 +38,28 @@ namespace Katydid
      - "time-gap-tolerance": maximum time gap between tracks
      - "frequency-acceptance": maximum allowed distance from the slope extrapolation
      - "max-track-width": radius around a track where there cannot be another track
-     - "apply-power-cut": default is false
-     - "apply-power-density-cut": default is false
-     - "power-threshold": total track power must be above this threshold
-     - "power-density-threshold": total power per second threshold
+     - "apply-power-cut": default false; if true, the summed-power has to be > total-power-threshold; uses fNeighborhoodAmplitude
+     - "apply-point-density-cut": default false; if true, the summed-power/time-length has to be > average-power-threshold; uses fNeighborhoodAmplitude
+     - "apply-total-snr-cut": default false; if true, the summed-snr has to be > total-snr-threshold; uses fNeighborhoodAmplitude
+     - "apply-average-snr-cut": default false; if true, the summed-snr/time-length has to be > average-snr-threshold; uses fNeighborhoodAmplitude
+     - "apply-total-residual-cut: default false; if true, the summed-unitless-residual has to be > total-residual-threshold; uses fNeighborhoodAmplitude
+     - "apply-average-residual-cut: default false; if true, the summed-unitless-residual/time-length has to be > average-residual-threshold; uses fNeighborhoodAmplitude
+     - "total-power-threshold": threshold for apply-total-power-cut
+     - "average-power-threshold": threshold for apply-average-power-cut
+     - "total-snr-threshold": threshold for apply-total-snr-cut
+     - "average-snr-threshold": threshold for apply-average-snr-cut
+     - "total-residual-threshold": threshold for apply-total-residual-cut
+     - "average-residual-threshold": threshold for apply-average-residual
 
      Slots:
-     - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.
-     - "do-clustering": void () -- Triggers clustering algorithm
+     - "track": Collects incoming KTProcessedTrackData objects. Clustering will produces new data pointer with KTProcessedTrackData
+     - "swf-cand": Collects incoming KTSparseWaterfallCandidateData objects. Clustering will produced new data pointer with KTSparseWaterfallCandidateData
+     - "do-clustering": Triggers clustering algorithm
 
      Signals:
-     - "track": void (shared_ptr<KTData>) -- Emitted for each group found; Guarantees KTProcessedTrackData.
-     - "clustering-done": void () -- Emitted when track clustering is complete
+     - "track": void (shared_ptr<KTData>) -- Created and emitted for each group found; Guarantees KTProcessedTrackData.
+     - "swf-cand: void (shared_ptr<KTData) -- Created and emitted for each group found; Guarantees KTSparseWaterfallCandidateData.
+     - "clustering-done": void () -- Emitted when clustering is complete
     */
 
     class KTIterativeTrackClustering : public Nymph::KTPrimaryProcessor
