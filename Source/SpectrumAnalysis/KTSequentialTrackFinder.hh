@@ -33,7 +33,7 @@ namespace Katydid
      @class KTSeqTrackFinder
      @author C. Claessens
 
-     @brief Implementation of Dan Furse's algorithm with some modifiactions
+     @brief Implementation of Dan Furse's algorithm with some modifications
 
      @details
      Collects points on a linear track
@@ -152,7 +152,7 @@ namespace Katydid
 
 
         private:
-            std::vector< LineRef> fActiveLines;
+            std::vector< KTSequentialLine > fActiveLines;
             std::set< Nymph::KTDataPtr > fCandidates;
 
         public:
@@ -160,19 +160,19 @@ namespace Katydid
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
-            bool LoopOverHighPowerPoints(std::vector<Point>& points, unsigned component);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<KTSequentialLine::Point>& points, unsigned component);
+            bool LoopOverHighPowerPoints(std::vector<KTSequentialLine::Point>& points, unsigned component);
 
 
-            void UpdateLinePoint(Point& point, KTPowerSpectrum& slice);
+            void UpdateLinePoint(KTSequentialLine::Point& point, KTPowerSpectrum& slice);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
-            void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
-            void CalculateSlopeFirstRef(LineRef& Line);
-            void CalculateSlopeLastRef(LineRef& Line);
+            void (KTSequentialTrackFinder::*fCalcSlope)(KTSequentialLine& Line);
+            void CalculateSlopeFirstRef(KTSequentialLine& Line);
+            void CalculateSlopeLastRef(KTSequentialLine& Line);
             //void CalculateWeightedSlope(LineRef& Line);
-            void CalculateUnweightedSlope(LineRef& Line);
+            void CalculateUnweightedSlope(KTSequentialLine& Line);
             //void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
-            bool EmitPreCandidate(LineRef line);
+            bool EmitPreCandidate(KTSequentialLine line);
             void AcquisitionIsOver();
 
 

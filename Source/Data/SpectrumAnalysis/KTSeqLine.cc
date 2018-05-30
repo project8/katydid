@@ -41,6 +41,30 @@ namespace Katydid
         fSumXX(0.)
         {}
 
+    KTSequentialLine::KTSequentialLine():
+        fStartTimeInRunC(0.0),
+        fStartTimeInAcq(0.0),
+        fEndTimeInRunC(0.0),
+        fEndTimeInAcq(0.0),
+        fStartFrequency(0.0),
+        fEndFrequency(0.0),
+        fInitialSlope(0.0),
+        fSlope(0.0),
+        fNPoints(0),
+        fComponent(0),
+        fAmplitudeSum(0.0),
+        fSNRSum(0.0),
+        fNUPSum(0.0),
+        fAcquisitionID(0),
+        fMinPoints(0),
+        fStartFrequencySigma(0.),
+        fEndFrequencySigma(0.),
+        fSumX(0.),
+        fSumY(0.),
+        fSumXY(0.),
+        fSumXX(0.)
+        {}
+
     KTSequentialLine::~KTSequentialLine()
     {}
 
@@ -80,11 +104,11 @@ namespace Katydid
                 fNPoints = fLinePoints.size();
             }
         }
-        fAcquisitionID = fLinePoints.front().fAcquisitionID;
-        fComponent = fLinePoints.front().fComponent;
-        fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
-        fStartFrequency = fLinePoints.front().fFrequency;
-        fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+        SetAcquisitionID(fLinePoints.front().fAcquisitionID );
+        SetComponent( fLinePoints.front().fComponent);
+        SetStartTimeInRunC( fLinePoints.front().fTimeInRunC);
+        SetStartFrequency( fLinePoints.front().fFrequency);
+        SetStartTimeInAcq( fLinePoints.front().fTimeInAcq);
 
         for(std::vector<Point>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
         {
@@ -92,9 +116,9 @@ namespace Katydid
             fSNRSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
             fNUPSum += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
         }
-
-        this->UpdateLineProperties();
-        //this->CalculateSlope();
+        SetEndTimeInRunC( fLinePoints.back().fTimeInRunC);
+        SetEndTimeInAcq( fLinePoints.back().fTimeInAcq);
+        SetEndFrequency( fLinePoints.back().fFrequency);
     }
 
 
@@ -104,15 +128,15 @@ namespace Katydid
         fNPoints = fLinePoints.size();
         if ( fNPoints == 1 )
             {
-                fAcquisitionID = fLinePoints.front().fAcquisitionID;
-                fComponent = fLinePoints.front().fComponent;
-                fStartTimeInRunC = fLinePoints.front().fTimeInRunC;
-                fStartFrequency = fLinePoints.front().fFrequency;
-                fStartTimeInAcq = fLinePoints.front().fTimeInAcq;
+                SetAcquisitionID( fLinePoints.front().fAcquisitionID );
+                SetComponent( fLinePoints.front().fComponent );
+                SetStartTimeInRunC( fLinePoints.front().fTimeInRunC );
+                SetStartFrequency( fLinePoints.front().fFrequency );
+                SetStartTimeInAcq( fLinePoints.front().fTimeInAcq );
             }
-        fEndTimeInRunC = fLinePoints.back().fTimeInRunC;
-        fEndTimeInAcq = fLinePoints.back().fTimeInAcq;
-        fEndFrequency = fLinePoints.back().fFrequency;
+        SetEndTimeInRunC( fLinePoints.back().fTimeInRunC);
+        SetEndTimeInAcq( fLinePoints.back().fTimeInAcq);
+        SetEndFrequency( fLinePoints.back().fFrequency);
     }
 } /* namespace Katydid */
 

@@ -61,7 +61,7 @@ namespace Katydid
                     return (fAmplitude < str.fAmplitude);
                 }
             };
-            struct PointCompare
+            /*struct PointCompare
             {
                 bool operator() (const Point& lhs, const Point& rhs) const
                 {
@@ -69,7 +69,7 @@ namespace Katydid
                 }
             };
 
-            typedef std::set< Point, PointCompare > Points;
+            typedef std::set< Point, PointCompare > Points;*/
 
         private:
 
@@ -78,27 +78,28 @@ namespace Katydid
             std::vector<double> fAmplitudeList;
             std::vector<double> fSNRList;
 
-            Points fPoints;
+            //Points fPoints;
 
         public:
 
-            double fStartTimeInRunC;
-            double fEndTimeInRunC;
-            double fStartTimeInAcq;
-            double fEndTimeInAcq;
-            double fStartFrequency;
-            double fEndFrequency;
-            double fInitialSlope;
-            double fSlope;
-            unsigned fComponent;
-            double fAmplitudeSum;
-            double fSNRSum;
-            double fNUPSum;
-            unsigned fNPoints;
-            uint64_t fAcquisitionID;
-            unsigned fMinPoints;
-            double fStartFrequencySigma;
-            double fEndFrequencySigma;
+            MEMBERVARIABLE(double, StartTimeInRunC);
+            MEMBERVARIABLE(double, EndTimeInRunC);
+            MEMBERVARIABLE(double, StartTimeInAcq);
+            MEMBERVARIABLE(double, EndTimeInAcq);
+            MEMBERVARIABLE(double, StartFrequency);
+            MEMBERVARIABLE(double, EndFrequency);
+            MEMBERVARIABLE(double, InitialSlope);
+            MEMBERVARIABLE(double, Slope);
+            MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(unsigned, CandidateID)
+            MEMBERVARIABLE(double, AmplitudeSum);
+            MEMBERVARIABLE(double, SNRSum);
+            MEMBERVARIABLE(double, NUPSum);
+            MEMBERVARIABLE(unsigned, NPoints);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
+            MEMBERVARIABLE(unsigned, MinPoints);
+            MEMBERVARIABLE(double, StartFrequencySigma);
+            MEMBERVARIABLE(double, EndFrequencySigma);
 
             double fSumX;
             double fSumY;
@@ -111,8 +112,8 @@ namespace Katydid
             KTSequentialLine(const double& initialSlope);
             virtual ~KTSequentialLine();
 
-            const Points& GetPoints() const;
-            Points& GetPoints();
+            const std::vector<KTSequentialLine::Point>& GetPoints() const;
+            std::vector<KTSequentialLine::Point>& GetPoints();
             //LineRef(const double& initialSlope);
             void AppendPoint(const Point& point);
             void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
@@ -128,20 +129,20 @@ namespace Katydid
             }*/
     };
 
-    inline const KTSequentialLine::Points& KTSequentialLine::GetPoints() const
+    inline const std::vector<KTSequentialLine::Point>& KTSequentialLine::GetPoints() const
     {
-        return fPoints;
+        return fLinePoints;
     }
 
-    inline KTSequentialLine::Points& KTSequentialLine::GetPoints()
+    inline std::vector<KTSequentialLine::Point>& KTSequentialLine::GetPoints()
     {
-        return fPoints;
+        return fLinePoints;
     }
-    void KTSequentialLine::AddPoint(const Point& point)
+    /*void KTSequentialLine::AddPoint(const Point& point)
     {
-        fPoints.insert(point);
+        //Points.insert(point);
         return;
-    }
+    }*/
 } /* namespace Katydid */
 
 #endif /* SOURCE_DATA_SPECTRUM_ANALYSIS_KTSEQLINE_HH_ */

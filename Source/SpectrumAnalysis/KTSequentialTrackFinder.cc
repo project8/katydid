@@ -261,7 +261,7 @@ namespace Katydid
 
             KTDEBUG( stflog, "Collected "<<points.size()<<" points");
             // sort points by power
-            std::sort(points.begin(), points.end(),std::less<Point>());
+            std::sort(points.begin(), points.end(),std::less<KTSequentialLine::Point>());
 
             // Loop over the high power points
             this->LoopOverHighPowerPoints(powerSpectrum, points, iComponent);
@@ -328,7 +328,7 @@ namespace Katydid
     }
 
 
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<Point>& points, unsigned component)
+    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<KTSequentialLine::Point>& points, unsigned component)
      {
          KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -336,9 +336,9 @@ namespace Katydid
          bool match;
 
          //loop in reverse order (by power)
-         for(std::vector<Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+         for(std::vector<KTSequentialLine::Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
          {
-             newFreq = pointIt->fPointFreq;
+             newFreq = pointIt->fFrequency;
 
              // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
              // To prevent that in the next iteration the point gets re-found and added to another line the amplitude of the point is reassigned here
@@ -352,7 +352,7 @@ namespace Katydid
              else
              {
                  this->UpdateLinePoint(*pointIt, slice);
-                 newFreq = pointIt->fPointFreq;
+                 newFreq = pointIt->fFrequency;
              }
              if (newFreq == 0.0 or pointIt->fAmplitude==0.0)
              {
@@ -368,7 +368,7 @@ namespace Katydid
 
                  //KTDEBUG(stflog, "Currently there are N active Lines "<<fActiveLines.size());
 
-                 std::vector< LineRef >::iterator lineIt = fActiveLines.begin();
+                 std::vector< KTSequentialLine >::iterator lineIt = fActiveLines.begin();
                  while( lineIt != fActiveLines.end())
                  {
                      // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
@@ -392,8 +392,8 @@ namespace Katydid
                      {
                          // Under these conditions a point will be added to a line
                          bool timeCondition = pointIt->fTimeInRunC > lineIt->fEndTimeInRunC;
-                         bool anyPointCondition = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
-                         bool secondPointCondition = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fInitialFrequencyAcceptance;
+                         bool anyPointCondition = std::abs(pointIt->fFrequency - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
+                         bool secondPointCondition = std::abs(pointIt->fFrequency - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fInitialFrequencyAcceptance;
 
                          // if point matches this line: insert
                          if (timeCondition and anyPointCondition)
@@ -407,7 +407,7 @@ namespace Katydid
                          else if (lineIt->fNPoints == 1 and timeCondition and secondPointCondition)
                          {
                              KTDEBUG(stflog, "Trying initial-frequency-acceptance "<<fInitialFrequencyAcceptance);
-                             lineIt->InsertPoint(*pointIt);
+                             lineIt->AppendPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
                              ++lineIt;
@@ -425,8 +425,8 @@ namespace Katydid
                  {
                      //KTDEBUG(stflog, "Starting new line");
 
-                     LineRef new_line(fInitialSlope);
-                     new_line.InsertPoint(*pointIt);
+                     KTSequentialLine new_line(fInitialSlope);
+                     new_line.AppendPoint(*pointIt);
                      (this->*fCalcSlope)(new_line);
                      fActiveLines.push_back(new_line);
                      match = true;
@@ -436,7 +436,7 @@ namespace Katydid
          return true;
      }
 
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(std::vector<Point>& points, unsigned component)
+    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(std::vector<KTSequentialLine::Point>& points, unsigned component)
      {
          KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -444,9 +444,9 @@ namespace Katydid
          bool match;
 
          //loop in reverse order (by power)
-         for(std::vector<Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+         for(std::vector<KTSequentialLine::Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
          {
-             newFreq = pointIt->fPointFreq;
+             newFreq = pointIt->fFrequency;
 
              // Need to think about how to prevent visiting the same neighborhood twice
 
@@ -469,7 +469,7 @@ namespace Katydid
 
                  //KTDEBUG(stflog, "Currently there are N active Lines "<<fActiveLines.size());
 
-                 std::vector< LineRef >::iterator lineIt = fActiveLines.begin();
+                 std::vector< KTSequentialLine >::iterator lineIt = fActiveLines.begin();
                  while( lineIt != fActiveLines.end())
                  {
                      // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
@@ -493,13 +493,13 @@ namespace Katydid
                      {
                          // Under these conditions a point will be added to a line
                          bool timeCondition = pointIt->fTimeInRunC > lineIt->fEndTimeInRunC;
-                         bool anyPointCondition = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
-                         bool secondPointCondition = std::abs(pointIt->fPointFreq - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fInitialFrequencyAcceptance;
+                         bool anyPointCondition = std::abs(pointIt->fFrequency - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fFrequencyAcceptance;
+                         bool secondPointCondition = std::abs(pointIt->fFrequency - (lineIt->fEndFrequency + lineIt->fSlope*(pointIt->fTimeInAcq - lineIt->fEndTimeInAcq))) < fInitialFrequencyAcceptance;
 
                          // if point matches this line: insert
                          if (timeCondition and anyPointCondition)
                          {
-                             lineIt->InsertPoint(*pointIt);
+                             lineIt->AppendPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
                              ++lineIt;
@@ -508,7 +508,7 @@ namespace Katydid
                          else if (lineIt->fNPoints == 1 and timeCondition and secondPointCondition)
                          {
                              KTDEBUG(stflog, "Trying initial-frequency-acceptance "<<fInitialFrequencyAcceptance);
-                             lineIt->InsertPoint(*pointIt);
+                             lineIt->AppendPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
                              ++lineIt;
@@ -526,8 +526,8 @@ namespace Katydid
                  {
                      //KTDEBUG(stflog, "Starting new line");
 
-                     LineRef new_line(fInitialSlope);
-                     new_line.InsertPoint(*pointIt);
+                     KTSequentialLine new_line(fInitialSlope);
+                     new_line.AppendPoint(*pointIt);
                      (this->*fCalcSlope)(new_line);
                      fActiveLines.push_back(new_line);
                      match = true;
@@ -538,7 +538,7 @@ namespace Katydid
      }
 
 
-    bool KTSequentialTrackFinder::EmitPreCandidate(LineRef line)
+    bool KTSequentialTrackFinder::EmitPreCandidate(KTSequentialLine line)
     {
         bool lineIsCandidate = true;
 
@@ -610,28 +610,19 @@ namespace Katydid
 
             // Set up new data object
             Nymph::KTDataPtr data( new Nymph::KTData() );
-            KTSparseWaterfallCandidateData& newSwfCand = data->Of< KTSparseWaterfallCandidateData >();
-            newSwfCand.SetComponent( line.fComponent );
-            newSwfCand.SetAcquisitionID( line.fAcquisitionID);
-            newSwfCand.SetCandidateID( fNLines );
-            newSwfCand.SetMinimumFrequency( line.fStartFrequency );
-            newSwfCand.SetMaximumFrequency( line.fEndFrequency );
-            newSwfCand.SetTimeInRunC( line.fStartTimeInRunC );
-            newSwfCand.SetTimeInAcq( line.fStartTimeInAcq );
-            newSwfCand.SetMinimumTimeInRunC( line.fStartTimeInRunC );
-            newSwfCand.SetMinimumTimeInAcq( line.fStartTimeInAcq );
-            newSwfCand.SetMaximumTimeInRunC( line.fEndTimeInRunC );
-            newSwfCand.SetMaximumTimeInAcq( line.fEndTimeInAcq );
-            newSwfCand.SetFrequencyWidth( line.fEndFrequency - line.fStartFrequency );
-            newSwfCand.SetSlope( line.fSlope );
+            KTSequentialLine& newCand = data->Of< KTSequentialLine >();
+            newCand.SetComponent( line.fComponent );
+            newCand.SetAcquisitionID( line.fAcquisitionID);
+            newCand.SetCandidateID( fNLines );
+            newCand.SetSlope( line.fSlope );
             ++fNLines;
 
             // Add line points to swf candidate
-            for(std::vector<Point>::iterator pointIt = line.fLinePoints.begin(); pointIt != line.fLinePoints.end(); ++pointIt )
+            for(std::vector<KTSequentialLine::Point>::iterator pointIt = line.fLinePoints.begin(); pointIt != line.fLinePoints.end(); ++pointIt )
             {
                 KTDEBUG( stflog, "Adding points from SeqLine to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fPointFreq<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-                KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fPointFreq, pointIt->fAmplitude, pointIt->fTimeInAcq );
-                newSwfCand.AddPoint(newSwfPoint);
+                KTSequentialLine::Point newPoint(*pointIt);
+                newCand.AppendPoint(newPoint);
             }
 
 
@@ -663,13 +654,13 @@ namespace Katydid
 
     }*/
 
-    void KTSequentialTrackFinder::UpdateLinePoint(Point& point, KTPowerSpectrum& slice)
+    void KTSequentialTrackFinder::UpdateLinePoint(KTSequentialLine::Point& point, KTPowerSpectrum& slice)
     {
         double Delta = fConvergeDelta + 1.0;
         unsigned loopCounter = 0;
         int maxIterations = 10;
 
-        double frequency = point.fPointFreq;
+        double frequency = point.fFrequency;
         double amplitude = point.fAmplitude;
         unsigned frequencyBin = point.fBinInSlice;
         double oldFrequencyBin;
@@ -725,7 +716,7 @@ namespace Katydid
         }
         // Replace values stored in discPoint
         point.fBinInSlice = frequencyBin;
-        point.fPointFreq = frequency;
+        point.fFrequency = frequency;
         point.fNeighborhoodAmplitude = amplitude;
 
     }
@@ -755,7 +746,7 @@ namespace Katydid
     {
         KTINFO(stflog, "Got egg-done signal. Checking remaining line candidates");
 
-        std::vector< LineRef >::iterator lineIt = fActiveLines.begin();
+        std::vector< KTSequentialLine >::iterator lineIt = fActiveLines.begin();
         while( lineIt != fActiveLines.end())
         {
             if (lineIt->fNPoints >= fMinPoints)
@@ -808,15 +799,15 @@ namespace Katydid
             Line.fSlope = fInitialSlope;
         }
     }*/
-    void KTSequentialTrackFinder::CalculateUnweightedSlope(LineRef& Line)
+    void KTSequentialTrackFinder::CalculateUnweightedSlope(KTSequentialLine& Line)
     {
 
         //KTDEBUG(stflog, "Calculating line slope");
         Line.fNPoints = Line.fLinePoints.size();
 
         Line.fSumX += Line.fLinePoints.back().fTimeInRunC;
-        Line.fSumY += Line.fLinePoints.back().fPointFreq;
-        Line.fSumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fPointFreq;
+        Line.fSumY += Line.fLinePoints.back().fFrequency;
+        Line.fSumXY += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fFrequency;
         Line.fSumXX += Line.fLinePoints.back().fTimeInRunC * Line.fLinePoints.back().fTimeInRunC;
 
         if (Line.fNPoints > 1)
@@ -830,7 +821,7 @@ namespace Katydid
         //KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.fSlope);
     }
 
-    void KTSequentialTrackFinder::CalculateSlopeFirstRef(LineRef& Line)
+    void KTSequentialTrackFinder::CalculateSlopeFirstRef(KTSequentialLine& Line)
     {
 
         //KTDEBUG(seqlog, "Calculating line slope");
@@ -840,11 +831,11 @@ namespace Katydid
 
         if (Line.fNPoints > fNSlopePoints)
         {
-            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<KTSequentialLine::Point>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq != Line.fStartFrequency)
+                if (pointIt->fFrequency != Line.fStartFrequency)
                 {
-                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (pointIt->fFrequency - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fNeighborhoodAmplitude;
                     wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
@@ -852,11 +843,11 @@ namespace Katydid
         }
         else if (Line.fNPoints > 1)
         {
-            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<KTSequentialLine::Point>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq != Line.fStartFrequency)
+                if (pointIt->fFrequency != Line.fStartFrequency)
                 {
-                    weightedSlope += (pointIt->fPointFreq - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (pointIt->fFrequency - Line.fStartFrequency)/(pointIt->fTimeInAcq - Line.fStartTimeInAcq) * pointIt->fNeighborhoodAmplitude;
                     wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
@@ -869,7 +860,7 @@ namespace Katydid
         //KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
     }
 
-    void KTSequentialTrackFinder::CalculateSlopeLastRef(LineRef& Line)
+    void KTSequentialTrackFinder::CalculateSlopeLastRef(KTSequentialLine& Line)
     {
 
         //KTDEBUG(seqlog, "Calculating line slope");
@@ -879,11 +870,11 @@ namespace Katydid
 
         if (Line.fNPoints > fNSlopePoints)
         {
-            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<KTSequentialLine::Point>::iterator pointIt = Line.fLinePoints.end() - fNSlopePoints; pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq != Line.fEndFrequency)
+                if (pointIt->fFrequency != Line.fEndFrequency)
                 {
-                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (Line.fEndFrequency - pointIt->fFrequency)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
                     wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
@@ -891,11 +882,11 @@ namespace Katydid
         }
         else if (Line.fNPoints > 1)
         {
-            for(std::vector<Point>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
+            for(std::vector<KTSequentialLine::Point>::iterator pointIt = Line.fLinePoints.begin(); pointIt != Line.fLinePoints.end(); ++pointIt)
             {
-                if (pointIt->fPointFreq != Line.fEndFrequency)
+                if (pointIt->fFrequency != Line.fEndFrequency)
                 {
-                    weightedSlope += (Line.fEndFrequency - pointIt->fPointFreq)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (Line.fEndFrequency - pointIt->fFrequency)/(Line.fEndTimeInRunC - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
                     wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
