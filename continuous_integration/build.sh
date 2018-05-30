@@ -1,6 +1,6 @@
 mkdir build
 cd build
-cmake ..
+cmake -DKatydid_ENABLE_TESTING=TRUE ..
 make -j3 
 make install
 
