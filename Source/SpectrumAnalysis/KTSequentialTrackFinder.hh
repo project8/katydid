@@ -102,6 +102,8 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
+
         public:
             //MEMBERVARIABLE(ThresholdMode, Mode);
 
@@ -151,6 +153,7 @@ namespace Katydid
 
         private:
             std::vector< LineRef> fActiveLines;
+            std::set< Nymph::KTDataPtr > fCandidates;
 
         public:
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
@@ -192,6 +195,10 @@ namespace Katydid
             Nymph::KTSlotDone fDoneSlot;
 
     };
+    inline const std::set< Nymph::KTDataPtr >& KTSequentialTrackFinder::GetCandidates() const
+    {
+        return fCandidates;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSEQUENTIALTRACKFinder_HH_ */

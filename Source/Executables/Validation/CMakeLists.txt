@@ -82,6 +82,7 @@ if (Katydid_ENABLE_TESTING)
         TestSpectrogramStriperSwaps
         TestSpectrumDiscriminator
         TestWindowFunction
+        TestSequentialTrackFinder
     )
     
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )

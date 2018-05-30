@@ -249,16 +249,17 @@ namespace Katydid
 
 
             // this vector will collect the discriminated points
-            std::vector<Point> points;
+            std::vector<KTSequentialLine::Point> points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
             {
                 //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
-                Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
+                KTSequentialLine::Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
                 points.push_back(newPoint);
             }
 
+            KTDEBUG( stflog, "Collected "<<points.size()<<" points");
             // sort points by power
             std::sort(points.begin(), points.end(),std::less<Point>());
 
@@ -273,17 +274,18 @@ namespace Katydid
     {
         KTDEBUG(stflog, "Initial slope is: "<<fInitialSlope);
 
-        unsigned nComponents = 0;
+        unsigned nComponents = 1;
         fBinWidth = (double) slHeader.GetSampleRate() / (double) slHeader.GetRawSliceSize();
+        KTDEBUG(stflog, "Bin Width "<<fBinWidth);
 
         if (fCalculateMinBin)
         {
-            SetMinBin((unsigned) ( fMinFrequency / slHeader.GetSampleRate() ));
+            SetMinBin((unsigned) ( fMinFrequency / fBinWidth ) );
             KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin((unsigned) (slHeader.GetSampleRate() - fMaxFrequency) / slHeader.GetSampleRate());
+            SetMaxBin((unsigned) ( fMaxFrequency / fBinWidth ) );
             KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
         }
 
@@ -306,13 +308,17 @@ namespace Katydid
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
             {
-                //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
-                Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
-                points.push_back(newPoint);
+                if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
+                {
+                    //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
+                    Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
+                    points.push_back(newPoint);
+                }
             }
 
             // sort points by power
             std::sort(points.begin(), points.end(),std::less<Point>());
+            KTDEBUG( stflog, "Collected "<<points.size()<<" points");
 
             // Loop over the high power points
             this->LoopOverHighPowerPoints(points, iComponent);
@@ -635,6 +641,7 @@ namespace Katydid
             //ProcessNewTrack( newTrack );
 
             KTDEBUG(stflog, "Emitting track signal");
+            fCandidates.insert( data );
             fTrackSignal( data );
         }
         else
@@ -820,7 +827,7 @@ namespace Katydid
         {
             Line.fSlope = fInitialSlope;
         }
-        KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.fSlope);
+        //KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.fSlope);
     }
 
     void KTSequentialTrackFinder::CalculateSlopeFirstRef(LineRef& Line)
@@ -859,7 +866,7 @@ namespace Katydid
         {
             Line.fSlope = fInitialSlope;
         }
-        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
+        //KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
     }
 
     void KTSequentialTrackFinder::CalculateSlopeLastRef(LineRef& Line)
@@ -898,6 +905,6 @@ namespace Katydid
         {
             Line.fSlope = fInitialSlope;
         }
-        KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.fSlope);
+        //KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.fSlope);
     }
 } /* namespace Katydid */
