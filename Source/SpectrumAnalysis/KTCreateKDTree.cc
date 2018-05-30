@@ -193,6 +193,9 @@ namespace Katydid
             newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
             newPoint.fAmplitude = pIt->fAmplitude;
             newPoint.fTimeInAcq = fInvScalingX * pIt->fTimeInAcq;
+            newPoint.fMean = 0;
+            newPoint.fVariance = 1;
+            newPoint.fNeighborhoodAmplitude = 1;
             fTreeData.AddPoint(newPoint, component);
         }
         KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");

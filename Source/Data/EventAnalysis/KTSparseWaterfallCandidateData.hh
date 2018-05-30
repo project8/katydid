@@ -25,7 +25,10 @@ namespace Katydid
                 double fFrequency;
                 double fAmplitude;
                 double fTimeInAcq;
-                Point(double tirc, double freq, double amp, double tiacq) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq) {}
+                double fMean;
+                double fVariance;
+                double fNeighborhoodAmplitude;
+                Point(double tirc, double freq, double amp, double tiacq, double mean, double variance, double neighborhoodAmplitude) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodAmplitude) {}
             };
 
             struct PointCompare

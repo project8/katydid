@@ -28,8 +28,8 @@ namespace Katydid
                 double fThreshold;
                 double fMean;
                 double fVariance;
-                double fSummedPower;
-                Point(double abscissa, double ordinate, double threshold, double mean, double variance, double summedpower) : fAbscissa(abscissa), fOrdinate(ordinate), fThreshold(threshold), fMean(mean), fVariance(variance), fSummedPower(summedpower) {}
+                double fNeighborhoodAmplitude;
+                Point(double abscissa, double ordinate, double threshold, double mean, double variance, double neighborhoodAmplitude) : fAbscissa(abscissa), fOrdinate(ordinate), fThreshold(threshold), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodAmplitude) {}
             };
             typedef std::map< unsigned, Point > SetOfPoints;
 
