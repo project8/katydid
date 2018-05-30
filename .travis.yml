@@ -2,21 +2,16 @@ language: cpp
 sudo: required
 dist: trusty
 compiler:
-- clang
+    - clang
 os:
-- osx
+    - osx
 osx_image: xcode9.3
 ruby: 2.2.0
 before_install:
-- echo $LANG
-- echo $LC_ALL
-- if [ $TRAVIS_OS_NAME == osx ]; then rm '/usr/local/include/c++' && brew update && brew upgrade python && brew install root hdf5 fftw libmatio ; fi
+    - if [ $TRAVIS_OS_NAME == osx ]; then rm '/usr/local/include/c++' && brew update && brew upgrade python && brew install root hdf5 fftw libmatio ; fi
 script:
-# - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --llvm-config=llvm-config --cc=clang --cxx=clang++; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/build.sh ; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/test.sh ; fi
+    - if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/build.sh ; fi
+    - if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/test.sh ; fi
 # after_success:
-# - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_codedb; fi
-# - if [ $TRAVIS_BRANCH == $TRAVIS_TAG ]; then ./scripts/deploy.sh release github website triggers; fi
 notifications:
-  slack: projecteight:hoT9qNHFUUethFMOnVHB2pB4
+    slack: projecteight:hoT9qNHFUUethFMOnVHB2pB4
