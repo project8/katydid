@@ -202,9 +202,9 @@ namespace Katydid
                 double minTime = time;
                 double minTimeInAcq = timeInAcq;
                 double maxTime = minTime;
-                double mean = 0.;
-                double variance = 0.;
-                double neighborhoodAmplitude = 0.;
+                double mean = points[*pointIdIt].fMean;
+                double variance = points[*pointIdIt].fVariance;
+                double neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
                 cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude));
                 KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
@@ -213,6 +213,9 @@ namespace Katydid
                     time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
                     freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                     timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();;
+                    mean = points[*pointIdIt].fMean;
+                    variance = points[*pointIdIt].fVariance;
+                    neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
                     cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude));
                     KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
 

@@ -142,6 +142,9 @@ namespace Katydid
                 newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
                 newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
+                newPoint.fMean = pIt->second.fMean;
+                newPoint.fVariance = pIt->second.fVariance;
+                newPoint.fNeighborhoodAmplitude = pIt->second.fNeighborhoodAmplitude;
                 fTreeData.AddPoint(newPoint, iComponent);
             }
             KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points (Slice Number: " << newPoint.fSliceNumber << ")");
@@ -193,9 +196,9 @@ namespace Katydid
             newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
             newPoint.fAmplitude = pIt->fAmplitude;
             newPoint.fTimeInAcq = fInvScalingX * pIt->fTimeInAcq;
-            newPoint.fMean = 0;
-            newPoint.fVariance = 1;
-            newPoint.fNeighborhoodAmplitude = 1;
+            newPoint.fMean = pIt->fMean;
+            newPoint.fVariance = pIt->fVariance;
+            newPoint.fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;
             fTreeData.AddPoint(newPoint, component);
         }
         KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");
