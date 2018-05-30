@@ -5,14 +5,16 @@ compiler:
 - clang
 os:
 - osx
+osx_image: xcode9.3
 ruby: 2.2.0
 before_install:
 - echo $LANG
 - echo $LC_ALL
-- if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install hdf5 fftw; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install hdf5 fftw && brew link --overwrite gcc ; fi
 script:
 # - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --llvm-config=llvm-config --cc=clang --cxx=clang++; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then ./continuous_integration/build.sh ; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/build.sh ; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then source continuous_integration/test.sh ; fi
 # after_success:
 # - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_codedb; fi
 # - if [ $TRAVIS_BRANCH == $TRAVIS_TAG ]; then ./scripts/deploy.sh release github website triggers; fi
