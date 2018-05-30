@@ -18,3 +18,6 @@ script:
 # after_success:
 # - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_codedb; fi
 # - if [ $TRAVIS_BRANCH == $TRAVIS_TAG ]; then ./scripts/deploy.sh release github website triggers; fi
+notifications:
+  slack:
+    secure: gQbkvrwOB0KoNNMi9BaY5lvr1h/vy4hZMBLioE5EFHoe0Sss+cBK868H1b8UqqiGY4fxEL2jC59W70sGwceD978IjWnBeBAtKkbJ1uIDDjENvBNxs3O5ADXa6FKUeRQQduHwOa2JqMe6QErXMBMjRNEUNvItoqEG2X20BHMhOymFNEtI44UT42Osnqwi0iwmNVK8cHM1lSLI/29I+rVn7hYejsG79rzB3gu3gHpA0EIhauhRyDy2HmJ9gcHjATFRdjz2qfJR/tLTEH1HGMnA2zXKLIjA0MX30qLOjnnTbFeakbDFW89OIOxco484QjWIP6oswAi3FMIDPZaf80PP8PNDc+7I2xIctjpW8tUAXA8Tqj4x59YU9lelQ0DbbsVpW49YbyeV2o+gENvTYZvwGGDafVBpvjn7XZ48Sjw3fQCdgn+cLE/TQ5XASsPWm5rXCyk22qLk3neXzt8sTAFtq2UKZJ+IPfjYOyWvj5YcV1SfUtJgbu9sLc7N5OP9XHUViwssHetEIVdba45H9xnPccCDapeEwBvTkfk8LAXiyAUjMumZNVfBD2+h1UWDRb2cNV1rcrP/anlJyFHCAJFnjw37U7X2BCF+dhSwkMeQjTpQt0QfzM/KATcb1/fMro0A0EBF+4Ta+ZRI0EH3r7lwjXyKRrJBMSUo7f8p2qN1Toc=
