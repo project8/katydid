@@ -44,7 +44,6 @@ namespace Katydid
             KTProcessor(name),
             fSNRThreshold(10.),
             fSigmaThreshold(5.),
-            fPowerRadius(2.),
             fThresholdMode(eSigma),
             fMinFrequency(0.),
             fMaxFrequency(1.),
