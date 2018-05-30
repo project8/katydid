@@ -12,7 +12,7 @@ before_install:
 - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install cmake boost hdf5 fftw; fi
 script:
 # - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --llvm-config=llvm-config --cc=clang --cxx=clang++; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then ./build.sh ; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then ./continuous_integration/build.sh ; fi
 # after_success:
 # - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_codedb; fi
 # - if [ $TRAVIS_BRANCH == $TRAVIS_TAG ]; then ./scripts/deploy.sh release github website triggers; fi
