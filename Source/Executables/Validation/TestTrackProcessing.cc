@@ -13,6 +13,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTTrackProcessing.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 #include "KTRandom.hh"
 
 #include <cmath>        // std::abs
@@ -40,7 +41,7 @@ KTSparseWaterfallCandidateData createFakeData(){
     KTRNGGaussian<> powerDistribution(trackPowerMean,trackPowerStd);
     KTRNGPoisson<> numberPointsDistribution(avgPointsPerSlice);
 
-    typedef KTSparseWaterfallCandidateData::Point Point;
+    typedef KTDiscriminatedPoint Point;
     
     if (nSlices<=1){
         KTERROR( testlog, "Number of slices <" << nSlices <<"> should be larger than 1!");
@@ -53,7 +54,7 @@ KTSparseWaterfallCandidateData createFakeData(){
         for (unsigned iPoint = 0; iPoint<nPoints; ++iPoint){
             double yPoint = trackIntercept + trackSlope*sliceTime + noiseDistribution();
             double power = powerDistribution();
-            Point aPoint(sliceTime,yPoint,power,sliceTime);
+            Point aPoint(sliceTime,yPoint,power,sliceTime,1.,1.,1.);
             sftData.AddPoint(aPoint);
         }
         sliceTime +=timeStep;
@@ -75,10 +76,11 @@ int main()
 
     // Execute the Processing step
     KTSparseWaterfallCandidateData swfData = createFakeData();
-    trackProc.ProcessTrackWeightedSlope(swfData);
+    trackProc.ProcessTrackSWF(swfData);
+
+    KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
 
     // Check the results of the processing
-    KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
     double foundFrequency = procTrack.GetStartFrequency();
     double toBeFoundFrequency = trackIntercept + trackSlope*trackStart;
     double diff = foundFrequency - toBeFoundFrequency;

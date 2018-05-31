@@ -12,6 +12,8 @@
 #include "KTProcessor.hh"
 
 #include "KTMemberVariable.hh"
+#include "KTDiscriminatedPoint.hh"
+#include "KTProcessedTrackData.hh"
 
 #include "KTSlot.hh"
 
@@ -54,7 +56,14 @@ namespace Katydid
     {
 
         public:
-            typedef KTSparseWaterfallCandidateData::Points Points;
+            typedef KTDiscriminatedPoints Points;
+            struct TrackID
+            {
+                unsigned fComponent;
+                unsigned fCandidateID;
+                unsigned fAcquisitionID;
+
+            };
 
         public:
             KTTrackProcessing(const std::string& name = "track-proc");
@@ -75,11 +84,12 @@ namespace Katydid
             bool ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData);
             bool ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
             // Core methods for both algorithm
-            bool ProcessTrackDoubleCuts(Points& points, KTHoughData& htData);
-            bool ProcessTrackWeightedSlope(Points& points);
+            bool ProcessTrackDoubleCuts(Points& points, KTHoughData& htData, TrackID trackID, KTProcessedTrackData* procTrack);
+            bool ProcessTrackWeightedSlope(Points& points, TrackID trackID, KTProcessedTrackData* procTrack);
 
         private:
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
+            TrackID ExtractTrackID(KTSparseWaterfallCandidateData swfData);
 
             //***************
             // Signals

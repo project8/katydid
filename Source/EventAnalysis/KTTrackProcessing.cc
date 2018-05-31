@@ -70,46 +70,56 @@ namespace Katydid
     }
 
     bool KTTrackProcessing::ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
+    // Method associated with the <SWFC, Hough> slot
     {
+        TrackID trackID = ExtractTrackID(swfData);
+        Points& points = swfData.GetPoints();
+        // The & is important!!
+        KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();     
+
         KTDEBUG(tlog, "Track processing");
         if (fTrackProcAlgorithm == "double-cuts")
         {
             KTDEBUG(tlog, "Making track reconstruction using \"double-cuts\" algorithm");
-            return KTTrackProcessing::ProcessTrackDoubleCuts(swfData,htData);
+            return KTTrackProcessing::ProcessTrackDoubleCuts(points, htData, trackID, &procTrack);
         }
         else if (fTrackProcAlgorithm == "weighted-slope")
         {
             KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
-            return KTTrackProcessing::ProcessTrackWeightedSlope(swfData);
+            return KTTrackProcessing::ProcessTrackWeightedSlope(points, trackID, &procTrack);
 
         }
         KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
         return false;
-
     }
 
     bool KTTrackProcessing::ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData)
+    // Method associated with the <SWFC> slot
     {
+
+        TrackID trackID = ExtractTrackID(swfData);
+        Points& points = swfData.GetPoints();
+        // The & is important!!
+        KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
+
         KTDEBUG(tlog, "Track processing");
         if (fTrackProcAlgorithm=="double-cuts") {
             KTERROR(tlog, "Cannot use " << fTrackProcAlgorithm << "algorithm with only SparseWaterfallCandidate!");
             return false;
         }
-        KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
-        return KTTrackProcessing::ProcessTrackWeightedSlope(swfData);
+        else if (fTrackProcAlgorithm == "weighted-slope")
+        {
+            KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+            return KTTrackProcessing::ProcessTrackWeightedSlope(points, trackID, &procTrack);
+        }
+        KTERROR(tlog, "Invalid value for \"track-slope\": <" << fTrackProcAlgorithm << ">");
+        return false;
     }
 
-    bool KTTrackProcessing::ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
+    bool KTTrackProcessing::ProcessTrackDoubleCuts(Points& points, KTHoughData& htData, TrackID trackID, KTProcessedTrackData* procTrack)
     {
-        unsigned component = swfData.GetComponent();
-        unsigned trackID = swfData.GetCandidateID();
-
-        typedef KTDiscriminatedPoints Points;
-        // not const because points will be removed later
-        Points& points = swfData.GetPoints();
-
         // not const because the HT will be smoothed in place
-        KTPhysicalArray< 2, double >* houghTransform = htData.GetTransform(component);
+        KTPhysicalArray< 2, double >* houghTransform = htData.GetTransform(trackID.fComponent);
 
         // NOTE: smoothes the actual data, not a copy
         if (! KTSmooth::Smooth(houghTransform))
@@ -132,10 +142,10 @@ namespace Katydid
         // "scaled" means the axis has been scaled to 0-1, as was the case when the Hough Transform was calculated
         // "unscaled" means the axis is in the original units
         // unscaled = scaled * scale + offset
-        double xScale = htData.GetXScale(component);
-        double yScale = htData.GetYScale(component);
-        double xOffset = htData.GetXOffset(component);
-        double yOffset = htData.GetYOffset(component);
+        double xScale = htData.GetXScale(trackID.fComponent);
+        double yScale = htData.GetYScale(trackID.fComponent);
+        double xOffset = htData.GetXOffset(trackID.fComponent);
+        double yOffset = htData.GetYOffset(trackID.fComponent);
 
         double htSlope = -1.0 * (htCosAngle * yScale) / (htSinAngle * xScale);
         double htIntercept = (htRadius / htSinAngle) * yScale + yOffset - htSlope * xOffset; // this is r/sin(angle), rescaled, plus extra from the xOffset
@@ -280,38 +290,34 @@ namespace Katydid
         }
         KTDEBUG(tlog, "Points present after cuts: " << points.size());
 
-
-
-
         // Add the new data
-        KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
-        procTrack.SetComponent(component);
-        procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
-        procTrack.SetTrackID(trackID);
+        procTrack->SetComponent(trackID.fComponent);
+        procTrack->SetAcquisitionID(trackID.fAcquisitionID);
+        procTrack->SetTrackID(trackID.fCandidateID);
 
         if (lsSlope < fSlopeMinimum || points.size() < fProcTrackMinPoints)
         {
-            procTrack.SetIsCut(true);
+            procTrack->SetIsCut(true);
         }
 
-        procTrack.SetStartTimeInAcq(startTimeInAcq);
-        procTrack.SetStartTimeInRunC(startTime);
-        procTrack.SetEndTimeInRunC(stopTime);
-        procTrack.SetTimeLength(stopTime - startTime);
-        procTrack.SetStartFrequency(startFreq);
-        procTrack.SetEndFrequency(stopFreq);
-        procTrack.SetFrequencyWidth(std::abs(stopFreq - startFreq));
-        procTrack.SetSlope(lsSlope);
-        procTrack.SetIntercept(lsIntercept);
-        procTrack.SetTotalPower(std::accumulate(amplitude.begin(), amplitude.end(), 0.));
+        procTrack->SetStartTimeInAcq(startTimeInAcq);
+        procTrack->SetStartTimeInRunC(startTime);
+        procTrack->SetEndTimeInRunC(stopTime);
+        procTrack->SetTimeLength(stopTime - startTime);
+        procTrack->SetStartFrequency(startFreq);
+        procTrack->SetEndFrequency(stopFreq);
+        procTrack->SetFrequencyWidth(std::abs(stopFreq - startFreq));
+        procTrack->SetSlope(lsSlope);
+        procTrack->SetIntercept(lsIntercept);
+        procTrack->SetTotalPower(std::accumulate(amplitude.begin(), amplitude.end(), 0.));
 
-        procTrack.SetNTrackBins(points.size());
-        procTrack.SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
-        procTrack.SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
-        procTrack.SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
-        procTrack.SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
-        procTrack.SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
-        procTrack.SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
+        procTrack->SetNTrackBins(points.size());
+        procTrack->SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
+        procTrack->SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
+        procTrack->SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
+        procTrack->SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
+        procTrack->SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
+        procTrack->SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
         
         //TODO: Add calculation of uncertainties
 
@@ -319,23 +325,11 @@ namespace Katydid
     }
 
 
-    bool KTTrackProcessing::ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData)
+    bool KTTrackProcessing::ProcessTrackWeightedSlope(Points& points, TrackID trackID,KTProcessedTrackData* procTrack)
     {
-        unsigned component = swfData.GetComponent();
-        unsigned trackID = swfData.GetCandidateID();
-
-        typedef KTDiscriminatedPoints Points;
-        // not const because points will be removed later
-        Points& points = swfData.GetPoints();
-
         vector< double > timeBinInAcq;
         vector< double > timeBinInRunC;
         vector< double > averageFrequency;
-        vector< double > mean;
-        vector< double > variance;
-        vector< double > neighborhoodAmplitude;
-
-        // Makes a first loop over the points to calculate the weighted averageFrequency in one time slice
 
         // Makes a first loop over the points to calculate the weighted average in one time slice
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
@@ -350,9 +344,11 @@ namespace Katydid
         sort( timeBinInRunC.begin(), timeBinInRunC.end() );
         timeBinInRunC.erase( unique( timeBinInRunC.begin(), timeBinInRunC.end() ), timeBinInRunC.end() );
 
-
         const int nTimeBins = timeBinInAcq.size();
         //Derived Quantites
+        vector< double > mean(nTimeBins);
+        vector< double > variance(nTimeBins);
+        vector< double > neighborhoodAmplitude(nTimeBins);
         vector< double > sumPf(nTimeBins);
         vector< double > sumP(nTimeBins);
         vector< double > trackSNR(nTimeBins);
@@ -360,7 +356,6 @@ namespace Katydid
         vector< double > wideTrackSNR(nTimeBins);
         vector< double > wideTrackNUP(nTimeBins);
         int nTrackBins = 0.;
-
         // Calculate the averaged points
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
@@ -436,9 +431,9 @@ namespace Katydid
 
             if (chi2min < 0.1)
             {
-                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged Frequency points (" << fProcTrackAssError << ")");
-                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
-                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
+                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged Frequency points (" << fProcTrackAssignedError << ")");
+                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssignedError);
+                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssignedError);
             }
             else
             {
@@ -460,40 +455,50 @@ namespace Katydid
         // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
 
         // Adding resuts to ProcessedTrackData object
-        KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
-        procTrack.SetComponent(component);
-        procTrack.SetAcquisitionID(swfData.GetAcquisitionID());
-        procTrack.SetTrackID(trackID);
+        // KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
+        procTrack->SetComponent(trackID.fComponent);
+        procTrack->SetAcquisitionID(trackID.fAcquisitionID);
+        procTrack->SetTrackID(trackID.fCandidateID);
 
-        procTrack.SetStartTimeInAcq(*std::min_element(timeBinInAcq.begin(), timeBinInAcq.end()));
-        procTrack.SetStartTimeInRunC(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
-        procTrack.SetEndTimeInRunC(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()));
-        procTrack.SetTimeLength(procTrack.GetEndTimeInRunC() - procTrack.GetStartTimeInRunC());
-        procTrack.SetStartFrequency(procTrack.GetStartTimeInAcq() * slope + intercept);
-        procTrack.SetEndFrequency((procTrack.GetStartTimeInAcq() + procTrack.GetTimeLength()) * slope + intercept);
-        procTrack.SetFrequencyWidth(std::abs(procTrack.GetEndFrequency() - procTrack.GetStartFrequency()));
-        procTrack.SetSlope(slope);
-        procTrack.SetIntercept(intercept);
-        procTrack.SetTotalPower(amplitudeSum);
+        procTrack->SetStartTimeInAcq(*std::min_element(timeBinInAcq.begin(), timeBinInAcq.end()));
+        procTrack->SetStartTimeInRunC(*std::min_element(timeBinInRunC.begin(), timeBinInRunC.end()));
+        procTrack->SetEndTimeInRunC(*std::max_element(timeBinInRunC.begin(), timeBinInRunC.end()));
+        procTrack->SetTimeLength(procTrack->GetEndTimeInRunC() - procTrack->GetStartTimeInRunC());
+        procTrack->SetStartFrequency(procTrack->GetStartTimeInAcq() * slope + intercept);
+        procTrack->SetEndFrequency((procTrack->GetStartTimeInAcq() + procTrack->GetTimeLength()) * slope + intercept);
+        procTrack->SetFrequencyWidth(std::abs(procTrack->GetEndFrequency() - procTrack->GetStartFrequency()));
+        procTrack->SetSlope(slope);
+        procTrack->SetIntercept(intercept);
+        procTrack->SetTotalPower(amplitudeSum);
 
-        procTrack.SetNTrackBins(nTrackBins);
-        procTrack.SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
-        procTrack.SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
-        procTrack.SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
-        procTrack.SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
-        procTrack.SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
-        procTrack.SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
-        
+        procTrack->SetNTrackBins(nTrackBins);
+        procTrack->SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
+        procTrack->SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
+        procTrack->SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
+        procTrack->SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
+        procTrack->SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
+        procTrack->SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
+
 
         if (!(slope > fSlopeMinimum))
         {
-            procTrack.SetIsCut(true);
+            procTrack->SetIsCut(true);
         }
-        procTrack.SetSlopeSigma(deltaSlope);
-        procTrack.SetInterceptSigma(deltaIntercept);
-        procTrack.SetStartFrequencySigma(sigmaStartFreq);
-        procTrack.SetEndFrequencySigma(sigmaEndFreq);
+        procTrack->SetSlopeSigma(deltaSlope);
+        procTrack->SetInterceptSigma(deltaIntercept);
+        procTrack->SetStartFrequencySigma(sigmaStartFreq);
+        procTrack->SetEndFrequencySigma(sigmaEndFreq);
 
         return true;
     }
+
+    KTTrackProcessing::TrackID KTTrackProcessing::ExtractTrackID(KTSparseWaterfallCandidateData swfData)
+    {
+        TrackID trackID;
+        trackID.fComponent = swfData.GetComponent();
+        trackID.fAcquisitionID = swfData.GetAcquisitionID();
+        trackID.fCandidateID = swfData.GetCandidateID();
+        return trackID;
+    }
+
 } /* namespace Katydid */
