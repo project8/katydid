@@ -49,10 +49,10 @@ namespace Katydid
             MEMBERVARIABLE(double, NTrackBins);
             MEMBERVARIABLE(double, TotalTrackSNR);
             MEMBERVARIABLE(double, MaxTrackSNR);
-            MEMBERVARIABLE(double, TotalTrackNVP);
-            MEMBERVARIABLE(double, MaxTrackNVP);
+            MEMBERVARIABLE(double, TotalTrackNUP);
+            MEMBERVARIABLE(double, MaxTrackNUP);
             MEMBERVARIABLE(double, TotalWideTrackSNR);
-            MEMBERVARIABLE(double, TotalWideTrackNVP);
+            MEMBERVARIABLE(double, TotalWideTrackNUP);
 
             MEMBERVARIABLE(double, StartTimeInRunCSigma);
             MEMBERVARIABLE(double, EndTimeInRunCSigma);
