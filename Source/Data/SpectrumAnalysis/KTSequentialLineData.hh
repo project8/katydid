@@ -20,45 +20,6 @@ namespace Katydid
 {
     class KTSequentialLineData : public Nymph::KTExtensibleData< KTSequentialLineData >
     {
-        public:
-            /*struct Point
-            {
-                double fBinInSlice;
-                double fFrequency;
-                double fTimeInAcq;
-                double fTimeInRunC;
-                double fAmplitude;
-                double fThreshold;
-                double fMean;
-                double fVariance;
-                double fNeighborhoodAmplitude;
-                uint64_t fAcquisitionID;
-                double fComponent;
-
-                Point(unsigned binInSclice, double pointFreq, double timeInAcq, double timeInRunC, double amplitude, double threshold, double mean, double variance, double neighborhoodamplitude, uint64_t acqID, unsigned iComponent) :
-                    fBinInSlice(binInSclice),
-                    fFrequency(pointFreq),
-                    fTimeInAcq(timeInAcq),
-                    fTimeInRunC(timeInRunC),
-                    fAmplitude(amplitude),
-                    fThreshold(threshold),
-                    fMean(mean),
-                    fVariance(variance),
-                    fNeighborhoodAmplitude(neighborhoodamplitude),
-                    fAcquisitionID(acqID),
-                    fComponent(iComponent)
-                {}
-
-                void Clear();
-                bool operator > (const Point& str) const
-                {
-                    return (fAmplitude > str.fAmplitude);
-                }
-                bool operator < (const Point& str) const
-                {
-                    return (fAmplitude < str.fAmplitude);
-                }
-            };*/
 
         private:
 

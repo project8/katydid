@@ -53,6 +53,7 @@ KTSliceHeader createFakeHeader( unsigned sliceNumber ){
     header.SetTimeInRun(timeBinWidth*sliceNumber);
     header.SetSampleRate(100.e6);
     header.SetRawSliceSize(4096);
+    header.SetAcquisitionID(5);
     return header;
 }
 
@@ -219,6 +220,7 @@ int main()
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
         KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        KTINFO(testlog, "AcquisitionsID - CandidateID: "<<sqlData.GetAcquisitionID()<<" - "<<sqlData.GetCandidateID());
         iCand++;
 
         const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
