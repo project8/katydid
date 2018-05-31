@@ -40,7 +40,7 @@ namespace Katydid
     {
     }
 
-    void KTSparseWaterfallCandidateData::AddPoint(const Point& point)
+    void KTSparseWaterfallCandidateData::AddPoint(const KTDiscriminatedPoint& point)
     {
         fPoints.insert(point);
         return;

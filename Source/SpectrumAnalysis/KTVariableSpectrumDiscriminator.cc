@@ -607,12 +607,11 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
+                        // neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
                         variance = normalizedVariance;
                         mean = normalizedValue;
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
                     }
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fPowerRadius - 1) * mean;
+                    // neighborhoodAmplitude = neighborhoodAmplitude - (2* fPowerRadius - 1) * mean;
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }

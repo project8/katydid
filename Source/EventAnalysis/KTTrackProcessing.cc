@@ -94,7 +94,7 @@ namespace Katydid
         unsigned component = swfData.GetComponent();
         unsigned trackID = swfData.GetCandidateID();
 
-        typedef KTSparseWaterfallCandidateData::Points Points;
+        typedef KTDiscriminatedPoints Points;
         // not const because points will be removed later
         Points& points = swfData.GetPoints();
 
@@ -314,7 +314,7 @@ namespace Katydid
         unsigned component = swfData.GetComponent();
         unsigned trackID = swfData.GetCandidateID();
 
-        typedef KTSparseWaterfallCandidateData::Points Points;
+        typedef KTDiscriminatedPoints Points;
         // not const because points will be removed later
         Points& points = swfData.GetPoints();
 

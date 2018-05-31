@@ -13,6 +13,7 @@
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 using std::string;
 using std::vector;
@@ -188,8 +189,8 @@ namespace Katydid
         KTKDTreeData::Point newPoint;
         newPoint.fSliceNumber = 0; // slice number isn't available in KTSparseWaterfallCandidateData
         if (newPoint.fSliceNumber > fTreeData.GetLastSlice()) fTreeData.SetLastSlice(newPoint.fSliceNumber);
-        const KTSparseWaterfallCandidateData::Points& incomingPts = swfcData.GetPoints();
-        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = incomingPts.begin();
+        const KTDiscriminatedPoints& incomingPts = swfcData.GetPoints();
+        for (KTDiscriminatedPoints::const_iterator pIt = incomingPts.begin();
                 pIt != incomingPts.end(); ++pIt)
         {
             newPoint.fCoords[0] = fInvScalingX * pIt->fTimeInRunC;
