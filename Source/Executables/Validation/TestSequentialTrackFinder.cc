@@ -21,14 +21,14 @@ and tests the behavior of the algorithms in this processor.
 
 
 
-int nSlices = 70;
+int nSlices = 200;
 
 
 int avgPointsPerSlice = 10;
 double freqBinWidth = 24000.;
 double timeBinWidth = 4.096e-5;
-double pointPowerMean = 166.0e-6;
-double pointPowerStd = 166.0e-7;
+double pointPowerMean = 1e-6;
+double pointPowerStd = 1e-7;
 unsigned minBin = 0;
 unsigned maxBin = 4096;
 double threshold = 6;
@@ -38,6 +38,7 @@ unsigned component = 0;
 double trackSlope = 500e6/freqBinWidth*timeBinWidth; // [Bins/s]
 double trackIntercept = 1000; // [Bins]
 unsigned trackStart = 20; //[Bin]
+unsigned trackStart2 = 100;
 unsigned trackLength = 50; //[Bin]
 
 using namespace Katydid;
@@ -82,6 +83,13 @@ KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber){
         disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, pointPowerMean-2*pointPowerStd), component);
         KTINFO(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
     }
+    if (sliceNumber >= trackStart2 and sliceNumber < trackStart2 + trackLength)
+        {
+            double power = powerDistribution();
+            unsigned iBin = trackIntercept + trackSlope*(sliceNumber - trackStart);
+            disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, pointPowerMean-2*pointPowerStd), component);
+            KTINFO(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
+        }
     return disc1d;
 }
 
@@ -96,10 +104,10 @@ int main()
     // Apply some settings
     stf.SetTrimmingThreshold(1);
     stf.SetApplyTotalPowerCut(false);
-    stf.SetTotalPowerThreshold(166e-6);
+    stf.SetTotalPowerThreshold(100e-6);
     stf.SetMinFrequency(0.);
     stf.SetMaxFrequency(100.e6);
-    stf.SetMinPoints(3);
+    stf.SetMinPoints(2);
     stf.SetFrequencyAcceptance(60.e3);
     stf.SetTimeGapTolerance(1.e-3);
     stf.SetMinSlope(0);
@@ -122,15 +130,94 @@ int main()
     KTINFO(testlog, "Candidates found: " << candidates.size());
 
     unsigned iCand = 0;
-    typedef KTSequentialLine::Point Point;
+    typedef KTSequentialLineData::Point Point;
 
     // Print some output
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
         KTINFO(testlog, "Candidate " << iCand);
-        KTSequentialLine& sqlData = (*cIt)->Of< KTSequentialLine >();
+        KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
+        iCand++;
+
+        const std::vector<Point>& candPoints = sqlData.GetPoints();
+        for(std::vector<Point>::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        {
+            KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
+        }
+    }
+
+
+
+    // Test OTC
+    KTOverlappingTrackClustering otc;
+    otc.SetApplyTotalSNRCut(true);
+    otc.SetTotalSNRThreshold(3);
+    otc.SetApplyAverageSNRCut(true);
+    otc.SetAverageSNRThreshold(5000);
+    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
+    {
+        KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
+        otc.TakeSeqLineCandidate(sqlData);
+    }
+    otc.DoSeqLineClustering();
+
+
+    // Get output
+    const std::set< Nymph::KTDataPtr >& otccandidates = otc.GetCandidates();
+    KTINFO(testlog, "OTC Candidates found: " << otccandidates.size());
+
+    // Print some output
+    iCand = 0;
+    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt)
+    {
+        KTINFO(testlog, "OTC Candidate " << iCand);
+        KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
+        KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        iCand++;
+
+        const std::vector<Point>& candPoints = sqlData.GetPoints();
+        for(std::vector<Point>::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        {
+            KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
+        }
+    }
+
+
+    // Test ITC
+    KTIterativeTrackClustering itc;
+    itc.SetApplyTotalSNRCut(true);
+    itc.SetTotalSNRThreshold(4);
+    itc.SetApplyAverageSNRCut(true);
+    itc.SetAverageSNRThreshold(20000);
+    itc.SetApplyAverageUnitlessResidualCut(true);
+    itc.SetAverageUnitlessResidualThreshold(1e3);
+    itc.SetApplyTotalUnitlessResidualCut(true);
+    itc.SetTotalUnitlessResidualThreshold(10);
+
+    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt)
+    {
+        KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
+        itc.TakeSeqLineCandidate(sqlData);
+    }
+    itc.DoSeqLineClustering();
+
+
+    // Get output
+    const std::set< Nymph::KTDataPtr >& itccandidates = itc.GetCandidates();
+    KTINFO(testlog, "ITC Candidates found: " << itccandidates.size());
+
+    // Print some output
+    iCand = 0;
+    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = itccandidates.begin(); cIt != itccandidates.end(); ++cIt)
+    {
+        KTINFO(testlog, "ITCCandidate " << iCand);
+        KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
+        KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         iCand++;
 
         const std::vector<Point>& candPoints = sqlData.GetPoints();

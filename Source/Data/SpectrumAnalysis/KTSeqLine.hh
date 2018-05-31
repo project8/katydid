@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    class KTSequentialLine : public Nymph::KTExtensibleData< KTSequentialLine >
+    class KTSequentialLineData : public Nymph::KTExtensibleData< KTSequentialLineData >
     {
         public:
             // this is a point from a power spectrum slice
@@ -106,13 +106,11 @@ namespace Katydid
             double fSumXY;
             double fSumXX;
 
-            void AddPoint(const Point& point);
+            KTSequentialLineData();
+            virtual ~KTSequentialLineData();
 
-            KTSequentialLine();
-            virtual ~KTSequentialLine();
-
-            const std::vector<KTSequentialLine::Point>& GetPoints() const;
-            std::vector<KTSequentialLine::Point>& GetPoints();
+            const std::vector<KTSequentialLineData::Point>& GetPoints() const;
+            std::vector<KTSequentialLineData::Point>& GetPoints();
             //LineRef(const double& initialSlope);
             void AppendPoint(const Point& point);
             void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
@@ -127,16 +125,16 @@ namespace Katydid
             }*/
     };
 
-    inline const std::vector<KTSequentialLine::Point>& KTSequentialLine::GetPoints() const
+    inline const std::vector<KTSequentialLineData::Point>& KTSequentialLineData::GetPoints() const
     {
         return fLinePoints;
     }
 
-    inline std::vector<KTSequentialLine::Point>& KTSequentialLine::GetPoints()
+    inline std::vector<KTSequentialLineData::Point>& KTSequentialLineData::GetPoints()
     {
         return fLinePoints;
     }
-    /*void KTSequentialLine::AddPoint(const Point& point)
+    /*void KTSequentialLineData::AddPoint(const Point& point)
     {
         //Points.insert(point);
         return;
