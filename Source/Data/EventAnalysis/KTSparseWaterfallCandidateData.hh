@@ -19,28 +19,6 @@ namespace Katydid
 {
     class KTSparseWaterfallCandidateData : public Nymph::KTExtensibleData< KTSparseWaterfallCandidateData >
     {
-        public:
-            // struct Point
-            // {
-            //     double fTimeInRunC;
-            //     double fFrequency;
-            //     double fAmplitude;
-            //     double fTimeInAcq;
-            //     double fMean;
-            //     double fVariance;
-            //     double fNeighborhoodAmplitude;
-            //     Point(double tirc, double freq, double amp, double tiacq, double mean, double variance, double neighborhoodAmplitude) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodAmplitude) {}
-            // };
-
-            // struct PointCompare
-            // {
-            //     bool operator() (const Point& lhs, const Point& rhs) const
-            //     {
-            //         return lhs.fTimeInRunC < rhs.fTimeInRunC || (lhs.fTimeInRunC == rhs.fTimeInRunC && lhs.fFrequency < rhs.fFrequency);
-            //     }
-            // };
-
-            // typedef std::set< Point, PointCompare > Points;
 
         public:
             KTSparseWaterfallCandidateData();
