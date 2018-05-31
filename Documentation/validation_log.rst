@@ -56,6 +56,8 @@ New Features:
       * Automatic build of libraries and validation executable
       * Test of one executable (TestRandom)
       * Slack message upon success or failure
+* Track SNR and NUP:
+      * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
