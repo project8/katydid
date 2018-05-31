@@ -7,6 +7,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTCluster1DData.hh
     SpectrumAnalysis/KTCorrelationData.hh
     SpectrumAnalysis/KTCorrelationTSData.hh
+    SpectrumAnalysis/KTDiscriminatedPoint.hh
     SpectrumAnalysis/KTDiscriminatedPoints1DData.hh
     SpectrumAnalysis/KTDiscriminatedPoints2DData.hh
     SpectrumAnalysis/KTGainVarChi2Data.hh
@@ -15,7 +16,6 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTKDTree.hh
     SpectrumAnalysis/KTKDTreeData.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
-    SpectrumAnalysis/KTPoint.hh
     SpectrumAnalysis/KTPointCloud.hh
     SpectrumAnalysis/KTSeqLine.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
