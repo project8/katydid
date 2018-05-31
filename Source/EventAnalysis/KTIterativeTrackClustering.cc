@@ -515,14 +515,13 @@ namespace Katydid
     void KTIterativeTrackClustering::EmitTrackCandidates()
     {
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
-        bool emitThisCandidate = true;
         KTINFO(itclog, "Clustering done.");
 
         std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();
 
         while(trackIt!=fCompTracks.end())
         {
-            emitThisCandidate = true;
+            bool emitThisCandidate = true;
 
             if (fApplyTotalPowerCut)
             {
@@ -621,13 +620,12 @@ namespace Katydid
         KTDEBUG(itclog, "Number of tracks to emit: "<<fCompSeqLineCands.size());
         KTINFO(itclog, "Clustering done.");
 
-        bool emitThisCandidate = true;
 
         std::vector<KTSequentialLineData>::iterator candIt = fCompSeqLineCands.begin();
 
         while( candIt!=fCompSeqLineCands.end() )
         {
-            emitThisCandidate = true;
+            bool emitThisCandidate = true;
             double summedPower = 0.0;
             double summedSNR = 0.0;
             double summedUnitlessResidual = 0.0;
