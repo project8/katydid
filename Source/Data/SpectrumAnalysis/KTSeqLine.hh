@@ -10,8 +10,6 @@
 
 #include "KTMemberVariable.hh"
 #include "KTData.hh"
-//#include "KTSeqTrackCreator.hh"
-
 
 #include <string>
 #include <vector>
@@ -82,6 +80,8 @@ namespace Katydid
 
         public:
 
+            static const std::string sName;
+
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
             MEMBERVARIABLE(double, StartTimeInAcq);
@@ -109,7 +109,6 @@ namespace Katydid
             void AddPoint(const Point& point);
 
             KTSequentialLine();
-            KTSequentialLine(const double& initialSlope);
             virtual ~KTSequentialLine();
 
             const std::vector<KTSequentialLine::Point>& GetPoints() const;
@@ -120,7 +119,6 @@ namespace Katydid
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
             void FinishTrack();
-            void Clear();
             //virtual ~LineRef();
 
             /*bool operator < (const LineRef& str) const
@@ -145,6 +143,6 @@ namespace Katydid
     }*/
 } /* namespace Katydid */
 
-#endif /* SOURCE_DATA_SPECTRUM_ANALYSIS_KTSEQLINE_HH_ */
+#endif /* KTSEQLINE_HH_ */
 
 

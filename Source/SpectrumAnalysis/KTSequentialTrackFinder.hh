@@ -73,12 +73,12 @@ namespace Katydid
 
 
      Slots:
-     - "disc1d": clusters discriminated points to sparse waterfall candidates
-     - "disc1d-ps": clusters discriminated points to sparsewaterfall candidates; updates point properties using power spectrum slice
+     - "disc1d": clusters discriminated points to sequential lines candidates
+     - "disc1d-ps": clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
      - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "swf-cand": KTSparseWaterfallCandidateData
+     - "seq-lines": KTSparseWaterfallCandidateData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
@@ -182,7 +182,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalData fTrackSignal;
+            Nymph::KTSignalData fLineSignal;
             Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************

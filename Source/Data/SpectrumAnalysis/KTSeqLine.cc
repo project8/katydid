@@ -1,5 +1,5 @@
 /*
- * KTScoredSpectrum.cc
+ * KTSequentialLine.cc
  *
  *  Created on: Mar 10, 2016
  *      Author: Christine
@@ -15,31 +15,8 @@
 
 namespace Katydid
 {
+    const std::string KTSequentialLine::sName("sequential-line");
 	KTLOGGER(seqlog, "KTSeqLine");
-
-    KTSequentialLine::KTSequentialLine(const double& initialSlope):
-        fStartTimeInRunC(0.0),
-        fStartTimeInAcq(0.0),
-        fEndTimeInRunC(0.0),
-        fEndTimeInAcq(0.0),
-        fStartFrequency(0.0),
-        fEndFrequency(0.0),
-        fInitialSlope(initialSlope),
-        fSlope(0.0),
-        fNPoints(0),
-        fComponent(0),
-        fAmplitudeSum(0.0),
-        fSNRSum(0.0),
-        fNUPSum(0.0),
-        fAcquisitionID(0),
-        fMinPoints(0),
-        fStartFrequencySigma(0.),
-        fEndFrequencySigma(0.),
-        fSumX(0.),
-        fSumY(0.),
-        fSumXY(0.),
-        fSumXX(0.)
-        {}
 
     KTSequentialLine::KTSequentialLine():
         fStartTimeInRunC(0.0),
@@ -56,6 +33,7 @@ namespace Katydid
         fSNRSum(0.0),
         fNUPSum(0.0),
         fAcquisitionID(0),
+        fCandidateID(0),
         fMinPoints(0),
         fStartFrequencySigma(0.),
         fEndFrequencySigma(0.),
@@ -124,8 +102,8 @@ namespace Katydid
 
     inline void KTSequentialLine::UpdateLineProperties()
     {
-        //KTDEBUG(seqlog, "Updating line parameters");
-        fNPoints = fLinePoints.size();
+        KTDEBUG(seqlog, "Updating line parameters");
+        SetNPoints( fLinePoints.size() );
         if ( fNPoints == 1 )
             {
                 SetAcquisitionID( fLinePoints.front().fAcquisitionID );
