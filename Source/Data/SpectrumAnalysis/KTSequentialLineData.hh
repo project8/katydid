@@ -10,6 +10,7 @@
 
 #include "KTMemberVariable.hh"
 #include "KTData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include <string>
 #include <vector>
@@ -20,9 +21,7 @@ namespace Katydid
     class KTSequentialLineData : public Nymph::KTExtensibleData< KTSequentialLineData >
     {
         public:
-            // this is a point from a power spectrum slice
-            // sorting it will sort it by power
-            struct Point
+            /*struct Point
             {
                 double fBinInSlice;
                 double fFrequency;
@@ -59,22 +58,11 @@ namespace Katydid
                 {
                     return (fAmplitude < str.fAmplitude);
                 }
-            };
-            struct PointCompare
-            {
-                bool operator() (const Point& lhs, const Point& rhs) const
-                {
-                    return lhs.fTimeInRunC < rhs.fTimeInRunC || (lhs.fTimeInRunC == rhs.fTimeInRunC && lhs.fFrequency < rhs.fFrequency);
-                }
-            };
-
-            typedef std::set< Point, PointCompare > Points;
+            };*/
 
         private:
 
-            std::vector<double> fTrimmingLimits;
-            //std::vector<Point> fLinePoints;
-            Points fLinePoints;
+            KTDiscriminatedPoints fLinePoints;
             std::vector<double> fAmplitudeList;
             std::vector<double> fSNRList;
 
@@ -111,10 +99,10 @@ namespace Katydid
             KTSequentialLineData();
             virtual ~KTSequentialLineData();
 
-            const KTSequentialLineData::Points& GetPoints() const;
-            KTSequentialLineData::Points& GetPoints();
+            const KTDiscriminatedPoints& GetPoints() const;
+            KTDiscriminatedPoints& GetPoints();
             //LineRef(const double& initialSlope);
-            void AddPoint(const Point& point);
+            void AddPoint(const KTDiscriminatedPoint& point);
             void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
@@ -127,20 +115,16 @@ namespace Katydid
             }*/
     };
 
-    inline const KTSequentialLineData::Points& KTSequentialLineData::GetPoints() const
+    inline const KTDiscriminatedPoints& KTSequentialLineData::GetPoints() const
     {
         return fLinePoints;
     }
 
-    inline KTSequentialLineData::Points& KTSequentialLineData::GetPoints()
+    inline KTDiscriminatedPoints& KTSequentialLineData::GetPoints()
     {
         return fLinePoints;
     }
-    /*void KTSequentialLineData::AddPoint(const Point& point)
-    {
-        //Points.insert(point);
-        return;
-    }*/
+
 } /* namespace Katydid */
 
 #endif /* KTSEQUENTIALLINEDATA_HH_ */

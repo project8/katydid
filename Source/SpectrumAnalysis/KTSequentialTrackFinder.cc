@@ -249,22 +249,23 @@ namespace Katydid
 
 
             // this vector will collect the discriminated points
-            std::vector<KTSequentialLineData::Point> points;
+            KTDiscriminatedPowerSortedPoints points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
             {
                 //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
-                KTSequentialLineData::Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
-                points.push_back(newPoint);
+                KTDiscriminatedPoint newPoint(newTimeInRunC, pIt->second.fAbscissa, pIt->second.fOrdinate, newTimeInAcq, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude);
+                newPoint.fBinInSlice = pIt->first;
+                points.insert(newPoint);
             }
 
             KTDEBUG( stflog, "Collected "<<points.size()<<" points");
-            // sort points by power
-            std::sort(points.begin(), points.end(),std::less<KTSequentialLineData::Point>());
+            // sort vector with points by power
+            // std::sort(points.begin(), points.end(),std::less<KTSequentialLineData::Point>());
 
             // Loop over the high power points
-            this->LoopOverHighPowerPoints(powerSpectrum, points, iComponent);
+            this->LoopOverHighPowerPoints(powerSpectrum, points, acqID, iComponent);
 
         }
         return true;
@@ -303,7 +304,7 @@ namespace Katydid
             KTDEBUG(stflog, "new_TimeInRunC is " << newTimeInRunC);
 
             // this vector will collect the discriminated points
-            std::vector<KTSequentialLineData::Point> points;
+            KTDiscriminatedPowerSortedPoints points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
@@ -311,24 +312,25 @@ namespace Katydid
                 if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
                 {
                     //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate <<", threshold = "<<pIt->second.fThreshold);
-                    KTSequentialLineData::Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
-                    points.push_back(newPoint);
+                    KTDiscriminatedPoint newPoint(newTimeInRunC, pIt->second.fAbscissa, pIt->second.fOrdinate, newTimeInAcq, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude);
+                    newPoint.fBinInSlice = pIt->first;
+                    points.insert(newPoint);
                 }
             }
 
             // sort points by power
-            std::sort(points.begin(), points.end(),std::less<KTSequentialLineData::Point>());
+            //std::sort(points.begin(), points.end(),std::less<KTSequentialLineData::Point>());
             KTDEBUG( stflog, "Collected "<<points.size()<<" points");
 
             // Loop over the high power points
-            this->LoopOverHighPowerPoints(points, iComponent);
+            this->LoopOverHighPowerPoints(points, acqID, iComponent);
 
         }
         return true;
     }
 
 
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, std::vector<KTSequentialLineData::Point>& points, unsigned component)
+    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
      {
          KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -336,25 +338,27 @@ namespace Katydid
          bool match;
 
          //loop in reverse order (by power)
-         for(std::vector<KTSequentialLineData::Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+         for(KTDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
          {
              newFreq = pointIt->fFrequency;
 
              // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
              // To prevent that in the next iteration the point gets re-found and added to another line the amplitude of the point is reassigned here
-             pointIt->fAmplitude = slice(pointIt->fBinInSlice);
 
-             if (pointIt->fAmplitude == 0.0)
+             KTDiscriminatedPoint tempPoint = *pointIt;
+             tempPoint.fAmplitude = slice(pointIt->fBinInSlice);
+             if (tempPoint.fAmplitude == 0.0)
              {
                  KTDEBUG(stflog, "Point amplitude is 0, skipping point");
                  continue;
              }
              else
              {
-                 this->UpdateLinePoint(*pointIt, slice);
-                 newFreq = pointIt->fFrequency;
+
+                 this->UpdateLinePoint(tempPoint, slice);
+                 newFreq = tempPoint.fFrequency;
              }
-             if (newFreq == 0.0 or pointIt->fAmplitude==0.0)
+             if (newFreq == 0.0 or tempPoint.fAmplitude==0.0)
              {
                  KTDEBUG(stflog, "Point frequency and/or amplitude is zero, skipping point");
                  continue;
@@ -427,6 +431,8 @@ namespace Katydid
 
                      KTSequentialLineData newLine;
                      newLine.SetSlope( fInitialSlope );
+                     newLine.SetAcquisitionID( acqID );
+                     newLine.SetComponent( component );
                      newLine.AddPoint(*pointIt);
                      (this->*fCalcSlope)(newLine);
                      fActiveLines.push_back(newLine);
@@ -437,7 +443,7 @@ namespace Katydid
          return true;
      }
 
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(std::vector<KTSequentialLineData::Point>& points, unsigned component)
+    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
      {
          KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -445,7 +451,7 @@ namespace Katydid
          bool match;
 
          //loop in reverse order (by power)
-         for(std::vector<KTSequentialLineData::Point>::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+         for(KTDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
          {
              newFreq = pointIt->fFrequency;
 
@@ -530,6 +536,8 @@ namespace Katydid
 
                      KTSequentialLineData newLine;
                      newLine.SetSlope( fInitialSlope );
+                     newLine.SetAcquisitionID( acqID );
+                     newLine.SetComponent( component );
                      newLine.AddPoint(*pointIt);
                      (this->*fCalcSlope)(newLine);
                      fActiveLines.push_back(newLine);
@@ -602,11 +610,11 @@ namespace Katydid
             ++fNLines;
 
             // Add line points to swf candidate
-            KTSequentialLineData::Points& points = line.GetPoints();
-            for(KTSequentialLineData::Points::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+            KTDiscriminatedPoints& points = line.GetPoints();
+            for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
                 //KTDEBUG( stflog, "Adding points to newCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-                KTSequentialLineData::Point newPoint(*pointIt);
+                KTDiscriminatedPoint newPoint(*pointIt);
                 newCand.AddPoint(newPoint);
             }
 
@@ -639,7 +647,7 @@ namespace Katydid
 
     }*/
 
-    void KTSequentialTrackFinder::UpdateLinePoint(KTSequentialLineData::Point& point, KTPowerSpectrum& slice)
+    void KTSequentialTrackFinder::UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice)
     {
         double Delta = fConvergeDelta + 1.0;
         unsigned loopCounter = 0;
@@ -789,7 +797,7 @@ namespace Katydid
 
         //KTDEBUG(stflog, "Calculating line slope");
 
-        KTSequentialLineData::Points& points = Line.GetPoints();
+        KTDiscriminatedPoints& points = Line.GetPoints();
         Line.fSumX += points.rbegin()->fTimeInRunC;
         Line.fSumY += points.rbegin()->fFrequency;
         Line.fSumXY += points.rbegin()->fTimeInRunC * points.rbegin()->fFrequency;
@@ -815,8 +823,8 @@ namespace Katydid
 
         if (Line.GetNPoints() > fNSlopePoints)
         {
-            KTSequentialLineData::Points& points = Line.GetPoints();
-            KTSequentialLineData::Points::iterator pointIt = points.end();
+            KTDiscriminatedPoints& points = Line.GetPoints();
+            KTDiscriminatedPoints::iterator pointIt = points.end();
             std::advance(pointIt, -fNSlopePoints);
             while(pointIt != points.end())
             {
@@ -831,8 +839,8 @@ namespace Katydid
         }
         else if (Line.GetNPoints() > 1)
         {
-            KTSequentialLineData::Points& points = Line.GetPoints();
-            for(KTSequentialLineData::Points::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
+            KTDiscriminatedPoints& points = Line.GetPoints();
+            for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
             {
                 if (pointIt->fFrequency != Line.GetStartFrequency())
                 {
@@ -858,8 +866,8 @@ namespace Katydid
 
         if (Line.GetNPoints() > fNSlopePoints)
         {
-            KTSequentialLineData::Points& points = Line.GetPoints();
-            KTSequentialLineData::Points::iterator pointIt = points.end();
+            KTDiscriminatedPoints& points = Line.GetPoints();
+            KTDiscriminatedPoints::iterator pointIt = points.end();
             std::advance(pointIt, -fNSlopePoints);
 
             while(pointIt != points.end())
@@ -875,8 +883,8 @@ namespace Katydid
         }
         else if (Line.GetNPoints() > 1)
         {
-            KTSequentialLineData::Points& points = Line.GetPoints();
-            for(KTSequentialLineData::Points::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
+            KTDiscriminatedPoints& points = Line.GetPoints();
+            for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
             {
                 if (pointIt->fFrequency != Line.GetEndFrequency())
                 {

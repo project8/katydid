@@ -17,6 +17,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTIterativeTrackClustering.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTSequentialLineData.hh"
+#include "KTDiscriminatedPoint.hh"
 #include "KTRandom.hh"
 
 
@@ -102,7 +103,7 @@ int main()
     KTSequentialTrackFinder stf;
 
     // Apply some settings
-    stf.SetTrimmingThreshold(1);
+    stf.SetTrimmingThreshold(0.9);
     stf.SetApplyTotalPowerCut(true);
     stf.SetTotalPowerThreshold(4e-6);
     stf.SetMinFrequency(0.);
@@ -130,7 +131,7 @@ int main()
     KTINFO(testlog, "Candidates found: " << candidates.size());
 
     unsigned iCand = 0;
-    typedef KTSequentialLineData::Point Point;
+    typedef KTDiscriminatedPoint Point;
 
     // Print some output
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
@@ -142,8 +143,8 @@ int main()
 
         iCand++;
 
-        const KTSequentialLineData::Points& candPoints = sqlData.GetPoints();
-        for(KTSequentialLineData::Points::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+        for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         }
@@ -179,8 +180,8 @@ int main()
         KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         iCand++;
 
-        const KTSequentialLineData::Points& candPoints = sqlData.GetPoints();
-        for(KTSequentialLineData::Points::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+        for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         }
@@ -191,11 +192,11 @@ int main()
     KTIterativeTrackClustering itc;
     itc.SetApplyTotalSNRCut(true);
     itc.SetTotalSNRThreshold(4);
-    itc.SetApplyAverageSNRCut(true);
+    itc.SetApplyAverageSNRCut(false);
     itc.SetAverageSNRThreshold(20000);
-    itc.SetApplyAverageUnitlessResidualCut(true);
+    itc.SetApplyAverageUnitlessResidualCut(false);
     itc.SetAverageUnitlessResidualThreshold(1e3);
-    itc.SetApplyTotalUnitlessResidualCut(true);
+    itc.SetApplyTotalUnitlessResidualCut(false);
     itc.SetTotalUnitlessResidualThreshold(10);
 
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt)
@@ -220,8 +221,8 @@ int main()
         KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         iCand++;
 
-        const KTSequentialLineData::Points& candPoints = sqlData.GetPoints();
-        for(KTSequentialLineData::Points::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+        for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         }

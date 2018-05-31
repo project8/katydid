@@ -46,10 +46,8 @@ namespace Katydid
     KTSequentialLineData::~KTSequentialLineData()
     {}
 
-    void KTSequentialLineData::AddPoint( const Point& point )
+    void KTSequentialLineData::AddPoint( const KTDiscriminatedPoint& point )
     {
-
-        fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(point.fNeighborhoodAmplitude);
         fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
 
@@ -69,7 +67,6 @@ namespace Katydid
                 KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fSNRList.erase(fSNRList.end() -1);
-                fTrimmingLimits.erase(fTrimmingLimits.end() -1);
                 fLinePoints.erase(*fLinePoints.rbegin());
                 fNPoints = fLinePoints.size();
             }
@@ -78,13 +75,10 @@ namespace Katydid
                 KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
                 fAmplitudeList.erase(fAmplitudeList.begin());
                 fSNRList.erase(fSNRList.begin());
-                fTrimmingLimits.erase(fTrimmingLimits.begin());
                 fLinePoints.erase(*fLinePoints.begin());
                 fNPoints = fLinePoints.size();
             }
         }
-        SetAcquisitionID(fLinePoints.begin()->fAcquisitionID );
-        SetComponent( fLinePoints.begin()->fComponent);
         SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC);
         SetStartFrequency( fLinePoints.begin()->fFrequency);
         SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq);
@@ -93,7 +87,7 @@ namespace Katydid
         fSNRSum = 0;
         fNUPSum = 0;
 
-        for(Points::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        for(KTDiscriminatedPoints::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
         {
             fAmplitudeSum += pointIt->fNeighborhoodAmplitude;
             fSNRSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
@@ -111,16 +105,12 @@ namespace Katydid
         SetNPoints( fLinePoints.size() );
         if ( fNPoints == 1 )
         {
-            SetAcquisitionID( fLinePoints.begin()->fAcquisitionID );
-            SetComponent( fLinePoints.begin()->fComponent );
             SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
             SetStartFrequency( fLinePoints.begin()->fFrequency );
             SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );
         }
         if ( fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
         {
-            SetAcquisitionID( fLinePoints.begin()->fAcquisitionID );
-            SetComponent( fLinePoints.begin()->fComponent );
             SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
             SetStartFrequency( fLinePoints.begin()->fFrequency );
             SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );

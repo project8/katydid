@@ -339,6 +339,8 @@ namespace Katydid
     {
         if (oldSeqLineCand.GetStartTimeInRunC() < newSeqLineCand.GetStartTimeInRunC())
         {
+            newSeqLineCand.SetComponent( oldSeqLineCand.GetComponent() );
+            newSeqLineCand.SetAcquisitionID( oldSeqLineCand.GetAcquisitionID() );
             newSeqLineCand.SetStartTimeInRunC( oldSeqLineCand.GetStartTimeInRunC() );
             newSeqLineCand.SetStartTimeInAcq( oldSeqLineCand.GetStartTimeInAcq() );
             newSeqLineCand.SetStartFrequency( oldSeqLineCand.GetStartFrequency() );
@@ -350,8 +352,8 @@ namespace Katydid
         }
         newSeqLineCand.SetSlope( (newSeqLineCand.GetEndFrequency() - newSeqLineCand.GetStartFrequency())/(newSeqLineCand.GetEndTimeInRunC() - newSeqLineCand.GetStartTimeInRunC()) );
 
-        KTSequentialLineData::Points points = oldSeqLineCand.GetPoints();
-        for(KTSequentialLineData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+        KTDiscriminatedPoints points = oldSeqLineCand.GetPoints();
+        for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
         {
             //KTDEBUG( otclog, "Adding points from oldSeqLineCand to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
             newSeqLineCand.AddPoint(*pointIt);
@@ -619,8 +621,8 @@ namespace Katydid
             double summedSNR = 0.0;
             double summedUnitlessResidual = 0.0;
 
-            KTSequentialLineData::Points& points = candIt->GetPoints();
-            for (KTSequentialLineData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+            KTDiscriminatedPoints& points = candIt->GetPoints();
+            for (KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
                 summedPower += pointIt->fNeighborhoodAmplitude;
                 summedSNR += pointIt->fNeighborhoodAmplitude / pointIt->fMean;
@@ -688,8 +690,8 @@ namespace Katydid
 
                 newSeqLineCand.SetSlope(candIt->GetSlope());
 
-                KTSequentialLineData::Points& points = candIt->GetPoints();
-                for(KTSequentialLineData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+                KTDiscriminatedPoints& points = candIt->GetPoints();
+                for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
                 {
                     //KTDEBUG( otclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                     newSeqLineCand.AddPoint( *pointIt );
