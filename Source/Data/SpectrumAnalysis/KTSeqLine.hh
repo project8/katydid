@@ -13,6 +13,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 namespace Katydid
 {
@@ -59,7 +60,7 @@ namespace Katydid
                     return (fAmplitude < str.fAmplitude);
                 }
             };
-            /*struct PointCompare
+            struct PointCompare
             {
                 bool operator() (const Point& lhs, const Point& rhs) const
                 {
@@ -67,12 +68,13 @@ namespace Katydid
                 }
             };
 
-            typedef std::set< Point, PointCompare > Points;*/
+            typedef std::set< Point, PointCompare > Points;
 
         private:
 
             std::vector<double> fTrimmingLimits;
-            std::vector<Point> fLinePoints;
+            //std::vector<Point> fLinePoints;
+            Points fLinePoints;
             std::vector<double> fAmplitudeList;
             std::vector<double> fSNRList;
 
@@ -109,10 +111,10 @@ namespace Katydid
             KTSequentialLineData();
             virtual ~KTSequentialLineData();
 
-            const std::vector<KTSequentialLineData::Point>& GetPoints() const;
-            std::vector<KTSequentialLineData::Point>& GetPoints();
+            const KTSequentialLineData::Points& GetPoints() const;
+            KTSequentialLineData::Points& GetPoints();
             //LineRef(const double& initialSlope);
-            void AppendPoint(const Point& point);
+            void AddPoint(const Point& point);
             void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
@@ -125,12 +127,12 @@ namespace Katydid
             }*/
     };
 
-    inline const std::vector<KTSequentialLineData::Point>& KTSequentialLineData::GetPoints() const
+    inline const KTSequentialLineData::Points& KTSequentialLineData::GetPoints() const
     {
         return fLinePoints;
     }
 
-    inline std::vector<KTSequentialLineData::Point>& KTSequentialLineData::GetPoints()
+    inline KTSequentialLineData::Points& KTSequentialLineData::GetPoints()
     {
         return fLinePoints;
     }

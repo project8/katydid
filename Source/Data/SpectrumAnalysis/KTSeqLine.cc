@@ -46,14 +46,14 @@ namespace Katydid
     KTSequentialLineData::~KTSequentialLineData()
     {}
 
-    void KTSequentialLineData::AppendPoint( const Point& point )
+    void KTSequentialLineData::AddPoint( const Point& point )
     {
 
         fTrimmingLimits.push_back(point.fThreshold); //new_trimming_limits);
         fAmplitudeList.push_back(point.fNeighborhoodAmplitude);
         fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
 
-        fLinePoints.push_back(point);
+        fLinePoints.insert(point);
         //KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();
     }
@@ -70,7 +70,7 @@ namespace Katydid
                 fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fSNRList.erase(fSNRList.end() -1);
                 fTrimmingLimits.erase(fTrimmingLimits.end() -1);
-                fLinePoints.erase(fLinePoints.end() - 1);
+                fLinePoints.erase(*fLinePoints.rbegin());
                 fNPoints = fLinePoints.size();
             }
             while ( fSNRList.front() < trimmingThreshold and fNPoints >= minPoints )
@@ -79,29 +79,29 @@ namespace Katydid
                 fAmplitudeList.erase(fAmplitudeList.begin());
                 fSNRList.erase(fSNRList.begin());
                 fTrimmingLimits.erase(fTrimmingLimits.begin());
-                fLinePoints.erase(fLinePoints.begin());
+                fLinePoints.erase(*fLinePoints.begin());
                 fNPoints = fLinePoints.size();
             }
         }
-        SetAcquisitionID(fLinePoints.front().fAcquisitionID );
-        SetComponent( fLinePoints.front().fComponent);
-        SetStartTimeInRunC( fLinePoints.front().fTimeInRunC);
-        SetStartFrequency( fLinePoints.front().fFrequency);
-        SetStartTimeInAcq( fLinePoints.front().fTimeInAcq);
+        SetAcquisitionID(fLinePoints.begin()->fAcquisitionID );
+        SetComponent( fLinePoints.begin()->fComponent);
+        SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC);
+        SetStartFrequency( fLinePoints.begin()->fFrequency);
+        SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq);
 
         fAmplitudeSum = 0.;
         fSNRSum = 0;
         fNUPSum = 0;
 
-        for(std::vector<Point>::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        for(Points::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
         {
             fAmplitudeSum += pointIt->fNeighborhoodAmplitude;
             fSNRSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
             fNUPSum += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
         }
-        SetEndTimeInRunC( fLinePoints.back().fTimeInRunC);
-        SetEndTimeInAcq( fLinePoints.back().fTimeInAcq);
-        SetEndFrequency( fLinePoints.back().fFrequency);
+        SetEndTimeInRunC( fLinePoints.rbegin()->fTimeInRunC);
+        SetEndTimeInAcq( fLinePoints.rbegin()->fTimeInAcq);
+        SetEndFrequency( fLinePoints.rbegin()->fFrequency);
     }
 
 
@@ -111,25 +111,25 @@ namespace Katydid
         SetNPoints( fLinePoints.size() );
         if ( fNPoints == 1 )
         {
-            SetAcquisitionID( fLinePoints.front().fAcquisitionID );
-            SetComponent( fLinePoints.front().fComponent );
-            SetStartTimeInRunC( fLinePoints.front().fTimeInRunC );
-            SetStartFrequency( fLinePoints.front().fFrequency );
-            SetStartTimeInAcq( fLinePoints.front().fTimeInAcq );
+            SetAcquisitionID( fLinePoints.begin()->fAcquisitionID );
+            SetComponent( fLinePoints.begin()->fComponent );
+            SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
+            SetStartFrequency( fLinePoints.begin()->fFrequency );
+            SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );
         }
-        if ( fLinePoints.back().fTimeInRunC < GetStartTimeInRunC() )
+        if ( fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
         {
-            SetAcquisitionID( fLinePoints.back().fAcquisitionID );
-            SetComponent( fLinePoints.back().fComponent );
-            SetStartTimeInRunC( fLinePoints.back().fTimeInRunC );
-            SetStartFrequency( fLinePoints.back().fFrequency );
-            SetStartTimeInAcq( fLinePoints.back().fTimeInAcq );
+            SetAcquisitionID( fLinePoints.begin()->fAcquisitionID );
+            SetComponent( fLinePoints.begin()->fComponent );
+            SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
+            SetStartFrequency( fLinePoints.begin()->fFrequency );
+            SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );
         }
-        if ( fLinePoints.back().fTimeInRunC > GetEndTimeInRunC() )
+        if ( fLinePoints.rbegin()->fTimeInRunC > GetEndTimeInRunC() )
         {
-            SetEndTimeInRunC( fLinePoints.back().fTimeInRunC);
-            SetEndTimeInAcq( fLinePoints.back().fTimeInAcq);
-            SetEndFrequency( fLinePoints.back().fFrequency);
+            SetEndTimeInRunC( fLinePoints.rbegin()->fTimeInRunC);
+            SetEndTimeInAcq( fLinePoints.rbegin()->fTimeInAcq);
+            SetEndFrequency( fLinePoints.rbegin()->fFrequency);
         }
     }
 } /* namespace Katydid */

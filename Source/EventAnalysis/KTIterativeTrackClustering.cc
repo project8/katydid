@@ -356,11 +356,11 @@ namespace Katydid
         }
         newSeqLineCand.SetSlope( (newSeqLineCand.GetEndFrequency() - newSeqLineCand.GetStartFrequency())/(newSeqLineCand.GetEndTimeInRunC() - newSeqLineCand.GetStartTimeInRunC()) );
 
-        std::vector<KTSequentialLineData::Point> points = oldSeqLineCand.GetPoints();
-        for(std::vector<KTSequentialLineData::Point>::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+        KTSequentialLineData::Points points = oldSeqLineCand.GetPoints();
+        for(KTSequentialLineData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
         {
             //KTDEBUG( itclog, "Adding points from oldSeqLineCand to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-            newSeqLineCand.AppendPoint(*pointIt);
+            newSeqLineCand.AddPoint(*pointIt);
         }
     }
 
@@ -628,8 +628,8 @@ namespace Katydid
             double summedSNR = 0.0;
             double summedUnitlessResidual = 0.0;
 
-            std::vector<KTSequentialLineData::Point>& SeqLinePoints = candIt->GetPoints();
-            for (std::vector<KTSequentialLineData::Point>::const_iterator pointIt = SeqLinePoints.begin(); pointIt != SeqLinePoints.end(); ++pointIt )
+            KTSequentialLineData::Points& points = candIt->GetPoints();
+            for (KTSequentialLineData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
                 summedPower += pointIt->fNeighborhoodAmplitude;
                 summedSNR += pointIt->fNeighborhoodAmplitude / pointIt->fMean;
@@ -697,11 +697,11 @@ namespace Katydid
 
                 newSeqLineCand.SetSlope(candIt->GetSlope());
 
-                std::vector<KTSequentialLineData::Point>& points = candIt->GetPoints();
-                for(std::vector<KTSequentialLineData::Point>::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+                KTSequentialLineData::Points& points = candIt->GetPoints();
+                for(KTSequentialLineData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
                 {
                     //KTDEBUG( itclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-                    newSeqLineCand.AppendPoint( *pointIt );
+                    newSeqLineCand.AddPoint( *pointIt );
                 }
                 KTDEBUG( itclog, "Emitting SeqLine signal" );
                 fCandidates.insert( data );

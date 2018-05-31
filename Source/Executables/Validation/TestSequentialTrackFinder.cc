@@ -142,8 +142,8 @@ int main()
 
         iCand++;
 
-        const std::vector<Point>& candPoints = sqlData.GetPoints();
-        for(std::vector<Point>::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        const KTSequentialLineData::Points& candPoints = sqlData.GetPoints();
+        for(KTSequentialLineData::Points::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         }
@@ -179,8 +179,8 @@ int main()
         KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         iCand++;
 
-        const std::vector<Point>& candPoints = sqlData.GetPoints();
-        for(std::vector<Point>::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        const KTSequentialLineData::Points& candPoints = sqlData.GetPoints();
+        for(KTSequentialLineData::Points::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         }
@@ -220,8 +220,8 @@ int main()
         KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         iCand++;
 
-        const std::vector<Point>& candPoints = sqlData.GetPoints();
-        for(std::vector<Point>::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
+        const KTSequentialLineData::Points& candPoints = sqlData.GetPoints();
+        for(KTSequentialLineData::Points::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         }
