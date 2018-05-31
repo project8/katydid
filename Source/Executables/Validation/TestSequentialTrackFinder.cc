@@ -31,7 +31,7 @@ double pointPowerMean = 1e-6;
 double pointPowerStd = 1e-7;
 unsigned minBin = 0;
 unsigned maxBin = 4096;
-double threshold = 6;
+double threshold = pointPowerMean - 2* pointPowerStd;
 unsigned component = 0;
 
 // Define the parameters of the fake track to generate
@@ -72,7 +72,7 @@ KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber){
 
         double power = powerDistribution();
         unsigned iBin = yBin();
-        disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, pointPowerMean-2*pointPowerStd), component);
+        disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth*((double)iBin + 0.5), power, threshold, pointPowerMean, pointPowerStd, power), component);
         KTINFO(testlog, "Adding point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
     }
     // track points
@@ -80,14 +80,14 @@ KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber){
     {
         double power = powerDistribution();
         unsigned iBin = trackIntercept + trackSlope*(sliceNumber - trackStart);
-        disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, pointPowerMean-2*pointPowerStd), component);
+        disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth*((double)iBin + 0.5), power, threshold, pointPowerMean,pointPowerStd, power), component);
         KTINFO(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
     }
     if (sliceNumber >= trackStart2 and sliceNumber < trackStart2 + trackLength)
         {
             double power = powerDistribution();
             unsigned iBin = trackIntercept + trackSlope*(sliceNumber - trackStart);
-            disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, pointPowerMean-2*pointPowerStd), component);
+            disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, threshold, pointPowerMean, pointPowerStd, power), component);
             KTINFO(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
         }
     return disc1d;

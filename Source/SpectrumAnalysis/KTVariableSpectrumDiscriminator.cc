@@ -639,7 +639,7 @@ namespace Katydid
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
                 }
             }
         }
