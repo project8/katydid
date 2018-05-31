@@ -423,7 +423,7 @@ namespace Katydid
             KTINFO(publog, "Tree already exists!");
             fWriter->AddTree( fProcessedTrackTree );
 
-            fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetDefaultObjectName(), &fProcessedTrackDataPtr);
+            fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
         }
 
         KT2ROOT::LoadProcTrackData(ptData, *fProcessedTrackDataPtr);
@@ -444,7 +444,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedTrackTree );
 
-                fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetDefaultObjectName(), &fProcessedTrackDataPtr);
+                fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
 
                 return true;
             }
@@ -460,7 +460,7 @@ namespace Katydid
 
         //fProcessedTrackDataPtr = new Cicada::TProcessedTrackData();
 
-        fProcessedTrackTree->Branch(fProcessedTrackDataPtr->GetDefaultObjectName(), "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
+        fProcessedTrackTree->Branch(fProcessedTrackDataPtr->GetBranchName().c_str(), "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
 
         return true;
     }
@@ -504,7 +504,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedMPTTree );
 
-                fProcessedMPTTree->SetBranchAddress(fProcessedMPTDataPtr->GetDefaultObjectName(), &fProcessedMPTDataPtr);
+                fProcessedMPTTree->SetBranchAddress(fProcessedMPTDataPtr->GetBranchName().c_str(), &fProcessedMPTDataPtr);
 
                 return true;
             }
@@ -520,7 +520,7 @@ namespace Katydid
 
         //fProcessedTrackDataPtr = new TProcessedTrackData();
 
-        fProcessedMPTTree->Branch(fProcessedMPTDataPtr->GetDefaultObjectName(), "Katydid::TProcessedMPTData", &fProcessedMPTDataPtr);
+        fProcessedMPTTree->Branch(fProcessedMPTDataPtr->GetBranchName().c_str(), "Katydid::TProcessedMPTData", &fProcessedMPTDataPtr);
 
         return true;
     }
@@ -652,7 +652,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMultiTrackEventTree );
 
-                fMultiTrackEventTree->SetBranchAddress(fMultiTrackEventDataPtr->GetDefaultObjectName(), &fMultiTrackEventDataPtr);
+                fMultiTrackEventTree->SetBranchAddress(fMultiTrackEventDataPtr->GetBranchName().c_str(), &fMultiTrackEventDataPtr);
 
                 return true;
             }
@@ -668,7 +668,7 @@ namespace Katydid
 
         fMultiTrackEventDataPtr = new Cicada::TMultiTrackEventData();
 
-        fMultiTrackEventTree->Branch(fMultiTrackEventDataPtr->GetDefaultObjectName(), "Cicada::TMultiTrackEventData", &fMultiTrackEventDataPtr);
+        fMultiTrackEventTree->Branch(fMultiTrackEventDataPtr->GetBranchName().c_str(), "Cicada::TMultiTrackEventData", &fMultiTrackEventDataPtr);
 
         return true;
     }
@@ -712,7 +712,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMTEWithClassifierResultsTree );
 
-                fMTEWithClassifierResultsTree->SetBranchAddress(fMTEWithClassifierResultsDataPtr->GetDefaultObjectName(), &fMTEWithClassifierResultsDataPtr);
+                fMTEWithClassifierResultsTree->SetBranchAddress(fMTEWithClassifierResultsDataPtr->GetBranchName().c_str(), &fMTEWithClassifierResultsDataPtr);
 
                 return true;
             }
@@ -728,7 +728,7 @@ namespace Katydid
 
         fMTEWithClassifierResultsDataPtr = new Cicada::TMTEWithClassifierResultsData();
 
-        fMTEWithClassifierResultsTree->Branch(fMTEWithClassifierResultsDataPtr->GetDefaultObjectName(), "Cicada::TMTEWithClassifierResultsData", &fMTEWithClassifierResultsDataPtr);
+        fMTEWithClassifierResultsTree->Branch(fMTEWithClassifierResultsDataPtr->GetBranchName().c_str(), "Cicada::TMTEWithClassifierResultsData", &fMTEWithClassifierResultsDataPtr);
 
         return true;
     }
