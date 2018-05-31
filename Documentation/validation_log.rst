@@ -43,6 +43,20 @@ Fixes:
 Log
 ---
 
+Version: ????
+~~~~~~~~~~~~~~~
+
+Release Date: ?????
+''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Continuous Integration with Travis:
+      * Automatic build of libraries and validation executable
+      * Test of one executable (TestRandom)
+      * Slack message upon success or failure
+
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
 
