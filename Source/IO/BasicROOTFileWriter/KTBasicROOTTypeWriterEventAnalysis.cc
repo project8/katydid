@@ -13,6 +13,7 @@
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTTIFactory.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include "TAxis.h"
 #include "TCanvas.h"
@@ -73,7 +74,7 @@ namespace Katydid
             return;
         }
 
-        const KTSparseWaterfallCandidateData::Points& points = swfcData.GetPoints();
+        const KTDiscriminatedPoints& points = swfcData.GetPoints();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -89,7 +90,7 @@ namespace Katydid
         grPoints->SetMarkerColor(4);
 
         unsigned iPoint = 0;
-        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+        for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             grPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency);
             KTDEBUG(publog, "Point " << iPoint << ": (" << pIt->fTimeInRunC << ", " << pIt->fFrequency << ")");
