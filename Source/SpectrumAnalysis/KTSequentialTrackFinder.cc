@@ -500,7 +500,7 @@ namespace Katydid
                          // if point matches this line: insert
                          if (timeCondition and anyPointCondition)
                          {
-                             KTDEBUG(stflog, "Mathing conditions fullfilled");
+                             KTDEBUG(stflog, "Matching conditions fullfilled");
                              lineIt->AppendPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;

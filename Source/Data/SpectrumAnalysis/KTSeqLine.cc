@@ -75,6 +75,7 @@ namespace Katydid
             }
             while ( fSNRList.front() < trimmingThreshold and fNPoints >= minPoints )
             {
+                KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
                 fAmplitudeList.erase(fAmplitudeList.begin());
                 fSNRList.erase(fSNRList.begin());
                 fTrimmingLimits.erase(fTrimmingLimits.begin());
