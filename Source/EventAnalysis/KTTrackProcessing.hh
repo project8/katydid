@@ -2,7 +2,7 @@
  @file KTTrackProcessing.hh
  @brief Contains KTTrackProcessing
  @details Extracts physics-relevant information about tracks
- @author: N.S. Oblath & B. LaRoque
+ @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */
 
@@ -10,6 +10,10 @@
 #define KTTRACKPROCESSING_HH_
 
 #include "KTProcessor.hh"
+
+#include "KTMemberVariable.hh"
+#include "KTDiscriminatedPoint.hh"
+#include "KTProcessedTrackData.hh"
 
 #include "KTSlot.hh"
 
@@ -24,7 +28,7 @@ namespace Katydid
 
     /*!
      @class KTTrackProcessing
-     @author N.S. Oblath & B. LaRoque
+     @author N.S. Oblath, B. LaRoque & M. Guigue
 
      @brief Extracts physics-relevant information about tracks
 
@@ -33,7 +37,7 @@ namespace Katydid
      Configuration name: "track-proc"
 
      Available configuration values:
-     - "algorithm": string -- Select the track processing algorithm: "double-cuts" (default) or "weighted-slope"
+     - "algorithm": string -- Select the track processing algorithm: "weighted-slope" (default) or "double-cuts"
      - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
      - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
      - "slope-min": double -- Minimum track slope to keep (Hz/s)
@@ -41,6 +45,7 @@ namespace Katydid
      - "assigned-error": double -- Error assigned to the points in case of perfectly aligned points
 
      Slots:
+     - "swfc": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData; Adds KTProcessedTrackData; Emits signal "track"
      - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
 
      Signals:
@@ -49,47 +54,42 @@ namespace Katydid
 
     class KTTrackProcessing : public Nymph::KTProcessor
     {
+
+        public:
+            typedef KTDiscriminatedPoints Points;
+            struct TrackID
+            {
+                unsigned fComponent;
+                unsigned fCandidateID;
+                unsigned fAcquisitionID;
+
+            };
+
         public:
             KTTrackProcessing(const std::string& name = "track-proc");
             virtual ~KTTrackProcessing();
 
             bool Configure(const scarab::param_node* node);
 
-            double GetPointLineDistCut1() const;
-            void SetPointLineDistCut1(double dist);
-
-            double GetPointLineDistCut2() const;
-            void SetPointLineDistCut2(double dist);
-
-            double GetSlopeMinimum() const;
-            void SetSlopeMinimum(double slope);
-
-            unsigned GetProcTrackMinPoints() const;
-            void SetProcTrackMinPoints(unsigned min);
-
-            double GetProcTrackAssignedError() const;
-            void SetProcTrackAssignedError(double err);
-
         private:
-            double fPointLineDistCut1;
-            double fPointLineDistCut2;
 
-            double fSlopeMinimum;
-
-            unsigned fProcTrackMinPoints;
-            double fProcTrackAssError;
+            MEMBERVARIABLE(std::string, TrackProcAlgorithm);
+            MEMBERVARIABLE(double, PointLineDistCut1);
+            MEMBERVARIABLE(double, PointLineDistCut2);
+            MEMBERVARIABLE(double, SlopeMinimum);
+            MEMBERVARIABLE(unsigned, ProcTrackMinPoints);
+            MEMBERVARIABLE(double, ProcTrackAssignedError);
 
         public:
-            bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-
+            bool ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData);
+            bool ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            // Core methods for both algorithm
+            bool ProcessTrackDoubleCuts(Points& points, KTHoughData& htData, TrackID trackID, KTProcessedTrackData* procTrack);
+            bool ProcessTrackWeightedSlope(Points& points, TrackID trackID, KTProcessedTrackData* procTrack);
 
         private:
-            /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
-            typedef bool (KTTrackProcessing::*TrackProcPtr)(KTSparseWaterfallCandidateData& , KTHoughData& );
-            TrackProcPtr fTrackProcPtr;
+            TrackID ExtractTrackID(KTSparseWaterfallCandidateData swfData);
 
             //***************
             // Signals
@@ -103,59 +103,10 @@ namespace Katydid
             //***************
 
         private:
+            Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFSlot;
             Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
 
     };
-
-    inline double KTTrackProcessing::GetPointLineDistCut1() const
-    {
-        return fPointLineDistCut1;
-    }
-    inline void KTTrackProcessing::SetPointLineDistCut1(double dist)
-    {
-        fPointLineDistCut1 = dist;
-        return;
-    }
-
-    inline double KTTrackProcessing::GetPointLineDistCut2() const
-    {
-        return fPointLineDistCut2;
-    }
-    inline void KTTrackProcessing::SetPointLineDistCut2(double dist)
-    {
-        fPointLineDistCut2 = dist;
-        return;
-    }
-
-    inline double KTTrackProcessing::GetSlopeMinimum() const
-    {
-        return fSlopeMinimum;
-    }
-    inline void KTTrackProcessing::SetSlopeMinimum(double slope)
-    {
-        fSlopeMinimum = slope;
-        return;
-    }
-
-    inline unsigned KTTrackProcessing::GetProcTrackMinPoints() const
-    {
-        return fProcTrackMinPoints;
-    }
-    inline void KTTrackProcessing::SetProcTrackMinPoints(unsigned min)
-    {
-        fProcTrackMinPoints = min;
-        return;
-    }
-
-    inline double KTTrackProcessing::GetProcTrackAssignedError() const
-    {
-        return fProcTrackAssError;
-    }
-    inline void KTTrackProcessing::SetProcTrackAssignedError(double err)
-    {
-        fProcTrackAssError = err;
-        return;
-    }
 
     double KTTrackProcessing::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
     {
