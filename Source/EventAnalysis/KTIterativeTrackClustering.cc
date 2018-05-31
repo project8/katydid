@@ -30,6 +30,8 @@ namespace Katydid
             fMaxTrackWidth(50000.0),
             fCompTracks(),
             fNewTracks(),
+            fNewSeqLineCands(),
+            fCompSeqLineCands(),
             fNTracks(0),
             fApplyTotalPowerCut(false),
             fApplyAveragePowerCut(false),

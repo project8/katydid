@@ -822,8 +822,8 @@ namespace Katydid
             {
                 if (pointIt->fFrequency != Line.GetStartFrequency())
                 {
-                    weightedSlope += (pointIt->fFrequency - Line.GetStartFrequency())/(pointIt->fTimeInAcq - Line.GetStartTimeInAcq()) * pointIt->fNeighborhoodAmplitude;
-                    wSum += pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (pointIt->fFrequency - Line.GetStartFrequency())/(pointIt->fTimeInAcq - Line.GetStartTimeInAcq()) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
                 }
                 ++pointIt;
             }
@@ -836,8 +836,8 @@ namespace Katydid
             {
                 if (pointIt->fFrequency != Line.GetStartFrequency())
                 {
-                    weightedSlope += (pointIt->fFrequency - Line.GetStartFrequency())/(pointIt->fTimeInAcq - Line.GetStartTimeInAcq()) * pointIt->fNeighborhoodAmplitude;
-                    wSum += pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (pointIt->fFrequency - Line.GetStartFrequency())/(pointIt->fTimeInAcq - Line.GetStartTimeInAcq()) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
                 }
             }
             Line.SetSlope( weightedSlope/wSum );
@@ -866,8 +866,8 @@ namespace Katydid
             {
                 if (pointIt->fFrequency != Line.GetEndFrequency())
                 {
-                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
-                    wSum += pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
                 }
                 ++pointIt;
             }
@@ -880,8 +880,8 @@ namespace Katydid
             {
                 if (pointIt->fFrequency != Line.GetEndFrequency())
                 {
-                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude;
-                    wSum += pointIt->fNeighborhoodAmplitude;
+                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fAmplitude;
+                    wSum += pointIt->fAmplitude;
                 }
             }
             Line.SetSlope( weightedSlope/wSum );
