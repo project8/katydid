@@ -15,6 +15,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTKDTree.hh
     SpectrumAnalysis/KTKDTreeData.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
+    SpectrumAnalysis/KTPoint.hh
     SpectrumAnalysis/KTPointCloud.hh
     SpectrumAnalysis/KTSeqLine.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
