@@ -103,8 +103,8 @@ int main()
 
     // Apply some settings
     stf.SetTrimmingThreshold(1);
-    stf.SetApplyTotalPowerCut(false);
-    stf.SetTotalPowerThreshold(100e-6);
+    stf.SetApplyTotalPowerCut(true);
+    stf.SetTotalPowerThreshold(4e-6);
     stf.SetMinFrequency(0.);
     stf.SetMaxFrequency(100.e6);
     stf.SetMinPoints(2);

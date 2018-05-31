@@ -621,7 +621,7 @@ namespace Katydid
         }
         else
         {
-            KTDEBUG(stflog, "Line did not make it above the cut and was not emitted as track");
+            KTDEBUG(stflog, "Line did not make it above the cut and was not emitted as candidate");
         }
         return true;
     }
