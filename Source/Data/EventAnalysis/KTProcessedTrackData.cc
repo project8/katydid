@@ -31,6 +31,13 @@ namespace Katydid
             fSlope(0.),
             fIntercept(0.),
             fTotalPower(0.),
+            fNTrackBins(0.),
+            fTotalTrackSNR(0.),
+            fMaxTrackSNR(0.),
+            fTotalTrackNUP(0.),
+            fMaxTrackNUP(0.),
+            fTotalWideTrackSNR(0.),
+            fTotalWideTrackNUP(0.),
             fStartTimeInRunCSigma(0.),
             fEndTimeInRunCSigma(0.),
             fTimeLengthSigma(0.),
@@ -63,6 +70,13 @@ namespace Katydid
             fSlope(orig.fSlope),
             fIntercept(orig.fIntercept),
             fTotalPower(orig.fTotalPower),
+            fNTrackBins(orig.fNTrackBins),
+            fTotalTrackSNR(orig.fTotalTrackSNR),
+            fMaxTrackSNR(orig.fMaxTrackSNR),
+            fTotalTrackNUP(orig.fTotalTrackNUP),
+            fMaxTrackNUP(orig.fMaxTrackNUP),
+            fTotalWideTrackSNR(orig.fTotalWideTrackSNR),
+            fTotalWideTrackNUP(orig.fTotalWideTrackNUP),
             fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma),
             fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma),
             fTimeLengthSigma(orig.fTimeLengthSigma),
@@ -98,6 +112,13 @@ namespace Katydid
         fSlope = rhs.fSlope;
         fIntercept = rhs.fIntercept;
         fTotalPower = rhs.fTotalPower;
+        fNTrackBins = rhs.fNTrackBins,
+        fTotalTrackSNR = rhs.fTotalTrackSNR;
+        fMaxTrackSNR = rhs.fMaxTrackSNR;
+        fTotalTrackNUP = rhs.fTotalTrackNUP;
+        fMaxTrackNUP = rhs.fMaxTrackNUP;
+        fTotalWideTrackSNR = rhs.fTotalWideTrackSNR;
+        fTotalWideTrackNUP = rhs.fTotalWideTrackNUP;
         fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma;
         fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma;
         fTimeLengthSigma = rhs.fTimeLengthSigma;

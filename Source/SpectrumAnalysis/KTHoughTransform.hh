@@ -54,7 +54,7 @@ namespace Katydid
     {
         public:
             typedef KTDiscriminatedPoints2DData::SetOfPoints SetOfPoints;
-            typedef KTSparseWaterfallCandidateData::Points SWFPoints;
+            typedef KTDiscriminatedPoints SWFPoints;
 
         public:
             KTHoughTransform(const std::string& name = "hough-transform");

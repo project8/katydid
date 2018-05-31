@@ -18,6 +18,7 @@
 #include <limits>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 
 using boost::shared_ptr;
 using std::vector;
@@ -103,7 +104,7 @@ namespace Katydid
         unsigned component = swfData.GetComponent();
         unsigned trackID = swfData.GetCandidateID();
 
-        typedef KTSparseWaterfallCandidateData::Points Points;
+        typedef KTDiscriminatedPoints Points;
         // not const because points will be removed later
         Points& points = swfData.GetPoints();
 
@@ -242,14 +243,35 @@ namespace Katydid
         // Remove points and sum amplitudes
         Points::iterator pItMaster = points.begin();
         Points::iterator pItCache;
-        double amplitudeSum = 0.;
+
+        vector<double> amplitude;
+        vector<double> mean;
+        vector<double> variance;
+        vector<double> neighborhoodAmplitude;
+
+        vector<double> trackSNR;
+        vector<double> trackNUP;
+
+        vector<double> wideTrackSNR;
+        vector<double> wideTrackNUP;
+
+        //Has to be a better way (remove_if?)
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
             pItCache = pItMaster;
             ++pItMaster;
             if (pointsCuts[iPoint] == 0)
             {
-                amplitudeSum += pItCache->fAmplitude;
+                amplitude.push_back(pItCache->fAmplitude);
+                mean.push_back(pItCache->fMean);
+                variance.push_back(pItCache->fVariance);
+                neighborhoodAmplitude.push_back(pItCache->fNeighborhoodAmplitude);
+
+                trackSNR.push_back(pItCache->fAmplitude / pItCache->fMean);
+                trackNUP.push_back((pItCache->fAmplitude - pItCache->fMean) / pItCache->fVariance);
+
+                wideTrackSNR.push_back(pItCache->fNeighborhoodAmplitude / pItCache->fMean);
+                wideTrackNUP.push_back((pItCache->fNeighborhoodAmplitude - pItCache->fMean) / pItCache->fVariance);
             }
             else
             {
@@ -257,6 +279,9 @@ namespace Katydid
             }
         }
         KTDEBUG(tlog, "Points present after cuts: " << points.size());
+
+
+
 
         // Add the new data
         KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
@@ -278,7 +303,16 @@ namespace Katydid
         procTrack.SetFrequencyWidth(std::abs(stopFreq - startFreq));
         procTrack.SetSlope(lsSlope);
         procTrack.SetIntercept(lsIntercept);
-        procTrack.SetTotalPower(amplitudeSum);
+        procTrack.SetTotalPower(std::accumulate(amplitude.begin(), amplitude.end(), 0.));
+
+        procTrack.SetNTrackBins(points.size());
+        procTrack.SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
+        procTrack.SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
+        procTrack.SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
+        procTrack.SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
+        procTrack.SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
+        procTrack.SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
+        
         //TODO: Add calculation of uncertainties
 
         return true;
@@ -290,80 +324,92 @@ namespace Katydid
         unsigned component = swfData.GetComponent();
         unsigned trackID = swfData.GetCandidateID();
 
-        typedef KTSparseWaterfallCandidateData::Points Points;
+        typedef KTDiscriminatedPoints Points;
         // not const because points will be removed later
         Points& points = swfData.GetPoints();
 
         vector< double > timeBinInAcq;
         vector< double > timeBinInRunC;
-        vector< double > sumPf;
-        vector< double > sumP;
-        vector< double > average;
+        vector< double > averageFrequency;
+        vector< double > mean;
+        vector< double > variance;
+        vector< double > neighborhoodAmplitude;
+
+        // Makes a first loop over the points to calculate the weighted averageFrequency in one time slice
 
         // Makes a first loop over the points to calculate the weighted average in one time slice
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            bool addToList = true;
-            for (unsigned iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
-            {
-                if (pIt->fTimeInAcq == timeBinInAcq[iTimeBin])
-                {
-                  addToList = false;
-                  KTDEBUG(tlog, "Duplicate time: " << pIt->fTimeInAcq << '\t' << pIt->fTimeInRunC);
-                  break;
-                }
-            }
-            if (addToList)
-            {
-                KTDEBUG(tlog, "Adding Time: " << pIt->fTimeInAcq << '\t' << pIt->fTimeInRunC);
-                timeBinInAcq.push_back(pIt->fTimeInAcq);
-                timeBinInRunC.push_back(pIt->fTimeInRunC);
-            }
+            timeBinInAcq.push_back(pIt->fTimeInAcq);
+            timeBinInRunC.push_back(pIt->fTimeInRunC);
         }
+        //Make these lists duplicate-free
+        sort( timeBinInAcq.begin(), timeBinInAcq.end() );
+        timeBinInAcq.erase( unique( timeBinInAcq.begin(), timeBinInAcq.end() ), timeBinInAcq.end() );
 
-        // Initialize the list of weighted points
-        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
-        {
-            sumPf.push_back(0.);
-            sumP.push_back(0.);
-        }
+        sort( timeBinInRunC.begin(), timeBinInRunC.end() );
+        timeBinInRunC.erase( unique( timeBinInRunC.begin(), timeBinInRunC.end() ), timeBinInRunC.end() );
+
+
+        const int nTimeBins = timeBinInAcq.size();
+        //Derived Quantites
+        vector< double > sumPf(nTimeBins);
+        vector< double > sumP(nTimeBins);
+        vector< double > trackSNR(nTimeBins);
+        vector< double > trackNUP(nTimeBins);
+        vector< double > wideTrackSNR(nTimeBins);
+        vector< double > wideTrackNUP(nTimeBins);
+        int nTrackBins = 0.;
 
         // Calculate the averaged points
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            for (int iTimeBin=0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+            for (int iTimeBin=0; iTimeBin<nTimeBins; ++iTimeBin)
             {
                 if (pIt->fTimeInAcq == timeBinInAcq[iTimeBin])
                 {
-                  sumPf[iTimeBin] += pIt->fFrequency * pIt->fAmplitude;
-                  sumP[iTimeBin] += pIt->fAmplitude;
+                    sumPf[iTimeBin] += pIt->fFrequency * pIt->fAmplitude;
+                    sumP[iTimeBin] += pIt->fAmplitude;
+                    mean[iTimeBin] += pIt->fMean;
+                    variance[iTimeBin] += pIt->fVariance;
+                    neighborhoodAmplitude[iTimeBin] += pIt->fNeighborhoodAmplitude;
+
+                    trackSNR[iTimeBin] += pIt->fAmplitude/pIt->fMean;
+                    trackNUP[iTimeBin] += (pIt->fAmplitude - pIt->fMean) / pIt->fVariance;
+
+                    wideTrackSNR[iTimeBin] += pIt->fNeighborhoodAmplitude/pIt->fMean;
+                    wideTrackNUP[iTimeBin] += (pIt->fNeighborhoodAmplitude - pIt->fMean) / pIt->fVariance;
+                    
+                    ++nTrackBins;
+
+                    break; //Since time bins are unique
                 }
             }
         }
 
         KTDEBUG(tlog, "Averaging");
-        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        for (unsigned iTimeBin = 0; iTimeBin<nTimeBins; ++iTimeBin)
         {
-            average.push_back(sumPf[iTimeBin]/sumP[iTimeBin]);
-            KTDEBUG(tlog, timeBinInAcq[iTimeBin] << '\t' << average[iTimeBin]);
+            averageFrequency.push_back(sumPf[iTimeBin]/sumP[iTimeBin]);
+            KTDEBUG(tlog, timeBinInAcq[iTimeBin] << '\t' << averageFrequency[iTimeBin]);
         }
 
         // Determining the slope and intercept from Chi-2 minimization
         double sumXY = 0, sumXX=0, sumX=0, sumY=0, sumOne = 0, amplitudeSum = 0;
 
-        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        for (unsigned iTimeBin = 0; iTimeBin<nTimeBins; ++iTimeBin)
         {
-            sumXY += average[iTimeBin] * timeBinInAcq[iTimeBin];
+            sumXY += averageFrequency[iTimeBin] * timeBinInAcq[iTimeBin];
             sumXX += timeBinInAcq[iTimeBin] * timeBinInAcq[iTimeBin];
             sumX += timeBinInAcq[iTimeBin];
-            sumY += average[iTimeBin];
+            sumY += averageFrequency[iTimeBin];
             sumOne += 1.;
             amplitudeSum += sumP[iTimeBin];
         }
         double slope = (sumXY*sumOne-sumY*sumX)/(sumXX*sumOne-sumX*sumX);
         double intercept = sumY/sumOne-slope*sumX/sumOne;
         double rho = -sumX/sqrt(sumXX*sumOne); // correlation coefficient between slope and intercept
-        KTDEBUG(tlog, "Weighted average results: \n" <<
+        KTDEBUG(tlog, "Weighted average Frequency results: \n" <<
                       "\tSlope: " << '\t' << slope << '\n' <<
                       "\tIntercept: " << '\t' << intercept);
         KTDEBUG(tlog, "Amplitude of the track: " << amplitudeSum );
@@ -371,9 +417,9 @@ namespace Katydid
         //Calculating Chi^2_min
         double chi2min = 0;
         double residual = 0;
-        for (unsigned iTimeBin = 0; iTimeBin<timeBinInAcq.size(); ++iTimeBin)
+        for (unsigned iTimeBin = 0; iTimeBin<nTimeBins; ++iTimeBin)
         {
-            residual = average[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
+            residual = averageFrequency[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
             chi2min += residual * residual;
             KTDEBUG(tlog, "Residuals : " << residual );
         }
@@ -384,19 +430,19 @@ namespace Katydid
         double sigmaEndFreq = 0;
 
         // need at least 3 points to get a non-zero Ndf
-        if (timeBinInAcq.size()>2)
+        if (nTimeBins>2)
         {
             KTDEBUG(tlog, "Chi2min : " << chi2min );
 
             if (chi2min < 0.1)
             {
-                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged points (" << fProcTrackAssignedError << ")");
-                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssignedError);
-                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssignedError);
+                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged Frequency points (" << fProcTrackAssError << ")");
+                deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssError);
+                deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssError);
             }
             else
             {
-                double ndf = timeBinInAcq.size() - 2; // 2: two fitting parameters
+                double ndf = nTimeBins - 2; // 2: two fitting parameters
                 deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
                 deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
             }
@@ -429,6 +475,16 @@ namespace Katydid
         procTrack.SetSlope(slope);
         procTrack.SetIntercept(intercept);
         procTrack.SetTotalPower(amplitudeSum);
+
+        procTrack.SetNTrackBins(nTrackBins);
+        procTrack.SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
+        procTrack.SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
+        procTrack.SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
+        procTrack.SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
+        procTrack.SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
+        procTrack.SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
+        
+
         if (!(slope > fSlopeMinimum))
         {
             procTrack.SetIsCut(true);

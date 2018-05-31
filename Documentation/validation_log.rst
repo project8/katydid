@@ -58,6 +58,7 @@ New Features:
       * Slack message upon success or failure
 * Track SNR and NUP:
       * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
+        Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~

@@ -13,6 +13,7 @@
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 using std::string;
 using std::vector;
@@ -142,6 +143,9 @@ namespace Katydid
                 newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
                 newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
+                newPoint.fMean = pIt->second.fMean;
+                newPoint.fVariance = pIt->second.fVariance;
+                newPoint.fNeighborhoodAmplitude = pIt->second.fNeighborhoodAmplitude;
                 fTreeData.AddPoint(newPoint, iComponent);
             }
             KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points (Slice Number: " << newPoint.fSliceNumber << ")");
@@ -185,14 +189,17 @@ namespace Katydid
         KTKDTreeData::Point newPoint;
         newPoint.fSliceNumber = 0; // slice number isn't available in KTSparseWaterfallCandidateData
         if (newPoint.fSliceNumber > fTreeData.GetLastSlice()) fTreeData.SetLastSlice(newPoint.fSliceNumber);
-        const KTSparseWaterfallCandidateData::Points& incomingPts = swfcData.GetPoints();
-        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = incomingPts.begin();
+        const KTDiscriminatedPoints& incomingPts = swfcData.GetPoints();
+        for (KTDiscriminatedPoints::const_iterator pIt = incomingPts.begin();
                 pIt != incomingPts.end(); ++pIt)
         {
             newPoint.fCoords[0] = fInvScalingX * pIt->fTimeInRunC;
             newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
             newPoint.fAmplitude = pIt->fAmplitude;
             newPoint.fTimeInAcq = fInvScalingX * pIt->fTimeInAcq;
+            newPoint.fMean = pIt->fMean;
+            newPoint.fVariance = pIt->fVariance;
+            newPoint.fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;
             fTreeData.AddPoint(newPoint, component);
         }
         KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");

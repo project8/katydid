@@ -260,11 +260,14 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             double value;
+            //FIX ME!!
+            double variance = 1;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = magnitude[iBin];
-                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                //if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), iComponent);
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
@@ -355,6 +358,8 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             double value;
+            //FIX ME!!!
+            double variance = 1.;
             //std::stringstream printer;
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -362,7 +367,8 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     //printer << "   " << iBin << " -- " << value;
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                    //newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), iComponent);
                 }
             }
 
@@ -456,12 +462,14 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
+            // FIX ME!!!
             double value;
+            double variance = 1.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin);
-                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), iComponent);
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 

@@ -21,6 +21,7 @@
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
@@ -322,7 +323,7 @@ namespace Katydid
         fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
         fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
 
-        const KTSparseWaterfallCandidateData::Points& points = swcData.GetPoints();
+        const KTDiscriminatedPoints& points = swcData.GetPoints();
 
         if (points.size() == 0)
         {
@@ -332,7 +333,7 @@ namespace Katydid
 
         fSparseWaterfallCandidateData.fPoints = new TGraph2D(points.size());
         unsigned iPoint = 0;
-        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+        for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
             ++iPoint;
