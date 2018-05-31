@@ -9,6 +9,8 @@
 #ifndef KTDISCRIMINATEDPOINT_HH_
 #define KTDISCRIMINATEDPOINT_HH_
 
+#include <set>
+
 namespace Katydid
 {
     struct KTDiscriminatedPoint
@@ -17,7 +19,10 @@ namespace Katydid
         double fFrequency;
         double fAmplitude;
         double fTimeInAcq;
-        KTDiscriminatedPoint(double tirc, double freq, double amp, double tiacq) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq) {}
+        double fMean;
+        double fVariance;
+        double fNeighborhoodAmplitude;
+        KTDiscriminatedPoint(double tirc, double freq, double amp, double tiacq, double mean, double variance, double neighborhoodAmplitude) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodAmplitude) {}
     };
     struct KTDiscriminatedPointCompare
             {

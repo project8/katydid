@@ -39,6 +39,9 @@ namespace Katydid
                 double fTimeInAcq;
                 bool fNoiseFlag;
                 uint64_t fSliceNumber;
+                double fMean;
+                double fVariance;
+                double fNeighborhoodAmplitude;
                 //uint64_t fAcquisitionID;
             };
 

@@ -66,14 +66,14 @@ if (Katydid_ENABLE_TESTING)
         TestDataAccumulator
         TestDBScan
         TestDBScanTrackClustering
-        TestDistanceClustering
+        # TestDistanceClustering
         TestGainNormalization
         TestGainVariationProcessor
         #TestHoughTransform  # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
         TestKDTree
         TestKDTreeData
-        TestLinearDensityProbe
-        TestMultiSliceClustering
+        # TestLinearDensityProbe
+        # TestMultiSliceClustering
         TestNanoflann
         #TestSimpleClustering # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
         #TestSlidingWindowFFT
@@ -129,7 +129,7 @@ if (Katydid_ENABLE_TESTING)
            TestROOTDictionary
            TestROOTTreeWritingViaCicada
            TestROOTWriterFileManager
-           TestROOTWritingToSameFile
+        #    TestROOTWritingToSameFile
         )
         
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
