@@ -52,6 +52,10 @@ namespace Katydid
 
     class KTTrackProcessing : public Nymph::KTProcessor
     {
+
+        public:
+            typedef KTSparseWaterfallCandidateData::Points Points;
+
         public:
             KTTrackProcessing(const std::string& name = "track-proc");
             virtual ~KTTrackProcessing();
@@ -70,8 +74,9 @@ namespace Katydid
         public:
             bool ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData);
             bool ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ProcessTrackDoubleCuts(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
-            bool ProcessTrackWeightedSlope(KTSparseWaterfallCandidateData& swfData);
+            // Core methods for both algorithm
+            bool ProcessTrackDoubleCuts(Points& points, KTHoughData& htData);
+            bool ProcessTrackWeightedSlope(Points& points);
 
         private:
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
