@@ -15,7 +15,7 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTProcessedTrackData.hh"
-#include "KTSeqLine.hh"
+#include "KTSequentialLineData.hh"
 
 #include <vector>
 

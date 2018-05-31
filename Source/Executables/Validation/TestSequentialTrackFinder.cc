@@ -16,7 +16,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTOverlappingTrackClustering.hh"
 #include "KTIterativeTrackClustering.hh"
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTSeqLine.hh"
+#include "KTSequentialLineData.hh"
 #include "KTRandom.hh"
 
 

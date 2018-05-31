@@ -5,7 +5,7 @@
  *      Author: Christine
  */
 
-#include <KTSeqLine.hh>
+#include <KTSequentialLineData.hh>
 
 #include "KTLogger.hh"
 

@@ -1,12 +1,12 @@
 /*
- * KTSeqLine.hh
+ * KTSequentialLineData.hh
  *
  *  Created on: Sep 8, 2016
  *      Author: Christine
  */
 
-#ifndef KTSEQLINE_HH_
-#define KTSEQLINE_HH_
+#ifndef KTSEQUENTIALLINEDATA_HH_
+#define KTSEQUENTIALLINEDATA_HH_
 
 #include "KTMemberVariable.hh"
 #include "KTData.hh"
@@ -143,6 +143,6 @@ namespace Katydid
     }*/
 } /* namespace Katydid */
 
-#endif /* KTSEQLINE_HH_ */
+#endif /* KTSEQUENTIALLINEDATA_HH_ */
 
 
