@@ -60,7 +60,7 @@ namespace Katydid
 
     void KTSequentialLine::LineSNRTrimming( const double& trimmingThreshold, const unsigned& minPoints )
     {
-        KTDEBUG( seqlog, "Trimming line edges. Trimming SNR threshold is "<<trimmingThreshold );
+        //KTDEBUG( seqlog, "Trimming line edges. Trimming SNR threshold is "<<trimmingThreshold );
 
         if ( !fSNRList.empty() )
         {
@@ -102,7 +102,7 @@ namespace Katydid
 
     inline void KTSequentialLine::UpdateLineProperties()
     {
-        KTDEBUG(seqlog, "Updating line parameters");
+        //KTDEBUG(seqlog, "Updating line parameters");
         SetNPoints( fLinePoints.size() );
         if ( fNPoints == 1 )
             {

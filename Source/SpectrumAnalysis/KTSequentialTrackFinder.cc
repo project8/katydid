@@ -300,7 +300,7 @@ namespace Katydid
             double newTimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
             double newTimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
             KTDEBUG(stflog, "new_TimeInAcq is " << newTimeInAcq);
-
+            KTDEBUG(stflog, "new_TimeInRunC is " << newTimeInRunC);
 
             // this vector will collect the discriminated points
             std::vector<KTSequentialLine::Point> points;
@@ -310,7 +310,7 @@ namespace Katydid
             {
                 if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
                 {
-                    //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
+                    //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate <<", threshold = "<<pIt->second.fThreshold);
                     KTSequentialLine::Point newPoint(pIt->first, pIt->second.fAbscissa, newTimeInAcq, newTimeInRunC, pIt->second.fOrdinate, pIt->second.fThreshold, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude, acqID, iComponent);
                     points.push_back(newPoint);
                 }
@@ -500,6 +500,7 @@ namespace Katydid
                          // if point matches this line: insert
                          if (timeCondition and anyPointCondition)
                          {
+                             KTDEBUG(stflog, "Mathing conditions fullfilled");
                              lineIt->AppendPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
@@ -542,6 +543,7 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::EmitPreCandidate(KTSequentialLine line)
     {
+        KTDEBUG(stflog, "applying cuts and then emitting candidate");
         bool lineIsCandidate = true;
 
         if ( fApplyTotalPowerCut )
@@ -590,26 +592,6 @@ namespace Katydid
         if (lineIsCandidate == true)
         {
 
-            /*// Set up new data object
-            Nymph::KTDataPtr data( new Nymph::KTData() );
-            KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
-            newTrack.SetComponent( line.fComponent );
-            newTrack.SetTrackID(fNLines);
-            ++fNLines;
-
-
-            newTrack.SetStartTimeInRunC( line.fStartTimeInRunC );
-            newTrack.SetEndTimeInRunC( line.fEndTimeInRunC );
-            newTrack.SetStartTimeInAcq( line.fStartTimeInAcq);
-            newTrack.SetStartFrequency( line.fStartFrequency );
-            newTrack.SetEndFrequency( line.fEndFrequency );
-            newTrack.SetSlope(line.fSlope);
-            newTrack.SetSlopeSigma(line.fSlopeSigma);
-            newTrack.SetInterceptSigma(line.fInterceptSigma);
-            newTrack.SetStartFrequencySigma(line.fStartFrequencySigma);
-            newTrack.SetEndFrequencySigma(line.fEndFrequencySigma);
-            newTrack.SetTotalPower(line.fAmplitudeSum);*/
-
             // Set up new data object
             Nymph::KTDataPtr data( new Nymph::KTData() );
             KTSequentialLine& newCand = data->Of< KTSequentialLine >();
@@ -622,7 +604,7 @@ namespace Katydid
             // Add line points to swf candidate
             for(std::vector<KTSequentialLine::Point>::iterator pointIt = line.GetPoints().begin(); pointIt != line.GetPoints().end(); ++pointIt )
             {
-                KTDEBUG( stflog, "Adding points to newCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
+                //KTDEBUG( stflog, "Adding points to newCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                 KTSequentialLine::Point newPoint(*pointIt);
                 newCand.AppendPoint(newPoint);
             }
@@ -819,7 +801,7 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        //KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.fSlope);
+        KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.GetSlope());
     }
 
     void KTSequentialTrackFinder::CalculateSlopeFirstRef(KTSequentialLine& Line)
@@ -857,7 +839,7 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        //KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.fSlope);
+        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.GetSlope());
     }
 
     void KTSequentialTrackFinder::CalculateSlopeLastRef(KTSequentialLine& Line)
@@ -895,6 +877,6 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        //KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.fSlope);
+        KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.GetSlope());
     }
 } /* namespace Katydid */

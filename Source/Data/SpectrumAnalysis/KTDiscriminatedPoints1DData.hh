@@ -33,9 +33,9 @@ namespace Katydid
                     fAbscissa( abscissa ),
                     fOrdinate( ordinate ),
                     fThreshold( threshold ),
-                    fMean( 0.0 ),
-                    fVariance( 1.0 ),
-                    fNeighborhoodAmplitude( abscissa )
+                    fMean( threshold ),
+                    fVariance( ordinate ),
+                    fNeighborhoodAmplitude( ordinate)
                 {}
             };
             typedef std::map< unsigned, Point > SetOfPoints;
