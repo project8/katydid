@@ -25,19 +25,8 @@ namespace Katydid
                 double fFrequency;
                 double fAmplitude;
                 double fTimeInAcq;
-                double fMean;
-                double fVariance;
-                double fNeighborhoodAmplitude;
-                Point(double tirc, double freq, double amp, double tiacq) :
-                    fTimeInRunC(tirc),
-                    fFrequency(freq),
-                    fAmplitude(amp),
-                    fTimeInAcq(tiacq),
-                    fMean(0.),
-                    fVariance(1.),
-                    fNeighborhoodAmplitude(amp)
-                {}
-            };
+                Point(double tirc, double freq, double amp, double tiacq) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq) {}
+};
 
             struct PointCompare
             {
@@ -73,11 +62,6 @@ namespace Katydid
             //MEMBERVARIABLE(uint64_t, LastSliceNumber);
             MEMBERVARIABLE(double, MinimumFrequency);
             MEMBERVARIABLE(double, MaximumFrequency);
-            MEMBERVARIABLE(double, MinimumTimeInRunC);
-            MEMBERVARIABLE(double, MaximumTimeInRunC);
-            MEMBERVARIABLE(double, MinimumTimeInAcq);
-            MEMBERVARIABLE(double, MaximumTimeInAcq);
-            MEMBERVARIABLE(double, Slope);
             //MEMBERVARIABLE(double, MeanStartFrequency);
             //MEMBERVARIABLE(double, MeanEndFrequency);
             MEMBERVARIABLE(double, FrequencyWidth);
