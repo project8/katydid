@@ -240,10 +240,10 @@ namespace Katydid
         vector<double> neighborhoodAmplitude;
 
         vector<double> trackSNR;
-        vector<double> trackNVP;
+        vector<double> trackNUP;
 
         vector<double> wideTrackSNR;
-        vector<double> wideTrackNVP;
+        vector<double> wideTrackNUP;
 
         //Has to be a better way (remove_if?)
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
@@ -258,10 +258,10 @@ namespace Katydid
                 neighborhoodAmplitude.push_back(pItCache->fNeighborhoodAmplitude);
 
                 trackSNR.push_back(pItCache->fAmplitude / pItCache->fMean);
-                trackNVP.push_back((pItCache->fAmplitude - pItCache->fMean) / pItCache->fVariance);
+                trackNUP.push_back((pItCache->fAmplitude - pItCache->fMean) / pItCache->fVariance);
 
                 wideTrackSNR.push_back(pItCache->fNeighborhoodAmplitude / pItCache->fMean);
-                wideTrackNVP.push_back((pItCache->fNeighborhoodAmplitude - pItCache->fMean) / pItCache->fVariance);
+                wideTrackNUP.push_back((pItCache->fNeighborhoodAmplitude - pItCache->fMean) / pItCache->fVariance);
             }
             else
             {
@@ -298,10 +298,10 @@ namespace Katydid
         procTrack.SetNTrackBins(points.size());
         procTrack.SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
         procTrack.SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
-        procTrack.SetTotalTrackNVP(std::accumulate(trackNVP.begin(),trackNVP.end(),0.));
-        procTrack.SetMaxTrackNVP(*std::max_element(trackNVP.begin(), trackNVP.end()));
+        procTrack.SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
+        procTrack.SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
         procTrack.SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
-        procTrack.SetTotalWideTrackNVP(std::accumulate(wideTrackNVP.begin(),wideTrackNVP.end(),0.));
+        procTrack.SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
         
         //TODO: Add calculation of uncertainties
 
@@ -346,9 +346,9 @@ namespace Katydid
         vector< double > sumPf(nTimeBins);
         vector< double > sumP(nTimeBins);
         vector< double > trackSNR(nTimeBins);
-        vector< double > trackNVP(nTimeBins);
+        vector< double > trackNUP(nTimeBins);
         vector< double > wideTrackSNR(nTimeBins);
-        vector< double > wideTrackNVP(nTimeBins);
+        vector< double > wideTrackNUP(nTimeBins);
         int nTrackBins = 0.;
 
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
@@ -364,10 +364,10 @@ namespace Katydid
                     neighborhoodAmplitude[iTimeBin] += pIt->fNeighborhoodAmplitude;
 
                     trackSNR[iTimeBin] += pIt->fAmplitude/pIt->fMean;
-                    trackNVP[iTimeBin] += (pIt->fAmplitude - pIt->fMean) / pIt->fVariance;
+                    trackNUP[iTimeBin] += (pIt->fAmplitude - pIt->fMean) / pIt->fVariance;
 
                     wideTrackSNR[iTimeBin] += pIt->fNeighborhoodAmplitude/pIt->fMean;
-                    wideTrackNVP[iTimeBin] += (pIt->fNeighborhoodAmplitude - pIt->fMean) / pIt->fVariance;
+                    wideTrackNUP[iTimeBin] += (pIt->fNeighborhoodAmplitude - pIt->fMean) / pIt->fVariance;
                     
                     ++nTrackBins;
 
@@ -468,10 +468,10 @@ namespace Katydid
         procTrack.SetNTrackBins(nTrackBins);
         procTrack.SetTotalTrackSNR(std::accumulate(trackSNR.begin(),trackSNR.end(),0.));
         procTrack.SetMaxTrackSNR(*std::max_element(trackSNR.begin(), trackSNR.end()));
-        procTrack.SetTotalTrackNVP(std::accumulate(trackNVP.begin(),trackNVP.end(),0.));
-        procTrack.SetMaxTrackNVP(*std::max_element(trackNVP.begin(), trackNVP.end()));
+        procTrack.SetTotalTrackNUP(std::accumulate(trackNUP.begin(),trackNUP.end(),0.));
+        procTrack.SetMaxTrackNUP(*std::max_element(trackNUP.begin(), trackNUP.end()));
         procTrack.SetTotalWideTrackSNR(std::accumulate(wideTrackSNR.begin(),wideTrackSNR.end(),0.));
-        procTrack.SetTotalWideTrackNVP(std::accumulate(wideTrackNVP.begin(),wideTrackNVP.end(),0.));
+        procTrack.SetTotalWideTrackNUP(std::accumulate(wideTrackNUP.begin(),wideTrackNUP.end(),0.));
         
 
         if (!(slope > fSlopeMinimum))
