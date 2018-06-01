@@ -377,7 +377,7 @@ namespace Katydid
                     
                     ++nTrackBins;
 
-                    break; //Since time bins are unique
+                    // break; //Since time bins are unique
                 }
             }
         }
