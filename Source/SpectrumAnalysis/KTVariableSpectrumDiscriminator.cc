@@ -422,19 +422,22 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0., summedpower = 0;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin).abs();
-                threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                value = (*spectrum)(iBin);
+                mean = (*splineImp)(iBin - fMinBin);
+                threshold = thresholdMult * mean;
+                variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
                     if( fNormalize )
                     {
-                        mean = (*splineImp)(iBin - fMinBin);
-                        variance = (*varSplineImp)(iBin - fMinBin);
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
+                        variance = normalizedVariance;
+                        mean = normalizedValue;
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -507,19 +510,22 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
+            double mean = 0., variance = 0., threshold = 0., value = 0., summedpower = 0;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
-                threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                value = (*spectrum)(iBin);
+                mean = (*splineImp)(iBin - fMinBin);
+                threshold = thresholdMult * mean;
+                variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
                     if( fNormalize )
                     {
-                        mean = (*splineImp)(iBin - fMinBin);
-                        variance = (*varSplineImp)(iBin - fMinBin);
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        summedpower = sqrt( normalizedVariance / variance ) * ( summedpower - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
+                        variance = normalizedVariance;
+                        mean = normalizedValue;
                     }
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
@@ -602,6 +608,10 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     // Add summing over adjacent bins here
+                    for (unsigned jBin = max(iBin-fPowerRadius,fMinBin); jbin<= min(iBin+fPowerRadius,fMaxBin); ++jBin)
+                    {
+                        summedpower +=(*spectrum)(iBin);
+                    }
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
