@@ -49,17 +49,15 @@ Version: x.y.z
 Release Date: ?????????????????
 '''''''''''''''''''''''''''''''
 
-New Features:
-'''''''''''''
-
 * Moving the default object name from the Katydid Writer into Cicada:
       * TMultiTrackEventData
       * TProcessedTrackData
       * TProcessedMPTData
       * TClassifierResultsData
-
-Fixes:
-''''''
+* Continuous Integration with Travis:
+      * Automatic build of libraries and validation executable
+      * Test of one executable (TestRandom)
+      * Slack message upon success or failure
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
