@@ -14,6 +14,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoint.hh"
+#include "KTROOTTreeTypeWriterEventAnalysis.hh"
 #include "KTRandom.hh"
 
 #include <cmath>        // std::abs
@@ -78,9 +79,16 @@ int main()
     KTSparseWaterfallCandidateData swfData = createFakeData();
     trackProc.ProcessTrackSWF(swfData);
 
-    KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
+#ifdef ROOT_FOUND
+    KTROOTTreeTypeWriterEventAnalysis treeWriter;
+    // treeWriter.SetupProcessedTrackTree();
+    treeWriter.WriteProcessedTrack(swfData);
+    KTINFO(testlog, "Processed track saved in file");
+#endif
+
 
     // Check the results of the processing
+    KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
     double foundFrequency = procTrack.GetStartFrequency();
     double toBeFoundFrequency = trackIntercept + trackSlope*trackStart;
     double diff = foundFrequency - toBeFoundFrequency;
