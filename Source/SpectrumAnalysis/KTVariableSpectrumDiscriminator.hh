@@ -146,6 +146,8 @@ namespace Katydid
             bool fCalculateMaxBin;
             bool fNormalize;
 
+            int fNeighborhoodRadius;
+
         public:
             bool CheckGVData();
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
@@ -172,6 +174,11 @@ namespace Katydid
             bool CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
             bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
             bool CoreDiscriminate(KTPowerSpectrumDataCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+
+            void SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+
 
             KTGainVariationData fGVData;
             std::vector< double > fMagnitudeCache;

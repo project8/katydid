@@ -111,6 +111,7 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
+            int fNeighborhoodRadius
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
 
@@ -123,6 +124,11 @@ namespace Katydid
             bool Discriminate(KTNormalizedPSData& data);
             bool Discriminate(KTCorrelationData& data);
             bool Discriminate(KTWignerVilleData& data);
+
+            void SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+
 
         private:
             struct PerComponentInfo
