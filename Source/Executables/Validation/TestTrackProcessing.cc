@@ -76,7 +76,6 @@ int main()
     trackProc.SetProcTrackAssignedError(12000);
 
     // Execute the Processing step
-
     Nymph::KTDataPtr dataPtr(new Nymph::KTData());    
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
     swfData = createFakeData();
