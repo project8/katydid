@@ -395,14 +395,14 @@ namespace Katydid
                      else
                      {
                          // Under these conditions a point will be added to a line
-                         bool timeCondition = pointIt->fTimeInRunC > lineIt->GetEndTimeInRunC();
-                         bool anyPointCondition = std::abs(pointIt->fFrequency - (lineIt->GetEndFrequency() + lineIt->GetSlope()*(pointIt->fTimeInAcq - lineIt->GetEndTimeInAcq()))) < fFrequencyAcceptance;
-                         bool secondPointCondition = std::abs(pointIt->fFrequency - (lineIt->GetEndFrequency() + lineIt->GetSlope()*(pointIt->fTimeInAcq - lineIt->GetEndTimeInAcq()))) < fInitialFrequencyAcceptance;
+                         bool timeCondition = tempPoint.fTimeInRunC > lineIt->GetEndTimeInRunC();
+                         bool anyPointCondition = std::abs(tempPoint.fFrequency - (lineIt->GetEndFrequency() + lineIt->GetSlope()*(pointIt->fTimeInAcq - lineIt->GetEndTimeInAcq()))) < fFrequencyAcceptance;
+                         bool secondPointCondition = std::abs(tempPoint.fFrequency - (lineIt->GetEndFrequency() + lineIt->GetSlope()*(pointIt->fTimeInAcq - lineIt->GetEndTimeInAcq()))) < fInitialFrequencyAcceptance;
 
                          // if point matches this line: insert
                          if (timeCondition and anyPointCondition)
                          {
-                             lineIt->AddPoint(*pointIt);
+                             lineIt->AddPoint(tempPoint);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
                              ++lineIt;
@@ -433,7 +433,7 @@ namespace Katydid
                      newLine.SetSlope( fInitialSlope );
                      newLine.SetAcquisitionID( acqID );
                      newLine.SetComponent( component );
-                     newLine.AddPoint(*pointIt);
+                     newLine.AddPoint(tempPoint);
                      (this->*fCalcSlope)(newLine);
                      fActiveLines.push_back(newLine);
                      match = true;
