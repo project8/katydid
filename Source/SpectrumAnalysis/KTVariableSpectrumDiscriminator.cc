@@ -432,6 +432,10 @@ namespace Katydid
                 variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
+                    for (unsigned jBin = max(iBin-fPowerRadius,fMinBin); jbin<= min(iBin+fPowerRadius,fMaxBin); ++jBin)
+                    {
+                        summedpower +=(*spectrum)(iBin);
+                    }
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
@@ -439,6 +443,8 @@ namespace Katydid
                         variance = normalizedVariance;
                         mean = normalizedValue;
                     }
+                    summedpower = summedpower - (2* fPowerRadius - 1) * mean;
+
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
             }
@@ -520,6 +526,10 @@ namespace Katydid
                 variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
+                    for (unsigned jBin = max(iBin-fPowerRadius,fMinBin); jbin<= min(iBin+fPowerRadius,fMaxBin); ++jBin)
+                    {
+                        summedpower +=(*spectrum)(iBin);
+                    }
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
@@ -527,6 +537,8 @@ namespace Katydid
                         variance = normalizedVariance;
                         mean = normalizedValue;
                     }
+                    summedpower = summedpower - (2* fPowerRadius - 1) * mean;
+
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
                 }
             }
