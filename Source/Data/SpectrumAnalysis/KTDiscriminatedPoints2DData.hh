@@ -60,23 +60,13 @@ namespace Katydid
         
             KTDiscriminatedPoints2DData& SetNComponents(unsigned channels);
 
-            unsigned GetNBinsX() const;
-            unsigned GetNBinsY() const;
-            double GetBinWidthX() const;
-            double GetBinWidthY() const;
-
-            void SetNBinsX(unsigned nBins);
-            void SetNBinsY(unsigned nBins);
-            void SetBinWidthX(double binWidth);
-            void SetBinWidthY(double binWidth);
-
         private:
             std::vector< PerComponentData > fComponentData;
 
-            unsigned fNBinsX;
-            unsigned fNBinsY;
-            double fBinWidthX;
-            double fBinWidthY;
+            MEMBERVARIABLE(unsigned, fNBinsX);
+            MEMBERVARIABLE(unsigned, fNBinsY);
+            MEMBERVARIABLE(double, fBinWidthX);
+            MEMBERVARIABLE(double, fBinWidthY);
 
         public:
             static const std::string sName;
@@ -107,50 +97,6 @@ namespace Katydid
     {
         fComponentData.resize(channels);
         return *this;
-    }
-
-    inline unsigned KTDiscriminatedPoints2DData::GetNBinsX() const
-    {
-        return fNBinsX;
-    }
-
-    inline unsigned KTDiscriminatedPoints2DData::GetNBinsY() const
-    {
-        return fNBinsY;
-    }
-
-    inline double KTDiscriminatedPoints2DData::GetBinWidthX() const
-    {
-        return fBinWidthX;
-    }
-
-    inline double KTDiscriminatedPoints2DData::GetBinWidthY() const
-    {
-        return fBinWidthY;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetNBinsX(unsigned nBins)
-    {
-        fNBinsX = nBins;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetNBinsY(unsigned nBins)
-    {
-        fNBinsY = nBins;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetBinWidthX(double binWidth)
-    {
-        fBinWidthX = binWidth;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetBinWidthY(double binWidth)
-    {
-        fBinWidthY = binWidth;
-        return;
     }
 
 } /* namespace Katydid */
