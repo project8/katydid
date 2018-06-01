@@ -136,7 +136,6 @@ namespace Katydid
 
             double fSNRThreshold;
             double fSigmaThreshold;
-            double fPowerRadius;
             ThresholdMode fThresholdMode;
 
             double fMinFrequency;

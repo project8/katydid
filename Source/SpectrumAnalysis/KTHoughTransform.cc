@@ -12,6 +12,7 @@
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include <cmath>
 
@@ -56,7 +57,7 @@ namespace Katydid
     {
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(1);
 
-        const KTSparseWaterfallCandidateData::Points& points = data.GetPoints();
+        const KTDiscriminatedPoints& points = data.GetPoints();
 
         KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
         if (newTransform == NULL)

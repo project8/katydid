@@ -30,6 +30,8 @@ namespace Katydid
             fMaxTrackWidth(200000.),
             fCompTracks(),
             fNewTracks(),
+            fNewSeqLineCands(),
+            fCompSeqLineCands(),
             fNTracks(0),
             fApplyTotalPowerCut(false),
             fApplyAveragePowerCut(false),
@@ -44,10 +46,10 @@ namespace Katydid
             fTotalUnitlessResidualThreshold(0.0),
             fAverageUnitlessResidualThreshold(0.0),
             fTrackSignal("track", this),
-            fSWFCandSignal("swf-cand", this),
+            fSeqLineCandSignal("sql-cand", this),
             fDoneSignal("clustering-done", this),
             fTakeTrackSlot("track", this, &KTOverlappingTrackClustering::TakeTrack),
-            fTakeSWFCandSlot("swf-cand", this, &KTOverlappingTrackClustering::TakeSWFCandidate)
+            fTakeSeqLineCandSlot("sql-cand", this, &KTOverlappingTrackClustering::TakeSeqLineCandidate)
     {
         RegisterSlot("do-clustering", this, &KTOverlappingTrackClustering::DoClusteringSlot);
     }
@@ -110,13 +112,13 @@ namespace Katydid
 
         return true;
     }
-    bool KTOverlappingTrackClustering::TakeSWFCandidate(KTSparseWaterfallCandidateData& swfCand)
+    bool KTOverlappingTrackClustering::TakeSeqLineCandidate(KTSequentialLineData& SeqLineCand)
     {
 
-        KTDEBUG(otclog, "Taking swf candidate: (" << swfCand.GetMinimumTimeInRunC() << ", " << swfCand.GetMinimumFrequency() << ", " << swfCand.GetMaximumTimeInRunC() << ", " << swfCand.GetMaximumFrequency() << ")");
+        KTDEBUG(otclog, "Taking SeqLine candidate: (" << SeqLineCand.GetStartTimeInRunC() << ", " << SeqLineCand.GetStartFrequency() << ", " << SeqLineCand.GetEndTimeInRunC() << ", " << SeqLineCand.GetEndFrequency() << ")");
 
         // copy the full track data
-        fCompSWFCands.push_back(swfCand);
+        fCompSeqLineCands.push_back(SeqLineCand);
 
         return true;
     }
@@ -139,8 +141,8 @@ namespace Katydid
         }
         else
         {
-            KTINFO( otclog, "Clustering SWF Candidates");
-            return DoSWFClustering();
+            KTINFO( otclog, "Clustering SeqLine Candidates");
+            return DoSeqLineClustering();
         }
     }
 
@@ -157,15 +159,15 @@ namespace Katydid
 
         return true;
     }
-    bool KTOverlappingTrackClustering::DoSWFClustering()
+    bool KTOverlappingTrackClustering::DoSeqLineClustering()
         {
-            if (! FindMatchingSWFCands())
+            if (! FindMatchingSeqLineCands())
             {
-                KTERROR(otclog, "An error occurred while identifying overlapping swf candidates");
+                KTERROR(otclog, "An error occurred while identifying overlapping SeqLine candidates");
                 return false;
             }
 
-            KTDEBUG(otclog, "SWF clustering complete");
+            KTDEBUG(otclog, "SeqLine clustering complete");
             fDoneSignal();
 
             return true;
@@ -205,14 +207,14 @@ namespace Katydid
 
         return true;
     }
-    bool KTOverlappingTrackClustering::FindMatchingSWFCands()
+    bool KTOverlappingTrackClustering::FindMatchingSeqLineCands()
     {
         KTINFO( otclog, "Finding overlapping tracks" );
         KTDEBUG( otclog, "FrequencyAcceptance is: "<<fMaxTrackWidth );
-        fNewSWFCands.clear();
+        fNewSeqLineCands.clear();
 
-        unsigned numberOfCands = fCompSWFCands.size();
-        unsigned numberOfNewCands = fNewSWFCands.size();
+        unsigned numberOfCands = fCompSeqLineCands.size();
+        unsigned numberOfNewCands = fNewSeqLineCands.size();
 
 
 
@@ -220,22 +222,22 @@ namespace Katydid
         {
             while (numberOfCands!=numberOfNewCands)
             {
-                numberOfCands = fCompSWFCands.size();
-                KTDEBUG(otclog, "Number of swf candidates to cluster: "<< numberOfCands);
-                this->OverlapSWFClustering();
+                numberOfCands = fCompSeqLineCands.size();
+                KTDEBUG(otclog, "Number of SeqLine candidates to cluster: "<< numberOfCands);
+                this->OverlapSeqLineClustering();
 
                 // Update number of tracks
-                numberOfNewCands = fNewSWFCands.size();
+                numberOfNewCands = fNewSeqLineCands.size();
 
-                KTDEBUG(otclog, "Number of new swf candidates: "<< numberOfNewCands);
+                KTDEBUG(otclog, "Number of new SeqLine candidates: "<< numberOfNewCands);
 
-                fCompSWFCands.clear();
-                fCompSWFCands = fNewSWFCands;
-                fNewSWFCands.clear();
+                fCompSeqLineCands.clear();
+                fCompSeqLineCands = fNewSeqLineCands;
+                fNewSeqLineCands.clear();
             }
         }
 
-        this->EmitSWFCandidates();
+        this->EmitSeqLineCandidates();
 
         return true;
     }
@@ -274,27 +276,27 @@ namespace Katydid
         }
         return true;
     }
-    bool KTOverlappingTrackClustering::OverlapSWFClustering()
+    bool KTOverlappingTrackClustering::OverlapSeqLineClustering()
     {
         bool match = false;
-        for (std::vector<KTSparseWaterfallCandidateData>::iterator compIt = fCompSWFCands.begin(); compIt != fCompSWFCands.end(); ++compIt)
+        for (std::vector<KTSequentialLineData>::iterator compIt = fCompSeqLineCands.begin(); compIt != fCompSeqLineCands.end(); ++compIt)
         {
             match = false;
-            for (std::vector<KTSparseWaterfallCandidateData>::iterator newIt = fNewSWFCands.begin(); newIt != fNewSWFCands.end(); ++newIt)
+            for (std::vector<KTSequentialLineData>::iterator newIt = fNewSeqLineCands.begin(); newIt != fNewSeqLineCands.end(); ++newIt)
             {
                 if (this->DoTheyOverlap(*compIt, *newIt))
                 {
                     match = true;
                     KTDEBUG(otclog, "Found overlapping tracks")
-                    this->CombineSWFCandidates(*compIt, *newIt);
+                    this->CombineSeqLineCandidates(*compIt, *newIt);
                     break;
                 }
             }
 
             if (match == false)
             {
-                KTSparseWaterfallCandidateData newSWFCand(*compIt);
-                fNewSWFCands.push_back(newSWFCand);
+                KTSequentialLineData newSeqLineCand(*compIt);
+                fNewSeqLineCands.push_back(newSeqLineCand);
             }
         }
         return true;
@@ -333,30 +335,28 @@ namespace Katydid
     }
 
 
-    const void KTOverlappingTrackClustering::CombineSWFCandidates(const KTSparseWaterfallCandidateData& oldSWFCand, KTSparseWaterfallCandidateData& newSWFCand)
+    const void KTOverlappingTrackClustering::CombineSeqLineCandidates(const KTSequentialLineData& oldSeqLineCand, KTSequentialLineData& newSeqLineCand)
     {
-        if (oldSWFCand.GetMinimumTimeInRunC() < newSWFCand.GetMinimumTimeInRunC())
+        if (oldSeqLineCand.GetStartTimeInRunC() < newSeqLineCand.GetStartTimeInRunC())
         {
-            newSWFCand.SetTimeInRunC( oldSWFCand.GetTimeInRunC() );
-            newSWFCand.SetTimeInAcq( oldSWFCand.GetTimeInAcq() );
-            newSWFCand.SetMinimumTimeInRunC( oldSWFCand.GetMinimumTimeInRunC() );
-            newSWFCand.SetMinimumTimeInAcq( oldSWFCand.GetMinimumTimeInAcq() );
-            newSWFCand.SetMinimumFrequency( oldSWFCand.GetMinimumFrequency() );
+            newSeqLineCand.SetComponent( oldSeqLineCand.GetComponent() );
+            newSeqLineCand.SetAcquisitionID( oldSeqLineCand.GetAcquisitionID() );
+            newSeqLineCand.SetStartTimeInRunC( oldSeqLineCand.GetStartTimeInRunC() );
+            newSeqLineCand.SetStartTimeInAcq( oldSeqLineCand.GetStartTimeInAcq() );
+            newSeqLineCand.SetStartFrequency( oldSeqLineCand.GetStartFrequency() );
         }
-        if (oldSWFCand.GetMaximumTimeInRunC() > newSWFCand.GetMaximumTimeInRunC())
+        if (oldSeqLineCand.GetEndTimeInRunC() > newSeqLineCand.GetEndTimeInRunC())
         {
-            newSWFCand.SetMaximumTimeInRunC( oldSWFCand.GetMaximumTimeInRunC());
-            newSWFCand.SetMaximumFrequency( oldSWFCand.GetMaximumFrequency());
+            newSeqLineCand.SetEndTimeInRunC( oldSeqLineCand.GetEndTimeInRunC());
+            newSeqLineCand.SetEndFrequency( oldSeqLineCand.GetEndFrequency());
         }
-        newSWFCand.SetSlope( (newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency())/(newSWFCand.GetMaximumTimeInRunC() - newSWFCand.GetMinimumTimeInRunC()) );
-        newSWFCand.SetFrequencyWidth( newSWFCand.GetMaximumFrequency() - newSWFCand.GetMinimumFrequency());
+        newSeqLineCand.SetSlope( (newSeqLineCand.GetEndFrequency() - newSeqLineCand.GetStartFrequency())/(newSeqLineCand.GetEndTimeInRunC() - newSeqLineCand.GetStartTimeInRunC()) );
 
-        KTSparseWaterfallCandidateData::Points points = oldSWFCand.GetPoints();
-        for(KTSparseWaterfallCandidateData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+        KTDiscriminatedPoints points = oldSeqLineCand.GetPoints();
+        for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
         {
-            KTDEBUG( otclog, "Adding points from oldSwfCand to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
-            //KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
-            newSWFCand.AddPoint(*pointIt);
+            //KTDEBUG( otclog, "Adding points from oldSeqLineCand to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
+            newSeqLineCand.AddPoint(*pointIt);
         }
     }
 
@@ -409,46 +409,46 @@ namespace Katydid
 
         return false;
     }
-    bool KTOverlappingTrackClustering::DoTheyOverlap(KTSparseWaterfallCandidateData& track1, KTSparseWaterfallCandidateData& track2)
+    bool KTOverlappingTrackClustering::DoTheyOverlap(KTSequentialLineData& track1, KTSequentialLineData& track2)
     {
         // if there are two tracks that should be just one, any point of the track will be close to the other track (extrapolated)
         // therefore it is enough to check start and endpoint of a track. one should overlap in time, both should be close in frequency
 
         // if the start time of track 2 is between start and end time of track 1
-        bool condition1 = track2.GetMinimumTimeInRunC() < track1.GetMaximumTimeInRunC() and track2.GetMinimumTimeInRunC() >= track1.GetMinimumTimeInRunC();
+        bool condition1 = track2.GetStartTimeInRunC() < track1.GetEndTimeInRunC() and track2.GetStartTimeInRunC() >= track1.GetStartTimeInRunC();
 
         // and the start frequency of track 2 is too close to track 1
-        bool condition2 = std::abs(track2.GetMinimumFrequency() - (track1.GetMaximumFrequency() + track1.GetSlope() * (track2.GetMinimumTimeInRunC() - track1.GetMinimumTimeInRunC()))) < fMaxTrackWidth;
+        bool condition2 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
 
-        // same for endpoint but not as strict
-        bool condition3 = std::abs(track2.GetMaximumFrequency() - (track1.GetMinimumFrequency() + track1.GetSlope() * (track2.GetMaximumTimeInRunC() - track1.GetMinimumTimeInRunC()))) < fMaxTrackWidth*5.0;
+        // same for endpoint
+        bool condition3 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth*5.0;
 
         if (condition1 and condition2 and condition3)
         {
             return true;
         }
         // the other way around
-        bool condition4 = track1.GetMinimumTimeInRunC() < track2.GetMaximumTimeInRunC() and track1.GetMinimumTimeInRunC() >= track2.GetMinimumTimeInRunC();
-        bool condition5 = std::abs(track1.GetMinimumFrequency() - (track2.GetMinimumFrequency() + track2.GetSlope() * (track1.GetMinimumTimeInRunC() - track2.GetMinimumTimeInRunC()))) < fMaxTrackWidth;
-        bool condition6 = std::abs(track1.GetMaximumFrequency() - (track2.GetMinimumFrequency() + track2.GetSlope() * (track1.GetMaximumTimeInRunC() - track2.GetMinimumTimeInRunC()))) < fMaxTrackWidth*5.0;
+        bool condition4 = track1.GetStartTimeInRunC() < track2.GetEndTimeInRunC() and track1.GetStartTimeInRunC() >= track2.GetStartTimeInRunC();
+        bool condition5 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
+        bool condition6 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth*5.0;
 
         if (condition4 and condition5 and condition6)
         {
             return true;
         }
         // same for end point of track2
-        condition1 = track2.GetMaximumTimeInRunC() <= track1.GetMaximumTimeInRunC() and track2.GetMaximumTimeInRunC() > track1.GetMinimumTimeInRunC();
-        condition2 = std::abs(track2.GetMaximumFrequency() - (track1.GetMinimumFrequency() + track1.GetSlope() * (track2.GetMaximumTimeInRunC() - track1.GetMinimumTimeInRunC()))) < fMaxTrackWidth;
-        condition3 = std::abs(track2.GetMinimumFrequency() - (track1.GetMinimumFrequency() + track1.GetSlope() * (track2.GetMinimumTimeInRunC() - track1.GetMinimumTimeInRunC()))) < fMaxTrackWidth*5.0;
+        condition1 = track2.GetEndTimeInRunC() <= track1.GetEndTimeInRunC() and track2.GetEndTimeInRunC() > track1.GetStartTimeInRunC();
+        condition2 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
+        condition3 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth*5.0;
 
         if (condition1 and condition2 and condition3)
         {
             return true;
         }
         // the other way around
-        condition4 = track1.GetMaximumTimeInRunC() <= track2.GetMaximumTimeInRunC() and track1.GetMaximumTimeInRunC() > track2.GetMinimumTimeInRunC();
-        condition5 = std::abs(track1.GetMaximumFrequency() - (track2.GetMinimumFrequency() + track2.GetSlope() * (track1.GetMaximumTimeInRunC() - track2.GetMinimumTimeInRunC()))) < fMaxTrackWidth;
-        condition6 = std::abs(track1.GetMinimumFrequency() - (track2.GetMinimumFrequency() + track2.GetSlope() * (track1.GetMinimumTimeInRunC() - track2.GetMinimumTimeInRunC()))) < fMaxTrackWidth*5.0;
+        condition4 = track1.GetEndTimeInRunC() <= track2.GetEndTimeInRunC() and track1.GetEndTimeInRunC() > track2.GetStartTimeInRunC();
+        condition5 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
+        condition6 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth*5.0;
 
         if (condition4 and condition5 and condition6)
         {
@@ -503,14 +503,13 @@ namespace Katydid
     void KTOverlappingTrackClustering::EmitTrackCandidates()
     {
         KTDEBUG(otclog, "Number of tracks to emit: "<<fCompTracks.size());
-        bool emitThisCandidate = true;
         KTINFO(otclog, "Clustering done.");
 
         std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();
 
         while(trackIt!=fCompTracks.end())
         {
-            emitThisCandidate = true;
+            bool emitThisCandidate = true;
 
             if (fApplyTotalPowerCut)
             {
@@ -598,30 +597,29 @@ namespace Katydid
                 ProcessNewTrack( newTrack );
 
                 KTDEBUG(otclog, "Emitting track signal");
+                fCandidates.insert( data );
                 fTrackSignal( data );
             }
             trackIt = fCompTracks.erase(trackIt);
         }
     }
 
-    void KTOverlappingTrackClustering::EmitSWFCandidates()
+    void KTOverlappingTrackClustering::EmitSeqLineCandidates()
     {
-        KTDEBUG(otclog, "Number of tracks to emit: "<<fCompSWFCands.size());
+        KTDEBUG(otclog, "Number of tracks to emit: "<<fCompSeqLineCands.size());
         KTINFO(otclog, "Clustering done.");
 
-        bool emitThisCandidate = true;
+        std::vector<KTSequentialLineData>::iterator candIt = fCompSeqLineCands.begin();
 
-        std::vector<KTSparseWaterfallCandidateData>::iterator candIt = fCompSWFCands.begin();
-
-        while( candIt!=fCompSWFCands.end() )
+        while( candIt!=fCompSeqLineCands.end() )
         {
-            emitThisCandidate = true;
+            bool emitThisCandidate = true;
             double summedPower = 0.0;
             double summedSNR = 0.0;
             double summedUnitlessResidual = 0.0;
 
-            KTSparseWaterfallCandidateData::Points& swfPoints = candIt->GetPoints();
-            for (KTSparseWaterfallCandidateData::Points::const_iterator pointIt = swfPoints.begin(); pointIt != swfPoints.end(); ++pointIt )
+            KTDiscriminatedPoints& points = candIt->GetPoints();
+            for (KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
                 summedPower += pointIt->fNeighborhoodAmplitude;
                 summedSNR += pointIt->fNeighborhoodAmplitude / pointIt->fMean;
@@ -638,9 +636,9 @@ namespace Katydid
             }
             if (fApplyAveragePowerCut)
             {
-                if (summedPower/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <= fAveragePowerThreshold)
+                if (summedPower/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <= fAveragePowerThreshold)
                 {
-                    KTDEBUG(otclog, "average track power below threshold: "<<summedPower/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <<" "<< fAveragePowerThreshold);
+                    KTDEBUG(otclog, "average track power below threshold: "<<summedPower/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <<" "<< fAveragePowerThreshold);
                     emitThisCandidate = false;
                 }
             }
@@ -654,9 +652,9 @@ namespace Katydid
             }
             if (fApplyAverageSNRCut)
             {
-                if (summedSNR/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <= fAverageSNRThreshold)
+                if (summedSNR/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
                 {
-                    KTDEBUG(otclog, "average track snr below threshold: "<<summedSNR/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC())<<" "<<fAverageSNRThreshold);
+                    KTDEBUG(otclog, "average track snr below threshold: "<<summedSNR/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC())<<" "<<fAverageSNRThreshold);
                     emitThisCandidate = false;
                 }
             }
@@ -670,9 +668,9 @@ namespace Katydid
             }
             if (fApplyAverageUnitlessResidualCut)
             {
-                if (summedUnitlessResidual/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC()) <= fAverageUnitlessResidualThreshold)
+                if (summedUnitlessResidual/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
                 {
-                    KTDEBUG(otclog, "average track residuals below threshold: "<<summedUnitlessResidual/(candIt->GetMaximumTimeInRunC()-candIt->GetMinimumTimeInRunC())<<" "<<fAverageUnitlessResidualThreshold);
+                    KTDEBUG(otclog, "average track residuals below threshold: "<<summedUnitlessResidual/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC())<<" "<<fAverageUnitlessResidualThreshold);
                     emitThisCandidate = false;
                 }
             }
@@ -681,34 +679,25 @@ namespace Katydid
 
                 // Set up new data object
                 Nymph::KTDataPtr data( new Nymph::KTData() );
-                KTSparseWaterfallCandidateData& newSWFCand = data->Of< KTSparseWaterfallCandidateData >();
-                newSWFCand.SetComponent( candIt->GetComponent() );
-                newSWFCand.SetAcquisitionID( candIt->GetAcquisitionID() );
-                newSWFCand.SetCandidateID( fNTracks );
+                KTSequentialLineData& newSeqLineCand = data->Of< KTSequentialLineData >();
+                newSeqLineCand.SetComponent( candIt->GetComponent() );
+                newSeqLineCand.SetAcquisitionID( candIt->GetAcquisitionID() );
+                newSeqLineCand.SetCandidateID( fNTracks );
                 fNTracks++;
 
-                newSWFCand.SetTimeInRunC( candIt->GetTimeInRunC() );
-                newSWFCand.SetTimeInAcq( candIt->GetTimeInAcq() );
-                newSWFCand.SetMinimumTimeInRunC( candIt->GetMinimumTimeInRunC() );
-                newSWFCand.SetMaximumTimeInRunC( candIt->GetMaximumTimeInRunC() );
-                newSWFCand.SetMinimumTimeInAcq( candIt->GetMinimumTimeInAcq() );
-                newSWFCand.SetMaximumTimeInAcq( candIt->GetMaximumTimeInAcq() );
-                newSWFCand.SetMinimumFrequency( candIt->GetMinimumFrequency() );
-                newSWFCand.SetMaximumFrequency( candIt->GetMaximumFrequency() );
-                newSWFCand.SetFrequencyWidth( candIt->GetFrequencyWidth());
-                newSWFCand.SetSlope(candIt->GetSlope());
+                newSeqLineCand.SetSlope(candIt->GetSlope());
 
-                KTSparseWaterfallCandidateData::Points& points = candIt->GetPoints();
-                for(KTSparseWaterfallCandidateData::Points::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+                KTDiscriminatedPoints& points = candIt->GetPoints();
+                for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
                 {
-                    KTDEBUG( otclog, "Adding points to newSwfCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
-                    //KTSparseWaterfallCandidateData::Point newSwfPoint(pointIt->fTimeInRunC, pointIt->fFrequency, pointIt->fAmplitude, pointIt->fTimeInAcq );
-                    newSWFCand.AddPoint( *pointIt );
+                    //KTDEBUG( otclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
+                    newSeqLineCand.AddPoint( *pointIt );
                 }
-                KTDEBUG( otclog, "Emitting swf signal" );
-                fSWFCandSignal( data );
+                KTDEBUG( otclog, "Emitting SeqLine signal" );
+                fCandidates.insert( data );
+                fSeqLineCandSignal( data );
             }
-        candIt = fCompSWFCands.erase(candIt);
+        candIt = fCompSeqLineCands.erase(candIt);
         }
     }
 

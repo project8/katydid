@@ -239,7 +239,7 @@ int main()
 #endif
     unsigned iCand = 0;
 
-    typedef KTSparseWaterfallCandidateData::Points Points;
+    typedef KTDiscriminatedPoints Points;
 
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {

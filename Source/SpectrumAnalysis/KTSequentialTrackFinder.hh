@@ -18,10 +18,11 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTGainVariationData.hh"
-#include "KTSeqLine.hh"
+#include "KTSequentialLineData.hh"
 //#include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include <iostream>
 #include <set>
@@ -33,7 +34,7 @@ namespace Katydid
      @class KTSeqTrackFinder
      @author C. Claessens
 
-     @brief Implementation of Dan Furse's algorithm with some modifiactions
+     @brief Implementation of Dan Furse's algorithm with some modifications
 
      @details
      Collects points on a linear track
@@ -73,12 +74,12 @@ namespace Katydid
 
 
      Slots:
-     - "disc1d": clusters discriminated points to sparse waterfall candidates
-     - "disc1d-ps": clusters discriminated points to sparsewaterfall candidates; updates point properties using power spectrum slice
+     - "disc1d": clusters discriminated points to sequential lines candidates
+     - "disc1d-ps": clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
      - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "swf-cand": KTSparseWaterfallCandidateData
+     - "seq-lines": KTSparseWaterfallCandidateData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
@@ -94,17 +95,44 @@ namespace Katydid
                 unweighted
             };
 
-            KTGainVariationData fGVData;
+        public:
+            struct KTDiscriminatedPointComparePower
+            {
+                bool operator() (const KTDiscriminatedPoint& lhs, const KTDiscriminatedPoint& rhs) const
+                {
+                    return lhs.fAmplitude< rhs.fAmplitude || (lhs.fAmplitude == rhs.fAmplitude && lhs.fFrequency < rhs.fFrequency);
+                }
+            };
+
+            typedef std::set< KTDiscriminatedPoint, KTDiscriminatedPointComparePower > KTDiscriminatedPowerSortedPoints;
+
 
         public:
             KTSequentialTrackFinder(const std::string& name = "seq-clustering");
             virtual ~KTSequentialTrackFinder();
 
             bool Configure(const scarab::param_node* node);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+            bool LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+
+            void UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice);
+            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
+            void (KTSequentialTrackFinder::*fCalcSlope)(KTSequentialLineData& Line);
+            void CalculateSlopeFirstRef(KTSequentialLineData& Line);
+            void CalculateSlopeLastRef(KTSequentialLineData& Line);
+            //void CalculateWeightedSlope(LineRef& Line);
+            void CalculateUnweightedSlope(KTSequentialLineData& Line);
+            bool EmitPreCandidate(KTSequentialLineData line);
+            void AcquisitionIsOver();
+
+
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
 
         public:
-            //MEMBERVARIABLE(ThresholdMode, Mode);
-
             // Parameters for point update before adding point to line
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
@@ -150,27 +178,11 @@ namespace Katydid
 
 
         private:
-            std::vector< LineRef> fActiveLines;
-
-        public:
-            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
-            bool LoopOverHighPowerPoints(std::vector<Point>& points, unsigned component);
+            std::vector< KTSequentialLineData > fActiveLines;
+            std::set< Nymph::KTDataPtr > fCandidates;
 
 
-            void UpdateLinePoint(Point& point, KTPowerSpectrum& slice);
-            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
-            void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
-            void CalculateSlopeFirstRef(LineRef& Line);
-            void CalculateSlopeLastRef(LineRef& Line);
-            //void CalculateWeightedSlope(LineRef& Line);
-            void CalculateUnweightedSlope(LineRef& Line);
-            //void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
-            bool EmitPreCandidate(LineRef line);
-            void AcquisitionIsOver();
+
 
 
 
@@ -179,7 +191,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalData fTrackSignal;
+            Nymph::KTSignalData fLineSignal;
             Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************
@@ -192,6 +204,10 @@ namespace Katydid
             Nymph::KTSlotDone fDoneSlot;
 
     };
+    inline const std::set< Nymph::KTDataPtr >& KTSequentialTrackFinder::GetCandidates() const
+    {
+        return fCandidates;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSEQUENTIALTRACKFinder_HH_ */

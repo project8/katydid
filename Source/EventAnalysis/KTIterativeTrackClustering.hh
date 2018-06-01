@@ -15,7 +15,8 @@
 #include "KTData.hh"
 #include "KTMemberVariable.hh"
 #include "KTProcessedTrackData.hh"
-#include "KTSparseWaterfallCandidateData.hh"
+#include "KTSequentialLineData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include <vector>
 
@@ -30,7 +31,7 @@ namespace Katydid
 
      @details
      Checks whether track start/ends match another track's extrapolation.
-     Can work with KTProcessedTracksData or KTSparseWaterfallCandidateData
+     Can work with KTProcessedTracksData or KTSequentialLineData
 
      Configuration name: "iterative-track-clustering"
 
@@ -53,12 +54,12 @@ namespace Katydid
 
      Slots:
      - "track": Collects incoming KTProcessedTrackData objects. Clustering will produces new data pointer with KTProcessedTrackData
-     - "swf-cand": Collects incoming KTSparseWaterfallCandidateData objects. Clustering will produced new data pointer with KTSparseWaterfallCandidateData
+     - "sql-cand": Collects incoming KTSequentialLineData objects. Clustering will produced new data pointer with KTSequentialLineData
      - "do-clustering": Triggers clustering algorithm
 
      Signals:
      - "track": void (shared_ptr<KTData>) -- Created and emitted for each group found; Guarantees KTProcessedTrackData.
-     - "swf-cand: void (shared_ptr<KTData) -- Created and emitted for each group found; Guarantees KTSparseWaterfallCandidateData.
+     - "sql-cand: void (shared_ptr<KTData) -- Created and emitted for each group found; Guarantees KTSequentialLineData.
      - "clustering-done": void () -- Emitted when clustering is complete
     */
 
@@ -91,35 +92,39 @@ namespace Katydid
         public:
             // Store point information locally
             bool TakeTrack(KTProcessedTrackData& track);
-            bool TakeSWFCandidate(KTSparseWaterfallCandidateData& swfCand);
+            bool TakeSeqLineCandidate(KTSequentialLineData& SeqLineCand);
 
             //void SetNComponents(unsigned nComps);
             bool DoTrackClustering();
-            bool DoSWFClustering();
+            bool DoSeqLineClustering();
             bool Run();
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
+
 
 
         private:
             bool ExtrapolateTrackClustering();
-            bool ExtrapolateSWFClustering();
+            bool ExtrapolateSeqLineClustering();
             bool DoTheyMatch(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
-            bool DoTheyMatch(KTSparseWaterfallCandidateData& track1, KTSparseWaterfallCandidateData& track2);
+            bool DoTheyMatch(KTSequentialLineData& track1, KTSequentialLineData& track2);
             bool DoTheyOverlap(KTProcessedTrackData& track1, KTProcessedTrackData& track2);
-            bool DoTheyOverlap(KTSparseWaterfallCandidateData& track1, KTSparseWaterfallCandidateData& track2);
+            bool DoTheyOverlap(KTSequentialLineData& track1, KTSequentialLineData& track2);
             const void CombineTracks(const KTProcessedTrackData& track1, KTProcessedTrackData& track2);
-            const void CombineSWFCandidates(const KTSparseWaterfallCandidateData& oldSWFCand, KTSparseWaterfallCandidateData& newSWFCand);
+            const void CombineSeqLineCandidates(const KTSequentialLineData& oldSeqLineCand, KTSequentialLineData& newSeqLineCand);
             bool FindMatchingTracks();
-            bool FindMatchingSWFCands();
+            bool FindMatchingSeqLineCands();
             void EmitTrackCandidates();
-            void EmitSWFCandidates();
+            void EmitSeqLineCandidates();
             const void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
 
 
             std::vector<KTProcessedTrackData> fCompTracks;
             std::vector<KTProcessedTrackData> fNewTracks;
 
-            std::vector<KTSparseWaterfallCandidateData> fCompSWFCands;
-            std::vector<KTSparseWaterfallCandidateData> fNewSWFCands;
+            std::vector<KTSequentialLineData> fCompSeqLineCands;
+            std::vector<KTSequentialLineData> fNewSeqLineCands;
+
+            std::set< Nymph::KTDataPtr > fCandidates;
 
 
             //***************
@@ -128,7 +133,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTrackSignal;
-            Nymph::KTSignalData fSWFCandSignal;
+            Nymph::KTSignalData fSeqLineCandSignal;
             Nymph::KTSignalOneArg< void > fDoneSignal;
 
             //***************
@@ -137,12 +142,15 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
-            Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fTakeSWFCandSlot;
+            Nymph::KTSlotDataOneType< KTSequentialLineData > fTakeSeqLineCandSlot;
 
             void DoClusteringSlot();
 
     };
-
+    inline const std::set< Nymph::KTDataPtr >& KTIterativeTrackClustering::GetCandidates() const
+    {
+        return fCandidates;
+    }
 }
  /* namespace Katydid */
 #endif /* KTITERATIVETRACKCLUSTERING_HH_ */
