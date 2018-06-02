@@ -241,7 +241,7 @@ namespace Katydid
             }
             if (fApplyTotalSNRCut)
             {
-                if (trackIt->GetTotalPower() <= fTotalSNRThreshold)
+                if (trackIt->GetTotalWideTrackSNR() <= fTotalSNRThreshold)
                 {
                     KTDEBUG(itclog, "total track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalSNRThreshold);
                     emitThisCandidate = false;
@@ -249,7 +249,7 @@ namespace Katydid
             }
             if (fApplyAverageSNRCut)
             {
-                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
+                if (trackIt->GetTotalWideTrackSNR()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
                 {
                     KTDEBUG(itclog, "average track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageSNRThreshold);
                     emitThisCandidate = false;
@@ -257,7 +257,7 @@ namespace Katydid
             }
             if (fApplyTotalUnitlessResidualCut)
             {
-                if (trackIt->GetTotalPower() <= fTotalUnitlessResidualThreshold)
+                if (trackIt->GetTotalWideTrackNUP() <= fTotalUnitlessResidualThreshold)
                 {
                     KTDEBUG(itclog, "total track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalUnitlessResidualThreshold);
                     emitThisCandidate = false;
@@ -265,7 +265,7 @@ namespace Katydid
             }
             if (fApplyAverageUnitlessResidualCut)
             {
-                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
+                if (trackIt->GetTotalWideTrackNUP()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
                 {
                     KTDEBUG(itclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageUnitlessResidualThreshold);
                     emitThisCandidate = false;
