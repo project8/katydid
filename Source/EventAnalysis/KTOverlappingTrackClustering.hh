@@ -77,6 +77,7 @@ namespace Katydid
             const std::set< Nymph::KTDataPtr >& GetCandidates() const;
 
 
+        private:
             MEMBERVARIABLE(double, MaxTrackWidth);
             MEMBERVARIABLE(double, LargerMaxTrackWidth);
             MEMBERVARIABLE(bool, ApplyTotalPowerCut);
