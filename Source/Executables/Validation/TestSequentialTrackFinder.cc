@@ -105,8 +105,8 @@ int main()
 
     // Apply some settings
     stf.SetTrimmingThreshold(0.9);
-    stf.SetApplyTotalPowerCut(true);
-    stf.SetTotalPowerThreshold(4e-6);
+    stf.SetApplyTotalSNRCut(true);
+    stf.SetTotalSNRThreshold(3);
     stf.SetMinFrequency(0.);
     stf.SetMaxFrequency(100.e6);
     stf.SetMinPoints(2);
@@ -140,11 +140,13 @@ int main()
         KTINFO(testlog, "Candidate " << iCand);
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
         iCand++;
 
         const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+        KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+
         for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
@@ -155,16 +157,16 @@ int main()
 
     // Test OTC
     KTOverlappingTrackClustering otc;
-    otc.SetApplyTotalSNRCut(true);
+    otc.SetApplyTotalSNRCut(false);
     otc.SetTotalSNRThreshold(3);
-    otc.SetApplyAverageSNRCut(true);
+    otc.SetApplyAverageSNRCut(false);
     otc.SetAverageSNRThreshold(5000);
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         otc.TakeSeqLineCandidate(sqlData);
     }
-    otc.DoSeqLineClustering();
+    otc.Run();
 
 
     // Get output
@@ -178,10 +180,12 @@ int main()
         KTINFO(testlog, "OTC Candidate " << iCand);
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         iCand++;
 
         const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+        KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+
         for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
@@ -193,8 +197,8 @@ int main()
     KTIterativeTrackClustering itc;
     itc.SetApplyTotalSNRCut(true);
     itc.SetTotalSNRThreshold(4);
-    itc.SetApplyAverageSNRCut(false);
-    itc.SetAverageSNRThreshold(20000);
+    itc.SetApplyAverageSNRCut(true);
+    itc.SetAverageSNRThreshold(10000);
     itc.SetApplyAverageUnitlessResidualCut(false);
     itc.SetAverageUnitlessResidualThreshold(1e3);
     itc.SetApplyTotalUnitlessResidualCut(false);
@@ -219,11 +223,13 @@ int main()
         KTINFO(testlog, "ITCCandidate " << iCand);
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTINFO(testlog, "Length: "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         KTINFO(testlog, "AcquisitionsID - CandidateID: "<<sqlData.GetAcquisitionID()<<" - "<<sqlData.GetCandidateID());
         iCand++;
 
         const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+        KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+
         for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         {
             KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
