@@ -81,6 +81,7 @@ if (Katydid_ENABLE_TESTING)
         TestSpectrogramStriper
         TestSpectrogramStriperSwaps
         TestSpectrumDiscriminator
+        TestTrackProcessing
         TestWindowFunction
         TestSequentialTrackFinder
     )
