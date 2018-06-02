@@ -73,7 +73,6 @@ namespace Katydid
             bool TakeTrack(KTProcessedTrackData& track);
             bool TakeSeqLineCandidate(KTSequentialLineData& swfCand);
             bool Run();
-
             const std::set< Nymph::KTDataPtr >& GetCandidates() const;
 
 
@@ -238,9 +237,7 @@ namespace Katydid
             const void CombineCandidates(const KTSequentialLineData& track1, KTSequentialLineData& track2);
             void EmitCandidates(std::vector<KTProcessedTrackData>& compTracks);
             void EmitCandidates(std::vector<KTSequentialLineData>& compCands);
-
             const void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
-
 
 
             std::vector<KTProcessedTrackData> fCompTracks;

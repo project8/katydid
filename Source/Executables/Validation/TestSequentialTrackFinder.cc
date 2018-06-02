@@ -209,8 +209,7 @@ int main()
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
         itc.TakeSeqLineCandidate(sqlData);
     }
-    itc.DoSeqLineClustering();
-
+    itc.Run();
 
     // Get output
     const std::set< Nymph::KTDataPtr >& itccandidates = itc.GetCandidates();

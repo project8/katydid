@@ -1,8 +1,9 @@
-/*
- * KTOverlappingTrackClustering.cc
- *
- *  Created on: August 7, 2017
- *      Author: C. Claessens
+/**
+ @file KTOverlappingTrackClustering.cc
+ @brief Contains KTOverlappingTrackClustering
+ @details Groups overlapping or crossing tracks into one
+ @author: C. Claessens
+ @date: August 7, 2017
  */
 
 #include "KTOverlappingTrackClustering.hh"
