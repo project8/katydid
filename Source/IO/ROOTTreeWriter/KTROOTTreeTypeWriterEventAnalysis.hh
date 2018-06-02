@@ -60,13 +60,16 @@ namespace Katydid
         Double_t fMeanStartFrequency;
         Double_t fMeanEndFrequency;
         Double_t fFrequencyWidth;
+        UInt_t fStartRecordNumber;
+        UInt_t fStartSampleNumber;
+        UInt_t fEndRecordNumber;
+        UInt_t fEndSampleNumber;
         TH2D* fCandidate;
     };
 
     // commented-out fields match fields not yet implemented in KTSparseWaterfallCandidateData
     struct TSparseWaterfallCandidateData
     {
-        TGraph2D* fPoints;
         UInt_t fComponent;
         UInt_t fAcquisitionID;
         UInt_t fCandidateID;
@@ -81,10 +84,7 @@ namespace Katydid
         //Double_t fMeanStartFrequency;
         //Double_t fMeanEndFrequency;
         Double_t fFrequencyWidth;
-        //UInt_t fStartRecordNumber;
-        //UInt_t fStartSampleNumber;
-        //UInt_t fEndRecordNumber;
-        //UInt_t fEndSampleNumber;
+        TGraph2D* fPoints; //<- TimeInRunc, Frequency, Amplitude, Threshold, ..., ...
 
     };
 
