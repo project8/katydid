@@ -302,6 +302,14 @@ namespace Katydid
                 newTrack.SetIntercept( trackIt->GetFrequencyWidth() );
                 newTrack.SetInterceptSigma( trackIt->GetInterceptSigma() );
 
+                newTrack.SetNTrackBins( trackIt->GetNTrackBins() );
+                newTrack.SetTotalTrackSNR( trackIt->GetTotalTrackSNR() );
+                newTrack.SetMaxTrackSNR( trackIt->GetMaxTrackSNR() );
+                newTrack.SetTotalTrackNUP( trackIt->GetTotalTrackNUP() );
+                newTrack.SetMaxTrackNUP( trackIt->GetMaxTrackNUP() );
+                newTrack.SetTotalWideTrackSNR( trackIt->GetTotalWideTrackSNR() );
+                newTrack.SetTotalWideTrackNUP( trackIt->GetTotalWideTrackNUP() );
+
 
                 // Process & emit new track
 
