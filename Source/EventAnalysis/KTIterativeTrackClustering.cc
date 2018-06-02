@@ -160,8 +160,6 @@ namespace Katydid
             newTrack.SetStartFrequency( oldTrack.GetStartFrequency());
             newTrack.SetStartTimeInRunCSigma( oldTrack.GetStartTimeInRunCSigma());
             newTrack.SetStartFrequencySigma( oldTrack.GetStartFrequencySigma());
-            newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
-
         }
         if (oldTrack.GetEndTimeInRunC() > newTrack.GetEndTimeInRunC())
         {
@@ -169,11 +167,18 @@ namespace Katydid
             newTrack.SetEndFrequency( oldTrack.GetEndFrequency());
             newTrack.SetEndTimeInRunCSigma( oldTrack.GetEndTimeInRunCSigma());
             newTrack.SetEndFrequencySigma( oldTrack.GetEndFrequencySigma());
-            newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
-
         }
+        newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
 
+        newTrack.SetNTrackBins( newTrack.GetNTrackBins() + oldTrack.GetNTrackBins() );
+        newTrack.SetTotalTrackSNR( newTrack.GetTotalTrackSNR() + oldTrack.GetTotalTrackSNR() );
+        newTrack.SetMaxTrackSNR( std::max( newTrack.GetMaxTrackSNR(), oldTrack.GetMaxTrackSNR() ) );
+        newTrack.SetTotalTrackNUP( newTrack.GetTotalTrackNUP() + oldTrack.GetTotalTrackNUP() );
+        newTrack.SetMaxTrackNUP( std::max( newTrack.GetMaxTrackNUP(), oldTrack.GetMaxTrackNUP() ) );
+        newTrack.SetTotalWideTrackSNR( newTrack.GetTotalWideTrackSNR() + oldTrack.GetTotalWideTrackSNR() );
+        newTrack.SetTotalWideTrackNUP( newTrack.GetTotalWideTrackNUP() + oldTrack.GetTotalWideTrackNUP() );
         newTrack.SetTotalPower( newTrack.GetTotalPower() + oldTrack.GetTotalPower());
+
         newTrack.SetTotalPowerSigma( sqrt(newTrack.GetTotalPowerSigma()*newTrack.GetTotalPowerSigma() + oldTrack.GetTotalPowerSigma()*oldTrack.GetTotalPowerSigma()) );
         //newTrack.SetTimeLength( newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC());
         newTrack.SetTimeLengthSigma( sqrt(newTrack.GetTimeLengthSigma()*newTrack.GetTimeLengthSigma() + oldTrack.GetTimeLengthSigma()*oldTrack.GetTimeLengthSigma()) );
