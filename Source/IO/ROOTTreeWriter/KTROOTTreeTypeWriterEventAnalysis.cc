@@ -33,6 +33,7 @@
 #include "TGraph2D.h"
 #include "TH2.h"
 #include "TTree.h"
+#include "TClonesArray.h"
 
 #include <sstream>
 
@@ -224,8 +225,8 @@ namespace Katydid
         fWaterfallCandidateData.fTimeLength = wcData.GetTimeLength();
         fWaterfallCandidateData.fFirstSliceNumber = wcData.GetFirstSliceNumber();
         fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
-        fWaterfallCandidateData.fMinFrequency = wcData.GetMinimumFrequency();
-        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaximumFrequency();
+        fWaterfallCandidateData.fMinFrequency = wcData.GetMinFrequency();
+        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaxFrequency();
         fWaterfallCandidateData.fMeanStartFrequency = wcData.GetMeanStartFrequency();
         fWaterfallCandidateData.fMeanEndFrequency = wcData.GetMeanEndFrequency();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
@@ -319,8 +320,8 @@ namespace Katydid
         //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
         fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
         fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
-        fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinimumFrequency();
-        fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
+        fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinFrequency();
+        fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaxFrequency();
         fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
 
         const KTDiscriminatedPoints& points = swcData.GetPoints();
@@ -331,16 +332,17 @@ namespace Katydid
             return;
         }
 
-        fSparseWaterfallCandidateData.fPoints = new TGraph2D(points.size());
+        fSparseWaterfallCandidateData.fPoints = new TClonesArray();
         unsigned iPoint = 0;
         for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
+            TDiscriminatedPoint* point = (TDiscriminatedPoint*)fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
+            // fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
             ++iPoint;
         }
-        fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
-        KTDEBUG(publog, "Candidate info:\n"
-                << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
+        // fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
+        // KTDEBUG(publog, "Candidate info:\n"
+                // << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
         //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
         //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
 

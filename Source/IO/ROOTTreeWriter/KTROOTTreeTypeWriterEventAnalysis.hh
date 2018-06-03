@@ -13,6 +13,7 @@
 #include "KTData.hh"
 
 #include "Rtypes.h"
+#include "TClonesArray.h"
 
 #include <vector>
 
@@ -68,6 +69,17 @@ namespace Katydid
     };
 
     // commented-out fields match fields not yet implemented in KTSparseWaterfallCandidateData
+    struct TDiscriminatedPoint 
+    {
+        Double_t fTimeInRunC;
+        Double_t fFrequency;
+        Double_t fAmplitude;
+        Double_t fTimeInAcq;
+        Double_t fMean;
+        Double_t fVariance;
+        Double_t fNeighborhoodAmplitude;
+    };
+
     struct TSparseWaterfallCandidateData
     {
         UInt_t fComponent;
@@ -84,7 +96,7 @@ namespace Katydid
         //Double_t fMeanStartFrequency;
         //Double_t fMeanEndFrequency;
         Double_t fFrequencyWidth;
-        TGraph2D* fPoints; //<- TimeInRunc, Frequency, Amplitude, Threshold, ..., ...
+        TClonesArray* fPoints; //<- TimeInRunc, Frequency, Amplitude, Threshold, ..., ...
 
     };
 

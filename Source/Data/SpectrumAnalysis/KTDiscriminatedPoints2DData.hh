@@ -63,10 +63,10 @@ namespace Katydid
         private:
             std::vector< PerComponentData > fComponentData;
 
-            MEMBERVARIABLE(unsigned, fNBinsX);
-            MEMBERVARIABLE(unsigned, fNBinsY);
-            MEMBERVARIABLE(double, fBinWidthX);
-            MEMBERVARIABLE(double, fBinWidthY);
+            MEMBERVARIABLE(unsigned, NBinsX);
+            MEMBERVARIABLE(unsigned, NBinsY);
+            MEMBERVARIABLE(double, BinWidthX);
+            MEMBERVARIABLE(double, BinWidthY);
 
         public:
             static const std::string sName;

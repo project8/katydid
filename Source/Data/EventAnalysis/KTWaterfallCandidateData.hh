@@ -29,7 +29,7 @@ namespace Katydid
 
             static const std::string sName;
 
-        MEMBERVARIABLE(KTTimeFrequency*, Candidate);
+        MEMBERVARIABLE_NOSET(KTTimeFrequency*, Candidate);
         MEMBERVARIABLE(unsigned, Component);
 
         MEMBERVARIABLE(double, TimeInRun);
@@ -46,6 +46,9 @@ namespace Katydid
         MEMBERVARIABLE(unsigned, StartSampleNumber);
         MEMBERVARIABLE(unsigned, EndRecordNumber);
         MEMBERVARIABLE(unsigned, EndSampleNumber);
+
+    public:
+        void SetCandidate(KTTimeFrequency* candidate);
 
 };
 
