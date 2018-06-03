@@ -337,6 +337,13 @@ namespace Katydid
         for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             TDiscriminatedPoint* point = (TDiscriminatedPoint*)fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
+            point->fTimeInRunC = pIt->fTimeInRunC;
+            point->fFrequency = pIt->fFrequency;
+            point->fAmplitude = pIt->fAmplitude;
+            point->fTimeInAcq = pIt->fTimeInAcq;
+            point->fMean = pIt->fMean;
+            point->fVariance = pIt->fVariance;
+            point->fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;
             // fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
             ++iPoint;
         }
