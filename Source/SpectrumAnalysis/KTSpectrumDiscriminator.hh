@@ -19,13 +19,16 @@ namespace Katydid
     
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
+    class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
     class KTNormalizedFSDataFFTW;
     class KTNormalizedFSDataPolar;
     class KTNormalizedPSData;
+    class KTPowerSpectrum;
     class KTPowerSpectrumData;
     class KTPowerSpectrumDataCore;
     class KTWignerVilleData;
@@ -111,7 +114,7 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
-            int fNeighborhoodRadius
+            int fNeighborhoodRadius;
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
 
@@ -125,11 +128,6 @@ namespace Katydid
             bool Discriminate(KTCorrelationData& data);
             bool Discriminate(KTWignerVilleData& data);
 
-            void SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
-            void SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
-            void SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
-
-
         private:
             struct PerComponentInfo
             {
@@ -141,6 +139,9 @@ namespace Katydid
             bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData, std::vector< PerComponentInfo > pcData);
             bool CoreDiscriminate(KTPowerSpectrumDataCore& data, KTDiscriminatedPoints1DData& newData, std::vector< PerComponentInfo > pcData);
 
+            void SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
 
             //***************
             // Signals
