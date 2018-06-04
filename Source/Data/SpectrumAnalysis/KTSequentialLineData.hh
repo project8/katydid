@@ -1,8 +1,9 @@
-/*
- * KTSequentialLineData.hh
- *
- *  Created on: Sep 8, 2016
- *      Author: Christine
+/**
+ @file KTSequentialLineData.hh
+ @brief Contains KTSequentialLineData
+ @details KTDiscriminatedPoint cluster with some track properties
+ @author: C. Claessens
+ @date: May 31, 2018
  */
 
 #ifndef KTSEQUENTIALLINEDATA_HH_
@@ -27,12 +28,6 @@ namespace Katydid
             std::vector<double> fAmplitudeList;
             std::vector<double> fSNRList;
 
-            //Points fPoints;
-
-        public:
-
-            static const std::string sName;
-
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
             MEMBERVARIABLE(double, StartTimeInAcq);
@@ -52,6 +47,10 @@ namespace Katydid
             MEMBERVARIABLE(double, StartFrequencySigma);
             MEMBERVARIABLE(double, EndFrequencySigma);
 
+        public:
+
+            static const std::string sName;
+
             double fSumX;
             double fSumY;
             double fSumXY;
@@ -68,12 +67,7 @@ namespace Katydid
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
             void FinishTrack();
-            //virtual ~LineRef();
 
-            /*bool operator < (const LineRef& str) const
-            {
-                return (fStartTimeInRunC < str.fStartTimeInRunC);
-            }*/
     };
 
     inline const KTDiscriminatedPoints& KTSequentialLineData::GetPoints() const

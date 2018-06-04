@@ -1,10 +1,10 @@
-/*
- * KTSequentialLineData.cc
- *
- *  Created on: Mar 10, 2016
- *      Author: Christine
+/**
+ @file KTSequentialLineData.cc
+ @brief Contains KTSequentialLineData
+ @details KTDiscriminatedPoint cluster with some track properties
+ @author: C. Claessens
+ @date: May 31, 2018
  */
-
 #include <KTSequentialLineData.hh>
 
 #include "KTLogger.hh"
@@ -103,13 +103,7 @@ namespace Katydid
     {
         //KTDEBUG(seqlog, "Updating line parameters");
         SetNPoints( fLinePoints.size() );
-        if ( fNPoints == 1 )
-        {
-            SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
-            SetStartFrequency( fLinePoints.begin()->fFrequency );
-            SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );
-        }
-        if ( fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
+        if ( fNPoints == 1 or fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
         {
             SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
             SetStartFrequency( fLinePoints.begin()->fFrequency );
