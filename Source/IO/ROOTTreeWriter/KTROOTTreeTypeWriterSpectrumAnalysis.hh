@@ -42,9 +42,9 @@ namespace Katydid
         Double_t fTimeInRunC;
         Double_t fFrequency;
         Double_t fAmplitude;
-        Double_t fMean; //<-
-        Double_t fVariance; //<-
-        Double_t fNeighborhoodAmplitude; //<-
+        Double_t fMean;
+        Double_t fVariance;
+        Double_t fNeighborhoodAmplitude;
         Bool_t fNoiseFlag;
         Double_t fNNDistance;
         UInt_t fKNNWithin0p22;

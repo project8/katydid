@@ -183,6 +183,9 @@ namespace Katydid
                     fKDTreePointData.fTimeInRunC = it->fCoords[0];
                     fKDTreePointData.fFrequency = it->fCoords[1];
                     fKDTreePointData.fAmplitude = it->fAmplitude;
+                    fKDTreePointData.fMean = it->fMean;
+                    fKDTreePointData.fVariance = it->fVariance;
+                    fKDTreePointData.fNeighborhoodAmplitude = it->fNeighborhoodAmplitude;
                     fKDTreePointData.fNoiseFlag = it->fNoiseFlag;
                     KTKDTreeData::TreeIndex::Neighbors neighbors = index->NearestNeighborsByNumber(pid, 2);
                     fKDTreePointData.fNNDistance = neighbors.dist(1);

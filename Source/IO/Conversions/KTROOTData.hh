@@ -271,6 +271,79 @@ namespace Katydid
             ClassDef(TClassifiedEventData, 1);
     };
 
+    //************************
+    // TDiscriminatedPoint
+    //************************
+
+    class KTDiscriminatedPoint;
+
+    class TDiscriminatedPoint : public TObject
+    {
+
+        MEMBERVARIABLE(Double_t, TimeInRunC);
+        MEMBERVARIABLE(Double_t, Frequency);
+        MEMBERVARIABLE(Double_t, Amplitude);
+        MEMBERVARIABLE(Double_t, TimeInAcq);
+        MEMBERVARIABLE(Double_t, Mean);
+        MEMBERVARIABLE(Double_t, Variance);
+        MEMBERVARIABLE(Double_t, NeighborhoodAmplitude);
+
+        public:
+            TClonesArray* GetPoints() {return fPoints;}
+
+        private:
+            TClonesArray* fPoints;
+
+        public:
+            TDiscriminatedPoint();
+            TDiscriminatedPoint(const TDiscriminatedPoint& data);
+            virtual ~TDiscriminatedPoint();
+            TObject* Clone(const char* newname="");
+            TDiscriminatedPoint& operator=(const TDiscriminatedPoint& rhs);
+
+            void Load(const KTDiscriminatedPoint& data);
+            void Unload(KTDiscriminatedPoint& data) const;
+
+            ClassDef(TDiscriminatedPoint, 1);
+    };
+
+    //************************
+    // TSparseWaterFallCandidateData
+    //************************
+
+    class KTSparseWaterfallCandidateData;
+
+    class TSparseWaterfallCandidateData : public TObject
+    {
+        MEMBERVARIABLE(UInt_t, Component);
+        MEMBERVARIABLE(UInt_t, AcquisitionID);
+        MEMBERVARIABLE(UInt_t, CandidateID);
+
+        MEMBERVARIABLE(Double_t, TimeInRunC);
+        MEMBERVARIABLE(Double_t, TimeLength);
+        MEMBERVARIABLE(Double_t, MinFrequency);
+        MEMBERVARIABLE(Double_t, MaxFrequency);
+        MEMBERVARIABLE(Double_t, FrequencyWidth);
+
+        public:
+            TClonesArray* GetPoints() {return fPoints;}
+
+        private:
+            TClonesArray* fPoints;
+
+        public:
+            TSparseWaterfallCandidateData();
+            TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& data);
+            virtual ~TSparseWaterfallCandidateData();
+            TObject* Clone(const char* newname="");
+            TSparseWaterfallCandidateData& operator=(const TSparseWaterfallCandidateData& rhs);
+
+            // void Load(const TSparseWaterfallCandidateData& data);
+            // void Unload(TSparseWaterfallCandidateData& data) const;
+
+            ClassDef(TSparseWaterfallCandidateData, 1);
+    };
+
 
 }
 

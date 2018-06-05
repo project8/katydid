@@ -23,11 +23,13 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
 #include "CProcessedMPTData.hh"
 #include "CROOTData.hh"
+#include "KTROOTData.hh"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -735,6 +737,48 @@ namespace Katydid
             KTClassifierResultsData& crData = trIt->fProcTrack.Of< KTClassifierResultsData >();
             KT2ROOT::UnloadClassifierResultsData(crData, *(Cicada::TClassifierResultsData*)((*classifierResults)[iTrack]));
             ++iTrack;
+        }
+        return;
+    }
+
+    void KT2ROOT::LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData)
+    {
+        rootSWfData.SetComponent(swfData.GetComponent()); 
+        rootSWfData.SetAcquisitionID(swfData.GetAcquisitionID()); 
+        rootSWfData.SetCandidateID(swfData.GetCandidateID());
+        rootSWfData.SetTimeInRunC(swfData.GetTimeInRunC());
+        rootSWfData.SetTimeLength(swfData.GetTimeLength()); 
+        rootSWfData.SetMinFrequency(swfData.GetMinFrequency()); 
+        rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency()); 
+        rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth()); 
+
+        Int_t nPoints = (Int_t)swfData.GetNPoints();
+        fPoints->Clear(); fPoints->Expand(nPoints);
+        Int_t iPoint = 0;
+        for (PointSetCIt trIt = swfData.GetPointsBegin(); trIt != swfData.GetPointsEnd(); ++trIt)
+        {
+            TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);
+            ++iTrack;
+        }
+        return;
+    }
+
+    void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData) const
+    {
+        data.ClearPoints(); // do this first, since it clears some of the member variables other than just fTracks
+        data.SetComponent(fComponent); data.SetAcquisitionID(fAcquisitionID); data.SetCandidateID(fCandidateID);
+        data.SetTimeInRunC(fTimeInRunC); data.SetTimeLength(fTimeLength);
+        data.SetMinFrequency(fMinFrequency); data.SetMaxFrequency(fMaxFrequency); data.SetFrequencyWidth(fFrequencyWidth);
+
+        Int_t nPoints = fPoints->GetSize();
+        Nymph::KTDataPtr dummyData;
+        KTDiscriminatedPoint& discPoint = dummyData->Of< KTDiscriminatedPoint >();
+        // AllTrackData point( dummyData, discPoint );
+
+        for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint)
+        {
+            ((TDiscriminatedPoint*)((*fTracks)[iPoint]))->Unload(discPoint);
+            data.AddPoint(track);
         }
         return;
     }

@@ -500,4 +500,146 @@ namespace Katydid
         return;
     }
 
+    //***********************
+    // TDiscriminatedPoint
+    //***********************
+
+    TDiscriminatedPoint::TDiscriminatedPoint() :
+            TObject(),
+            fTimeInRunC(0), fFrequency(0), fAmplitude(0), fTimeInAcq(0),
+            fMean(0), fVariance(0),fNeighborhoodAmplitude(0)
+    {}
+
+    TDiscriminatedPoint::TDiscriminatedPoint(const KTDiscriminatedPoint& orig) :
+            TObject(),
+            fTimeInRunC(0), fFrequency(0), fAmplitude(0), fTimeInAcq(0),
+            fMean(0), fVariance(0),fNeighborhoodAmplitude(0)
+    {
+        Load(orig);
+    }
+
+    TDiscriminatedPoint::TDiscriminatedPoint(const TDiscriminatedPoint& orig) :
+            TObject(orig),
+            fTimeInRunC(orig.fTimeInRunC), fFrequency(orig.fFrequency), fAmplitude(orig.fAmpltiude), fTimeInAcq(orig.fTimeInAcq)),
+            fMean(orig.fMean), fVariance(orig.fVariance),fNeighborhoodAmplitude(orig.fNeighborhoodAmplitude)
+    {}
+
+    TDiscriminatedPoint::~TDiscriminatedPoint()
+    {}
+
+    TObject* TDiscriminatedPoint::Clone(const char* newname)
+    {
+        TDiscriminatedPoint* newData = new TDiscriminatedPoint(*this);
+        return newData;
+    }
+
+    TDiscriminatedPoint& TDiscriminatedPoint::operator=(const TDiscriminatedPoint& rhs)
+    {
+        fTimeInRunC = rhs.fTimeInRunC; fFrequency = rhs.fFrequency; fAmplitude = rhs.fAmplitude; fTimeInAcq = rhs.fTimeInAcq;
+        fMean = rhs.fMean; fVariance = rhs.fVariance; fNeighborhoodAmplitude = rhs.fNeighborhoodAmplitude;
+        return *this;
+    }
+
+    void TDiscriminatedPoint::Load(const KTDiscriminatedPoint& data)
+    {
+        fTimeInRunC = data.GetTimeInRunC(); fFrequency = data.GetFrequency(); fAmplitude = data.GetAmplitude(); fTimeInAcq = data.GetTimeInAcq();
+        fMean = data.GetMean(); fAmplitude = data.GetAmplitude(); fNeighborhoodAmplitude = data.GetNeighborhoodAmplitude();
+        return;
+    }
+    void TDiscriminatedPoint::Unload(KTDiscriminatedPoint& data) const
+    {
+        data.SetTimeInRunC(fTimeInRunC); data.SetFrequency(fFrequency); data.SetAmplitude(fAmplitude); data.SetTimeInAcq(fTimeInAcq); 
+        data.SetMean(fMean); data.SetVariance(fVariance); data.SetNeighborhoodAmplitude(fNeighborhoodAmplitude);
+        return;
+    }
+
+
+
+    //************************
+    // TSparseWaterfallCandidate
+    //************************
+
+    TSparseWaterfallCandidateData::TSparseWaterfallCandidateData() :
+            fComponent(0), fAcquisitionID(0), fCandidateID(0),
+            fTimeInRunC(0.), fTimeLength(0.),
+            fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
+    }
+
+    TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TMultiTrackEventData& orig) :
+            fComponent(orig.fComponent), fAcquisitionID(orig.fAcquisitionID), fCandidateID(orig.fCandidateID),
+            fTimeInRunC(orig.fTimeInRunC), fTimeLength(orig.fTimeLength),
+            fMinFrequency(orig.fMinFrequency), fMaxFrequency(orig.fMaxFrequency), fFrequencyWidth(orig.fFrequencyWidth)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fPoints = new TClonesArray(*orig.fPoints);
+    }
+
+    TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig) :
+            fComponent(0), fAcquisitionID(0), fCandidateID(0), 
+            fTimeInRunC(0.), fTimeLength(0.),
+            fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
+        Load(orig);
+    }
+
+    TSparseWaterfallCandidateData::~TSparseWaterfallCandidateData()
+    {
+        fTracks->Clear();
+    }
+
+    TObject* TSparseWaterfallCandidateData::Clone(const char* newname)
+    {
+        TSparseWaterfallCandidateData* newData = new TSparseWaterfallCandidateData(*this);
+        return newData;
+    }
+
+    TSparseWaterfallCandidateData& TSparseWaterfallCandidateData::operator=(const TSparseWaterfallCandidateData& rhs)
+    {
+        fComponent = rhs.fComponent; fAcquisitionID = rhs.fAcquisitionID; fCandidateID = rhs.fCandidateID;
+        fTimeInRunC = rhs.fTimeInRunC; fTimeLength = rhs.fTimeLength; 
+        fMinFrequency = rhs.fMinFrequency; fMaxFrequency = rhs.fMaxFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
+        fPoints->Clear(); (*fPoints) = *(rhs.fPoints);
+        return *this;
+    }
+
+    // void TSparseWaterfallCandidateData::Load(const KTSparseWaterfallCandidateData& data)
+    // {
+    //     fComponent = data.GetComponent(); fAcquisitionID = data.GetAcquisitionID(); fCandidateID = data.GetCandidateID();
+    //     fTimeInRunC = data.GetTimeInRunC(); fTimeLength = data.GetTimeLength();
+    //     fMinFrequency = data.GetMinFrequency(); fMaxFrequency = data.GetMaxFrequency(); fFrequencyWidth = data.GetFrequencyWidth();
+    //     Int_t nPoints = (Int_t)data.GetNPoints();
+    //     fPoints->Clear(); fPoints->Expand(nPoints);
+    //     Int_t iPoint = 0;
+    //     for (PointSetCIt trIt = data.GetPointsBegin(); trIt != data.GetPointsEnd(); ++trIt)
+    //     {
+    //         TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);
+    //         ++iTrack;
+    //     }
+    //     return;
+    // }
+    // void TSparseWaterfallCandidateData::Unload(KTSparseWaterfallCandidateData& data) const
+    // {
+    //     data.ClearPoints(); // do this first, since it clears some of the member variables other than just fTracks
+    //     data.SetComponent(fComponent); data.SetAcquisitionID(fAcquisitionID); data.SetCandidateID(fCandidateID); 
+    //     data.SetTimeInRunC(fTimeInRunC); data.SetTimeLength(fTimeLength);
+    //     data.SetMinFrequency(fMinFrequency); data.SetMaxFrequency(fMaxFrequency); data.SetFrequencyWidth(fFrequencyWidth);
+
+    //     Int_t nPoints = fPoints->GetSize();
+    //     Nymph::KTDataPtr dummyData;
+    //     KTProcessedTrackData& discPoint = dummyData->Of< KTDiscriminatedPoint >();
+    //     AllTrackData point( dummyData, discPoint );
+
+    //     for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)
+    //     {
+    //         ((TProcessedTrackData*)((*fTracks)[iTrack]))->Unload(discPoint);
+    //         data.AddTrack(track);
+    //     }
+    //     return;
+    // }
+
 }

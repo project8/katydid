@@ -14,6 +14,8 @@
 
 #include "Rtypes.h"
 #include "TClonesArray.h"
+#include "TNtupleD.h"
+#include "KTROOTData.hh"
 
 #include <vector>
 
@@ -35,6 +37,7 @@ namespace Katydid
     
     //class KTFrequencyCandidateData;
     //class KTWaterfallCandidateData;
+    // class TSparseWaterfallCandidateData;
 
     struct TFrequencyCandidateData
     {
@@ -69,36 +72,36 @@ namespace Katydid
     };
 
     // commented-out fields match fields not yet implemented in KTSparseWaterfallCandidateData
-    struct TDiscriminatedPoint 
-    {
-        Double_t fTimeInRunC;
-        Double_t fFrequency;
-        Double_t fAmplitude;
-        Double_t fTimeInAcq;
-        Double_t fMean;
-        Double_t fVariance;
-        Double_t fNeighborhoodAmplitude;
-    };
 
-    struct TSparseWaterfallCandidateData
-    {
-        UInt_t fComponent;
-        UInt_t fAcquisitionID;
-        UInt_t fCandidateID;
-        //Double_t fTimeBinWidth;
-        //Double_t fFreqBinWidth;
-        Double_t fTimeInRunC;
-        Double_t fTimeLength;
-        //ULong64_t fFirstSliceNumber;
-        //ULong64_t fLastSliceNumber;
-        Double_t fMinFrequency;
-        Double_t fMaxFrequency;
-        //Double_t fMeanStartFrequency;
-        //Double_t fMeanEndFrequency;
-        Double_t fFrequencyWidth;
-        TClonesArray* fPoints; //<- TimeInRunc, Frequency, Amplitude, Threshold, ..., ...
+    // struct TDiscriminatedPoint 
+    // {
+    //     Double_t fTimeInRunC;
+    //     Double_t fFrequency;
+    //     Double_t fAmplitude;
+    //     Double_t fTimeInAcq;
+    //     Double_t fMean;
+    //     Double_t fVariance;
+    //     Double_t fNeighborhoodAmplitude;
+    // };
 
-    };
+    // struct TSparseWaterfallCandidateData
+    // {
+    //     UInt_t fComponent;
+    //     UInt_t fAcquisitionID;
+    //     UInt_t fCandidateID;
+    //     //Double_t fTimeBinWidth;
+    //     //Double_t fFreqBinWidth;
+    //     Double_t fTimeInRunC;
+    //     Double_t fTimeLength;
+    //     //ULong64_t fFirstSliceNumber;
+    //     //ULong64_t fLastSliceNumber;
+    //     Double_t fMinFrequency;
+    //     Double_t fMaxFrequency;
+    //     //Double_t fMeanStartFrequency;
+    //     //Double_t fMeanEndFrequency;
+    //     Double_t fFrequencyWidth;
+    //     TNtupleD* fPoints; //<- TimeInRunc, Frequency, Amplitude, Threshold, ..., ...
+    // };
 
     struct TMultiPeakTrackData
     {
@@ -238,7 +241,7 @@ namespace Katydid
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
-            TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
+            TSparseWaterfallCandidateData* fSparseWaterfallCandidateDataPtr;
             Cicada::TProcessedTrackData* fProcessedTrackDataPtr;
             Cicada::TProcessedMPTData* fProcessedMPTDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;

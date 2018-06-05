@@ -42,6 +42,9 @@ namespace Katydid
     class KTProcessedMPTData;
     class KTMultiTrackEventData;
     class KTClassifiedEventData;
+    class KTSparseWaterfallCandidateData;
+
+    class TSparseWaterfallCandidateData;
 
     class KT2ROOT
     {
@@ -161,6 +164,13 @@ namespace Katydid
 
             static void LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData);
             static void UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData);
+
+            //*********************************
+            // Sparse Waterfall Candidate Data
+            //*********************************
+
+            static void LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData);
+            static void UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData);
 
 
     };
