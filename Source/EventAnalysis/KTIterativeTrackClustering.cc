@@ -153,6 +153,8 @@ namespace Katydid
 
     const void KTIterativeTrackClustering::CombineCandidates(const KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
     {
+        KTDEBUG(itclog, "Matching candidates are: "<< oldTrack.GetTrackID()<<" - "<<newTrack.GetTrackID());
+
         if (oldTrack.GetStartTimeInRunC() < newTrack.GetStartTimeInRunC())
         {
             newTrack.SetStartTimeInRunC( oldTrack.GetStartTimeInRunC());
@@ -189,6 +191,8 @@ namespace Katydid
     }
     const void KTIterativeTrackClustering::CombineCandidates(const KTSequentialLineData& oldSeqLineCand, KTSequentialLineData& newSeqLineCand)
     {
+        KTDEBUG(itclog, "Matching candidates are: "<< oldSeqLineCand.GetCandidateID()<<" - "<<newSeqLineCand.GetCandidateID());
+
         if (oldSeqLineCand.GetStartTimeInRunC() < newSeqLineCand.GetStartTimeInRunC())
         {
             newSeqLineCand.SetStartTimeInRunC( oldSeqLineCand.GetStartTimeInRunC() );
@@ -316,7 +320,7 @@ namespace Katydid
                 KTINFO(itclog, "Now processing tracksCandidates");
                 ProcessNewTrack( newTrack );
 
-                KTDEBUG(itclog, "Emitting track signal");
+                //KTDEBUG(itclog, "Emitting track signal");
                 fCandidates.insert( data );
                 fTrackSignal( data );
             }
@@ -413,7 +417,7 @@ namespace Katydid
                     //KTDEBUG( itclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                     newSeqLineCand.AddPoint( *pointIt );
                 }
-                KTDEBUG( itclog, "Emitting SeqLine signal" );
+                //KTDEBUG( itclog, "Emitting SeqLine signal" );
                 fCandidates.insert( data );
                 fSeqLineCandSignal( data );
             }

@@ -135,7 +135,7 @@ namespace Katydid
                         // Update number of tracks
                         numberOfNewCandidates = newCands.size();
 
-                        KTDEBUG(itchlog, "Number of new candidates: "<< numberOfNewCandidates);
+                        KTDEBUG(itchlog, "Number of candidates after clustering: "<< numberOfNewCandidates);
 
                         compCands.clear();
                         compCands = newCands;

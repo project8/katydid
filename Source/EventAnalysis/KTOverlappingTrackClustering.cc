@@ -151,6 +151,8 @@ namespace Katydid
 
     const void KTOverlappingTrackClustering::CombineCandidates(const KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
     {
+        KTDEBUG(otclog, "Matching candidates are: "<< oldTrack.GetTrackID()<<" - "<<newTrack.GetTrackID());
+
         if (oldTrack.GetStartTimeInRunC() < newTrack.GetStartTimeInRunC())
         {
             newTrack.SetStartTimeInRunC( oldTrack.GetStartTimeInRunC());
@@ -189,6 +191,7 @@ namespace Katydid
 
     const void KTOverlappingTrackClustering::CombineCandidates(const KTSequentialLineData& oldSeqLineCand, KTSequentialLineData& newSeqLineCand)
     {
+        KTDEBUG(otclog, "Matching candidates are: "<< oldSeqLineCand.GetCandidateID()<<" - "<<newSeqLineCand.GetCandidateID());
         if (oldSeqLineCand.GetStartTimeInRunC() < newSeqLineCand.GetStartTimeInRunC())
         {
             newSeqLineCand.SetComponent( oldSeqLineCand.GetComponent() );
@@ -207,7 +210,8 @@ namespace Katydid
         KTDiscriminatedPoints points = oldSeqLineCand.GetPoints();
         for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
         {
-            //KTDEBUG( otclog, "Adding points from oldSeqLineCand to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
+            KTDEBUG( otclog, "Adding points from oldSeqLineCand to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fAmplitude );
+
             newSeqLineCand.AddPoint(*pointIt);
         }
     }
@@ -358,7 +362,7 @@ namespace Katydid
                 KTINFO(otclog, "Now processing tracksCandidates");
                 ProcessNewTrack( newTrack );
 
-                KTDEBUG(otclog, "Emitting track signal");
+                //KTDEBUG(otclog, "Emitting track signal");
                 fCandidates.insert( data );
                 fTrackSignal( data );
             }
@@ -370,6 +374,7 @@ namespace Katydid
     {
         KTDEBUG(otclog, "Number of sequential line candidates to emit: "<<compCands.size());
         KTINFO(otclog, "Clustering done.");
+        //std::sort(compCands.begin(), compCands.end(), std::less<KTSequentialLineData>());
 
         std::vector<KTSequentialLineData>::iterator candIt = compCands.begin();
 
@@ -455,7 +460,7 @@ namespace Katydid
                     //KTDEBUG( otclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                     newSeqLineCand.AddPoint( *pointIt );
                 }
-                KTDEBUG( otclog, "Emitting SeqLine signal" );
+                //KTDEBUG( otclog, "Emitting SeqLine signal" );
                 fCandidates.insert( data );
                 fSeqLineCandSignal( data );
             }

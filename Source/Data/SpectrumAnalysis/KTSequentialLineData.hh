@@ -68,6 +68,11 @@ namespace Katydid
             void UpdateLineProperties();
             void FinishTrack();
 
+            bool operator() (const KTSequentialLineData& lhs, const KTSequentialLineData& rhs) const
+            {
+                return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC() || (lhs.GetStartTimeInRunC() == rhs.GetStartTimeInRunC() && lhs.GetStartFrequency() < rhs.fStartFrequency);
+            }
+
     };
 
     inline const KTDiscriminatedPoints& KTSequentialLineData::GetPoints() const

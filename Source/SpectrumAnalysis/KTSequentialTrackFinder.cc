@@ -405,16 +405,16 @@ namespace Katydid
                              lineIt->AddPoint(tempPoint);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
-                             ++lineIt;
+                             break;
                          }
                          // if this line consists of only one point so far, try again with different radius
                          else if (lineIt->GetNPoints() == 1 and timeCondition and secondPointCondition)
                          {
                              KTDEBUG(stflog, "Trying initial-frequency-acceptance "<<fInitialFrequencyAcceptance);
-                             lineIt->AddPoint(*pointIt);
+                             lineIt->AddPoint(tempPoint);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
-                             ++lineIt;
+                             break;
                          }
                          // if not try next line
                          else
@@ -453,6 +453,7 @@ namespace Katydid
          //loop in reverse order (by power)
          for(KTDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
          {
+             //KTINFO( stflog, "Comparing point to lines: bin "<<pointIt->fBinInSlice<<", power "<<pointIt->fAmplitude);
              newFreq = pointIt->fFrequency;
 
              // Need to think about how to prevent visiting the same neighborhood twice
@@ -480,7 +481,7 @@ namespace Katydid
                  while( lineIt != fActiveLines.end())
                  {
                      // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
-                     if (lineIt->GetEndTimeInRunC() <pointIt->fTimeInRunC-fTimeGapTolerance)
+                     if (lineIt->GetEndTimeInRunC() < pointIt->fTimeInRunC-fTimeGapTolerance)
                      {
                          if (lineIt->GetNPoints() >= fMinPoints)
                          {
@@ -510,7 +511,7 @@ namespace Katydid
                              lineIt->AddPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
-                             ++lineIt;
+                             break;
                          }
                          // if this line consists of only one point so far, try again with different radius
                          else if (lineIt->GetNPoints() == 1 and timeCondition and secondPointCondition)
@@ -519,7 +520,7 @@ namespace Katydid
                              lineIt->AddPoint(*pointIt);
                              (this->*fCalcSlope)(*lineIt);
                              match = true;
-                             ++lineIt;
+                             break;
                          }
                          // if not try next line
                          else

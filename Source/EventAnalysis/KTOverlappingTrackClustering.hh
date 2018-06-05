@@ -175,8 +175,8 @@ namespace Katydid
 
                     if (match == false)
                     {
-                        T newTrack(*compIt);
-                        newCands.push_back(newTrack);
+                        //T newTrack(*compIt);
+                        newCands.push_back(*compIt);
                     }
                 }
                 return true;
