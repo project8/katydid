@@ -29,18 +29,17 @@ namespace Katydid
         fSlope(0.0),
         fNPoints(0),
         fComponent(0),
+        fAcquisitionID(0),
+        fCandidateID(0),
         fAmplitudeSum(0.0),
         fSNRSum(0.0),
         fNUPSum(0.0),
-        fAcquisitionID(0),
-        fCandidateID(0),
         fMinPoints(0),
-        fStartFrequencySigma(0.),
-        fEndFrequencySigma(0.),
         fSumX(0.),
         fSumY(0.),
         fSumXY(0.),
-        fSumXX(0.)
+        fSumXX(0.),
+        fLinePoints()
         {}
 
     KTSequentialLineData::~KTSequentialLineData()

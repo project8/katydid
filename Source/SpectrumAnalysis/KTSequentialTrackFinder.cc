@@ -799,14 +799,14 @@ namespace Katydid
         //KTDEBUG(stflog, "Calculating line slope");
 
         KTDiscriminatedPoints& points = Line.GetPoints();
-        Line.fSumX += points.rbegin()->fTimeInRunC;
-        Line.fSumY += points.rbegin()->fFrequency;
-        Line.fSumXY += points.rbegin()->fTimeInRunC * points.rbegin()->fFrequency;
-        Line.fSumXX += points.rbegin()->fTimeInRunC * points.rbegin()->fTimeInRunC;
+        Line.SetSumX( Line.GetSumX() + points.rbegin()->fTimeInRunC) ;
+        Line.SetSumY( Line.GetSumX() + points.rbegin()->fFrequency);
+        Line.SetSumXY( Line.GetSumX() + points.rbegin()->fTimeInRunC * points.rbegin()->fFrequency);
+        Line.SetSumXX( Line.GetSumX() + points.rbegin()->fTimeInRunC * points.rbegin()->fTimeInRunC);
 
         if (Line.GetNPoints() > 1)
         {
-            Line.SetSlope( (Line.GetNPoints() * Line.fSumXY - Line.fSumX * Line.fSumY)/(Line.fSumXX * Line.GetNPoints() - Line.fSumX * Line.fSumX) );
+            Line.SetSlope( (Line.GetNPoints() * Line.GetSumXY() - Line.GetSumX() * Line.GetSumY())/(Line.GetSumXX() * Line.GetNPoints() - Line.GetSumX() * Line.GetSumX()) );
         }
         else
         {
