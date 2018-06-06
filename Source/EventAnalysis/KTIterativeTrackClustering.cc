@@ -71,10 +71,6 @@ namespace Katydid
         {
             SetMaxTrackWidth(node->get_value<double>("max-track-width"));
         }
-        if (node->has("lamax-track-width"))
-        {
-            SetMaxTrackWidth(node->get_value<double>("max-track-width"));
-        }
         if (node->has("large-max-track-width"))
         {
             SetLargeMaxTrackWidth(node->get_value<double>("large-max-track-width"));
