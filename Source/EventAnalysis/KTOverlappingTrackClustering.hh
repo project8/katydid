@@ -78,7 +78,7 @@ namespace Katydid
 
         private:
             MEMBERVARIABLE(double, MaxTrackWidth);
-            MEMBERVARIABLE(double, LargerMaxTrackWidth);
+            MEMBERVARIABLE(double, LargeMaxTrackWidth);
             MEMBERVARIABLE(bool, ApplyTotalPowerCut);
             MEMBERVARIABLE(bool, ApplyAveragePowerCut);
             MEMBERVARIABLE(bool, ApplyTotalSNRCut);
@@ -195,7 +195,7 @@ namespace Katydid
                 bool condition2 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
 
                 // same for endpoint
-                bool condition3 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fLargerMaxTrackWidth;
+                bool condition3 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fLargeMaxTrackWidth;
 
                 if (condition1 and condition2 and condition3)
                 {
@@ -204,7 +204,7 @@ namespace Katydid
                 // the other way around
                 bool condition4 = track1.GetStartTimeInRunC() < track2.GetEndTimeInRunC() and track1.GetStartTimeInRunC() >= track2.GetStartTimeInRunC();
                 bool condition5 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
-                bool condition6 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fLargerMaxTrackWidth;
+                bool condition6 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fLargeMaxTrackWidth;
 
                 if (condition4 and condition5 and condition6)
                 {
@@ -213,7 +213,7 @@ namespace Katydid
                 // same for end point of track2
                 condition1 = track2.GetEndTimeInRunC() <= track1.GetEndTimeInRunC() and track2.GetEndTimeInRunC() > track1.GetStartTimeInRunC();
                 condition2 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
-                condition3 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fLargerMaxTrackWidth;
+                condition3 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fLargeMaxTrackWidth;
 
                 if (condition1 and condition2 and condition3)
                 {
@@ -222,7 +222,7 @@ namespace Katydid
                 // the other way around
                 condition4 = track1.GetEndTimeInRunC() <= track2.GetEndTimeInRunC() and track1.GetEndTimeInRunC() > track2.GetStartTimeInRunC();
                 condition5 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
-                condition6 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fLargerMaxTrackWidth;
+                condition6 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fLargeMaxTrackWidth;
 
                 if (condition4 and condition5 and condition6)
                 {

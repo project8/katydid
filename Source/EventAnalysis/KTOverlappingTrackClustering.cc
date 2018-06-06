@@ -29,7 +29,7 @@ namespace Katydid
     KTOverlappingTrackClustering::KTOverlappingTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
             fMaxTrackWidth(200000.),
-            fLargerMaxTrackWidth(1e6),
+            fLargeMaxTrackWidth(1e6),
             fCompTracks(),
             fNewTracks(),
             fNewSeqLineCands(),
@@ -67,6 +67,10 @@ namespace Katydid
         if (node->has("max-track-width"))
         {
             SetMaxTrackWidth(node->get_value<double>("max-track-width"));
+        }
+        if (node->has("large-max-track-width"))
+        {
+            SetLargeMaxTrackWidth(node->get_value<double>("large-max-track-width"));
         }
         if (node->has("apply-power-cut"))
         {
