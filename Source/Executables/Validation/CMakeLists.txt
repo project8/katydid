@@ -75,6 +75,7 @@ if (Katydid_ENABLE_TESTING)
         # TestLinearDensityProbe
         # TestMultiSliceClustering
         TestNanoflann
+        TestSequentialTrackFinder
         #TestSimpleClustering # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
         #TestSlidingWindowFFT
         TestSpectrogramCollector
@@ -82,7 +83,7 @@ if (Katydid_ENABLE_TESTING)
         TestSpectrogramStriperSwaps
         TestSpectrumDiscriminator
         TestWindowFunction
-        TestSequentialTrackFinder
+        
     )
     
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )

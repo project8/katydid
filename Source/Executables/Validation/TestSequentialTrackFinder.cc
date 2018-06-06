@@ -22,31 +22,13 @@ and tests the behavior of the algorithms in this processor.
 
 
 
-int nSlices = 200;
-
-
-int avgPointsPerSlice = 10;
-double freqBinWidth = 24000.;
-double timeBinWidth = 4.096e-5;
-double pointPowerMean = 1e-6;
-double pointPowerStd = 1e-7;
-unsigned minBin = 0;
-unsigned maxBin = 4096;
-double threshold = pointPowerMean - 2* pointPowerStd;
-unsigned component = 0;
-
-// Define the parameters of the fake track to generate
-double trackSlope = 500e6/freqBinWidth*timeBinWidth; // [Bins/s]
-double trackIntercept = 1000; // [Bins]
-unsigned trackStart = 20; //[Bin]
-unsigned trackStart2 = 100;
-unsigned trackLength = 50; //[Bin]
-
 using namespace Katydid;
 
 KTLOGGER(testlog, "TestSequentialTrackFinder");
 
-KTSliceHeader createFakeHeader( unsigned sliceNumber ){
+KTSliceHeader createFakeHeader( unsigned sliceNumber, double timeBinWidth ){
+
+
     KTSliceHeader header;
     header.SetBinWidth(timeBinWidth);
     header.SetTimeInAcq(timeBinWidth*sliceNumber);
@@ -57,7 +39,24 @@ KTSliceHeader createFakeHeader( unsigned sliceNumber ){
     return header;
 }
 
-KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber){
+KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber, double timeBinWidth, double freqBinWidth){
+
+    int avgPointsPerSlice = 10;
+
+
+    double pointPowerMean = 1e-6;
+    double pointPowerStd = 1e-7;
+    unsigned minBin = 0;
+    unsigned maxBin = 4096;
+    double threshold = pointPowerMean - 2* pointPowerStd;
+    unsigned component = 0;
+
+    // Define the parameters of the fake track to generate
+    double trackSlope = 500e6/freqBinWidth*timeBinWidth; // [Bins/s]
+    double trackIntercept = 1000; // [Bins]
+    unsigned trackStart = 20; //[Bin]
+    unsigned trackStart2 = 100;
+    unsigned trackLength = 50; //[Bin]
 
     KTDiscriminatedPoints1DData disc1d;
 
@@ -97,9 +96,12 @@ KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber){
 
 int main()
 {
+    int nSlices = 200;
+    double timeBinWidth = 4.096e-5;
+    double freqBinWidth = 24000.;
+
 
     KTINFO(testlog, "Testing STF!");
-    KTINFO(testlog, "test track slope: "<<trackSlope);
 
     KTSequentialTrackFinder stf;
 
@@ -119,10 +121,10 @@ int main()
     // Create fake data for every slice and run stf
     for (unsigned iSlice = 0; iSlice <= nSlices; ++iSlice )
     {
-        KTSliceHeader header = createFakeHeader(iSlice);
+        KTSliceHeader header = createFakeHeader(iSlice, timeBinWidth);
         KTINFO(testlog, "Sample rate is "<<header.GetSampleRate());
 
-        KTDiscriminatedPoints1DData disc1d = createFakeData(iSlice);
+        KTDiscriminatedPoints1DData disc1d = createFakeData(iSlice, timeBinWidth, freqBinWidth);
         stf.CollectDiscrimPointsFromSlice(header, disc1d);
     }
     stf.AcquisitionIsOver();

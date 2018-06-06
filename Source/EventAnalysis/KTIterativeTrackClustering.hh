@@ -98,8 +98,8 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, NTracks);
 
         private:
-            template<typename T>
-            bool DoCandidateClustering(std::vector<T> compCands, std::vector<T> newCands)
+            template<typename TracklikeCandidate>
+            bool DoCandidateClustering(std::vector<TracklikeCandidate> compCands, std::vector<TracklikeCandidate> newCands)
             {
                 if (! FindMatchingCandidates(compCands, newCands))
                 {
@@ -113,8 +113,8 @@ namespace Katydid
                 return true;
             }
 
-            template<typename T>
-            bool FindMatchingCandidates(std::vector<T> compCands, std::vector<T> newCands)
+            template<typename TracklikeCandidate>
+            bool FindMatchingCandidates(std::vector<TracklikeCandidate> compCands, std::vector<TracklikeCandidate> newCands)
             {
                 KTINFO(itchlog, "Finding extrapolated candidates");
                 KTDEBUG(itchlog, "TimeGapTolerance FrequencyAcceptance and MaxTrackWidth are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance<< " "<<fMaxTrackWidth);
@@ -148,14 +148,14 @@ namespace Katydid
                 return true;
             }
 
-            template<typename T>
-            bool ExtrapolateClustering(std::vector<T>& compCands, std::vector<T>& newCands)
+            template<typename TracklikeCandidate>
+            bool ExtrapolateClustering(std::vector<TracklikeCandidate>& compCands, std::vector<TracklikeCandidate>& newCands)
             {
                 bool match = false;
-                for (typename std::vector<T>::iterator compIt = compCands.begin(); compIt != compCands.end(); ++compIt)
+                for (typename std::vector<TracklikeCandidate>::iterator compIt = compCands.begin(); compIt != compCands.end(); ++compIt)
                 {
                     match = false;
-                    for (typename std::vector<T>::iterator newIt = newCands.begin(); newIt != newCands.end(); ++newIt)
+                    for (typename std::vector<TracklikeCandidate>::iterator newIt = newCands.begin(); newIt != newCands.end(); ++newIt)
                     {
                         if (this->DoTheyMatch(*compIt, *newIt))
                         {
@@ -177,15 +177,14 @@ namespace Katydid
 
                     if (match == false)
                     {
-                        T newCand(*compIt);
-                        newCands.push_back(newCand);
+                        newCands.push_back(*compIt);
                     }
                 }
                 return true;
             }
 
-            template<typename T>
-            bool DoTheyMatch(T& track1, T& track2)
+            template<typename TracklikeCandidate>
+            bool DoTheyMatch(TracklikeCandidate& track1, TracklikeCandidate& track2)
             {
                 bool slopeCondition1 = std::abs(track1.GetEndFrequency()+track1.GetSlope()*(track2.GetStartTimeInRunC()-track1.GetEndTimeInRunC()) - track2.GetStartFrequency())<fFrequencyAcceptance;
                 bool slopeCondition2 = std::abs(track2.GetStartFrequency()-track2.GetSlope()*(track2.GetStartTimeInRunC()-track1.GetEndTimeInRunC()) - track1.GetEndFrequency())<fFrequencyAcceptance;
@@ -209,8 +208,8 @@ namespace Katydid
             return false;
             }
 
-            template<typename T>
-            bool DoTheyOverlap(T& track1, T& track2)
+            template<typename TracklikeCandidate>
+            bool DoTheyOverlap(TracklikeCandidate& track1, TracklikeCandidate& track2)
             {
                 // if the start time of track 2 is between start and end time of track 1
                 bool condition1 = track2.GetStartTimeInRunC() < track1.GetEndTimeInRunC() and track2.GetStartTimeInRunC() >= track1.GetStartTimeInRunC();

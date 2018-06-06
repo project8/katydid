@@ -24,7 +24,6 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoint.hh"
 
-#include <iostream>
 #include <set>
 
 
@@ -132,7 +131,7 @@ namespace Katydid
 
             const std::set< Nymph::KTDataPtr >& GetCandidates() const;
 
-        public:
+        private:
             // Parameters for point update before adding point to line
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
