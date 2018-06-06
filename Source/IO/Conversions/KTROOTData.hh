@@ -296,13 +296,13 @@ namespace Katydid
 
         public:
             TDiscriminatedPoint();
-            TDiscriminatedPoint(const TDiscriminatedPoint& data);
+            TDiscriminatedPoint(const TDiscriminatedPoint& orig);
             virtual ~TDiscriminatedPoint();
             TObject* Clone(const char* newname="");
             TDiscriminatedPoint& operator=(const TDiscriminatedPoint& rhs);
 
-            void Load(const KTDiscriminatedPoint& data);
-            void Unload(KTDiscriminatedPoint& data) const;
+            // void Load(const KTDiscriminatedPoint& data);
+            // void Unload(KTDiscriminatedPoint& data) const;
 
             ClassDef(TDiscriminatedPoint, 1);
     };
@@ -333,7 +333,7 @@ namespace Katydid
 
         public:
             TSparseWaterfallCandidateData();
-            TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& data);
+            TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig);
             virtual ~TSparseWaterfallCandidateData();
             TObject* Clone(const char* newname="");
             TSparseWaterfallCandidateData& operator=(const TSparseWaterfallCandidateData& rhs);

@@ -23,6 +23,8 @@ ClassImp(Katydid::TProcessedTrackData);
 ClassImp(Katydid::TMultiTrackEventData);
 ClassImp(Katydid::TClassifiedEventData);
 ClassImp(Katydid::TClassifierResultsData);
+ClassImp(Katydid::TDiscriminatedPoint);
+ClassImp(Katydid::TSparseWaterfallCandidateData);
 
 namespace Katydid
 {
@@ -510,17 +512,9 @@ namespace Katydid
             fMean(0), fVariance(0),fNeighborhoodAmplitude(0)
     {}
 
-    TDiscriminatedPoint::TDiscriminatedPoint(const KTDiscriminatedPoint& orig) :
-            TObject(),
-            fTimeInRunC(0), fFrequency(0), fAmplitude(0), fTimeInAcq(0),
-            fMean(0), fVariance(0),fNeighborhoodAmplitude(0)
-    {
-        Load(orig);
-    }
-
     TDiscriminatedPoint::TDiscriminatedPoint(const TDiscriminatedPoint& orig) :
             TObject(orig),
-            fTimeInRunC(orig.fTimeInRunC), fFrequency(orig.fFrequency), fAmplitude(orig.fAmpltiude), fTimeInAcq(orig.fTimeInAcq)),
+            fTimeInRunC(orig.fTimeInRunC), fFrequency(orig.fFrequency), fAmplitude(orig.fAmplitude), fTimeInAcq(orig.fTimeInAcq),
             fMean(orig.fMean), fVariance(orig.fVariance),fNeighborhoodAmplitude(orig.fNeighborhoodAmplitude)
     {}
 
@@ -540,18 +534,18 @@ namespace Katydid
         return *this;
     }
 
-    void TDiscriminatedPoint::Load(const KTDiscriminatedPoint& data)
-    {
-        fTimeInRunC = data.GetTimeInRunC(); fFrequency = data.GetFrequency(); fAmplitude = data.GetAmplitude(); fTimeInAcq = data.GetTimeInAcq();
-        fMean = data.GetMean(); fAmplitude = data.GetAmplitude(); fNeighborhoodAmplitude = data.GetNeighborhoodAmplitude();
-        return;
-    }
-    void TDiscriminatedPoint::Unload(KTDiscriminatedPoint& data) const
-    {
-        data.SetTimeInRunC(fTimeInRunC); data.SetFrequency(fFrequency); data.SetAmplitude(fAmplitude); data.SetTimeInAcq(fTimeInAcq); 
-        data.SetMean(fMean); data.SetVariance(fVariance); data.SetNeighborhoodAmplitude(fNeighborhoodAmplitude);
-        return;
-    }
+    // void TDiscriminatedPoint::Load(const KTDiscriminatedPoint& data)
+    // {
+    //     fTimeInRunC = data.GetTimeInRunC(); fFrequency = data.GetFrequency(); fAmplitude = data.GetAmplitude(); fTimeInAcq = data.GetTimeInAcq();
+    //     fMean = data.GetMean(); fAmplitude = data.GetAmplitude(); fNeighborhoodAmplitude = data.GetNeighborhoodAmplitude();
+    //     return;
+    // }
+    // void TDiscriminatedPoint::Unload(KTDiscriminatedPoint& data) const
+    // {
+    //     data.SetTimeInRunC(fTimeInRunC); data.SetFrequency(fFrequency); data.SetAmplitude(fAmplitude); data.SetTimeInAcq(fTimeInAcq); 
+    //     data.SetMean(fMean); data.SetVariance(fVariance); data.SetNeighborhoodAmplitude(fNeighborhoodAmplitude);
+    //     return;
+    // }
 
 
 
@@ -560,7 +554,6 @@ namespace Katydid
     //************************
 
     TSparseWaterfallCandidateData::TSparseWaterfallCandidateData() :
-            TObject(),
             fComponent(0), fAcquisitionID(0), fCandidateID(0),
             fTimeInRunC(0.), fTimeLength(0.),
             fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)
@@ -569,7 +562,7 @@ namespace Katydid
         fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
     }
 
-    TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TMultiTrackEventData& orig) :
+    TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig) :
             fComponent(orig.fComponent), fAcquisitionID(orig.fAcquisitionID), fCandidateID(orig.fCandidateID),
             fTimeInRunC(orig.fTimeInRunC), fTimeLength(orig.fTimeLength),
             fMinFrequency(orig.fMinFrequency), fMaxFrequency(orig.fMaxFrequency), fFrequencyWidth(orig.fFrequencyWidth)
@@ -578,19 +571,9 @@ namespace Katydid
         fPoints = new TClonesArray(*orig.fPoints);
     }
 
-    TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig) :
-            fComponent(0), fAcquisitionID(0), fCandidateID(0), 
-            fTimeInRunC(0.), fTimeLength(0.),
-            fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)
-    {
-        // this cannot be initialized in the initializer list because ROOT
-        fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
-        Load(orig);
-    }
-
     TSparseWaterfallCandidateData::~TSparseWaterfallCandidateData()
     {
-        fTracks->Clear();
+        fPoints->Clear();
     }
 
     TObject* TSparseWaterfallCandidateData::Clone(const char* newname)

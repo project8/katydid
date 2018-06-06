@@ -40,6 +40,7 @@ if (ROOT_FOUND)
         ${IO_HEADERFILES}
         ${IO_DICT_HEADERFILES}
         Conversions/KT2ROOT.hh
+        Conversions/KTROOTData.hh
         BasicROOTFileWriter/KTBasicROOTFileWriter.hh
         BasicROOTFileWriter/KTBasicROOTTypeWriterSpectrumAnalysis.hh
         BasicROOTFileWriter/KTBasicROOTTypeWriterEventAnalysis.hh
@@ -69,6 +70,7 @@ if (ROOT_FOUND)
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
         Conversions/KT2ROOT.cc
+        Conversions/KTROOTData.cc
         BasicROOTFileWriter/KTBasicROOTTypeWriterSpectrumAnalysis.cc
         BasicROOTFileWriter/KTBasicROOTTypeWriterEventAnalysis.cc
         BasicROOTFileWriter/KTBasicROOTTypeWriterTime.cc

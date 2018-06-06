@@ -9,4 +9,7 @@
 
 #pragma link C++ namespace Katydid;
 
+#pragma link C++ class Katydid::TDiscrimatedPoint+;
+#pragma link C++ class Katydid::TSparseWaterfallCandidateData+;
+
 #endif

@@ -27,6 +27,7 @@
 #include "CMTEWithClassifierResultsData.hh"
 #include "CProcessedMPTData.hh"
 #include "CROOTData.hh"
+#include "KTROOTData.hh"
 
 #include "TFile.h"
 #include "TGraph.h"
