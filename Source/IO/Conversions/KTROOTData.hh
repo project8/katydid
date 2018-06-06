@@ -338,6 +338,8 @@ namespace Katydid
             TObject* Clone(const char* newname="");
             TSparseWaterfallCandidateData& operator=(const TSparseWaterfallCandidateData& rhs);
 
+            std::string GetBranchName() { return std::string("SparseWaterfall"); } // Defines the default name of the object saved inside the output tree
+
             // void Load(const TSparseWaterfallCandidateData& data);
             // void Unload(TSparseWaterfallCandidateData& data) const;
 

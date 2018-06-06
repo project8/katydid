@@ -752,34 +752,40 @@ namespace Katydid
         rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency()); 
         rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth()); 
 
-        Int_t nPoints = (Int_t)swfData.GetNPoints();
-        fPoints->Clear(); fPoints->Expand(nPoints);
-        Int_t iPoint = 0;
-        for (PointSetCIt trIt = swfData.GetPointsBegin(); trIt != swfData.GetPointsEnd(); ++trIt)
-        {
-            TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);
-            ++iTrack;
-        }
-        return;
+        // Int_t nPoints = (Int_t)swfData.GetNPoints();
+        // rootSWfData.GetPoints()->Clear();
+        //  rootSWfData.GetPoints()->Expand(nPoints);
+        // Int_t iPoint = 0;
+        // for (PointSetCIt trIt = swfData.GetPointsBegin(); trIt != swfData.GetPointsEnd(); ++trIt)
+        // {
+            // TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);
+            // ++iTrack;
+        // }
+        // for (KTDiscriminatedPoints::const_iterator pIt = swfData.GetPoints().begin(); pIt != swfData.GetPoints().end(); ++pIt)
+        // {
+            // ((TDiscriminatedPoint*)((*fTracks)[iPoint]))->Unload(discPoint);
+            // TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);            
+            // swfData.AddPoint(pIt);
+        // }
+        // return;
     }
 
-    void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData) const
+    void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)
     {
-        data.ClearPoints(); // do this first, since it clears some of the member variables other than just fTracks
-        data.SetComponent(fComponent); data.SetAcquisitionID(fAcquisitionID); data.SetCandidateID(fCandidateID);
-        data.SetTimeInRunC(fTimeInRunC); data.SetTimeLength(fTimeLength);
-        data.SetMinFrequency(fMinFrequency); data.SetMaxFrequency(fMaxFrequency); data.SetFrequencyWidth(fFrequencyWidth);
+        // swfData.ClearPoints(); // do this first, since it clears some of the member variables other than just fTracks
+        swfData.SetComponent(rootSWfData.GetComponent()); swfData.SetAcquisitionID(rootSWfData.GetAcquisitionID()); swfData.SetCandidateID(rootSWfData.GetCandidateID());
+        swfData.SetTimeInRunC(rootSWfData.GetTimeInRunC()); swfData.SetTimeLength(rootSWfData.GetTimeLength());
+        swfData.SetMinFrequency(rootSWfData.GetMinFrequency()); swfData.SetMaxFrequency(rootSWfData.GetMaxFrequency()); swfData.SetFrequencyWidth(rootSWfData.GetFrequencyWidth());
 
-        Int_t nPoints = fPoints->GetSize();
-        Nymph::KTDataPtr dummyData;
-        KTDiscriminatedPoint& discPoint = dummyData->Of< KTDiscriminatedPoint >();
+        // Nymph::KTDataPtr dummyData;
+        // KTDiscriminatedPoint& discPoint = dummyData->Of< KTDiscriminatedPoint >();
         // AllTrackData point( dummyData, discPoint );
 
-        for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint)
-        {
-            ((TDiscriminatedPoint*)((*fTracks)[iPoint]))->Unload(discPoint);
-            data.AddPoint(track);
-        }
+        // for (TDiscriminatedPoints::const_iterator pIt = rootSWfData.GetPoints().begin(); pIt != rootSWfData.GetPoints().end(); ++pIt)
+        // {
+            // ((TDiscriminatedPoint*)((*fTracks)[iPoint]))->Unload(discPoint);
+            // swfData.AddPoint(pIt);
+        // }
         return;
     }
 

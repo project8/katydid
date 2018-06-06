@@ -560,6 +560,7 @@ namespace Katydid
     //************************
 
     TSparseWaterfallCandidateData::TSparseWaterfallCandidateData() :
+            TObject(),
             fComponent(0), fAcquisitionID(0), fCandidateID(0),
             fTimeInRunC(0.), fTimeLength(0.),
             fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)

@@ -440,7 +440,7 @@ namespace Katydid
             }
         }
 
-        fSparseWaterfallCandidateDataPtr->Load(swfData);
+        KT2ROOT::LoadSparseWaterfallCandidateData(swfData,*fSparseWaterfallCandidateDataPtr);
 
         fSparseWaterfallCandidateTree->Fill();
 
