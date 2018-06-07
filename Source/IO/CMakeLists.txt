@@ -34,6 +34,7 @@ set (IO_SOURCEFILES
 if (ROOT_FOUND)
     set (IO_DICT_HEADERFILES
         DataDisplay/KTDisplayWindow.hh
+        Conversions/KTROOTData.hh
     )
     
     set (IO_HEADERFILES
