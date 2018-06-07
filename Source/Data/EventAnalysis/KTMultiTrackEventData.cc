@@ -45,6 +45,12 @@ namespace Katydid
             fFirstTrackSlope(0.),
             fFirstTrackIntercept(0.),
             fFirstTrackTotalPower(0.),
+            fFirstTrackTotalSNR(0.),
+            fFirstTrackMaxSNR(0.),
+            fFirstTrackTotalNUP(0.),
+            fFirstTrackMaxNUP(0.),
+            fFirstTrackTotalWideSNR(0.),
+            fFirstTrackTotalWideNUP(0.),
             fUnknownEventTopology(false),
             fTracks()
     {
@@ -77,6 +83,12 @@ namespace Katydid
             fFirstTrackSlope(orig.fFirstTrackSlope),
             fFirstTrackIntercept(orig.fFirstTrackIntercept),
             fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
+            fFirstTrackTotalSNR(orig.fFirstTrackTotalSNR),
+            fFirstTrackMaxSNR(orig.fFirstTrackMaxSNR),
+            fFirstTrackTotalNUP(orig.fFirstTrackTotalNUP),
+            fFirstTrackMaxNUP(orig.fFirstTrackMaxNUP),
+            fFirstTrackTotalWideSNR(orig.fFirstTrackTotalWideSNR),
+            fFirstTrackTotalWideNUP(orig.fFirstTrackTotalWideNUP),
             fUnknownEventTopology(orig.fUnknownEventTopology),
             fTracks()
     {
@@ -252,6 +264,13 @@ namespace Katydid
         fFirstTrackSlope = trackIt->fProcTrack.GetSlope();
         fFirstTrackIntercept = trackIt->fProcTrack.GetIntercept();
         fFirstTrackTotalPower = trackIt->fProcTrack.GetTotalPower();
+
+        fFirstTrackTotalSNR = trackIt->fProcTrack.GetTotalTrackSNR();
+        fFirstTrackMaxSNR = trackIt->fProcTrack.GetMaxTrackSNR();
+        fFirstTrackTotalNUP = trackIt->fProcTrack.GetTotalTrackNUP();
+        fFirstTrackMaxNUP = trackIt->fProcTrack.GetMaxTrackNUP();
+        fFirstTrackTotalWideSNR = trackIt->fProcTrack.GetTotalWideTrackSNR();
+        fFirstTrackTotalWideNUP = trackIt->fProcTrack.GetTotalWideTrackNUP();
 
         for (++trackIt; trackIt != fTracks.end(); ++trackIt)
         {
