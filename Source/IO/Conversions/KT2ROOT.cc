@@ -740,6 +740,15 @@ namespace Katydid
         }
         return;
     }
+    
+    void LoadDiscriminatedPoint(const KTDiscriminatedPoint& point, TDiscriminatedPoint& rootPoint)
+    {
+        return;
+    };
+    void KT2ROOT::UnloadDiscriminatedPoint(KTDiscriminatedPoint& point, const TDiscriminatedPoint& rootPoint)
+    {
+        return;
+    };
 
     void KT2ROOT::LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData)
     {
@@ -750,23 +759,31 @@ namespace Katydid
         rootSWfData.SetTimeLength(swfData.GetTimeLength()); 
         rootSWfData.SetMinFrequency(swfData.GetMinFrequency()); 
         rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency()); 
-        rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth()); 
+        rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth());
 
-        // Int_t nPoints = (Int_t)swfData.GetNPoints();
-        // rootSWfData.GetPoints()->Clear();
-        //  rootSWfData.GetPoints()->Expand(nPoints);
-        // Int_t iPoint = 0;
-        // for (PointSetCIt trIt = swfData.GetPointsBegin(); trIt != swfData.GetPointsEnd(); ++trIt)
-        // {
-            // TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);
-            // ++iTrack;
-        // }
-        // for (KTDiscriminatedPoints::const_iterator pIt = swfData.GetPoints().begin(); pIt != swfData.GetPoints().end(); ++pIt)
-        // {
-            // ((TDiscriminatedPoint*)((*fTracks)[iPoint]))->Unload(discPoint);
-            // TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);            
-            // swfData.AddPoint(pIt);
-        // }
+        //
+        Int_t nPoints = (Int_t)swfData.GetPoints().size();
+        TClonesArray* points = rootSWfData.GetPoints();
+        points->Clear(); points->Expand(nPoints);
+        Int_t iPoint = 0;
+        for (KTDiscriminatedPoints::const_iterator pIt = swfData.GetPoints().begin(); pIt != swfData.GetPoints().end(); ++pIt)
+        {
+            // TDiscriminatedPoint* point = new((*points)[iPoint]) TDiscriminatedPoint;
+            Katydid::TDiscriminatedPoint* point = new((*points)[iPoint]) Katydid::TDiscriminatedPoint;
+            
+            // TDiscriminatedPoint *point = (TDiscriminatedPoint*)points->ConstructedAt(iPoint);
+            // KT2ROOT::LoadProcTrackData(trIt->fProcTrack, *point);
+
+            // KTDEBUG(dblog, point->GetTimeInRunC());
+            // point->SetTimeInRunC(pIt->fTimeInRunC);
+            // KTDEBUG(dblog, point->GetTimeInRunC());
+            // KTDEBUG(dblog, iPoint << "\t" << nPoints);
+            ++iPoint;
+        }
+        // KTDEBUG(dblog, "Number of points: " << iPoint);
+        // KTDEBUG(dblog, "Number of points: " << rootSWfData.GetPoints()->GetSize());
+        // //
+
         return;
     }
 
@@ -777,15 +794,7 @@ namespace Katydid
         swfData.SetTimeInRunC(rootSWfData.GetTimeInRunC()); swfData.SetTimeLength(rootSWfData.GetTimeLength());
         swfData.SetMinFrequency(rootSWfData.GetMinFrequency()); swfData.SetMaxFrequency(rootSWfData.GetMaxFrequency()); swfData.SetFrequencyWidth(rootSWfData.GetFrequencyWidth());
 
-        // Nymph::KTDataPtr dummyData;
-        // KTDiscriminatedPoint& discPoint = dummyData->Of< KTDiscriminatedPoint >();
-        // AllTrackData point( dummyData, discPoint );
-
-        // for (TDiscriminatedPoints::const_iterator pIt = rootSWfData.GetPoints().begin(); pIt != rootSWfData.GetPoints().end(); ++pIt)
-        // {
-            // ((TDiscriminatedPoint*)((*fTracks)[iPoint]))->Unload(discPoint);
-            // swfData.AddPoint(pIt);
-        // }
+        // TODO
         return;
     }
 

@@ -442,8 +442,11 @@ namespace Katydid
         }
 
         KT2ROOT::LoadSparseWaterfallCandidateData(swfData, *fSparseWaterfallCandidateDataPtr);
+        KTDEBUG(publog, "Before filling");
+        KTDEBUG(publog, fSparseWaterfallCandidateDataPtr->GetComponent());
 
         fSparseWaterfallCandidateTree->Fill();
+        KTDEBUG(publog, "After filling");
 
         return;
     }

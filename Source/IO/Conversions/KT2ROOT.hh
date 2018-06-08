@@ -43,7 +43,9 @@ namespace Katydid
     class KTMultiTrackEventData;
     class KTClassifiedEventData;
     class KTSparseWaterfallCandidateData;
+    class KTDiscriminatedPoint;
 
+    class TDiscriminatedPoint;
     class TSparseWaterfallCandidateData;
 
     class KT2ROOT
@@ -171,6 +173,13 @@ namespace Katydid
 
             static void LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData);
             static void UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData);
+
+            //**************************
+            // Discrominated Point Data
+            //**************************
+
+            static void LoadDiscriminatedPoint(const KTDiscriminatedPoint& point, TDiscriminatedPoint& rootPoint);
+            static void UnloadDiscriminatedPoint(KTDiscriminatedPoint& point, const TDiscriminatedPoint& rootPoint);
 
 
     };
