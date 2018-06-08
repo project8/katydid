@@ -441,7 +441,7 @@ namespace Katydid
             }
         }
 
-        KT2ROOT::LoadSparseWaterfallCandidateData(swfData,*fSparseWaterfallCandidateDataPtr);
+        KT2ROOT::LoadSparseWaterfallCandidateData(swfData, *fSparseWaterfallCandidateDataPtr);
 
         fSparseWaterfallCandidateTree->Fill();
 
@@ -475,7 +475,7 @@ namespace Katydid
 
         fSparseWaterfallCandidateDataPtr = new TSparseWaterfallCandidateData();
 
-        fSparseWaterfallCandidateTree->Branch(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), "Katydid::TSparseWaterFallCandidateData", &fSparseWaterfallCandidateDataPtr);
+        fSparseWaterfallCandidateTree->Branch(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), "Katydid::TSparseWaterfallCandidateData", &fSparseWaterfallCandidateDataPtr);
 
         return true;
     }

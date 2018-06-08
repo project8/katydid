@@ -767,7 +767,7 @@ namespace Katydid
             // TDiscriminatedPoint* point = new((*fPoints)[iPoint]) TDiscriminatedPoint(trIt->fPoint);            
             // swfData.AddPoint(pIt);
         // }
-        // return;
+        return;
     }
 
     void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)

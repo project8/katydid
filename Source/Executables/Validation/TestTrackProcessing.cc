@@ -60,6 +60,8 @@ KTSparseWaterfallCandidateData createFakeData()
         }
         sliceTime +=timeStep;
     }
+    swfData.SetTimeInRunC(0.1);
+
     return swfData;
 }
 
@@ -80,6 +82,7 @@ int main()
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
     swfData = createFakeData();
     trackProc.ProcessTrackSWF(swfData);
+    KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
 
 #ifdef ROOT_FOUND
 
