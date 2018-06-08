@@ -8,3 +8,4 @@
 
 # Event Analysis
 ./build/bin/TestDBScanTrackClustering
+./build/bin/TestSequentialTrackFinder
