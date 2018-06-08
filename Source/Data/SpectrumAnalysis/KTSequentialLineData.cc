@@ -20,8 +20,8 @@ namespace Katydid
 
     KTSequentialLineData::KTSequentialLineData():
         fLinePoints(),
-	fAmplitudeList(),
-	fSNRList(),
+        fAmplitudeList(),
+        fSNRList(),
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
         fEndTimeInRunC(0.0),
