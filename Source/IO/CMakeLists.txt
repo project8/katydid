@@ -41,7 +41,6 @@ if (ROOT_FOUND)
         ${IO_HEADERFILES}
         ${IO_DICT_HEADERFILES}
         Conversions/KT2ROOT.hh
-        Conversions/KTROOTData.hh
         BasicROOTFileWriter/KTBasicROOTFileWriter.hh
         BasicROOTFileWriter/KTBasicROOTTypeWriterSpectrumAnalysis.hh
         BasicROOTFileWriter/KTBasicROOTTypeWriterEventAnalysis.hh

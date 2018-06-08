@@ -10,5 +10,8 @@
 #pragma link C++ namespace Katydid;
 
 #pragma link C++ class Katydid::KTDisplayWindow+;
+#pragma link C++ class Katydid::TDiscriminatedPoint+;
+#pragma link C++ class Katydid::TSparseWaterfallCandidateData+;
+
 
 #endif
