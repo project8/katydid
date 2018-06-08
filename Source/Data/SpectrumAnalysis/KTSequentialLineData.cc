@@ -19,6 +19,9 @@ namespace Katydid
 	KTLOGGER(seqlog, "KTSeqLine");
 
     KTSequentialLineData::KTSequentialLineData():
+        fLinePoints(),
+	fAmplitudeList(),
+	fSNRList(),
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
         fEndTimeInRunC(0.0),
@@ -38,8 +41,7 @@ namespace Katydid
         fSumX(0.),
         fSumY(0.),
         fSumXY(0.),
-        fSumXX(0.),
-        fLinePoints()
+        fSumXX(0.)
         {}
 
     KTSequentialLineData::~KTSequentialLineData()
