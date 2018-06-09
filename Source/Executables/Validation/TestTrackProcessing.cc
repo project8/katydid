@@ -34,7 +34,15 @@ using namespace Katydid;
 
 KTLOGGER(testlog, "TestTrackProcessing");
 
-KTSparseWaterfallCandidateData createFakeData()
+KTSparseWaterfallCandidateData createFakeData(double trackSlope, 
+                                              double trackIntercept,
+                                              double trackStart,
+                                              double trackLength,
+                                              double trackSigma,
+                                              double trackPowerMean,
+                                              double trackPowerStd,
+                                              double nSlices,
+                                              double avgPointsPerSlice)
 {
     KTSparseWaterfallCandidateData swfData;
     
@@ -70,6 +78,16 @@ int main()
 
     KTINFO(testlog, "Finally, a customer!");
 
+    double trackSlope = 100e6; // [Hz/s]
+    double trackIntercept = 1e5; // [Hz]
+    double trackStart = 0.1; //[s] 
+    double trackLength = 0.1; //[s]
+    double trackSigma = 20000.; // [Hz]
+    double trackPowerMean = 1e-10;
+    double trackPowerStd = 1e-11;
+    int nSlices = 20;
+    int avgPointsPerSlice = 1;
+
     // Processor definition
     KTTrackProcessing trackProc;
     trackProc.SetTrackProcAlgorithm("weighted-slope");
@@ -80,7 +98,7 @@ int main()
     // Execute the Processing step
     Nymph::KTDataPtr dataPtr(new Nymph::KTData());    
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
-    swfData = createFakeData();
+    swfData = createFakeData(trackSlope, trackIntercept,trackStart,trackLength,trackSigma,trackPowerMean,trackPowerStd,nSlices,avgPointsPerSlice);
     trackProc.ProcessTrackSWF(swfData);
     KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
 
