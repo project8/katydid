@@ -63,6 +63,8 @@ Release Date: ?????????????????
         Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
       * KTTrackProcessing: new logic for handling new slots and algorithm combinaisons (adding new slots should be easier).
         Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
+* Writers update:
+      * KTSparseWaterfallCandidateData objects: TDiscriminatedPoint and TSparseWaterfallCandidateData classes have been added.
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
