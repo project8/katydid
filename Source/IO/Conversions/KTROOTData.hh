@@ -289,20 +289,11 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, NeighborhoodAmplitude);
 
         public:
-            TClonesArray* GetPoints() {return fPoints;}
-
-        private:
-            TClonesArray* fPoints;
-
-        public:
             TDiscriminatedPoint();
             TDiscriminatedPoint(const TDiscriminatedPoint& orig);
             virtual ~TDiscriminatedPoint();
             TObject* Clone(const char* newname="");
             TDiscriminatedPoint& operator=(const TDiscriminatedPoint& rhs);
-
-            // void Load(const KTDiscriminatedPoint& data);
-            // void Unload(KTDiscriminatedPoint& data) const;
 
             ClassDef(TDiscriminatedPoint, 1);
     };
@@ -340,14 +331,8 @@ namespace Katydid
 
             std::string GetBranchName() { return std::string("SparseWaterfall"); } // Defines the default name of the object saved inside the output tree
 
-            // void Load(const TSparseWaterfallCandidateData& data);
-            // void Unload(TSparseWaterfallCandidateData& data) const;
-
             ClassDef(TSparseWaterfallCandidateData, 1);
     };
-
-
 }
-
 
 #endif /* KTROOTDATA_HH_ */

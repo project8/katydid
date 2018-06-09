@@ -768,22 +768,16 @@ namespace Katydid
         Int_t iPoint = 0;
         for (KTDiscriminatedPoints::const_iterator pIt = swfData.GetPoints().begin(); pIt != swfData.GetPoints().end(); ++pIt)
         {
-            // TDiscriminatedPoint* point = new((*points)[iPoint]) TDiscriminatedPoint;
             Katydid::TDiscriminatedPoint* point = new((*points)[iPoint]) Katydid::TDiscriminatedPoint;
-            
-            // TDiscriminatedPoint *point = (TDiscriminatedPoint*)points->ConstructedAt(iPoint);
-            // KT2ROOT::LoadProcTrackData(trIt->fProcTrack, *point);
-
-            // KTDEBUG(dblog, point->GetTimeInRunC());
-            // point->SetTimeInRunC(pIt->fTimeInRunC);
-            // KTDEBUG(dblog, point->GetTimeInRunC());
-            // KTDEBUG(dblog, iPoint << "\t" << nPoints);
+            point->SetTimeInRunC(pIt->fTimeInRunC);
+            point->SetFrequency(pIt->fFrequency);
+            point->SetAmplitude(pIt->fAmplitude);
+            point->SetTimeInAcq(pIt->fTimeInAcq);
+            point->SetMean(pIt->fMean);
+            point->SetVariance(pIt->fVariance);
+            point->SetNeighborhoodAmplitude(pIt->fNeighborhoodAmplitude);
             ++iPoint;
         }
-        // KTDEBUG(dblog, "Number of points: " << iPoint);
-        // KTDEBUG(dblog, "Number of points: " << rootSWfData.GetPoints()->GetSize());
-        // //
-
         return;
     }
 

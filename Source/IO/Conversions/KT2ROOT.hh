@@ -180,8 +180,6 @@ namespace Katydid
 
             static void LoadDiscriminatedPoint(const KTDiscriminatedPoint& point, TDiscriminatedPoint& rootPoint);
             static void UnloadDiscriminatedPoint(KTDiscriminatedPoint& point, const TDiscriminatedPoint& rootPoint);
-
-
     };
 
 } /* namespace Katydid */
