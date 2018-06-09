@@ -172,14 +172,8 @@ namespace Katydid
             //*********************************
 
             static void LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData);
-            static void UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData);
+            // static void UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData);
 
-            //**************************
-            // Discrominated Point Data
-            //**************************
-
-            static void LoadDiscriminatedPoint(const KTDiscriminatedPoint& point, TDiscriminatedPoint& rootPoint);
-            static void UnloadDiscriminatedPoint(KTDiscriminatedPoint& point, const TDiscriminatedPoint& rootPoint);
     };
 
 } /* namespace Katydid */

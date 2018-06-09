@@ -741,15 +741,6 @@ namespace Katydid
         return;
     }
     
-    void LoadDiscriminatedPoint(const KTDiscriminatedPoint& point, TDiscriminatedPoint& rootPoint)
-    {
-        return;
-    };
-    void KT2ROOT::UnloadDiscriminatedPoint(KTDiscriminatedPoint& point, const TDiscriminatedPoint& rootPoint)
-    {
-        return;
-    };
-
     void KT2ROOT::LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData)
     {
         rootSWfData.SetComponent(swfData.GetComponent()); 
@@ -781,15 +772,14 @@ namespace Katydid
         return;
     }
 
-    void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)
-    {
-        // swfData.ClearPoints(); // do this first, since it clears some of the member variables other than just fTracks
-        swfData.SetComponent(rootSWfData.GetComponent()); swfData.SetAcquisitionID(rootSWfData.GetAcquisitionID()); swfData.SetCandidateID(rootSWfData.GetCandidateID());
-        swfData.SetTimeInRunC(rootSWfData.GetTimeInRunC()); swfData.SetTimeLength(rootSWfData.GetTimeLength());
-        swfData.SetMinFrequency(rootSWfData.GetMinFrequency()); swfData.SetMaxFrequency(rootSWfData.GetMaxFrequency()); swfData.SetFrequencyWidth(rootSWfData.GetFrequencyWidth());
+    // void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)
+    // {
+        // swfData.SetComponent(rootSWfData.GetComponent()); swfData.SetAcquisitionID(rootSWfData.GetAcquisitionID()); swfData.SetCandidateID(rootSWfData.GetCandidateID());
+        // swfData.SetTimeInRunC(rootSWfData.GetTimeInRunC()); swfData.SetTimeLength(rootSWfData.GetTimeLength());
+        // swfData.SetMinFrequency(rootSWfData.GetMinFrequency()); swfData.SetMaxFrequency(rootSWfData.GetMaxFrequency()); swfData.SetFrequencyWidth(rootSWfData.GetFrequencyWidth());
 
         // TODO
-        return;
-    }
+        // return;
+    // }
 
 } /* namespace Katydid */
