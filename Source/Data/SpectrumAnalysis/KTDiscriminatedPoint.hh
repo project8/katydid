@@ -22,7 +22,11 @@ namespace Katydid
         double fMean;
         double fVariance;
         double fNeighborhoodAmplitude;
+        // The SequentialTrackFinder Processor uses BinInSlice when it sums over adjacent bins in the power spectrum slice
+        // Once that slow is deleted we no longer need this variable
+        unsigned fBinInSlice;
         KTDiscriminatedPoint(double tirc, double freq, double amp, double tiacq, double mean, double variance, double neighborhoodAmplitude) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodAmplitude) {}
+
     };
     struct KTDiscriminatedPointCompare
             {
