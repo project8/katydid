@@ -123,10 +123,6 @@ namespace Katydid
         {
             SetMaxBin(node->get_value< unsigned >("max-bin"));
         }
-        if (node->has("neighborhood-radius"))
-        {
-            SetNeighborhoodRadius(node->get_value< int >("neighborhood-radius"));
-        }
 
         SetNormalize(node->get_value< bool >("normalize", fNormalize));
 
