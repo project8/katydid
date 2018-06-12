@@ -97,6 +97,10 @@ namespace Katydid
         {
             SetMaxBin(node->get_value< unsigned >("max-bin"));
         }
+        if (node->has("neighborhood-radius"))
+        {
+            SetNeighborhoodRadius(node->get_value< int >("neighborhood-radius"));
+        }
 
         return true;
     }
@@ -209,10 +213,11 @@ namespace Katydid
                 magnitude.resize(spectrum->size());
             }
 
-            double mean = 0.;
+            double mean = 0., sigma = 0.;;
             if (! pcData.empty())
             {
                 mean = pcData[iComponent].fMean;
+                sigma = sqrt(pcData[iComponent].fVariance);
             }
             else
             {
@@ -221,8 +226,10 @@ namespace Katydid
                 {
                     magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                     mean += magnitude[iBin];
+                    sigma += magnitude[iBin] * magnitude[iBin];
                 }
                 mean *= norm;
+                sigma = sqrt(sigma*norm  - mean*mean);
             }
 
             double threshold = 0.;
@@ -240,21 +247,6 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0.;
-                if (! pcData.empty())
-                {
-                    sigma = sqrt(pcData[iComponent].fVariance);
-                }
-                else
-                {
-#pragma omp parallel for reduction(+:sigma)
-                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-                    {
-                        sigma += magnitude[iBin] * magnitude[iBin];
-                    }
-                    sigma = sqrt(sigma*norm  - mean*mean);
-                }
-
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
             }
@@ -314,18 +306,21 @@ namespace Katydid
                 return false;
             }
 
-            double mean = 0.;
+            double mean = 0., sigma = 0.;
             if (! pcData.empty())
             {
                 mean = pcData[iComponent].fMean;
+                sigma = sqrt(pcData[iComponent].fVariance);
             }
             else
             {
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
                     mean += (*spectrum)(iBin).abs();
+                    sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
                 }
                 mean *= norm;
+                sigma = sqrt(sigma*norm - mean*mean);
             }
 
             double threshold = 0.;
@@ -343,20 +338,6 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0.;
-                if (! pcData.empty())
-                {
-                    sigma = sqrt(pcData[iComponent].fVariance);
-                }
-                else
-                {
-                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-                    {
-                        sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
-                    }
-                    sigma = sqrt(sigma*norm - mean*mean);
-                }
-
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
             }
@@ -419,10 +400,11 @@ namespace Katydid
                 return false;
             }
 
-            double mean = 0.;
+            double mean = 0., sigma = 0.;
             if (! pcData.empty())
             {
                 mean = pcData[iComponent].fMean;
+                sigma = sqrt(pcData[iComponent].fVariance);
             }
             else
             {
@@ -430,8 +412,10 @@ namespace Katydid
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
                     mean += (*spectrum)(iBin);
+                    sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
                 }
                 mean *= norm;
+                sigma = sqrt(sigma*norm - mean*mean);
             }
 
             double threshold = 0.;
@@ -449,21 +433,6 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0.;
-                if (! pcData.empty())
-                {
-                    sigma = sqrt(pcData[iComponent].fVariance);
-                }
-                else
-                {
-#pragma omp parallel for reduction(+:sigma)
-                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-                    {
-                        sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
-                    }
-                    sigma = sqrt(sigma*norm - mean*mean);
-                }
-
                 threshold = mean + fSigmaThreshold * sigma;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
             }
