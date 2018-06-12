@@ -9,6 +9,8 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTSpectrumDiscriminator.hh"
 
@@ -45,14 +47,23 @@ int main()
     data.SetNComponents(1);
     KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, minFreq, maxFreq);
 
+    KTFrequencySpectrumDataFFTW dataFFTW;
+    dataFFTW.SetNComponents(1);
+    KTFrequencySpectrumFFTW* spectrumFFTW = new KTFrequencySpectrumFFTW(nBins, minFreq, maxFreq);
+
+
     // Fill in the noise
     KTINFO(testlog, "Creating the baseline and noise");
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
 #ifdef ROOT_FOUND
         (*spectrum)(iBin).set_polar(rand.Gaus(meanValue, noiseSigma), 0.);
+        (*spectrumFFTW)(iBin)[0] = rand.Gaus(meanValue, noiseSigma);
+        (*spectrumFFTW)(iBin)[1] = 0.;
 #else
         (*spectrum)(iBin).set_polar(meanValue, 0.);
+        (*spectrumFFTW)(iBin)[0] = (meanValue);
+        (*spectrumFFTW)(iBin)[1] = 0.;
 #endif
     }
 
@@ -67,10 +78,13 @@ int main()
         double multiplier = meanPeakMult;
 #endif
         (*spectrum)(iBin).set_polar((*spectrum)(iBin).abs() * multiplier, 0.);
+        (*spectrumFFTW)(iBin)[0] =(*spectrumFFTW)(iBin)[0] * multiplier;
+        (*spectrumFFTW)(iBin)[1] =(*spectrumFFTW)(iBin)[1] * multiplier;
         KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());
     }
 
     data.SetSpectrum(spectrum, 0);
+    dataFFTW.SetSpectrum(spectrumFFTW, 0);
 
 #ifdef ROOT_FOUND
     TFile* file = new TFile("spectrum_disc_test.root", "recreate");
@@ -85,20 +99,21 @@ int main()
     disc.SetMinFrequency(minFreq);
     disc.SetMaxFrequency(maxFreq);
     disc.SetSigmaThreshold(sigmaThresh);
+    disc.SetNeighborhoodRadius(2);
 
     KTINFO(testlog, "Discriminating data");
-    if (! disc.Discriminate(data))
+    if (! disc.Discriminate(dataFFTW))
     {
         KTERROR(testlog, "Something went wrong while discriminating peaks");
         return -1;
     }
-    KTDiscriminatedPoints1DData& pointData = data.Of< KTDiscriminatedPoints1DData >();
+    KTDiscriminatedPoints1DData& pointData = dataFFTW.Of< KTDiscriminatedPoints1DData >();
 
     KTDiscriminatedPoints1DData::SetOfPoints setOfPoints = pointData.GetSetOfPoints(0);
     KTINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        KTINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ")");
+        KTINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ", "<< it->second.fNeighborhoodAmplitude<<")");
     }
 
 #ifdef ROOT_FOUND
