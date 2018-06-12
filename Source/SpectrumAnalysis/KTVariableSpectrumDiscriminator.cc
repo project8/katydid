@@ -81,7 +81,14 @@ namespace Katydid
         if (node == NULL) return false;
 
         // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also change the threshold mode, so we only want to call them if we are setting the value, and not just keeping the existing value.
+
+        if (node->has("fNeighborhoodRadius"))
+        {
+            SetNeighborhoodRadius(node->get_value< double >("fNeighborhoodRadius"));
+        }
+
+        // These Set[whatever] functions also change the threshold mode, 
+        // so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("snr-threshold-amplitude"))
         {
             SetSNRAmplitudeThreshold(node->get_value< double >("snr-threshold-amplitude"));
@@ -95,8 +102,8 @@ namespace Katydid
             SetSigmaThreshold(node->get_value< double >("sigma-threshold"));
         }
 
-        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, 
+        // so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -106,8 +113,8 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, 
+        // so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -443,7 +450,7 @@ namespace Katydid
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    summedpower = summedpower - (2* fPowerRadius - 1) * mean;
+                    summedpower = summedpower - (2* fNeighborhoodRadius - 1) * mean;
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
@@ -542,7 +549,7 @@ namespace Katydid
                         variance = normalizedVariance;
                     }
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
-                    summedpower = summedpower - (2* fPowerRadius - 1) * mean;
+                    summedpower = summedpower - (2* fNeighborhoodRadius - 1) * mean;
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }

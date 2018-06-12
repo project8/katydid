@@ -114,7 +114,7 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
-            int fNeighborhoodRadius;
+            MEMBERVARIABLE(int, NeighborhoodRadius);
             bool fCalculateMinBin;
             bool fCalculateMaxBin;
 

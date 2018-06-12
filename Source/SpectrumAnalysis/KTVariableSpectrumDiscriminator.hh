@@ -146,7 +146,7 @@ namespace Katydid
             bool fCalculateMaxBin;
             bool fNormalize;
 
-            int fNeighborhoodRadius;
+            MEMBERVARIABLE(int, NeighborhoodRadius);
 
         public:
             bool CheckGVData();
