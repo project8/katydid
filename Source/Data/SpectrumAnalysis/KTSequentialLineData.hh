@@ -24,9 +24,9 @@ namespace Katydid
 
         private:
 
-            KTDiscriminatedPoints fLinePoints;
-            std::vector<double> fAmplitudeList;
-            std::vector<double> fSNRList;
+            MEMBERVARIABLE(KTDiscriminatedPoints, LinePoints);
+            MEMBERVARIABLE(std::vector<double>, AmplitudeList);
+            MEMBERVARIABLE(std::vector<double>, SNRList);
 
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
@@ -37,24 +37,24 @@ namespace Katydid
             MEMBERVARIABLE(double, InitialSlope);
             MEMBERVARIABLE(double, Slope);
             MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, CandidateID)
             MEMBERVARIABLE(double, AmplitudeSum);
             MEMBERVARIABLE(double, SNRSum);
             MEMBERVARIABLE(double, NUPSum);
             MEMBERVARIABLE(unsigned, NPoints);
-            MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, MinPoints);
-            MEMBERVARIABLE(double, StartFrequencySigma);
-            MEMBERVARIABLE(double, EndFrequencySigma);
+            MEMBERVARIABLE(double, SumX);
+            MEMBERVARIABLE(double, SumY);
+            MEMBERVARIABLE(double, SumXY);
+            MEMBERVARIABLE(double, SumXX);
+
+
 
         public:
 
             static const std::string sName;
 
-            double fSumX;
-            double fSumY;
-            double fSumXY;
-            double fSumXX;
 
             KTSequentialLineData();
             virtual ~KTSequentialLineData();
@@ -67,6 +67,11 @@ namespace Katydid
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
             void FinishTrack();
+
+            bool operator() (const KTSequentialLineData& lhs, const KTSequentialLineData& rhs) const
+            {
+                return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC() || (lhs.GetStartTimeInRunC() == rhs.GetStartTimeInRunC() && lhs.GetStartFrequency() < rhs.fStartFrequency);
+            }
 
     };
 

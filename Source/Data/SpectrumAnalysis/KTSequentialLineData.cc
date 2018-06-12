@@ -19,6 +19,9 @@ namespace Katydid
 	KTLOGGER(seqlog, "KTSeqLine");
 
     KTSequentialLineData::KTSequentialLineData():
+        fLinePoints(),
+        fAmplitudeList(),
+        fSNRList(),
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
         fEndTimeInRunC(0.0),
@@ -29,14 +32,12 @@ namespace Katydid
         fSlope(0.0),
         fNPoints(0),
         fComponent(0),
+        fAcquisitionID(0),
+        fCandidateID(0),
         fAmplitudeSum(0.0),
         fSNRSum(0.0),
         fNUPSum(0.0),
-        fAcquisitionID(0),
-        fCandidateID(0),
         fMinPoints(0),
-        fStartFrequencySigma(0.),
-        fEndFrequencySigma(0.),
         fSumX(0.),
         fSumY(0.),
         fSumXY(0.),
@@ -103,11 +104,17 @@ namespace Katydid
     {
         //KTDEBUG(seqlog, "Updating line parameters");
         SetNPoints( fLinePoints.size() );
-        if ( fNPoints == 1 or fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
+        if ( fNPoints == 1 or fLinePoints.begin()->fTimeInRunC < GetStartTimeInRunC())
         {
             SetStartTimeInRunC( fLinePoints.begin()->fTimeInRunC );
             SetStartFrequency( fLinePoints.begin()->fFrequency );
             SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );
+        }
+        if (fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
+        {
+            SetStartTimeInRunC( fLinePoints.rbegin()->fTimeInRunC );
+            SetStartFrequency( fLinePoints.rbegin()->fFrequency );
+            SetStartTimeInAcq( fLinePoints.rbegin()->fTimeInAcq );
         }
         if ( fLinePoints.rbegin()->fTimeInRunC > GetEndTimeInRunC() )
         {
