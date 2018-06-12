@@ -59,11 +59,11 @@ int main()
 #ifdef ROOT_FOUND
         (*spectrum)(iBin).set_polar(rand.Gaus(meanValue, noiseSigma), 0.);
         (*spectrumFFTW)(iBin)[0] = rand.Gaus(meanValue, noiseSigma);
-        (*spectrumFFTW)(iBin)[1] = 0.;
+        (*spectrumFFTW)(iBin)[1] = rand.Gaus(meanValue, noiseSigma);
 #else
         (*spectrum)(iBin).set_polar(meanValue, 0.);
         (*spectrumFFTW)(iBin)[0] = (meanValue);
-        (*spectrumFFTW)(iBin)[1] = 0.;
+        (*spectrumFFTW)(iBin)[1] = (meanValue);
 #endif
     }
 
@@ -113,7 +113,7 @@ int main()
     KTINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        KTINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ", "<< it->second.fNeighborhoodAmplitude<<")");
+        KTINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ", "<< it->second.fMean << ", "<< it->second.fVariance << ", "<< it->second.fNeighborhoodAmplitude<<")");
     }
 
 #ifdef ROOT_FOUND
