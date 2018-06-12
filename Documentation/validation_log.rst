@@ -12,7 +12,7 @@ Guidelines
   * Indicate in this log what tests were performed, and where to find a writeup of the results.
 * Fixes to existing features should also be validated.
   * Perform tests to show that the fix solves the problem that had been indicated.
-  * Perform tests to shwo that the fix does not cause other problems.
+  * Perform tests to show that the fix does not cause other problems.
   * Indicate in this log what tests were performed and how you know the problem was fixed.
   
 Template
@@ -43,15 +43,17 @@ Fixes:
 Log
 ---
 
-Version: ????
-~~~~~~~~~~~~~~~
+Version: x.y.z
+~~~~~~~~~~~~~~
 
-Release Date: ?????
-''''''''''''''''''''''''''''
+Release Date: ?????????????????
+'''''''''''''''''''''''''''''''
 
-New Features:
-'''''''''''''
-
+* Moving the default object name from the Katydid Writer into Cicada:
+      * TMultiTrackEventData
+      * TProcessedTrackData
+      * TProcessedMPTData
+      * TClassifierResultsData
 * Continuous Integration with Travis:
       * Automatic build of libraries and validation executable
       * Test of one executable (TestRandom)
@@ -59,8 +61,9 @@ New Features:
 * Track SNR and NUP:
       * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
         Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
-      * KTTrackProcessing: new logic for handling new slots and algorithm combinaisons (adding new slots should be easier).
+      * KTTrackProcessing: new logic for handling new slots and algorithm combinations (adding new slots should be easier).
         Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
+      * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
