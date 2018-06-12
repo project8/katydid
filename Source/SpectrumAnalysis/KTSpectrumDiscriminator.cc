@@ -66,9 +66,9 @@ namespace Katydid
     bool KTSpectrumDiscriminator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
-        if (node->has("fNeighborhoodRadius"))
+        if (node->has("neighborhood-radius"))
         {
-            SetNeighborhoodRadius(node->get_value< double >("fNeighborhoodRadius"));
+            SetNeighborhoodRadius(node->get_value< int >("neighborhood-radius"));
         }
         if (node->has("snr-threshold-amplitude"))
         {

@@ -82,9 +82,9 @@ namespace Katydid
 
         // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
 
-        if (node->has("fNeighborhoodRadius"))
+        if (node->has("neighborhood-Radius"))
         {
-            SetNeighborhoodRadius(node->get_value< double >("fNeighborhoodRadius"));
+            SetNeighborhoodRadius(node->get_value< int >("neighborhood-radius"));
         }
 
         // These Set[whatever] functions also change the threshold mode, 
