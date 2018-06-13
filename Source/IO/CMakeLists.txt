@@ -34,6 +34,7 @@ set (IO_SOURCEFILES
 if (ROOT_FOUND)
     set (IO_DICT_HEADERFILES
         DataDisplay/KTDisplayWindow.hh
+        Conversions/KTROOTData.hh
     )
     
     set (IO_HEADERFILES
@@ -69,6 +70,7 @@ if (ROOT_FOUND)
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
         Conversions/KT2ROOT.cc
+        Conversions/KTROOTData.cc
         BasicROOTFileWriter/KTBasicROOTTypeWriterSpectrumAnalysis.cc
         BasicROOTFileWriter/KTBasicROOTTypeWriterEventAnalysis.cc
         BasicROOTFileWriter/KTBasicROOTTypeWriterTime.cc

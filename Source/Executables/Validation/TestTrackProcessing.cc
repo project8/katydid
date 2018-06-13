@@ -14,6 +14,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoint.hh"
+#include "KTROOTTreeTypeWriterEventAnalysis.hh"
 #include "KTRandom.hh"
 
 #include <cmath>        // std::abs
@@ -33,9 +34,17 @@ using namespace Katydid;
 
 KTLOGGER(testlog, "TestTrackProcessing");
 
-KTSparseWaterfallCandidateData createFakeData(){
-
-    KTSparseWaterfallCandidateData sftData;
+KTSparseWaterfallCandidateData createFakeData(double trackSlope, 
+                                              double trackIntercept,
+                                              double trackStart,
+                                              double trackLength,
+                                              double trackSigma,
+                                              double trackPowerMean,
+                                              double trackPowerStd,
+                                              double nSlices,
+                                              double avgPointsPerSlice)
+{
+    KTSparseWaterfallCandidateData swfData;
     
     KTRNGGaussian<> noiseDistribution(0,trackSigma);
     KTRNGGaussian<> powerDistribution(trackPowerMean,trackPowerStd);
@@ -45,7 +54,7 @@ KTSparseWaterfallCandidateData createFakeData(){
     
     if (nSlices<=1){
         KTERROR( testlog, "Number of slices <" << nSlices <<"> should be larger than 1!");
-        return sftData;
+        return swfData;
     }
     double timeStep = (trackLength)/(nSlices-1);
     double sliceTime = trackStart;
@@ -54,18 +63,30 @@ KTSparseWaterfallCandidateData createFakeData(){
         for (unsigned iPoint = 0; iPoint<nPoints; ++iPoint){
             double yPoint = trackIntercept + trackSlope*sliceTime + noiseDistribution();
             double power = powerDistribution();
-            Point aPoint(sliceTime,yPoint,power,sliceTime,1.,1.,1.);
-            sftData.AddPoint(aPoint);
+            Point aPoint(sliceTime,yPoint,power,sliceTime,trackPowerMean*0.1,trackPowerStd,power*1.1);
+            swfData.AddPoint(aPoint);
         }
         sliceTime +=timeStep;
     }
-    return sftData;
+    swfData.SetTimeInRunC(0.1);
+
+    return swfData;
 }
 
 int main()
 {
 
     KTINFO(testlog, "Finally, a customer!");
+
+    double trackSlope = 100e6; // [Hz/s]
+    double trackIntercept = 1e5; // [Hz]
+    double trackStart = 0.1; //[s] 
+    double trackLength = 0.1; //[s]
+    double trackSigma = 20000.; // [Hz]
+    double trackPowerMean = 1e-10;
+    double trackPowerStd = 1e-11;
+    int nSlices = 20;
+    int avgPointsPerSlice = 1;
 
     // Processor definition
     KTTrackProcessing trackProc;
@@ -75,12 +96,29 @@ int main()
     trackProc.SetProcTrackAssignedError(12000);
 
     // Execute the Processing step
-    KTSparseWaterfallCandidateData swfData = createFakeData();
+    Nymph::KTDataPtr dataPtr(new Nymph::KTData());    
+    KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
+    swfData = createFakeData(trackSlope, trackIntercept,trackStart,trackLength,trackSigma,trackPowerMean,trackPowerStd,nSlices,avgPointsPerSlice);
     trackProc.ProcessTrackSWF(swfData);
+    KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
 
-    KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
+#ifdef ROOT_FOUND
+
+    KTROOTTreeWriter writer;
+    writer.SetFilename("TestTrackProcessing_result.root");
+    writer.SetFileFlag("recreate");
+
+    KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
+    treeTypeWriter.SetWriter(&writer);
+    // treeWriter.SetupProcessedTrackTree();
+    treeTypeWriter.WriteSparseWaterfallCandidate(dataPtr);
+    treeTypeWriter.WriteProcessedTrack(dataPtr);
+    KTINFO(testlog, "Processed track saved in file");
+#endif
+
 
     // Check the results of the processing
+    KTProcessedTrackData& procTrack = dataPtr->Of< KTProcessedTrackData >();
     double foundFrequency = procTrack.GetStartFrequency();
     double toBeFoundFrequency = trackIntercept + trackSlope*trackStart;
     double diff = foundFrequency - toBeFoundFrequency;
@@ -89,5 +127,7 @@ int main()
         KTERROR(testlog, "The difference seems too large (>1e5 Hz)! " );
         return -1;
     }
+    KTINFO(testlog, "Track SNR: " << procTrack.GetTotalTrackSNR());
+    KTINFO(testlog, "NTrackBins: " << procTrack.GetNTrackBins());
     return 0;
 }
