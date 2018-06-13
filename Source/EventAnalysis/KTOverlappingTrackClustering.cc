@@ -36,18 +36,6 @@ namespace Katydid
             fCompSeqLineCands(),
             fCandidates(),
             fNTracks(0),
-            fApplyTotalPowerCut(false),
-            fApplyAveragePowerCut(false),
-            fApplyTotalSNRCut(false),
-            fApplyAverageSNRCut(false),
-            fApplyTotalUnitlessResidualCut(false),
-            fApplyAverageUnitlessResidualCut(false),
-            fTotalPowerThreshold(0.0),
-            fAveragePowerThreshold(0.0),
-            fTotalSNRThreshold(0.0),
-            fAverageSNRThreshold(0.0),
-            fTotalUnitlessResidualThreshold(0.0),
-            fAverageUnitlessResidualThreshold(0.0),
             fTrackSignal("track", this),
             fSeqLineCandSignal("sql-cand", this),
             fDoneSignal("clustering-done", this),
@@ -72,36 +60,6 @@ namespace Katydid
         if (node->has("large-max-track-width"))
         {
             SetLargeMaxTrackWidth(node->get_value<double>("large-max-track-width"));
-        }
-        if (node->has("apply-power-cut"))
-        {
-            SetApplyTotalPowerCut(node->get_value("apply-total-power-cut", GetApplyTotalPowerCut()));
-            SetTotalPowerThreshold(node->get_value("power-total-threshold", GetTotalPowerThreshold()));
-        }
-        if (node->has("apply-power-density-cut"))
-        {
-            SetApplyAveragePowerCut(node->get_value("apply-average-power-cut", GetApplyAveragePowerCut()));
-            SetAveragePowerThreshold(node->get_value("power-average-power-threshold", GetAveragePowerThreshold()));
-        }
-        if (node->has("apply-total-snr-cut"))
-        {
-            SetApplyTotalSNRCut(node->get_value("apply-total-snr-cut", GetApplyTotalSNRCut()));
-            SetTotalSNRThreshold(node->get_value("total-snr-threshold", GetTotalSNRThreshold()));
-        }
-        if (node->has("apply-average-snr-cut"))
-        {
-            SetApplyAverageSNRCut(node->get_value("apply-average-snr-cut", GetApplyAverageSNRCut()));
-            SetAverageSNRThreshold(node->get_value("average-snr-threshold", GetAverageSNRThreshold()));
-        }
-        if (node->has("apply-total-unitless-residual-cut"))
-        {
-            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-unitless-residual-cut", GetApplyTotalUnitlessResidualCut()));
-            SetTotalUnitlessResidualThreshold(node->get_value("total-unitless-residual-threshold", GetTotalUnitlessResidualThreshold()));
-        }
-        if (node->has("apply-average-unitless-residual-cut"))
-        {
-            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-unitless-residual-cut", GetApplyAverageUnitlessResidualCut()));
-            SetAverageUnitlessResidualThreshold(node->get_value("average-unitless-residual-threshold", GetAverageUnitlessResidualThreshold()));
         }
         return true;
     }
@@ -273,104 +231,51 @@ namespace Katydid
 
         while(trackIt!=compTracks.end())
         {
-            bool emitThisCandidate = true;
+            // Set up new data object
+            Nymph::KTDataPtr data( new Nymph::KTData() );
+            KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
+            newTrack.SetComponent( trackIt->GetComponent() );
+            newTrack.SetAcquisitionID( trackIt->GetAcquisitionID() );
+            newTrack.SetTrackID( fNTracks );
+            fNTracks++;
 
-            if (fApplyTotalPowerCut)
-            {
-                if (trackIt->GetTotalPower() <= fTotalPowerThreshold)
-                {
-                    KTDEBUG(otclog, "track power below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalPowerThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyAveragePowerCut)
-            {
-                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAveragePowerThreshold)
-                {
-                    KTDEBUG(otclog, "average track power below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fAveragePowerThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyTotalSNRCut)
-            {
-                if (trackIt->GetTotalWideTrackSNR() <= fTotalSNRThreshold)
-                {
-                    KTDEBUG(otclog, "total track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalSNRThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyAverageSNRCut)
-            {
-                if (trackIt->GetTotalWideTrackSNR()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
-                {
-                    KTDEBUG(otclog, "average track snr below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageSNRThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyTotalUnitlessResidualCut)
-            {
-                if (trackIt->GetTotalWideTrackNUP() <= fTotalUnitlessResidualThreshold)
-                {
-                    KTDEBUG(otclog, "total track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fTotalUnitlessResidualThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyAverageUnitlessResidualCut)
-            {
-                if (trackIt->GetTotalWideTrackNUP()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
-                {
-                    KTDEBUG(otclog, "average track residuals below threshold: "<<trackIt->GetTotalPower()<<" "<<fAverageUnitlessResidualThreshold);
-                    emitThisCandidate = false;
-                }
-            }
+            newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC() );
+            newTrack.SetStartTimeInRunCSigma( trackIt->GetStartTimeInRunCSigma() );
+            newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC() );
+            newTrack.SetEndTimeInRunCSigma( trackIt->GetEndTimeInRunCSigma() );
+            newTrack.SetStartTimeInAcq( trackIt->GetStartTimeInAcq() );
+            newTrack.SetTimeLength( trackIt->GetTimeLength() );
+            newTrack.SetTimeLengthSigma( trackIt->GetTimeLengthSigma() );
+            newTrack.SetStartFrequency( trackIt->GetStartFrequency() );
+            newTrack.SetStartFrequency( trackIt->GetStartFrequencySigma() );
+            newTrack.SetEndFrequency( trackIt->GetEndFrequency() );
+            newTrack.SetEndFrequencySigma( trackIt->GetEndFrequencySigma() );
+            newTrack.SetSlope( trackIt->GetSlope() );
+            newTrack.SetSlopeSigma( trackIt->GetSlopeSigma() );
+            newTrack.SetTotalPower( trackIt->GetTotalPower() );
+            newTrack.SetTotalPowerSigma( trackIt->GetTotalPowerSigma() );
+            newTrack.SetFrequencyWidth( trackIt->GetFrequencyWidth() );
+            newTrack.SetFrequencyWidthSigma( trackIt->GetFrequencyWidthSigma() );
+            newTrack.SetIntercept( trackIt->GetFrequencyWidth() );
+            newTrack.SetInterceptSigma( trackIt->GetInterceptSigma() );
 
-            if (emitThisCandidate == true)
-            {
-                // Set up new data object
-                Nymph::KTDataPtr data( new Nymph::KTData() );
-                KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
-                newTrack.SetComponent( trackIt->GetComponent() );
-                newTrack.SetAcquisitionID( trackIt->GetAcquisitionID() );
-                newTrack.SetTrackID( fNTracks );
-                fNTracks++;
+            newTrack.SetNTrackBins( trackIt->GetNTrackBins() );
+            newTrack.SetTotalTrackSNR( trackIt->GetTotalTrackSNR() );
+            newTrack.SetMaxTrackSNR( trackIt->GetMaxTrackSNR() );
+            newTrack.SetTotalTrackNUP( trackIt->GetTotalTrackNUP() );
+            newTrack.SetMaxTrackNUP( trackIt->GetMaxTrackNUP() );
+            newTrack.SetTotalWideTrackSNR( trackIt->GetTotalWideTrackSNR() );
+            newTrack.SetTotalWideTrackNUP( trackIt->GetTotalWideTrackNUP() );
 
-                newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC() );
-                newTrack.SetStartTimeInRunCSigma( trackIt->GetStartTimeInRunCSigma() );
-                newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC() );
-                newTrack.SetEndTimeInRunCSigma( trackIt->GetEndTimeInRunCSigma() );
-                newTrack.SetStartTimeInAcq( trackIt->GetStartTimeInAcq() );
-                newTrack.SetTimeLength( trackIt->GetTimeLength() );
-                newTrack.SetTimeLengthSigma( trackIt->GetTimeLengthSigma() );
-                newTrack.SetStartFrequency( trackIt->GetStartFrequency() );
-                newTrack.SetStartFrequency( trackIt->GetStartFrequencySigma() );
-                newTrack.SetEndFrequency( trackIt->GetEndFrequency() );
-                newTrack.SetEndFrequencySigma( trackIt->GetEndFrequencySigma() );
-                newTrack.SetSlope( trackIt->GetSlope() );
-                newTrack.SetSlopeSigma( trackIt->GetSlopeSigma() );
-                newTrack.SetTotalPower( trackIt->GetTotalPower() );
-                newTrack.SetTotalPowerSigma( trackIt->GetTotalPowerSigma() );
-                newTrack.SetFrequencyWidth( trackIt->GetFrequencyWidth() );
-                newTrack.SetFrequencyWidthSigma( trackIt->GetFrequencyWidthSigma() );
-                newTrack.SetIntercept( trackIt->GetFrequencyWidth() );
-                newTrack.SetInterceptSigma( trackIt->GetInterceptSigma() );
+            // Process & emit new track
 
-                newTrack.SetNTrackBins( trackIt->GetNTrackBins() );
-                newTrack.SetTotalTrackSNR( trackIt->GetTotalTrackSNR() );
-                newTrack.SetMaxTrackSNR( trackIt->GetMaxTrackSNR() );
-                newTrack.SetTotalTrackNUP( trackIt->GetTotalTrackNUP() );
-                newTrack.SetMaxTrackNUP( trackIt->GetMaxTrackNUP() );
-                newTrack.SetTotalWideTrackSNR( trackIt->GetTotalWideTrackSNR() );
-                newTrack.SetTotalWideTrackNUP( trackIt->GetTotalWideTrackNUP() );
+            KTINFO(otclog, "Now processing tracksCandidates");
+            ProcessNewTrack( newTrack );
 
-                // Process & emit new track
+            //KTDEBUG(otclog, "Emitting track signal");
+            fCandidates.insert( data );
+            fTrackSignal( data );
 
-                KTINFO(otclog, "Now processing tracksCandidates");
-                ProcessNewTrack( newTrack );
-
-                //KTDEBUG(otclog, "Emitting track signal");
-                fCandidates.insert( data );
-                fTrackSignal( data );
-            }
             trackIt = compTracks.erase(trackIt);
         }
     }
@@ -385,91 +290,31 @@ namespace Katydid
 
         while( candIt!=compCands.end() )
         {
-            bool emitThisCandidate = true;
-            double summedPower = 0.0;
-            double summedSNR = 0.0;
-            double summedUnitlessResidual = 0.0;
+
+            // Set up new data object
+            Nymph::KTDataPtr data( new Nymph::KTData() );
+            KTSequentialLineData& newSeqLineCand = data->Of< KTSequentialLineData >();
+            newSeqLineCand.SetComponent( candIt->GetComponent() );
+            newSeqLineCand.SetAcquisitionID( candIt->GetAcquisitionID() );
+            newSeqLineCand.SetCandidateID( fNTracks );
+
+            fNTracks++;
+
+            newSeqLineCand.SetSlope(candIt->GetSlope());
+            newSeqLineCand.CalculateTotalPower();
+            newSeqLineCand.CalculateTotalSNR();
 
             KTDiscriminatedPoints& points = candIt->GetPoints();
-            for (KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+            for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
-                summedPower += pointIt->fNeighborhoodAmplitude;
-                summedSNR += pointIt->fNeighborhoodAmplitude / pointIt->fMean;
-                summedUnitlessResidual += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / pointIt->fVariance;
+                //KTDEBUG( otclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
+                newSeqLineCand.AddPoint( *pointIt );
             }
+            //KTDEBUG( otclog, "Emitting SeqLine signal" );
+            fCandidates.insert( data );
+            fSeqLineCandSignal( data );
 
-            if (fApplyTotalPowerCut)
-            {
-                if (summedPower <= fTotalPowerThreshold)
-                {
-                    KTDEBUG(otclog, "total candidate power below threshold: "<<summedPower<<" "<<fTotalPowerThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyAveragePowerCut)
-            {
-                if (summedPower/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <= fAveragePowerThreshold)
-                {
-                    KTDEBUG(otclog, "average candidate power below threshold: "<<summedPower/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <<" "<< fAveragePowerThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyTotalSNRCut)
-            {
-                if (summedSNR <= fTotalSNRThreshold)
-                {
-                    KTDEBUG(otclog, "total candidate snr below threshold: "<<summedSNR<<" "<<fTotalSNRThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyAverageSNRCut)
-            {
-                if (summedSNR/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <= fAverageSNRThreshold)
-                {
-                    KTDEBUG(otclog, "average candidate snr below threshold: "<<summedSNR/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC())<<" "<<fAverageSNRThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyTotalUnitlessResidualCut)
-            {
-                if (summedUnitlessResidual <= fTotalUnitlessResidualThreshold)
-                {
-                    KTDEBUG(otclog, "total candidate residuals below threshold: "<<summedUnitlessResidual<<" "<<fTotalUnitlessResidualThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (fApplyAverageUnitlessResidualCut)
-            {
-                if (summedUnitlessResidual/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC()) <= fAverageUnitlessResidualThreshold)
-                {
-                    KTDEBUG(otclog, "average candidate residuals below threshold: "<<summedUnitlessResidual/(candIt->GetEndTimeInRunC()-candIt->GetStartTimeInRunC())<<" "<<fAverageUnitlessResidualThreshold);
-                    emitThisCandidate = false;
-                }
-            }
-            if (emitThisCandidate == true )
-            {
-
-                // Set up new data object
-                Nymph::KTDataPtr data( new Nymph::KTData() );
-                KTSequentialLineData& newSeqLineCand = data->Of< KTSequentialLineData >();
-                newSeqLineCand.SetComponent( candIt->GetComponent() );
-                newSeqLineCand.SetAcquisitionID( candIt->GetAcquisitionID() );
-                newSeqLineCand.SetCandidateID( fNTracks );
-                fNTracks++;
-
-                newSeqLineCand.SetSlope(candIt->GetSlope());
-
-                KTDiscriminatedPoints& points = candIt->GetPoints();
-                for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
-                {
-                    //KTDEBUG( otclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
-                    newSeqLineCand.AddPoint( *pointIt );
-                }
-                //KTDEBUG( otclog, "Emitting SeqLine signal" );
-                fCandidates.insert( data );
-                fSeqLineCandSignal( data );
-            }
-        candIt = compCands.erase(candIt);
+            candIt = compCands.erase(candIt);
         }
     }
 

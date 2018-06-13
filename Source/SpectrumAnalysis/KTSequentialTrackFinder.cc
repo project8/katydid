@@ -625,11 +625,9 @@ namespace Katydid
             KTDiscriminatedPoints& points = line.GetPoints();
             for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
-                //KTDEBUG( stflog, "Adding points to newCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                 KTDiscriminatedPoint newPoint(*pointIt);
                 newCand.AddPoint(newPoint);
             }
-
 
             // Process & emit new track
 
@@ -823,7 +821,7 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.GetSlope());
+        //KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.GetSlope());
     }
 
     void KTSequentialTrackFinder::CalculateSlopeFirstRef(KTSequentialLineData& Line)
@@ -866,7 +864,7 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.GetSlope());
+        //KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.GetSlope());
     }
 
     void KTSequentialTrackFinder::CalculateSlopeLastRef(KTSequentialLineData& Line)
@@ -910,6 +908,6 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.GetSlope());
+        //KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.GetSlope());
     }
 } /* namespace Katydid */

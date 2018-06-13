@@ -36,19 +36,8 @@ namespace Katydid
      Configuration name: "overlapping-track-clustering"
 
      Available configuration values:
-     - "max-track-width": tracks that are not further apart than this value in frequency will be grouped together to a combined track
-     - "apply-power-cut": default false; if true, the summed-power has to be > total-power-threshold; uses fNeighborhoodAmplitude
-     - "apply-point-density-cut": default false; if true, the summed-power/time-length has to be > average-power-threshold; uses fNeighborhoodAmplitude
-     - "apply-total-snr-cut": default false; if true, the summed-snr has to be > total-snr-threshold; uses fNeighborhoodAmplitude
-     - "apply-average-snr-cut": default false; if true, the summed-snr/time-length has to be > average-snr-threshold; uses fNeighborhoodAmplitude
-     - "apply-total-residual-cut: default false; if true, the summed-unitless-residual has to be > total-residual-threshold; uses fNeighborhoodAmplitude
-     - "apply-average-residual-cut: default false; if true, the summed-unitless-residual/time-length has to be > average-residual-threshold; uses fNeighborhoodAmplitude
-     - "total-power-threshold": threshold for apply-total-power-cut
-     - "average-power-threshold": threshold for apply-average-power-cut
-     - "total-snr-threshold": threshold for apply-total-snr-cut
-     - "average-snr-threshold": threshold for apply-average-snr-cut
-     - "total-residual-threshold": threshold for apply-total-residual-cut
-     - "average-residual-threshold": threshold for apply-average-residual
+     - "max-track-width": if the start- or end point of a track is closer than this value (in frequency) the tracks are combined to one...
+     - "large-max-track-width": if their largest distance in frequency is not greater than this
 
      Slots:
      - "track": Collects incoming KTProcessedTrackData objects. Clustering will produces new data pointer with KTProcessedTrackData
@@ -78,18 +67,6 @@ namespace Katydid
         private:
             MEMBERVARIABLE(double, MaxTrackWidth);
             MEMBERVARIABLE(double, LargeMaxTrackWidth);
-            MEMBERVARIABLE(bool, ApplyTotalPowerCut);
-            MEMBERVARIABLE(bool, ApplyAveragePowerCut);
-            MEMBERVARIABLE(bool, ApplyTotalSNRCut);
-            MEMBERVARIABLE(bool, ApplyAverageSNRCut);
-            MEMBERVARIABLE(bool, ApplyTotalUnitlessResidualCut);
-            MEMBERVARIABLE(bool, ApplyAverageUnitlessResidualCut);
-            MEMBERVARIABLE(double, TotalPowerThreshold);
-            MEMBERVARIABLE(double, AveragePowerThreshold);
-            MEMBERVARIABLE(double, TotalSNRThreshold);
-            MEMBERVARIABLE(double, AverageSNRThreshold);
-            MEMBERVARIABLE(double, TotalUnitlessResidualThreshold);
-            MEMBERVARIABLE(double, AverageUnitlessResidualThreshold);
             MEMBERVARIABLE(unsigned, NTracks);
 
 
