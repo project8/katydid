@@ -63,10 +63,8 @@ namespace Katydid
             KTDiscriminatedPoints& GetPoints();
             //LineRef(const double& initialSlope);
             void AddPoint(const KTDiscriminatedPoint& point);
-            void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
-            void FinishTrack();
 
             bool operator() (const KTSequentialLineData& lhs, const KTSequentialLineData& rhs) const
             {
