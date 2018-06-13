@@ -94,6 +94,9 @@ namespace Katydid
                 fDiscPoints1DData.fAbscissa = it->second.fAbscissa;
                 fDiscPoints1DData.fOrdinate = it->second.fOrdinate;
                 fDiscPoints1DData.fThreshold = it->second.fThreshold;
+                fDiscPoints1DData.fMean = it->second.fMean;
+                fDiscPoints1DData.fVariance = it->second.fVariance;
+                fDiscPoints1DData.fNeighborhoodAmplitude = it->second.fNeighborhoodAmplitude;
 
                 fDiscPoints1DTree->Fill();
            }
