@@ -252,8 +252,8 @@ namespace Katydid
                 cand.SetTimeInAcq(minTimeInAcq);
                 cand.SetTimeLength(maxTime - minTime);
 
-                cand.SetMinimumFrequency(minFreq);
-                cand.SetMaximumFrequency(maxFreq);
+                cand.SetMinFrequency(minFreq);
+                cand.SetMaxFrequency(maxFreq);
 
                 cand.SetFrequencyWidth(maxFreq - minFreq);
 

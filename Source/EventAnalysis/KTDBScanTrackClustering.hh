@@ -72,6 +72,7 @@ namespace Katydid
 
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, Radius);
+            MEMBERVARIABLE_NOSET(unsigned, DataCount);            
             //MEMBERVARIABLEREF(Point, Radii);
 
         public:
@@ -92,7 +93,6 @@ namespace Katydid
             //bool DoClustering();
 
             const std::set< Nymph::KTDataPtr >& GetCandidates() const;
-            unsigned GetDataCount() const;
 
         private:
 
@@ -102,7 +102,6 @@ namespace Katydid
             //std::vector< Points > fCompPoints; // points vectors for each component
 
             std::set< Nymph::KTDataPtr > fCandidates;
-            unsigned fDataCount;
 
             //***************
             // Signals
@@ -139,10 +138,6 @@ namespace Katydid
     inline const std::set< Nymph::KTDataPtr >& KTDBScanTrackClustering::GetCandidates() const
     {
         return fCandidates;
-    }
-    inline unsigned KTDBScanTrackClustering::GetDataCount() const
-    {
-        return fDataCount;
     }
 
 

@@ -23,11 +23,13 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
 #include "CProcessedMPTData.hh"
 #include "CROOTData.hh"
+#include "KTROOTData.hh"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -656,6 +658,7 @@ namespace Katydid
         rootMTEData.SetStartTimeInRunCSigma(mteData.GetStartTimeInRunCSigma()); rootMTEData.SetEndTimeInRunCSigma(mteData.GetEndTimeInRunCSigma()); rootMTEData.SetTimeLengthSigma(mteData.GetTimeLengthSigma());
         rootMTEData.SetStartFrequencySigma(mteData.GetStartFrequencySigma()); rootMTEData.SetEndFrequencySigma(mteData.GetEndFrequencySigma()); rootMTEData.SetFrequencyWidthSigma(mteData.GetFrequencyWidthSigma());
         rootMTEData.SetFirstTrackID(mteData.GetFirstTrackID()); rootMTEData.SetFirstTrackTimeLength(mteData.GetFirstTrackTimeLength()); rootMTEData.SetFirstTrackFrequencyWidth(mteData.GetFirstTrackFrequencyWidth()); rootMTEData.SetFirstTrackSlope(mteData.GetFirstTrackSlope()); rootMTEData.SetFirstTrackIntercept(mteData.GetFirstTrackIntercept()); rootMTEData.SetFirstTrackTotalPower(mteData.GetFirstTrackTotalPower());
+        // rootMTEData.SetFirstTrackTotalSNR(mteData.GetFirstTrackTotalSNR()); rootMTEData.SetFirstTrackMaxSNR(mteData.GetFirstTrackMaxSNR()); rootMTEData.SetFirstTrackTotalNUP(mteData.GetFirstTrackTotalNUP()); rootMTEData.SetFirstTrackMaxNUP(mteData.GetFirstTrackMaxNUP()); rootMTEData.SetFirstTrackTotalWideSNR(mteData.GetFirstTrackTotalWideSNR()); rootMTEData.SetFirstTrackTotalWideNUP(mteData.GetFirstTrackTotalWideNUP());
         rootMTEData.SetUnknownEventTopology(mteData.GetUnknownEventTopology());
         Int_t nTracks = (Int_t)mteData.GetNTracks();
         TClonesArray* tracks = rootMTEData.GetTracks();
@@ -679,6 +682,7 @@ namespace Katydid
         mteData.SetStartTimeInRunCSigma(rootMTEData.GetStartTimeInRunCSigma()); mteData.SetEndTimeInRunCSigma(rootMTEData.GetEndTimeInRunCSigma()); mteData.SetTimeLengthSigma(rootMTEData.GetTimeLengthSigma());
         mteData.SetStartFrequencySigma(rootMTEData.GetStartFrequencySigma()); mteData.SetEndFrequencySigma(rootMTEData.GetEndFrequencySigma()); mteData.SetFrequencyWidthSigma(rootMTEData.GetFrequencyWidthSigma());
         mteData.SetFirstTrackID(rootMTEData.GetFirstTrackID()); mteData.SetFirstTrackTimeLength(rootMTEData.GetFirstTrackTimeLength()); mteData.SetFirstTrackFrequencyWidth(rootMTEData.GetFirstTrackFrequencyWidth()); mteData.SetFirstTrackSlope(rootMTEData.GetFirstTrackSlope()); mteData.SetFirstTrackIntercept(rootMTEData.GetFirstTrackIntercept()); mteData.SetFirstTrackTotalPower(rootMTEData.GetFirstTrackTotalPower());
+        // mteData.SetFirstTrackTotalSNR(rootMTEData.GetFirstTrackTotalSNR()); mteData.SetFirstTrackMaxSNR(rootMTEData.GetFirstTrackMaxSNR()); mteData.SetFirstTrackTotalNUP(rootMTEData.GetFirstTrackTotalNUP()); mteData.SetFirstTrackMaxNUP(rootMTEData.GetFirstTrackMaxNUP()); mteData.SetFirstTrackTotalWideSNR(rootMTEData.GetFirstTrackTotalWideSNR()); mteData.SetFirstTrackTotalWideNUP(rootMTEData.GetFirstTrackTotalWideNUP());
         mteData.SetUnknownEventTopology(rootMTEData.GetUnknownEventTopology());
         const TClonesArray* tracks = rootMTEData.GetTracks();
         Int_t nTracks = tracks->GetSize();
@@ -740,5 +744,46 @@ namespace Katydid
         }
         return;
     }
+    
+    void KT2ROOT::LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData)
+    {
+        rootSWfData.SetComponent(swfData.GetComponent()); 
+        rootSWfData.SetAcquisitionID(swfData.GetAcquisitionID()); 
+        rootSWfData.SetCandidateID(swfData.GetCandidateID());
+        rootSWfData.SetTimeInRunC(swfData.GetTimeInRunC());
+        rootSWfData.SetTimeLength(swfData.GetTimeLength()); 
+        rootSWfData.SetMinFrequency(swfData.GetMinFrequency()); 
+        rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency()); 
+        rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth());
+
+        //
+        Int_t nPoints = (Int_t)swfData.GetPoints().size();
+        TClonesArray* points = rootSWfData.GetPoints();
+        points->Clear(); points->Expand(nPoints);
+        Int_t iPoint = 0;
+        for (KTDiscriminatedPoints::const_iterator pIt = swfData.GetPoints().begin(); pIt != swfData.GetPoints().end(); ++pIt)
+        {
+            Katydid::TDiscriminatedPoint* point = new((*points)[iPoint]) Katydid::TDiscriminatedPoint;
+            point->SetTimeInRunC(pIt->fTimeInRunC);
+            point->SetFrequency(pIt->fFrequency);
+            point->SetAmplitude(pIt->fAmplitude);
+            point->SetTimeInAcq(pIt->fTimeInAcq);
+            point->SetMean(pIt->fMean);
+            point->SetVariance(pIt->fVariance);
+            point->SetNeighborhoodAmplitude(pIt->fNeighborhoodAmplitude);
+            ++iPoint;
+        }
+        return;
+    }
+
+    // void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)
+    // {
+        // swfData.SetComponent(rootSWfData.GetComponent()); swfData.SetAcquisitionID(rootSWfData.GetAcquisitionID()); swfData.SetCandidateID(rootSWfData.GetCandidateID());
+        // swfData.SetTimeInRunC(rootSWfData.GetTimeInRunC()); swfData.SetTimeLength(rootSWfData.GetTimeLength());
+        // swfData.SetMinFrequency(rootSWfData.GetMinFrequency()); swfData.SetMaxFrequency(rootSWfData.GetMaxFrequency()); swfData.SetFrequencyWidth(rootSWfData.GetFrequencyWidth());
+
+        // TODO
+        // return;
+    // }
 
 } /* namespace Katydid */

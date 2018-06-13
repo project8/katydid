@@ -10,6 +10,8 @@
 
 #include "KTData.hh"
 
+#include "KTMemberVariable.hh"
+
 #include <map>
 #include <utility>
 #include <vector>
@@ -51,17 +53,11 @@ namespace Katydid
 
             KTDiscriminatedPoints1DData& SetNComponents(unsigned channels);
 
-            unsigned GetNBins() const;
-            double GetBinWidth() const;
-
-            void SetNBins(unsigned nBins);
-            void SetBinWidth(double binWidth);
-
         private:
             std::vector< PerComponentData > fComponentData;
 
-            unsigned fNBins;
-            double fBinWidth;
+            MEMBERVARIABLE(unsigned, NBins);
+            MEMBERVARIABLE(double, BinWidth);
 
         public:
             static const std::string sName;
@@ -89,27 +85,6 @@ namespace Katydid
         return *this;
     }
 
-    inline unsigned KTDiscriminatedPoints1DData::GetNBins() const
-    {
-        return fNBins;
-    }
-
-    inline double KTDiscriminatedPoints1DData::GetBinWidth() const
-    {
-        return fBinWidth;
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetNBins(unsigned nBins)
-    {
-        fNBins = nBins;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetBinWidth(double binWidth)
-    {
-        fBinWidth = binWidth;
-        return;
-    }
 
 } /* namespace Katydid */
 

@@ -100,6 +100,21 @@ int main()
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
     swfData = createFakeData(trackSlope, trackIntercept,trackStart,trackLength,trackSigma,trackPowerMean,trackPowerStd,nSlices,avgPointsPerSlice);
     trackProc.ProcessTrackSWF(swfData);
+    KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
+
+#ifdef ROOT_FOUND
+
+    KTROOTTreeWriter writer;
+    writer.SetFilename("TestTrackProcessing_result.root");
+    writer.SetFileFlag("recreate");
+
+    KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
+    treeTypeWriter.SetWriter(&writer);
+    // treeWriter.SetupProcessedTrackTree();
+    treeTypeWriter.WriteSparseWaterfallCandidate(dataPtr);
+    treeTypeWriter.WriteProcessedTrack(dataPtr);
+    KTINFO(testlog, "Processed track saved in file");
+#endif
 
 #ifdef ROOT_FOUND
 
