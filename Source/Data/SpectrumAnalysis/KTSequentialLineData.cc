@@ -20,7 +20,6 @@ namespace Katydid
 
     KTSequentialLineData::KTSequentialLineData():
         fLinePoints(),
-        fAmplitudeList(),
         fSNRList(),
         fStartTimeInRunC(0.0),
         fStartTimeInAcq(0.0),
@@ -34,9 +33,12 @@ namespace Katydid
         fComponent(0),
         fAcquisitionID(0),
         fCandidateID(0),
-        fAmplitudeSum(0.0),
-        fSNRSum(0.0),
-        fNUPSum(0.0),
+        fTotalPower(0.0),
+        fTotalSNR(0.0),
+        fTotalNUP(0.0),
+        fTotalWidePower(0.0),
+        fTotalWideSNR(0.0),
+        fTotalWideNUP(0.0),
         fMinPoints(0),
         fSumX(0.),
         fSumY(0.),
@@ -49,7 +51,6 @@ namespace Katydid
 
     void KTSequentialLineData::AddPoint( const KTDiscriminatedPoint& point )
     {
-        fAmplitudeList.push_back(point.fNeighborhoodAmplitude);
         fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
 
         fLinePoints.insert(point);
@@ -66,7 +67,6 @@ namespace Katydid
             while ( fSNRList.back() < trimmingThreshold and fNPoints >= minPoints )
             {
                 KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
-                fAmplitudeList.erase(fAmplitudeList.end() -1);
                 fSNRList.erase(fSNRList.end() -1);
                 fLinePoints.erase(*fLinePoints.rbegin());
                 fNPoints = fLinePoints.size();
@@ -74,7 +74,6 @@ namespace Katydid
             while ( fSNRList.front() < trimmingThreshold and fNPoints >= minPoints )
             {
                 KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
-                fAmplitudeList.erase(fAmplitudeList.begin());
                 fSNRList.erase(fSNRList.begin());
                 fLinePoints.erase(*fLinePoints.begin());
                 fNPoints = fLinePoints.size();
@@ -84,23 +83,13 @@ namespace Katydid
         SetStartFrequency( fLinePoints.begin()->fFrequency);
         SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq);
 
-        fAmplitudeSum = 0.;
-        fSNRSum = 0;
-        fNUPSum = 0;
-
-        for(KTDiscriminatedPoints::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
-        {
-            fAmplitudeSum += pointIt->fNeighborhoodAmplitude;
-            fSNRSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
-            fNUPSum += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
-        }
         SetEndTimeInRunC( fLinePoints.rbegin()->fTimeInRunC);
         SetEndTimeInAcq( fLinePoints.rbegin()->fTimeInAcq);
         SetEndFrequency( fLinePoints.rbegin()->fFrequency);
     }
 
 
-    inline void KTSequentialLineData::UpdateLineProperties()
+    void KTSequentialLineData::UpdateLineProperties()
     {
         //KTDEBUG(seqlog, "Updating line parameters");
         SetNPoints( fLinePoints.size() );
@@ -110,6 +99,7 @@ namespace Katydid
             SetStartFrequency( fLinePoints.begin()->fFrequency );
             SetStartTimeInAcq( fLinePoints.begin()->fTimeInAcq );
         }
+        // This shouldn't actually be possible because fLinePoints are of tape KTDiscriminatedPoints
         if (fLinePoints.rbegin()->fTimeInRunC < GetStartTimeInRunC() )
         {
             SetStartTimeInRunC( fLinePoints.rbegin()->fTimeInRunC );
@@ -121,6 +111,36 @@ namespace Katydid
             SetEndTimeInRunC( fLinePoints.rbegin()->fTimeInRunC);
             SetEndTimeInAcq( fLinePoints.rbegin()->fTimeInAcq);
             SetEndFrequency( fLinePoints.rbegin()->fFrequency);
+        }
+    }
+    void KTSequentialLineData::CalculateTotalPower()
+    {
+        fTotalPower = 0.;
+        fTotalWidePower = 0.;
+        for(KTDiscriminatedPoints::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        {
+            fTotalPower += pointIt->fAmplitude;
+            fTotalWidePower += pointIt->fNeighborhoodAmplitude;
+        }
+    }
+    void KTSequentialLineData::CalculateTotalSNR()
+    {
+        fTotalSNR = 0.;
+        fTotalWideSNR = 0.;
+        for(KTDiscriminatedPoints::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        {
+            fTotalSNR += pointIt->fAmplitude/pointIt->fMean;
+            fTotalWideSNR += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
+        }
+    }
+    void KTSequentialLineData::CalculateTotalNUP()
+    {
+        fTotalNUP = 0.;
+        fTotalWideNUP = 0.;
+        for(KTDiscriminatedPoints::iterator pointIt = fLinePoints.begin(); pointIt != fLinePoints.end(); ++pointIt)
+        {
+            fTotalNUP += ( pointIt->fAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
+            fTotalWideNUP += ( pointIt->fNeighborhoodAmplitude - pointIt->fMean ) / sqrt( pointIt->fVariance );
         }
     }
 } /* namespace Katydid */

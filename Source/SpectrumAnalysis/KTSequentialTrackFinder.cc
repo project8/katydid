@@ -550,49 +550,53 @@ namespace Katydid
      }
 
 
-    bool KTSequentialTrackFinder::EmitPreCandidate(KTSequentialLineData line)
+    bool KTSequentialTrackFinder::EmitPreCandidate(KTSequentialLineData& line)
     {
         KTDEBUG(stflog, "applying cuts and then emitting candidate");
         bool lineIsCandidate = true;
 
+        line.CalculateTotalPower();
+        line.CalculateTotalSNR();
+        line.CalculateTotalNUP();
+
         if ( fApplyTotalPowerCut )
         {
-            if ( line.GetAmplitudeSum() <= fTotalPowerThreshold )
+            if ( line.GetTotalWidePower() <= fTotalPowerThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyAveragePowerCut )
         {
-            if ( line.GetAmplitudeSum()/(line.GetEndTimeInRunC()-line.GetStartTimeInRunC()) <= fAveragePowerThreshold )
+            if ( line.GetTotalWidePower()/(line.GetEndTimeInRunC()-line.GetStartTimeInRunC()) <= fAveragePowerThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyTotalSNRCut )
         {
-            if ( line.GetSNRSum() <= fTotalSNRThreshold)
+            if ( line.GetTotalWideSNR() <= fTotalSNRThreshold)
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyAverageSNRCut )
         {
-            if ( line.GetSNRSum() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageSNRThreshold )
+            if ( line.GetTotalWideSNR() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageSNRThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyTotalUnitlessResidualCut )
         {
-            if ( line.GetNUPSum() <= fTotalUnitlessResidualThreshold )
+            if ( line.GetTotalWideNUP() <= fTotalUnitlessResidualThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyAverageUnitlessResidualCut )
         {
-            if ( line.GetNUPSum() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageUnitlessResidualThreshold )
+            if ( line.GetTotalWideNUP() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageUnitlessResidualThreshold )
             {
                 lineIsCandidate = false;
             }
@@ -608,6 +612,13 @@ namespace Katydid
             newCand.SetAcquisitionID( line.GetAcquisitionID());
             newCand.SetCandidateID( fNLines );
             newCand.SetSlope( line.GetSlope() );
+            newCand.SetTotalSNR( line.GetTotalSNR() );
+            newCand.SetTotalWideSNR( line.GetTotalWideSNR() );
+            newCand.SetTotalPower( line.GetTotalPower() );
+            newCand.SetTotalWidePower( line.GetTotalWidePower() );
+            newCand.SetTotalNUP( line.GetTotalNUP() );
+            newCand.SetTotalWideNUP( line.GetTotalWideNUP() );
+
             ++fNLines;
 
             // Add line points to swf candidate
