@@ -19,6 +19,7 @@
 #include "KTDiscriminatedPoint.hh"
 
 #include <vector>
+#include <cmath>
 
 namespace Katydid
 {
