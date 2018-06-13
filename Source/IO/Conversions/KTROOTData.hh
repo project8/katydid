@@ -187,6 +187,12 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, FirstTrackSlope);
         MEMBERVARIABLE(Double_t, FirstTrackIntercept);
         MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+        MEMBERVARIABLE(Double_t, FirstTrackTotalSNR);
+        MEMBERVARIABLE(Double_t, FirstTrackMaxSNR);
+        MEMBERVARIABLE(Double_t, FirstTrackTotalNUP);
+        MEMBERVARIABLE(Double_t, FirstTrackMaxNUP);
+        MEMBERVARIABLE(Double_t, FirstTrackTotalWideSNR);
+        MEMBERVARIABLE(Double_t, FirstTrackMaxWideSNR);
 
         MEMBERVARIABLE(Double_t, UnknownEventTopology);
 

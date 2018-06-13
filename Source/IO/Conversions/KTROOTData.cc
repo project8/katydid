@@ -332,6 +332,7 @@ namespace Katydid
         fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma; fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma; fTimeLengthSigma = rhs.fTimeLengthSigma;
         fStartFrequencySigma = rhs.fStartFrequencySigma; fEndFrequencySigma = rhs.fEndFrequencySigma; fFrequencyWidthSigma = rhs.fFrequencyWidthSigma;
         fFirstTrackID = rhs.fFirstTrackID; fFirstTrackTimeLength = rhs.fFirstTrackTimeLength; fFirstTrackFrequencyWidth = rhs.fFirstTrackFrequencyWidth; fFirstTrackSlope = rhs.fFirstTrackSlope; fFirstTrackIntercept = rhs.fFirstTrackIntercept; fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
+        fFirstTrackTotalSNR = rhs.fFirstTrackTotalSNR; fFirstTrackMaxSNR = rhs.fFirstTrackMaxSNR; fFirstTrackTotalNUP = rhs.fFirstTrackTotalNUP; fFirstTrackMaxNUP = rhs.fFirstTrackMaxNUP; fFirstTrackTotalWideSNR = rhs.fFirstTrackTotalWideSNR; fFirstTrackTotalWideNUP = rhs.fFirstTrackTotalWideNUP;
         fUnknownEventTopology = rhs.fUnknownEventTopology;
         fTracks->Clear(); (*fTracks) = *(rhs.fTracks);
         return *this;
@@ -345,6 +346,7 @@ namespace Katydid
         fStartTimeInRunCSigma = data.GetStartTimeInRunCSigma(); fEndTimeInRunCSigma = data.GetEndTimeInRunCSigma(); fTimeLengthSigma = data.GetTimeLengthSigma();
         fStartFrequencySigma = data.GetStartFrequencySigma(); fEndFrequencySigma = data.GetEndFrequencySigma(); fFrequencyWidthSigma = data.GetFrequencyWidthSigma();
         fFirstTrackID = data.GetFirstTrackID(); fFirstTrackTimeLength = data.GetFirstTrackTimeLength(); fFirstTrackFrequencyWidth = data.GetFirstTrackFrequencyWidth(); fFirstTrackSlope = data.GetFirstTrackSlope(); fFirstTrackIntercept = data.GetFirstTrackIntercept(); fFirstTrackTotalPower = data.GetFirstTrackTotalPower();
+        fFirstTrackTotalSNR = data.GetFirstTrackTotalSNR(); fFirstTrackMaxSNR = data.GetFirstTrackMaxSNR(); fFirstTrackTotalNUP = data.GetFirstTrackTotalNUP(); fFirstTrackMaxNUP = data.GetFirstTrackMaxNUP(); fFirstTrackTotalWideSNR = data.GetFirstTrackTotalWideSNR(); fFirstTrackTotalWideNUP = data.GetFirstTrackTotalWideNUP();
         fUnknownEventTopology = data.GetUnknownEventTopology();
         Int_t nTracks = (Int_t)data.GetNTracks();
         fTracks->Clear(); fTracks->Expand(nTracks);
@@ -365,6 +367,7 @@ namespace Katydid
         data.SetStartTimeInRunCSigma(fStartTimeInRunCSigma); data.SetEndTimeInRunCSigma(fEndTimeInRunCSigma); data.SetTimeLengthSigma(fTimeLengthSigma);
         data.SetStartFrequencySigma(fStartFrequencySigma); data.SetEndFrequencySigma(fEndFrequencySigma); data.SetFrequencyWidthSigma(fFrequencyWidthSigma);
         data.SetFirstTrackID(fFirstTrackID); data.SetFirstTrackTimeLength(fFirstTrackTimeLength); data.SetFirstTrackFrequencyWidth(fFirstTrackFrequencyWidth); data.SetFirstTrackSlope(fFirstTrackSlope); data.SetFirstTrackIntercept(fFirstTrackIntercept); data.SetFirstTrackTotalPower(fFirstTrackTotalPower);
+        data.SetFirstTrackTotalSNR(fFirstTrackTotalSNR); data.SetFirstTrackMaxSNR(fFirstTrackMaxSNR); data.SetFirstTrackTotalNUP(fFirstTrackTotalNUP); data.SetFirstTrackMaxNUP(fFirstTrackMaxNUP); data.SetFirstTrackTotalWideSNR(fFirstTrackTotalWideSNR); data.SetFirstTrackTotalWideNUP(fFirstTrackTotalWideNUP);
         data.SetUnknownEventTopology(fUnknownEventTopology);
 
         Int_t nTracks = fTracks->GetSize();
