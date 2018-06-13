@@ -64,6 +64,10 @@ Release Date: ?????????????????
       * KTTrackProcessing: new logic for handling new slots and algorithm combinations (adding new slots should be easier).
         Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
       * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
+      * KTSequentialLineData: new version of KTSeqLine. Has SNR and NUP member variables. LineTrimming now uses SNR instead of Power.
+      * KTSequentialTrackFinder: new slot for KTDiscriminatedPoints1DData only. Signal is now KTSequentialLineData.
+      * KTOverlappingTrackClustering and KTIterativeTrrackClustering: new slot and singal for KTSequentialLineData. Both Processors can no longer apply cuts.
+      * KTSequentialLineSNRCut and KTSequentialLineNUPCut: can be used to apply cuts on total and average SNR and NUP of KTSequentialLineData.
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
