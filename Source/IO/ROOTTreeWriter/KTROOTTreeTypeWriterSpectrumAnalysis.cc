@@ -94,6 +94,9 @@ namespace Katydid
                 fDiscPoints1DData.fAbscissa = it->second.fAbscissa;
                 fDiscPoints1DData.fOrdinate = it->second.fOrdinate;
                 fDiscPoints1DData.fThreshold = it->second.fThreshold;
+                fDiscPoints1DData.fMean = it->second.fMean;
+                fDiscPoints1DData.fVariance = it->second.fVariance;
+                fDiscPoints1DData.fNeighborhoodAmplitude = it->second.fNeighborhoodAmplitude;
 
                 fDiscPoints1DTree->Fill();
            }
@@ -183,6 +186,9 @@ namespace Katydid
                     fKDTreePointData.fTimeInRunC = it->fCoords[0];
                     fKDTreePointData.fFrequency = it->fCoords[1];
                     fKDTreePointData.fAmplitude = it->fAmplitude;
+                    fKDTreePointData.fMean = it->fMean;
+                    fKDTreePointData.fVariance = it->fVariance;
+                    fKDTreePointData.fNeighborhoodAmplitude = it->fNeighborhoodAmplitude;
                     fKDTreePointData.fNoiseFlag = it->fNoiseFlag;
                     KTKDTreeData::TreeIndex::Neighbors neighbors = index->NearestNeighborsByNumber(pid, 2);
                     fKDTreePointData.fNNDistance = neighbors.dist(1);

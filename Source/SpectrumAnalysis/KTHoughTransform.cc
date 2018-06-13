@@ -59,14 +59,14 @@ namespace Katydid
 
         const KTDiscriminatedPoints& points = data.GetPoints();
 
-        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
+        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinFrequency(), data.GetFrequencyWidth());
         if (newTransform == NULL)
         {
             KTERROR(htlog, "Something went wrong in the transform");
         }
         else
         {
-            newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth(), 0);
+            newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinFrequency(), data.GetFrequencyWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 

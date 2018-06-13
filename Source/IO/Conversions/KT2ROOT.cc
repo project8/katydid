@@ -23,11 +23,13 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
 #include "CProcessedMPTData.hh"
 #include "CROOTData.hh"
+#include "KTROOTData.hh"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -740,5 +742,46 @@ namespace Katydid
         }
         return;
     }
+    
+    void KT2ROOT::LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData)
+    {
+        rootSWfData.SetComponent(swfData.GetComponent()); 
+        rootSWfData.SetAcquisitionID(swfData.GetAcquisitionID()); 
+        rootSWfData.SetCandidateID(swfData.GetCandidateID());
+        rootSWfData.SetTimeInRunC(swfData.GetTimeInRunC());
+        rootSWfData.SetTimeLength(swfData.GetTimeLength()); 
+        rootSWfData.SetMinFrequency(swfData.GetMinFrequency()); 
+        rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency()); 
+        rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth());
+
+        //
+        Int_t nPoints = (Int_t)swfData.GetPoints().size();
+        TClonesArray* points = rootSWfData.GetPoints();
+        points->Clear(); points->Expand(nPoints);
+        Int_t iPoint = 0;
+        for (KTDiscriminatedPoints::const_iterator pIt = swfData.GetPoints().begin(); pIt != swfData.GetPoints().end(); ++pIt)
+        {
+            Katydid::TDiscriminatedPoint* point = new((*points)[iPoint]) Katydid::TDiscriminatedPoint;
+            point->SetTimeInRunC(pIt->fTimeInRunC);
+            point->SetFrequency(pIt->fFrequency);
+            point->SetAmplitude(pIt->fAmplitude);
+            point->SetTimeInAcq(pIt->fTimeInAcq);
+            point->SetMean(pIt->fMean);
+            point->SetVariance(pIt->fVariance);
+            point->SetNeighborhoodAmplitude(pIt->fNeighborhoodAmplitude);
+            ++iPoint;
+        }
+        return;
+    }
+
+    // void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)
+    // {
+        // swfData.SetComponent(rootSWfData.GetComponent()); swfData.SetAcquisitionID(rootSWfData.GetAcquisitionID()); swfData.SetCandidateID(rootSWfData.GetCandidateID());
+        // swfData.SetTimeInRunC(rootSWfData.GetTimeInRunC()); swfData.SetTimeLength(rootSWfData.GetTimeLength());
+        // swfData.SetMinFrequency(rootSWfData.GetMinFrequency()); swfData.SetMaxFrequency(rootSWfData.GetMaxFrequency()); swfData.SetFrequencyWidth(rootSWfData.GetFrequencyWidth());
+
+        // TODO
+        // return;
+    // }
 
 } /* namespace Katydid */
