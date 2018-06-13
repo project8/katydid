@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTSequentialLineSNRCut");
+    KTLOGGER(sqlcutlog, "KTSequentialLineSNRCut");
 
     const std::string KTSequentialLineSNRCut::Result::sName = "seq-line-snr-cut";
 
@@ -21,7 +21,8 @@ namespace Katydid
     KTSequentialLineSNRCut::KTSequentialLineSNRCut(const std::string& name) :
          KTCutOneArg(name),
          fMinTotalSNR(0.0),
-         fMinAverageSNR(0.0)
+         fMinAverageSNR(0.0),
+         fWideOrNarrowLine("wide")
     {}
 
     KTSequentialLineSNRCut::~KTSequentialLineSNRCut()
@@ -43,15 +44,32 @@ namespace Katydid
         bool isCut = false;
         seqLineData.CalculateTotalSNR();
 
-        if( seqLineData.GetTotalSNR() < GetMinTotalSNR() )
+        if (fWideOrNarrowLine == "narrow")
         {
-            isCut = true;
+            if( seqLineData.GetTotalSNR() < GetMinTotalSNR() )
+            {
+                isCut = true;
+            }
+            if( seqLineData.GetTotalSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) > GetMaxStartTime() )
+            {
+                isCut = true;
+            }
         }
-        if( seqLineData.GetTotalSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) > GetMaxStartTime() )
+        else if (fWideOrNarrowLine == "wide")
         {
-            isCut = true;
+            if( seqLineData.GetTotalWideSNR() < GetMinTotalSNR() )
+            {
+                isCut = true;
+            }
+            if( seqLineData.GetTotalWideSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) > GetMaxStartTime() )
+            {
+                isCut = true;
+            }
         }
-        
+        else
+        {
+            KTERROR(sqlcutlog, "Invalid string for fWideOrNarrowLine: "<< fWideOrNarrowLine);
+        }
         data.GetCutStatus().AddCutResult< KTSequentialLineSNRCut::Result >(isCut);
 
         return isCut;
