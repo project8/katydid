@@ -50,7 +50,7 @@ namespace Katydid
             {
                 isCut = true;
             }
-            if( seqLineData.GetTotalSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) > GetMaxStartTime() )
+            if( seqLineData.GetTotalSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) < GetMinAverageSNR() )
             {
                 isCut = true;
             }
@@ -61,7 +61,7 @@ namespace Katydid
             {
                 isCut = true;
             }
-            if( seqLineData.GetTotalWideSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) > GetMaxStartTime() )
+            if( seqLineData.GetTotalWideSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) < GetMinAverageSNR() )
             {
                 isCut = true;
             }

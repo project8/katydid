@@ -34,6 +34,7 @@ namespace Katydid
             fNewTracks(),
             fNewSeqLineCands(),
             fCompSeqLineCands(),
+            fCandidates(),
             fNTracks(0),
             fApplyTotalPowerCut(false),
             fApplyAveragePowerCut(false),

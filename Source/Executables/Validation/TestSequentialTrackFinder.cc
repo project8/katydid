@@ -17,7 +17,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTIterativeTrackClustering.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTSequentialLineData.hh"
-#include "KTDiscriminatedPoint.hh"
+#include "KTSequentialLineSNRCut.hh"
 #include "KTRandom.hh"
 
 
@@ -104,6 +104,7 @@ int main()
     KTINFO(testlog, "Testing STF!");
 
     KTSequentialTrackFinder stf;
+    KTSequentialLineSNRCut snrcut;
 
     // Apply some settings
     stf.SetTrimmingThreshold(0.9);
@@ -116,7 +117,7 @@ int main()
     stf.SetTimeGapTolerance(1.e-3);
     stf.SetMinSlope(0);
 
-
+    snrcut.SetMinAverageSNR(1e4);
 
     // Create fake data for every slice and run stf
     for (unsigned iSlice = 0; iSlice <= nSlices; ++iSlice )
@@ -157,10 +158,7 @@ int main()
 
     // Test OTC
     KTOverlappingTrackClustering otc;
-    otc.SetApplyTotalSNRCut(false);
-    otc.SetTotalSNRThreshold(4);
-    otc.SetApplyAverageSNRCut(true);
-    otc.SetAverageSNRThreshold(1e4);
+
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
@@ -170,7 +168,8 @@ int main()
 
 
     // Get output
-    const std::set< Nymph::KTDataPtr >& otccandidates = otc.GetCandidates();
+    std::set< Nymph::KTDataPtr > otccandidates = otc.GetCandidates();
+
     KTINFO(testlog, "OTC Candidates found: " << otccandidates.size());
 
     // Print some output
@@ -182,28 +181,34 @@ int main()
         KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
         //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
-        const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-        KTINFO(testlog, "Length [bins]: "<<candPoints.size());
-        OTCPoints += candPoints.size();
+        Nymph::KTData data = (*cIt)->Of< Nymph::KTData >();
+        snrcut.Apply(data, sqlData);
+        KTINFO(testlog, "Cut status: "<<data.GetCutStatus().IsCut());
+        if (data.GetCutStatus().IsCut() == true)
+        {
+            otccandidates.erase(*cIt);
+        }
+        else
+        {
+            const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
+            KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+            OTCPoints += candPoints.size();
+        }
+
+
 
         //for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         //{
         //    KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         //}
+
     }
+    KTINFO(testlog, "OTC Candidates after Cut: " << otccandidates.size());
     KTINFO(testlog, "Total OTC Points: "<<OTCPoints);
 
 
     // Test ITC
     KTIterativeTrackClustering itc;
-    itc.SetApplyTotalSNRCut(false);
-    itc.SetTotalSNRThreshold(4);
-    itc.SetApplyAverageSNRCut(false);
-    itc.SetAverageSNRThreshold(10000);
-    itc.SetApplyAverageUnitlessResidualCut(true);
-    itc.SetAverageUnitlessResidualThreshold(100);
-    itc.SetApplyTotalUnitlessResidualCut(true);
-    itc.SetTotalUnitlessResidualThreshold(1);
 
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt)
     {
