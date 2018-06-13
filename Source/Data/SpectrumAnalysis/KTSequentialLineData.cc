@@ -52,7 +52,6 @@ namespace Katydid
     void KTSequentialLineData::AddPoint( const KTDiscriminatedPoint& point )
     {
         fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
-
         fLinePoints.insert(point);
         //KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();

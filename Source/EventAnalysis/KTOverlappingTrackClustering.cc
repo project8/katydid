@@ -301,8 +301,6 @@ namespace Katydid
             fNTracks++;
 
             newSeqLineCand.SetSlope(candIt->GetSlope());
-            newSeqLineCand.CalculateTotalPower();
-            newSeqLineCand.CalculateTotalSNR();
 
             KTDiscriminatedPoints& points = candIt->GetPoints();
             for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
@@ -310,7 +308,10 @@ namespace Katydid
                 //KTDEBUG( otclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                 newSeqLineCand.AddPoint( *pointIt );
             }
-            //KTDEBUG( otclog, "Emitting SeqLine signal" );
+            newSeqLineCand.CalculateTotalPower();
+            newSeqLineCand.CalculateTotalSNR();
+            newSeqLineCand.CalculateTotalNUP();
+
             fCandidates.insert( data );
             fSeqLineCandSignal( data );
 
