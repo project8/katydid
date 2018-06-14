@@ -432,7 +432,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0., summedpower = 0;
+            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -446,12 +446,14 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fNeighborhoodRadius * mean ) + 2* fNeighborhoodRadius * normalizedValue;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    summedpower = summedpower - (2* fNeighborhoodRadius - 1) * mean;
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -477,11 +479,14 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fNeighborhoodRadius * mean ) + 2* fNeighborhoodRadius * normalizedValue;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -530,7 +535,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0., summedpower = 0;
+            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
@@ -538,18 +543,21 @@ namespace Katydid
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 mean = (*splineImp)(iBin - fMinBin);
                 variance = (*varSplineImp)(iBin - fMinBin);
+
                 if (value >= threshold)
                 {
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fNeighborhoodRadius * mean ) + 2* fNeighborhoodRadius * normalizedValue;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
-                    summedpower = summedpower - (2* fNeighborhoodRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -574,11 +582,14 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fNeighborhoodRadius * mean ) + 2* fNeighborhoodRadius * normalizedValue;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -641,11 +652,14 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fNeighborhoodRadius * mean ) + 2* fNeighborhoodRadius * normalizedValue;
-                        variance = normalizedVariance;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
+                        variance = normalizedVariance;
                     }
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -671,11 +685,14 @@ namespace Katydid
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fNeighborhoodRadius * mean ) + 2* fNeighborhoodRadius * normalizedValue;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -688,21 +705,24 @@ namespace Katydid
 
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
-        for (unsigned jBin = std::max(iBin-fNeighborhoodRadius,fMinBin); jBin<= std::min(iBin+fNeighborhoodRadius,fMaxBin); ++jBin)
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += (*spectrum)(jBin);
         }
     }
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
-        for (unsigned jBin = std::max(iBin-fNeighborhoodRadius,fMinBin); jBin<= std::min(iBin+fNeighborhoodRadius,fMaxBin); ++jBin)
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
-            neighborhoodAmplitude += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+            neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
         }
     }
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
-        for (unsigned jBin = std::max(iBin-fNeighborhoodRadius,fMinBin); jBin<= std::min(iBin+fNeighborhoodRadius,fMaxBin); ++jBin)
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += (*spectrum)(jBin).abs();
         }

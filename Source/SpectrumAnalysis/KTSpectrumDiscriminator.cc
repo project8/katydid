@@ -260,7 +260,7 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
@@ -353,7 +353,7 @@ namespace Katydid
                     //printer << "   " << iBin << " -- " << value;
                     //newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
@@ -446,7 +446,7 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
-                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius - 1) * mean;
+                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
@@ -461,21 +461,24 @@ namespace Katydid
 
     void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
-        for (unsigned jBin = std::max(iBin-fNeighborhoodRadius,fMinBin); jBin<= std::min(iBin+fNeighborhoodRadius,fMaxBin); ++jBin)
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += (*spectrum)(jBin);
         }
     }
     void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
-        for (unsigned jBin = std::max(iBin-fNeighborhoodRadius,fMinBin); jBin<= std::min(iBin+fNeighborhoodRadius,fMaxBin); ++jBin)
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
-            neighborhoodAmplitude += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+            neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
         }
     }
     void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
-        for (unsigned jBin = std::max(iBin-fNeighborhoodRadius,fMinBin); jBin<= std::min(iBin+fNeighborhoodRadius,fMaxBin); ++jBin)
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += (*spectrum)(jBin).abs();
         }
