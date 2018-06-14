@@ -25,7 +25,7 @@ namespace Katydid
 
     class KTHoughData;
     class KTSparseWaterfallCandidateData;
-    class KTSequentialLineData;
+    // class KTSequentialLineData;
 
     /*!
      @class KTTrackProcessingDoubleCuts
@@ -103,7 +103,7 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
-            Nymph::KTSlotDataTwoTypes< KTSequentialLineData, KTHoughData > fSeqAndHoughSlot;
+            // Nymph::KTSlotDataTwoTypes< KTSequentialLineData, KTHoughData > fSeqAndHoughSlot;
 
     };
 

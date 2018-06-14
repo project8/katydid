@@ -14,7 +14,7 @@
 #include "KTProcessedTrackData.hh"
 #include "KTSmooth.hh"
 #include "KTSparseWaterfallCandidateData.hh"
-#include "KTSequentialLineData.hh"
+// #include "KTSequentialLineData.hh"
 
 #include <limits>
 #include <vector>
@@ -41,8 +41,8 @@ namespace Katydid
             fProcTrackAssignedError(0.),
             fTrackSignal("track", this),
             // fTrackProcPtr(&KTTrackProcessingDoubleCuts::ProcessTrackDoubleCuts),
-            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessingDoubleCuts::ProcessTrack, &fTrackSignal),
-            fSeqAndHoughSlot("seqc-and-hough", this, &KTTrackProcessingDoubleCuts::ProcessTrack, &fTrackSignal)
+            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessingDoubleCuts::ProcessTrack, &fTrackSignal)
+            // fSeqAndHoughSlot("seqc-and-hough", this, &KTTrackProcessingDoubleCuts::ProcessTrack, &fTrackSignal)
     {
     }
 
