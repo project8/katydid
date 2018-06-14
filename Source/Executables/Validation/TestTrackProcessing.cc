@@ -103,7 +103,6 @@ int main()
     KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
 
 #ifdef ROOT_FOUND
-
     KTROOTTreeWriter writer;
     writer.SetFilename("TestTrackProcessing_result.root");
     writer.SetFileFlag("recreate");

@@ -59,7 +59,6 @@ namespace Katydid
                 unsigned fComponent;
                 unsigned fCandidateID;
                 unsigned fAcquisitionID;
-
             };
 
         public:
@@ -82,7 +81,6 @@ namespace Katydid
             bool DoWeightedSlopeAlgorithm(Points& points, TrackID trackID, KTProcessedTrackData* procTrack);
 
         private:
-            double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
             template<typename TracklikeCandidate> 
             TrackID ExtractTrackID(TracklikeCandidate tlcData);
 
@@ -102,11 +100,6 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTSequentialLineData > fSeqSlot;
 
     };
-
-    double KTTrackProcessingWeightedSlope::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
-    {
-        return fabs(lineA * pointX + lineB * pointY + lineC) / sqrt(lineA*lineA + lineB*lineB);
-    }
 
 }
  /* namespace Katydid */

@@ -125,7 +125,6 @@ namespace Katydid
                     wideTrackNUP[iTimeBin] += (pIt->fNeighborhoodAmplitude - pIt->fMean) / pIt->fVariance;
                     
                     ++nTrackBins;
-
                     break; //Since time bins are unique
                 }
             }
@@ -204,7 +203,6 @@ namespace Katydid
         // TODO: Calculate distance to track and see for a possible alpha [%] rejection of noise.
 
         // Adding resuts to ProcessedTrackData object
-        // KTProcessedTrackData& procTrack = swfData.Of< KTProcessedTrackData >();
         procTrack->SetComponent(trackID.fComponent);
         procTrack->SetAcquisitionID(trackID.fAcquisitionID);
         procTrack->SetTrackID(trackID.fCandidateID);
