@@ -10,7 +10,7 @@ and tests the behavior of the algorithms in this processor.
 
 #include "KTLogger.hh"
 
-#include "KTTrackProcessing.hh"
+#include "KTTrackProcessingWeightedSlope.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoint.hh"
@@ -89,7 +89,7 @@ int main()
     int avgPointsPerSlice = 1;
 
     // Processor definition
-    KTTrackProcessing trackProc;
+    KTTrackProcessingWeightedSlope trackProc;
     trackProc.SetTrackProcAlgorithm("weighted-slope");
     trackProc.SetSlopeMinimum(0);
     trackProc.SetProcTrackMinPoints(1);
@@ -99,7 +99,7 @@ int main()
     Nymph::KTDataPtr dataPtr(new Nymph::KTData());    
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
     swfData = createFakeData(trackSlope, trackIntercept,trackStart,trackLength,trackSigma,trackPowerMean,trackPowerStd,nSlices,avgPointsPerSlice);
-    trackProc.ProcessTrackSWF(swfData);
+    trackProc.ProcessTrack(swfData);
     KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
 
 #ifdef ROOT_FOUND
