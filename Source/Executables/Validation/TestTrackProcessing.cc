@@ -63,7 +63,7 @@ KTSparseWaterfallCandidateData createFakeData(double trackSlope,
         for (unsigned iPoint = 0; iPoint<nPoints; ++iPoint){
             double yPoint = trackIntercept + trackSlope*sliceTime + noiseDistribution();
             double power = powerDistribution();
-            Point aPoint(sliceTime,yPoint,power,sliceTime,trackPowerMean*0.1,trackPowerStd,power*1.1);
+            Point aPoint(sliceTime,yPoint,power,sliceTime,trackPowerMean*0.1,pow(trackPowerStd,2),power*1.1);
             swfData.AddPoint(aPoint);
         }
         sliceTime +=timeStep;
