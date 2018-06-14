@@ -61,6 +61,7 @@ Release Date: ?????????????????
 * Track SNR and NUP:
       * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
         Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
+      * KTSpectrumDiscriminator and KTVariableSpectrumDiscriminator: new member variables of KTDiscriminatedPoints1DData are calculated and set.
       * KTTrackProcessing: new logic for handling new slots and algorithm combinations (adding new slots should be easier).
         Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
       * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
