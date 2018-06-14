@@ -1,7 +1,7 @@
 /**
  @file KTTrackProcessingWeightedSlope.hh
  @brief Contains KTTrackProcessingWeightedSlope
- @details Extracts physics-relevant information about tracks
+ @details Extracts physics-relevant information about tracks using a weighted-slope algorithm
  @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */
@@ -62,7 +62,7 @@ namespace Katydid
             };
 
         public:
-            KTTrackProcessingWeightedSlope(const std::string& name = "track-proc");
+            KTTrackProcessingWeightedSlope(const std::string& name = "track-proc-ws");
             virtual ~KTTrackProcessingWeightedSlope();
 
             bool Configure(const scarab::param_node* node);

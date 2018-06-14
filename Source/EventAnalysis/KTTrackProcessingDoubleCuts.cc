@@ -1,7 +1,7 @@
 /**
  @file KTTrackProcessingDoubleCuts.cc
  @brief Contains KTTrackProcessingDoubleCuts
- @details Extracts physics-relevant information about tracks
+ @details Extracts physics-relevant information about tracks using a double-cuts algorithm
  @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */

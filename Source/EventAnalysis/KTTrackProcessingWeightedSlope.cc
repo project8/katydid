@@ -1,7 +1,7 @@
 /**
  @file KTTrackProcessingWeightedSlope.cc
  @brief Contains KTTrackProcessingWeightedSlope
- @details Extracts physics-relevant information about tracks
+ @details Extracts physics-relevant information about tracks using a weighted slope algorithm
  @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */
@@ -38,7 +38,6 @@ namespace Katydid
             fProcTrackMinPoints(0),
             fProcTrackAssignedError(0.),
             fTrackSignal("track", this),
-            // fTrackProcPtr(&KTTrackProcessingWeightedSlope::ProcessTrackDoubleCuts),
             fSWFSlot("swfc", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSparseWaterfallCandidateData>, &fTrackSignal),
             fSeqSlot("seqc", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSequentialLineData>, &fTrackSignal)
     {
