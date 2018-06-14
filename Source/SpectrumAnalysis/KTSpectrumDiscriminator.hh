@@ -85,38 +85,27 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            double GetSNRThreshold() const;
             void SetSNRAmplitudeThreshold(double thresh);
             void SetSNRPowerThreshold(double thresh);
-
-            double GetSigmaThreshold() const;
             void SetSigmaThreshold(double thresh);
-
-            double GetMinFrequency() const;
             void SetMinFrequency(double freq);
-
-            double GetMaxFrequency() const;
             void SetMaxFrequency(double freq);
-
-            unsigned GetMinBin() const;
             void SetMinBin(unsigned bin);
-
-            unsigned GetMaxBin() const;
             void SetMaxBin(unsigned bin);
 
         private:
 
-            double fSNRThreshold;
-            double fSigmaThreshold;
-            ThresholdMode fThresholdMode;
+            MEMBERVARIABLE_NOSET(double, SNRThreshold);
+            MEMBERVARIABLE_NOSET(double, SigmaThreshold);
+            MEMBERVARIABLE_NOSET(ThresholdMode, ThresholdMode);
 
-            double fMinFrequency;
-            double fMaxFrequency;
-            unsigned fMinBin;
-            unsigned fMaxBin;
+            MEMBERVARIABLE_NOSET(double, MinFrequency);
+            MEMBERVARIABLE_NOSET(double, MaxFrequency);
+            MEMBERVARIABLE_NOSET(unsigned, MinBin);
+            MEMBERVARIABLE_NOSET(unsigned, MaxBin);
             MEMBERVARIABLE(int, NeighborhoodRadius);
-            bool fCalculateMinBin;
-            bool fCalculateMaxBin;
+            MEMBERVARIABLE_NOSET(bool, CalculateMinBin);
+            MEMBERVARIABLE_NOSET(bool, CalculateMaxBin);
 
         public:
             bool Discriminate(KTFrequencySpectrumDataPolar& data);
@@ -166,10 +155,6 @@ namespace Katydid
 
     };
 
-    inline double KTSpectrumDiscriminator::GetSNRThreshold() const
-    {
-        return fSNRThreshold;
-    }
 
     inline void KTSpectrumDiscriminator::SetSNRAmplitudeThreshold(double thresh)
     {
@@ -185,21 +170,11 @@ namespace Katydid
         return;
     }
 
-    inline double KTSpectrumDiscriminator::GetSigmaThreshold() const
-    {
-        return fSigmaThreshold;
-    }
-
     inline void KTSpectrumDiscriminator::SetSigmaThreshold(double thresh)
     {
         fSigmaThreshold = thresh;
         fThresholdMode = eSigma;
         return;
-    }
-
-    inline double KTSpectrumDiscriminator::GetMinFrequency() const
-    {
-        return fMinFrequency;
     }
 
     inline void KTSpectrumDiscriminator::SetMinFrequency(double freq)
@@ -209,11 +184,6 @@ namespace Katydid
         return;
     }
 
-    inline double KTSpectrumDiscriminator::GetMaxFrequency() const
-    {
-        return fMaxFrequency;
-    }
-
     inline void KTSpectrumDiscriminator::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
@@ -221,21 +191,11 @@ namespace Katydid
         return;
     }
 
-    inline unsigned KTSpectrumDiscriminator::GetMinBin() const
-    {
-        return fMinBin;
-    }
-
     inline void KTSpectrumDiscriminator::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
-    }
-
-    inline unsigned KTSpectrumDiscriminator::GetMaxBin() const
-    {
-        return fMaxBin;
     }
 
     inline void KTSpectrumDiscriminator::SetMaxBin(unsigned bin)
