@@ -65,6 +65,8 @@ Release Date: ?????????????????
       * KTTrackProcessing: new logic for handling new slots and algorithm combinations (adding new slots should be easier).
         Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
       * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
+* Writers update:
+      * KTSparseWaterfallCandidateData objects: TDiscriminatedPoint and TSparseWaterfallCandidateData classes have been added.
 
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
