@@ -90,7 +90,6 @@ int main()
 
     // Processor definition
     KTTrackProcessingWeightedSlope trackProc;
-    trackProc.SetTrackProcAlgorithm("weighted-slope");
     trackProc.SetSlopeMinimum(0);
     trackProc.SetProcTrackMinPoints(1);
     trackProc.SetProcTrackAssignedError(12000);
@@ -100,7 +99,6 @@ int main()
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
     swfData = createFakeData(trackSlope, trackIntercept,trackStart,trackLength,trackSigma,trackPowerMean,trackPowerStd,nSlices,avgPointsPerSlice);
     trackProc.ProcessTrack(swfData);
-    KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
 
 #ifdef ROOT_FOUND
     KTROOTTreeWriter writer;
