@@ -31,6 +31,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTSpectrogramCollector.hh
     KTTrackMainbandCut.hh
     KTTrackMVACut.hh
+    KTTrackProcessingDoubleCuts.hh
     KTTrackProcessingWeightedSlope.hh
     KTTrackFreqCut.hh
     KTTrackTimeCut.hh
@@ -61,6 +62,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTSpectrogramCollector.cc
     KTTrackMainbandCut.cc
     KTTrackMVACut.cc
+    KTTrackProcessingDoubleCuts.cc
     KTTrackProcessingWeightedSlope.cc
     KTTrackFreqCut.cc
     KTTrackTimeCut.cc

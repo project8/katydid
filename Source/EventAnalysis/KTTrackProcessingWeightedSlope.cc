@@ -27,7 +27,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(tlog, "katydid.fft");
+    KTLOGGER(tlog, "KTTrackProcessingWeightedSlope");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTTrackProcessingWeightedSlope, "track-proc-ws");
@@ -71,7 +71,6 @@ namespace Katydid
 
         KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
         return KTTrackProcessingWeightedSlope::DoWeightedSlopeAlgorithm(points, trackID, &procTrack);
-
     }
 
     bool KTTrackProcessingWeightedSlope::DoWeightedSlopeAlgorithm(Points& points, TrackID trackID,KTProcessedTrackData* procTrack)
