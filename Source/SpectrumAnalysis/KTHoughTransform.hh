@@ -17,6 +17,7 @@
 #include "KTSlot.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
+#include "KTMemberVariable.hh"
 
 #include <vector>
 
@@ -62,18 +63,6 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            unsigned GetNThetaPoints() const;
-            void SetNThetaPoints(unsigned nPoints);
-
-            unsigned GetNRPoints() const;
-            void SetNRPoints(unsigned nPoints);
-
-        private:
-
-            unsigned fNThetaPoints;
-            unsigned fNRPoints;
-
-        public:
             bool TransformData(KTSparseWaterfallCandidateData& data);
             KTPhysicalArray< 2, double >* TransformPoints(const SWFPoints& points, double minTime, double timeLength, double minFreq, double freqWidth);
 
@@ -82,6 +71,9 @@ namespace Katydid
 
             bool TransformData(KTDiscriminatedPoints2DData& data);
             KTPhysicalArray< 2, double >* TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins);
+        
+        MEMBERVARIABLE(unsigned, NThetaPoints);
+        MEMBERVARIABLE(unsigned, NRPoints);
 
 
         private:
@@ -107,28 +99,6 @@ namespace Katydid
              Nymph::KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPts2DSlot;
 
     };
-
-    inline unsigned KTHoughTransform::GetNThetaPoints() const
-    {
-        return fNThetaPoints;
-    }
-
-    inline void KTHoughTransform::SetNThetaPoints(unsigned nPoints)
-    {
-        fNThetaPoints = nPoints;
-        return;
-    }
-
-    inline unsigned KTHoughTransform::GetNRPoints() const
-    {
-        return fNRPoints;
-    }
-
-    inline void KTHoughTransform::SetNRPoints(unsigned nPoints)
-    {
-        fNRPoints = nPoints;
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTHOUGHTRANSFORM_HH_ */
