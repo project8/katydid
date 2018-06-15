@@ -147,14 +147,14 @@ int main()
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
-        KTINFO(testlog, "Candidate " << sqlData.GetCandidateID());
-        KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTINFO(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
+        KTDEBUG(testlog, "Candidate " << sqlData.GetCandidateID());
+        KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        KTDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
 
         //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
         const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-        KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+        KTDEBUG(testlog, "Length [bins]: "<<candPoints.size());
         STFPoints += candPoints.size();
         //for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         //{
@@ -183,9 +183,9 @@ int main()
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt)
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
-        KTINFO(testlog, "OTC Candidate " << sqlData.GetCandidateID());
-        KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTINFO(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
+        KTDEBUG(testlog, "OTC Candidate " << sqlData.GetCandidateID());
+        KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        KTDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
         //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
         Nymph::KTData data = (*cIt)->Of< Nymph::KTData >();
@@ -197,7 +197,7 @@ int main()
         else
         {
             const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-            KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+            KTDEBUG(testlog, "Length [bins]: "<<candPoints.size());
             OTCPoints += candPoints.size();
         }
 
@@ -230,9 +230,9 @@ int main()
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
 
-        KTINFO(testlog, "ITC Candidate " << sqlData.GetCandidateID());
-        KTINFO(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTINFO(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
+        KTDEBUG(testlog, "ITC Candidate " << sqlData.GetCandidateID());
+        KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        KTDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
         //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         //KTINFO(testlog, "AcquisitionsID - CandidateID: "<<sqlData.GetAcquisitionID()<<" - "<<sqlData.GetCandidateID());
 
@@ -245,12 +245,12 @@ int main()
         else
         {
             const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-            KTINFO(testlog, "Length [bins]: "<<candPoints.size());
+            KTDEBUG(testlog, "Length [bins]: "<<candPoints.size());
             ITCPoints += candPoints.size();
 
             for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
             {
-                KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
+                KTDEBUG(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
             }
         }
         ++cIt;
