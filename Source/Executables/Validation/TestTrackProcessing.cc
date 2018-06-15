@@ -10,7 +10,7 @@ and tests the behavior of the algorithms in this processor.
 
 #include "KTLogger.hh"
 
-#include "KTTrackProcessing.hh"
+#include "KTTrackProcessingWeightedSlope.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoint.hh"
@@ -63,7 +63,7 @@ KTSparseWaterfallCandidateData createFakeData(double trackSlope,
         for (unsigned iPoint = 0; iPoint<nPoints; ++iPoint){
             double yPoint = trackIntercept + trackSlope*sliceTime + noiseDistribution();
             double power = powerDistribution();
-            Point aPoint(sliceTime,yPoint,power,sliceTime,trackPowerMean*0.1,trackPowerStd,power*1.1);
+            Point aPoint(sliceTime,yPoint,power,sliceTime,trackPowerMean*0.1,pow(trackPowerStd,2),power*1.1);
             swfData.AddPoint(aPoint);
         }
         sliceTime +=timeStep;
@@ -89,8 +89,7 @@ int main()
     int avgPointsPerSlice = 1;
 
     // Processor definition
-    KTTrackProcessing trackProc;
-    trackProc.SetTrackProcAlgorithm("weighted-slope");
+    KTTrackProcessingWeightedSlope trackProc;
     trackProc.SetSlopeMinimum(0);
     trackProc.SetProcTrackMinPoints(1);
     trackProc.SetProcTrackAssignedError(12000);
@@ -99,11 +98,9 @@ int main()
     Nymph::KTDataPtr dataPtr(new Nymph::KTData());    
     KTSparseWaterfallCandidateData& swfData = dataPtr->Of< KTSparseWaterfallCandidateData >();
     swfData = createFakeData(trackSlope, trackIntercept,trackStart,trackLength,trackSigma,trackPowerMean,trackPowerStd,nSlices,avgPointsPerSlice);
-    trackProc.ProcessTrackSWF(swfData);
-    KTDEBUG(testlog, "After ProcessTrackSWF(): " << swfData.GetTimeInRunC());
+    trackProc.ProcessTrack(swfData);
 
 #ifdef ROOT_FOUND
-
     KTROOTTreeWriter writer;
     writer.SetFilename("TestTrackProcessing_result.root");
     writer.SetFileFlag("recreate");
