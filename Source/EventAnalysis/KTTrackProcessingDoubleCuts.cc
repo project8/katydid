@@ -239,10 +239,10 @@ namespace Katydid
                 neighborhoodAmplitude.push_back(pItCache->fNeighborhoodAmplitude);
 
                 trackSNR.push_back(pItCache->fAmplitude / pItCache->fMean);
-                trackNUP.push_back((pItCache->fAmplitude - pItCache->fMean) / pItCache->fVariance);
+                trackNUP.push_back((pItCache->fAmplitude - pItCache->fMean) / sqrt(pItCache->fVariance));
 
                 wideTrackSNR.push_back(pItCache->fNeighborhoodAmplitude / pItCache->fMean);
-                wideTrackNUP.push_back((pItCache->fNeighborhoodAmplitude - pItCache->fMean) / pItCache->fVariance);
+                wideTrackNUP.push_back((pItCache->fNeighborhoodAmplitude - pItCache->fMean) / sqrt(pItCache->fVariance));
             }
             else
             {

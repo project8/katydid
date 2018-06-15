@@ -117,10 +117,10 @@ namespace Katydid
                     neighborhoodAmplitude[iTimeBin] += pIt->fNeighborhoodAmplitude;
 
                     trackSNR[iTimeBin] += pIt->fAmplitude/pIt->fMean;
-                    trackNUP[iTimeBin] += (pIt->fAmplitude - pIt->fMean) / pIt->fVariance;
+                    trackNUP[iTimeBin] += (pIt->fAmplitude - pIt->fMean) / sqrt(pIt->fVariance);
 
                     wideTrackSNR[iTimeBin] += pIt->fNeighborhoodAmplitude/pIt->fMean;
-                    wideTrackNUP[iTimeBin] += (pIt->fNeighborhoodAmplitude - pIt->fMean) / pIt->fVariance;
+                    wideTrackNUP[iTimeBin] += (pIt->fNeighborhoodAmplitude - pIt->fMean) / sqrt(pIt->fVariance);
                     
                     ++nTrackBins;
                     break; //Since time bins are unique
