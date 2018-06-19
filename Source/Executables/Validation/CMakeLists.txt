@@ -125,7 +125,7 @@ if (Katydid_ENABLE_TESTING)
         set( PROGRAMS
            TestBackgroundFlattening
            TestBasicROOTFileWriter
-           TestGainVariation
+           #TestGainVariation  # This is removed because the GV calculation without variance data is not done correctly and has been temporarily removed
            TestROOTDictionary
            TestROOTTreeWritingViaCicada
            TestROOTWriterFileManager
