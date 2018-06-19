@@ -667,6 +667,8 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataPolarCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
+        KTDEBUG(gvlog, "Doing local variance calculation");
+
         unsigned nComponents = data.GetNComponents();
 
         unsigned nBins = data.GetSpectrumPolar(0)->GetNBins();
@@ -694,7 +696,7 @@ namespace Katydid
             }
             (*varSpect)(0) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
 
-            std::complex<double> newValue, oldValue;
+            std::complex<double> newValue;
 
             // now calculate the variance for all bins up until and including when we have varCalcNBins available
             for (unsigned iBin = 1; iBin <= varCalcNBinsToLeft; ++iBin)
@@ -738,6 +740,8 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataFFTWCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
+        KTDEBUG(gvlog, "Doing local variance calculation");
+
         unsigned nComponents = data.GetNComponents();
 
         unsigned nBins = data.GetSpectrumFFTW(0)->GetNBins();
@@ -765,7 +769,7 @@ namespace Katydid
             }
             (*varSpect)(0) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
 
-            std::complex<double> newValue, oldValue;
+            std::complex<double> newValue;
 
             // now calculate the variance for all bins up until and including when we have varCalcNBins available
             for (unsigned iBin = 1; iBin <= varCalcNBinsToLeft; ++iBin)
@@ -809,6 +813,8 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CoreVarianceCalc(KTPowerSpectrumDataCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
+        KTDEBUG(gvlog, "Doing local variance calculation");
+
         unsigned nComponents = data.GetNComponents();
 
         unsigned nBins = data.GetSpectrum(0)->GetNBins();
@@ -836,7 +842,7 @@ namespace Katydid
             }
             (*varSpect)(0) = CalculateVariance(binValuesInUse, runningSum, invNBinsInUse);
 
-            double newValue = 0., oldValue = 0.;
+            double newValue = 0.;
 
             // now calculate the variance for all bins up until and including when we have varCalcNBins available
             for (unsigned iBin = 1; iBin <= varCalcNBinsToLeft; ++iBin)
