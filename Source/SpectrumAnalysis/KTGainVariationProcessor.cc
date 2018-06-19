@@ -46,13 +46,13 @@ namespace Katydid
             fCalculateMaxBin(true),
             fVarianceCalcNBins(100),
             fGainVarSignal("gain-var", this),
-            fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fCorrSlot("corr", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fPSSlot("ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fConvFSPolarSlot("conv-fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fConvFSFFTWSlot("conv-fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fConvPSSlot("conv-ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fCorrSlot("corr", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fPSSlot("ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fConvFSPolarSlot("conv-fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fConvFSFFTWSlot("conv-fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            //fConvPSSlot("conv-ps", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fFSPolarWithVarSlot("fs-polar-var", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fFSFFTWWithVarSlot("fs-fftw-var", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fPSWithVarSlot("ps-var", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
@@ -100,6 +100,9 @@ namespace Katydid
         return true;
     }
 
+    // Commented-out functions have been removed because the variance is not calculated correctly here
+    // See GitHub issue #159
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
         KTFrequencySpectrumVarianceDataPolar newVarData;
@@ -112,7 +115,7 @@ namespace Katydid
         
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data, KTFrequencySpectrumVarianceDataPolar& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -131,7 +134,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
     {
         KTFrequencySpectrumVarianceDataFFTW newVarData;
@@ -144,7 +147,7 @@ namespace Katydid
 
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data, KTFrequencySpectrumVarianceDataFFTW& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -163,7 +166,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
     {
         KTFrequencySpectrumVarianceDataPolar newVarData;
@@ -176,7 +179,7 @@ namespace Katydid
 
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data, KTFrequencySpectrumVarianceDataPolar& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -195,7 +198,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTPowerSpectrumData& data)
     {
         KTPowerSpectrumVarianceData newVarData;
@@ -208,7 +211,7 @@ namespace Katydid
 
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTPowerSpectrumData& data, KTPowerSpectrumVarianceData& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -227,7 +230,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data)
     {
         KTConvolvedFrequencySpectrumVarianceDataPolar newVarData;
@@ -240,7 +243,7 @@ namespace Katydid
 
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataPolar& data, KTConvolvedFrequencySpectrumVarianceDataPolar& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -259,7 +262,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data)
     {
         KTConvolvedFrequencySpectrumVarianceDataFFTW newVarData;
@@ -272,7 +275,7 @@ namespace Katydid
 
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedFrequencySpectrumDataFFTW& data, KTConvolvedFrequencySpectrumVarianceDataFFTW& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -291,7 +294,7 @@ namespace Katydid
 
         return true;
     }
-
+/*
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data)
     {
         KTConvolvedPowerSpectrumVarianceData newVarData;
@@ -304,7 +307,7 @@ namespace Katydid
 
         return CalculateGainVariation(data, newVarData);
     }
-
+*/
     bool KTGainVariationProcessor::CalculateGainVariation(KTConvolvedPowerSpectrumData& data, KTConvolvedPowerSpectrumVarianceData& varData)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
@@ -665,6 +668,9 @@ namespace Katydid
         return true;
     }
 
+    // These functions have been removed because the variance is not calculated correctly here
+    // See GitHub issue #159
+/*
     bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataPolarCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
         KTDEBUG(gvlog, "Doing local variance calculation");
@@ -915,6 +921,6 @@ namespace Katydid
 
         return variance * invNBinsInUse - meanSq;
     }
-
+*/
 
 } /* namespace Katydid */
