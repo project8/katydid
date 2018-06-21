@@ -113,20 +113,6 @@ int main()
     KTINFO(testlog, "Processed track saved in file");
 #endif
 
-#ifdef ROOT_FOUND
-
-    KTROOTTreeWriter writer;
-    writer.SetFilename("TestTrackProcessing_result.root");
-    writer.SetFileFlag("recreate");
-
-    KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
-    treeTypeWriter.SetWriter(&writer);
-    // treeWriter.SetupProcessedTrackTree();
-    treeTypeWriter.WriteProcessedTrack(dataPtr);
-    KTINFO(testlog, "Processed track saved in file");
-#endif
-
-
     // Check the results of the processing
     KTProcessedTrackData& procTrack = dataPtr->Of< KTProcessedTrackData >();
     double foundFrequency = procTrack.GetStartFrequency();
