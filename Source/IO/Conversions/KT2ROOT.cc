@@ -614,7 +614,7 @@ namespace Katydid
         rootPTData.SetStartFrequency(ptData.GetStartFrequency()); rootPTData.SetEndFrequency(ptData.GetEndFrequency()); rootPTData.SetFrequencyWidth(ptData.GetFrequencyWidth());
         rootPTData.SetSlope(ptData.GetSlope()); rootPTData.SetIntercept(ptData.GetIntercept()); 
         rootPTData.SetTotalPower(ptData.GetTotalPower()); rootPTData.SetNTrackBins(ptData.GetNTrackBins()); rootPTData.SetTotalTrackSNR(ptData.GetTotalTrackSNR()); rootPTData.SetMaxTrackSNR(ptData.GetMaxTrackSNR()); rootPTData.SetTotalWideTrackSNR(ptData.GetTotalWideTrackSNR());
-        rootPTData.SetTotalTrackNUP(ptData.GetTotalTrackNUP()); rootPTData.SetMaxTrackNUP(ptData.GetMaxTrackNUP()); rootPTData.SetTotalWideTrackNUP(ptData.GetTotalWideTrackNUP());
+        rootPTData.SetNTrackBins(ptData.GetNTrackBins()); rootPTData.SetTotalTrackNUP(ptData.GetTotalTrackNUP()); rootPTData.SetMaxTrackNUP(ptData.GetMaxTrackNUP()); rootPTData.SetTotalWideTrackNUP(ptData.GetTotalWideTrackNUP());
         rootPTData.SetStartTimeInRunCSigma(ptData.GetStartTimeInRunCSigma()); rootPTData.SetEndTimeInRunCSigma(ptData.GetEndTimeInRunCSigma()); rootPTData.SetTimeLengthSigma(ptData.GetTimeLengthSigma());
         rootPTData.SetStartFrequencySigma(ptData.GetStartFrequencySigma()); rootPTData.SetEndFrequencySigma(ptData.GetEndFrequencySigma()); rootPTData.SetFrequencyWidthSigma(ptData.GetFrequencyWidthSigma());
         rootPTData.SetSlopeSigma(ptData.GetSlopeSigma()); rootPTData.SetInterceptSigma(ptData.GetInterceptSigma()); rootPTData.SetTotalPowerSigma(ptData.GetTotalPowerSigma());
@@ -628,7 +628,7 @@ namespace Katydid
         ptData.SetStartFrequency(rootPTData.GetStartFrequency()); ptData.SetEndFrequency(rootPTData.GetEndFrequency()); ptData.SetFrequencyWidth(rootPTData.GetFrequencyWidth());
         ptData.SetSlope(rootPTData.GetSlope()); ptData.SetIntercept(rootPTData.GetIntercept()); 
         ptData.SetTotalPower(rootPTData.GetTotalPower()); ptData.SetNTrackBins(rootPTData.GetNTrackBins()); ptData.SetTotalTrackSNR(rootPTData.GetTotalTrackSNR()); ptData.SetMaxTrackSNR(rootPTData.GetMaxTrackSNR()); ptData.SetTotalWideTrackSNR(rootPTData.GetTotalWideTrackSNR());
-        ptData.SetTotalTrackNUP(rootPTData.GetTotalTrackNUP()); ptData.SetMaxTrackNUP(rootPTData.GetMaxTrackNUP()); ptData.SetTotalWideTrackNUP(rootPTData.GetTotalWideTrackNUP());
+        ptData.SetNTrackBins(rootPTData.GetNTrackBins()); ptData.SetTotalTrackNUP(rootPTData.GetTotalTrackNUP()); ptData.SetMaxTrackNUP(rootPTData.GetMaxTrackNUP()); ptData.SetTotalWideTrackNUP(rootPTData.GetTotalWideTrackNUP());
         ptData.SetStartTimeInRunCSigma(rootPTData.GetStartTimeInRunCSigma()); ptData.SetEndTimeInRunCSigma(rootPTData.GetEndTimeInRunCSigma()); ptData.SetTimeLengthSigma(rootPTData.GetTimeLengthSigma());
         ptData.SetStartFrequencySigma(rootPTData.GetStartFrequencySigma()); ptData.SetEndFrequencySigma(rootPTData.GetEndFrequencySigma()); ptData.SetFrequencyWidthSigma(rootPTData.GetFrequencyWidthSigma());
         ptData.SetSlopeSigma(rootPTData.GetSlopeSigma()); ptData.SetInterceptSigma(rootPTData.GetInterceptSigma()); ptData.SetTotalPowerSigma(rootPTData.GetTotalPowerSigma());

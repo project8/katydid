@@ -113,7 +113,6 @@ int main()
     KTINFO(testlog, "Processed track saved in file");
 #endif
 
-
     // Check the results of the processing
     KTProcessedTrackData& procTrack = dataPtr->Of< KTProcessedTrackData >();
     double foundFrequency = procTrack.GetStartFrequency();
