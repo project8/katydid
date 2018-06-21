@@ -39,8 +39,11 @@ int main()
 
     unsigned nPeaks = 10;
     double meanPeakMult = 10.;
-    double sigmaPeakMult = 1.;
 
+#ifdef ROOT_FOUND
+    double sigmaPeakMult = 1.;
+#endif
+    
     double sigmaThresh = 5.;
     double snrThresh = 5.;
 
@@ -61,7 +64,6 @@ int main()
     for (unsigned iFitPoint=0; iFitPoint < NFitPoints; ++iFitPoint)
     {
         unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint;
-        unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
         xVals[iFitPoint] = minFreq + (iFitPoint + 0.5) * dF;
         yValsMean[iFitPoint] = meanValue;
