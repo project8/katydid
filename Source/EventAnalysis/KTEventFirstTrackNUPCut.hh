@@ -29,6 +29,7 @@ namespace Katydid
      Available configuration values:
      - "min-average-nup": double -- minimum nup per unit length in the first track for the event to pass the cut
      - "min-total-nup": double -- minimum total nup in the first track for the event to pass the cut
+     - "wide-or-narrow": string -- decides whether to use wide NUP or narrow NUP
     */
 
     class KTEventFirstTrackNUPCut : public Nymph::KTCutOneArg< KTMultiTrackEventData >
@@ -48,6 +49,7 @@ namespace Katydid
 
         MEMBERVARIABLE(double, MinTotalNUP);
         MEMBERVARIABLE(double, MinAverageNUP);
+        MEMBERVARIABLE(std::string, WideOrNarrow);
 
     public:
         bool Apply(Nymph::KTData& data, KTMultiTrackEventData& eventData);

@@ -125,6 +125,7 @@ int main()
 
     snrcut.SetMinAverageSNR(1e3);
     nupcut.SetMinTotalNUP(.1);
+    nupcut.SetWideOrNarrowLine("wide");
 
     // Create fake data for every slice and run stf
     for (unsigned iSlice = 0; iSlice <= nSlices; ++iSlice )
@@ -234,7 +235,7 @@ int main()
 
         KTDEBUG(testlog, "ITC Candidate " << sqlData.GetCandidateID());
         KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
+        KTDEBUG(testlog, "Properties (total snr - wide snr - total nup - total wide nup) "<<sqlData.GetTotalSNR()<<" - "<<sqlData.GetTotalWideSNR()<<" - "<<sqlData.GetTotalNUP()<<" - "<<sqlData.GetTotalWideNUP());
         //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
         //KTINFO(testlog, "AcquisitionsID - CandidateID: "<<sqlData.GetAcquisitionID()<<" - "<<sqlData.GetCandidateID());
 

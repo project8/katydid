@@ -42,7 +42,7 @@ namespace Katydid
     bool KTSequentialLineNUPCut::Apply( Nymph::KTData& data, KTSequentialLineData& seqLineData )
     {
         bool isCut = false;
-        seqLineData.CalculateTotalNUP();
+        //seqLineData.CalculateTotalNUP();
 
         if (fWideOrNarrowLine == "narrow")
         {

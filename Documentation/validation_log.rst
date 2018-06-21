@@ -70,6 +70,7 @@ Release Date: ?????????????????
       * KTSequentialTrackFinder: new slot for KTDiscriminatedPoints1DData only. Signal is now KTSequentialLineData.
       * KTOverlappingTrackClustering and KTIterativeTrrackClustering: new slot and singal for KTSequentialLineData. Both Processors can no longer apply cuts.
       * KTSequentialLineSNRCut and KTSequentialLineNUPCut: can be used to apply cuts on total and average SNR and NUP of KTSequentialLineData.
+      * KTEventFirstTrackSNR and KTEventFirstTrackNUPCut: can be used to apply cuts on total and average SNR and NUP of KTMultiTrackEventData.
 * Writers update:
       * KTSparseWaterfallCandidateData objects: TDiscriminatedPoint and TSparseWaterfallCandidateData classes have been added.
 
