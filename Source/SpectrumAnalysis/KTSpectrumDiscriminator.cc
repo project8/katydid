@@ -251,14 +251,14 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = magnitude[iBin];
+                double value = magnitude[iBin];
                 //if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
@@ -342,16 +342,16 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double value = 0., neighborhoodAmplitude = 0.;
 
             //std::stringstream printer;
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin).abs();
+                double value = (*spectrum)(iBin).abs();
                 if (value >= threshold)
                 {
                     //printer << "   " << iBin << " -- " << value;
                     //newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
@@ -437,14 +437,14 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double value = 0., neighborhoodAmplitude = 0.;
 
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin);
+                double value = (*spectrum)(iBin);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 

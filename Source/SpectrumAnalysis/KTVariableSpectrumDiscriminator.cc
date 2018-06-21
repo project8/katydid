@@ -429,17 +429,18 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin).abs();
-                threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
+                double value = (*spectrum)(iBin).abs();
+                double threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
+
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
@@ -461,17 +462,17 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
-                threshold = mean + fSigmaThreshold * sqrt( variance );
-                value = (*spectrum)(iBin).abs();
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+                double threshold = mean + fSigmaThreshold * sqrt( variance );
+                double value = (*spectrum)(iBin).abs();
 
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
@@ -532,17 +533,17 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
-                threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
+                double value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                double threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
 
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
@@ -565,16 +566,16 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
-                threshold = mean + fSigmaThreshold * sqrt( variance );
-                value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+                double threshold = mean + fSigmaThreshold * sqrt( variance );
+                double value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
@@ -635,16 +636,16 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin);
-                mean = (*splineImp)(iBin - fMinBin);
-                threshold = thresholdMult * mean;
-                variance = (*varSplineImp)(iBin - fMinBin);
+                double value = (*spectrum)(iBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double threshold = thresholdMult * mean;
+                double variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
@@ -668,16 +669,16 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
-                threshold = mean + fSigmaThreshold * sqrt( variance );
-                value = (*spectrum)(iBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+                double threshold = mean + fSigmaThreshold * sqrt( variance );
+                double value = (*spectrum)(iBin);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
@@ -703,7 +704,7 @@ namespace Katydid
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
         neighborhoodAmplitude = 0;
-        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += (*spectrum)(jBin);
         }
@@ -711,7 +712,7 @@ namespace Katydid
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
         neighborhoodAmplitude = 0;
-        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
         }
@@ -719,7 +720,7 @@ namespace Katydid
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
     {
         neighborhoodAmplitude = 0;
-        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
         {
             neighborhoodAmplitude += (*spectrum)(jBin).abs();
         }
