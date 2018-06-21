@@ -137,17 +137,17 @@ namespace Katydid
         if (node->has("apply-average-snr-cut"))
         {
             SetApplyAverageSNRCut(node->get_value("apply-average-snr-cut", GetApplyAverageSNRCut()));
-            SetAverageSNRThreshold(node->get_value("power-average-snr-threshold", GetAverageSNRThreshold()));
+            SetAverageSNRThreshold(node->get_value("average-snr-threshold", GetAverageSNRThreshold()));
         }
-        if (node->has("apply-total-residual-cut"))
+        if (node->has("apply-total-nup-cut"))
         {
-            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-residual-cut", GetApplyTotalUnitlessResidualCut()));
-            SetTotalUnitlessResidualThreshold(node->get_value("total-residual-threshold", GetTotalUnitlessResidualThreshold()));
+            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-nup-cut", GetApplyTotalUnitlessResidualCut()));
+            SetTotalUnitlessResidualThreshold(node->get_value("total-nup-threshold", GetTotalUnitlessResidualThreshold()));
         }
-        if (node->has("apply-average-residual-cut"))
+        if (node->has("apply-average-nup-cut"))
         {
-            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-residual-cut", GetApplyAverageUnitlessResidualCut()));
-            SetAverageUnitlessResidualThreshold(node->get_value("power-average-residual-threshold", GetAverageUnitlessResidualThreshold()));
+            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-nup-cut", GetApplyAverageUnitlessResidualCut()));
+            SetAverageUnitlessResidualThreshold(node->get_value("average-nup-threshold", GetAverageUnitlessResidualThreshold()));
         }
         if (node->has("n-slope-points"))
         {
