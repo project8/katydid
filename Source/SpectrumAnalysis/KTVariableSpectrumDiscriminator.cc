@@ -49,6 +49,7 @@ namespace Katydid
             fMaxFrequency(1.),
             fMinBin(0),
             fMaxBin(1),
+            fNeighborhoodRadius(0),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fNormalize(false),
@@ -80,7 +81,14 @@ namespace Katydid
         if (node == NULL) return false;
 
         // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also change the threshold mode, so we only want to call them if we are setting the value, and not just keeping the existing value.
+
+        if (node->has("neighborhood-Radius"))
+        {
+            SetNeighborhoodRadius(node->get_value< int >("neighborhood-radius"));
+        }
+
+        // These Set[whatever] functions also change the threshold mode, 
+        // so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("snr-threshold-amplitude"))
         {
             SetSNRAmplitudeThreshold(node->get_value< double >("snr-threshold-amplitude"));
@@ -94,8 +102,8 @@ namespace Katydid
             SetSigmaThreshold(node->get_value< double >("sigma-threshold"));
         }
 
-        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, 
+        // so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-frequency"))
         {
             SetMinFrequency(node->get_value< double >("min-frequency"));
@@ -105,8 +113,8 @@ namespace Katydid
             SetMaxFrequency(node->get_value< double >("max-frequency"));
         }
 
-        // The if(has) pattern is used here so that Set[whatever] is only called if the particular parameter is present.
-        // These Set[whatever] functions also set the flags to calculate the min/max bin, so we only want to call them if we are setting the value, and not just keeping the existing value.
+        // These Set[whatever] functions also set the flags to calculate the min/max bin, 
+        // so we only want to call them if we are setting the value, and not just keeping the existing value.
         if (node->has("min-bin"))
         {
             SetMinBin(node->get_value< unsigned >("min-bin"));
@@ -255,9 +263,6 @@ namespace Katydid
         unsigned nSpectra = data.GetSpectra().size();   // Number of time slices in the spectrogram collection
         unsigned nPoints = 0;                           // Number of points above threshold in one slice
         unsigned sliceNumber = 0;                       // Slice counter
-        double mean = 0;
-        double variance = 0;
-        double neighborhoodAmplitude = 0;
 
         // Iterate through the power spectra
         for( std::map< double, KTPowerSpectrum* >::const_iterator it = data.GetSpectra().begin(); it != data.GetSpectra().end(); ++it )
@@ -278,7 +283,7 @@ namespace Katydid
             // Iterate through the 1D points and add them to the 2D points
             for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); it != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++it )
             {
-                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + Xmin, YbinWidth * ((double)it->first+0.5) + Ymin, it->second.fOrdinate, it->second.fThreshold, mean, variance, neighborhoodAmplitude ), 0 );
+                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + Xmin, YbinWidth * ((double)it->first+0.5) + Ymin, it->second.fOrdinate, it->second.fThreshold, it->second.fMean, it->second.fVariance, it->second.fNeighborhoodAmplitude ), 0 );
             }
 
             sliceNumber++;
@@ -424,21 +429,31 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin).abs();
-                threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                double value = (*spectrum)(iBin).abs();
+                double threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
+
                     if( fNormalize )
                     {
-                        mean = (*splineImp)(iBin - fMinBin);
-                        variance = (*varSplineImp)(iBin - fMinBin);
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
+                        mean = normalizedValue;
+                        variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
             }
         }
@@ -447,22 +462,31 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
-                threshold = mean + fSigmaThreshold * sqrt( variance );
-                value = (*spectrum)(iBin).abs();
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+                double threshold = mean + fSigmaThreshold * sqrt( variance );
+                double value = (*spectrum)(iBin).abs();
 
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
+                        mean = normalizedValue;
+                        variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
             }
         }
@@ -509,21 +533,31 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
-                threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                double value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                double threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
-                        mean = (*splineImp)(iBin - fMinBin);
-                        variance = (*varSplineImp)(iBin - fMinBin);
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
+                        mean = normalizedValue;
+                        variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
             }
         }
@@ -532,21 +566,30 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
-                threshold = mean + fSigmaThreshold * sqrt( variance );
-                value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+                double threshold = mean + fSigmaThreshold * sqrt( variance );
+                double value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
+                        mean = normalizedValue;
+                        variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
             }
         }
@@ -593,25 +636,28 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double mean = 0., variance = 0., threshold = 0., value = 0., neighborhoodAmplitude = 0;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin);
-                mean = (*splineImp)(iBin - fMinBin);
-                threshold = thresholdMult * mean;
-                variance = (*varSplineImp)(iBin - fMinBin);
+                double value = (*spectrum)(iBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double threshold = thresholdMult * mean;
+                double variance = (*varSplineImp)(iBin - fMinBin);
                 if (value >= threshold)
                 {
-                    // Add summing over adjacent bins here
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
-                        // neighborhoodAmplitude = sqrt( normalizedVariance / variance ) * ( neighborhoodAmplitude - 2* fPowerRadius * mean ) + 2* fPowerRadius * normalizedValue;
-                        variance = normalizedVariance;
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
+                        variance = normalizedVariance;
                     }
-                    // neighborhoodAmplitude = neighborhoodAmplitude - (2* fPowerRadius - 1) * mean;
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
 
                     newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
@@ -623,23 +669,30 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            double mean = 0., variance = 0., threshold = 0., value = 0.;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                mean = (*splineImp)(iBin - fMinBin);
-                variance = (*varSplineImp)(iBin - fMinBin);
-                threshold = mean + fSigmaThreshold * sqrt( variance );
-                value = (*spectrum)(iBin);
+                double mean = (*splineImp)(iBin - fMinBin);
+                double variance = (*varSplineImp)(iBin - fMinBin);
+                double threshold = mean + fSigmaThreshold * sqrt( variance );
+                double value = (*spectrum)(iBin);
                 if (value >= threshold)
                 {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     if( fNormalize )
                     {
                         value = normalizedValue + (value - mean) * sqrt( normalizedVariance / variance );
+                        neighborhoodAmplitude = normalizedValue + ( neighborhoodAmplitude - ( 2 * fNeighborhoodRadius+1 ) * mean ) * sqrt( normalizedVariance / variance );
                         mean = normalizedValue;
                         variance = normalizedVariance;
                     }
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, value), component);
+                    else
+                    {
+                        neighborhoodAmplitude = neighborhoodAmplitude - ( 2 * fNeighborhoodRadius ) * mean;
+                    }
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), component);
                 }
             }
         }
@@ -647,5 +700,31 @@ namespace Katydid
         return true;
 
     }
+
+    void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
+    {
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
+        {
+            neighborhoodAmplitude += (*spectrum)(jBin);
+        }
+    }
+    void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
+    {
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
+        {
+            neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
+        }
+    }
+    void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
+    {
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
+        {
+            neighborhoodAmplitude += (*spectrum)(jBin).abs();
+        }
+    }
+
 
 } /* namespace Katydid */
