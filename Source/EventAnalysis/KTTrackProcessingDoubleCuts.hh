@@ -1,13 +1,13 @@
 /**
- @file KTTrackProcessing.hh
- @brief Contains KTTrackProcessing
- @details Extracts physics-relevant information about tracks
+ @file KTTrackProcessingDoubleCuts.hh
+ @brief Contains KTTrackProcessingDoubleCuts
+ @details Extracts physics-relevant information about tracks using a double-cuts algorithm
  @author: N.S. Oblath, B. LaRoque & M. Guigue
  @date: July 22, 2013
  */
 
-#ifndef KTTRACKPROCESSING_HH_
-#define KTTRACKPROCESSING_HH_
+#ifndef KTTrackProcessingDoubleCuts_HH_
+#define KTTrackProcessingDoubleCuts_HH_
 
 #include "KTProcessor.hh"
 
@@ -25,19 +25,19 @@ namespace Katydid
 
     class KTHoughData;
     class KTSparseWaterfallCandidateData;
+    // class KTSequentialLineData;
 
     /*!
-     @class KTTrackProcessing
+     @class KTTrackProcessingDoubleCuts
      @author N.S. Oblath, B. LaRoque & M. Guigue
 
-     @brief Extracts physics-relevant information about tracks
+     @brief Extracts physics-relevant information about tracks using a double-cuts algorithm
 
      @details
 
      Configuration name: "track-proc"
 
      Available configuration values:
-     - "algorithm": string -- Select the track processing algorithm: "weighted-slope" (default) or "double-cuts"
      - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
      - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
      - "slope-min": double -- Minimum track slope to keep (Hz/s)
@@ -45,14 +45,14 @@ namespace Katydid
      - "assigned-error": double -- Error assigned to the points in case of perfectly aligned points
 
      Slots:
-     - "swfc": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData; Adds KTProcessedTrackData; Emits signal "track"
      - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
+     - "seqc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSequentialLineData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
 
      Signals:
      - "track": void (Nymph::KTDataPtr) -- Emitted when a track has been processed; Guarantees KTProcessedTrackData.
     */
 
-    class KTTrackProcessing : public Nymph::KTProcessor
+    class KTTrackProcessingDoubleCuts : public Nymph::KTProcessor
     {
 
         public:
@@ -62,12 +62,11 @@ namespace Katydid
                 unsigned fComponent;
                 unsigned fCandidateID;
                 unsigned fAcquisitionID;
-
             };
 
         public:
-            KTTrackProcessing(const std::string& name = "track-proc");
-            virtual ~KTTrackProcessing();
+            KTTrackProcessingDoubleCuts(const std::string& name = "track-proc-dc");
+            virtual ~KTTrackProcessingDoubleCuts();
 
             bool Configure(const scarab::param_node* node);
 
@@ -81,15 +80,15 @@ namespace Katydid
             MEMBERVARIABLE(double, ProcTrackAssignedError);
 
         public:
-            bool ProcessTrackSWF(KTSparseWaterfallCandidateData& swfData);
-            bool ProcessTrackSWFAndHough(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
+            template<typename TracklikeCandidate> 
+            bool ProcessTrack(TracklikeCandidate& tlcData, KTHoughData& htData);
             // Core methods for both algorithm
-            bool ProcessTrackDoubleCuts(Points& points, KTHoughData& htData, TrackID trackID, KTProcessedTrackData* procTrack);
-            bool ProcessTrackWeightedSlope(Points& points, TrackID trackID, KTProcessedTrackData* procTrack);
+            bool DoDoubleCutsAlgorithm(Points& points, KTHoughData& htData, TrackID trackID, KTProcessedTrackData* procTrack);
 
         private:
             double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
-            TrackID ExtractTrackID(KTSparseWaterfallCandidateData swfData);
+            template<typename TracklikeCandidate> 
+            TrackID ExtractTrackID(TracklikeCandidate tlcData);
 
             //***************
             // Signals
@@ -103,15 +102,15 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFSlot;
             Nymph::KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
+            // Nymph::KTSlotDataTwoTypes< KTSequentialLineData, KTHoughData > fSeqAndHoughSlot;
 
     };
 
-    double KTTrackProcessing::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
+    double KTTrackProcessingDoubleCuts::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
     {
         return fabs(lineA * pointX + lineB * pointY + lineC) / sqrt(lineA*lineA + lineB*lineB);
     }
 }
  /* namespace Katydid */
-#endif /* KTTRACKPROCESSING_HH_ */
+#endif /* KTTrackProcessingDoubleCuts_HH_ */

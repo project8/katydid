@@ -24,7 +24,7 @@ namespace Katydid
      @details
 
 
-     Configuration name: "event-first-time-power-cut"
+     Configuration name: "event-first-track-power-cut"
 
      Available configuration values:
      - "min-power": double -- minimum power per unit length in the first track for the event to pass the cut
