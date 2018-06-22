@@ -43,6 +43,19 @@ Fixes:
 Log
 ---
 
+Version: 2.11.1
+~~~~~~~~~~~~~~~
+
+Release Date: June 22, 2011
+''''''''''''''''''''''''''''
+
+Fixes:
+''''''
+
+* Nymph upgraded to v1.4.5
+* Commented out incorrect calculation of variance in KTGainVariationProcessor.
+
+
 Version: 2.11.0
 ~~~~~~~~~~~~~~~
 
