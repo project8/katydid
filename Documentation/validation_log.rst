@@ -66,6 +66,11 @@ Release Date: ?????????????????
         KTTrackProcessingWeightedSlope handles both SequentialLineData and SparseWaterfallCandidateData; while KTTrackProcessingDoubleCuts only connects to SparseWaterfallCandidateData (with HoughData).
         Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
       * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
+      * KTSequentialLineData: new version of KTSeqLine. Has SNR and NUP member variables. LineTrimming now uses SNR instead of Power.
+      * KTSequentialTrackFinder: new slot for KTDiscriminatedPoints1DData only. Signal is now KTSequentialLineData.
+      * KTOverlappingTrackClustering and KTIterativeTrrackClustering: new slot and singal for KTSequentialLineData. Both Processors can no longer apply cuts.
+      * KTSequentialLineSNRCut and KTSequentialLineNUPCut: can be used to apply cuts on total and average SNR and NUP of KTSequentialLineData.
+      * KTEventFirstTrackSNR and KTEventFirstTrackNUPCut: can be used to apply cuts on total and average SNR and NUP of KTMultiTrackEventData.
 * Writers update:
       * KTSparseWaterfallCandidateData objects: TDiscriminatedPoint and TSparseWaterfallCandidateData classes have been added.
 

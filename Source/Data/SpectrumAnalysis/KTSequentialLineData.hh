@@ -25,7 +25,6 @@ namespace Katydid
         private:
 
             MEMBERVARIABLE(KTDiscriminatedPoints, LinePoints);
-            MEMBERVARIABLE(std::vector<double>, AmplitudeList);
             MEMBERVARIABLE(std::vector<double>, SNRList);
 
             MEMBERVARIABLE(double, StartTimeInRunC);
@@ -39,9 +38,12 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, CandidateID)
-            MEMBERVARIABLE(double, AmplitudeSum);
-            MEMBERVARIABLE(double, SNRSum);
-            MEMBERVARIABLE(double, NUPSum);
+            MEMBERVARIABLE(double, TotalPower);
+            MEMBERVARIABLE(double, TotalSNR);
+            MEMBERVARIABLE(double, TotalNUP);
+            MEMBERVARIABLE(double, TotalWidePower);
+            MEMBERVARIABLE(double, TotalWideSNR);
+            MEMBERVARIABLE(double, TotalWideNUP);
             MEMBERVARIABLE(unsigned, NPoints);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, SumX);
@@ -63,10 +65,11 @@ namespace Katydid
             KTDiscriminatedPoints& GetPoints();
             //LineRef(const double& initialSlope);
             void AddPoint(const KTDiscriminatedPoint& point);
-            void LineTrimming(const double& trimmingFactor, const unsigned& minPoints);
             void LineSNRTrimming(const double& trimmingThreshold, const unsigned& minPoints);
             void UpdateLineProperties();
-            void FinishTrack();
+            void CalculateTotalPower();
+            void CalculateTotalSNR();
+            void CalculateTotalNUP();
 
             bool operator() (const KTSequentialLineData& lhs, const KTSequentialLineData& rhs) const
             {

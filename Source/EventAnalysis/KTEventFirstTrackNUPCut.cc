@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTEventFirstTrackNUPCut");
+    KTLOGGER(ecnuplog, "KTEventFirstTrackNUPCut");
 
     const std::string KTEventFirstTrackNUPCut::Result::sName = "event-first-track-nup-cut";
 
@@ -21,7 +21,8 @@ namespace Katydid
     KTEventFirstTrackNUPCut::KTEventFirstTrackNUPCut(const std::string& name) :
          KTCutOneArg(name),
          fMinTotalNUP(0.),
-         fMinAverageNUP(0.)
+         fMinAverageNUP(0.),
+         fWideOrNarrow("wide" )
     {}
 
     KTEventFirstTrackNUPCut::~KTEventFirstTrackNUPCut()
@@ -33,6 +34,7 @@ namespace Katydid
 
         SetMinTotalNUP( node->get_value< double >( "min-total-nup", GetMinTotalNUP() ) );
         SetMinAverageNUP( node->get_value< double >( "min-average-nup", GetMinAverageNUP() ) );
+        SetWideOrNarrow( node->get_value("wide-or-narrow", GetWideOrNarrow() ) );
 
         return true;
     }
@@ -40,13 +42,31 @@ namespace Katydid
     bool KTEventFirstTrackNUPCut::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {
         bool isCut = false;
-        if( eventData.GetFirstTrackTotalNUP() < fMinTotalNUP )
+        if ( fWideOrNarrow == "narrow" )
         {
-            isCut = true;
+            if( eventData.GetFirstTrackTotalNUP() < fMinTotalNUP )
+            {
+                isCut = true;
+            }
+            if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackTimeLength() < fMinAverageNUP )
+            {
+                isCut = true;
+            }
         }
-        if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackTimeLength() < fMinAverageNUP )
+        else if ( fWideOrNarrow == "wide" )
         {
-            isCut = true;
+            if( eventData.GetFirstTrackTotalWideNUP() < fMinTotalNUP )
+            {
+                isCut = true;
+            }
+            if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackTimeLength() < fMinAverageNUP )
+            {
+                isCut = true;
+            }
+        }
+        else
+        {
+            KTERROR(ecnuplog, "Invalid string for fWideOrNarrow: "<< fWideOrNarrow);
         }
 
         data.GetCutStatus().AddCutResult< KTEventFirstTrackNUPCut::Result >(isCut);

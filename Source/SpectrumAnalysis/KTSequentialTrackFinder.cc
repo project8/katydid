@@ -137,17 +137,17 @@ namespace Katydid
         if (node->has("apply-average-snr-cut"))
         {
             SetApplyAverageSNRCut(node->get_value("apply-average-snr-cut", GetApplyAverageSNRCut()));
-            SetAverageSNRThreshold(node->get_value("power-average-snr-threshold", GetAverageSNRThreshold()));
+            SetAverageSNRThreshold(node->get_value("average-snr-threshold", GetAverageSNRThreshold()));
         }
-        if (node->has("apply-total-residual-cut"))
+        if (node->has("apply-total-nup-cut"))
         {
-            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-residual-cut", GetApplyTotalUnitlessResidualCut()));
-            SetTotalUnitlessResidualThreshold(node->get_value("total-residual-threshold", GetTotalUnitlessResidualThreshold()));
+            SetApplyTotalUnitlessResidualCut(node->get_value("apply-total-nup-cut", GetApplyTotalUnitlessResidualCut()));
+            SetTotalUnitlessResidualThreshold(node->get_value("total-nup-threshold", GetTotalUnitlessResidualThreshold()));
         }
-        if (node->has("apply-average-residual-cut"))
+        if (node->has("apply-average-nup-cut"))
         {
-            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-residual-cut", GetApplyAverageUnitlessResidualCut()));
-            SetAverageUnitlessResidualThreshold(node->get_value("power-average-residual-threshold", GetAverageUnitlessResidualThreshold()));
+            SetApplyAverageUnitlessResidualCut(node->get_value("apply-average-nup-cut", GetApplyAverageUnitlessResidualCut()));
+            SetAverageUnitlessResidualThreshold(node->get_value("average-nup-threshold", GetAverageUnitlessResidualThreshold()));
         }
         if (node->has("n-slope-points"))
         {
@@ -489,7 +489,7 @@ namespace Katydid
 
                              if (lineIt->GetNPoints() >= fMinPoints and lineIt->GetSlope() >= fMinSlope)
                              {
-                                 KTINFO(stflog, "Found track candidate");
+                                 KTINFO(stflog, "Found line candidate");
                                  (this->*fCalcSlope)(*lineIt);
                                  this->EmitPreCandidate(*lineIt);
                              }
@@ -550,49 +550,53 @@ namespace Katydid
      }
 
 
-    bool KTSequentialTrackFinder::EmitPreCandidate(KTSequentialLineData line)
+    bool KTSequentialTrackFinder::EmitPreCandidate(KTSequentialLineData& line)
     {
         KTDEBUG(stflog, "applying cuts and then emitting candidate");
         bool lineIsCandidate = true;
 
+        line.CalculateTotalPower();
+        line.CalculateTotalSNR();
+        line.CalculateTotalNUP();
+
         if ( fApplyTotalPowerCut )
         {
-            if ( line.GetAmplitudeSum() <= fTotalPowerThreshold )
+            if ( line.GetTotalWidePower() <= fTotalPowerThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyAveragePowerCut )
         {
-            if ( line.GetAmplitudeSum()/(line.GetEndTimeInRunC()-line.GetStartTimeInRunC()) <= fAveragePowerThreshold )
+            if ( line.GetTotalWidePower()/(line.GetEndTimeInRunC()-line.GetStartTimeInRunC()) <= fAveragePowerThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyTotalSNRCut )
         {
-            if ( line.GetSNRSum() <= fTotalSNRThreshold)
+            if ( line.GetTotalWideSNR() <= fTotalSNRThreshold)
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyAverageSNRCut )
         {
-            if ( line.GetSNRSum() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageSNRThreshold )
+            if ( line.GetTotalWideSNR() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageSNRThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyTotalUnitlessResidualCut )
         {
-            if ( line.GetNUPSum() <= fTotalUnitlessResidualThreshold )
+            if ( line.GetTotalWideNUP() <= fTotalUnitlessResidualThreshold )
             {
                 lineIsCandidate = false;
             }
         }
         if ( fApplyAverageUnitlessResidualCut )
         {
-            if ( line.GetNUPSum() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageUnitlessResidualThreshold )
+            if ( line.GetTotalWideNUP() / ( line.GetEndTimeInRunC() - line.GetStartTimeInRunC() ) <= fAverageUnitlessResidualThreshold )
             {
                 lineIsCandidate = false;
             }
@@ -608,17 +612,22 @@ namespace Katydid
             newCand.SetAcquisitionID( line.GetAcquisitionID());
             newCand.SetCandidateID( fNLines );
             newCand.SetSlope( line.GetSlope() );
+            newCand.SetTotalSNR( line.GetTotalSNR() );
+            newCand.SetTotalWideSNR( line.GetTotalWideSNR() );
+            newCand.SetTotalPower( line.GetTotalPower() );
+            newCand.SetTotalWidePower( line.GetTotalWidePower() );
+            newCand.SetTotalNUP( line.GetTotalNUP() );
+            newCand.SetTotalWideNUP( line.GetTotalWideNUP() );
+
             ++fNLines;
 
             // Add line points to swf candidate
             KTDiscriminatedPoints& points = line.GetPoints();
             for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
             {
-                //KTDEBUG( stflog, "Adding points to newCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
                 KTDiscriminatedPoint newPoint(*pointIt);
                 newCand.AddPoint(newPoint);
             }
-
 
             // Process & emit new track
 
@@ -812,7 +821,7 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.GetSlope());
+        //KTDEBUG( stflog, "Unweighted slope method. New slope "<<Line.GetSlope());
     }
 
     void KTSequentialTrackFinder::CalculateSlopeFirstRef(KTSequentialLineData& Line)
@@ -855,7 +864,7 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.GetSlope());
+        //KTDEBUG(stflog, "Ref point slope method. New slope is " << Line.GetSlope());
     }
 
     void KTSequentialTrackFinder::CalculateSlopeLastRef(KTSequentialLineData& Line)
@@ -899,6 +908,6 @@ namespace Katydid
         {
             Line.SetSlope( fInitialSlope );
         }
-        KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.GetSlope());
+        //KTDEBUG(stflog, "Ref point slope method. fNSlopePoints: "<<fNSlopePoints<<" . New slope is " << Line.GetSlope());
     }
 } /* namespace Katydid */

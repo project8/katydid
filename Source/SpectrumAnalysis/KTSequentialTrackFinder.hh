@@ -125,7 +125,7 @@ namespace Katydid
             void CalculateSlopeLastRef(KTSequentialLineData& Line);
             //void CalculateWeightedSlope(LineRef& Line);
             void CalculateUnweightedSlope(KTSequentialLineData& Line);
-            bool EmitPreCandidate(KTSequentialLineData line);
+            bool EmitPreCandidate(KTSequentialLineData& line);
             void AcquisitionIsOver();
 
 
