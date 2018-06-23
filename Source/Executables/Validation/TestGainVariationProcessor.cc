@@ -87,13 +87,14 @@ int main()
     gvProc.SetNormalize( false );
     gvProc.SetVarianceCalcNBins(100);
 
-    KTINFO(testlog, "Processing gain variation -- PS only");
-    gvProc.CalculateGainVariation(psDataOnly);
+    // This call has been removed because the GV functions without variance do not currently work correctly and have been temporarily removed
+    //KTINFO(testlog, "Processing gain variation -- PS only");
+    //gvProc.CalculateGainVariation(psDataOnly);
 
     KTINFO(testlog, "Processing gain variation -- PS & variance");
     gvProc.CalculateGainVariation(psData, varData);
 
-    KTGainVariationData& psOnlyGVData = psDataOnly.Of< KTGainVariationData >();
+    //KTGainVariationData& psOnlyGVData = psDataOnly.Of< KTGainVariationData >();
     KTGainVariationData& psAndVarGVData = psData.Of< KTGainVariationData >();
 
 #ifdef ROOT_FOUND
@@ -113,13 +114,13 @@ int main()
     psAndVarVarHist->SetDirectory(file);
     psAndVarVarHist->SetLineColor(kBlue);
 
-    TH1D* psOnlySplineHist = psOnlyGVData.CreateGainVariationHistogram(nBins, 0, "hPSOnlySpline");
-    psOnlySplineHist->SetDirectory(file);
-    psOnlySplineHist->SetLineColor(kGreen+2);
+    //TH1D* psOnlySplineHist = psOnlyGVData.CreateGainVariationHistogram(nBins, 0, "hPSOnlySpline");
+    //psOnlySplineHist->SetDirectory(file);
+    //psOnlySplineHist->SetLineColor(kGreen+2);
 
-    TH1D* psOnlyVarSplineHist = psOnlyGVData.CreateGainVariationVarianceHistogram(nBins, 0, "hPSOnlyVarSpline");
-    psOnlyVarSplineHist->SetDirectory(file);
-    psOnlyVarSplineHist->SetLineColor(kGreen+2);
+    //TH1D* psOnlyVarSplineHist = psOnlyGVData.CreateGainVariationVarianceHistogram(nBins, 0, "hPSOnlyVarSpline");
+    //psOnlyVarSplineHist->SetDirectory(file);
+    //psOnlyVarSplineHist->SetLineColor(kGreen+2);
 
     TH1D* psAndVarSplineHist = psAndVarGVData.CreateGainVariationHistogram(nBins, 0, "hPSAndVarSpline");
     psAndVarSplineHist->SetDirectory(file);
