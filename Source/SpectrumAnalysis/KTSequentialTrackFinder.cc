@@ -62,8 +62,8 @@ namespace Katydid
             fCalcSlope(&KTSequentialTrackFinder::CalculateSlopeFirstRef),
             fLineSignal("seq-cand", this),
             fClusterDoneSignal("clustering-done", this),
-            fDiscrimPowerSlot("disc1d-ps", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
-            fDiscrimSlot("disc1d", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
+            fDiscrimPowerSlot("disc-1d-ps", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
+            fDiscrimSlot("disc-1d", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
             fDoneSlot("done", this, &KTSequentialTrackFinder::AcquisitionIsOver, &fClusterDoneSignal)
     {
     }
