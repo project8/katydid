@@ -60,7 +60,7 @@ namespace Katydid
             fTotalUnitlessResidualThreshold(0.0),
             fAverageUnitlessResidualThreshold(0.0),
             fCalcSlope(&KTSequentialTrackFinder::CalculateSlopeFirstRef),
-            fLineSignal("seq-lines", this),
+            fLineSignal("seq-cand", this),
             fClusterDoneSignal("clustering-done", this),
             fDiscrimPowerSlot("disc1d-ps", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
             fDiscrimSlot("disc1d", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
