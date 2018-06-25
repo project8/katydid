@@ -27,7 +27,7 @@ namespace Katydid
         fEndTimeInAcq(0.0),
         fStartFrequency(0.0),
         fEndFrequency(0.0),
-        fInitialSlope(0.0),
+        fWeightedSlopeSum(0.0),
         fSlope(0.0),
         fNPoints(0),
         fComponent(0),
@@ -51,6 +51,7 @@ namespace Katydid
     void KTSequentialLineData::AddPoint( const KTDiscriminatedPoint& point )
     {
         fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
+        fTotalWideSNR += point.fNeighborhoodAmplitude/point.fMean;
         fLinePoints.insert(point);
         //KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();

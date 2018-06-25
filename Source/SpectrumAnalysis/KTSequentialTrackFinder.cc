@@ -827,13 +827,22 @@ namespace Katydid
     void KTSequentialTrackFinder::CalculateSlopeFirstRef(KTSequentialLineData& Line)
     {
 
-        //KTDEBUG(seqlog, "Calculating line slope");
-        double weightedSlope = 0.0;
-        double wSum = 0.0;
+        KTDEBUG(stflog, "Calculating line slope "<<Line.GetSNRList().rbegin()[fNSlopePoints-1]);
+        //double weightedSlope = 0.0;
+        //double wSum = 0.0;
 
         if (Line.GetNPoints() > fNSlopePoints)
         {
             KTDiscriminatedPoints& points = Line.GetPoints();
+            KTDiscriminatedPoints::iterator pointIt = points.end();
+            std::advance(pointIt, -1);
+            Line.SetWeightedSlopeSum( Line.GetWeightedSlopeSum() + ( pointIt->fFrequency - Line.GetStartFrequency() ) / ( pointIt->fTimeInRunC - Line.GetStartTimeInRunC() ) * Line.GetSNRList().back() );
+
+            std::advance(pointIt, -(fNSlopePoints-1));
+            Line.SetWeightedSlopeSum( Line.GetWeightedSlopeSum() - (pointIt->fFrequency - Line.GetStartFrequency() ) / ( pointIt->fTimeInRunC - Line.GetStartTimeInRunC() ) * Line.GetSNRList().rbegin()[fNSlopePoints-1] );
+            Line.SetTotalWideSNR( Line.GetTotalWideSNR() - Line.GetSNRList().rbegin()[fNSlopePoints-1]);
+            Line.SetSlope(Line.GetWeightedSlopeSum()/Line.GetTotalWideSNR());
+            /*KTDiscriminatedPoints& points = Line.GetPoints();
             KTDiscriminatedPoints::iterator pointIt = points.end();
             std::advance(pointIt, -fNSlopePoints);
             while(pointIt != points.end())
@@ -845,12 +854,14 @@ namespace Katydid
                 }
                 ++pointIt;
             }
-            Line.SetSlope( weightedSlope/wSum );
+            Line.SetSlope( weightedSlope/wSum );*/
         }
         else if (Line.GetNPoints() > 1)
         {
             KTDiscriminatedPoints& points = Line.GetPoints();
-            for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
+            Line.SetWeightedSlopeSum( Line.GetWeightedSlopeSum() + ( points.rbegin()->fFrequency - Line.GetStartFrequency() ) / ( points.rbegin()->fTimeInRunC - Line.GetStartTimeInRunC() ) * Line.GetSNRList().back() );
+            Line.SetSlope(Line.GetWeightedSlopeSum()/Line.GetTotalWideSNR());
+            /*for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
             {
                 if (pointIt->fFrequency != Line.GetStartFrequency())
                 {
@@ -858,7 +869,7 @@ namespace Katydid
                     wSum += pointIt->fAmplitude;
                 }
             }
-            Line.SetSlope( weightedSlope/wSum );
+            Line.SetSlope( weightedSlope/wSum );*/
         }
         else
         {
@@ -884,8 +895,8 @@ namespace Katydid
             {
                 if (pointIt->fFrequency != Line.GetEndFrequency())
                 {
-                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
+                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude/pointIt->fMean;
+                    wSum += pointIt->fNeighborhoodAmplitude/pointIt->fMean;
                 }
                 ++pointIt;
             }
@@ -893,16 +904,19 @@ namespace Katydid
         }
         else if (Line.GetNPoints() > 1)
         {
+            /*KTDiscriminatedPoints points = Line.GetPoints();
+            Line.SetWeightedSlopeSum( Line.GetWeightedSlopeSum() + ( Line.GetEndFrequency() - points.rbegin()[1].fFrequency) / ( Line.GetEndTimeInRunC() - points.rbegin()[1].fTimeInRunC ) * Line.GetSNRList().rbegin()[1] );
+            Line.SetSlope(Line.GetWeightedSlopeSum()/Line.GetTotalWideSNR());*/
             KTDiscriminatedPoints& points = Line.GetPoints();
             for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
             {
                 if (pointIt->fFrequency != Line.GetEndFrequency())
                 {
-                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fAmplitude;
-                    wSum += pointIt->fAmplitude;
+                    weightedSlope += (Line.GetEndFrequency() - pointIt->fFrequency)/(Line.GetEndTimeInRunC() - pointIt->fTimeInRunC) * pointIt->fNeighborhoodAmplitude / pointIt->fMean;
+                    //wSum += pointIt->fNeighborhoodAmplitude;
                 }
             }
-            Line.SetSlope( weightedSlope/wSum );
+            Line.SetSlope( weightedSlope/Line.GetTotalWideSNR() );
         }
         else
         {

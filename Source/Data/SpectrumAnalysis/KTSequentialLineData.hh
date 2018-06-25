@@ -33,8 +33,8 @@ namespace Katydid
             MEMBERVARIABLE(double, EndTimeInAcq);
             MEMBERVARIABLE(double, StartFrequency);
             MEMBERVARIABLE(double, EndFrequency);
-            MEMBERVARIABLE(double, InitialSlope);
             MEMBERVARIABLE(double, Slope);
+            MEMBERVARIABLE(double, WeightedSlopeSum);
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, CandidateID)
