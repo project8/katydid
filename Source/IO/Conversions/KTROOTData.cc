@@ -20,6 +20,7 @@
 
 ClassImp(Katydid::TDiscriminatedPoint);
 ClassImp(Katydid::TSparseWaterfallCandidateData);
+ClassImp(Katydid::TSequentialLineData);
 
 namespace Katydid
 {
@@ -67,7 +68,7 @@ namespace Katydid
             fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)
     {
         // this cannot be initialized in the initializer list because ROOT
-        fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
+        fPoints = new TClonesArray("Katydid::TSparseWaterfallCandidate", 20);
     }
 
     TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig) :
@@ -95,6 +96,49 @@ namespace Katydid
         fComponent = rhs.fComponent; fAcquisitionID = rhs.fAcquisitionID; fCandidateID = rhs.fCandidateID;
         fTimeInRunC = rhs.fTimeInRunC; fTimeLength = rhs.fTimeLength; 
         fMinFrequency = rhs.fMinFrequency; fMaxFrequency = rhs.fMaxFrequency; fFrequencyWidth = rhs.fFrequencyWidth;
+        fPoints->Clear(); (*fPoints) = *(rhs.fPoints);
+        return *this;
+    }
+
+
+    //************************
+    // TSequentialLineData
+    //************************
+
+    TSequentialLineData::TSequentialLineData() :
+            TObject(),
+            fComponent(0), fAcquisitionID(0), fCandidateID(0),
+            fStartTimeInRunC(0.), fEndTimeInRunC(0.), fStartTimeInAcq(0.), fStartFrequency(0.), fEndFrequency(0.), fInitialSlope(0.), fSlope(0.),
+            fTotalPower(0.), fTotalTrackSNR(0.), fTotalTrackNUP(0.), fTotalWideTrackPower(0.), fTotalWideTrackSNR(0.), fTotalWideTrackNUP(0.)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fPoints = new TClonesArray("Katydid::TSequentialLineData", 20);
+    }
+
+    TSequentialLineData::TSequentialLineData(const TSequentialLineData& orig) :
+            fComponent(orig.fComponent), fAcquisitionID(orig.fAcquisitionID), fCandidateID(orig.fCandidateID),
+            fStartTimeInRunC(orig.fStartTimeInRunC), fEndTimeInRunC(orig.fEndTimeInRunC), fStartTimeInAcq(orig.fStartTimeInAcq), fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fInitialSlope(orig.fInitialSlope), 
+            fTotalPower(orig.fTotalPower), fTotalTrackSNR(orig.fTotalTrackSNR), fTotalTrackNUP(orig.fTotalTrackNUP), fTotalWideTrackPower(orig.fTotalWideTrackPower), fTotalWideTrackSNR(orig.fTotalWideTrackSNR), fTotalWideTrackNUP(orig.fTotalWideTrackNUP)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fPoints = new TClonesArray(*orig.fPoints);
+    }
+
+    TSequentialLineData::~TSequentialLineData()
+    {
+        fPoints->Clear();
+    }
+
+    TObject* TSequentialLineData::Clone(const char* newname)
+    {
+        TSequentialLineData* newData = new TSequentialLineData(*this);
+        return newData;
+    }
+
+    TSequentialLineData& TSequentialLineData::operator=(const TSequentialLineData& rhs)
+    {
+        fComponent = rhs.fComponent; fAcquisitionID = rhs.fAcquisitionID; fCandidateID = rhs.fCandidateID;
+        fStartTimeInRunC = rhs.fStartTimeInRunC; fEndTimeInRunC = rhs.fEndTimeInRunC; fStartTimeInAcq = rhs.fStartTimeInAcq; fStartFrequency = rhs.fStartFrequency; fEndFrequency = rhs.fEndFrequency; fInitialSlope = rhs.fInitialSlope; fSlope = rhs.fSlope; 
         fPoints->Clear(); (*fPoints) = *(rhs.fPoints);
         return *this;
     }
