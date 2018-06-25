@@ -809,9 +809,9 @@ namespace Katydid
 
         KTDiscriminatedPoints& points = Line.GetPoints();
         Line.SetSumX( Line.GetSumX() + points.rbegin()->fTimeInRunC) ;
-        Line.SetSumY( Line.GetSumX() + points.rbegin()->fFrequency);
-        Line.SetSumXY( Line.GetSumX() + points.rbegin()->fTimeInRunC * points.rbegin()->fFrequency);
-        Line.SetSumXX( Line.GetSumX() + points.rbegin()->fTimeInRunC * points.rbegin()->fTimeInRunC);
+        Line.SetSumY( Line.GetSumY() + points.rbegin()->fFrequency);
+        Line.SetSumXY( Line.GetSumXY() + points.rbegin()->fTimeInRunC * points.rbegin()->fFrequency);
+        Line.SetSumXX( Line.GetSumXX() + points.rbegin()->fTimeInRunC * points.rbegin()->fTimeInRunC);
 
         if (Line.GetNPoints() > 1)
         {

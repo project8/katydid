@@ -39,7 +39,6 @@ namespace Katydid
         fTotalWidePower(0.0),
         fTotalWideSNR(0.0),
         fTotalWideNUP(0.0),
-        fMinPoints(0),
         fSumX(0.),
         fSumY(0.),
         fSumXY(0.),

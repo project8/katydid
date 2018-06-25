@@ -45,7 +45,6 @@ namespace Katydid
             MEMBERVARIABLE(double, TotalWideSNR);
             MEMBERVARIABLE(double, TotalWideNUP);
             MEMBERVARIABLE(unsigned, NPoints);
-            MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, SumX);
             MEMBERVARIABLE(double, SumY);
             MEMBERVARIABLE(double, SumXY);
