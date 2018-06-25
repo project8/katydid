@@ -39,7 +39,7 @@ namespace Katydid
             fProcTrackAssignedError(0.),
             fTrackSignal("track", this),
             fSWFSlot("swfc", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSparseWaterfallCandidateData>, &fTrackSignal),
-            fSeqSlot("seqc", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSequentialLineData>, &fTrackSignal)
+            fSeqSlot("seq-cand", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSequentialLineData>, &fTrackSignal)
     {
     }
 
