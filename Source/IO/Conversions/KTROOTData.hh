@@ -87,32 +87,30 @@ namespace Katydid
 
     class TSequentialLineData : public TObject
     {
-        MEMBERVARIABLE(UInt_t, Component);
-        MEMBERVARIABLE(UInt_t, AcquisitionID);
-        MEMBERVARIABLE(UInt_t, CandidateID);
+        // MEMBERVARIABLE(UInt_t, Component);
+        // MEMBERVARIABLE(UInt_t, AcquisitionID);
+        // MEMBERVARIABLE(UInt_t, CandidateID);
 
-        MEMBERVARIABLE(Double_t, StartTimeInRunC);
-        MEMBERVARIABLE(Double_t, EndTimeInRunC);
-        MEMBERVARIABLE(Double_t, StartTimeInAcq);
-        MEMBERVARIABLE(Double_t, StartFrequency);
-        MEMBERVARIABLE(Double_t, EndFrequency);
-        MEMBERVARIABLE(Double_t, InitialSlope);
-        MEMBERVARIABLE(Double_t, Slope);
+        // MEMBERVARIABLE(Double_t, StartTimeInRunC);
+        // MEMBERVARIABLE(Double_t, EndTimeInRunC);
+        // MEMBERVARIABLE(Double_t, StartTimeInAcq);
+        // MEMBERVARIABLE(Double_t, StartFrequency);
+        // MEMBERVARIABLE(Double_t, EndFrequency);
+        // MEMBERVARIABLE(Double_t, InitialSlope);
+        // MEMBERVARIABLE(Double_t, Slope);
 
-        MEMBERVARIABLE(Double_t, TotalPower);
-        MEMBERVARIABLE(Double_t, TotalTrackSNR);
-        MEMBERVARIABLE(Double_t, TotalTrackNUP);
-        MEMBERVARIABLE(Double_t, TotalWideTrackPower);
-        MEMBERVARIABLE(Double_t, TotalWideTrackSNR);
-        MEMBERVARIABLE(Double_t, TotalWideTrackNUP);
-
-        MEMBERVARIABLE(Double_t, NPoints);
+        // MEMBERVARIABLE(Double_t, TotalPower);
+        // MEMBERVARIABLE(Double_t, TotalTrackSNR);
+        // MEMBERVARIABLE(Double_t, TotalTrackNUP);
+        // MEMBERVARIABLE(Double_t, TotalWidePower);
+        // MEMBERVARIABLE(Double_t, TotalWideTrackSNR);
+        // MEMBERVARIABLE(Double_t, TotalWideTrackNUP);
 
         public:
-            TClonesArray* GetPoints() {return fPoints;}
+            // TClonesArray* GetPoints() {return fPoints;}
 
         private:
-            TClonesArray* fPoints;
+            // TClonesArray* fPoints;
 
         public:
             TSequentialLineData();
@@ -121,7 +119,7 @@ namespace Katydid
             TObject* Clone(const char* newname="");
             TSequentialLineData& operator=(const TSequentialLineData& rhs);
 
-            std::string GetBranchName() { return std::string("SequentialLine"); } // Defines the default name of the object saved inside the output tree
+            // std::string GetBranchName() { return std::string("SequentialLine"); } // Defines the default name of the object saved inside the output tree
 
             ClassDef(TSequentialLineData, 1);
     };
