@@ -827,7 +827,7 @@ namespace Katydid
     void KTSequentialTrackFinder::CalculateSlopeFirstRef(KTSequentialLineData& Line)
     {
 
-        KTDEBUG(stflog, "Calculating line slope "<<Line.GetSNRList().rbegin()[fNSlopePoints-1]);
+        //KTDEBUG(stflog, "Calculating line slope "<<Line.GetSNRList().rbegin()[fNSlopePoints-1]);
         //double weightedSlope = 0.0;
         //double wSum = 0.0;
 
@@ -904,9 +904,6 @@ namespace Katydid
         }
         else if (Line.GetNPoints() > 1)
         {
-            /*KTDiscriminatedPoints points = Line.GetPoints();
-            Line.SetWeightedSlopeSum( Line.GetWeightedSlopeSum() + ( Line.GetEndFrequency() - points.rbegin()[1].fFrequency) / ( Line.GetEndTimeInRunC() - points.rbegin()[1].fTimeInRunC ) * Line.GetSNRList().rbegin()[1] );
-            Line.SetSlope(Line.GetWeightedSlopeSum()/Line.GetTotalWideSNR());*/
             KTDiscriminatedPoints& points = Line.GetPoints();
             for(KTDiscriminatedPoints::iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt)
             {
