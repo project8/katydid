@@ -35,6 +35,13 @@ namespace Katydid
     class KTSequentialLineSNRCut : public Nymph::KTCutOneArg< KTSequentialLineData >
     {
 
+    private:
+        enum class wide_or_narrow
+        {
+            wide,
+            narrow
+        };
+
     public:
         struct Result : Nymph::KTExtensibleCutResult< Result >
         {
@@ -49,7 +56,7 @@ namespace Katydid
 
         MEMBERVARIABLE(double, MinTotalSNR);
         MEMBERVARIABLE(double, MinAverageSNR);
-        MEMBERVARIABLE(std::string, WideOrNarrowLine);
+        MEMBERVARIABLE(wide_or_narrow, WideOrNarrowLine);
 
     public:
         bool Apply(Nymph::KTData& data, KTSequentialLineData& seqLineData);

@@ -155,11 +155,11 @@ namespace Katydid
         }
         if (node->has("slope-method"))
         {
-            if (node->get_value("slope-method") == "weighted_first_point_ref")
+            if (node->get_value("slope-method") == "weighted-first-point-ref")
             {
                 SetSlopeMethod(slopeMethod::weighted_first_point_ref);
             }
-            if (node->get_value("slope-method") == "weighted_last_point_ref")
+            if (node->get_value("slope-method") == "weighted-last-point-ref")
             {
                 SetSlopeMethod(slopeMethod::weighted_last_point_ref);
             }

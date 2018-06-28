@@ -41,6 +41,13 @@ namespace Katydid
             static const std::string sName;
         };
 
+    private:
+        enum class wide_or_narrow
+        {
+            wide,
+            narrow
+        };
+
     public:
         KTEventFirstTrackNUPCut(const std::string& name = "event-first-track-nup-cut");
         ~KTEventFirstTrackNUPCut();
@@ -49,7 +56,7 @@ namespace Katydid
 
         MEMBERVARIABLE(double, MinTotalNUP);
         MEMBERVARIABLE(double, MinAverageNUP);
-        MEMBERVARIABLE(std::string, WideOrNarrow);
+        MEMBERVARIABLE(wide_or_narrow, WideOrNarrow);
 
     public:
         bool Apply(Nymph::KTData& data, KTMultiTrackEventData& eventData);

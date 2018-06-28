@@ -22,7 +22,7 @@ namespace Katydid
          KTCutOneArg(name),
          fMinTotalSNR(0.0),
          fMinAverageSNR(0.0),
-         fWideOrNarrowLine("wide")
+         fWideOrNarrowLine( wide_or_narrow::wide )
     {}
 
     KTSequentialLineSNRCut::~KTSequentialLineSNRCut()
@@ -34,8 +34,21 @@ namespace Katydid
 
         SetMinTotalSNR( node->get_value< double >( "min-total-snr", GetMinTotalSNR() ) );
         SetMinAverageSNR( node->get_value< double >( "min-average-snr", GetMinAverageSNR() ) );
-        SetWideOrNarrowLine( node->get_value("wide-or-narrow", GetWideOrNarrowLine() ) );
-
+        if (node->has("wide-or-narrow"))
+        {
+            if (node->get_value("wide-or-narrow") == "wide")
+            {
+                SetWideOrNarrowLine(wide_or_narrow::wide);
+            }
+            else if (node->get_value("wide-or-narrow") == "narrow")
+            {
+                SetWideOrNarrowLine(wide_or_narrow::narrow);
+            }
+            else
+            {
+                KTERROR(sqlcutlog, "Invalid string for fWideOrNarrow: "<< fWideOrNarrowLine);
+            }
+        }
         return true;
     }
 
@@ -55,7 +68,7 @@ namespace Katydid
                 isCut = true;
             }
         }
-        else if (fWideOrNarrowLine == "wide")
+        else //(fWideOrNarrowLine == "wide")
         {
             if( seqLineData.GetTotalWideSNR() < GetMinTotalSNR() )
             {
@@ -66,10 +79,7 @@ namespace Katydid
                 isCut = true;
             }
         }
-        else
-        {
-            KTERROR(sqlcutlog, "Invalid string for fWideOrNarrowLine: "<< fWideOrNarrowLine);
-        }
+
         data.GetCutStatus().AddCutResult< KTSequentialLineSNRCut::Result >(isCut);
 
         return isCut;

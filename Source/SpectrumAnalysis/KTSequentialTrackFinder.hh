@@ -52,7 +52,7 @@ namespace Katydid
      - "search-radius": for disc1d-ps slot: before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
      - "converge-delta": for disc1d-ps slot: defines when convergence has been reached (in bins)
      - "frequency-acceptance": maximum allowed frequency distance of point to an extrapolated line (in Hz)
-     - "slope-method": method to update the line slope after point collection
+     - "slope-method": method to update the line slope after point collection (see options below)
      - "initial-frequency-acceptance": if the line that a point is being compared to, only has a single point so far, this is the accepted frequency acceptance. Default isfrequency_acceptance
      - "initial-slope": if a line has only one point, this is the line's slope
      - "n-slope-points": maximum number of points to include in the slope calculation
@@ -70,6 +70,13 @@ namespace Katydid
      - "average-snr-threshold": threshold for apply-average-snr-cut
      - "total-residual-threshold": threshold for apply-total-residual-cut
      - "average-residual-threshold": threshold for apply-average-residual
+
+     Slope method:
+     The slope-method controls which method is used for updating the line slope when a new point is added to the line.
+     There are 3 available options:
+     - "weighted-first-point-ref" -- slope is calculated by taking the snr-weighted average of df/dt of every point in reference to the line start
+     - "weighted-last-point-ref" -- slope is calculated by taking the snr-weighted average of df/dt of every point in reference to the line end. As the reference point changes with every new point, this method re-loops over n-slope-points.
+     - "unweighted" -- unweighted slope calculation. Does not take power or snr into account.
 
 
      Slots:
@@ -179,9 +186,6 @@ namespace Katydid
         private:
             std::vector< KTSequentialLineData > fActiveLines;
             std::set< Nymph::KTDataPtr > fCandidates;
-
-
-
 
 
 
