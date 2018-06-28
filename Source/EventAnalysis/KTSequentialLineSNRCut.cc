@@ -46,7 +46,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(sqlcutlog, "Invalid string for fWideOrNarrow: "<< fWideOrNarrowLine);
+                KTERROR(sqlcutlog, "Invalid string for fWideOrNarrow");
             }
         }
         return true;
@@ -57,7 +57,7 @@ namespace Katydid
         bool isCut = false;
         //seqLineData.CalculateTotalSNR();
 
-        if (fWideOrNarrowLine == "narrow")
+        if (fWideOrNarrowLine == wide_or_narrow::narrow)
         {
             if( seqLineData.GetTotalSNR() < GetMinTotalSNR() )
             {
@@ -68,7 +68,7 @@ namespace Katydid
                 isCut = true;
             }
         }
-        else //(fWideOrNarrowLine == "wide")
+        else
         {
             if( seqLineData.GetTotalWideSNR() < GetMinTotalSNR() )
             {

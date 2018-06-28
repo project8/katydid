@@ -46,7 +46,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecsnrlog, "Invalid string for fWideOrNarrow: "<< fWideOrNarrow);
+                KTERROR(ecsnrlog, "Invalid string for fWideOrNarrow");
             }
         }
 
@@ -56,7 +56,7 @@ namespace Katydid
     bool KTEventFirstTrackSNRCut::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {
         bool isCut = false;
-        if ( fWideOrNarrow == "narrow" )
+        if ( fWideOrNarrow == wide_or_narrow::narrow )
         {
             if( eventData.GetFirstTrackTotalSNR() < fMinTotalSNR )
             {
@@ -67,7 +67,7 @@ namespace Katydid
                 isCut = true;
             }
         }
-        else //if ( fWideOrNarrow == "wide" )
+        else
         {
             if( eventData.GetFirstTrackTotalWideSNR() < fMinTotalSNR )
             {

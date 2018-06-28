@@ -34,7 +34,7 @@ namespace Katydid
 
         SetMinTotalNUP( node->get_value< double >( "min-total-nup", GetMinTotalNUP() ) );
         SetMinAverageNUP( node->get_value< double >( "min-average-nup", GetMinAverageNUP() ) );
-        SetWideOrNarrow( node->get_value("wide-or-narrow", GetWideOrNarrow() ) );
+
         if (node->has("wide-or-narrow"))
         {
             if (node->get_value("wide-or-narrow") == "wide")
@@ -47,7 +47,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecnuplog, "Invalid string for fWideOrNarrow: "<< fWideOrNarrow);
+                KTERROR(ecnuplog, "Invalid string for fWideOrNarrow");
             }
         }
         return true;
@@ -56,7 +56,7 @@ namespace Katydid
     bool KTEventFirstTrackNUPCut::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {
         bool isCut = false;
-        if ( fWideOrNarrow == "narrow" )
+        if ( fWideOrNarrow == wide_or_narrow::narrow )
         {
             if( eventData.GetFirstTrackTotalNUP() < fMinTotalNUP )
             {
@@ -67,7 +67,7 @@ namespace Katydid
                 isCut = true;
             }
         }
-        else //( fWideOrNarrow == "wide" )
+        else
         {
             if( eventData.GetFirstTrackTotalWideNUP() < fMinTotalNUP )
             {
