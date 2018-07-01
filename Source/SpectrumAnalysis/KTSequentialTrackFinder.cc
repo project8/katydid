@@ -159,7 +159,7 @@ namespace Katydid
             {
                 SetSlopeMethod(slopeMethod::weighted_first_point_ref);
             }
-            if (node->get_value("slope-method") == "weighted-last-point-ref")
+            else if (node->get_value("slope-method") == "weighted-last-point-ref")
             {
                 SetSlopeMethod(slopeMethod::weighted_last_point_ref);
             }
@@ -168,9 +168,9 @@ namespace Katydid
             //     SetSlopeMethod(slopeMethod::weighted);
             //}
             else if (node->get_value("slope-method") == "unweighted")
-                {
-                 SetSlopeMethod(slopeMethod::unweighted);
-                }
+            {
+                SetSlopeMethod(slopeMethod::unweighted);
+            }
             else
             {
                 KTERROR(stflog, "Set slope method not valid");
