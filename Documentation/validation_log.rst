@@ -43,11 +43,14 @@ Fixes:
 Log
 ---
 
-Version: x.y.z
-~~~~~~~~~~~~~~
+Version: 2.12.0
+~~~~~~~~~~~~~~~
 
-Release Date: ?????????????????
+Release Date: July 5, 2018
 '''''''''''''''''''''''''''''''
+
+New Features
+''''''''''''
 
 * Moving the default object name from the Katydid Writer into Cicada:
       * TMultiTrackEventData
@@ -60,11 +63,11 @@ Release Date: ?????????????????
       * Slack message upon success or failure
 * Track SNR and NUP:
       * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
-        Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
+      * Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
       * KTSpectrumDiscriminator and KTVariableSpectrumDiscriminator: new member variables of KTDiscriminatedPoints1DData are calculated and set.
       * KTTrackProcessing: split the KTProcessingTrack processor into two processors: KTTrackProcessingDoubleCuts and KTTrackProcessingWeightedSlope.
-        KTTrackProcessingWeightedSlope handles both SequentialLineData and SparseWaterfallCandidateData; while KTTrackProcessingDoubleCuts only connects to SparseWaterfallCandidateData (with HoughData).
-        Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
+      * KTTrackProcessingWeightedSlope handles both SequentialLineData and SparseWaterfallCandidateData; while KTTrackProcessingDoubleCuts only connects to SparseWaterfallCandidateData (with HoughData).
+      * Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
       * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
       * KTSequentialLineData: new version of KTSeqLine. Has SNR and NUP member variables. LineTrimming now uses SNR instead of Power.
       * KTSequentialTrackFinder: new slot for KTDiscriminatedPoints1DData only. Signal is now KTSequentialLineData.
