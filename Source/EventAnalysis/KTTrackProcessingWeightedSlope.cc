@@ -157,10 +157,9 @@ namespace Katydid
 
         //Calculating Chi^2_min
         double chi2min = 0;
-        double residual = 0;
         for (unsigned iTimeBin = 0; iTimeBin<nTimeBins; ++iTimeBin)
         {
-            residual = averageFrequency[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
+            double residual = averageFrequency[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
             chi2min += residual * residual;
             KTDEBUG(tlog, "Residuals : " << residual );
         }

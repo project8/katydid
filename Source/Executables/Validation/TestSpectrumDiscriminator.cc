@@ -63,7 +63,7 @@ int main()
 
     for (unsigned iFitPoint=0; iFitPoint < NFitPoints; ++iFitPoint)
     {
-        unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+        //unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint;
 
         xVals[iFitPoint] = minFreq + (iFitPoint + 0.5) * dF;
         yValsMean[iFitPoint] = meanValue;

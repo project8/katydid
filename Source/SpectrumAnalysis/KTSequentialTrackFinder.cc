@@ -883,10 +883,10 @@ namespace Katydid
 
         //KTDEBUG(seqlog, "Calculating line slope");
         double weightedSlope = 0.0;
-        double wSum = 0.0;
 
         if (Line.GetNPoints() > fNSlopePoints)
         {
+            double wSum = 0.0;
             KTDiscriminatedPoints& points = Line.GetPoints();
             KTDiscriminatedPoints::iterator pointIt = points.end();
             std::advance(pointIt, -fNSlopePoints);
