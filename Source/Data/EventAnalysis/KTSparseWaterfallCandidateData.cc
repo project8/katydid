@@ -24,8 +24,8 @@ namespace Katydid
             fTimeInAcq(0.),
             //fFirstSliceNumber(0),
             //fLastSliceNumber(0),
-            fMinimumFrequency(0.),
-            fMaximumFrequency(0.),
+            fMinFrequency(0.),
+            fMaxFrequency(0.),
             //fMeanStartFrequency(0.),
             //fMeanEndFrequency(0.),
             fFrequencyWidth(0.)
@@ -40,7 +40,7 @@ namespace Katydid
     {
     }
 
-    void KTSparseWaterfallCandidateData::AddPoint(const Point& point)
+    void KTSparseWaterfallCandidateData::AddPoint(const KTDiscriminatedPoint& point)
     {
         fPoints.insert(point);
         return;

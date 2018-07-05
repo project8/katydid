@@ -44,6 +44,7 @@ namespace Katydid
             fMaxFrequency(1.),
             fMinBin(0),
             fMaxBin(1),
+            fNeighborhoodRadius(0),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fDiscrim1DSignal("disc-1d", this),
@@ -65,7 +66,10 @@ namespace Katydid
     bool KTSpectrumDiscriminator::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
-
+        if (node->has("neighborhood-radius"))
+        {
+            SetNeighborhoodRadius(node->get_value< int >("neighborhood-radius"));
+        }
         if (node->has("snr-threshold-amplitude"))
         {
             SetSNRAmplitudeThreshold(node->get_value< double >("snr-threshold-amplitude"));
@@ -208,10 +212,11 @@ namespace Katydid
                 magnitude.resize(spectrum->size());
             }
 
-            double mean = 0.;
+            double mean = 0., variance = 0.;
             if (! pcData.empty())
             {
                 mean = pcData[iComponent].fMean;
+                variance = pcData[iComponent].fVariance;
             }
             else
             {
@@ -220,8 +225,10 @@ namespace Katydid
                 {
                     magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                     mean += magnitude[iBin];
+                    variance += magnitude[iBin] * magnitude[iBin];
                 }
                 mean *= norm;
+                variance = variance*norm  - mean*mean;
             }
 
             double threshold = 0.;
@@ -239,32 +246,24 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0.;
-                if (! pcData.empty())
-                {
-                    sigma = sqrt(pcData[iComponent].fVariance);
-                }
-                else
-                {
-#pragma omp parallel for reduction(+:sigma)
-                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-                    {
-                        sigma += magnitude[iBin] * magnitude[iBin];
-                    }
-                    sigma = sqrt(sigma*norm  - mean*mean);
-                }
-
-                threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
+                threshold = mean + fSigmaThreshold * sqrt(variance);
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; variance = " << variance << ")");
             }
 
             // loop over bins, checking against the threshold
-            double value;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = magnitude[iBin];
-                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                double value = magnitude[iBin];
+                //if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                if (value >= threshold)
+                {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
+                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
+                }
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
@@ -306,18 +305,21 @@ namespace Katydid
                 return false;
             }
 
-            double mean = 0.;
+            double mean = 0., variance = 0.;
             if (! pcData.empty())
             {
                 mean = pcData[iComponent].fMean;
+                variance = pcData[iComponent].fVariance;
             }
             else
             {
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
                     mean += (*spectrum)(iBin).abs();
+                    variance += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
                 }
                 mean *= norm;
+                variance = variance*norm - mean*mean;
             }
 
             double threshold = 0.;
@@ -335,34 +337,25 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0.;
-                if (! pcData.empty())
-                {
-                    sigma = sqrt(pcData[iComponent].fVariance);
-                }
-                else
-                {
-                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-                    {
-                        sigma += (*spectrum)(iBin).abs() * (*spectrum)(iBin).abs();
-                    }
-                    sigma = sqrt(sigma*norm - mean*mean);
-                }
-
-                threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
+                threshold = mean + fSigmaThreshold * sqrt(variance);
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; variance = " << variance << ")");
             }
 
             // loop over bins, checking against the threshold
-            double value;
+
             //std::stringstream printer;
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin).abs();
+                double value = (*spectrum)(iBin).abs();
                 if (value >= threshold)
                 {
                     //printer << "   " << iBin << " -- " << value;
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                    //newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
+                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
             }
 
@@ -406,10 +399,11 @@ namespace Katydid
                 return false;
             }
 
-            double mean = 0.;
+            double mean = 0., variance = 0.;
             if (! pcData.empty())
             {
                 mean = pcData[iComponent].fMean;
+                variance = pcData[iComponent].fVariance;
             }
             else
             {
@@ -417,8 +411,10 @@ namespace Katydid
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
                     mean += (*spectrum)(iBin);
+                    variance += (*spectrum)(iBin) * (*spectrum)(iBin);
                 }
                 mean *= norm;
+                variance = variance*norm - mean*mean;
             }
 
             double threshold = 0.;
@@ -436,32 +432,24 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                double sigma = 0.;
-                if (! pcData.empty())
-                {
-                    sigma = sqrt(pcData[iComponent].fVariance);
-                }
-                else
-                {
-#pragma omp parallel for reduction(+:sigma)
-                    for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
-                    {
-                        sigma += (*spectrum)(iBin) * (*spectrum)(iBin);
-                    }
-                    sigma = sqrt(sigma*norm - mean*mean);
-                }
-
-                threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; sigma = " << sigma << ")");
+                threshold = mean + fSigmaThreshold * sqrt(variance);
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode; mean = " << mean << "; variance = " << variance << ")");
             }
 
             // loop over bins, checking against the threshold
-            double value;
+
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                value = (*spectrum)(iBin);
-                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
+                double value = (*spectrum)(iBin);
+                if (value >= threshold)
+                {
+                    double neighborhoodAmplitude = 0.;
+                    this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
+                    neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
+
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
+                }
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
@@ -471,6 +459,30 @@ namespace Katydid
         return true;
     }
 
+    void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
+    {
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
+        {
+            neighborhoodAmplitude += (*spectrum)(jBin);
+        }
+    }
+    void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
+    {
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
+        {
+            neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
+        }
+    }
+    void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)
+    {
+        neighborhoodAmplitude = 0;
+        for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
+        {
+            neighborhoodAmplitude += (*spectrum)(jBin).abs();
+        }
+    }
 
 
 } /* namespace Katydid */

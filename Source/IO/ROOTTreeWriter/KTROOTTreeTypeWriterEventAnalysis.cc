@@ -21,17 +21,21 @@
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
 #include "CProcessedMPTData.hh"
 #include "CROOTData.hh"
+#include "KTROOTData.hh"
 
 #include "TFile.h"
 #include "TGraph.h"
 #include "TGraph2D.h"
 #include "TH2.h"
 #include "TTree.h"
+#include "TClonesArray.h"
+#include "TNtupleD.h"
 
 #include <sstream>
 
@@ -61,7 +65,7 @@ namespace Katydid
                     fPowerFitDataTree(NULL),
                     fFreqCandidateData(),
                     fWaterfallCandidateData(),
-                    fSparseWaterfallCandidateData(),
+                    fSparseWaterfallCandidateDataPtr(NULL),
                     fProcessedTrackDataPtr(NULL),
                     fProcessedMPTDataPtr(NULL),
                     fMultiPeakTrackData(),
@@ -223,8 +227,8 @@ namespace Katydid
         fWaterfallCandidateData.fTimeLength = wcData.GetTimeLength();
         fWaterfallCandidateData.fFirstSliceNumber = wcData.GetFirstSliceNumber();
         fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
-        fWaterfallCandidateData.fMinFrequency = wcData.GetMinimumFrequency();
-        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaximumFrequency();
+        fWaterfallCandidateData.fMinFrequency = wcData.GetMinFrequency();
+        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaxFrequency();
         fWaterfallCandidateData.fMeanStartFrequency = wcData.GetMeanStartFrequency();
         fWaterfallCandidateData.fMeanEndFrequency = wcData.GetMeanEndFrequency();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
@@ -294,14 +298,141 @@ namespace Katydid
     // Sparse Waterfall Candidates
     //****************************
 
+    // void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
+    // {
+    //     KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
+    //     KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
+
+    //     if (! fWriter->OpenAndVerifyFile()) return;
+
+    //     if (fSparseWaterfallCandidateTree == NULL)
+    //     {
+    //         if (! SetupSparseWaterfallCandidateTree())
+    //         {
+    //             KTERROR(publog, "Something went wrong while setting up the sparse waterfall candidate tree! Nothing was written.");
+    //             return;
+    //         }
+    //     }
+
+    //     // Load() also clears any existing data
+    //     //fFreqCandidateData->Load(*data);
+    //     fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
+    //     fSparseWaterfallCandidateData.fAcquisitionID = swcData.GetAcquisitionID();
+    //     //fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
+    //     //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
+    //     fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
+    //     fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
+    //     fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinFrequency();
+    //     fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaxFrequency();
+    //     fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
+
+    //     const KTDiscriminatedPoints& points = swcData.GetPoints();
+    //     // KTDEBUG(publog, "# points in sparse waterfall candidate " << points.size());
+
+    //     if (points.size() == 0)
+    //     {
+    //         KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
+    //         return;
+    //     }
+
+    //     fSparseWaterfallCandidateData.fPoints = new TNtupleD("Points","Points","Frequency:TimeInRunC");
+    //     unsigned iPoint = 0;
+    //     for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+    //     {
+    //         KTDEBUG(publog, "In loop " << iPoint);
+    //         // TDiscriminatedPoint* point = (TDiscriminatedPoint*) fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
+    //         // TDiscriminatedPoint* point = (TDiscriminatedPoint*)fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
+    //         KTDEBUG(publog, "Past constructon " << iPoint);
+    //         // point->fTimeInRunC = pIt->fTimeInRunC;
+    //         // point->fFrequency = pIt->fFrequency;
+    //         // point->fAmplitude = pIt->fAmplitude;
+    //         // point->fTimeInAcq = pIt->fTimeInAcq;
+    //         // point->fMean = pIt->fMean;
+    //         // point->fVariance = pIt->fVariance;
+    //         // point->fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;            
+    //         // fSparseWaterfallCandidateData.fPoints[iPoint] = new TDiscriminatedPoint();
+    //         // fSparseWaterfallCandidateData.fPoints[iPoint]->fFrequency = pIt->fTimeInRunC;
+    //         fSparseWaterfallCandidateData.fPoints->Fill(pIt->fTimeInRunC,pIt->fFrequency);
+    //         // point->fFrequency = pIt->fFrequency;
+    //         // point->fAmplitude = pIt->fAmplitude;
+    //         // point->fTimeInAcq = pIt->fTimeInAcq;
+    //         // point->fMean = pIt->fMean;
+    //         // point->fVariance = pIt->fVariance;
+    //         // point->fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;
+    //         // fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
+    //         ++iPoint;
+    //     }
+    //     // fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
+    //     // KTDEBUG(publog, "Candidate info:\n"
+    //             // << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
+    //     //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
+    //     //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
+
+    //     fSparseWaterfallCandidateTree->Fill();
+    //     // fSparseWaterfallCandidateData.fPoints->Clear();
+
+    //     return;
+    // }
+
+    // bool KTROOTTreeTypeWriterEventAnalysis::SetupSparseWaterfallCandidateTree()
+    // {
+    //     if( fWriter->GetAccumulate() )
+    //     {
+    //         fWriter->GetFile()->GetObject( "swfCand", fSparseWaterfallCandidateTree );
+
+    //         if( fSparseWaterfallCandidateTree != NULL )
+    //         {
+    //             KTINFO( publog, "Tree already exists; will add to it" );
+    //             fWriter->AddTree( fSparseWaterfallCandidateTree );
+
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("Component", &fSparseWaterfallCandidateData.fComponent);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("CandidateID", &fSparseWaterfallCandidateData.fCandidateID);
+    //             //fSparseWaterfallCandidateTree->SetBranchAddress("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth);
+    //             //fSparseWaterfallCandidateTree->SetBranchAddress("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("TimeLength", &fSparseWaterfallCandidateData.fTimeLength);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("Points", &fSparseWaterfallCandidateData.fPoints);
+
+    //             return true;
+    //         }
+    //     }
+
+    //     fSparseWaterfallCandidateTree = new TTree("swfCand", "Sparse Waterfall Candidates");
+    //     if (fSparseWaterfallCandidateTree == NULL)
+    //     {
+    //         KTERROR(publog, "Tree was not created!");
+    //         return false;
+    //     }
+    //     fWriter->AddTree(fSparseWaterfallCandidateTree);
+
+    //     fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/i");
+    //     fSparseWaterfallCandidateTree->Branch("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID, "fAcquisitionID/i");
+    //     fSparseWaterfallCandidateTree->Branch("CandidateID", &fSparseWaterfallCandidateData.fCandidateID, "fCandidateID/i");
+    //     //fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
+    //     //fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
+    //     fSparseWaterfallCandidateTree->Branch("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC, "fTimeInRunC/d");
+    //     fSparseWaterfallCandidateTree->Branch("TimeLength", &fSparseWaterfallCandidateData.fTimeLength, "fTimeLength/d");
+    //     fSparseWaterfallCandidateTree->Branch("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
+    //     fSparseWaterfallCandidateTree->Branch("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
+    //     fSparseWaterfallCandidateTree->Branch("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
+    //     fSparseWaterfallCandidateTree->Branch("Points", &fSparseWaterfallCandidateData.fPoints, 32000, 0);
+
+    //     return true;
+    // }
+
+
     void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
-        KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
+        KTSparseWaterfallCandidateData& swfData = data->Of< KTSparseWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        if (fSparseWaterfallCandidateTree == NULL)
+        if (fSparseWaterfallCandidateDataPtr == NULL)
         {
             if (! SetupSparseWaterfallCandidateTree())
             {
@@ -310,40 +441,12 @@ namespace Katydid
             }
         }
 
-        // Load() also clears any existing data
-        //fFreqCandidateData->Load(*data);
-        fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
-        fSparseWaterfallCandidateData.fAcquisitionID = swcData.GetAcquisitionID();
-        //fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
-        //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
-        fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
-        fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
-        fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinimumFrequency();
-        fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
-        fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
-
-        const KTSparseWaterfallCandidateData::Points& points = swcData.GetPoints();
-
-        if (points.size() == 0)
-        {
-            KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
-            return;
-        }
-
-        fSparseWaterfallCandidateData.fPoints = new TGraph2D(points.size());
-        unsigned iPoint = 0;
-        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
-        {
-            fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
-            ++iPoint;
-        }
-        fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
-        KTDEBUG(publog, "Candidate info:\n"
-                << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
-        //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
-        //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
+        KT2ROOT::LoadSparseWaterfallCandidateData(swfData, *fSparseWaterfallCandidateDataPtr);
+        KTDEBUG(publog, "Before filling");
+        KTDEBUG(publog, fSparseWaterfallCandidateDataPtr->GetComponent());
 
         fSparseWaterfallCandidateTree->Fill();
+        KTDEBUG(publog, "After filling");
 
         return;
     }
@@ -352,30 +455,20 @@ namespace Katydid
     {
         if( fWriter->GetAccumulate() )
         {
-            fWriter->GetFile()->GetObject( "swfCand", fSparseWaterfallCandidateTree );
+            fWriter->GetFile()->GetObject( "sparseWaterfall", fSparseWaterfallCandidateTree );
 
             if( fSparseWaterfallCandidateTree != NULL )
             {
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fSparseWaterfallCandidateTree );
 
-                fSparseWaterfallCandidateTree->SetBranchAddress("Component", &fSparseWaterfallCandidateData.fComponent);
-                fSparseWaterfallCandidateTree->SetBranchAddress("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID);
-                fSparseWaterfallCandidateTree->SetBranchAddress("CandidateID", &fSparseWaterfallCandidateData.fCandidateID);
-                //fSparseWaterfallCandidateTree->SetBranchAddress("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth);
-                //fSparseWaterfallCandidateTree->SetBranchAddress("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth);
-                fSparseWaterfallCandidateTree->SetBranchAddress("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC);
-                fSparseWaterfallCandidateTree->SetBranchAddress("TimeLength", &fSparseWaterfallCandidateData.fTimeLength);
-                fSparseWaterfallCandidateTree->SetBranchAddress("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency);
-                fSparseWaterfallCandidateTree->SetBranchAddress("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency);
-                fSparseWaterfallCandidateTree->SetBranchAddress("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth);
-                fSparseWaterfallCandidateTree->SetBranchAddress("Points", &fSparseWaterfallCandidateData.fPoints);
+                fSparseWaterfallCandidateTree->SetBranchAddress(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), &fSparseWaterfallCandidateDataPtr);
 
                 return true;
             }
         }
 
-        fSparseWaterfallCandidateTree = new TTree("swfCand", "Sparse Waterfall Candidates");
+        fSparseWaterfallCandidateTree = new TTree("sparseWaterfall", "Sparse Waterfall Candidate");
         if (fSparseWaterfallCandidateTree == NULL)
         {
             KTERROR(publog, "Tree was not created!");
@@ -383,20 +476,13 @@ namespace Katydid
         }
         fWriter->AddTree(fSparseWaterfallCandidateTree);
 
-        fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/i");
-        fSparseWaterfallCandidateTree->Branch("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID, "fAcquisitionID/i");
-        fSparseWaterfallCandidateTree->Branch("CandidateID", &fSparseWaterfallCandidateData.fCandidateID, "fCandidateID/i");
-        //fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
-        //fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
-        fSparseWaterfallCandidateTree->Branch("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC, "fTimeInRunC/d");
-        fSparseWaterfallCandidateTree->Branch("TimeLength", &fSparseWaterfallCandidateData.fTimeLength, "fTimeLength/d");
-        fSparseWaterfallCandidateTree->Branch("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
-        fSparseWaterfallCandidateTree->Branch("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
-        fSparseWaterfallCandidateTree->Branch("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
-        fSparseWaterfallCandidateTree->Branch("Points", &fSparseWaterfallCandidateData.fPoints, 32000, 0);
+        fSparseWaterfallCandidateDataPtr = new TSparseWaterfallCandidateData();
+
+        fSparseWaterfallCandidateTree->Branch(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), "Katydid::TSparseWaterfallCandidateData", &fSparseWaterfallCandidateDataPtr);
 
         return true;
     }
+
 
     //****************
     // Processed Track

@@ -2,7 +2,7 @@
  @file KTSequentialTrackFinder.hh
  @brief Contains KTSeqTrackFinder
  @details Creates a track
- @author: Christine
+ @author: C. Claessens
  @date: Aug 4, 2017
  */
 
@@ -18,11 +18,12 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTGainVariationData.hh"
-#include "KTSeqLine.hh"
-#include "KTProcessedTrackData.hh"
+#include "KTSequentialLineData.hh"
+//#include "KTProcessedTrackData.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
+#include "KTDiscriminatedPoint.hh"
 
-#include <iostream>
 #include <set>
 
 
@@ -30,48 +31,61 @@ namespace Katydid
 {
     /*!
      @class KTSeqTrackFinder
-     @author E. Christine
+     @author C. Claessens
 
-     @brief Implementation of a slightly modified version of Dan Furse's algorithm
+     @brief Implementation of Dan Furse's algorithm with some modifications
 
      @details
      Collects points on a linear track
 
-     Configuration name: "dans-track-finding-algorithm"
+     Configuration name: "sequential-track-finder"
 
      Available configuration values:
-     - "snr-threshold-power": discrimination snr for point candidates
      - "min-frequency": minimum allowed frequency (has to be set)
      - "max-frequency": max allowed frequency (has to be set)
      - "min-bin": can be set instead of min frequency
      - "max-bin": can be set instead of  max frequency
-     - "trimming-factor": before a line is converted to a track its edges get trimmed. If the last or first line point power is less than the trimming-factor times the power threshold of the points frequency bins in the power spectrum slice, these points get cut off the line
-     - "line-power-radius": the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
+     - "trimming-threshold": before a line is converted to a sparse waterfall candidate its edges get trimmed. If the last or first line point snr is less than the trimming-threshold, they get removed
+     - "line-power-radius": only valid for disc1d-ps slot. the power that is assigned to a line point is the sum of the power_spectrum[point_bin - line_width: point_bin + line_width]
      - "time-gap-tolerance": maximum gap between points in a line (in seconds)
-     - "minimum-line-distance": if a point is less than this distance (in bins) away from the last point it will be skipped
-     - "search-radius": before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
-     - "converge-delta": defines when convergence has been reached (in bins)
+     - "minimum-line-distance": requires some thought for disc1d-slot!!! For disc1d-ps slot: if a point is less than this distance (in bins) away from the last point it will be skipped
+     - "search-radius": for disc1d-ps slot: before a point is added to a line, the weighted average of the points frequency neighborhood (+/- search-radius in bins) is taken and the point updated until the frequency converges
+     - "converge-delta": for disc1d-ps slot: defines when convergence has been reached (in bins)
      - "frequency-acceptance": maximum allowed frequency distance of point to an extrapolated line (in Hz)
-     - "slope-method": method to update the line slope after point collection
+     - "slope-method": method to update the line slope after point collection (see options below)
      - "initial-frequency-acceptance": if the line that a point is being compared to, only has a single point so far, this is the accepted frequency acceptance. Default isfrequency_acceptance
      - "initial-slope": if a line has only one point, this is the line's slope
      - "n-slope-points": maximum number of points to include in the slope calculation
      - "min-points": a line only gets converted to a track if it has collected more than this many number of points
      - "min-slope": a line only gets converted to a track if its slope is > than this slope (in Hz/s)
-     - "apply-power-cut" (bool): if true, a power threshold will be applied to a line before converting it to a processed track
-     - "apply-point-density-cut" (bool): if true, a number-of-points/time-length threshold will be applied to a line before converting it to a processed track
-     - "power-threshold": threshold for power cut
-     - "point-density-threshold": threshold for point density cut in points/millisecond
+     - "apply-power-cut": default false; if true, the summed-power has to be > total-power-threshold; uses fNeighborhoodAmplitude
+     - "apply-point-density-cut": default false; if true, the summed-power/time-length has to be > average-power-threshold; uses fNeighborhoodAmplitude
+     - "apply-total-snr-cut": default false; if true, the summed-snr has to be > total-snr-threshold; uses fNeighborhoodAmplitude
+     - "apply-average-snr-cut": default false; if true, the summed-snr/time-length has to be > average-snr-threshold; uses fNeighborhoodAmplitude
+     - "apply-total-residual-cut: default false; if true, the summed-unitless-residual has to be > total-residual-threshold; uses fNeighborhoodAmplitude
+     - "apply-average-residual-cut: default false; if true, the summed-unitless-residual/time-length has to be > average-residual-threshold; uses fNeighborhoodAmplitude
+     - "total-power-threshold": threshold for apply-total-power-cut
+     - "average-power-threshold": threshold for apply-average-power-cut
+     - "total-snr-threshold": threshold for apply-total-snr-cut
+     - "average-snr-threshold": threshold for apply-average-snr-cut
+     - "total-residual-threshold": threshold for apply-total-residual-cut
+     - "average-residual-threshold": threshold for apply-average-residual
+
+     Slope method:
+     The slope-method controls which method is used for updating the line slope when a new point is added to the line.
+     There are 3 available options:
+     - "weighted-first-point-ref" -- slope is calculated by taking the snr-weighted average of df/dt of every point in reference to the line start
+     - "weighted-last-point-ref" -- slope is calculated by taking the snr-weighted average of df/dt of every point in reference to the line end. As the reference point changes with every new point, this method re-loops over n-slope-points.
+     - "unweighted" -- unweighted slope calculation. Does not take power or snr into account.
 
 
      Slots:
-     - "disc-1d": needs sparse spectrogram for thresholding 
-     - "gv": needs gain variation for thresholding
-     - "ps-in": power spectrum to collect points from
-     - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
+     - "disc1d": void (KTDataPtr) -- clusters discriminated points to sequential lines candidates
+     - "disc1d-ps": void (KTDataPtr) -- clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
+     - "done": void () -- connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "pre-candidate": KTProcessedTrackData
+     - "seq-lines": void (KTDataPtr) -- KTSparseWaterfallCandidateData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
@@ -87,17 +101,44 @@ namespace Katydid
                 unweighted
             };
 
-            KTGainVariationData fGVData;
+        public:
+            struct KTDiscriminatedPointComparePower
+            {
+                bool operator() (const KTDiscriminatedPoint& lhs, const KTDiscriminatedPoint& rhs) const
+                {
+                    return lhs.fAmplitude< rhs.fAmplitude || (lhs.fAmplitude == rhs.fAmplitude && lhs.fFrequency < rhs.fFrequency);
+                }
+            };
+
+            typedef std::set< KTDiscriminatedPoint, KTDiscriminatedPointComparePower > KTDiscriminatedPowerSortedPoints;
+
 
         public:
             KTSequentialTrackFinder(const std::string& name = "seq-clustering");
             virtual ~KTSequentialTrackFinder();
 
             bool Configure(const scarab::param_node* node);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+            bool LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
 
-        public:
-            //MEMBERVARIABLE(ThresholdMode, Mode);
+            void UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice);
+            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
+            void (KTSequentialTrackFinder::*fCalcSlope)(KTSequentialLineData& Line);
+            void CalculateSlopeFirstRef(KTSequentialLineData& Line);
+            void CalculateSlopeLastRef(KTSequentialLineData& Line);
+            //void CalculateWeightedSlope(LineRef& Line);
+            void CalculateUnweightedSlope(KTSequentialLineData& Line);
+            bool EmitPreCandidate(KTSequentialLineData& line);
+            void AcquisitionIsOver();
 
+
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
+
+        private:
             // Parameters for point update before adding point to line
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
@@ -114,13 +155,22 @@ namespace Katydid
             MEMBERVARIABLE(double, TimeGapTolerance);
 
             // Parameters for line post-processing
-            MEMBERVARIABLE(double, TrimmingFactor);
+            //MEMBERVARIABLE(double, TrimmingFactor);
+            MEMBERVARIABLE(double, TrimmingThreshold);
             MEMBERVARIABLE(unsigned, MinPoints);
             MEMBERVARIABLE(double, MinSlope);
-            MEMBERVARIABLE(bool, ApplyPowerCut);
-            MEMBERVARIABLE(bool, ApplyDensityCut);
-            MEMBERVARIABLE(double, PowerThreshold);
-            MEMBERVARIABLE(double, DensityThreshold);
+            MEMBERVARIABLE(bool, ApplyTotalPowerCut);
+            MEMBERVARIABLE(bool, ApplyAveragePowerCut);
+            MEMBERVARIABLE(bool, ApplyTotalSNRCut);
+            MEMBERVARIABLE(bool, ApplyAverageSNRCut);
+            MEMBERVARIABLE(bool, ApplyTotalUnitlessResidualCut);
+            MEMBERVARIABLE(bool, ApplyAverageUnitlessResidualCut);
+            MEMBERVARIABLE(double, TotalPowerThreshold);
+            MEMBERVARIABLE(double, AveragePowerThreshold);
+            MEMBERVARIABLE(double, TotalSNRThreshold);
+            MEMBERVARIABLE(double, AverageSNRThreshold);
+            MEMBERVARIABLE(double, TotalUnitlessResidualThreshold);
+            MEMBERVARIABLE(double, AverageUnitlessResidualThreshold);
 
             // Others
             MEMBERVARIABLE(unsigned, NLines);
@@ -134,27 +184,8 @@ namespace Katydid
 
 
         private:
-            std::vector< LineRef> fActiveLines;
-
-        public:
-            //bool SetPreCalcGainVar(KTGainVariationData& gvData);
-            //bool CollectPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum);
-            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
-            //bool CollectPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTGainVariationData& gvData);
-            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
-            //bool LoopOverHighPowerPoints(std::vector<double>& slice, std::vector<Point>& points, unsigned component);
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, std::vector<Point>& points, unsigned component);
-
-            void UpdateLinePoint(Point& point, KTPowerSpectrum& slice);
-            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
-            void (KTSequentialTrackFinder::*fCalcSlope)(LineRef& Line);
-            void CalculateSlopeFirstRef(LineRef& Line);
-            void CalculateSlopeLastRef(LineRef& Line);
-            //void CalculateWeightedSlope(LineRef& Line);
-            void CalculateUnweightedSlope(LineRef& Line);
-            void ProcessNewTrack( KTProcessedTrackData& myNewTrack );
-            bool EmitPreCandidate(LineRef line);
-            void AcquisitionIsOver();
+            std::vector< KTSequentialLineData > fActiveLines;
+            std::set< Nymph::KTDataPtr > fCandidates;
 
 
 
@@ -163,7 +194,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalData fTrackSignal;
+            Nymph::KTSignalData fLineSignal;
             Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************
@@ -171,13 +202,15 @@ namespace Katydid
             //***************
 
         private:
-            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fSeqTrackSlot;
-            //Nymph::KTSlotDataOneType< KTGainVariationData > fGainVarSlot;
-            //Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTPowerSpectrumData > fPSSlot;
-            Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimSlot;
+            Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimPowerSlot;
+            Nymph::KTSlotDataTwoTypes < KTSliceHeader, KTDiscriminatedPoints1DData > fDiscrimSlot;
             Nymph::KTSlotDone fDoneSlot;
 
     };
+    inline const std::set< Nymph::KTDataPtr >& KTSequentialTrackFinder::GetCandidates() const
+    {
+        return fCandidates;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSEQUENTIALTRACKFinder_HH_ */

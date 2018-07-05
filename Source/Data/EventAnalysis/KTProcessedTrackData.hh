@@ -46,6 +46,13 @@ namespace Katydid
             MEMBERVARIABLE(double, Slope);
             MEMBERVARIABLE(double, Intercept);
             MEMBERVARIABLE(double, TotalPower);
+            MEMBERVARIABLE(unsigned, NTrackBins);
+            MEMBERVARIABLE(double, TotalTrackSNR);
+            MEMBERVARIABLE(double, MaxTrackSNR);
+            MEMBERVARIABLE(double, TotalTrackNUP);
+            MEMBERVARIABLE(double, MaxTrackNUP);
+            MEMBERVARIABLE(double, TotalWideTrackSNR);
+            MEMBERVARIABLE(double, TotalWideTrackNUP);
 
             MEMBERVARIABLE(double, StartTimeInRunCSigma);
             MEMBERVARIABLE(double, EndTimeInRunCSigma);

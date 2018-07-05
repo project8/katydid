@@ -58,6 +58,21 @@ Release Date: ?????????????????
       * Automatic build of libraries and validation executable
       * Test of one executable (TestRandom)
       * Slack message upon success or failure
+* Track SNR and NUP:
+      * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
+        Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
+      * KTSpectrumDiscriminator and KTVariableSpectrumDiscriminator: new member variables of KTDiscriminatedPoints1DData are calculated and set.
+      * KTTrackProcessing: split the KTProcessingTrack processor into two processors: KTTrackProcessingDoubleCuts and KTTrackProcessingWeightedSlope.
+        KTTrackProcessingWeightedSlope handles both SequentialLineData and SparseWaterfallCandidateData; while KTTrackProcessingDoubleCuts only connects to SparseWaterfallCandidateData (with HoughData).
+        Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
+      * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
+      * KTSequentialLineData: new version of KTSeqLine. Has SNR and NUP member variables. LineTrimming now uses SNR instead of Power.
+      * KTSequentialTrackFinder: new slot for KTDiscriminatedPoints1DData only. Signal is now KTSequentialLineData.
+      * KTOverlappingTrackClustering and KTIterativeTrrackClustering: new slot and singal for KTSequentialLineData. Both Processors can no longer apply cuts.
+      * KTSequentialLineSNRCut and KTSequentialLineNUPCut: can be used to apply cuts on total and average SNR and NUP of KTSequentialLineData.
+      * KTEventFirstTrackSNR and KTEventFirstTrackNUPCut: can be used to apply cuts on total and average SNR and NUP of KTMultiTrackEventData.
+* Writers update:
+      * KTSparseWaterfallCandidateData objects: TDiscriminatedPoint and TSparseWaterfallCandidateData classes have been added.
 
 
 Version: 2.11.1
