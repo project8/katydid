@@ -44,7 +44,7 @@ int main()
     double sigmaPeakMult = 1.;
 #endif
     
-    double sigmaThresh = 5.;
+    //double sigmaThresh = 5.;
     double snrThresh = 5.;
 
 #ifdef ROOT_FOUND
