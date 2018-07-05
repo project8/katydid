@@ -47,6 +47,7 @@ namespace Katydid
             else
             {
                 KTERROR(sqlcutlog, "Invalid string for fWideOrNarrow");
+                return false;
             }
         }
         return true;

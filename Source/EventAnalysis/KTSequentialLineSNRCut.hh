@@ -29,7 +29,7 @@ namespace Katydid
      Available configuration values:
      - "min-total-snr": double -- minimum summed SNR to accept
      - "min- average-snr": double -- minimum average SNR to accept
-     - "wide-or-narrow": string -- decides whether to use wide SNR or narrow SNR (default: "wide")
+     - "wide-or-narrow": string -- decides whether to use "wide" SNR or "narrow" SNR (default: "wide")
     */
 
     class KTSequentialLineSNRCut : public Nymph::KTCutOneArg< KTSequentialLineData >

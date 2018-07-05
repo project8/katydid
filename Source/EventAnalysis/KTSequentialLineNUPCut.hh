@@ -29,7 +29,7 @@ namespace Katydid
      Available configuration values:
      - "min-total-nup": double -- minimum summed NUP to accept
      - "min-average-nup": double -- minimum average NUP to accept
-     - "wide-or-narrow": string -- decides whether to use wide NUP or narrow NUP (default: "wide")
+     - "wide-or-narrow": string -- decides whether to use "wide" NUP or "narrow" NUP (default: "wide")
     */
 
     class KTSequentialLineNUPCut : public Nymph::KTCutOneArg< KTSequentialLineData >

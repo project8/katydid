@@ -48,6 +48,7 @@ namespace Katydid
             else
             {
                 KTERROR(ecnuplog, "Invalid string for fWideOrNarrow");
+                return false;
             }
         }
         return true;
