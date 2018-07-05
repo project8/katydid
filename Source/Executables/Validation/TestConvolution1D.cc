@@ -79,9 +79,9 @@ int main()
 	convProcessor.SetNormalizeKernel( true );
 	convProcessor.FinishSetup();
 
-    int block = convProcessor.GetBlockSize();
-    int overlap = nKernelBins - 1;
-    int step = block - overlap;
+    const int block = convProcessor.GetBlockSize();
+    const int overlap = nKernelBins - 1;
+    const int step = block - overlap;
 
     convProcessor.Initialize( nBins, block, step, overlap );
 

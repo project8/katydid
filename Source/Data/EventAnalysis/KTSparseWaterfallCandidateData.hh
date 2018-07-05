@@ -9,6 +9,7 @@
 #define KTSPARSEWATERFALLCANDIDATEDATA_HH_
 
 #include "KTData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include "KTMemberVariable.hh"
 
@@ -18,32 +19,13 @@ namespace Katydid
 {
     class KTSparseWaterfallCandidateData : public Nymph::KTExtensibleData< KTSparseWaterfallCandidateData >
     {
-        public:
-            struct Point
-            {
-                double fTimeInRunC;
-                double fFrequency;
-                double fAmplitude;
-                double fTimeInAcq;
-                Point(double tirc, double freq, double amp, double tiacq) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq) {}
-            };
-
-            struct PointCompare
-            {
-                bool operator() (const Point& lhs, const Point& rhs) const
-                {
-                    return lhs.fTimeInRunC < rhs.fTimeInRunC || (lhs.fTimeInRunC == rhs.fTimeInRunC && lhs.fFrequency < rhs.fFrequency);
-                }
-            };
-
-            typedef std::set< Point, PointCompare > Points;
 
         public:
             KTSparseWaterfallCandidateData();
             virtual ~KTSparseWaterfallCandidateData();
 
-            const Points& GetPoints() const;
-            Points& GetPoints();
+            const KTDiscriminatedPoints& GetPoints() const;
+            KTDiscriminatedPoints& GetPoints();
 
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
@@ -60,8 +42,8 @@ namespace Katydid
             MEMBERVARIABLE(double, TimeInAcq);
             //MEMBERVARIABLE(uint64_t, FirstSliceNumber);
             //MEMBERVARIABLE(uint64_t, LastSliceNumber);
-            MEMBERVARIABLE(double, MinimumFrequency);
-            MEMBERVARIABLE(double, MaximumFrequency);
+            MEMBERVARIABLE(double, MinFrequency);
+            MEMBERVARIABLE(double, MaxFrequency);
             //MEMBERVARIABLE(double, MeanStartFrequency);
             //MEMBERVARIABLE(double, MeanEndFrequency);
             MEMBERVARIABLE(double, FrequencyWidth);
@@ -71,22 +53,22 @@ namespace Katydid
             //MEMBERVARIABLE(unsigned, EndRecordNumber);
             //MEMBERVARIABLE(unsigned, EndSampleNumber);
 
-            void AddPoint(const Point& point);
+            void AddPoint(const KTDiscriminatedPoint& point);
 
         private:
-            Points fPoints;
+            KTDiscriminatedPoints fPoints;
 
         public:
             static const std::string sName;
 
     };
 
-    inline const KTSparseWaterfallCandidateData::Points& KTSparseWaterfallCandidateData::GetPoints() const
+    inline const KTDiscriminatedPoints& KTSparseWaterfallCandidateData::GetPoints() const
     {
         return fPoints;
     }
 
-    inline KTSparseWaterfallCandidateData::Points& KTSparseWaterfallCandidateData::GetPoints()
+    inline KTDiscriminatedPoints& KTSparseWaterfallCandidateData::GetPoints()
     {
         return fPoints;
     }

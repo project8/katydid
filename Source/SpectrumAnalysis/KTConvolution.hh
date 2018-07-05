@@ -16,6 +16,8 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 
+#include "KTLogger.hh"
+
 #include <vector>
 #include <cmath>
 #include <fftw3.h>
@@ -70,6 +72,8 @@ namespace Katydid
      - "fs-fftw": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataFFTW
      - "fs-polar": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataPolar
     */
+
+    KTLOGGER(convlog_hh, "KTConvolution.hh");
 
     class KTConvolution1D : public Nymph::KTProcessor
     {
@@ -198,6 +202,169 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;            
 
     };
+
+    template< class XSpectrumDataCore, class XConvolvedSpectrumTypeData >
+    bool KTConvolution1D::CoreConvolve1D( XSpectrumDataCore& data, XConvolvedSpectrumTypeData& newData )
+    {
+        newData.SetNComponents( data.GetNComponents() );
+
+        // Set overlap-and-save method parameters
+        // These do not change, but I want to group them together like this so it's easy to follow
+        int block = GetBlockSize();
+        int overlap = fKernelSize - 1;
+        int step = block - overlap;
+
+        KTINFO(convlog_hh, "Block size: " << block);
+        KTINFO(convlog_hh, "Overlap: " << overlap);
+        KTINFO(convlog_hh, "Step size: " << step);
+
+        int nBinsTotal = GetSpectrum( data, 0 )->GetNFrequencyBins();
+        KTINFO(convlog_hh, "nBinsTotal = " << nBinsTotal);
+
+        // Now that nBinsTotal is determined, we can initialize the DFTs
+        // The following conditional should only be true on the first slice
+        if( ! fInitialized )
+        {
+            Initialize( nBinsTotal, block, step, overlap );
+        }
+
+        // First loop over components
+        for( unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent )
+        {
+            KTINFO(convlog_hh, "Starting component: " << iComponent);
+
+            // Get power spectrum and initialize convolved spectrum for this component
+            typename XSpectrumDataCore::spectrum_type* transformedSpectrum = DoConvolution( GetSpectrum( data, iComponent ), block, step, overlap );
+
+            if( transformedSpectrum == nullptr )
+            {
+                KTERROR( convlog_hh, "Convolution was unsuccessful. Aborting." );
+                return false;
+            }
+
+            // Set power spectrum
+            newData.SetSpectrum( transformedSpectrum, iComponent );
+            KTDEBUG(convlog_hh, "Filled new spectrum");
+        }
+
+        KTINFO(convlog_hh, "All components finished successfully!");
+
+        return true;
+    }
+
+    template< class XSpectraType >
+    XSpectraType* KTConvolution1D::DoConvolution( const XSpectraType* myInitialSpectrum, const int block, const int step, const int overlap )
+    {
+        int nBinsTotal = myInitialSpectrum->GetNFrequencyBins();
+
+        // non-const version
+        XSpectraType* initialSpectrum = new XSpectraType( *myInitialSpectrum );
+
+        // If we're doing cross-correlation, first we need to conjugate and reverse the input spectrum
+        if( fTransformType == "cross-correlation" )
+        {
+            ConjugateAndReverse( *initialSpectrum );
+        }
+
+        XSpectraType* transformedSpectrum = new XSpectraType( nBinsTotal, initialSpectrum->GetRangeMin(), initialSpectrum->GetRangeMax() );
+
+        if( ! SetUpGeneralVars< XSpectraType* >() )
+        {
+            KTERROR(convlog_hh, "Spectrum type unknown. Returning blank spectrum");
+            return transformedSpectrum;
+        }
+
+        // Loop over block numbers
+        int blockNumber = 0;
+        int position = 0;
+        while( (blockNumber+1) * step <= nBinsTotal )
+        {
+            KTDEBUG(convlog_hh, "Block number: " << blockNumber);
+            KTDEBUG(convlog_hh, "Starting position: " << blockNumber * step - overlap);
+            KTDEBUG(convlog_hh, "nBinsTotal: " << nBinsTotal);
+
+            // Fill input array
+            for( int nBin = 0; nBin < block; ++nBin )
+            {
+                position = nBin + blockNumber * step - overlap;
+                SetInputArray( position, nBin, initialSpectrum );
+            }
+
+            // FFT of input block
+            KTDEBUG(convlog_hh, "Performing DFT");
+            fftw_execute( fGeneralForwardPlan );
+
+            // Bin multiplication in fourier space
+            KTDEBUG(convlog_hh, "Multiplying arrays in fourier space");
+
+            for( int nBin = 0; nBin < nBinLimitRegular; ++nBin )
+            {
+                fGeneralTransformedOutputArray[nBin][0] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][0] - fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][1];
+                fGeneralTransformedOutputArray[nBin][1] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][1] + fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][0];
+            }
+
+            // Reverse FFT of output block
+            KTDEBUG(convlog_hh, "Performing reverse DFT");
+            fftw_execute( fGeneralReversePlan );
+
+            // Loop over bins in the output block and fill the convolved spectrum
+            for( int nBin = overlap; nBin < block; ++nBin )
+            {
+                SetOutputArray( nBin - overlap + blockNumber * step, nBin, *transformedSpectrum, block );
+            }
+
+            // Increment block number
+            ++blockNumber;
+        }
+
+        if( blockNumber * step == nBinsTotal )
+        {
+            KTINFO(convlog_hh, "Reached end of input data");
+            return transformedSpectrum;
+        }
+
+        KTINFO(convlog_hh, "Reached final block");
+        KTINFO(convlog_hh, "Starting position: " << blockNumber * step - overlap);
+
+        // Same procedure as above, this time with a shorter final block
+
+#ifndef NDEBUG
+        int lastNBin = 0;
+#endif
+        for( int nBin = 0; position+1 < nBinsTotal; ++nBin )
+        {
+            position = nBin + blockNumber * step - overlap;
+            SetInputArray( position, nBin, initialSpectrum );
+#ifndef NDEBUG
+            lastNBin = nBin;
+#endif
+        }
+
+        KTDEBUG(convlog_hh, "Short array length = " << lastNBin);
+        KTDEBUG(convlog_hh, "Initialized short array length = " << fShortSize);
+
+        // FFT of input block
+        fftw_execute( fGeneralForwardPlanShort );
+
+        for( int nBin = 0; nBin < nBinLimitShort; ++nBin )
+        {
+            fGeneralTransformedOutputArray[nBin][0] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][0] - fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][1];
+            fGeneralTransformedOutputArray[nBin][1] = fGeneralTransformedInputArray[nBin][0] * fGeneralTransformedKernelArray[nBin][1] + fGeneralTransformedInputArray[nBin][1] * fGeneralTransformedKernelArray[nBin][0];
+        }
+
+        // Reverse FFT of output block
+        fftw_execute( fGeneralReversePlanShort );
+
+        // Loop over bins in the output block and fill the convolved spectrum
+        for( int nBin = overlap; nBin < fShortSize; ++nBin )
+        {
+            SetOutputArray( nBin - overlap + blockNumber * step, nBin, *transformedSpectrum, fShortSize );
+        }
+
+        KTINFO(convlog_hh, "Component finished!");
+
+        return transformedSpectrum;
+    }
 
     inline const KTPowerSpectrum* KTConvolution1D::GetSpectrum( KTPowerSpectrumDataCore& data, unsigned iComponent )
     {

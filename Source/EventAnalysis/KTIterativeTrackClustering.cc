@@ -1,8 +1,9 @@
-/*
- * KTIterativeTrackClustering.cc
- *
- *  Created on: August 7, 2017
- *      Author: C. Claessens
+/**
+ @file KTIterativeTrackClustering.cc
+ @brief Contains KTIterativeTrackClustering
+ @details Groups collinear tracks into one
+ @author: C. Claessens
+ @date: August 7, 2017
  */
 
 #include "KTIterativeTrackClustering.hh"
@@ -28,16 +29,17 @@ namespace Katydid
             fTimeGapTolerance(0.005),
             fFrequencyAcceptance(185000.0),
             fMaxTrackWidth(50000.0),
+            fLargeMaxTrackWidth(250000.0),
             fCompTracks(),
             fNewTracks(),
+            fNewSeqLineCands(),
+            fCompSeqLineCands(),
             fNTracks(0),
-            fApplyPowerCut(false),
-            fApplyDensityCut(false),
-            fPowerThreshold(0.0),
-            fDensityThreshold(0.0),
             fTrackSignal("track", this),
-            fDoneSignal("tracks-done", this),
-            fTakeTrackSlot("track", this, &KTIterativeTrackClustering::TakeTrack)
+            fSeqLineCandSignal("seq-cand", this),
+            fDoneSignal("clustering-done", this),
+            fTakeTrackSlot("track", this, &KTIterativeTrackClustering::TakeTrack),
+            fTakeSeqLineCandSlot("seq-cand", this, &KTIterativeTrackClustering::TakeSeqLineCandidate)
     {
         RegisterSlot("do-clustering", this, &KTIterativeTrackClustering::DoClusteringSlot);
     }
@@ -57,17 +59,10 @@ namespace Katydid
         {
             SetMaxTrackWidth(node->get_value<double>("max-track-width"));
         }
-        if (node->has("apply-power-cut"))
+        if (node->has("large-max-track-width"))
         {
-            SetApplyPowerCut(node->get_value("apply-power-cut", GetApplyPowerCut()));
-            SetPowerThreshold(node->get_value("power-threshold", GetPowerThreshold()));
+            SetLargeMaxTrackWidth(node->get_value<double>("large-max-track-width"));
         }
-        if (node->has("apply-power-density-cut"))
-        {
-            SetApplyDensityCut(node->get_value("apply-power-density-cut", GetApplyDensityCut()));
-            SetDensityThreshold(node->get_value("power-density-threshold", GetDensityThreshold()));
-        }
-
         return true;
     }
 
@@ -84,7 +79,16 @@ namespace Katydid
 
         return true;
     }
+    bool KTIterativeTrackClustering::TakeSeqLineCandidate(KTSequentialLineData& SeqLineCand)
+    {
 
+        KTDEBUG(itclog, "Taking SeqLine candidate: (" << SeqLineCand.GetStartTimeInRunC() << ", " << SeqLineCand.GetStartFrequency() << ", " << SeqLineCand.GetEndTimeInRunC() << ", " << SeqLineCand.GetEndFrequency() << ")");
+
+        // copy the full track data
+        fCompSeqLineCands.push_back(SeqLineCand);
+
+        return true;
+    }
     void KTIterativeTrackClustering::DoClusteringSlot()
     {
         if (! Run())
@@ -96,96 +100,22 @@ namespace Katydid
 
     bool KTIterativeTrackClustering::Run()
     {
-        return DoClustering();
-    }
-
-    bool KTIterativeTrackClustering::DoClustering()
-    {
-        if (! FindMatchingTracks())
+        if (fCompTracks.size() != 0 )
         {
-            KTERROR(itclog, "An error occurred while identifying extrapolated tracks");
-            return false;
+            KTINFO( itclog, "Clustering procTracks");
+            return DoCandidateClustering(fCompTracks, fNewTracks);
         }
-
-        KTDEBUG(itclog, "Track building complete");
-        fDoneSignal();
-
-        return true;
-    }
-
-    bool KTIterativeTrackClustering::FindMatchingTracks()
-    {
-        KTINFO(itclog, "Finding extrapolated tracks");
-        KTDEBUG(itclog, "TimeGapTolerance FrequencyAcceptance and MaxTrackWidth are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance<< " "<<fMaxTrackWidth);
-        fNewTracks.clear();
-
-        unsigned numberOfTracks = fCompTracks.size();
-        unsigned numberOfNewTracks = fNewTracks.size();
-
-
-        if (numberOfTracks > 1)
+        else
         {
-            while (numberOfTracks!=numberOfNewTracks)
-            {
-                numberOfTracks = fCompTracks.size();
-                KTDEBUG(itclog, "Number of tracks to cluster: "<< numberOfTracks);
-                this->ExtrapolateClustering();
-
-                // Update number of tracks
-                numberOfNewTracks = fNewTracks.size();
-
-                KTDEBUG(itclog, "Number of new tracks: "<< numberOfNewTracks);
-
-                fCompTracks.clear();
-                fCompTracks = fNewTracks;
-                fNewTracks.clear();
-            }
+            KTINFO( itclog, "Clustering SeqLine Candidates");
+            return DoCandidateClustering(fCompSeqLineCands, fNewSeqLineCands);
         }
-
-        this->EmitTrackCandidates();
-
-        return true;
     }
 
-
-    bool KTIterativeTrackClustering::ExtrapolateClustering()
+    const void KTIterativeTrackClustering::CombineCandidates(const KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
     {
-        bool match = false;
-        for (std::vector<KTProcessedTrackData>::iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
-        {
-            match = false;
-            for (std::vector<KTProcessedTrackData>::iterator newIt = fNewTracks.begin(); newIt != fNewTracks.end(); ++newIt)
-            {
-                if (this->DoTheyMatch(*compIt, *newIt))
-                {
-                    match = true;
-                    KTDEBUG(itclog, "Found matching tracks");
-                    this->CombineTracks(*compIt, *newIt);
-                    break;
-                }
-                // it is possible that the segments that get combined first are not direct neighbors in time
-                // in that case there can be a track segment very close to an already combined track
-                if (this->DoTheyOverlap(*compIt, *newIt))
-                {
-                    match = true;
-                    KTDEBUG(itclog, "Found overlapping tracks");
-                    this->CombineTracks(*compIt, *newIt);
-                    break;   
-                }
-            }
+        KTDEBUG(itclog, "Matching candidates are: "<< oldTrack.GetTrackID()<<" - "<<newTrack.GetTrackID());
 
-            if (match == false)
-            {
-                KTProcessedTrackData newTrack(*compIt);
-                fNewTracks.push_back(newTrack);
-            }   
-        }
-        return true;
-    }
-
-
-    const void KTIterativeTrackClustering::CombineTracks(const KTProcessedTrackData& oldTrack, KTProcessedTrackData& newTrack)
-    {
         if (oldTrack.GetStartTimeInRunC() < newTrack.GetStartTimeInRunC())
         {
             newTrack.SetStartTimeInRunC( oldTrack.GetStartTimeInRunC());
@@ -193,8 +123,6 @@ namespace Katydid
             newTrack.SetStartFrequency( oldTrack.GetStartFrequency());
             newTrack.SetStartTimeInRunCSigma( oldTrack.GetStartTimeInRunCSigma());
             newTrack.SetStartFrequencySigma( oldTrack.GetStartFrequencySigma());
-            newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
-
         }
         if (oldTrack.GetEndTimeInRunC() > newTrack.GetEndTimeInRunC())
         {
@@ -202,151 +130,147 @@ namespace Katydid
             newTrack.SetEndFrequency( oldTrack.GetEndFrequency());
             newTrack.SetEndTimeInRunCSigma( oldTrack.GetEndTimeInRunCSigma());
             newTrack.SetEndFrequencySigma( oldTrack.GetEndFrequencySigma());
-            newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
-
         }
+        newTrack.SetSlope( (newTrack.GetEndFrequency() - newTrack.GetStartFrequency())/(newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC()));
 
+        newTrack.SetNTrackBins( newTrack.GetNTrackBins() + oldTrack.GetNTrackBins() );
+        newTrack.SetTotalTrackSNR( newTrack.GetTotalTrackSNR() + oldTrack.GetTotalTrackSNR() );
+        newTrack.SetMaxTrackSNR( std::max( newTrack.GetMaxTrackSNR(), oldTrack.GetMaxTrackSNR() ) );
+        newTrack.SetTotalTrackNUP( newTrack.GetTotalTrackNUP() + oldTrack.GetTotalTrackNUP() );
+        newTrack.SetMaxTrackNUP( std::max( newTrack.GetMaxTrackNUP(), oldTrack.GetMaxTrackNUP() ) );
+        newTrack.SetTotalWideTrackSNR( newTrack.GetTotalWideTrackSNR() + oldTrack.GetTotalWideTrackSNR() );
+        newTrack.SetTotalWideTrackNUP( newTrack.GetTotalWideTrackNUP() + oldTrack.GetTotalWideTrackNUP() );
         newTrack.SetTotalPower( newTrack.GetTotalPower() + oldTrack.GetTotalPower());
-        newTrack.SetTimeLength( newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC());
+
+        newTrack.SetTotalPowerSigma( sqrt(newTrack.GetTotalPowerSigma()*newTrack.GetTotalPowerSigma() + oldTrack.GetTotalPowerSigma()*oldTrack.GetTotalPowerSigma()) );
+        //newTrack.SetTimeLength( newTrack.GetEndTimeInRunC() - newTrack.GetStartTimeInRunC());
+        newTrack.SetTimeLengthSigma( sqrt(newTrack.GetTimeLengthSigma()*newTrack.GetTimeLengthSigma() + oldTrack.GetTimeLengthSigma()*oldTrack.GetTimeLengthSigma()) );
+        //newTrack.SetFrequencyWidth( newTrack.GetEndFrequency() - newTrack.GetStartFrequency() );
+        newTrack.SetFrequencyWidthSigma( sqrt(newTrack.GetFrequencyWidthSigma()*newTrack.GetFrequencyWidthSigma() + oldTrack.GetFrequencyWidthSigma()*oldTrack.GetFrequencyWidthSigma()) );
         newTrack.SetSlopeSigma( sqrt(newTrack.GetSlopeSigma()*newTrack.GetSlopeSigma() + oldTrack.GetSlopeSigma()*oldTrack.GetSlopeSigma()));
+        newTrack.SetInterceptSigma( sqrt(newTrack.GetInterceptSigma()*newTrack.GetInterceptSigma() + oldTrack.GetInterceptSigma()*oldTrack.GetInterceptSigma()));
+    }
+    const void KTIterativeTrackClustering::CombineCandidates(const KTSequentialLineData& oldSeqLineCand, KTSequentialLineData& newSeqLineCand)
+    {
+        KTDEBUG(itclog, "Matching candidates are: "<< oldSeqLineCand.GetCandidateID()<<" - "<<newSeqLineCand.GetCandidateID());
+
+        if (oldSeqLineCand.GetStartTimeInRunC() < newSeqLineCand.GetStartTimeInRunC())
+        {
+            newSeqLineCand.SetStartTimeInRunC( oldSeqLineCand.GetStartTimeInRunC() );
+            newSeqLineCand.SetStartTimeInAcq( oldSeqLineCand.GetStartTimeInAcq() );
+            newSeqLineCand.SetStartFrequency( oldSeqLineCand.GetStartFrequency() );
+            newSeqLineCand.SetComponent( oldSeqLineCand.GetComponent() );
+            newSeqLineCand.SetAcquisitionID( oldSeqLineCand.GetAcquisitionID() );
+        }
+        if (oldSeqLineCand.GetEndTimeInRunC() > newSeqLineCand.GetEndTimeInRunC())
+        {
+            newSeqLineCand.SetEndTimeInRunC( oldSeqLineCand.GetEndTimeInRunC());
+            newSeqLineCand.SetEndFrequency( oldSeqLineCand.GetEndFrequency());
+        }
+        newSeqLineCand.SetSlope( (newSeqLineCand.GetEndFrequency() - newSeqLineCand.GetStartFrequency())/(newSeqLineCand.GetEndTimeInRunC() - newSeqLineCand.GetStartTimeInRunC()) );
+
+        KTDiscriminatedPoints points = oldSeqLineCand.GetPoints();
+        for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+        {
+            //KTDEBUG( itclog, "Adding points from oldSeqLineCand to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
+            newSeqLineCand.AddPoint(*pointIt);
+        }
     }
 
-
-    bool KTIterativeTrackClustering::DoTheyMatch(KTProcessedTrackData& track1, KTProcessedTrackData& track2)
+    void KTIterativeTrackClustering::EmitCandidates(std::vector<KTProcessedTrackData>& compCands)
     {
-        bool slopeCondition1 = std::abs(track1.GetEndFrequency()+track1.GetSlope()*(track2.GetStartTimeInRunC()-track1.GetEndTimeInRunC()) - track2.GetStartFrequency())<fFrequencyAcceptance;
-        bool slopeCondition2 = std::abs(track2.GetStartFrequency()-track2.GetSlope()*(track2.GetStartTimeInRunC()-track1.GetEndTimeInRunC()) - track1.GetEndFrequency())<fFrequencyAcceptance;
-        bool timeGapInLine = track1.GetEndTimeInRunC() <= track2.GetStartTimeInRunC();
-        bool gapSmallerThanLimit = std::abs(track2.GetStartTimeInRunC() - track1.GetEndTimeInRunC())<fTimeGapTolerance;
-
-        if (timeGapInLine and gapSmallerThanLimit and (slopeCondition1 or slopeCondition2))
-        {
-            return true;
-        }
-
-        slopeCondition1 = std::abs(track2.GetEndFrequency()+track2.GetSlope()*(track1.GetStartTimeInRunC()-track2.GetEndTimeInRunC()) - track1.GetStartFrequency())<fFrequencyAcceptance;
-        slopeCondition2 = std::abs(track1.GetStartFrequency()-track1.GetSlope()*(track1.GetStartTimeInRunC()-track2.GetEndTimeInRunC()) - track2.GetEndFrequency())<fFrequencyAcceptance;
-        timeGapInLine = track2.GetEndTimeInRunC() <= track1.GetStartTimeInRunC();
-        gapSmallerThanLimit = std::abs(track1.GetStartTimeInRunC() - track2.GetEndTimeInRunC())<fTimeGapTolerance;
-
-        if (timeGapInLine and gapSmallerThanLimit and (slopeCondition1 or slopeCondition2))
-        {
-            return true;
-        }
-
-    return false;
-    }
-
-    bool KTIterativeTrackClustering::DoTheyOverlap(KTProcessedTrackData& track1, KTProcessedTrackData& track2)
-    {
-        // if the start time of track 2 is between start and end time of track 1
-        bool condition1 = track2.GetStartTimeInRunC() < track1.GetEndTimeInRunC() and track2.GetStartTimeInRunC() >= track1.GetStartTimeInRunC();
-
-        // and the start and end frequency of track 2 are close to track 1 (or an extrapolated track 1)
-        bool condition2 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
-
-        // and the other end is nearby too
-        bool condition3 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth * 5.0;
-        // This condition doesn't need to be as strict and just makes sure this isn't a new track after all (instead one could compare slopes)
-
-        if (condition1 and condition2 and condition3)
-        {
-            return true;
-        }
-
-        // the other way around
-        bool condition4 = track1.GetStartTimeInRunC() < track2.GetEndTimeInRunC() and track1.GetStartTimeInRunC() >= track2.GetStartTimeInRunC();
-        bool condition5 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
-        bool condition6 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth * 5.0;
-
-        if (condition4 and condition5 and condition6)
-        {
-            return true;
-        }
-
-        // same for endpoints overlapping in time
-        condition1 = track2.GetEndTimeInRunC() <= track1.GetEndTimeInRunC() and track2.GetEndTimeInRunC() > track1.GetStartTimeInRunC();
-        condition2 = std::abs(track2.GetEndFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetEndTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth;
-        condition3 = std::abs(track2.GetStartFrequency() - (track1.GetStartFrequency() + track1.GetSlope() * (track2.GetStartTimeInRunC() - track1.GetStartTimeInRunC()))) < fMaxTrackWidth * 5.0;
-
-        if (condition1 and condition2 and condition2)
-        {
-            return true;
-        }
-
-        // again the other way around
-        condition4 = track1.GetEndTimeInRunC() <= track2.GetEndTimeInRunC() and track1.GetEndTimeInRunC() > track2.GetStartTimeInRunC();
-        condition5 = std::abs(track1.GetEndFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetEndTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth;
-        condition6 = std::abs(track1.GetStartFrequency() - (track2.GetStartFrequency() + track2.GetSlope() * (track1.GetStartTimeInRunC() - track2.GetStartTimeInRunC()))) < fMaxTrackWidth * 5.0;
-
-        if (condition4 and condition5 and condition6)
-        {
-            return true;
-        }
-        return false;
-    }
-
-
-    void KTIterativeTrackClustering::EmitTrackCandidates()
-    {
-        KTDEBUG(itclog, "Number of tracks to emit: "<<fCompTracks.size());
-        bool lineIsTrack = true;
+        KTDEBUG(itclog, "Number of tracks to emit: "<<compCands.size());
         KTINFO(itclog, "Clustering done.");
 
-        std::vector<KTProcessedTrackData>::iterator trackIt = fCompTracks.begin();
+        std::vector<KTProcessedTrackData>::iterator trackIt = compCands.begin();
 
-        while(trackIt!=fCompTracks.end())
+        while(trackIt!=compCands.end())
         {
-            lineIsTrack = true;
+            // Set up new data object
+            Nymph::KTDataPtr data( new Nymph::KTData() );
+            KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
+            newTrack.SetComponent( trackIt->GetComponent() );
+            newTrack.SetAcquisitionID( trackIt->GetAcquisitionID() );
+            newTrack.SetTrackID( fNTracks );
+            fNTracks++;
 
-            if (fApplyPowerCut)
-            {
-                if (trackIt->GetTotalPower() <= fPowerThreshold)
-                {
-                    KTDEBUG(itclog, "track power below threshold: "<<trackIt->GetTotalPower()<<" "<<fPowerThreshold);
-                    lineIsTrack = false;
-                }
-            }
-            if (fApplyDensityCut)
-            {
-                if (trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <= fDensityThreshold)
-                {
-                    KTDEBUG(itclog, "track power density below threshold: "<<trackIt->GetTotalPower()/(trackIt->GetEndTimeInRunC()-trackIt->GetStartTimeInRunC()) <<" "<< fDensityThreshold);
-                    lineIsTrack = false;
-                }
-            }
+            newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC() );
+            newTrack.SetStartTimeInRunCSigma( trackIt->GetStartTimeInRunCSigma() );
+            newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC() );
+            newTrack.SetEndTimeInRunCSigma( trackIt->GetEndTimeInRunCSigma() );
+            newTrack.SetStartTimeInAcq( trackIt->GetStartTimeInAcq() );
+            newTrack.SetTimeLength( trackIt->GetTimeLength() );
+            newTrack.SetTimeLengthSigma( trackIt->GetTimeLengthSigma() );
+            newTrack.SetStartFrequency( trackIt->GetStartFrequency() );
+            newTrack.SetStartFrequency( trackIt->GetStartFrequencySigma() );
+            newTrack.SetEndFrequency( trackIt->GetEndFrequency() );
+            newTrack.SetEndFrequencySigma( trackIt->GetEndFrequencySigma() );
+            newTrack.SetSlope( trackIt->GetSlope() );
+            newTrack.SetSlopeSigma( trackIt->GetSlopeSigma() );
+            newTrack.SetTotalPower( trackIt->GetTotalPower() );
+            newTrack.SetTotalPowerSigma( trackIt->GetTotalPowerSigma() );
+            newTrack.SetFrequencyWidth( trackIt->GetFrequencyWidth() );
+            newTrack.SetFrequencyWidthSigma( trackIt->GetFrequencyWidthSigma() );
+            newTrack.SetIntercept( trackIt->GetFrequencyWidth() );
+            newTrack.SetInterceptSigma( trackIt->GetInterceptSigma() );
 
-            if (lineIsTrack == true)
-            {
-                // Set up new data object
-                Nymph::KTDataPtr data( new Nymph::KTData() );
-                KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
-                newTrack.SetComponent( trackIt->GetComponent() );
-                newTrack.SetAcquisitionID( trackIt->GetAcquisitionID());
-                newTrack.SetTrackID(fNTracks);
-                fNTracks++;
-
-                newTrack.SetStartTimeInRunC( trackIt->GetStartTimeInRunC());
-                newTrack.SetEndTimeInRunC( trackIt->GetEndTimeInRunC());
-                newTrack.SetStartTimeInAcq( trackIt->GetStartTimeInAcq());
-                newTrack.SetStartFrequency( trackIt->GetStartFrequency());
-                newTrack.SetEndFrequency( trackIt->GetEndFrequency());
-                newTrack.SetSlope(trackIt->GetSlope());
-                newTrack.SetTotalPower(trackIt->GetTotalPower());
+            newTrack.SetNTrackBins( trackIt->GetNTrackBins() );
+            newTrack.SetTotalTrackSNR( trackIt->GetTotalTrackSNR() );
+            newTrack.SetMaxTrackSNR( trackIt->GetMaxTrackSNR() );
+            newTrack.SetTotalTrackNUP( trackIt->GetTotalTrackNUP() );
+            newTrack.SetMaxTrackNUP( trackIt->GetMaxTrackNUP() );
+            newTrack.SetTotalWideTrackSNR( trackIt->GetTotalWideTrackSNR() );
+            newTrack.SetTotalWideTrackNUP( trackIt->GetTotalWideTrackNUP() );
 
 
-                // Process & emit new track
+            // Process & emit new track
 
-                KTINFO(itclog, "Now processing tracksCandidates");
-                ProcessNewTrack( newTrack );
+            KTINFO(itclog, "Now processing tracksCandidates");
+            ProcessNewTrack( newTrack );
 
-                KTDEBUG(itclog, "Emitting track signal");
-                fTrackSignal( data );
-            }
-            trackIt = fCompTracks.erase(trackIt);
+            //KTDEBUG(itclog, "Emitting track signal");
+            fCandidates.insert( data );
+            fTrackSignal( data );
+
+            trackIt = compCands.erase(trackIt);
         }
     }
+    void KTIterativeTrackClustering::EmitCandidates(std::vector<KTSequentialLineData>& compCands)
+    {
+        KTDEBUG(itclog, "Number of tracks to emit: "<<compCands.size());
+        KTINFO(itclog, "Clustering done.");
 
+
+        std::vector<KTSequentialLineData>::iterator candIt = compCands.begin();
+
+        while( candIt!=compCands.end() )
+        {
+            // Set up new data object
+            Nymph::KTDataPtr data( new Nymph::KTData() );
+            KTSequentialLineData& newSeqLineCand = data->Of< KTSequentialLineData >();
+            newSeqLineCand.SetComponent( candIt->GetComponent() );
+            newSeqLineCand.SetAcquisitionID( candIt->GetAcquisitionID() );
+            newSeqLineCand.SetCandidateID( fNTracks );
+            fNTracks++;
+
+            newSeqLineCand.SetSlope(candIt->GetSlope());
+
+            KTDiscriminatedPoints& points = candIt->GetPoints();
+            for(KTDiscriminatedPoints::const_iterator pointIt = points.begin(); pointIt != points.end(); ++pointIt )
+            {
+                //KTDEBUG( itclog, "Adding points to newSeqLineCand: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fAmplitude<<" "<<pointIt->fNeighborhoodAmplitude );
+                newSeqLineCand.AddPoint( *pointIt );
+            }
+            newSeqLineCand.CalculateTotalPower();
+            newSeqLineCand.CalculateTotalSNR();
+            newSeqLineCand.CalculateTotalNUP();
+
+            fCandidates.insert( data );
+            fSeqLineCandSignal( data );
+
+            candIt = compCands.erase(candIt);
+        }
+    }
     const void KTIterativeTrackClustering::ProcessNewTrack( KTProcessedTrackData& myNewTrack )
     {
         myNewTrack.SetTimeLength( myNewTrack.GetEndTimeInRunC() - myNewTrack.GetStartTimeInRunC() );

@@ -64,6 +64,13 @@ namespace Katydid
             MEMBERVARIABLE(double, FirstTrackSlope);
             MEMBERVARIABLE(double, FirstTrackIntercept);
             MEMBERVARIABLE(double, FirstTrackTotalPower);
+            MEMBERVARIABLE(int, FirstTrackNTrackBins);
+            MEMBERVARIABLE(double, FirstTrackTotalSNR);
+            MEMBERVARIABLE(double, FirstTrackMaxSNR);
+            MEMBERVARIABLE(double, FirstTrackTotalNUP);
+            MEMBERVARIABLE(double, FirstTrackMaxNUP);
+            MEMBERVARIABLE(double, FirstTrackTotalWideSNR);
+            MEMBERVARIABLE(double, FirstTrackTotalWideNUP);
 
             // this member variable is set by event building
             MEMBERVARIABLE(bool, UnknownEventTopology); // if True, indicates that the reconstruction was unable to deal with the event

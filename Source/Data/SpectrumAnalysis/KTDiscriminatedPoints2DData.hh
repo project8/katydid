@@ -34,7 +34,10 @@ namespace Katydid
                 double fOrdinate;
                 double fApplicate;
                 double fThreshold;
-                Point(double abscissa, double ordinate, double applicate, double threshold) : fAbscissa(abscissa), fOrdinate(ordinate), fApplicate(applicate), fThreshold(threshold) {}
+                double fMean;
+                double fVariance;
+                double fNeighborhoodAmplitude;
+                Point(double abscissa, double ordinate, double applicate, double threshold, double mean, double variance, double neighborhoodAmplitude) : fAbscissa(abscissa), fOrdinate(ordinate), fApplicate(applicate), fThreshold(threshold), fMean(mean), fVariance(variance), fNeighborhoodAmplitude(neighborhoodAmplitude) {}
             };
             typedef std::map< std::pair< unsigned, unsigned >, Point > SetOfPoints;
 
@@ -57,23 +60,13 @@ namespace Katydid
         
             KTDiscriminatedPoints2DData& SetNComponents(unsigned channels);
 
-            unsigned GetNBinsX() const;
-            unsigned GetNBinsY() const;
-            double GetBinWidthX() const;
-            double GetBinWidthY() const;
-
-            void SetNBinsX(unsigned nBins);
-            void SetNBinsY(unsigned nBins);
-            void SetBinWidthX(double binWidth);
-            void SetBinWidthY(double binWidth);
-
         private:
             std::vector< PerComponentData > fComponentData;
 
-            unsigned fNBinsX;
-            unsigned fNBinsY;
-            double fBinWidthX;
-            double fBinWidthY;
+            MEMBERVARIABLE(unsigned, NBinsX);
+            MEMBERVARIABLE(unsigned, NBinsY);
+            MEMBERVARIABLE(double, BinWidthX);
+            MEMBERVARIABLE(double, BinWidthY);
 
         public:
             static const std::string sName;
@@ -104,50 +97,6 @@ namespace Katydid
     {
         fComponentData.resize(channels);
         return *this;
-    }
-
-    inline unsigned KTDiscriminatedPoints2DData::GetNBinsX() const
-    {
-        return fNBinsX;
-    }
-
-    inline unsigned KTDiscriminatedPoints2DData::GetNBinsY() const
-    {
-        return fNBinsY;
-    }
-
-    inline double KTDiscriminatedPoints2DData::GetBinWidthX() const
-    {
-        return fBinWidthX;
-    }
-
-    inline double KTDiscriminatedPoints2DData::GetBinWidthY() const
-    {
-        return fBinWidthY;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetNBinsX(unsigned nBins)
-    {
-        fNBinsX = nBins;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetNBinsY(unsigned nBins)
-    {
-        fNBinsY = nBins;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetBinWidthX(double binWidth)
-    {
-        fBinWidthX = binWidth;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints2DData::SetBinWidthY(double binWidth)
-    {
-        fBinWidthY = binWidth;
-        return;
     }
 
 } /* namespace Katydid */
