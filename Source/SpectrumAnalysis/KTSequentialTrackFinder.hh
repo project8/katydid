@@ -80,12 +80,12 @@ namespace Katydid
 
 
      Slots:
-     - "disc1d": clusters discriminated points to sequential lines candidates
-     - "disc1d-ps": clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
-     - "done": connect with egg:done. Processes remaining active lines and emits clustering-done signal
+     - "disc1d": void (KTDataPtr) -- clusters discriminated points to sequential lines candidates
+     - "disc1d-ps": void (KTDataPtr) -- clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
+     - "done": void () -- connect with egg:done. Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "seq-lines": KTSparseWaterfallCandidateData
+     - "seq-lines": void (KTDataPtr) -- KTSparseWaterfallCandidateData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
