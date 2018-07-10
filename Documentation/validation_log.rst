@@ -44,7 +44,7 @@ Log
 ---
 
 Version: Upcoming Release
-~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Release Date: tbd
 ''''''''''''''''''
