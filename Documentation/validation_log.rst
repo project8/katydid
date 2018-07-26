@@ -43,17 +43,18 @@ Fixes:
 Log
 ---
 
-Version: Upcoming Release
+Version: 2.13.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Release Date: tbd
-''''''''''''''''''
+Release Date: July 26, 2018
+'''''''''''''''''''''''''''
 
 New Features:
 '''''''''''''
 
 * Event Time Cut in Acquisition
     * Cuts events that start outside a specifiable time window within an acquisition.
+    
 
 Version: 2.12.0
 ~~~~~~~~~~~~~~~
