@@ -30,6 +30,7 @@ namespace Katydid
      - "min-average-nup": double -- minimum nup per unit length in the first track for the event to pass the cut
      - "min-total-nup": double -- minimum total nup in the first track for the event to pass the cut
      - "wide-or-narrow": string -- decides whether to use "wide" NUP or "narrow" NUP (default: "wide")
+     - "time-or-bin-average": string -- decides whether to divide total NUP by track time length or track NTrackBins
     */
 
     class KTEventFirstTrackNUPCut : public Nymph::KTCutOneArg< KTMultiTrackEventData >

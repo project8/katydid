@@ -30,6 +30,7 @@ namespace Katydid
      - "min-total-snr": double -- minimum summed SNR to accept
      - "min- average-snr": double -- minimum average SNR to accept
      - "wide-or-narrow": string -- decides whether to use "wide" SNR or "narrow" SNR (default: "wide")
+     - "time-or-bin-average": string -- decides whether to divide total NUP by track time length or track NTrackBins
     */
 
     class KTSequentialLineSNRCut : public Nymph::KTCutOneArg< KTSequentialLineData >
@@ -40,6 +41,11 @@ namespace Katydid
         {
             wide,
             narrow
+        };
+        enum class time_or_bin_average
+        {
+            time,
+            bin
         };
 
     public:
@@ -57,6 +63,7 @@ namespace Katydid
         MEMBERVARIABLE(double, MinTotalSNR);
         MEMBERVARIABLE(double, MinAverageSNR);
         MEMBERVARIABLE(wide_or_narrow, WideOrNarrowLine);
+        MEMBERVARIABLE(time_or_bin_average, TimeOrBinAverage);
 
     public:
         bool Apply(Nymph::KTData& data, KTSequentialLineData& seqLineData);

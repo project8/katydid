@@ -22,7 +22,8 @@ namespace Katydid
          KTCutOneArg(name),
          fMinTotalSNR(0.),
          fMinAverageSNR(0.),
-         fWideOrNarrow( wide_or_narrow::wide )
+         fWideOrNarrow( wide_or_narrow::wide ),
+         fTimeOrBinAverage( time_or_bin_average::time )
     {}
 
     KTEventFirstTrackSNRCut::~KTEventFirstTrackSNRCut()
@@ -50,6 +51,22 @@ namespace Katydid
                 return false;
             }
         }
+        if (node->has("time-or-bin-average"))
+        {
+            if (node->get_value("time-or-bin-average") == "time")
+            {
+                SetTimeOrBinAverage(time_or_bin_average:: time);
+            }
+            else if (node->get_value("time-or-bin-average") == "bin")
+            {
+                SetTimeOrBinAverage(time_or_bin_average::bin);
+            }
+            else
+            {
+                KTERROR(ecsnrlog, "Invalid string for fTimeOrBinAverage");
+                return false;
+            }
+        }
 
         return true;
     }
@@ -63,9 +80,19 @@ namespace Katydid
             {
                 isCut = true;
             }
-            if( eventData.GetFirstTrackTotalSNR() / eventData.GetFirstTrackTimeLength() < fMinAverageSNR )
+            if ( fTimeOrBinAverage == time_or_bin_average::time )
             {
-                isCut = true;
+                if( eventData.GetFirstTrackTotalSNR() / eventData.GetFirstTrackTimeLength() < fMinAverageSNR )
+                {
+                    isCut = true;
+                }
+            }
+            else
+            {
+                if( eventData.GetFirstTrackTotalSNR() / eventData.GetFirstTrackNTrackBins() < fMinAverageSNR )
+                {
+                    isCut = true;
+                }
             }
         }
         else
@@ -74,9 +101,19 @@ namespace Katydid
             {
                 isCut = true;
             }
-            if( eventData.GetFirstTrackTotalWideSNR() / eventData.GetFirstTrackTimeLength() < fMinAverageSNR )
+            if ( fTimeOrBinAverage == time_or_bin_average::time )
             {
-                isCut = true;
+                if( eventData.GetFirstTrackTotalWideSNR() / eventData.GetFirstTrackTimeLength() < fMinAverageSNR )
+                {
+                    isCut = true;
+                }
+            }
+            else
+            {
+                if( eventData.GetFirstTrackTotalWideSNR() / eventData.GetFirstTrackNTrackBins() < fMinAverageSNR )
+                {
+                    isCut = true;
+                }
             }
         }
 
