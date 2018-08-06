@@ -22,6 +22,7 @@ namespace Katydid
          KTCutOneArg(name),
          fMinTotalNUP(0.),
          fMinAverageNUP(0.),
+         fMinMaxNUP(0.),
          fWideOrNarrow( wide_or_narrow::wide ),
          fTimeOrBinAverage( time_or_bin_average::time )
     {}
@@ -35,6 +36,7 @@ namespace Katydid
 
         SetMinTotalNUP( node->get_value< double >( "min-total-nup", GetMinTotalNUP() ) );
         SetMinAverageNUP( node->get_value< double >( "min-average-nup", GetMinAverageNUP() ) );
+        SetMinMaxNUP( node->get_value< double >("min-max-track-snr", GetMinMaxNUP() ) );
 
         if (node->has("wide-or-narrow"))
         {
@@ -115,6 +117,10 @@ namespace Katydid
                     isCut = true;
                 }
             }
+        }
+        if( eventData.GetFirstTrackMaxNUP() < fMinMaxNUP )
+        {
+            isCut = true;
         }
 
         data.GetCutStatus().AddCutResult< KTEventFirstTrackNUPCut::Result >(isCut);
