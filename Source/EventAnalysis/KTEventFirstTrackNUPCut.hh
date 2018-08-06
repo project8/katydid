@@ -47,6 +47,11 @@ namespace Katydid
             wide,
             narrow
         };
+        enum class time_or_bin_average
+        {
+            time,
+            bin
+        };
 
     public:
         KTEventFirstTrackNUPCut(const std::string& name = "event-first-track-nup-cut");
@@ -57,6 +62,7 @@ namespace Katydid
         MEMBERVARIABLE(double, MinTotalNUP);
         MEMBERVARIABLE(double, MinAverageNUP);
         MEMBERVARIABLE(wide_or_narrow, WideOrNarrow);
+        MEMBERVARIABLE(time_or_bin_average, TimeOrBinAverage);
 
     public:
         bool Apply(Nymph::KTData& data, KTMultiTrackEventData& eventData);
