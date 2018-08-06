@@ -36,7 +36,7 @@ namespace Katydid
     class KTSequentialLineSNRCut : public Nymph::KTCutOneArg< KTSequentialLineData >
     {
 
-    private:
+    public:
         enum class wide_or_narrow
         {
             wide,

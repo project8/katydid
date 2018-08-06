@@ -31,6 +31,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTQuadraticPhaseShift.hh
     KTRPClassifier.hh
     KTSequentialLineNUPCut.hh
+    KTSequentialLinePointDensityCut.hh
     KTSequentialLineSNRCut.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
@@ -67,6 +68,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTRPClassifier.cc
     KTQuadraticPhaseShift.cc
     KTSequentialLineNUPCut.cc
+    KTSequentialLinePointDensityCut.cc
     KTSequentialLineSNRCut.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
