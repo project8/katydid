@@ -66,8 +66,8 @@ namespace Katydid
         virtual void BuildIndex() = 0;
 
         virtual size_t size() const = 0;
-        virtual size_t Veclen() const = 0;
-        virtual size_t UsedMemory() const = 0;
+        virtual size_t Veclen() = 0;
+        virtual size_t UsedMemory() = 0;
 
         virtual void SaveIndex(FILE* stream) = 0;
         virtual void LoadIndex(FILE* stream) = 0;
@@ -93,12 +93,12 @@ namespace Katydid
         {}
         virtual ~KTTreeIndexManhattan() {}
 
-        void FreeIndex() {NanoflannIndex::freeIndex();}
+        void FreeIndex() {NanoflannIndex::freeIndex(*this);}
         void BuildIndex() {NanoflannIndex::buildIndex();}
 
-        size_t size() const {return NanoflannIndex::size();}
-        size_t Veclen() const {return NanoflannIndex::veclen();}
-        size_t UsedMemory() const {return NanoflannIndex::usedMemory();}
+        size_t size() const {return NanoflannIndex::size(*this);}
+        size_t Veclen() {return NanoflannIndex::veclen(*this);}
+        size_t UsedMemory() {return NanoflannIndex::usedMemory(*this);}
 
         void SaveIndex(FILE* stream) {NanoflannIndex::saveIndex(stream);}
         void LoadIndex(FILE* stream) {NanoflannIndex::loadIndex(stream);}
@@ -158,12 +158,12 @@ namespace Katydid
         {}
         virtual ~KTTreeIndexEuclidean() {}
 
-        void FreeIndex() {NanoflannIndex::freeIndex();}
+        void FreeIndex() {NanoflannIndex::freeIndex(*this);}
         void BuildIndex() {NanoflannIndex::buildIndex();}
 
-        size_t size() const {return NanoflannIndex::size();}
-        size_t Veclen() const {return NanoflannIndex::veclen();}
-        size_t UsedMemory() const {return NanoflannIndex::usedMemory();}
+        size_t size() const {return NanoflannIndex::size(*this);}
+        size_t Veclen() {return NanoflannIndex::veclen(*this);}
+        size_t UsedMemory() {return NanoflannIndex::usedMemory(*this);}
 
         void SaveIndex(FILE* stream) {NanoflannIndex::saveIndex(stream);}
         void LoadIndex(FILE* stream) {NanoflannIndex::loadIndex(stream);}
