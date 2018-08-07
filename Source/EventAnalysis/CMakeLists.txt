@@ -7,10 +7,9 @@
 set (EVENTANALYSIS_HEADERFILES
     KTCollinearTrackClustering.hh
     KTDataCutter.hh
-    KTDBScan.hh
     KTDistanceMatrix.hh
-    KTDBScanEventClustering.hh
-    KTDBScanTrackClustering.hh
+    KTDBSCANEventClustering.hh
+    KTDBSCANTrackClustering.hh
     KTEventFirstTrackNUPCut.hh
     KTEventFirstTrackPowerCut.hh
     KTEventFirstTrackSNRCut.hh
@@ -45,8 +44,8 @@ set (EVENTANALYSIS_HEADERFILES
 set (EVENTANALYSIS_SOURCEFILES
     KTCollinearTrackClustering.cc
     KTDataCutter.cc
-    KTDBScanEventClustering.cc
-    KTDBScanTrackClustering.cc
+    KTDBSCANEventClustering.cc
+    KTDBSCANTrackClustering.cc
     KTEventFirstTrackNUPCut.cc
     KTEventFirstTrackPowerCut.cc
     KTEventFirstTrackSNRCut.cc

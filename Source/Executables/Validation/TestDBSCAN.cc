@@ -1,14 +1,14 @@
 /*
- * TestDBScan.cc
+ * TestDBSCAN.cc
  *
  *  Created on: Jun 24, 2014
  *      Author: nsoblath
  *
- *      Usage: ./TestDBScan
+ *      Usage: ./TestDBSCAN
  */
 
 
-#include "KTDBScan.hh"
+#include "../../Utility/KTDBSCAN.hh"
 #include "KTDistanceMatrix.hh"
 #include "KTLogger.hh"
 
@@ -21,7 +21,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBScan");
+KTLOGGER(testlog, "TestDBSCAN");
 
 int main()
 {
@@ -81,7 +81,7 @@ int main()
     KTINFO(testlog, "Performing clustering");
 
     // init: sim threshold, minPts
-    typedef KTDBScan< KTSymmetricDistanceMatrix< double > > DBSCAN;
+    typedef KTDBSCAN< KTSymmetricDistanceMatrix< double > > DBSCAN;
     DBSCAN clustering(0.1, 10);
     DBSCAN::DBSResults results;
     clustering.DoClustering(distMat, results);

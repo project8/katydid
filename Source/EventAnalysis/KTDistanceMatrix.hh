@@ -26,7 +26,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(dmlog, "KTDBScan");
+    KTLOGGER(dmlog, "KTDBSCAN");
 
     // Euclidean distance
     template < typename VEC_T >

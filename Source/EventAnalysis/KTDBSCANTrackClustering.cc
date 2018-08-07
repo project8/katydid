@@ -1,12 +1,11 @@
 /*
- * KTDBScanTrackClustering.cc
+ * KTDBSCANTrackClustering.cc
  *
  *  Created on: June 20, 2014
  *      Author: N.S. Oblath
  */
 
-#include "KTDBScanTrackClustering.hh"
-
+#include "KTDBSCANTrackClustering.hh"
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -23,11 +22,11 @@ namespace Katydid
 {
     KTLOGGER(tclog, "katydid.fft");
 
-    KT_REGISTER_PROCESSOR(KTDBScanTrackClustering, "dbscan-track-clustering");
+    KT_REGISTER_PROCESSOR(KTDBSCANTrackClustering, "dbscan-track-clustering");
 
-    const unsigned KTDBScanTrackClustering::fNDimensions = 2;
+    const unsigned KTDBSCANTrackClustering::fNDimensions = 2;
 
-    KTDBScanTrackClustering::KTDBScanTrackClustering(const std::string& name) :
+    KTDBSCANTrackClustering::KTDBSCANTrackClustering(const std::string& name) :
             KTProcessor(name),
             //fRadii(fNDimensions),
             fMinPoints(3),
@@ -39,20 +38,20 @@ namespace Katydid
             fDataCount(0),
             fTrackSignal("track", this),
             fClusterDoneSignal("clustering-done", this),
-            fClusterKDTreeSlot("kd-tree", this, &KTDBScanTrackClustering::DoClustering)
-            //fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
-//            fDoClusterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::Run)
+            fClusterKDTreeSlot("kd-tree", this, &KTDBSCANTrackClustering::DoClustering)
+            //fTakePointSlot("points", this, &KTDBSCANTrackClustering::TakePoints)
+//            fDoClusterSlot("do-cluster-trigger", this, &KTDBSCANTrackClustering::Run)
     {
-        //RegisterSlot("do-clustering", this, &KTDBScanTrackClustering::DoClusteringSlot);
+        //RegisterSlot("do-clustering", this, &KTDBSCANTrackClustering::DoClusteringSlot);
         //fRadii(0) = 1. / sqrt(fNDimensions);
         //fRadii(1) = 1. / sqrt(fNDimensions);
     }
 
-    KTDBScanTrackClustering::~KTDBScanTrackClustering()
+    KTDBSCANTrackClustering::~KTDBSCANTrackClustering()
     {
     }
 
-    bool KTDBScanTrackClustering::Configure(const scarab::param_node* node)
+    bool KTDBSCANTrackClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
@@ -77,7 +76,7 @@ namespace Katydid
     }
 
     /*
-    bool KTDBScanTrackClustering::TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
+    bool KTDBSCANTrackClustering::TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (slHeader.GetIsNewAcquisition())
@@ -116,7 +115,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTDBScanTrackClustering::TakePoint(double time, double frequency *//*, double amplitude*//*, unsigned component)
+    bool KTDBSCANTrackClustering::TakePoint(double time, double frequency *//*, double amplitude*//*, unsigned component)
     {
         if (component >= fCompPoints.size())
         {
@@ -133,7 +132,7 @@ namespace Katydid
         return true;
     }
 
-    void KTDBScanTrackClustering::DoClusteringSlot()
+    void KTDBSCANTrackClustering::DoClusteringSlot()
     {
         if (! Run())
         {
@@ -142,24 +141,24 @@ namespace Katydid
         return;
     }
 
-    bool KTDBScanTrackClustering::Run()
+    bool KTDBSCANTrackClustering::Run()
     {
         return DoClustering();
     }
     */
 
 
-    bool KTDBScanTrackClustering::DoClustering(KTKDTreeData& data)
+    bool KTDBSCANTrackClustering::DoClustering(KTKDTreeData& data)
     {
         KTPROG(tclog, "Starting DBSCAN track clustering");
 
-        typedef KTDBScan< KTKDTreeData::TreeIndex > DBSCAN;
+        typedef KTDBSCAN< KTKDTreeData::TreeIndex > DBSCAN;
 
         DBSCAN dbScan;
 
         dbScan.SetRadius(fRadius);
         dbScan.SetMinPoints(fMinPoints);
-        KTINFO(tclog, "DBScan configured");
+        KTINFO(tclog, "DBSCAN configured");
 
         for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
         {

@@ -7,12 +7,12 @@
 
 #include "KTConsensusThresholding.hh"
 #include "KTKDTreeData.hh"
-#include "KTDBScanTrackClustering.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
 #include <vector>
+#include "../../EventAnalysis/KTDBSCANTrackClustering.hh"
 
 #ifdef ROOT_FOUND
 #include "TCanvas.h"
@@ -24,7 +24,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBScanTrackClustering");
+KTLOGGER(testlog, "TestDBSCANTrackClustering");
 
 int main()
 {
@@ -218,7 +218,7 @@ int main()
     KTINFO(testlog, "Number of points after CT: " << kdTreeData.GetSetOfPoints().size());
 
 
-    KTDBScanTrackClustering clustering;
+    KTDBSCANTrackClustering clustering;
 
     clustering.SetMinPoints(5);
 

@@ -6,12 +6,12 @@
 */
 
 #include "KTKDTreeData.hh"
-#include "KTDBScanTrackClustering.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
 #include <vector>
+#include "../../EventAnalysis/KTDBSCANTrackClustering.hh"
 
 #ifdef ROOT_FOUND
 #include "TCanvas.h"
@@ -23,7 +23,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBScanTrackClustering");
+KTLOGGER(testlog, "TestDBSCANTrackClustering");
 
 int main()
 {
@@ -206,7 +206,7 @@ int main()
     }
     kdTreeData.BuildIndex(KTKDTreeData::kEuclidean);
 
-    KTDBScanTrackClustering clustering;
+    KTDBSCANTrackClustering clustering;
 
     clustering.SetMinPoints(5);
 

@@ -1,7 +1,7 @@
 /**
- @file KTDBScan.hh
- @brief Contains KTDBScan
- @details DBScan Clustering Algorithm
+ @file KTDBSCAN.hh
+ @brief Contains KTDBSCAN
+ @details DBSCAN Clustering Algorithm
  @author: N.S. Oblath
  @date: Jun 24, 2014
  */
@@ -17,11 +17,11 @@
 namespace Katydid
 {
     
-    KTLOGGER(dbslog, "KTDBScan");
+    KTLOGGER(dbslog, "KTDBSCAN");
 
 
     /*!
-     @class KTDBScan
+     @class KTDBSCAN
      @author N.S. Oblath
 
      @brief DBSCAN Clustering Algorithm
@@ -34,7 +34,7 @@ namespace Katydid
      */
 
     template< typename DistanceData >
-    class KTDBScan
+    class KTDBSCAN
     {
         public:
             typedef int ClusterId;
@@ -61,8 +61,8 @@ namespace Katydid
             };
 
         public:
-            KTDBScan(double radius = 1., unsigned minPoints = 1);
-            virtual ~KTDBScan();
+            KTDBSCAN(double radius = 1., unsigned minPoints = 1);
+            virtual ~KTDBSCAN();
 
             double GetRadius() const;
             void SetRadius(double eps);
@@ -90,7 +90,7 @@ namespace Katydid
     };
 
     template< typename DistanceData >
-    KTDBScan< DistanceData >::KTDBScan(double radius, unsigned minPoints) :
+    KTDBSCAN< DistanceData >::KTDBSCAN(double radius, unsigned minPoints) :
             fRadius(radius),
             fMinPoints(minPoints),
             fVisited()
@@ -98,31 +98,31 @@ namespace Katydid
     }
 
     template< typename DistanceData >
-    KTDBScan< DistanceData >::~KTDBScan()
+    KTDBSCAN< DistanceData >::~KTDBSCAN()
     {
     }
 
     template< typename DistanceData >
-    inline double KTDBScan< DistanceData >::GetRadius() const
+    inline double KTDBSCAN< DistanceData >::GetRadius() const
     {
         return fRadius;
     }
 
     template< typename DistanceData >
-    inline void KTDBScan< DistanceData >::SetRadius(double eps)
+    inline void KTDBSCAN< DistanceData >::SetRadius(double eps)
     {
         fRadius = eps;
         return;
     }
 
     template< typename DistanceData >
-    inline unsigned KTDBScan< DistanceData >::GetMinPoints() const
+    inline unsigned KTDBSCAN< DistanceData >::GetMinPoints() const
     {
         return fMinPoints;
     }
 
     template< typename DistanceData >
-    inline void KTDBScan< DistanceData >::SetMinPoints(unsigned pts)
+    inline void KTDBSCAN< DistanceData >::SetMinPoints(unsigned pts)
     {
         fMinPoints = pts;
         return;
@@ -130,7 +130,7 @@ namespace Katydid
 
 
     template< typename DistanceData >
-    void KTDBScan< DistanceData >::InitializeArrays(size_t nPoints, DBSResults& results)
+    void KTDBSCAN< DistanceData >::InitializeArrays(size_t nPoints, DBSResults& results)
     {
         KTINFO(dbslog, "Initializing DBSCAN arrays with " << nPoints << " points");
 
@@ -147,7 +147,7 @@ namespace Katydid
     }
 
     template< typename DistanceData >
-    bool KTDBScan< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
+    bool KTDBSCAN< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
     {
         PointId nPoints = dist.size();
 

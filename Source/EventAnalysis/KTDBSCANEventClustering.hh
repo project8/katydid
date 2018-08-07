@@ -1,6 +1,6 @@
 /**
- @file KTDBScanEventClustering.hh
- @brief Contains KTDBScanEventClustering
+ @file KTDBSCANEventClustering.hh
+ @brief Contains KTDBSCANEventClustering
  @details Clusters tracks into events
  @author: N.S. Oblath
  @date: Aug 4, 2014
@@ -11,7 +11,7 @@
 
 #include "KTPrimaryProcessor.hh"
 
-#include "KTDBScan.hh"
+#include "KTDBSCAN.hh"
 #include "KTDistanceMatrix.hh"
 #include "KTSlot.hh"
 #include "KTData.hh"
@@ -58,7 +58,7 @@ namespace Katydid
 
 
     /*!
-     @class KTDBScanEventClustering
+     @class KTDBSCANEventClustering
      @author N.S. Oblath
 
      @brief Clustering for finding events using the DBSCAN algorithm
@@ -87,7 +87,7 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTDBScanEventClustering : public Nymph::KTPrimaryProcessor
+    class KTDBSCANEventClustering : public Nymph::KTPrimaryProcessor
     {
         public:
             typedef KTSymmetricDistanceMatrix< double > DistanceMatrix;
@@ -98,8 +98,8 @@ namespace Katydid
             const static unsigned fNPointsPerTrack;
 
         public:
-            KTDBScanEventClustering(const std::string& name = "dbscan-event-clustering");
-            virtual ~KTDBScanEventClustering();
+            KTDBSCANEventClustering(const std::string& name = "dbscan-event-clustering");
+            virtual ~KTDBSCANEventClustering();
 
             bool Configure(const scarab::param_node* node);
 
@@ -152,22 +152,22 @@ namespace Katydid
 
     };
 
-    inline void KTDBScanEventClustering::SetTimeBinWidth(double bw)
+    inline void KTDBSCANEventClustering::SetTimeBinWidth(double bw)
     {
         fTimeBinWidth = bw;
         return;
     }
-    inline void KTDBScanEventClustering::SetFreqBinWidth(double bw)
+    inline void KTDBSCANEventClustering::SetFreqBinWidth(double bw)
     {
         fFreqBinWidth = bw;
         return;
     }
 
-    inline const std::set< Nymph::KTDataPtr >& KTDBScanEventClustering::GetCandidates() const
+    inline const std::set< Nymph::KTDataPtr >& KTDBSCANEventClustering::GetCandidates() const
     {
         return fCandidates;
     }
-    inline unsigned KTDBScanEventClustering::GetDataCount() const
+    inline unsigned KTDBSCANEventClustering::GetDataCount() const
     {
         return fDataCount;
     }
