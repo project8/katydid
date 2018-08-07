@@ -11,14 +11,6 @@
 #include "KTLogger.hh"
 #include "KTMath.hh"
 
-#include "KTSliceHeader.hh"
-#include "KTSparseWaterfallCandidateData.hh"
-#include "KTTimeFrequencyPolar.hh"
-#include "KTDiscriminatedPoint.hh"
-
-using std::set;
-using std::vector;
-
 namespace Katydid
 {
     KTLOGGER(dnflog, "KTDBSCANNoiseFiltering");
@@ -79,101 +71,24 @@ namespace Katydid
             }
             KTDEBUG(dnflog, "DBSCAN finished");
 
-            // TODO: everything below this in the function needs to be changed
-            // loop over points in the point cloud
-            //    set the noise flag from results::fNoise
-
-            std::vector< KTKDTreeData::Point > points = data.GetSetOfPoints(iComponent);
-
-            // loop over the clusters found, and create data objects for them
-            KTDEBUG(dnflog, "Found " << results.fClusters.size() << " clusters; creating candidates");
-            for (vector< DBSCAN::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
+            std::vector< KTKDTreeData::Point >& points = data.GetSetOfPoints(iComponent);
+            if (points.size() != results.fNoise.size() )
             {
-                if (clustIt->empty())
-                {
-                    KTWARN(dnflog, "Empty cluster");
-                    continue;
-                }
+                KTERROR(dnflog, "Number of points doesn't equal the noise array size");
+                return false;
+            }
 
-                KTDEBUG(dnflog, "Creating candidate " << fDataCount << "; includes " << clustIt->size() << " points");
-
-                ++fDataCount;
-
-                Nymph::KTDataPtr newData(new Nymph::KTData());
-                KTSparseWaterfallCandidateData& cand = newData->Of< KTSparseWaterfallCandidateData >();
-
-                DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();
-                double time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
-                double freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
-                double timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();
-                double minFreq = freq;
-                double maxFreq = minFreq;
-                double minTime = time;
-                double minTimeInAcq = timeInAcq;
-                double maxTime = minTime;
-                double mean = points[*pointIdIt].fMean;
-                double variance = points[*pointIdIt].fVariance;
-                double neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
-                cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude));
-                KTDEBUG(dnflog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
-
-                for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
-                {
-                    time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
-                    freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
-                    timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();;
-                    mean = points[*pointIdIt].fMean;
-                    variance = points[*pointIdIt].fVariance;
-                    neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
-                    cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude));
-                    KTDEBUG(dnflog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
-
-                    if (time > maxTime)
-                    {
-                        maxTime = time;
-                    }
-                    else if (time < minTime)
-                    {
-                        minTime = time;
-                        minTimeInAcq = timeInAcq;
-                        KTDEBUG(dnflog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
-                    }
-
-                    if (freq > maxFreq)
-                    {
-                        maxFreq = freq;
-                    }
-                    else if (freq < minFreq)
-                    {
-                        minFreq = freq;
-                    }
-                }
-
-                cand.SetComponent(iComponent);
-                cand.SetAcquisitionID(data.GetAcquisitionID());
-                cand.SetCandidateID(fDataCount);
-
-                //cand.SetTimeBinWidth(fTimeBinWidth);
-                //cand.SetFreqBinWidth(fFreqBinWidth);
-
-                cand.SetTimeInRunC(minTime);
-                cand.SetTimeInAcq(minTimeInAcq);
-                cand.SetTimeLength(maxTime - minTime);
-
-                cand.SetMinFrequency(minFreq);
-                cand.SetMaxFrequency(maxFreq);
-
-                cand.SetFrequencyWidth(maxFreq - minFreq);
-
-                fCandidates.insert(newData);
-                fTrackSignal(newData);
-
-            } // loop over clusters
-
+            // double for loop, all the way across the sky!
+            for (auto itPair = std::make_pair(points.begin(), results.fNoise.begin());
+                    itPair.first != points.end();
+                    ++itPair.first, ++itPair.second)
+            {
+                itPair.first->fNoiseFlag = *itPair.second;
+            }
         } // loop over components
 
-        KTDEBUG(dnflog, "Clustering complete");
-        fClusterDoneSignal();
+        KTDEBUG(dnflog, "Filtering complete");
+        fFilteringDoneSignal();
 
         return true;
     }
