@@ -36,7 +36,7 @@ namespace Katydid
 
         SetMinTotalNUP( node->get_value< double >( "min-total-nup", GetMinTotalNUP() ) );
         SetMinAverageNUP( node->get_value< double >( "min-average-nup", GetMinAverageNUP() ) );
-        SetMinMaxNUP( node->get_value< double >("min-max-track-snr", GetMinMaxNUP() ) );
+        SetMinMaxNUP( node->get_value< double >("min-max-track-nup", GetMinMaxNUP() ) );
 
         if (node->has("wide-or-narrow"))
         {
