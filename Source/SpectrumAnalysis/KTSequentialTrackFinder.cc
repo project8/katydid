@@ -9,6 +9,7 @@
 
 #include "KTLogger.hh"
 
+#include "KTKDTreeData.hh"
 #include "KTSliceHeader.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
@@ -79,6 +80,7 @@ namespace Katydid
                     fClusterDoneSignal("clustering-done", this),
                     fDiscrimPowerSlot("disc-1d-ps", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
                     fDiscrimSlot("disc-1d", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
+                    fDiscrimKDTreeSlot("kd-tree", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromKDTree),
                     fDoneSlot("done", this, &KTSequentialTrackFinder::AcquisitionIsOver, &fClusterDoneSignal)
     {
     }
@@ -326,6 +328,10 @@ namespace Katydid
         return true;
     }
 
+    bool KTSequentialTrackFinder::CollectDiscrimPointsFromKDTree(KTKDTreeData& kdTreeData)
+    {
+        return false;
+    }
 
     bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
     {
