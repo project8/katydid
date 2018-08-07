@@ -9,6 +9,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTCorrelator.hh
     KTCreateKDTree.hh
     KTDataAccumulator.hh
+    KTDBSCANNoiseFiltering.hh
     KTDistanceClustering.hh
 #    KTGainVarChi2Test.hh
     KTGainVariationProcessor.hh
@@ -31,6 +32,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTConvolution.cc
     KTCreateKDTree.cc
     KTDataAccumulator.cc
+    KTDBSCANNoiseFiltering.cc
     KTDistanceClustering.cc
 #    KTGainVarChi2Test.cc
     KTGainVariationProcessor.cc
