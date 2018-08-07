@@ -9,11 +9,6 @@
 #ifndef KTDBSCAN_HH_
 #define KTDBSCAN_HH_
 
-#include <boost/foreach.hpp>
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/vector.hpp>
-
-#include <cfloat>
 #include <cmath>
 #include <vector>
 
@@ -84,10 +79,6 @@ namespace Katydid
             unsigned fMinPoints;
 
         public:
-            void UniformPartition();
-
-            Neighbors FindNeighbors(PointId pid/*, double threshold*/);
-
             bool DoClustering(const DistanceData& dist, DBSResults& results);
 
         private:
@@ -96,14 +87,7 @@ namespace Katydid
             // visited-point vector
             std::vector< bool > fVisited;
 
-            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
-            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
-            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
     };
-
-    //std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
-    //std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
-    //std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
 
     template< typename DistanceData >
     KTDBScan< DistanceData >::KTDBScan(double radius, unsigned minPoints) :
@@ -189,8 +173,6 @@ namespace Katydid
                 }
                 else
                 {
-                    //std::cout << "Point i=" << pid << " can be expanded " << std::endl;// = true;
-
                     // Add p to current cluster
 
                     Cluster cluster;              // a new cluster
@@ -213,26 +195,17 @@ namespace Katydid
                             // enough support
                             if (ne1.size() >= fMinPoints)
                             {
-                                //std::cout << "\t Expanding to pid=" << nPid << std::endl;
                                 // join
                                 for (unsigned int j = 0; j < ne1.size(); ++j)
                                 {
                                     ne.push_back(ne1[j]);
                                 }
-                                //BOOST_FOREACH(typename DistanceData::Neighbors::value_type n1, ne1)
-                                //{
-                                    // join neighbors
-                                //    ne.push_back(n1);
-                                    //std::cerr << "\tPushback pid=" << n1 << std::endl;
-                                //}
-                                //std::cout << std::endl;
                             }
                         }
 
                         // not already assigned to a cluster
                         if (results.fPointIdToClusterId[nPid] == -1)
                         {
-                            //std::cout << "\tadding pid=" << nPid << std::endl;
                             cluster.push_back(nPid);
                             results.fPointIdToClusterId[nPid] = cid;
                         }
