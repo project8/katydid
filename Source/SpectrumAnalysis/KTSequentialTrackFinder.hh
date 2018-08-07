@@ -14,14 +14,6 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
-#include "KTSliceHeader.hh"
-#include "KTPowerSpectrum.hh"
-#include "KTPowerSpectrumData.hh"
-#include "KTGainVariationData.hh"
-#include "KTSequentialLineData.hh"
-//#include "KTProcessedTrackData.hh"
-#include "KTSparseWaterfallCandidateData.hh"
-#include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoint.hh"
 
 #include <set>
@@ -29,6 +21,13 @@
 
 namespace Katydid
 {
+    class KTKDTreeData;
+    class KTPowerSpectrum;
+    class KTPowerSpectrumData;
+    class KTSequentialLineData;
+    class KTSliceHeader;
+    class KTDiscriminatedPoints1DData;
+
     /*!
      @class KTSeqTrackFinder
      @author C. Claessens
@@ -80,12 +79,12 @@ namespace Katydid
 
 
      Slots:
-     - "disc1d": void (KTDataPtr) -- clusters discriminated points to sequential lines candidates
-     - "disc1d-ps": void (KTDataPtr) -- clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
-     - "done": void () -- connect with egg:done. Processes remaining active lines and emits clustering-done signal
+     - "disc-1d": void (KTDataPtr) -- clusters discriminated points to sequential lines candidates
+     - "disc-1d-ps": void (KTDataPtr) -- clusters discriminated points to sequential line candidates; updates point properties using power spectrum slice
+     - "done": void () -- Processes remaining active lines and emits clustering-done signal
 
      Signals:
-     - "seq-lines": void (KTDataPtr) -- KTSparseWaterfallCandidateData
+     - "seq-cand": void (KTDataPtr) -- Emitted when a candidate is ready; guarantees KTSequentialLineData
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
@@ -118,27 +117,7 @@ namespace Katydid
             virtual ~KTSequentialTrackFinder();
 
             bool Configure(const scarab::param_node* node);
-            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTPowerSpectrumData& spectrum, const KTDiscriminatedPoints1DData& discrimPoints);
-            bool CollectDiscrimPoints(const KTSliceHeader& slHeader, const KTDiscriminatedPoints1DData& discrimPoints);
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
-            bool LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
 
-            void UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice);
-            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
-            void (KTSequentialTrackFinder::*fCalcSlope)(KTSequentialLineData& Line);
-            void CalculateSlopeFirstRef(KTSequentialLineData& Line);
-            void CalculateSlopeLastRef(KTSequentialLineData& Line);
-            //void CalculateWeightedSlope(LineRef& Line);
-            void CalculateUnweightedSlope(KTSequentialLineData& Line);
-            bool EmitPreCandidate(KTSequentialLineData& line);
-            void AcquisitionIsOver();
-
-
-            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
-
-        private:
             // Parameters for point update before adding point to line
             MEMBERVARIABLE(int, SearchRadius);
             MEMBERVARIABLE(double, ConvergeDelta);
@@ -182,6 +161,27 @@ namespace Katydid
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
 
+        public:
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
+
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+            bool LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+
+            void UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice);
+            void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
+
+            void (KTSequentialTrackFinder::*fCalcSlope)(KTSequentialLineData& line);
+            void CalculateSlopeFirstRef(KTSequentialLineData& line);
+            void CalculateSlopeLastRef(KTSequentialLineData& line);
+            //void CalculateWeightedSlope(LineRef& Line);
+            void CalculateUnweightedSlope(KTSequentialLineData& line);
+
+            bool EmitPreCandidate(KTSequentialLineData& line);
+
+            void AcquisitionIsOver();
+
+            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
 
         private:
             std::vector< KTSequentialLineData > fActiveLines;
