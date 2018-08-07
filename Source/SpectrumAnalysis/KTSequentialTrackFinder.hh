@@ -14,6 +14,7 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
+#include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoint.hh"
 
 #include <set>
@@ -26,7 +27,6 @@ namespace Katydid
     class KTPowerSpectrumData;
     class KTSequentialLineData;
     class KTSliceHeader;
-    class KTDiscriminatedPoints1DData;
 
     /*!
      @class KTSeqTrackFinder
@@ -101,15 +101,21 @@ namespace Katydid
             };
 
         public:
-            struct KTDiscriminatedPointComparePower
+            struct STFDiscriminatedPoint : KTDiscriminatedPoint
             {
-                bool operator() (const KTDiscriminatedPoint& lhs, const KTDiscriminatedPoint& rhs) const
+                STFDiscriminatedPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq);
+                unsigned fBinInSlice;
+            };
+
+            struct STFDiscriminatedPointComparePower
+            {
+                bool operator() (const STFDiscriminatedPoint& lhs, const STFDiscriminatedPoint& rhs) const
                 {
                     return lhs.fAmplitude< rhs.fAmplitude || (lhs.fAmplitude == rhs.fAmplitude && lhs.fFrequency < rhs.fFrequency);
                 }
             };
 
-            typedef std::set< KTDiscriminatedPoint, KTDiscriminatedPointComparePower > KTDiscriminatedPowerSortedPoints;
+            typedef std::set< STFDiscriminatedPoint, STFDiscriminatedPointComparePower > STFDiscriminatedPowerSortedPoints;
 
 
         public:
@@ -165,10 +171,10 @@ namespace Katydid
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
 
-            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
-            bool LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+            bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
+            bool LoopOverHighPowerPoints(STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
 
-            void UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice);
+            void UpdateLinePoint(STFDiscriminatedPoint& point, KTPowerSpectrum& slice);
             void WeightedAverage(const KTPowerSpectrum& slice, unsigned& frequencyBin, double& frequency);
 
             void (KTSequentialTrackFinder::*fCalcSlope)(KTSequentialLineData& line);

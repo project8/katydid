@@ -29,6 +29,11 @@ namespace Katydid
 {
     KTLOGGER(stflog, "KTSequentialTrackFinder");
 
+    KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq) :
+            KTDiscriminatedPoint(newTimeInRunC, pointIt->second.fAbscissa, pointIt->second.fOrdinate, newTimeInAcq, pointIt->second.fMean, pointIt->second.fVariance, pointIt->second.fNeighborhoodAmplitude),
+            fBinInSlice(pointIt->first)
+    {}
+
 
     KT_REGISTER_PROCESSOR(KTSequentialTrackFinder, "sequential-track-finder");
 
@@ -245,15 +250,13 @@ namespace Katydid
 
 
             // this vector will collect the discriminated points
-            KTDiscriminatedPowerSortedPoints points;
+            STFDiscriminatedPowerSortedPoints points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
             {
                 //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate<<", "<<powerSpectrum(pIt->first) <<", threshold = "<<pIt->second.fThreshold);
-                KTDiscriminatedPoint newPoint(newTimeInRunC, pIt->second.fAbscissa, pIt->second.fOrdinate, newTimeInAcq, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude);
-                newPoint.fBinInSlice = pIt->first;
-                points.insert(newPoint);
+                points.emplace(pIt, newTimeInRunC, newTimeInAcq);
             }
 
             KTDEBUG( stflog, "Collected "<<points.size()<<" points");
@@ -300,7 +303,7 @@ namespace Katydid
             KTDEBUG(stflog, "new_TimeInRunC is " << newTimeInRunC);
 
             // this vector will collect the discriminated points
-            KTDiscriminatedPowerSortedPoints points;
+            STFDiscriminatedPowerSortedPoints points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
@@ -308,9 +311,7 @@ namespace Katydid
                 if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
                 {
                     //KTINFO(stflog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate <<", threshold = "<<pIt->second.fThreshold);
-                    KTDiscriminatedPoint newPoint(newTimeInRunC, pIt->second.fAbscissa, pIt->second.fOrdinate, newTimeInAcq, pIt->second.fMean, pIt->second.fVariance, pIt->second.fNeighborhoodAmplitude);
-                    newPoint.fBinInSlice = pIt->first;
-                    points.insert(newPoint);
+                    points.emplace(pIt, newTimeInRunC, newTimeInAcq);
                 }
             }
 
@@ -326,7 +327,7 @@ namespace Katydid
     }
 
 
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
+    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
     {
         KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -334,14 +335,14 @@ namespace Katydid
         bool match;
 
         //loop in reverse order (by power)
-        for(KTDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+        for(STFDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
         {
             newFreq = pointIt->fFrequency;
 
             // The amplitude of the bin the in the slice at the position of the point in the power spectrum gets set to zero after a visit (in SearchTrueLinePoint)
             // To prevent that in the next iteration the point gets re-found and added to another line the amplitude of the point is reassigned here
 
-            KTDiscriminatedPoint tempPoint = *pointIt;
+            STFDiscriminatedPoint tempPoint = *pointIt;
             tempPoint.fAmplitude = slice(pointIt->fBinInSlice);
             if (tempPoint.fAmplitude == 0.0)
             {
@@ -439,7 +440,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
+    bool KTSequentialTrackFinder::LoopOverHighPowerPoints(STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
     {
         KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
 
@@ -447,7 +448,7 @@ namespace Katydid
         bool match;
 
         //loop in reverse order (by power)
-        for(KTDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+        for(STFDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
         {
             //KTINFO( stflog, "Comparing point to lines: bin "<<pointIt->fBinInSlice<<", power "<<pointIt->fAmplitude);
             newFreq = pointIt->fFrequency;
@@ -653,7 +654,7 @@ namespace Katydid
 
     }*/
 
-    void KTSequentialTrackFinder::UpdateLinePoint(KTDiscriminatedPoint& point, KTPowerSpectrum& slice)
+    void KTSequentialTrackFinder::UpdateLinePoint(STFDiscriminatedPoint& point, KTPowerSpectrum& slice)
     {
         double delta = fConvergeDelta + 1.0;
         unsigned loopCounter = 0;
