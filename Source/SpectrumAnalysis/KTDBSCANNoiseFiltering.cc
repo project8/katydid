@@ -34,9 +34,8 @@ namespace Katydid
             fRadius(1.),
             fCandidates(),
             fDataCount(0),
-            fTrackSignal("track", this),
-            fClusterDoneSignal("clustering-done", this),
-            fClusterKDTreeSlot("kd-tree", this, &KTDBSCANNoiseFiltering::DoClustering)
+            fFilteringDoneSignal("kd-tree", this),
+            fKDTreeSlot("kd-tree", this, &KTDBSCANNoiseFiltering::DoFiltering)
     {
     }
 
@@ -54,9 +53,9 @@ namespace Katydid
         return true;
     }
 
-    bool KTDBSCANNoiseFiltering::DoClustering(KTKDTreeData& data)
+    bool KTDBSCANNoiseFiltering::DoFiltering(KTKDTreeData& data)
     {
-        KTPROG(dnflog, "Starting DBSCAN track clustering");
+        KTPROG(dnflog, "Starting DBSCAN noise filtering");
 
         typedef KTDBSCAN< KTKDTreeData::TreeIndex > DBSCAN;
 
@@ -81,6 +80,8 @@ namespace Katydid
             KTDEBUG(dnflog, "DBSCAN finished");
 
             // TODO: everything below this in the function needs to be changed
+            // loop over points in the point cloud
+            //    set the noise flag from results::fNoise
 
             std::vector< KTKDTreeData::Point > points = data.GetSetOfPoints(iComponent);
 

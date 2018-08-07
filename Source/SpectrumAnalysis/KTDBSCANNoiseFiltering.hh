@@ -48,11 +48,10 @@ namespace Katydid
 
      Slots:
      - "points": void (shared_ptr<KTData>) -- If this is a new acquisition, triggers the clustering algorithm; Adds points to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
-     - "do-clustering": void () -- Triggers clustering algorithm
+     - "do-filtering": void () -- Triggers filtering algorithm
 
      Signals:
-     - "track": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KTSparseWaterfallCandidateData.
-     - "clustering-done": void () -- Emitted when track clustering is complete
+     - "kd-tree": void () -- Emitted when noise filtering is complete
     */
 
     class KTDBSCANNoiseFiltering : public Nymph::KTProcessor
@@ -72,7 +71,7 @@ namespace Katydid
             //MEMBERVARIABLEREF(Point, Radii);
 
         public:
-            bool DoClustering(KTKDTreeData& data);
+            bool DoFiltering(KTKDTreeData& data);
 
             const std::set< Nymph::KTDataPtr >& GetCandidates() const;
 
@@ -84,15 +83,14 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalData fTrackSignal;
-            Nymph::KTSignalOneArg< void > fClusterDoneSignal;
+            Nymph::KTSignalOneArg< void > fFilteringDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTKDTreeData > fClusterKDTreeSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
 
     };
 
