@@ -170,6 +170,7 @@ namespace Katydid
         public:
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
+            bool CollectDiscrimPointsFromKDTree(KTKDTreeData& kdTreeData);
 
             bool LoopOverHighPowerPoints(KTPowerSpectrum& powerSpectrum, STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
             bool LoopOverHighPowerPoints(STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component);
@@ -210,6 +211,7 @@ namespace Katydid
         private:
             Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimPowerSlot;
             Nymph::KTSlotDataTwoTypes < KTSliceHeader, KTDiscriminatedPoints1DData > fDiscrimSlot;
+            Nymph::KTSlotDataOneType < KTKDTreeData > fDiscrimKDTreeSlot;
             Nymph::KTSlotDone fDoneSlot;
 
     };
