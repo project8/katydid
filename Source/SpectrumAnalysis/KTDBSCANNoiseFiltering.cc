@@ -7,6 +7,8 @@
 
 #include "KTDBSCANNoiseFiltering.hh"
 
+#include "KTDBSCAN.hh"
+#include "KTException.hh"
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -24,8 +26,8 @@ namespace Katydid
             //fRadii(fNDimensions),
             fMinPoints(3),
             fRadius(1.),
-            fCandidates(),
             fDataCount(0),
+            fDBSCAN(),
             fFilteringDoneSignal("kd-tree", this),
             fKDTreeSlot("kd-tree", this, &KTDBSCANNoiseFiltering::DoFiltering)
     {
@@ -49,48 +51,56 @@ namespace Katydid
     {
         KTPROG(dnflog, "Starting DBSCAN noise filtering");
 
-        typedef KTDBSCAN< KTKDTreeData::TreeIndex > DBSCAN;
-
-        DBSCAN dbscan;
-
-        dbscan.SetRadius(fRadius);
-        dbscan.SetMinPoints(fMinPoints);
+        fDBSCAN.SetRadius(fRadius);
+        fDBSCAN.SetMinPoints(fMinPoints);
         KTINFO(dnflog, "DBSCAN configured");
 
-        for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
+        try
         {
-            KTDEBUG(dnflog, "Clustering component " << iComponent);
-
-            // do the clustering!
-            KTINFO(dnflog, "Starting DBSCAN");
-            DBSCAN::DBSResults results;
-            if (! dbscan.DoClustering(*(data.GetTreeIndex(iComponent)), results))
+            for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
             {
-                KTERROR(dnflog, "An error occurred while clustering");
-                return false;
-            }
-            KTDEBUG(dnflog, "DBSCAN finished");
+                KTDEBUG(dnflog, "Clustering component " << iComponent);
 
-            std::vector< KTKDTreeData::Point >& points = data.GetSetOfPoints(iComponent);
-            if (points.size() != results.fNoise.size() )
-            {
-                KTERROR(dnflog, "Number of points doesn't equal the noise array size");
-                return false;
-            }
-
-            // double for loop, all the way across the sky!
-            for (auto itPair = std::make_pair(points.begin(), results.fNoise.begin());
-                    itPair.first != points.end();
-                    ++itPair.first, ++itPair.second)
-            {
-                itPair.first->fNoiseFlag = *itPair.second;
-            }
-        } // loop over components
+                DoFiltering(data.GetTreeIndex(iComponent), data.GetSetOfPoints(iComponent));
+            } // loop over components
+        }
+        catch(Nymph::KTException& e)
+        {
+            KTERROR(dnflog, "Error running DBSCAN filtering: " << e.what());
+            return false;
+        }
 
         KTDEBUG(dnflog, "Filtering complete");
         fFilteringDoneSignal();
 
         return true;
+    }
+
+    void KTDBSCANNoiseFiltering::DoFiltering(KTKDTreeData::TreeIndex* treeIndex, KTKDTreeData::SetOfPoints& points)
+    {
+        // do the clustering!
+        KTINFO(dnflog, "Starting DBSCAN");
+        DBSCAN_KDTree::DBSResults results;
+        if (! fDBSCAN.DoClustering(*treeIndex, results))
+        {
+            throw Nymph::KTException() << "An error occurred while clustering";
+        }
+        KTDEBUG(dnflog, "DBSCAN finished");
+
+        if (points.size() != results.fNoise.size() )
+        {
+            throw Nymph::KTException() << "Number of points doesn't equal the noise array size";
+        }
+
+        // double for loop, all the way across the sky!
+        for (auto itPair = std::make_pair(points.begin(), results.fNoise.begin());
+                itPair.first != points.end();
+                ++itPair.first, ++itPair.second)
+        {
+            itPair.first->fNoiseFlag = *itPair.second;
+        }
+
+        return;
     }
 
 } /* namespace Katydid */

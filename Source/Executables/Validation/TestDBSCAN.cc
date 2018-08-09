@@ -8,7 +8,7 @@
  */
 
 
-#include "../../Utility/KTDBSCAN.hh"
+#include "KTDBSCAN.hh"
 #include "KTDistanceMatrix.hh"
 #include "KTLogger.hh"
 

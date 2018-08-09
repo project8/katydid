@@ -12,6 +12,7 @@
 #include "KTProcessor.hh"
 
 #include "KTDBSCAN.hh"
+#include "KTKDTreeData.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 #include "KTData.hh"
@@ -22,8 +23,6 @@
 
 namespace Katydid
 {
-
-    class KTKDTreeData;
 
     /*!
      @class KTDBSCANNoiseFiltering
@@ -59,6 +58,8 @@ namespace Katydid
         public:
             const static unsigned fNDimensions;
 
+            typedef KTDBSCAN< KTKDTreeData::TreeIndex > DBSCAN_KDTree;
+
         public:
             KTDBSCANNoiseFiltering(const std::string& name = "dbscan-noise-filtering");
             virtual ~KTDBSCANNoiseFiltering();
@@ -73,10 +74,10 @@ namespace Katydid
         public:
             bool DoFiltering(KTKDTreeData& data);
 
-            const std::set< Nymph::KTDataPtr >& GetCandidates() const;
+            void DoFiltering(KTKDTreeData::TreeIndex* treeIndex, KTKDTreeData::SetOfPoints& points);
 
         private:
-            std::set< Nymph::KTDataPtr > fCandidates;
+            DBSCAN_KDTree fDBSCAN;
 
             //***************
             // Signals
@@ -93,11 +94,6 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTKDTreeData > fKDTreeSlot;
 
     };
-
-    inline const std::set< Nymph::KTDataPtr >& KTDBSCANNoiseFiltering::GetCandidates() const
-    {
-        return fCandidates;
-    }
 
 }
  /* namespace Katydid */

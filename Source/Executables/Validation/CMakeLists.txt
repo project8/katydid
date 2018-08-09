@@ -68,6 +68,7 @@ if (Katydid_ENABLE_TESTING)
         TestConvolution1D
         TestCorrelator
         TestDataAccumulator
+        TestDBSCANNoiseFiltering
         TestDBSCANTrackClustering
         # TestDistanceClustering
         TestGainNormalization
