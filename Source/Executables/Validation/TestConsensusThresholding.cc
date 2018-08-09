@@ -6,13 +6,13 @@
 */
 
 #include "KTConsensusThresholding.hh"
+#include "KTDBSCANTrackClustering.hh"
 #include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
 #include <vector>
-#include "../../EventAnalysis/KTDBSCANTrackClustering.hh"
 
 #ifdef ROOT_FOUND
 #include "TCanvas.h"

@@ -27,19 +27,18 @@ int main()
     unsigned nNoisePoints = 1000;
 
     std::pair< double, double > trackXRange( 0.2, 0.3 );
-    std::pair< double, double > trackYRange( 0.6, 0.61 );
+    std::pair< double, double > trackYRange( 0.6, 0.605 );
     unsigned nTrackPoints = 100;
 
     KTINFO(testlog, "Creating data");
 
-    using KTKDTreeData::Point;
-    KTPointCloud< Point > points;
+    KTPointCloud< KTKDTreeData::Point > points;
     points.fPoints.reserve(nNoisePoints + nTrackPoints);
 
     double delta = range.second - range.first;
     for (unsigned iPoint = 0; iPoint < nNoisePoints; ++iPoint)
     {
-        Point pt;
+        KTKDTreeData::Point pt;
 
         pt.fCoords[0] = range.first + rand() * delta / RAND_MAX;
         pt.fCoords[1] = range.first + rand() * delta / RAND_MAX;
@@ -51,7 +50,7 @@ int main()
     double deltaY = trackYRange.second - trackYRange.first;
     for (unsigned iPoint = 0; iPoint < nTrackPoints; ++iPoint)
     {
-        Point pt;
+        KTKDTreeData::Point pt;
 
         pt.fCoords[0] = trackXRange.first + rand() * deltaX / RAND_MAX;
         pt.fCoords[1] = trackYRange.first + rand() * deltaY / RAND_MAX;
@@ -60,13 +59,13 @@ int main()
     }
 
     KTINFO(testlog, "Building the kd-tree index");
-    KTTreeIndex< double >* treeIndex = new KTTreeIndexEuclidean< double, KTPointCloud< Point > >(2, points, nanoflann::KDTreeSingleIndexAdaptorParams(10));
+    KTTreeIndex< double >* treeIndex = new KTTreeIndexEuclidean< double, KTPointCloud< KTKDTreeData::Point > >(2, points, nanoflann::KDTreeSingleIndexAdaptorParams(10));
     treeIndex->BuildIndex();
 
     KTINFO(testlog, "Setting up DBSCANNoiseFiltering");
     KTDBSCANNoiseFiltering filter;
-    filter.SetRadius(0.1);
-    filter.SetMinPoints(5);
+    filter.SetRadius(0.01);
+    filter.SetMinPoints(3);
 
     KTINFO(testlog, "Filtering data");
     filter.DoFiltering(treeIndex, points.fPoints);
@@ -78,44 +77,39 @@ int main()
 
 
 #ifdef ROOT_FOUND
-    if (dims == 2)
+    TFile file("dbscan_noise_filter_test.root", "recreate");
+    TCanvas* canv = new TCanvas("cNoiseFilterTest", "Noise Filter Test");
+
+    TGraph* ptsGraph = new TGraph(points.kdtree_get_point_count());
+    ptsGraph->SetMarkerStyle(1);
+    ptsGraph->SetMarkerColor(1);
+    unsigned nNoisePointsFound = 0;
+    for (unsigned pid = 0; pid < points.kdtree_get_point_count(); ++pid)
     {
-        TFile file("dbscan_test.root", "recreate");
-        TCanvas* canv = new TCanvas("cClusters", "Clusters");
-
-        TGraph* ptsGraph = new TGraph(ps.size());
-        ptsGraph->SetMarkerStyle(1);
-        ptsGraph->SetMarkerColor(1);
-        for (unsigned pid = 0; pid < ps.size(); ++pid)
-        {
-            ptsGraph->SetPoint(pid, ps[pid](0), ps[pid](1));
-        }
-        ptsGraph->Draw("ap");
-        ptsGraph->Write("Points");
-
-        unsigned firstClusterColor = 2;
-        unsigned iClust = 0;
-        for (std::vector< DBSCAN::Cluster >::const_iterator cIt = results.fClusters.begin(); cIt != results.fClusters.end(); ++cIt)
-        {
-            TGraph* clGraph = new TGraph(cIt->size());
-            clGraph->SetMarkerStyle(4);
-            clGraph->SetMarkerColor(firstClusterColor + iClust);
-            for (unsigned iPt = 0; iPt < cIt->size(); ++iPt)
-            {
-                clGraph->SetPoint(iPt, ps[(*cIt)[iPt]](0), ps[(*cIt)[iPt]](1));
-            }
-            std::stringstream nameStream;
-            nameStream << "Cluster" << iClust;
-            clGraph->Draw("psame");
-            clGraph->Write(nameStream.str().c_str());
-
-            iClust++;
-        }
-
-        canv->Write();
-
-        file.Close();
+        ptsGraph->SetPoint(pid, points.kdtree_get_pt(pid, 0), points.kdtree_get_pt(pid, 1));
+        if (points.fPoints.at(pid).fNoiseFlag) ++nNoisePointsFound;
     }
+    ptsGraph->Draw("ap");
+    ptsGraph->Write("Points");
+
+    KTINFO(testlog, "Number of noise points: " << nNoisePointsFound);
+
+    TGraph* noiseGraph = new TGraph(nNoisePoints);
+    noiseGraph->SetMarkerStyle(4);
+    noiseGraph->SetMarkerColor(2);
+    for (unsigned pid = 0; pid < points.kdtree_get_point_count(); ++pid)
+    {
+        if (points.fPoints.at(pid).fNoiseFlag)
+        {
+            noiseGraph->SetPoint(pid, points.kdtree_get_pt(pid, 0), points.kdtree_get_pt(pid, 1));
+        }
+    }
+    noiseGraph->Draw("psame");
+    noiseGraph->Write("Noise");
+
+    canv->Write();
+
+    file.Close();
 #endif
 
 

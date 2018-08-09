@@ -34,20 +34,15 @@ namespace Katydid
      Normalization of the axes:
      The DBSCAN algorithm expects expects that all of the dimensions that describe a points will have the same scale,
      such that a single radius parameter can describe a sphere in the parameter space that's used to cluster points together.
-     For track clustering, one radius is given to define the circle around points to be clustered together.
-     For clustering, a scaling factor is calculated for each axis such that the ellipse formed by the two radii is
-     scaled to a unit circle.  Those scaling factors are applied to every point before the data is passed to the
-     DBSCAN algorithm.
 
-     Configuration name: "dbscan-track-clustering"
+     Configuration name: "dbscan-noise-filtering"
 
      Available configuration values:
      - "radius": double -- double used to define the circle around points to be clustered together
      - "min-points": unsigned int -- minimum number of points required to have a cluster
 
      Slots:
-     - "points": void (shared_ptr<KTData>) -- If this is a new acquisition, triggers the clustering algorithm; Adds points to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
-     - "do-filtering": void () -- Triggers filtering algorithm
+     - "kd-tree": void (KTDataPtr) -- Performs clustering on a KDTree of data; Requires KTKDTreeData.
 
      Signals:
      - "kd-tree": void () -- Emitted when noise filtering is complete
@@ -75,9 +70,6 @@ namespace Katydid
             bool DoFiltering(KTKDTreeData& data);
 
             void DoFiltering(KTKDTreeData::TreeIndex* treeIndex, KTKDTreeData::SetOfPoints& points);
-
-        private:
-            DBSCAN_KDTree fDBSCAN;
 
             //***************
             // Signals

@@ -27,7 +27,6 @@ namespace Katydid
             fMinPoints(3),
             fRadius(1.),
             fDataCount(0),
-            fDBSCAN(),
             fFilteringDoneSignal("kd-tree", this),
             fKDTreeSlot("kd-tree", this, &KTDBSCANNoiseFiltering::DoFiltering)
     {
@@ -50,10 +49,6 @@ namespace Katydid
     bool KTDBSCANNoiseFiltering::DoFiltering(KTKDTreeData& data)
     {
         KTPROG(dnflog, "Starting DBSCAN noise filtering");
-
-        fDBSCAN.SetRadius(fRadius);
-        fDBSCAN.SetMinPoints(fMinPoints);
-        KTINFO(dnflog, "DBSCAN configured");
 
         try
         {
@@ -78,10 +73,15 @@ namespace Katydid
 
     void KTDBSCANNoiseFiltering::DoFiltering(KTKDTreeData::TreeIndex* treeIndex, KTKDTreeData::SetOfPoints& points)
     {
+        DBSCAN_KDTree dbscan;
+        dbscan.SetRadius(fRadius);
+        dbscan.SetMinPoints(fMinPoints);
+        KTINFO(dnflog, "DBSCAN configured");
+
         // do the clustering!
         KTINFO(dnflog, "Starting DBSCAN");
         DBSCAN_KDTree::DBSResults results;
-        if (! fDBSCAN.DoClustering(*treeIndex, results))
+        if (! dbscan.DoClustering(*treeIndex, results))
         {
             throw Nymph::KTException() << "An error occurred while clustering";
         }

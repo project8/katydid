@@ -17,7 +17,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(dbslog, "KTDBSCAN");
+    KTLOGGER(dbslog_h, "KTDBSCAN");
 
 
     /*!
@@ -132,7 +132,7 @@ namespace Katydid
     template< typename DistanceData >
     void KTDBSCAN< DistanceData >::InitializeArrays(size_t nPoints, DBSResults& results)
     {
-        KTINFO(dbslog, "Initializing DBSCAN arrays with " << nPoints << " points");
+        KTINFO(dbslog_h, "Initializing DBSCAN arrays with " << nPoints << " points");
 
         results.fClusters.clear();
         results.fClusters.reserve(nPoints);
@@ -149,6 +149,7 @@ namespace Katydid
     template< typename DistanceData >
     bool KTDBSCAN< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
     {
+        KTWARN(dbslog_h, "Starting DBSCAN; min points: " << fMinPoints << "; radius: " << fRadius);
         PointId nPoints = dist.size();
 
         InitializeArrays(nPoints, results);
@@ -157,31 +158,34 @@ namespace Katydid
         // foreach pid
         for (PointId pid = 0; pid < nPoints; ++pid)
         {
+            //KTWARN(dbslog_h, "Visiting point " << pid);
             // not already visited
             if (! fVisited[pid])
             {
-
                 fVisited[pid] = true;
 
                 // get the neighbors
                 Neighbors ne = dist.NearestNeighborsByRadius(pid, fRadius);
+                //KTWARN(dbslog_h, "This is a new point; it has " << ne.size() << " neighbors");
 
                 // not enough support -> mark as noise
                 if (ne.size() < fMinPoints)
                 {
+                    //KTWARN(dbslog_h, "That's below the threshold; it's a noise point");
                     results.fNoise[pid] = true;
                 }
                 else
                 {
                     // Add p to current cluster
-
                     Cluster cluster;              // a new cluster
                     cluster.push_back(pid);       // assign pid to cluster
                     results.fPointIdToClusterId[pid] = cid;
+                    //KTWARN(dbslog_h, "Starting cluster with this point; cluster is " << cid);
 
                     // go to neighbors
                     for (unsigned int i = 0; i < ne.size(); ++i)
                     {
+                        //KTWARN(dbslog_h, "    Visiting neighbor, point " << ne[i]);
                         PointId nPid = ne[i];
 
                         // not already visited
@@ -191,10 +195,12 @@ namespace Katydid
 
                             // go to neighbors
                             Neighbors ne1 = dist.NearestNeighborsByRadius(nPid, fRadius);
+                            //KTWARN(dbslog_h, "    This is a new point; it has " << ne1.size() << " neighbors");
 
                             // enough support
                             if (ne1.size() >= fMinPoints)
                             {
+                                //KTWARN(dbslog_h, "    Joining neighbor's neighbors with the previous cluster");
                                 // join
                                 for (unsigned int j = 0; j < ne1.size(); ++j)
                                 {
@@ -206,6 +212,7 @@ namespace Katydid
                         // not already assigned to a cluster
                         if (results.fPointIdToClusterId[nPid] == -1)
                         {
+                            //KTWARN(dbslog_h, "    Neighbor was not part of a cluster; adding to cluster " << cid);
                             cluster.push_back(nPid);
                             results.fPointIdToClusterId[nPid] = cid;
                         }
