@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 
-#include "KTKDTreeData.hh"
+#include "KTEggHeader.hh"
 #include "KTSliceHeader.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
@@ -30,9 +30,15 @@ namespace Katydid
 {
     KTLOGGER(stflog, "KTSequentialTrackFinder");
 
-    KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq) :
+    KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq) :
             KTDiscriminatedPoint(newTimeInRunC, pointIt->second.fAbscissa, pointIt->second.fOrdinate, newTimeInAcq, pointIt->second.fMean, pointIt->second.fVariance, pointIt->second.fNeighborhoodAmplitude),
             fBinInSlice(pointIt->first)
+    {}
+
+    KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint(KTKDTreeData::SetOfPoints::const_iterator& pointIt, double timeInRunC, double frequency) :
+            KTDiscriminatedPoint(timeInRunC, frequency, pointIt->fAmplitude, pointIt->fTimeInAcq, pointIt->fMean, pointIt->fVariance, pointIt->fNeighborhoodAmplitude),
+            fBinInSlice(0)
+            // TODO: set bin in slice correctly
     {}
 
 
@@ -213,6 +219,13 @@ namespace Katydid
         return true;
     }
 
+    bool KTSequentialTrackFinder::InitializeWithHeader(KTEggHeader& header)
+    {
+        fBinWidth = 1. / header.GetAcquisitionRate();
+
+        return true;
+    }
+
     bool KTSequentialTrackFinder::CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints)
     {
         KTDEBUG(stflog, "Initial slope is: "<<fInitialSlope);
@@ -251,7 +264,7 @@ namespace Katydid
             KTDEBUG(stflog, "new_TimeInAcq is " << newTimeInAcq);
 
 
-            // this vector will collect the discriminated points
+            // this set will collect the discriminated points sorted by power
             STFDiscriminatedPowerSortedPoints points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
@@ -304,7 +317,7 @@ namespace Katydid
             KTDEBUG(stflog, "new_TimeInAcq is " << newTimeInAcq);
             KTDEBUG(stflog, "new_TimeInRunC is " << newTimeInRunC);
 
-            // this vector will collect the discriminated points
+            // this set will collect the discriminated points sorted by power
             STFDiscriminatedPowerSortedPoints points;
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discrimPoints.GetSetOfPoints(iComponent);
@@ -330,7 +343,76 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::CollectDiscrimPointsFromKDTree(KTKDTreeData& kdTreeData)
     {
-        return false;
+        KTDEBUG(stflog, "Initial slope is: " << fInitialSlope);
+
+        unsigned nComponents = 1;
+        KTDEBUG(stflog, "Bin Width " << fBinWidth);
+
+        if (fCalculateMinBin)
+        {
+            SetMinBin((unsigned) ( fMinFrequency / fBinWidth ) );
+            KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin((unsigned) ( fMaxFrequency / fBinWidth ) );
+            KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
+        }
+
+        // We need to be able to detect when we've moved from slice to slice
+        // So we define a threshold for delta-t, because time values might not be the exact same due to floating-point uncertainty.
+        // We'll use the bin width, which is tiny relative to the slice size and stride.
+        // 3-times the bin width should be large enough compared to uncertainty on the slice time and smaller than any reasonable stride.
+        double deltaTThreshold = 3. * fBinWidth;
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            // TODO: set acquisition ID correctly
+            uint64_t acqID = 0; //slHeader.GetAcquisitionID(iComponent);
+
+            unsigned nBins = fMaxBin - fMinBin + 1;
+
+            const KTKDTreeData::SetOfPoints& allPoints = kdTreeData.GetSetOfPoints(iComponent);
+
+            // this set will collect the discriminated points sorted by power
+            STFDiscriminatedPowerSortedPoints points;
+
+            double lastTime = -1000.;
+            for (auto pointIt = allPoints.begin(); pointIt != allPoints.end(); ++pointIt)
+            {
+                double time = pointIt->fCoords[0] * kdTreeData.GetXScaling();
+                double freq = pointIt->fCoords[1] * kdTreeData.GetYScaling();
+
+                if (time - lastTime > deltaTThreshold)  // this indicates we've moved onto the next slice
+                {
+                    // this point is on the next slice; process these points then reset the points set
+                    KTDEBUG( stflog, "Collected " << points.size() << " points");
+
+                    // Loop over the high power points
+                    this->LoopOverHighPowerPoints(points, acqID, iComponent);
+
+                    // we're done with those points
+                    points.clear();
+                }
+
+                // check if it's not noise, and that we're within the frequency bounds
+                if (! pointIt->fNoiseFlag && freq > fMinFrequency && freq < fMaxFrequency)
+                {
+                    points.emplace(pointIt, time, freq);
+                }
+
+                lastTime = time;
+            }
+
+            if (! points.empty())
+            {
+                KTDEBUG( stflog, "Collected "<<points.size()<<" points");
+
+                // Loop over the high power points
+                this->LoopOverHighPowerPoints(points, acqID, iComponent);
+            }
+        }
+        return true;
     }
 
     bool KTSequentialTrackFinder::LoopOverHighPowerPoints(KTPowerSpectrum& slice, STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)

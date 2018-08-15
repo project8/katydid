@@ -10,19 +10,20 @@
 #define KTSEQUENTIALTRACKFINDER_HH_
 
 #include "KTProcessor.hh"
-#include "KTData.hh"
-#include "KTMemberVariable.hh"
-#include "KTSlot.hh"
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoint.hh"
+#include "KTKDTreeData.hh"
+
+#include "KTMemberVariable.hh"
+#include "KTSlot.hh"
 
 #include <set>
 
 
 namespace Katydid
 {
-    class KTKDTreeData;
+    class KTEggHeader;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
     class KTSequentialLineData;
@@ -104,6 +105,7 @@ namespace Katydid
             struct STFDiscriminatedPoint : KTDiscriminatedPoint
             {
                 STFDiscriminatedPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq);
+                STFDiscriminatedPoint(KTKDTreeData::SetOfPoints::const_iterator& pointIt, double timeInRunC, double frequency);
                 unsigned fBinInSlice;
             };
 
@@ -168,6 +170,8 @@ namespace Katydid
             MEMBERVARIABLE(double, MaxFrequency);
 
         public:
+            bool InitializeWithHeader(KTEggHeader& header);
+
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromKDTree(KTKDTreeData& kdTreeData);
