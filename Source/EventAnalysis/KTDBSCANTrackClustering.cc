@@ -205,7 +205,7 @@ namespace Katydid
                 double mean = points[*pointIdIt].fMean;
                 double variance = points[*pointIdIt].fVariance;
                 double neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
-                cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude));
+                cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude, points[*pointIdIt].fBinInSlice));
                 KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
@@ -216,7 +216,7 @@ namespace Katydid
                     mean = points[*pointIdIt].fMean;
                     variance = points[*pointIdIt].fVariance;
                     neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
-                    cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude));
+                    cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude, points[*pointIdIt].fBinInSlice));
                     KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
 
                     if (time > maxTime)

@@ -143,6 +143,7 @@ namespace Katydid
                 newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
                 newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
+                newPoint.fBinInSlice = pIt->first;
                 newPoint.fMean = pIt->second.fMean;
                 newPoint.fVariance = pIt->second.fVariance;
                 newPoint.fNeighborhoodAmplitude = pIt->second.fNeighborhoodAmplitude;
@@ -197,6 +198,7 @@ namespace Katydid
             newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
             newPoint.fAmplitude = pIt->fAmplitude;
             newPoint.fTimeInAcq = fInvScalingX * pIt->fTimeInAcq;
+            newPoint.fBinInSlice = pIt->fBinInSlice;
             newPoint.fMean = pIt->fMean;
             newPoint.fVariance = pIt->fVariance;
             newPoint.fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;

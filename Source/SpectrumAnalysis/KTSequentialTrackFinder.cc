@@ -31,14 +31,11 @@ namespace Katydid
     KTLOGGER(stflog, "KTSequentialTrackFinder");
 
     KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq) :
-            KTDiscriminatedPoint(newTimeInRunC, pointIt->second.fAbscissa, pointIt->second.fOrdinate, newTimeInAcq, pointIt->second.fMean, pointIt->second.fVariance, pointIt->second.fNeighborhoodAmplitude),
-            fBinInSlice(pointIt->first)
+            KTDiscriminatedPoint(newTimeInRunC, pointIt->second.fAbscissa, pointIt->second.fOrdinate, newTimeInAcq, pointIt->second.fMean, pointIt->second.fVariance, pointIt->second.fNeighborhoodAmplitude, pointIt->first)
     {}
 
     KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint(KTKDTreeData::SetOfPoints::const_iterator& pointIt, double timeInRunC, double frequency) :
-            KTDiscriminatedPoint(timeInRunC, frequency, pointIt->fAmplitude, pointIt->fTimeInAcq, pointIt->fMean, pointIt->fVariance, pointIt->fNeighborhoodAmplitude),
-            fBinInSlice(0)
-            // TODO: set bin in slice correctly
+            KTDiscriminatedPoint(timeInRunC, frequency, pointIt->fAmplitude, pointIt->fTimeInAcq, pointIt->fMean, pointIt->fVariance, pointIt->fNeighborhoodAmplitude, pointIt->fBinInSlice)
     {}
 
 
@@ -359,6 +356,8 @@ namespace Katydid
             KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
         }
 
+        uint64_t acqID = kdTreeData.GetAcquisitionID();
+
         // We need to be able to detect when we've moved from slice to slice
         // So we define a threshold for delta-t, because time values might not be the exact same due to floating-point uncertainty.
         // We'll use the bin width, which is tiny relative to the slice size and stride.
@@ -367,9 +366,6 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
-            // TODO: set acquisition ID correctly
-            uint64_t acqID = 0; //slHeader.GetAcquisitionID(iComponent);
-
             unsigned nBins = fMaxBin - fMinBin + 1;
 
             const KTKDTreeData::SetOfPoints& allPoints = kdTreeData.GetSetOfPoints(iComponent);

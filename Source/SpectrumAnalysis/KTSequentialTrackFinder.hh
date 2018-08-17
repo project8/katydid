@@ -106,7 +106,6 @@ namespace Katydid
             {
                 STFDiscriminatedPoint(KTDiscriminatedPoints1DData::SetOfPoints::const_iterator& pointIt, double newTimeInRunC, double newTimeInAcq);
                 STFDiscriminatedPoint(KTKDTreeData::SetOfPoints::const_iterator& pointIt, double timeInRunC, double frequency);
-                unsigned fBinInSlice;
             };
 
             struct STFDiscriminatedPointComparePower

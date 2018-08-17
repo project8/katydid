@@ -46,6 +46,8 @@ namespace Katydid
         Double_t fVariance;
         Double_t fNeighborhoodAmplitude;
         Bool_t fNoiseFlag;
+        UInt_t fBinInSlice;
+        ULong64_t fSliceNumber;
         Double_t fNNDistance;
         UInt_t fKNNWithin0p22;
         UInt_t fKNNWithin0p32;

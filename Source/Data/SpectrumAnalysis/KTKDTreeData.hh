@@ -30,7 +30,7 @@ namespace Katydid
             struct Point : KT2DPoint< double >
             {
                 typedef KT2DPoint< double >::coord_t coord_t;
-                Point() : fAmplitude(0.), fTimeInAcq(0.), fNoiseFlag(false), fSliceNumber(0),
+                Point() : fAmplitude(0.), fTimeInAcq(0.), fNoiseFlag(false), fBinInSlice(0), fSliceNumber(0),
                         fMean(0.), fVariance(0.), fNeighborhoodAmplitude(0.)
                 {
                     fCoords[0] = 0;
@@ -39,6 +39,7 @@ namespace Katydid
                 double fAmplitude;
                 double fTimeInAcq;
                 bool fNoiseFlag;
+                unsigned fBinInSlice;
                 uint64_t fSliceNumber;
                 double fMean;
                 double fVariance;

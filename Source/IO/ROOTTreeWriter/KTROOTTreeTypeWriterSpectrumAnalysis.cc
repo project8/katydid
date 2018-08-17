@@ -190,6 +190,7 @@ namespace Katydid
                     fKDTreePointData.fVariance = it->fVariance;
                     fKDTreePointData.fNeighborhoodAmplitude = it->fNeighborhoodAmplitude;
                     fKDTreePointData.fNoiseFlag = it->fNoiseFlag;
+                    fKDTreePointData.fBinInSlice = it->fBinInSlice;
                     KTKDTreeData::TreeIndex::Neighbors neighbors = index->NearestNeighborsByNumber(pid, 2);
                     fKDTreePointData.fNNDistance = neighbors.dist(1);
                     //KTWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
@@ -234,6 +235,7 @@ namespace Katydid
                 fKDTreeTree->SetBranchAddress("Frequency", &fKDTreePointData.fFrequency);
                 fKDTreeTree->SetBranchAddress("Amplitude", &fKDTreePointData.fAmplitude);
                 fKDTreeTree->SetBranchAddress("NoiseFlag", &fKDTreePointData.fNoiseFlag);
+                fKDTreeTree->SetBranchAddress("BinInSlice", &fKDTreePointData.fBinInSlice);
                 fKDTreeTree->SetBranchAddress("NNDistance", &fKDTreePointData.fNNDistance);
                 fKDTreeTree->SetBranchAddress("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22);
                 fKDTreeTree->SetBranchAddress("KNNWithin0p32", &fKDTreePointData.fKNNWithin0p32);
@@ -261,6 +263,7 @@ namespace Katydid
         fKDTreeTree->Branch("Frequency", &fKDTreePointData.fFrequency, "fFrequency/d");
         fKDTreeTree->Branch("Amplitude", &fKDTreePointData.fAmplitude, "fAmplitude/d");
         fKDTreeTree->Branch("NoiseFlag", &fKDTreePointData.fNoiseFlag, "fNoiseFlag/d");
+        fKDTreeTree->Branch("BinInSlice", &fKDTreePointData.fBinInSlice, "fBinInSlice/i");
         fKDTreeTree->Branch("NNDistance", &fKDTreePointData.fNNDistance, "fNNDistance/d");
         fKDTreeTree->Branch("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22, "fKNNWithin0p22/i");
         fKDTreeTree->Branch("KNNWithin0p32", &fKDTreePointData.fKNNWithin0p32, "fKNNWithin0p32/i");
