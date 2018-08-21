@@ -17,9 +17,9 @@ and tests the behavior of the algorithms in this processor.
 #include "KTIterativeTrackClustering.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTSequentialLineData.hh"
-#include "KTSequentialLineSNRCut.hh"
-#include "KTSequentialLineNUPCut.hh"
-#include "KTSequentialLinePointDensityCut.hh"
+#include "CutClasses/KTSequentialLineSNRCut.hh"
+#include "CutClasses/KTSequentialLineNUPCut.hh"
+#include "CutClasses/KTSequentialLinePointDensityCut.hh"
 #include "KTRandom.hh"
 
 
