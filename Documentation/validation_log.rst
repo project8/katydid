@@ -43,6 +43,25 @@ Fixes:
 Log
 ---
 
+Version: Upcoming release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date:
+'''''''''''''
+
+New Features:
+'''''''''''''
+
+* New cut
+    * Bin density: cut on number of points per time length in a track
+    * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
+* New cut options
+    * NUP and SNR cuts on sequential lines, first tracks of events have the additional option to cut on total NUP / number of points in a track
+    * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
+* Cut classes location
+    * Moved all cut classes in EventAnalysis to EventAnalysis/CutClasses
+    * Tested by successfully running TestSequentialTrackFinder.cc
+
 Version: 2.13.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
