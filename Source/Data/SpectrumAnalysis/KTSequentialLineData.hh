@@ -45,8 +45,8 @@ namespace Katydid
             MEMBERVARIABLE(double, TotalWideSNR);
             MEMBERVARIABLE(double, TotalWideNUP);
 
-            MEMBERVARIABLE(KTDiscriminatedPoints, LinePoints);
-            MEMBERVARIABLE(std::vector<double>, SNRList);
+            MEMBERVARIABLEREF(KTDiscriminatedPoints, LinePoints);
+            MEMBERVARIABLEREF(std::vector<double>, SNRList);
 
             // Pure temporary variables/parameters
             MEMBERVARIABLE(unsigned, NPoints);
