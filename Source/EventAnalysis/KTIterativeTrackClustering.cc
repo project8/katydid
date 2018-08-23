@@ -36,10 +36,10 @@ namespace Katydid
             fCompSeqLineCands(),
             fNTracks(0),
             fTrackSignal("track", this),
-            fSeqLineCandSignal("sql-cand", this),
+            fSeqLineCandSignal("seq-cand", this),
             fDoneSignal("clustering-done", this),
             fTakeTrackSlot("track", this, &KTIterativeTrackClustering::TakeTrack),
-            fTakeSeqLineCandSlot("sql-cand", this, &KTIterativeTrackClustering::TakeSeqLineCandidate)
+            fTakeSeqLineCandSlot("seq-cand", this, &KTIterativeTrackClustering::TakeSeqLineCandidate)
     {
         RegisterSlot("do-clustering", this, &KTIterativeTrackClustering::DoClusteringSlot);
     }

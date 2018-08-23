@@ -14,14 +14,14 @@ Guidelines
   * Perform tests to show that the fix solves the problem that had been indicated.
   * Perform tests to show that the fix does not cause other problems.
   * Indicate in this log what tests were performed and how you know the problem was fixed.
-  
+
 Template
 --------
 
-Version: 
+Version:
 ~~~~~~~~
 
-Release Date: 
+Release Date:
 '''''''''''''
 
 New Features:
@@ -31,7 +31,7 @@ New Features:
     * Details
 * Feature 2
     * Details
-  
+
 Fixes:
 ''''''
 
@@ -39,15 +39,31 @@ Fixes:
     * Details
 * Fix 2
     * Details
-  
+
 Log
 ---
 
-Version: x.y.z
-~~~~~~~~~~~~~~
+Version: 2.13.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Release Date: ?????????????????
+Release Date: July 26, 2018
+'''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Event Time Cut in Acquisition
+    * Cuts events that start outside a specifiable time window within an acquisition.
+    
+
+Version: 2.12.0
+~~~~~~~~~~~~~~~
+
+Release Date: July 5, 2018
 '''''''''''''''''''''''''''''''
+
+New Features
+''''''''''''
 
 * Moving the default object name from the Katydid Writer into Cicada:
       * TMultiTrackEventData
@@ -60,11 +76,11 @@ Release Date: ?????????????????
       * Slack message upon success or failure
 * Track SNR and NUP:
       * Adding a KTDiscriminatedPoint structure that would be common to data objects using points obtained by discrimination.
-        Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
+      * Propagating the new structure to SparseWaterfallCandidateData and related classes (tested with TestDBScanTrackClustering)
       * KTSpectrumDiscriminator and KTVariableSpectrumDiscriminator: new member variables of KTDiscriminatedPoints1DData are calculated and set.
       * KTTrackProcessing: split the KTProcessingTrack processor into two processors: KTTrackProcessingDoubleCuts and KTTrackProcessingWeightedSlope.
-        KTTrackProcessingWeightedSlope handles both SequentialLineData and SparseWaterfallCandidateData; while KTTrackProcessingDoubleCuts only connects to SparseWaterfallCandidateData (with HoughData).
-        Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
+      * KTTrackProcessingWeightedSlope handles both SequentialLineData and SparseWaterfallCandidateData; while KTTrackProcessingDoubleCuts only connects to SparseWaterfallCandidateData (with HoughData).
+      * Adding new track properties to the KTProcessedTrackData result (Tested with TestTrackProcessing).
       * KTMultiTrackEventData and KTProcessedTrackData: added member variables for SNR and NUP quantities.
       * KTSequentialLineData: new version of KTSeqLine. Has SNR and NUP member variables. LineTrimming now uses SNR instead of Power.
       * KTSequentialTrackFinder: new slot for KTDiscriminatedPoints1DData only. Signal is now KTSequentialLineData.
@@ -161,7 +177,7 @@ New Features:
     * Added classifiers built on TMVA and DLIB libraries
     * Added a slot in the ROOT Tree writer to simultaneously write tracks and classifier results within each event
     * Moved ROOT-based IO classes to submodule Cicada
-  
+
 Fixes:
 ''''''
 
@@ -171,7 +187,7 @@ Version: 2.9.2
 Release Date: February 20, 2018
 '''''''''''''''''''''''''''''''
 
- 
+
 Fixes:
 ''''''
 
@@ -185,7 +201,7 @@ Version: 2.9.1
 Release Date: January 29, 2018
 ''''''''''''''''''''''''''''''
 
- 
+
 Fixes:
 ''''''
 
@@ -204,7 +220,7 @@ New Features:
 '''''''''''''
 
 * Auto-building documentation system now fully functional
-  
+
 Fixes:
 ''''''
 
@@ -224,7 +240,7 @@ New Features:
 * Collinear Track Clustering
 * 1D Convolution Processor
 * Auto-building documentation system
-  
+
 Fixes:
 ''''''
 
@@ -257,7 +273,7 @@ New Features:
     * Documentation is included in the KTROOTSpectrogramWriter header documentation.
     * The new writing mode was tested on a concatenated file from an RSA run. Sequential spectrograms split at the right times according to the setting and acquisition breaks.
     * The old writing mode ("single") continued to function in the same way.
-  
+
 Fixes:
 ''''''
 
@@ -270,11 +286,8 @@ Fixes:
 * Consensus Thresholding NaN fix
     * For vertically-aligned points, the CT algorithm would calculate an NaN slope, but the algorithm did not crash. This special case is now handled without calculating a slope.
     * Validated by observing the debug output of the CT processor when processing a data file, and seeing that no NaN or inf values were present.
-  
+
 * Egg3 reader: crashed on reading second file and beyond in multi-file runs
     * The reader was not picking up the first record number in the file, which was non-zero for the second file and beyond in a multi-file run.
     * This was fixed by adjusting the variable that tracks that record number immediately after the first record was read.
     * This was validated by analyzing a non-first-file in a multi-file run and seeing that the record number was correct in the debug output.  Run number 3870 was used.
-
-
-  

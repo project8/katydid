@@ -44,7 +44,7 @@ int main()
     double sigmaPeakMult = 1.;
 #endif
     
-    double sigmaThresh = 5.;
+    //double sigmaThresh = 5.;
     double snrThresh = 5.;
 
 #ifdef ROOT_FOUND
@@ -63,7 +63,7 @@ int main()
 
     for (unsigned iFitPoint=0; iFitPoint < NFitPoints; ++iFitPoint)
     {
-        unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+        //unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint;
 
         xVals[iFitPoint] = minFreq + (iFitPoint + 0.5) * dF;
         yValsMean[iFitPoint] = meanValue;

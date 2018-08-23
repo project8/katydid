@@ -29,11 +29,18 @@ namespace Katydid
      Available configuration values:
      - "min-total-nup": double -- minimum summed NUP to accept
      - "min-average-nup": double -- minimum average NUP to accept
-     - "wide-or-narrow": string -- decides whether to use wide NUP or narrow NUP (default: "wide")
+     - "wide-or-narrow": string -- decides whether to use "wide" NUP or "narrow" NUP (default: "wide")
     */
 
     class KTSequentialLineNUPCut : public Nymph::KTCutOneArg< KTSequentialLineData >
     {
+
+    private:
+        enum class wide_or_narrow
+        {
+            wide,
+            narrow
+        };
 
     public:
         struct Result : Nymph::KTExtensibleCutResult< Result >
@@ -49,7 +56,7 @@ namespace Katydid
 
         MEMBERVARIABLE(double, MinTotalNUP);
         MEMBERVARIABLE(double, MinAverageNUP);
-        MEMBERVARIABLE(std::string, WideOrNarrowLine);
+        MEMBERVARIABLE(wide_or_narrow, WideOrNarrowLine);
 
     public:
         bool Apply(Nymph::KTData& data, KTSequentialLineData& seqLineData);

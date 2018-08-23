@@ -41,13 +41,13 @@ namespace Katydid
      - "large-max-track-width": if their largest distance in frequency is not greater than this
 
      Slots:
-     - "track": Collects incoming KTProcessedTrackData objects. Clustering will produces new data pointer with KTProcessedTrackData
-     - "swf-cand": Collects incoming KTSequentialLineData objects. Clustering will produced new data pointer with KTSequentialLineData
-     - "do-clustering": Triggers clustering algorithm
+     - "track": void (KTDataPtr) -- Collects incoming KTProcessedTrackData objects. Clustering will produces new data pointer with KTProcessedTrackData
+     - "swf-cand": void (KTDataPtr) -- Collects incoming KTSequentialLineData objects. Clustering will produced new data pointer with KTSequentialLineData
+     - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
-     - "track": void (shared_ptr<KTData>) -- Created and emitted for each group found; Guarantees KTProcessedTrackData.
-     - "swf-cand: void (shared_ptr<KTData) -- Created and emitted for each group found; Guarantees KTSequentialLineData.
+     - "track": void (KTDataPtr) -- Created and emitted for each group found; Guarantees KTProcessedTrackData.
+     - "swf-cand: void (KTDataPtr) -- Created and emitted for each group found; Guarantees KTSequentialLineData.
      - "clustering-done": void () -- Emitted when clustering is complete
     */
     KTLOGGER(otchlog, "KTOverlappingTrackClusteringHeader");

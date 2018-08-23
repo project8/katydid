@@ -39,7 +39,7 @@ namespace Katydid
             fProcTrackAssignedError(0.),
             fTrackSignal("track", this),
             fSWFSlot("swfc", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSparseWaterfallCandidateData>, &fTrackSignal),
-            fSeqSlot("seqc", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSequentialLineData>, &fTrackSignal)
+            fSeqSlot("seq-cand", this, &KTTrackProcessingWeightedSlope::ProcessTrack<KTSequentialLineData>, &fTrackSignal)
     {
     }
 
@@ -157,10 +157,9 @@ namespace Katydid
 
         //Calculating Chi^2_min
         double chi2min = 0;
-        double residual = 0;
         for (unsigned iTimeBin = 0; iTimeBin<nTimeBins; ++iTimeBin)
         {
-            residual = averageFrequency[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
+            double residual = averageFrequency[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
             chi2min += residual * residual;
             KTDEBUG(tlog, "Residuals : " << residual );
         }

@@ -125,7 +125,6 @@ int main()
 
     snrcut.SetMinAverageSNR(1e3);
     nupcut.SetMinTotalNUP(.1);
-    nupcut.SetWideOrNarrowLine("wide");
 
     // Create fake data for every slice and run stf
     for (unsigned iSlice = 0; iSlice <= nSlices; ++iSlice )

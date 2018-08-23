@@ -15,6 +15,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTEventFirstTrackPowerCut.hh
     KTEventFirstTrackSNRCut.hh
     KTEventTimeCut.hh
+    KTEventTimeInAcqCut.hh
     KTFrequencyCandidateIdentifier.hh
     KTIterativeTrackClustering.hh
     KTLinearFitCut.hh
@@ -50,6 +51,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTEventFirstTrackPowerCut.cc
     KTEventFirstTrackSNRCut.cc
     KTEventTimeCut.cc
+    KTEventTimeInAcqCut.cc
     KTFrequencyCandidateIdentifier.cc
     KTIterativeTrackClustering.cc
     KTLinearFitCut.cc
@@ -77,8 +79,8 @@ set (EVENTANALYSIS_SOURCEFILES
 )
 
 if (ROOT_FOUND)
-    set (EVENTANALYSIS_HEADERFILES 
-        ${EVENTANALYSIS_HEADERFILES}   
+    set (EVENTANALYSIS_HEADERFILES
+        ${EVENTANALYSIS_HEADERFILES}
         KTLinearDensityProbeFit.hh
         KTTMVAClassifier.hh
     )

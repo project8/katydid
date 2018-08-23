@@ -37,10 +37,10 @@ namespace Katydid
             fCandidates(),
             fNTracks(0),
             fTrackSignal("track", this),
-            fSeqLineCandSignal("sql-cand", this),
+            fSeqLineCandSignal("seq-cand", this),
             fDoneSignal("clustering-done", this),
             fTakeTrackSlot("track", this, &KTOverlappingTrackClustering::TakeTrack),
-            fTakeSeqLineCandSlot("sql-cand", this, &KTOverlappingTrackClustering::TakeSeqLineCandidate)
+            fTakeSeqLineCandSlot("seq-cand", this, &KTOverlappingTrackClustering::TakeSeqLineCandidate)
     {
         RegisterSlot("do-clustering", this, &KTOverlappingTrackClustering::DoClusteringSlot);
     }
