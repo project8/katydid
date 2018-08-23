@@ -38,9 +38,6 @@ namespace Katydid
             MEMBERVARIABLE(double, EndFrequency);
             MEMBERVARIABLE(double, Slope);
             MEMBERVARIABLE(double, WeightedSlopeSum);
-            MEMBERVARIABLE(unsigned, Component);
-            MEMBERVARIABLE(uint64_t, AcquisitionID);
-            MEMBERVARIABLE(unsigned, CandidateID)
             MEMBERVARIABLE(double, TotalPower);
             MEMBERVARIABLE(double, TotalSNR);
             MEMBERVARIABLE(double, TotalNUP);

@@ -785,46 +785,45 @@ namespace Katydid
         // return;
     // }
         
-    // void KT2ROOT::LoadSequentialLineData(const KTSequentialLineData& seqData, TSequentialLineData& rootSEQData)
-    // {
-        // rootSEQData.SetComponent(seqData.GetComponent()); 
-        // rootSEQData.SetAcquisitionID(seqData.GetAcquisitionID()); 
-        // rootSEQData.SetCandidateID(seqData.GetCandidateID());
+    void KT2ROOT::LoadSequentialLineData(const KTSequentialLineData& seqData, TSequentialLineData& rootSEQData)
+    {
+        rootSEQData.SetComponent(seqData.GetComponent()); 
+        rootSEQData.SetAcquisitionID(seqData.GetAcquisitionID()); 
+        rootSEQData.SetCandidateID(seqData.GetCandidateID());
 
-        // rootSEQData.SetStartTimeInRunC(seqData.GetStartTimeInRunC());
-        // rootSEQData.SetEndTimeInRunC(seqData.GetEndTimeInRunC());
-        // rootSEQData.SetStartTimeInAcq(seqData.GetStartTimeInAcq());
-        // rootSEQData.SetStartFrequency(seqData.GetStartFrequency());
-        // rootSEQData.SetEndFrequency(seqData.GetEndFrequency());
-        // rootSEQData.SetInitialSlope(seqData.GetInitialSlope());
-        // rootSEQData.SetSlope(seqData.GetSlope());
+        rootSEQData.SetStartTimeInRunC(seqData.GetStartTimeInRunC());
+        rootSEQData.SetEndTimeInRunC(seqData.GetEndTimeInRunC());
+        rootSEQData.SetStartTimeInAcq(seqData.GetStartTimeInAcq());
+        rootSEQData.SetStartFrequency(seqData.GetStartFrequency());
+        rootSEQData.SetEndFrequency(seqData.GetEndFrequency());
+        rootSEQData.SetSlope(seqData.GetSlope());
 
-        // rootSEQData.SetTotalPower(seqData.GetTotalPower());
-        // rootSEQData.SetTotalTrackSNR(seqData.GetTotalSNR());
-        // rootSEQData.SetTotalTrackNUP(seqData.GetTotalNUP());
-        // rootSEQData.SetTotalWidePower(seqData.GetTotalWidePower());
-        // rootSEQData.SetTotalWideTrackSNR(seqData.GetTotalWideSNR());
-        // rootSEQData.SetTotalWideTrackNUP(seqData.GetTotalWideNUP());
+        rootSEQData.SetTotalPower(seqData.GetTotalPower());
+        rootSEQData.SetTotalTrackSNR(seqData.GetTotalSNR());
+        rootSEQData.SetTotalTrackNUP(seqData.GetTotalNUP());
+        rootSEQData.SetTotalWidePower(seqData.GetTotalWidePower());
+        rootSEQData.SetTotalWideTrackSNR(seqData.GetTotalWideSNR());
+        rootSEQData.SetTotalWideTrackNUP(seqData.GetTotalWideNUP());
 
-        //
-        // Int_t nPoints = (Int_t)seqData.GetLinePoints().size();
-        // TClonesArray* points = rootSEQData.GetPoints();
-        // points->Clear(); points->Expand(nPoints);
-        // Int_t iPoint = 0;
-        // for (KTDiscriminatedPoints::const_iterator pIt = seqData.GetLinePoints().begin(); pIt != seqData.GetLinePoints().end(); ++pIt)
-        // {
-        //     Katydid::TDiscriminatedPoint* point = new((*points)[iPoint]) Katydid::TDiscriminatedPoint;
-        //     point->SetTimeInRunC(pIt->fTimeInRunC);
-        //     point->SetFrequency(pIt->fFrequency);
-        //     point->SetAmplitude(pIt->fAmplitude);
-        //     point->SetTimeInAcq(pIt->fTimeInAcq);
-        //     point->SetMean(pIt->fMean);
-        //     point->SetVariance(pIt->fVariance);
-        //     point->SetNeighborhoodAmplitude(pIt->fNeighborhoodAmplitude);
-        //     ++iPoint;
-        // }
-    //     return;
-    // }
+        
+        Int_t nPoints = (Int_t)seqData.GetLinePoints().size();
+        TClonesArray* points = rootSEQData.GetPoints();
+        points->Clear(); points->Expand(nPoints);
+        Int_t iPoint = 0;
+        for (KTDiscriminatedPoints::const_iterator pIt = seqData.GetLinePoints().begin(); pIt != seqData.GetLinePoints().end(); ++pIt)
+        {
+            Katydid::TDiscriminatedPoint* point = new((*points)[iPoint]) Katydid::TDiscriminatedPoint;
+            point->SetTimeInRunC(pIt->fTimeInRunC);
+            point->SetFrequency(pIt->fFrequency);
+            point->SetAmplitude(pIt->fAmplitude);
+            point->SetTimeInAcq(pIt->fTimeInAcq);
+            point->SetMean(pIt->fMean);
+            point->SetVariance(pIt->fVariance);
+            point->SetNeighborhoodAmplitude(pIt->fNeighborhoodAmplitude);
+            ++iPoint;
+        }
+        return;
+    }
 
     // void KT2ROOT::UnloadSequentialLineData(KTSequentialLineData& seqData, const TSequentialLineData& rootSEQData)
     // {
