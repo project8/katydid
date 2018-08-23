@@ -20,6 +20,7 @@
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTSequentialLineData.hh"
 #include "KTWaterfallCandidateData.hh"
 #include "KTDiscriminatedPoint.hh"
 
@@ -56,6 +57,7 @@ namespace Katydid
                     fFreqCandidateTree(NULL),
                     fWaterfallCandidateTree(NULL),
                     fSparseWaterfallCandidateTree(NULL),
+                    fSequentialLineTree(NULL),
                     fProcessedMPTTree(NULL),
                     fProcessedTrackTree(NULL),
                     fMultiPeakTrackTree(NULL),
@@ -66,6 +68,7 @@ namespace Katydid
                     fFreqCandidateData(),
                     fWaterfallCandidateData(),
                     fSparseWaterfallCandidateDataPtr(NULL),
+                    fSequentialLineDataPtr(NULL),
                     fProcessedTrackDataPtr(NULL),
                     fProcessedMPTDataPtr(NULL),
                     fMultiPeakTrackData(),
@@ -547,6 +550,72 @@ namespace Katydid
         //fProcessedTrackDataPtr = new Cicada::TProcessedTrackData();
 
         fProcessedTrackTree->Branch(fProcessedTrackDataPtr->GetBranchName().c_str(), "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
+
+        return true;
+    }
+
+
+    //*********************
+    // Sequential Line Data
+    //*********************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteSequentialLine(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to sequential line root tree");
+        KTSequentialLineData& ptData = data->Of< KTSequentialLineData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "seqLines", fSequentialLineTree );
+
+        if (fSequentialLineTree == NULL)
+        {
+            if (! SetupSequentialLineTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the sequential line tree! Nothing was written.");
+                return;
+            }
+        }
+        else
+        {
+            KTINFO(publog, "Tree already exists!");
+            fWriter->AddTree( fSequentialLineTree );
+
+            fSequentialLineTree->SetBranchAddress(fSequentialLineDataPtr->GetBranchName().c_str(), &fSequentialLineDataPtr);
+        }
+
+        KT2ROOT::LoadSequentialLineData(ptData, *fSequentialLineDataPtr);
+
+        fSequentialLineTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupSequentialLineTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "seqLines", fSequentialLineTree );
+
+            if( fSequentialLineTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fSequentialLineTree );
+
+                fSequentialLineTree->SetBranchAddress(fSequentialLineDataPtr->GetBranchName().c_str(), &fSequentialLineDataPtr);
+
+                return true;
+            }
+        }
+
+        fSequentialLineTree = new TTree("seqLines", "Sequential lines");
+        if (fSequentialLineTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fSequentialLineTree);
+
+        fSequentialLineTree->Branch(fSequentialLineDataPtr->GetBranchName().c_str(), "Katydid::TSequentialLineData", &fSequentialLineDataPtr);
 
         return true;
     }
