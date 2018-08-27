@@ -63,7 +63,7 @@ namespace Katydid
             fMinFrequency(0.), fMaxFrequency(0.), fFrequencyWidth(0.)
     {
         // this cannot be initialized in the initializer list because ROOT
-        fPoints = new TClonesArray("Katydid::TSparseWaterfallCandidate", 20);
+        fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
     }
 
     TSparseWaterfallCandidateData::TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig) :
@@ -78,6 +78,7 @@ namespace Katydid
     TSparseWaterfallCandidateData::~TSparseWaterfallCandidateData()
     {
         fPoints->Clear();
+        delete fPoints;
     }
 
     TObject* TSparseWaterfallCandidateData::Clone(const char* newname)
@@ -107,7 +108,7 @@ namespace Katydid
             fTotalPower(0.), fTotalTrackSNR(0.), fTotalTrackNUP(0.), fTotalWidePower(0.), fTotalWideTrackSNR(0.), fTotalWideTrackNUP(0.)
     {
         // this cannot be initialized in the initializer list because ROOT
-        fPoints = new TClonesArray("Katydid::TSequentialLineData", 20);
+        fPoints = new TClonesArray("Katydid::TDiscriminatedPoint", 20);
     }
 
     TSequentialLineData::TSequentialLineData(const TSequentialLineData& orig):
@@ -122,6 +123,7 @@ namespace Katydid
     TSequentialLineData::~TSequentialLineData()
     {
         fPoints->Clear();
+        delete fPoints;
     }
 
     TObject* TSequentialLineData::Clone(const char* newname)
