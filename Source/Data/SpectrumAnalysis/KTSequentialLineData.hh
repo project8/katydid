@@ -24,8 +24,11 @@ namespace Katydid
 
         private:
 
-            MEMBERVARIABLE(KTDiscriminatedPoints, LinePoints);
-            MEMBERVARIABLE(std::vector<double>, SNRList);
+
+
+            MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
+            MEMBERVARIABLE(unsigned, CandidateID);
 
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
@@ -35,20 +38,23 @@ namespace Katydid
             MEMBERVARIABLE(double, EndFrequency);
             MEMBERVARIABLE(double, Slope);
             MEMBERVARIABLE(double, WeightedSlopeSum);
-            MEMBERVARIABLE(unsigned, Component);
-            MEMBERVARIABLE(uint64_t, AcquisitionID);
-            MEMBERVARIABLE(unsigned, CandidateID)
             MEMBERVARIABLE(double, TotalPower);
             MEMBERVARIABLE(double, TotalSNR);
             MEMBERVARIABLE(double, TotalNUP);
             MEMBERVARIABLE(double, TotalWidePower);
             MEMBERVARIABLE(double, TotalWideSNR);
             MEMBERVARIABLE(double, TotalWideNUP);
+
+            MEMBERVARIABLEREF(KTDiscriminatedPoints, LinePoints);
+            MEMBERVARIABLEREF(std::vector<double>, SNRList);
+
+            // Pure temporary variables/parameters
             MEMBERVARIABLE(unsigned, NPoints);
             MEMBERVARIABLE(double, SumX);
             MEMBERVARIABLE(double, SumY);
             MEMBERVARIABLE(double, SumXY);
             MEMBERVARIABLE(double, SumXX);
+            MEMBERVARIABLE(unsigned, MinPoints);
 
 
 

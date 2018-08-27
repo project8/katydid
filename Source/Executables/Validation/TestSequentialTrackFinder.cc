@@ -19,6 +19,7 @@ and tests the behavior of the algorithms in this processor.
 #include "KTSequentialLineData.hh"
 #include "KTSequentialLineSNRCut.hh"
 #include "KTSequentialLineNUPCut.hh"
+#include "KTROOTTreeTypeWriterEventAnalysis.hh"
 #include "KTRandom.hh"
 
 
@@ -228,6 +229,18 @@ int main()
     // Print some output
     unsigned ITCPoints = 0;
     std::set< Nymph::KTDataPtr >::const_iterator cIt = itccandidates.begin();
+
+
+// #ifdef ROOT_FOUND
+    // KTROOTTreeWriter writer;
+    // writer.SetFilename("TestSequentialLineData_output.root");
+    // writer.SetFileFlag("recreate");
+
+    // KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
+    // treeTypeWriter.SetWriter(&writer);
+    // KTINFO(testlog, "Processed track saved in file");
+// #endif
+
     while(cIt != itccandidates.end())
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
@@ -240,6 +253,8 @@ int main()
 
         Nymph::KTData data = (*cIt)->Of< Nymph::KTData >();
         nupcut.Apply(data, sqlData);
+        // treeTypeWriter.WriteSequentialLine(&(*cIt)->Of< Nymph::KTDataPtr >());
+
         if (data.GetCutStatus().IsCut() == true)
         {
             cIt = itccandidates.erase(cIt);
@@ -260,6 +275,17 @@ int main()
     }
     KTINFO(testlog, "ITC Candidates after Cut: " << itccandidates.size());
     KTINFO(testlog, "Total ITC Points: "<<ITCPoints);
+
+#ifdef ROOT_FOUND
+    KTROOTTreeWriter writer;
+    writer.SetFilename("TestSequentialLineData_output.root");
+    writer.SetFileFlag("recreate");
+
+    KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
+    treeTypeWriter.SetWriter(&writer);
+    treeTypeWriter.WriteSequentialLine(*itccandidates.begin());
+    KTINFO(testlog, "Processed track saved in file");
+#endif
 
 
     return 0;
