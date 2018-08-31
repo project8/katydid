@@ -5,79 +5,83 @@
 #set (EVENTANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EventAnalysisDict.cxx)
 
 set (EVENTANALYSIS_HEADERFILES
-    KTCollinearTrackClustering.hh
-    KTDataCutter.hh
-    KTDBScan.hh
-    KTDistanceMatrix.hh
-    KTDBScanEventClustering.hh
-    KTDBScanTrackClustering.hh
     CutClasses/KTEventFirstTrackNUPCut.hh
     CutClasses/KTEventFirstTrackPowerCut.hh
     CutClasses/KTEventFirstTrackSNRCut.hh
     CutClasses/KTEventTimeCut.hh
     CutClasses/KTEventTimeInAcqCut.hh
-    KTFrequencyCandidateIdentifier.hh
-    KTIterativeTrackClustering.hh
     CutClasses/KTLinearFitCut.hh
-    KTMultiPeakEventBuilder.hh
-    KTMultiPeakTrackProcessing.hh
-    KTMultiPeakTrackBuilder.hh
     CutClasses/KTMultiPeakTrackEventSequenceIDCut.hh
     CutClasses/KTMultiPeakTrackMultiplicityCut.hh
-    KTMultiSliceClustering.hh
-    KTOverlappingTrackClustering.hh
     CutClasses/KTPowerFitCut.hh
     CutClasses/KTProcessedTrackCut.hh
-    KTQuadraticPhaseShift.hh
-    KTRPClassifier.hh
     CutClasses/KTSequentialLineNUPCut.hh
     CutClasses/KTSequentialLinePointDensityCut.hh
     CutClasses/KTSequentialLineSNRCut.hh
-    KTSidebandCorrection.hh
-    KTSpectrogramCollector.hh
+    CutClasses/KTTrackFreqCut.hh
     CutClasses/KTTrackMainbandCut.hh
     CutClasses/KTTrackMVACut.hh
+    CutClasses/KTTrackTimeCut.hh
+    KTCollinearTrackClustering.hh
+
+    KTDataCutter.hh
+    KTDBScan.hh
+    KTDistanceMatrix.hh
+    KTDBScanEventClustering.hh
+    KTDBScanTrackClustering.hh
+    KTFrequencyCandidateIdentifier.hh
+    KTIterativeTrackClustering.hh
+    KTMultiPeakEventBuilder.hh
+    KTMultiPeakTrackProcessing.hh
+    KTMultiPeakTrackBuilder.hh
+    KTMultiSliceClustering.hh
+    KTOverlappingTrackClustering.hh
+    KTQuadraticPhaseShift.hh
+    KTRPClassifier.hh
+    KTSidebandCorrection.hh
+    KTSpectrogramCollector.hh
     KTTrackProcessingDoubleCuts.hh
     KTTrackProcessingWeightedSlope.hh
-    CutClasses/KTTrackFreqCut.hh
-    CutClasses/KTTrackTimeCut.hh
+
 )
 
 set (EVENTANALYSIS_SOURCEFILES
-    KTCollinearTrackClustering.cc
-    KTDataCutter.cc
-    KTDBScanEventClustering.cc
-    KTDBScanTrackClustering.cc
     CutClasses/KTEventFirstTrackNUPCut.cc
     CutClasses/KTEventFirstTrackPowerCut.cc
     CutClasses/KTEventFirstTrackSNRCut.cc
     CutClasses/KTEventTimeCut.cc
     CutClasses/KTEventTimeInAcqCut.cc
-    KTFrequencyCandidateIdentifier.cc
-    KTIterativeTrackClustering.cc
     CutClasses/KTLinearFitCut.cc
-    KTMultiPeakEventBuilder.cc
-    KTMultiPeakTrackProcessing.cc
-    KTMultiPeakTrackBuilder.cc
     CutClasses/KTMultiPeakTrackEventSequenceIDCut.cc
     CutClasses/KTMultiPeakTrackMultiplicityCut.cc
-    KTMultiSliceClustering.cc
-    KTOverlappingTrackClustering.cc
-    CutClasses/KTPowerFitCut.cc
-    CutClasses/KTProcessedTrackCut.cc
-    KTRPClassifier.cc
-    KTQuadraticPhaseShift.cc
     CutClasses/KTSequentialLineNUPCut.cc
     CutClasses/KTSequentialLinePointDensityCut.cc
     CutClasses/KTSequentialLineSNRCut.cc
-    KTSidebandCorrection.cc
-    KTSpectrogramCollector.cc
+    KTCollinearTrackClustering.cc
+    CutClasses/KTPowerFitCut.cc
+    CutClasses/KTProcessedTrackCut.cc
     CutClasses/KTTrackMainbandCut.cc
     CutClasses/KTTrackMVACut.cc
-    KTTrackProcessingDoubleCuts.cc
-    KTTrackProcessingWeightedSlope.cc
     CutClasses/KTTrackFreqCut.cc
     CutClasses/KTTrackTimeCut.cc
+
+    KTDataCutter.cc
+    KTDBScanEventClustering.cc
+    KTDBScanTrackClustering.cc
+    KTFrequencyCandidateIdentifier.cc
+    KTIterativeTrackClustering.cc
+    KTMultiPeakEventBuilder.cc
+    KTMultiPeakTrackProcessing.cc
+    KTMultiPeakTrackBuilder.cc
+    KTMultiSliceClustering.cc
+    KTOverlappingTrackClustering.cc
+    KTRPClassifier.cc
+    KTQuadraticPhaseShift.cc
+    KTSidebandCorrection.cc
+    KTSpectrogramCollector.cc
+    KTTrackProcessingDoubleCuts.cc
+    KTTrackProcessingWeightedSlope.cc
+
 )
 
 if (ROOT_FOUND)
