@@ -40,6 +40,22 @@ Fixes:
 * Fix 2
     * Details
 
+Version:
+~~~~~~~~
+
+Release Date:
+'''''''''''''
+
+New Features:
+'''''''''''''
+
+* TSequentialLineData ROOT tree writer
+
+Fixes:
+''''''
+
+* Fix 1
+
 Log
 ---
 
