@@ -28,7 +28,7 @@ namespace Katydid
             fRadius(1.),
             fDataCount(0),
             fFilteringDoneSignal("kd-tree", this),
-            fKDTreeSlot("kd-tree", this, &KTDBSCANNoiseFiltering::DoFiltering)
+            fKDTreeSlot("kd-tree", this, &KTDBSCANNoiseFiltering::DoFiltering, &fFilteringDoneSignal)
     {
     }
 
@@ -64,9 +64,6 @@ namespace Katydid
             KTERROR(dnflog, "Error running DBSCAN filtering: " << e.what());
             return false;
         }
-
-        KTDEBUG(dnflog, "Filtering complete");
-        fFilteringDoneSignal();
 
         return true;
     }

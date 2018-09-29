@@ -45,7 +45,7 @@ namespace Katydid
      - "kd-tree": void (KTDataPtr) -- Performs clustering on a KDTree of data; Requires KTKDTreeData.
 
      Signals:
-     - "kd-tree": void () -- Emitted when noise filtering is complete
+     - "kd-tree": void (KTDataPtr) -- Emitted when noise filtering is complete; Guarantees KTKDTreeData
     */
 
     class KTDBSCANNoiseFiltering : public Nymph::KTProcessor
@@ -76,7 +76,7 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSignalOneArg< void > fFilteringDoneSignal;
+            Nymph::KTSignalData fFilteringDoneSignal;
 
             //***************
             // Slots
