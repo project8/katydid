@@ -58,7 +58,8 @@ namespace Katydid
                     fNSlopePoints(10),
                     fMinBin(0),
                     fMaxBin(1),
-                    fBinWidth(0.0),
+                    fFreqBinWidth(0.0),
+                    fTimeBinWidth(0.0),
                     fMinFrequency(0.),
                     fMaxFrequency(1.),
                     fSlopeMethod(slopeMethod::weighted_first_point_ref),
@@ -219,7 +220,8 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::InitializeWithHeader(KTEggHeader& header)
     {
-        fBinWidth = header.GetAcquisitionRate() / header.GetChannelHeader(0)->GetSliceSize();
+        fTimeBinWidth = 1. / header.GetAcquisitionRate();
+        fFreqBinWidth = 1. / (fTimeBinWidth * header.GetChannelHeader(0)->GetSliceSize());
 
         return true;
     }
@@ -255,7 +257,7 @@ namespace Katydid
             //KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
             //fReferenceThreshold = (*splineImp)((fMinBin+fMaxBin)/2)*fSNRPowerThreshold;
 
-            fBinWidth = powerSpectrum.GetBinWidth();
+            fFreqBinWidth = powerSpectrum.GetBinWidth();
 
             double newTimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
             double newTimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
@@ -288,17 +290,17 @@ namespace Katydid
         KTDEBUG(stflog, "Initial slope is: " << fInitialSlope);
 
         unsigned nComponents = 1;
-        fBinWidth = (double) slHeader.GetSampleRate() / (double) slHeader.GetRawSliceSize();
-        KTDEBUG(stflog, "Bin Width " << fBinWidth);
+        fFreqBinWidth = (double) slHeader.GetSampleRate() / (double) slHeader.GetRawSliceSize();
+        KTDEBUG(stflog, "Frequency bin width " << fFreqBinWidth);
 
         if (fCalculateMinBin)
         {
-            SetMinBin((unsigned) ( fMinFrequency / fBinWidth ) );
+            SetMinBin((unsigned) ( fMinFrequency / fFreqBinWidth ) );
             KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin((unsigned) ( fMaxFrequency / fBinWidth ) );
+            SetMaxBin((unsigned) ( fMaxFrequency / fFreqBinWidth ) );
             KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
         }
 
@@ -344,16 +346,16 @@ namespace Katydid
         KTDEBUG(stflog, "Initial slope is: " << fInitialSlope);
 
         unsigned nComponents = 1;
-        KTDEBUG(stflog, "Bin Width " << fBinWidth);
+        KTDEBUG(stflog, "Frequency bin Width " << fFreqBinWidth);
 
         if (fCalculateMinBin)
         {
-            SetMinBin((unsigned) ( fMinFrequency / fBinWidth ) );
+            SetMinBin((unsigned) ( fMinFrequency / fFreqBinWidth ) );
             KTDEBUG(stflog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin((unsigned) ( fMaxFrequency / fBinWidth ) );
+            SetMaxBin((unsigned) ( fMaxFrequency / fFreqBinWidth ) );
             KTDEBUG(stflog, "Maximum bin set to " << fMaxBin);
         }
 
@@ -363,7 +365,7 @@ namespace Katydid
         // So we define a threshold for delta-t, because time values might not be the exact same due to floating-point uncertainty.
         // We'll use the bin width, which is tiny relative to the slice size and stride.
         // 3-times the bin width should be large enough compared to uncertainty on the slice time and smaller than any reasonable stride.
-        double deltaTThreshold = 3. * fBinWidth;
+        double deltaTThreshold = 3. * fTimeBinWidth;
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -527,7 +529,7 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::LoopOverHighPowerPoints(STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
     {
-        KTDEBUG(stflog, "Time and Frequency tolerances are "<<fTimeGapTolerance<<" "<<fFrequencyAcceptance);
+        KTDEBUG(stflog, "Adding points to lines; Time and Frequency tolerances are " << fTimeGapTolerance<< "s and " << fFrequencyAcceptance << "Hz");
 
         double newFreq = 0.0;
         bool match;
@@ -819,7 +821,7 @@ namespace Katydid
             wSum +=slice(frequencyBin+iBin);
         }
         newFrequencyBin = unsigned(weightedBin/wSum);
-        newFrequency = fBinWidth * ((weightedBin/wSum)+0.5); //((double)newFrequencyBin + 0.5);
+        newFrequency = fFreqBinWidth * ((weightedBin/wSum)+0.5); //((double)newFrequencyBin + 0.5);
 
         frequency = newFrequency;
         frequencyBin = newFrequencyBin;

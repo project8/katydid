@@ -163,7 +163,8 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, MinBin);
             MEMBERVARIABLE(bool, CalculateMinBin);
             MEMBERVARIABLE(unsigned, MaxBin);
-            MEMBERVARIABLE(double, BinWidth);
+            MEMBERVARIABLE(double, FreqBinWidth);
+            MEMBERVARIABLE(double, TimeBinWidth);
             MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(double, MinFrequency);
             MEMBERVARIABLE(double, MaxFrequency);
