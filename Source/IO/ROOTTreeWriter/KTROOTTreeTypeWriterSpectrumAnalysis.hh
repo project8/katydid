@@ -49,12 +49,14 @@ namespace Katydid
         UInt_t fBinInSlice;
         ULong64_t fSliceNumber;
         Double_t fNNDistance;
-        UInt_t fKNNWithin0p22;
-        UInt_t fKNNWithin0p32;
-        UInt_t fKNNWithin0p45;
-        UInt_t fKNNWithin0p7;
-        UInt_t fKNNWithin1p0;
-        UInt_t fKNNWithin1p4;
+        UInt_t fKNNWithin1;
+        UInt_t fKNNWithin2;
+        UInt_t fKNNWithin3;
+        UInt_t fKNNWithin4;
+        UInt_t fKNNWithin5;
+        UInt_t fKNNWithin6;
+        UInt_t fKNNWithin7;
+        UInt_t fKNNWithin8;
     };
 
     struct TAmplitudeDistributionData

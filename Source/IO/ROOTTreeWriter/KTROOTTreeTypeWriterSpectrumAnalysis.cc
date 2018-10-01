@@ -196,18 +196,22 @@ namespace Katydid
                     //KTWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
                     //       << '\t' << neighbors[0] << ": " << points[neighbors[0]].fCoords[0] << ", " << points[neighbors[0]].fCoords[1] << '\n'
                     //       << '\t' << neighbors[1] << ": " << points[neighbors[1]].fCoords[0] << ", " << points[neighbors[1]].fCoords[1]);
-                    KTKDTreeData::TreeIndex::Neighbors neighbors2 = index->NearestNeighborsByRadius(pid, 0.22);
-                    fKDTreePointData.fKNNWithin0p22 = neighbors2.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors3 = index->NearestNeighborsByRadius(pid, 0.32);
-                    fKDTreePointData.fKNNWithin0p32 = neighbors3.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors4 = index->NearestNeighborsByRadius(pid, 0.45);
-                    fKDTreePointData.fKNNWithin0p45 = neighbors4.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors5 = index->NearestNeighborsByRadius(pid, 0.7);
-                    fKDTreePointData.fKNNWithin0p7 = neighbors5.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors6 = index->NearestNeighborsByRadius(pid, 1.);
-                    fKDTreePointData.fKNNWithin1p0 = neighbors6.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors7 = index->NearestNeighborsByRadius(pid, 1.4);
-                    fKDTreePointData.fKNNWithin1p4 = neighbors7.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors2 = index->NearestNeighborsByRadius(pid, 1.);
+                    fKDTreePointData.fKNNWithin1 = neighbors2.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors3 = index->NearestNeighborsByRadius(pid, 2.);
+                    fKDTreePointData.fKNNWithin2 = neighbors3.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors4 = index->NearestNeighborsByRadius(pid, 3.);
+                    fKDTreePointData.fKNNWithin3 = neighbors4.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors5 = index->NearestNeighborsByRadius(pid, 4.);
+                    fKDTreePointData.fKNNWithin4 = neighbors5.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors6 = index->NearestNeighborsByRadius(pid, 5.);
+                    fKDTreePointData.fKNNWithin5 = neighbors6.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors7 = index->NearestNeighborsByRadius(pid, 6.);
+                    fKDTreePointData.fKNNWithin6 = neighbors7.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors8 = index->NearestNeighborsByRadius(pid, 7.);
+                    fKDTreePointData.fKNNWithin7 = neighbors8.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors9 = index->NearestNeighborsByRadius(pid, 8.);
+                    fKDTreePointData.fKNNWithin8 = neighbors9.size();
 
                     fKDTreeTree->Fill();
                     ++pid;
@@ -237,12 +241,14 @@ namespace Katydid
                 fKDTreeTree->SetBranchAddress("NoiseFlag", &fKDTreePointData.fNoiseFlag);
                 fKDTreeTree->SetBranchAddress("BinInSlice", &fKDTreePointData.fBinInSlice);
                 fKDTreeTree->SetBranchAddress("NNDistance", &fKDTreePointData.fNNDistance);
-                fKDTreeTree->SetBranchAddress("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22);
-                fKDTreeTree->SetBranchAddress("KNNWithin0p32", &fKDTreePointData.fKNNWithin0p32);
-                fKDTreeTree->SetBranchAddress("KNNWithin0p45", &fKDTreePointData.fKNNWithin0p45);
-                fKDTreeTree->SetBranchAddress("KNNWithin0p7", &fKDTreePointData.fKNNWithin0p7);
-                fKDTreeTree->SetBranchAddress("KNNWithin1p0", &fKDTreePointData.fKNNWithin1p0);
-                fKDTreeTree->SetBranchAddress("KNNWithin1p4", &fKDTreePointData.fKNNWithin1p4);
+                fKDTreeTree->SetBranchAddress("KNNWithin1", &fKDTreePointData.fKNNWithin1);
+                fKDTreeTree->SetBranchAddress("KNNWithin2", &fKDTreePointData.fKNNWithin2);
+                fKDTreeTree->SetBranchAddress("KNNWithin3", &fKDTreePointData.fKNNWithin3);
+                fKDTreeTree->SetBranchAddress("KNNWithin4", &fKDTreePointData.fKNNWithin4);
+                fKDTreeTree->SetBranchAddress("KNNWithin5", &fKDTreePointData.fKNNWithin5);
+                fKDTreeTree->SetBranchAddress("KNNWithin6", &fKDTreePointData.fKNNWithin6);
+                fKDTreeTree->SetBranchAddress("KNNWithin7", &fKDTreePointData.fKNNWithin7);
+                fKDTreeTree->SetBranchAddress("KNNWithin8", &fKDTreePointData.fKNNWithin8);
 
                 return true;
             }
@@ -265,12 +271,14 @@ namespace Katydid
         fKDTreeTree->Branch("NoiseFlag", &fKDTreePointData.fNoiseFlag, "fNoiseFlag/O");
         fKDTreeTree->Branch("BinInSlice", &fKDTreePointData.fBinInSlice, "fBinInSlice/i");
         fKDTreeTree->Branch("NNDistance", &fKDTreePointData.fNNDistance, "fNNDistance/d");
-        fKDTreeTree->Branch("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22, "fKNNWithin0p22/i");
-        fKDTreeTree->Branch("KNNWithin0p32", &fKDTreePointData.fKNNWithin0p32, "fKNNWithin0p32/i");
-        fKDTreeTree->Branch("KNNWithin0p45", &fKDTreePointData.fKNNWithin0p45, "fKNNWithin0p45/i");
-        fKDTreeTree->Branch("KNNWithin0p7", &fKDTreePointData.fKNNWithin0p7, "fKNNWithin0p7/i");
-        fKDTreeTree->Branch("KNNWithin1p0", &fKDTreePointData.fKNNWithin1p0, "fKNNWithin1p0/i");
-        fKDTreeTree->Branch("KNNWithin1p4", &fKDTreePointData.fKNNWithin1p4, "fKNNWithin1p4/i");
+        fKDTreeTree->Branch("KNNWithin1", &fKDTreePointData.fKNNWithin1, "fKNNWithin1/i");
+        fKDTreeTree->Branch("KNNWithin2", &fKDTreePointData.fKNNWithin2, "fKNNWithin2/i");
+        fKDTreeTree->Branch("KNNWithin3", &fKDTreePointData.fKNNWithin3, "fKNNWithin3/i");
+        fKDTreeTree->Branch("KNNWithin4", &fKDTreePointData.fKNNWithin4, "fKNNWithin4/i");
+        fKDTreeTree->Branch("KNNWithin5", &fKDTreePointData.fKNNWithin5, "fKNNWithin5/i");
+        fKDTreeTree->Branch("KNNWithin6", &fKDTreePointData.fKNNWithin6, "fKNNWithin6/i");
+        fKDTreeTree->Branch("KNNWithin7", &fKDTreePointData.fKNNWithin7, "fKNNWithin7/i");
+        fKDTreeTree->Branch("KNNWithin8", &fKDTreePointData.fKNNWithin8, "fKNNWithin8/i");
 
         return true;
     }
