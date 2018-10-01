@@ -149,7 +149,7 @@ namespace Katydid
     template< typename DistanceData >
     bool KTDBSCAN< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
     {
-        KTWARN(dbslog_h, "Starting DBSCAN; min points: " << fMinPoints << "; radius: " << fRadius);
+        KTDEBUG(dbslog_h, "Starting DBSCAN; min points: " << fMinPoints << "; radius: " << fRadius);
         PointId nPoints = dist.size();
 
         InitializeArrays(nPoints, results);
