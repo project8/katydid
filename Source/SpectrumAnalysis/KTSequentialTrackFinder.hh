@@ -212,9 +212,10 @@ namespace Katydid
             //***************
 
         private:
-            Nymph::KTSlotDataThreeTypes < KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimPowerSlot;
-            Nymph::KTSlotDataTwoTypes < KTSliceHeader, KTDiscriminatedPoints1DData > fDiscrimSlot;
-            Nymph::KTSlotDataOneType < KTKDTreeData > fDiscrimKDTreeSlot;
+            Nymph::KTSlotDataOneType< KTEggHeader > fHeaderSlot;
+            Nymph::KTSlotDataThreeTypes< KTSliceHeader, KTPowerSpectrumData, KTDiscriminatedPoints1DData > fDiscrimPowerSlot;
+            Nymph::KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fDiscrimSlot;
+            Nymph::KTSlotDataOneType< KTKDTreeData > fDiscrimKDTreeSlot;
             Nymph::KTSlotDone fDoneSlot;
 
     };

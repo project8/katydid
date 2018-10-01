@@ -81,6 +81,7 @@ namespace Katydid
                     fCalcSlope(&KTSequentialTrackFinder::CalculateSlopeFirstRef),
                     fLineSignal("seq-cand", this),
                     fClusterDoneSignal("clustering-done", this),
+                    fHeaderSlot("header", this, &KTSequentialTrackFinder::InitializeWithHeader),
                     fDiscrimPowerSlot("disc-1d-ps", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
                     fDiscrimSlot("disc-1d", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromSlice),
                     fDiscrimKDTreeSlot("kd-tree", this, &KTSequentialTrackFinder::CollectDiscrimPointsFromKDTree),
@@ -218,7 +219,7 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::InitializeWithHeader(KTEggHeader& header)
     {
-        fBinWidth = 1. / header.GetAcquisitionRate();
+        fBinWidth = header.GetAcquisitionRate() / header.GetChannelHeader(0)->GetSliceSize();
 
         return true;
     }
