@@ -262,7 +262,7 @@ namespace Katydid
         fKDTreeTree->Branch("TimeInRunC", &fKDTreePointData.fTimeInRunC, "fTimeInRunC/d");
         fKDTreeTree->Branch("Frequency", &fKDTreePointData.fFrequency, "fFrequency/d");
         fKDTreeTree->Branch("Amplitude", &fKDTreePointData.fAmplitude, "fAmplitude/d");
-        fKDTreeTree->Branch("NoiseFlag", &fKDTreePointData.fNoiseFlag, "fNoiseFlag/d");
+        fKDTreeTree->Branch("NoiseFlag", &fKDTreePointData.fNoiseFlag, "fNoiseFlag/O");
         fKDTreeTree->Branch("BinInSlice", &fKDTreePointData.fBinInSlice, "fBinInSlice/i");
         fKDTreeTree->Branch("NNDistance", &fKDTreePointData.fNNDistance, "fNNDistance/d");
         fKDTreeTree->Branch("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22, "fKNNWithin0p22/i");
