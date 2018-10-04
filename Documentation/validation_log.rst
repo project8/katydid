@@ -43,6 +43,33 @@ Fixes:
 Log
 ---
 
+Version: Upcoming
+~~~~~~~~~~~~~~~~~
+
+Release Date: TBD
+'''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* New processor: KTDBSCANNoiseFilter
+    * Uses DBSCAN algorithm to filter noise from a sparse spectrogram
+    * Validated with new test program, TestDBSCANNoiseFiltering
+* New slot in KTSequentialTrackFinder: `kd-tree`
+    * Validated by running the STF with an example data file
+* Added variance-histogram-writing to the Basic ROOT Writer
+    * Validated by testing the writer on real data
+* Added `proc-track` slot to the Basic ROOT Writer
+    * Validated by outputting some tracks and plotting on top of sparse spectrogram data
+* Added `kd-tree-scaled` slot to the ROOT Tree Writer to scale time and frequency values to their original units
+    * Validated by outputting a KD-Tree and seeing that tracks fit from that data are correctly plotted on top, so the units are right.
+* Updated nanoflann to unreleased v1.3.0
+
+Fixes:
+''''''
+
+* Everything named with "DBScan" is renamed to "DBSCAN"
+
 Version: 2.13.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
