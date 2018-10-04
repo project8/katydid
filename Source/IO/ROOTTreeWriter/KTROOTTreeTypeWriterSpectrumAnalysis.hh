@@ -3,6 +3,11 @@
  *
  *  Created on: May 21, 2013
  *      Author: nsoblath
+ *
+ *  KDTreeData can be written either with "kd-tree" or "kd-tree-scaled".
+ *  The latter scales the time and frequency values back to their original units.
+ *  Both functions share the same TTree, so only one should be used in a given writer instance.
+ *  To write to both, please use two RTW instances.
  */
 
 #ifndef KTROOTTREETYPEWRITERSPECTRUMANALYSIS_HH_
@@ -20,6 +25,7 @@ class TTree;
 
 namespace Katydid
 {
+    class KTKDTreeData;
     
     struct TDiscriminatedPoints1DData
     {
@@ -88,6 +94,7 @@ namespace Katydid
         public:
             void WriteDiscriminatedPoints1D(Nymph::KTDataPtr data);
             void WriteKDTree(Nymph::KTDataPtr data);
+            void WriteKDTreeScaled(Nymph::KTDataPtr data);
             void WriteAmplitudeDistributions(Nymph::KTDataPtr data);
             void WriteHoughData(Nymph::KTDataPtr data);
 
@@ -102,6 +109,8 @@ namespace Katydid
             bool SetupKDTreeTree();
             bool SetupAmplitudeDistributionTree();
             bool SetupHoughTree();
+
+            void DoWriteKDTree(KTKDTreeData& kdtData, double xScaling, double yScaling);
 
             TTree* fDiscPoints1DTree;
             TTree* fKDTreeTree;

@@ -56,6 +56,7 @@ namespace Katydid
     {
         fWriter->RegisterSlot("disc-1d", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteDiscriminatedPoints1D);
         fWriter->RegisterSlot("kd-tree", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTree);
+        fWriter->RegisterSlot("kd-tree-scaled", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTreeScaled);
         fWriter->RegisterSlot("amp-dist", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteAmplitudeDistributions);
         fWriter->RegisterSlot("hough", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData);
         return;
@@ -156,9 +157,25 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTree(Nymph::KTDataPtr data)
     {
-        static Long64_t lastSlice = -1;
-
         KTKDTreeData& kdtData = data->Of< KTKDTreeData >();
+
+        DoWriteKDTree(kdtData, 1., 1.);
+
+        return;
+    }
+
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTreeScaled(Nymph::KTDataPtr data)
+    {
+        KTKDTreeData& kdtData = data->Of< KTKDTreeData >();
+
+        DoWriteKDTree(kdtData, kdtData.GetXScaling(), kdtData.GetYScaling());
+
+        return;
+    }
+
+    void KTROOTTreeTypeWriterSpectrumAnalysis::DoWriteKDTree(KTKDTreeData& kdtData, double xScaling, double yScaling)
+    {
+        static Long64_t lastSlice = -1;
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -183,8 +200,8 @@ namespace Katydid
                 {
                     if ((int64_t)it->fSliceNumber > lastSliceThisData) lastSliceThisData = (int64_t)it->fSliceNumber;
                     fKDTreePointData.fSlice = it->fSliceNumber;
-                    fKDTreePointData.fTimeInRunC = it->fCoords[0];
-                    fKDTreePointData.fFrequency = it->fCoords[1];
+                    fKDTreePointData.fTimeInRunC = it->fCoords[0] * xScaling;
+                    fKDTreePointData.fFrequency = it->fCoords[1] * yScaling;
                     fKDTreePointData.fAmplitude = it->fAmplitude;
                     fKDTreePointData.fMean = it->fMean;
                     fKDTreePointData.fVariance = it->fVariance;
