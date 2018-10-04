@@ -105,6 +105,7 @@ namespace Katydid
 
             static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");
 
+
             //***************
             // Power Spectrum
             //***************
