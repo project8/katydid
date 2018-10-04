@@ -134,6 +134,7 @@ namespace Katydid
         newPoint.fSliceNumber = slHeader.GetSliceNumber();
         if (newPoint.fSliceNumber > fTreeData.GetLastSlice()) fTreeData.SetLastSlice(newPoint.fSliceNumber);
         newPoint.fCoords[0] = fInvScalingX * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
+        newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
@@ -142,7 +143,6 @@ namespace Katydid
             {
                 newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
-                newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
                 newPoint.fBinInSlice = pIt->first;
                 newPoint.fMean = pIt->second.fMean;
                 newPoint.fVariance = pIt->second.fVariance;
