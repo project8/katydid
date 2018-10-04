@@ -35,7 +35,8 @@ namespace Katydid
     static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEventAnalysis > sBRTWCandidatesRegistrar;
 
     KTBasicROOTTypeWriterEventAnalysis::KTBasicROOTTypeWriterEventAnalysis() :
-            KTBasicROOTTypeWriter()
+            KTBasicROOTTypeWriter(),
+            fTrackList(nullptr)
     {
     }
 
@@ -46,10 +47,39 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEventAnalysis::RegisterSlots()
     {
+        fWriter->RegisterSlot("proc-track", this, &KTBasicROOTTypeWriterEventAnalysis::WriteProcTrack);
         fWriter->RegisterSlot("track-and-swfc", this, &KTBasicROOTTypeWriterEventAnalysis::WriteProcTrackAndSWFC);
 
         return;
     }
+
+
+    //************************
+    // Processed Track
+    //************************
+    void KTBasicROOTTypeWriterEventAnalysis::WriteProcTrack(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fTrackList == nullptr) fTrackList = new TList();
+
+        KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
+
+        // line for track
+        TLine* trackLine = new TLine(ptData.GetStartTimeInRunC(), ptData.GetStartFrequency(), ptData.GetEndTimeInRunC(), ptData.GetEndFrequency());
+        trackLine->SetLineColor(2);
+        trackLine->SetLineWidth(1);
+        KTDEBUG(publog, "Line created: (" << trackLine->GetX1() << ", " << trackLine->GetY1() << "), --> (" << trackLine->GetX2() << ", " << trackLine->GetY2() << ")");
+
+        fTrackList->Add(trackLine);
+
+        fWriter->GetFile()->WriteTObject(fTrackList, "proc-tracks", "SingleKey Overwrite");
+
+        return;
+    }
+
 
 
     //************************
