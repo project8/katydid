@@ -34,8 +34,8 @@ namespace Katydid
             KTDiscriminatedPoint(newTimeInRunC, pointIt->second.fAbscissa, pointIt->second.fOrdinate, newTimeInAcq, pointIt->second.fMean, pointIt->second.fVariance, pointIt->second.fNeighborhoodAmplitude, pointIt->first)
     {}
 
-    KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint(KTKDTreeData::SetOfPoints::const_iterator& pointIt, double timeInRunC, double frequency) :
-            KTDiscriminatedPoint(timeInRunC, frequency, pointIt->fAmplitude, pointIt->fTimeInAcq, pointIt->fMean, pointIt->fVariance, pointIt->fNeighborhoodAmplitude, pointIt->fBinInSlice)
+    KTSequentialTrackFinder::STFDiscriminatedPoint::STFDiscriminatedPoint(KTKDTreeData::SetOfPoints::const_iterator& pointIt, double time, double frequency, double timeScaling) :
+            KTDiscriminatedPoint(time, frequency, pointIt->fAmplitude, pointIt->fTimeInAcq * timeScaling, pointIt->fMean, pointIt->fVariance, pointIt->fNeighborhoodAmplitude, pointIt->fBinInSlice)
     {}
 
 
@@ -382,7 +382,8 @@ namespace Katydid
                 double time = pointIt->fCoords[0] * kdTreeData.GetXScaling();
                 double freq = pointIt->fCoords[1] * kdTreeData.GetYScaling();
 
-                if (time - lastTime > deltaTThreshold)  // this indicates we've moved onto the next slice
+                // check if we've moved onto the next slice and if we have points collected already
+                if (time - lastTime > deltaTThreshold && ! points.empty())
                 {
                     // this point is on the next slice; process these points then reset the points set
                     KTDEBUG( stflog, "Collected " << points.size() << " points");
@@ -397,7 +398,7 @@ namespace Katydid
                 // check if it's not noise, and that we're within the frequency bounds
                 if (! pointIt->fNoiseFlag && freq > fMinFrequency && freq < fMaxFrequency)
                 {
-                    points.emplace(pointIt, time, freq);
+                    points.emplace(pointIt, time, freq, kdTreeData.GetXScaling());
                 }
 
                 lastTime = time;
@@ -529,15 +530,15 @@ namespace Katydid
 
     bool KTSequentialTrackFinder::LoopOverHighPowerPoints(STFDiscriminatedPowerSortedPoints& points, uint64_t acqID, unsigned component)
     {
-        KTDEBUG(stflog, "Adding points to lines; Time and Frequency tolerances are " << fTimeGapTolerance<< "s and " << fFrequencyAcceptance << "Hz");
+        KTDEBUG(stflog, "Adding " << points.size() << " points to lines; Time and Frequency tolerances are " << fTimeGapTolerance<< "s and " << fFrequencyAcceptance << "Hz");
 
         double newFreq = 0.0;
         bool match;
 
         //loop in reverse order (by power)
-        for(STFDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
+        for (STFDiscriminatedPowerSortedPoints::reverse_iterator pointIt = points.rbegin(); pointIt != points.rend(); ++pointIt)
         {
-            //KTINFO( stflog, "Comparing point to lines: bin "<<pointIt->fBinInSlice<<", power "<<pointIt->fAmplitude);
+            //KTWARN( stflog, "Comparing point to lines: time: " << pointIt->fTimeInRunC << ", freq: " << pointIt->fFrequency << ", bin: " << pointIt->fBinInSlice << ", power: " << pointIt->fAmplitude);
             newFreq = pointIt->fFrequency;
 
             // Need to think about how to prevent visiting the same neighborhood twice
@@ -559,16 +560,18 @@ namespace Katydid
                 // loop over active lines, in order of earliest start time
                 // dont need to sort them because they are already sorted by the slice of the line's start point
 
-                //KTDEBUG(stflog, "Currently there are N active Lines "<<fActiveLines.size());
+                //KTWARN(stflog, "Currently there are " << fActiveLines.size() << " active Lines ");
 
                 std::vector< KTSequentialLineData >::iterator lineIt = fActiveLines.begin();
                 while( lineIt != fActiveLines.end())
                 {
                     // Check whether line should still be active. If not then check whether the line is a valid new track candidate.
-                    if (lineIt->GetEndTimeInRunC() < pointIt->fTimeInRunC-fTimeGapTolerance)
+                    if (lineIt->GetEndTimeInRunC() < pointIt->fTimeInRunC - fTimeGapTolerance)
                     {
+                        //KTWARN(stflog, "Gap between end of a line and the current time-in-run (" << pointIt->fTimeInRunC - lineIt->GetEndTimeInRunC()  << ") is larger than the gap tolerance; evaluating line");
                         if (lineIt->GetNPoints() >= fMinPoints)
                         {
+                            //KTWARN(stflog, "    line had more than the minimum number of points (" << lineIt->GetNPoints() << ")");
                             lineIt->LineSNRTrimming(fTrimmingThreshold, fMinPoints);
 
                             if (lineIt->GetNPoints() >= fMinPoints and lineIt->GetSlope() >= fMinSlope)
@@ -577,7 +580,16 @@ namespace Katydid
                                 (this->*fCalcSlope)(*lineIt);
                                 this->EmitPreCandidate(*lineIt);
                             }
+                            //else
+                            //{
+                            //    KTWARN(stflog, "    line cut after SNR trimming");
+                            //    KTWARN(stflog, "    npoints: " << lineIt->GetNPoints() << "; slope: " << lineIt->GetSlope());
+                           // }
                         }
+                        //else
+                        //{
+                        //    KTWARN(stflog, "    line was cut because it didn't have enough points (" << lineIt->GetNPoints() << ")");
+                        //}
                         // in any case, this line should be removed from the vector with active lines
                         lineIt = fActiveLines.erase(lineIt);
                     }
@@ -585,13 +597,16 @@ namespace Katydid
                     {
                         // Under these conditions a point will be added to a line
                         bool timeCondition = pointIt->fTimeInRunC > lineIt->GetEndTimeInRunC();
+                        //KTWARN(stflog, "time condition: " << timeCondition << " = " << pointIt->fTimeInRunC << " > " << lineIt->GetEndTimeInRunC() );
                         bool anyPointCondition = std::abs(pointIt->fFrequency - (lineIt->GetEndFrequency() + lineIt->GetSlope()*(pointIt->fTimeInAcq - lineIt->GetEndTimeInAcq()))) < fFrequencyAcceptance;
+                        //KTWARN(stflog, "any point condition: " << anyPointCondition << " = | " << pointIt->fFrequency << " - ( " << lineIt->GetEndFrequency() << " + " << lineIt->GetSlope() << " * ( " << pointIt->fTimeInAcq << " - " << lineIt->GetEndTimeInAcq() << " ))| < " << fFrequencyAcceptance);
                         bool secondPointCondition = std::abs(pointIt->fFrequency - (lineIt->GetEndFrequency() + lineIt->GetSlope()*(pointIt->fTimeInAcq - lineIt->GetEndTimeInAcq()))) < fInitialFrequencyAcceptance;
+                        //KTWARN(stflog, "second point condition: " << secondPointCondition << " = |" << pointIt->fFrequency << " - ( " << lineIt->GetEndFrequency() << " + " << lineIt->GetSlope() << " * ( " << pointIt->fTimeInAcq << " - " << lineIt->GetEndTimeInAcq() << " ))| < " << fInitialFrequencyAcceptance);
 
                         // if point matches this line: insert
                         if (timeCondition and anyPointCondition)
                         {
-                            KTDEBUG(stflog, "Matching conditions fullfilled");
+                            KTDEBUG(stflog, "Matching conditions fulfilled");
                             lineIt->AddPoint(*pointIt);
                             (this->*fCalcSlope)(*lineIt);
                             match = true;
@@ -617,7 +632,7 @@ namespace Katydid
                 // if point was not picked up
                 if (match == false)
                 {
-                    //KTDEBUG(stflog, "Starting new line");
+                    //KTWARN(stflog, "Starting new line");
 
                     KTSequentialLineData newLine;
                     newLine.SetSlope( fInitialSlope );
