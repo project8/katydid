@@ -29,7 +29,9 @@ namespace Katydid
      Available configuration values:
      - "min-average-snr": double -- minimum snr per unit length in the first track for the event to pass the cut
      - "min-total-snr": double -- minimum total snr in the first track for the event to pass the cut
+     - "min-max-track-snr": doublr -- minimum maximum snr in the first track for the event to pass the cut
      - "wide-or-narrow": string -- decides whether to use "wide" SNR or "narrow" SNR (default: "wide")
+     - "time-or-bin-average": string -- decides whether to divide total NUP by track time length or track NTrackBins
     */
 
     class KTEventFirstTrackSNRCut : public Nymph::KTCutOneArg< KTMultiTrackEventData >
@@ -40,6 +42,11 @@ namespace Katydid
         {
             wide,
             narrow
+        };
+        enum class time_or_bin_average
+        {
+            time,
+            bin
         };
 
     public:
@@ -56,7 +63,9 @@ namespace Katydid
 
         MEMBERVARIABLE(double, MinTotalSNR);
         MEMBERVARIABLE(double, MinAverageSNR);
+        MEMBERVARIABLE(double, MinMaxSNR);
         MEMBERVARIABLE(wide_or_narrow, WideOrNarrow);
+        MEMBERVARIABLE(time_or_bin_average, TimeOrBinAverage);
 
     public:
         bool Apply(Nymph::KTData& data, KTMultiTrackEventData& eventData);

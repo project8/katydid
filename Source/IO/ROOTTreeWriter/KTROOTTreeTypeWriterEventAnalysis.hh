@@ -196,6 +196,7 @@ namespace Katydid
             void WriteFrequencyCandidates(Nymph::KTDataPtr data);
             void WriteWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
+            void WriteSequentialLine(Nymph::KTDataPtr data);
             void WriteProcessedMPT(Nymph::KTDataPtr data);
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
@@ -208,6 +209,7 @@ namespace Katydid
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
+            TTree* GetSequentialLineTree() const;
             TTree* GetProcessedMPTTree() const;
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
@@ -220,6 +222,7 @@ namespace Katydid
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
+            bool SetupSequentialLineTree();
             bool SetupProcessedMPTTree();
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
@@ -231,6 +234,7 @@ namespace Katydid
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
+            TTree* fSequentialLineTree;
             TTree* fProcessedMPTTree;
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
@@ -242,6 +246,7 @@ namespace Katydid
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData* fSparseWaterfallCandidateDataPtr;
+            TSequentialLineData* fSequentialLineDataPtr;
             Cicada::TProcessedTrackData* fProcessedTrackDataPtr;
             Cicada::TProcessedMPTData* fProcessedMPTDataPtr;
             TMultiPeakTrackData fMultiPeakTrackData;
@@ -265,6 +270,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetSparseWaterfallCandidateTree() const
     {
         return fSparseWaterfallCandidateTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetSequentialLineTree() const
+    {
+        return fSequentialLineTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedMPTTree() const

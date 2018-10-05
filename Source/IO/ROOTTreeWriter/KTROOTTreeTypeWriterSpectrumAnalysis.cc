@@ -124,6 +124,9 @@ namespace Katydid
                 fDiscPoints1DTree->SetBranchAddress("Abscissa", &fDiscPoints1DData.fAbscissa);
                 fDiscPoints1DTree->SetBranchAddress("Ordinate", &fDiscPoints1DData.fOrdinate);
                 fDiscPoints1DTree->SetBranchAddress("Threshold", &fDiscPoints1DData.fThreshold);
+                fDiscPoints1DTree->SetBranchAddress("Mean", &fDiscPoints1DData.fMean);
+                fDiscPoints1DTree->SetBranchAddress("Variance", &fDiscPoints1DData.fVariance);
+                fDiscPoints1DTree->SetBranchAddress("NeighborhoodAmplitude", &fDiscPoints1DData.fNeighborhoodAmplitude);
                 
                 return true;
             }
@@ -146,7 +149,10 @@ namespace Katydid
         fDiscPoints1DTree->Branch("Abscissa", &fDiscPoints1DData.fAbscissa, "fAbscissa/d");
         fDiscPoints1DTree->Branch("Ordinate", &fDiscPoints1DData.fOrdinate, "fOrdinate/d");
         fDiscPoints1DTree->Branch("Threshold", &fDiscPoints1DData.fThreshold, "fThreshold/d");
-        //fDiscPoints1DTree->Branch("freqAnalysis", &fDiscPoints1DData.fComponent, "fComponent/s:fSlice/l:fTimeInRun/d:fThreshold/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
+        fDiscPoints1DTree->Branch("Mean", &fDiscPoints1DData.fMean, "fMean/d");
+        fDiscPoints1DTree->Branch("Variance", &fDiscPoints1DData.fVariance, "fVariance/d");
+        fDiscPoints1DTree->Branch("NeighborhoodAmplitude", &fDiscPoints1DData.fNeighborhoodAmplitude, "fNeighborhoodAmplitude/d");
+        //fDiscPoints1DTree->Branch("freqAnalysis", &fDiscPoints1DData.fComponent, "fComponent/s:fSlice/l:fTimeInRun/d:f/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
 
         return true;
     }

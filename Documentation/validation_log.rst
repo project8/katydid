@@ -43,8 +43,8 @@ Fixes:
 Log
 ---
 
-Version: Upcoming
-~~~~~~~~~~~~~~~~~
+Version: Upcoming release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Release Date: TBD
 '''''''''''''''''''''''
@@ -64,11 +64,23 @@ New Features:
 * Added `kd-tree-scaled` slot to the ROOT Tree Writer to scale time and frequency values to their original units
     * Validated by outputting a KD-Tree and seeing that tracks fit from that data are correctly plotted on top, so the units are right.
 * Updated nanoflann to unreleased v1.3.0
+* TSequentialLineData ROOT tree writer
+* New cut
+    * Bin density: cut on number of points per time length in a track
+    * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
+* New cut options
+    * NUP and SNR cuts on sequential lines, first tracks of events have the additional option to cut on total NUP / number of points in a track
+    * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
+* Cut classes location
+    * Moved all cut classes in EventAnalysis to EventAnalysis/CutClasses
+    * Tested by successfully running TestSequentialTrackFinder.cc
 
 Fixes:
 ''''''
 
 * Everything named with "DBScan" is renamed to "DBSCAN"
+* Adding missing branches to TDiscriminated1D
+
 
 Version: 2.13.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
