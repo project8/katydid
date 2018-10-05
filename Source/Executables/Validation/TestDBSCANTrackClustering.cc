@@ -1,5 +1,5 @@
 /*
-* TestDBSCanTrackClustering.cc
+* TestDBSCANTrackClustering.cc
 *
 * Created on: Jun 29, 2014
 *     Author: nsoblath
