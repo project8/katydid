@@ -40,22 +40,6 @@ Fixes:
 * Fix 2
     * Details
 
-Version:
-~~~~~~~~
-
-Release Date:
-'''''''''''''
-
-New Features:
-'''''''''''''
-
-* TSequentialLineData ROOT tree writer
-
-Fixes:
-''''''
-
-* Fix 1
-
 Log
 ---
 
@@ -68,6 +52,7 @@ Release Date:
 New Features:
 '''''''''''''
 
+* TSequentialLineData ROOT tree writer
 * New cut
     * Bin density: cut on number of points per time length in a track
     * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
@@ -77,6 +62,12 @@ New Features:
 * Cut classes location
     * Moved all cut classes in EventAnalysis to EventAnalysis/CutClasses
     * Tested by successfully running TestSequentialTrackFinder.cc
+
+Fixes:
+''''''
+
+* Adding missing branches to TDiscriminated1D
+
 
 Version: 2.13.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
