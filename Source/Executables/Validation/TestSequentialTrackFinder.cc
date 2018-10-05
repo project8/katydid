@@ -17,8 +17,9 @@ and tests the behavior of the algorithms in this processor.
 #include "KTIterativeTrackClustering.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTSequentialLineData.hh"
-#include "KTSequentialLineSNRCut.hh"
-#include "KTSequentialLineNUPCut.hh"
+#include "CutClasses/KTSequentialLineSNRCut.hh"
+#include "CutClasses/KTSequentialLineNUPCut.hh"
+#include "CutClasses/KTSequentialLinePointDensityCut.hh"
 #include "KTROOTTreeTypeWriterEventAnalysis.hh"
 #include "KTRandom.hh"
 
@@ -112,6 +113,7 @@ int main()
     KTIterativeTrackClustering itc;
     KTSequentialLineSNRCut snrcut;
     KTSequentialLineNUPCut nupcut;
+    KTSequentialLinePointDensityCut densitycut;
 
     // Apply some settings
     stf.SetTrimmingThreshold(0.9);
@@ -124,8 +126,10 @@ int main()
     stf.SetTimeGapTolerance(1.e-3);
     stf.SetMinSlope(0);
 
-    snrcut.SetMinAverageSNR(1e3);
+    snrcut.SetMinAverageSNR(1);
     nupcut.SetMinTotalNUP(.1);
+    snrcut.SetTimeOrBinAverage(KTSequentialLineSNRCut::time_or_bin_average::bin);
+    densitycut.SetMinDensity(2.e3);
 
     // Create fake data for every slice and run stf
     for (unsigned iSlice = 0; iSlice <= nSlices; ++iSlice )
@@ -253,7 +257,11 @@ int main()
 
         Nymph::KTData data = (*cIt)->Of< Nymph::KTData >();
         nupcut.Apply(data, sqlData);
+
+        densitycut.Apply(data, sqlData);
+
         // treeTypeWriter.WriteSequentialLine(&(*cIt)->Of< Nymph::KTDataPtr >());
+
 
         if (data.GetCutStatus().IsCut() == true)
         {

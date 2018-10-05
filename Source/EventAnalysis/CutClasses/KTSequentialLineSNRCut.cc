@@ -22,7 +22,8 @@ namespace Katydid
          KTCutOneArg(name),
          fMinTotalSNR(0.0),
          fMinAverageSNR(0.0),
-         fWideOrNarrowLine( wide_or_narrow::wide )
+         fWideOrNarrowLine( wide_or_narrow::wide ),
+         fTimeOrBinAverage( time_or_bin_average::time )
     {}
 
     KTSequentialLineSNRCut::~KTSequentialLineSNRCut()
@@ -50,6 +51,22 @@ namespace Katydid
                 return false;
             }
         }
+        if (node->has("time-or-bin-average"))
+        {
+            if (node->get_value("time-or-bin-average") == "time")
+            {
+                SetTimeOrBinAverage(time_or_bin_average:: time);
+            }
+            else if (node->get_value("time-or-bin-average") == "bin")
+            {
+                SetTimeOrBinAverage(time_or_bin_average::bin);
+            }
+            else
+            {
+                KTERROR(sqlcutlog, "Invalid string for fTimeOrBinAverage");
+                return false;
+            }
+        }
         return true;
     }
 
@@ -64,9 +81,19 @@ namespace Katydid
             {
                 isCut = true;
             }
-            if( seqLineData.GetTotalSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) < GetMinAverageSNR() )
+            if ( fTimeOrBinAverage == time_or_bin_average::time )
             {
-                isCut = true;
+                if( seqLineData.GetTotalSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) < GetMinAverageSNR() )
+                {
+                    isCut = true;
+                }
+            }
+            else
+            {
+                if( seqLineData.GetTotalSNR() / ( seqLineData.GetNPoints() ) < GetMinAverageSNR() )
+                {
+                    isCut = true;
+                }
             }
         }
         else
@@ -75,10 +102,21 @@ namespace Katydid
             {
                 isCut = true;
             }
-            if( seqLineData.GetTotalWideSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) < GetMinAverageSNR() )
+            if ( fTimeOrBinAverage == time_or_bin_average::time )
             {
-                isCut = true;
+                if( seqLineData.GetTotalWideSNR() / ( seqLineData.GetEndTimeInRunC() - seqLineData.GetStartTimeInRunC() ) < GetMinAverageSNR() )
+                {
+                    isCut = true;
+                }
             }
+            else
+            {
+                if( seqLineData.GetTotalWideSNR() / ( seqLineData.GetNPoints() ) < GetMinAverageSNR() )
+                {
+                    isCut = true;
+                }
+            }
+
         }
 
         data.GetCutStatus().AddCutResult< KTSequentialLineSNRCut::Result >(isCut);
