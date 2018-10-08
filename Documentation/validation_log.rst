@@ -63,7 +63,7 @@ New Features:
     * Validated by outputting some tracks and plotting on top of sparse spectrogram data
 * Added `kd-tree-scaled` slot to the ROOT Tree Writer to scale time and frequency values to their original units
     * Validated by outputting a KD-Tree and seeing that tracks fit from that data are correctly plotted on top, so the units are right.
-* Updated nanoflann to unreleased v1.3.0
+* Updated nanoflann to v1.3.0
 * TSequentialLineData ROOT tree writer
 * New cuts
     * Bin density: cut on number of points per time length in a track
