@@ -1,7 +1,7 @@
 /**
- @file KTDBScan.hh
- @brief Contains KTDBScan
- @details DBScan Clustering Algorithm
+ @file KTDBSCAN.hh
+ @brief Contains KTDBSCAN
+ @details DBSCAN Clustering Algorithm
  @author: N.S. Oblath
  @date: Jun 24, 2014
  */
@@ -9,11 +9,6 @@
 #ifndef KTDBSCAN_HH_
 #define KTDBSCAN_HH_
 
-#include <boost/foreach.hpp>
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/vector.hpp>
-
-#include <cfloat>
 #include <cmath>
 #include <vector>
 
@@ -22,11 +17,11 @@
 namespace Katydid
 {
     
-    KTLOGGER(dbslog, "KTDBScan");
+    KTLOGGER(dbslog_h, "KTDBSCAN");
 
 
     /*!
-     @class KTDBScan
+     @class KTDBSCAN
      @author N.S. Oblath
 
      @brief DBSCAN Clustering Algorithm
@@ -39,7 +34,7 @@ namespace Katydid
      */
 
     template< typename DistanceData >
-    class KTDBScan
+    class KTDBSCAN
     {
         public:
             typedef int ClusterId;
@@ -66,8 +61,8 @@ namespace Katydid
             };
 
         public:
-            KTDBScan(double radius = 1., unsigned minPoints = 1);
-            virtual ~KTDBScan();
+            KTDBSCAN(double radius = 1., unsigned minPoints = 1);
+            virtual ~KTDBSCAN();
 
             double GetRadius() const;
             void SetRadius(double eps);
@@ -84,10 +79,6 @@ namespace Katydid
             unsigned fMinPoints;
 
         public:
-            void UniformPartition();
-
-            Neighbors FindNeighbors(PointId pid/*, double threshold*/);
-
             bool DoClustering(const DistanceData& dist, DBSResults& results);
 
         private:
@@ -96,17 +87,10 @@ namespace Katydid
             // visited-point vector
             std::vector< bool > fVisited;
 
-            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
-            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
-            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
     };
 
-    //std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
-    //std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
-    //std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
-
     template< typename DistanceData >
-    KTDBScan< DistanceData >::KTDBScan(double radius, unsigned minPoints) :
+    KTDBSCAN< DistanceData >::KTDBSCAN(double radius, unsigned minPoints) :
             fRadius(radius),
             fMinPoints(minPoints),
             fVisited()
@@ -114,31 +98,31 @@ namespace Katydid
     }
 
     template< typename DistanceData >
-    KTDBScan< DistanceData >::~KTDBScan()
+    KTDBSCAN< DistanceData >::~KTDBSCAN()
     {
     }
 
     template< typename DistanceData >
-    inline double KTDBScan< DistanceData >::GetRadius() const
+    inline double KTDBSCAN< DistanceData >::GetRadius() const
     {
         return fRadius;
     }
 
     template< typename DistanceData >
-    inline void KTDBScan< DistanceData >::SetRadius(double eps)
+    inline void KTDBSCAN< DistanceData >::SetRadius(double eps)
     {
         fRadius = eps;
         return;
     }
 
     template< typename DistanceData >
-    inline unsigned KTDBScan< DistanceData >::GetMinPoints() const
+    inline unsigned KTDBSCAN< DistanceData >::GetMinPoints() const
     {
         return fMinPoints;
     }
 
     template< typename DistanceData >
-    inline void KTDBScan< DistanceData >::SetMinPoints(unsigned pts)
+    inline void KTDBSCAN< DistanceData >::SetMinPoints(unsigned pts)
     {
         fMinPoints = pts;
         return;
@@ -146,9 +130,9 @@ namespace Katydid
 
 
     template< typename DistanceData >
-    void KTDBScan< DistanceData >::InitializeArrays(size_t nPoints, DBSResults& results)
+    void KTDBSCAN< DistanceData >::InitializeArrays(size_t nPoints, DBSResults& results)
     {
-        KTINFO(dbslog, "Initializing DBSCAN arrays with " << nPoints << " points");
+        KTINFO(dbslog_h, "Initializing DBSCAN arrays with " << nPoints << " points");
 
         results.fClusters.clear();
         results.fClusters.reserve(nPoints);
@@ -163,8 +147,9 @@ namespace Katydid
     }
 
     template< typename DistanceData >
-    bool KTDBScan< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
+    bool KTDBSCAN< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
     {
+        KTDEBUG(dbslog_h, "Starting DBSCAN; min points: " << fMinPoints << "; radius: " << fRadius);
         PointId nPoints = dist.size();
 
         InitializeArrays(nPoints, results);
@@ -173,33 +158,34 @@ namespace Katydid
         // foreach pid
         for (PointId pid = 0; pid < nPoints; ++pid)
         {
+            //KTWARN(dbslog_h, "Visiting point " << pid);
             // not already visited
             if (! fVisited[pid])
             {
-
                 fVisited[pid] = true;
 
                 // get the neighbors
                 Neighbors ne = dist.NearestNeighborsByRadius(pid, fRadius);
+                //KTWARN(dbslog_h, "This is a new point; it has " << ne.size() << " neighbors");
 
                 // not enough support -> mark as noise
                 if (ne.size() < fMinPoints)
                 {
+                    //KTWARN(dbslog_h, "That's below the threshold; it's a noise point");
                     results.fNoise[pid] = true;
                 }
                 else
                 {
-                    //std::cout << "Point i=" << pid << " can be expanded " << std::endl;// = true;
-
                     // Add p to current cluster
-
                     Cluster cluster;              // a new cluster
                     cluster.push_back(pid);       // assign pid to cluster
                     results.fPointIdToClusterId[pid] = cid;
+                    //KTWARN(dbslog_h, "Starting cluster with this point; cluster is " << cid);
 
                     // go to neighbors
                     for (unsigned int i = 0; i < ne.size(); ++i)
                     {
+                        //KTWARN(dbslog_h, "    Visiting neighbor, point " << ne[i]);
                         PointId nPid = ne[i];
 
                         // not already visited
@@ -209,30 +195,24 @@ namespace Katydid
 
                             // go to neighbors
                             Neighbors ne1 = dist.NearestNeighborsByRadius(nPid, fRadius);
+                            //KTWARN(dbslog_h, "    This is a new point; it has " << ne1.size() << " neighbors");
 
                             // enough support
                             if (ne1.size() >= fMinPoints)
                             {
-                                //std::cout << "\t Expanding to pid=" << nPid << std::endl;
+                                //KTWARN(dbslog_h, "    Joining neighbor's neighbors with the previous cluster");
                                 // join
                                 for (unsigned int j = 0; j < ne1.size(); ++j)
                                 {
                                     ne.push_back(ne1[j]);
                                 }
-                                //BOOST_FOREACH(typename DistanceData::Neighbors::value_type n1, ne1)
-                                //{
-                                    // join neighbors
-                                //    ne.push_back(n1);
-                                    //std::cerr << "\tPushback pid=" << n1 << std::endl;
-                                //}
-                                //std::cout << std::endl;
                             }
                         }
 
                         // not already assigned to a cluster
                         if (results.fPointIdToClusterId[nPid] == -1)
                         {
-                            //std::cout << "\tadding pid=" << nPid << std::endl;
+                            //KTWARN(dbslog_h, "    Neighbor was not part of a cluster; adding to cluster " << cid);
                             cluster.push_back(nPid);
                             results.fPointIdToClusterId[nPid] = cid;
                         }

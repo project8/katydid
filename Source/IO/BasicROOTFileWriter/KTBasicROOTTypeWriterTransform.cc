@@ -60,10 +60,13 @@ namespace Katydid
         fWriter->RegisterSlot("fs-fftw-mag-dist", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWMagnitudeDistribution);
         fWriter->RegisterSlot("fs-polar-power-dist", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataPolarPowerDistribution);
         fWriter->RegisterSlot("fs-fftw-power-dist", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution);
+        fWriter->RegisterSlot("fs-polar-var", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataPolar);
+        fWriter->RegisterSlot("fs-fftw-var", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrum);
         fWriter->RegisterSlot("psd", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectralDensity);
         fWriter->RegisterSlot("ps-dist", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrumDistribution);
         fWriter->RegisterSlot("psd-dist", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectralDensityDistribution);
+        fWriter->RegisterSlot("ps-var", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrumVarianceData);
         fWriter->RegisterSlot("tf-polar", this, &KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolar);
         fWriter->RegisterSlot("tf-polar-phase", this, &KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPhase);
         fWriter->RegisterSlot("tf-polar-power", this, &KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPower);
@@ -367,6 +370,64 @@ namespace Katydid
         return;
     }
 
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataPolar(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumVarianceDataPolar& fsData = data->Of<KTFrequencySpectrumVarianceDataPolar>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumVariance* variance = fsData.GetSpectrum(iChannel);
+            if (variance != NULL)
+            {
+                stringstream conv;
+                conv << "histFSVarPolar_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* varianceSpectrum = KT2ROOT::CreateHistogram(variance, histName);
+                varianceSpectrum->SetDirectory(fWriter->GetFile());
+                varianceSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataFFTW(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumVarianceDataFFTW& fsData = data->Of<KTFrequencySpectrumVarianceDataFFTW>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumVariance* variance = fsData.GetSpectrum(iChannel);
+            if (variance != NULL)
+            {
+                stringstream conv;
+                conv << "histFSVarFFTW_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* varianceSpectrum = KT2ROOT::CreateHistogram(variance, histName);
+                varianceSpectrum->SetDirectory(fWriter->GetFile());
+                varianceSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
 
     //********************
     // Power Spectrum Data
@@ -491,6 +552,34 @@ namespace Katydid
         return;
     }
 
+    void KTBasicROOTTypeWriterTransform::WritePowerSpectrumVarianceData(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTPowerSpectrumVarianceData& fsData = data->Of<KTPowerSpectrumVarianceData>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumVariance* variance = fsData.GetSpectrum(iChannel);
+            if (variance != NULL)
+            {
+                stringstream conv;
+                conv << "histPSVar_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* varianceSpectrum = KT2ROOT::CreateHistogram(variance, histName);
+                varianceSpectrum->SetDirectory(fWriter->GetFile());
+                varianceSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
 
 
     //************************

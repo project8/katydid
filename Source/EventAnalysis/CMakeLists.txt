@@ -25,10 +25,9 @@ set (EVENTANALYSIS_HEADERFILES
     KTCollinearTrackClustering.hh
 
     KTDataCutter.hh
-    KTDBScan.hh
     KTDistanceMatrix.hh
-    KTDBScanEventClustering.hh
-    KTDBScanTrackClustering.hh
+    KTDBSCANEventClustering.hh
+    KTDBSCANTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
     KTIterativeTrackClustering.hh
     KTMultiPeakEventBuilder.hh
@@ -42,7 +41,6 @@ set (EVENTANALYSIS_HEADERFILES
     KTSpectrogramCollector.hh
     KTTrackProcessingDoubleCuts.hh
     KTTrackProcessingWeightedSlope.hh
-
 )
 
 set (EVENTANALYSIS_SOURCEFILES
@@ -66,8 +64,8 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTTrackTimeCut.cc
 
     KTDataCutter.cc
-    KTDBScanEventClustering.cc
-    KTDBScanTrackClustering.cc
+    KTDBSCANEventClustering.cc
+    KTDBSCANTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
     KTIterativeTrackClustering.cc
     KTMultiPeakEventBuilder.cc

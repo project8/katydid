@@ -774,6 +774,7 @@ namespace Katydid
             point->SetMean(pIt->fMean);
             point->SetVariance(pIt->fVariance);
             point->SetNeighborhoodAmplitude(pIt->fNeighborhoodAmplitude);
+            point->SetBinInSlice(pIt->fBinInSlice);
             ++iPoint;
         }
         return;

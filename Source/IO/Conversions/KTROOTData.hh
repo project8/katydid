@@ -32,6 +32,7 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, Mean);
         MEMBERVARIABLE(Double_t, Variance);
         MEMBERVARIABLE(Double_t, NeighborhoodAmplitude);
+        MEMBERVARIABLE(UInt_t, BinInSlice);
 
         public:
             TDiscriminatedPoint();

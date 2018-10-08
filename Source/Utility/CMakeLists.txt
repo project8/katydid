@@ -13,6 +13,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTCountHistogram.hh
     KTCutable.hh
     KTCutableArray.hh
+    KTDBSCAN.hh
     KTDemangle.hh
     KTECDF.hh
     KTKatydidApp.hh
