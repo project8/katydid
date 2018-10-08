@@ -1,6 +1,6 @@
 /**
- @file KTDBScanTrackClustering.hh
- @brief Contains KTDBScanTrackClustering
+ @file KTDBSCANTrackClustering.hh
+ @brief Contains KTDBSCANTrackClustering
  @details [does something]
  @author: [name]
  @date: [date]
@@ -11,7 +11,7 @@
 
 #include "KTProcessor.hh"
 
-#include "KTDBScan.hh"
+#include "KTDBSCAN.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 #include "KTData.hh"
@@ -26,7 +26,7 @@ namespace Katydid
     class KTKDTreeData;
 
     /*!
-     @class KTDBScanTrackClustering
+     @class KTDBSCANTrackClustering
      @author N.S. Oblath
 
      @brief Clustering for finding tracks using the DBSCAN algorithm
@@ -55,7 +55,7 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTDBScanTrackClustering : public Nymph::KTProcessor
+    class KTDBSCANTrackClustering : public Nymph::KTProcessor
     {
         public:
             //typedef KTSparseDistanceMatrix< double > DistanceMatrix;
@@ -65,8 +65,8 @@ namespace Katydid
             const static unsigned fNDimensions;
 
         public:
-            KTDBScanTrackClustering(const std::string& name = "dbscan-track-clustering");
-            virtual ~KTDBScanTrackClustering();
+            KTDBSCANTrackClustering(const std::string& name = "dbscan-track-clustering");
+            virtual ~KTDBSCANTrackClustering();
 
             bool Configure(const scarab::param_node* node);
 
@@ -124,18 +124,18 @@ namespace Katydid
 
     };
 /*
-    inline void KTDBScanTrackClustering::SetTimeBinWidth(double bw)
+    inline void KTDBSCANTrackClustering::SetTimeBinWidth(double bw)
     {
         fTimeBinWidth = bw;
         return;
     }
-    inline void KTDBScanTrackClustering::SetFreqBinWidth(double bw)
+    inline void KTDBSCANTrackClustering::SetFreqBinWidth(double bw)
     {
         fFreqBinWidth = bw;
         return;
     }
 */
-    inline const std::set< Nymph::KTDataPtr >& KTDBScanTrackClustering::GetCandidates() const
+    inline const std::set< Nymph::KTDataPtr >& KTDBSCANTrackClustering::GetCandidates() const
     {
         return fCandidates;
     }

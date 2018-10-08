@@ -43,10 +43,12 @@ namespace Katydid
     class KTMultiTrackEventData;
     class KTClassifiedEventData;
     class KTSparseWaterfallCandidateData;
+    class KTSequentialLineData;
     class KTDiscriminatedPoint;
 
     class TDiscriminatedPoint;
     class TSparseWaterfallCandidateData;
+    class TSequentialLineData;
 
     class KT2ROOT
     {
@@ -104,6 +106,7 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
 
             static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");
+
 
             //***************
             // Power Spectrum
@@ -173,6 +176,13 @@ namespace Katydid
 
             static void LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData);
             // static void UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData);
+
+            //*********************************
+            // Sequential Line Data
+            //*********************************
+
+            static void LoadSequentialLineData(const KTSequentialLineData& seqData, TSequentialLineData& rootSEQData);
+            // static void UnloadSequentialLineData(KTSequentialLineData& seqData, const TSequentialLineData& rootSEQData);
 
     };
 

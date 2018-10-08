@@ -11,7 +11,6 @@
 
 #include "KTPrimaryProcessor.hh"
 
-#include "KTDBScan.hh"
 #include "KTDistanceMatrix.hh"
 #include "KTSlot.hh"
 #include "KTData.hh"

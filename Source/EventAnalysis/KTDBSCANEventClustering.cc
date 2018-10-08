@@ -1,12 +1,11 @@
 /*
- * KTDBScanEventClustering.cc
+ * KTDBSCANEventClustering.cc
  *
  *  Created on: Aug 4, 2014
  *      Author: N.S. Oblath
  */
 
-#include "KTDBScanEventClustering.hh"
-
+#include "KTDBSCANEventClustering.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
@@ -23,14 +22,14 @@ namespace Katydid
 {
     KTLOGGER(tclog, "katydid.fft");
 
-    KT_REGISTER_PROCESSOR(KTDBScanEventClustering, "dbscan-event-clustering");
+    KT_REGISTER_PROCESSOR(KTDBSCANEventClustering, "dbscan-event-clustering");
 
     // dimensions: (t_start, f_start, t_end, f_end)
-    const unsigned KTDBScanEventClustering::fNDimensions = 4;
+    const unsigned KTDBSCANEventClustering::fNDimensions = 4;
     // points in a track: (start, end)
-    const unsigned KTDBScanEventClustering::fNPointsPerTrack = 2;
+    const unsigned KTDBSCANEventClustering::fNPointsPerTrack = 2;
 
-    KTDBScanEventClustering::KTDBScanEventClustering(const std::string& name) :
+    KTDBSCANEventClustering::KTDBSCANEventClustering(const std::string& name) :
             KTPrimaryProcessor(name),
             fRadii(fNDimensions / fNPointsPerTrack),
             fMinPoints(3),
@@ -41,19 +40,19 @@ namespace Katydid
             fDataCount(0),
             fEventSignal("event", this),
             fClusterDoneSignal("clustering-done", this),
-            fTakeTrackSlot("track", this, &KTDBScanEventClustering::TakeTrack)
-    //        fDoClusterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::Run)
+            fTakeTrackSlot("track", this, &KTDBSCANEventClustering::TakeTrack)
+    //        fDoClusterSlot("do-cluster-trigger", this, &KTDBSCANEventClustering::Run)
     {
-        RegisterSlot("do-clustering", this, &KTDBScanEventClustering::DoClusteringSlot);
+        RegisterSlot("do-clustering", this, &KTDBSCANEventClustering::DoClusteringSlot);
         fRadii(0) = 1. / sqrt(fNDimensions);
         fRadii(1) = 1. / sqrt(fNDimensions);
     }
 
-    KTDBScanEventClustering::~KTDBScanEventClustering()
+    KTDBSCANEventClustering::~KTDBSCANEventClustering()
     {
     }
 
-    bool KTDBScanEventClustering::Configure(const scarab::param_node* node)
+    bool KTDBSCANEventClustering::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
@@ -74,7 +73,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTDBScanEventClustering::TakeTrack(KTProcessedTrackData& track)
+    bool KTDBSCANEventClustering::TakeTrack(KTProcessedTrackData& track)
     {
         // ignore the track if it's been cut
         if (track.GetIsCut()) return true;
@@ -94,14 +93,14 @@ namespace Katydid
     }
 
     /*
-    bool KTDBScanEventClustering::TakePoint(double time, double frequency *//*, double amplitude*//*, unsigned component)
+    bool KTDBSCANEventClustering::TakePoint(double time, double frequency *//*, double amplitude*//*, unsigned component)
     {
         if (component >= fCompPoints.size())
         {
             SetNComponents(component + 1);
         }
 
-        KTDBScan::Point newPoint(fNDimensions);
+        KTDBSCAN::Point newPoint(fNDimensions);
         newPoint(0) = time;
         newPoint(1) = frequency;
         fCompPoints[component].push_back(newPoint);
@@ -112,7 +111,7 @@ namespace Katydid
     }
     */
 
-    void KTDBScanEventClustering::DoClusteringSlot()
+    void KTDBSCANEventClustering::DoClusteringSlot()
     {
         if (! Run())
         {
@@ -121,20 +120,20 @@ namespace Katydid
         return;
     }
 
-    bool KTDBScanEventClustering::Run()
+    bool KTDBSCANEventClustering::Run()
     {
         return DoClustering();
     }
 
-    bool KTDBScanEventClustering::DoClustering()
+    bool KTDBSCANEventClustering::DoClustering()
     {
         KTPROG(tclog, "Starting DBSCAN event clustering");
 
-        KTDBScan< DistanceMatrix > dbScan;
+        KTDBSCAN< DistanceMatrix > dbScan;
 
         dbScan.SetRadius(1.);
         dbScan.SetMinPoints(fMinPoints);
-        KTINFO(tclog, "DBScan configured");
+        KTINFO(tclog, "DBSCAN configured");
 
         for (unsigned iComponent = 0; iComponent < fCompTracks.size(); ++iComponent)
         {
@@ -181,7 +180,7 @@ namespace Katydid
 
             // do the clustering!
             KTINFO(tclog, "Starting DBSCAN");
-            KTDBScan< DistanceMatrix >::DBSResults results;
+            KTDBSCAN< DistanceMatrix >::DBSResults results;
             if (! dbScan.DoClustering(distMat, results))
             {
                 KTERROR(tclog, "An error occurred while clustering");
@@ -191,7 +190,7 @@ namespace Katydid
 
             // loop over the clusters found, and create data objects for them
             KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidate events");
-            for (vector< KTDBScan< DistanceMatrix >::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
+            for (vector< KTDBSCAN< DistanceMatrix >::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
                 {
@@ -210,7 +209,7 @@ namespace Katydid
                 eventData.SetAcquisitionID(fCompTracks[0][0].GetAcquisitionID());
                 eventData.SetEventID(fDataCount);
 
-                for (KTDBScan< DistanceMatrix >::Cluster::const_iterator pointIdIt = clustIt->begin(); pointIdIt != clustIt->end(); ++pointIdIt)
+                for (KTDBSCAN< DistanceMatrix >::Cluster::const_iterator pointIdIt = clustIt->begin(); pointIdIt != clustIt->end(); ++pointIdIt)
                 {
                     eventData.AddTrack(fCompTracks[iComponent][*pointIdIt]);
                 }
@@ -231,7 +230,7 @@ namespace Katydid
         return true;
     }
 
-    void KTDBScanEventClustering::SetNComponents(unsigned nComps)
+    void KTDBSCANEventClustering::SetNComponents(unsigned nComps)
     {
         fCompTracks.resize(nComps, vector< KTProcessedTrackData >());
         return;
