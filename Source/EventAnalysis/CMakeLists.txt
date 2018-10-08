@@ -5,6 +5,7 @@
 #set (EVENTANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EventAnalysisDict.cxx)
 
 set (EVENTANALYSIS_HEADERFILES
+    CutClasses/KTEventFirstTrackNPointsCut.hh
     CutClasses/KTEventFirstTrackNUPCut.hh
     CutClasses/KTEventFirstTrackPowerCut.hh
     CutClasses/KTEventFirstTrackSNRCut.hh
@@ -44,6 +45,7 @@ set (EVENTANALYSIS_HEADERFILES
 )
 
 set (EVENTANALYSIS_SOURCEFILES
+    CutClasses/KTEventFirstTrackNPointsCut.cc
     CutClasses/KTEventFirstTrackNUPCut.cc
     CutClasses/KTEventFirstTrackPowerCut.cc
     CutClasses/KTEventFirstTrackSNRCut.cc
