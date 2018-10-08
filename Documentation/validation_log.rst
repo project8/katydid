@@ -65,9 +65,10 @@ New Features:
     * Validated by outputting a KD-Tree and seeing that tracks fit from that data are correctly plotted on top, so the units are right.
 * Updated nanoflann to unreleased v1.3.0
 * TSequentialLineData ROOT tree writer
-* New cut
+* New cuts
     * Bin density: cut on number of points per time length in a track
     * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
+    * NPoints: cut on minimum number of points in the first track of an event
 * New cut options
     * NUP and SNR cuts on sequential lines, first tracks of events have the additional option to cut on total NUP / number of points in a track
     * Tested in TestSequentialTrackFinder.cc and by reprocessing raw data on dirac
