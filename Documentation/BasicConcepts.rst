@@ -29,3 +29,19 @@ Familiarity with the data pointer is most important for developers, but it is us
 - A processor slot can see all data objects behind it in the chain, to the extent that the 1-to-1 correspondence mentioned above holds. For example, if I connect the output of a FFT processor to a new processor, the new processor can still access the time-domain data which was input to the FFT.
 - A slot may require multiple data objects, in which case they must all be contained in the data pointer.
 - A data pointer should never contain multiple instances of the same data class, as there is no way of telling the slot which one to use.
+
+Configurable Parameters
+------------------------
+
+In addition to allowed signals and slots, there is one more set of properties of a processor: configurable parameters. These are parameters of the analysis performed by the processor, and can be specified at run-time along with the analysis chain. A list of configurable parameters is located in the .hh file of each processor, immediately before the signals and slots. And, like the signals and slots, only those variables which are specifically made so in the processor code will be configurable. As a simple example, if we have a processor which performs a Gaussian smearing on a 2D spectrogram, a natural configurable parameter would be the standard deviation of the kernel function.
+
+Putting it all together
+------------------------
+
+With an understanding of all of the above elements, we are now prepared to discuss the configuration file in full. The configuration is a YAML-format file which specifies everything related to the analysis chain. We talk through it more thoroughly on the User Interface page, but here we will outline the basic structure of any config file:
+
+1. Specify & name all processors. You may have multiple instances of the same processor but give them different names.
+2. Construct all signal-slot connections.
+3. Specify the first processor in the chain. Only certain processors are valid for this assignment.
+4. Configure all processor parameters
+
