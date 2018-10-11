@@ -45,6 +45,9 @@ With an understanding of all of the above elements, we are now prepared to discu
 3. Specify the first processor in the chain. Only certain processors are valid for this assignment.
 4. Configure all processor parameters
 
-Here is a graphic depicting the analysis chain from a simple example configuration file: https://imgur.com/IJvfuV8
+Below is a graphic depicting the analysis chain from a simple example configuration file:
+
+.. image:: "katydid example.png"
+   :width: 600
 
 The text is labelled by the four steps above, and this config file can be found in this repository under: ``Examples/ConfigFiles/KatydidPSConfig.yaml``
