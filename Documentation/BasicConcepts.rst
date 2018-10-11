@@ -1,11 +1,13 @@
 The Basic Idea
 ===============
 
-The majority of internal Katydid objects belong to one of two groups: data classes and processor classes. Data classes hold information such as a power spectrum or a track object, and processor classes perform some operation which takes one or more data objects as input and output. The basic idea of the Katydid framework is to construct an analysis chain of processors, and specify the types of data they will exchange. With this framework, changes to the analysis chain are made at runtime, while only changes to the internals of a processor or data object require code development. Changes to the analysis chain may include:
+The majority of internal Katydid objects belong to one of two groups: data classes and processor classes. Data classes hold information such as a power spectrum or a track object, and processor classes perform some operation which takes one or more data objects as input and output. The basic idea of the Katydid framework is to construct an analysis chain of processors, and specify the types of data they will exchange. With this modular framework, changes to the analysis chain are made at runtime, while only changes to the internals of a processor or data object require code development. Changes to the analysis chain may include:
 
 - Exchange one set of processors in the chain for a different set
 - Retrieve an alternate type of data from a processor
 - Adjust an analysis parameter of a processor
+
+Katydid has many, many data and processor classes but they are all specific to Project 8 analysis. Some are used in official analysis, some are used only in alternative analyses, some are old and no longer used, some are broken, and some are only understood by one person. Material is almost ever deleted, as the modular structure makes it beneficial to keep things around since they might see a different use (or a similar one) in the future. However, all of the numerous classes in Katydid inherit from one of a handful of classes in Nymph, which is the submodule that contains the more general framework we've begun to outline. In this page, we will focus on the most important aspects of this framework for a user or a new developer of Katydid. With that basic understanding, you may explore the multitude of processors, data classes, and other objects in Katydid and become familiar with the ones necessary for your analysis.
 
 Signals and Slots
 ------------------
