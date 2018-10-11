@@ -29,6 +29,11 @@ These instructions assume that you've compiled and installed Katydid. The instal
     	* The definitions of other parameters can be found in Source/IO/ROOTSpectrogramWriter/KTROOTSpectrogramWriter.hh
     * Believe it or not, checking the raw spectrogram is useful from time to time. However, in other cases for Katydid users, they would use a configuration file for reconstructing tracks and events. The way of running katydid with a track reconstruction configuration file is not substantially different from running the raw spectrogram configuration.
     	* The main difference is in the output ROOT file. In raw spectrogram generation, the output ROOT file has a 2D histogram recording the raw spectrogram in it. With a track and event reconstructing configuration the output file contains a tree structure recording event and track information and sometimes sparse spectrogram.
+    * After running the spectrogram configurations we get a sense of how katydid make spectrograms, but in many cases the tracks are what people are interested in. Here, we give a basic example on katydid reconstructing tracks.
+    	* First, look for TrackConstructionConfig.yaml in Examples/ConfigFiles folder.
+    	* Suppose an egg file is ready in hand, run
+    		> ${PREFIX}/bin/Katydid -c <path/to/TrackConstructionConfig.yaml> -e <path/to/eggfile> --rtw-file tracks.root
+    	* It would produce a tracks.root file in the present directory. It would contain the tree procTracks with various track properties information and tree DiscretePoints1D with information of discrete points where the tracks are built from.
 
     
 
