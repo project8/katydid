@@ -29,13 +29,7 @@ These instructions assume that you've compiled and installed Katydid. The instal
     	* The definitions of other parameters can be found in Source/IO/ROOTSpectrogramWriter/KTROOTSpectrogramWriter.hh
     * Believe it or not, checking the raw spectrogram is useful from time to time. However, in other cases for Katydid users, they would use a configuration file for reconstructing tracks and events. The way of running katydid with a track reconstruction configuration file is not substantially different from running the raw spectrogram configuration.
     	* The main difference is in the output ROOT file. In raw spectrogram generation, the output ROOT file has a 2D histogram recording the raw spectrogram in it. With a track and event reconstructing configuration the output file contains a tree structure recording event and track information and sometimes sparse spectrogram.
-    * For start users running katydid in p8 docker, they have to source the dependencies first. 
-    	* For example, to run the current release of katydid in p8 docker, we first have to do ``source /cvmfs/hep.pnnl.gov/project8/katydid/current/setup.sh`` to get the dependencies. 
-    	* But to download data and submit jobs in dirac, we need to source an older katydid dependency: ``source /cvmfs/hep.pnnl.gov/project8/katydid-2.7.0/setup_katydid.sh``. Thus, we would possibly have to switch between dependencies by frequently sourcing .sh's.
-    	* Here, we introduce a trick to get around that, which is to use the sub shell. 
-    	* Basically put the sourcing line and the running katydid line into a pair of parentheses. The operations done in a sub shell, which is the part contained in the parentheses, would leave no impact after the operations in the sub shell is done. Thus, after running the sub shell,  we don't have to source back to the original dependencies. 
-    	* A command example of such operations is here: ``(source /cvmfs/hep.pnnl.gov/project8/katydid/current/setup.sh;/host/katydid_docker/katydid/build/bin/Katydid -c /host/track_reconstruction/job_submission/config_test/config_new_cuts_modified_0.yaml -e rid000007898_151.egg --rtw-file rid000007898_151_config_new_cuts_modified_0_SparseSpectrogram.root;)``
-    	 
+
     
 
 How did it go for you? Suggestions? Problems? Additions? Please let us know on Slack, especially so we can improve and update the documentation.
