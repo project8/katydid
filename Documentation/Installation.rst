@@ -38,13 +38,18 @@ Dependencies
 
 **Submodules** (included with Katydid; must be fetched via Git)
 
-* [Monarch](https://github.com/project8/monarch)
-    * [Scarab](https://github.com/project8/scarab)
+* Monarch_
+    * Scarab_
         * yaml-cpp
 
-* [Nymph](https://github.com/project8/nymph)
-    * [Scarab](https://github.com/project8/scarab)
+* Nymph_
+    * Scarab_
         * yaml-cpp
+
+
+.. _Monarch: https://github.com/project8/monarch
+.. _Scarab: https://github.com/project8/scarab
+.. _Nymph: https://github.com/project8/nymph
 
 **Distributed Code** (included with Katydid directly)
 
@@ -56,9 +61,14 @@ Dependencies
 Tips on Installing the Dependencies
 -----------------------------------
 
-MacOS: [Homebrew](https://brew.sh/) is a convenient package manager. Before using it for the installation, make sure that the version available on brew is compatible with what is listed in the dependency list above. [CMake](http://brewformulas.org/Cmake), [Boost](http://brewformulas.org/Boost), [Hdf5](http://brewformulas.org/Hdf5), [Protobuf](http://brewformulas.org/Protobuf), and [Root](http://brewformulas.org/root) are all available through brew via the instructions in these links.
+MacOS: Homebrew_ is a convenient package manager. Before using it for the installation, make sure that the version available on brew is compatible with what is listed in the dependency list above. CMake_, Boost_, Hdf5_, Protobuf_, and Root_ are all available through brew via the instructions in these links.
 
-
+.. _Homebrew: https://brew.sh/
+.. _CMake: http://brewformulas.org/Cmake
+.. _Boost: http://brewformulas.org/Boost
+.. _Hdf5: http://brewformulas.org/Hdf5
+.. _Protobuf: http://brewformulas.org/Protobuf
+.. _Root: http://brewformulas.org/root
 
 
 Installation
