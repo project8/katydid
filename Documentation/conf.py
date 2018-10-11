@@ -52,7 +52,7 @@ call(['doxygen', '../Nymph/Scarab/documentation/cpp/Doxyfile'])
 call(['mv', './user_doxygen_out/html', './_static'])
 
 
-html_theme = 'sphinxcontrib.contentui'
+#html_theme = 'sphinxcontrib.contentui'
 #on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 #if on_rtd:
 #  html_theme = 'default'
