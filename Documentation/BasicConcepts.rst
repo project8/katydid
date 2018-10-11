@@ -12,9 +12,9 @@ Katydid has many, many data and processor classes but they are all specific to P
 Signals and Slots
 ------------------
 
-A link in the analysis chain is described by a signal-slot connection; signals are the output of processors and slots are their input. This connection has the following form:
+A link in the analysis chain is described by a signal-slot connection; signals are the output of processors and slots are their input. This connection has the following form::
 
-  signal: processor-name-1:signal-name
+  - signal: processor-name-1:signal-name
   slot: processor-name-2:slot-name
 
 Every processor has a list of possible signals and slots, and the connection is only allowed if both the specified signal and slot exist in their respective processors. The possible signals and slots are listed along with the associated data objects in the comment block before the class declaration of each processor .hh file.
@@ -44,4 +44,3 @@ With an understanding of all of the above elements, we are now prepared to discu
 2. Construct all signal-slot connections.
 3. Specify the first processor in the chain. Only certain processors are valid for this assignment.
 4. Configure all processor parameters
-
