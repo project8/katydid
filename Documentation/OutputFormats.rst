@@ -26,7 +26,7 @@ The *root-tree-writer* can be used to write the output from various processors i
 For example, *discriminated-points*, *processed-tracks* and *multi-peak-events* can all be written to the same root file using this writer.
 
 
-*root-tree-writer*
+*basic-root-writer*
 ~~~~~~~~~~~~~~~~~~~~
 
 The *basic-root-writer* can be used to write out power spectra, gain variation, sparse spectrograms as well as output from event analysis.
