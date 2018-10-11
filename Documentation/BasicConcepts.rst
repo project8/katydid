@@ -1,13 +1,17 @@
-The Big Idea
+The Basic Idea
 ===============
 
-Katydid is a C++-based analysis toolkit for the Project 8 experiment. At is heart is a more general analysis framework Nymph (which was also written custom for Project 8). Nymph in turn uses several general tools from Scarab.  Since Nymph and Scarab don't have their own documentation yet, its general principles go here too.
+The majority of internal Katydid objects belong to one of two groups: data classes and processor classes. Data classes hold information such as a power spectrum or a track object, and processor classes perform some operation which takes one or more data objects as input and output. The basic idea of the Katydid framework is to construct an analysis chain of processors, and specify the types of data they will exchange. With this framework, changes to the analysis chain are made at runtime, while only changes to the internals of a processor or data object require code development. Changes to the analysis chain may include:
 
-The goals behind the design of Katydid/Nymph are:
-- Users should be able to reconfigure and rerun their analysis without needing to recompile Katydid.
-- Code for performing a particular task should not need to be rewritten.
+- Exchange one set of processors in the chain for a different set
+- Retrieve an alternate type of data from a processor
+- Adjust an analysis parameter of a processor
 
-All of the analysis tasks are performed by Processors.  They operate on passive, extensible data objects.  Most processors will generate new data in response to input data; the new data type then gets added to the extensible data object.  There are, of course, exceptions to these guidelines, but most processors behave in this way.
+A link in the analysis chain is described by a signal-slot connection; signals are the output of processors and slots are their input. This connection has the following form:
 
-Processors are connected to one another using a signal/slot mechanism.  When a Processor has finished its job, assuming it's creating a new data type, it announces the new data by emitting a signal.  Other Processors may be listening for that signal with a slot.  That slot then calls a function in the listening Processor that acts on the new data.
+`
+- signal: processor-name-1:signal-name
+  slot: processor-name-2:slot-name
+`
 
+Every processor has a list of possible signals and slots, and the connection is only allowed if both the specified signal and slot exist in their respective processors. The possible signals and slots are listed in the comment block before the class declaration of each processor .hh file.
