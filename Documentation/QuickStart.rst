@@ -32,7 +32,7 @@ These instructions assume that you've compiled and installed Katydid. The instal
     * After running the spectrogram configurations we get a sense of how katydid make spectrograms, but in many cases the tracks are what people are interested in. Here, we give a basic example on katydid reconstructing tracks.
     	* First, look for TrackConstructionConfig.yaml in Examples/ConfigFiles folder.
     	* Suppose an egg file is ready in hand, run
-    		> ``${PREFIX}/bin/Katydid -c <path/to/TrackConstructionConfig.yaml> -e <path/to/eggfile> --rtw-file tracks.root``
+    		``${PREFIX}/bin/Katydid -c <path/to/TrackConstructionConfig.yaml> -e <path/to/eggfile> --rtw-file tracks.root``
     	* It would produce a tracks.root file in the present directory. It would contain the tree procTracks with various track properties information and tree DiscretePoints1D with information of discrete points where the tracks are built from.
 
     
