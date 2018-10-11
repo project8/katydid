@@ -70,7 +70,7 @@ html_theme = 'sphinxcontrib-contentui'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxcontrib-contentui']
+extensions = ['sphinxcontrib.contentui']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
