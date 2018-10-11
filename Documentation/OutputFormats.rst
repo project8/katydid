@@ -11,7 +11,7 @@ Katydid has a variety of ROOT writers:
  * "multislice-root-writer_"
  * "root-spectrogram-writer_"
 
-To write output from katydid processors with one of the writer, the signal of the processor needs to be connected to the slot of the corresponding slot of the wirter.
+To write output from katydid processors with one of the writers, add a signal-slot connection from the processor to the root writer in the configuration file.
 
 
 .. _basic-root-writer: https://katydid.readthedocs.io/en/stable/_static/class_katydid_1_1_k_t_basic_r_o_o_t_file_writer.html
@@ -22,14 +22,14 @@ To write output from katydid processors with one of the writer, the signal of th
 *root-tree-writer*
 ~~~~~~~~~~~~~~~~~~~~
 
-The *root-tree-writer* can be used to write the output from various processors in root tree format.
+The *root-tree-writer* can be used to write processor output into root tree format.
 For example, *discriminated-points*, *processed-tracks* and *multi-peak-events* can all be written to the same root file using this writer.
 
 
 *basic-root-writer*
 ~~~~~~~~~~~~~~~~~~~~
 
-The *basic-root-writer* can be used to write out power spectra, gain variation, sparse spectrograms as well as output from event analysis.
+The *basic-root-writer* can be used to write power spectra, gain variation, sparse spectrograms as well as output from event analysis.
 
 
 HDF5
