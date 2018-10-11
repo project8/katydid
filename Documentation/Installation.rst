@@ -46,10 +46,14 @@ Dependencies
     * Scarab_
         * yaml-cpp
 
+* Cicada_
+    * Scarab_
+
 
 .. _Monarch: https://github.com/project8/monarch
 .. _Scarab: https://github.com/project8/scarab
 .. _Nymph: https://github.com/project8/nymph
+.. _Cicada: https://github.com/project8/cicada
 
 **Distributed Code** (included with Katydid directly)
 
