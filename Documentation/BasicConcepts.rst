@@ -7,6 +7,9 @@ The majority of internal Katydid objects belong to one of two groups: data class
 - Retrieve an alternate type of data from a processor
 - Adjust an analysis parameter of a processor
 
+Signals and Slots
+------------------
+
 A link in the analysis chain is described by a signal-slot connection; signals are the output of processors and slots are their input. This connection has the following form:
 
 `
@@ -14,4 +17,15 @@ A link in the analysis chain is described by a signal-slot connection; signals a
   slot: processor-name-2:slot-name
 `
 
-Every processor has a list of possible signals and slots, and the connection is only allowed if both the specified signal and slot exist in their respective processors. The possible signals and slots are listed in the comment block before the class declaration of each processor .hh file.
+Every processor has a list of possible signals and slots, and the connection is only allowed if both the specified signal and slot exist in their respective processors. The possible signals and slots are listed along with the associated data objects in the comment block before the class declaration of each processor .hh file.
+
+The Data Pointer
+-----------------
+
+You may have already correctly guessed that there is another requirement on the signal-slot connection: they must be associated with the same data object. However, the object which is actually passed between processors is slightly more complicated than an ordinary data class; it is called the data pointer, and it is effectively an ordered list of many data objects. A signal always carries a data pointer, and a slot always receives it; the slot then checks whether the data pointer contains the required data object(s). Most often, a processor appends a data object to the data pointer and then emits a signal with the same data pointer. The data pointer then contains all of the data objects it had previously, and the one (or many) new objects appended by the most recent processor. Somtimes it is necessary for a processor to create a new data pointer; this is usually when there is not a 1-to-1 correspondence between the anticipated input and output (for example, you might only conditionally emit a signal). In these cases, the resulting data pointer will only have the objects appended to it by the processor which created it.
+
+Familiarity with the data pointer is most important for developers, but it is useful for ordinary users as well due to the following consequences on signal-slot connections:
+
+- A processor slot can see all data objects behind it in the chain, to the extent that the 1-to-1 correspondence mentioned above holds. For example, if I connect the output of a FFT processor to a new processor, the new processor can still access the time-domain data which was input to the FFT.
+- A slot may require multiple data objects, in which case they must all be contained in the data pointer.
+- A data pointer should never contain multiple instances of the same data class, as there is no way of telling the slot which one to use.
