@@ -21,7 +21,7 @@ Here are some examples of what development would be required if you wanted to...
     * add the new property in the root writer methods that can write this type of data
 * ... add a new data processing/analysis step:
     * create a new processor
-    * if this processor procudces a new type of data, add a new data class
+    * if this processor produces a new type of data, add a new data class
     * make a new method in the root writer of your choice so the new data type can be written to a root file
 
 

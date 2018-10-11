@@ -23,66 +23,45 @@ Configuration files are broken up into two main sections:
 * Configuring each individual processor.
 
 Both JSON- and YAML-formated files can be parsed.
-Here is an example of an annotated JSON-formatted configuration file::
+Here is an example of an annotated YAML-formatted configuration file::
 ::
 
-  {
-      "processor-toolbox":
-      {
-          "processors":
-          [
-              { "type": "egg-processor",       "name": "egg" },
-              { "type": "simple-fft",          "name": "fft" },
-              { "type": "low-pass-filter",     "name": "lpf" },
-              { "type": "basic-root-writer",   "name": "writer" }
-          ],
-          "connections":
-          [
-              {
-                  "signal": "egg:header",
-                  "slot": "fft:header"
-              }, 
-              {
-                  "signal": "egg:ts",
-                  "slot": "fft:ts"
-              },
-              {
-                  "signal": "fft:fft-forward",
-                  "slot": "lpf:ps"
-              },
-              {
-                  "signal": "lpf:ps",
-                  "slot": "writer:lpf-ps"
-              }
-          ],
+  processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: forward-fftw
+        name: fft
+      - type: convert-to-power
+        name: to-ps
+      - type: basic-root-writer
+        name: writer
 
-          "run-queue":
-          [
-              "egg"
-          ]
-      },
+    connections:
+      - signal: "egg:header"
+        slot: "fft:header"
+      - signal: "egg:ts"
+        slot: "fft:ts-fftw"
+      - signal: "fft:fft"
+        slot: "to-ps:fs-fftw-to-psd"
+      - signal: "to-ps:psd"
+        slot: "writer:ps"
 
-      "egg":
-      {
-          "filename": "/path/to/file.egg",
-          "egg-reader": "egg3",
-          "slice-size": 16384,
-          "number-of-slices": 1
-      },
-      "fft":
-      {
-          "transform-flag": "ESTIMATE"
-      },
-      "lpf":
-      {
-          "rc": 50.0e6
-      },
-      "writer":
-      {
-          "output-file": "/path/to/file.root",
-          "file-flag": "recreate"
-      }
-  }
+    run-queue:
+      - egg
+
+    egg:
+        filename: "/path/to/file.egg"
+        egg-reader: egg3
+        slice-size: 16384
+        number-of-slices: 1
+
+    fft:
+        transform-flag: ESTIMATE
+
+    writer:
+        output-file: "/path/to/file.root"
+        file-flag: recreate
 
 
 
