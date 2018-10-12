@@ -73,6 +73,7 @@ namespace Katydid
      - "max-frequency": double -- maximum frequency
      - "min-bin": unsigned -- minimum frequency by bin
      - "max-bin": unsigned -- maximum frequency by bin
+     - "normalize": bool -- Scale mean and variance in sigma-threshold mode
 
      Slots:
      - "fs-polar": void (Nymph::KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
@@ -109,39 +110,33 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            double GetSNRThreshold() const;
             void SetSNRAmplitudeThreshold(double thresh);
             void SetSNRPowerThreshold(double thresh);
-
-            double GetSigmaThreshold() const;
             void SetSigmaThreshold(double thresh);
-
-            double GetMinFrequency() const;
             void SetMinFrequency(double freq);
-
-            double GetMaxFrequency() const;
             void SetMaxFrequency(double freq);
-
-            unsigned GetMinBin() const;
             void SetMinBin(unsigned bin);
-
-            unsigned GetMaxBin() const;
             void SetMaxBin(unsigned bin);
+
 
         private:
 
-            double fSNRThreshold;
-            double fSigmaThreshold;
-            ThresholdMode fThresholdMode;
+            MEMBERVARIABLE_NOSET(double, SNRThreshold);
+            MEMBERVARIABLE_NOSET(double, SigmaThreshold);
+            MEMBERVARIABLE_NOSET(ThresholdMode, ThresholdMode);
 
-            double fMinFrequency;
-            double fMaxFrequency;
-            unsigned fMinBin;
-            unsigned fMaxBin;
-            bool fCalculateMinBin;
-            bool fCalculateMaxBin;
+            MEMBERVARIABLE_NOSET(double, MinFrequency);
+            MEMBERVARIABLE_NOSET(double, MaxFrequency);
+            MEMBERVARIABLE_NOSET(unsigned, MinBin);
+            MEMBERVARIABLE_NOSET(unsigned, MaxBin);
+            MEMBERVARIABLE_NOSET(bool, CalculateMinBin);
+            MEMBERVARIABLE_NOSET(bool, CalculateMaxBin);
+
+            MEMBERVARIABLE(bool, Normalize);
+            MEMBERVARIABLE(int, NeighborhoodRadius);
 
         public:
+            bool CheckGVData();
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
 
             bool Discriminate(KTConvolvedPowerSpectrumData& data);
@@ -158,14 +153,19 @@ namespace Katydid
             bool Discriminate(KTPowerSpectrumData& data, KTGainVariationData& gvData);
             bool Discriminate(KTPSCollectionData& data, KTGainVariationData& gvData);
 
-            bool DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
-            bool DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
-            bool DiscriminateSpectrum(const KTPowerSpectrum* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
+            bool DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
+            bool DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
+            bool DiscriminateSpectrum(const KTPowerSpectrum* spectrum, const KTSpline* spline, const KTSpline* varSpline, KTDiscriminatedPoints1DData& newData, unsigned component=0);
 
         private:
             bool CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
             bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
             bool CoreDiscriminate(KTPowerSpectrumDataCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+
+            void SumAdjacentBinAmplitude(const KTPowerSpectrum* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumFFTW* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+            void SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin);
+
 
             KTGainVariationData fGVData;
             std::vector< double > fMagnitudeCache;
@@ -202,10 +202,6 @@ namespace Katydid
 
     };
 
-    inline double KTVariableSpectrumDiscriminator::GetSNRThreshold() const
-    {
-        return fSNRThreshold;
-    }
 
     inline void KTVariableSpectrumDiscriminator::SetSNRAmplitudeThreshold(double thresh)
     {
@@ -221,21 +217,11 @@ namespace Katydid
         return;
     }
 
-    inline double KTVariableSpectrumDiscriminator::GetSigmaThreshold() const
-    {
-        return fSigmaThreshold;
-    }
-
     inline void KTVariableSpectrumDiscriminator::SetSigmaThreshold(double thresh)
     {
         fSigmaThreshold = thresh;
         fThresholdMode = eSigma;
         return;
-    }
-
-    inline double KTVariableSpectrumDiscriminator::GetMinFrequency() const
-    {
-        return fMinFrequency;
     }
 
     inline void KTVariableSpectrumDiscriminator::SetMinFrequency(double freq)
@@ -245,21 +231,11 @@ namespace Katydid
         return;
     }
 
-    inline double KTVariableSpectrumDiscriminator::GetMaxFrequency() const
-    {
-        return fMaxFrequency;
-    }
-
     inline void KTVariableSpectrumDiscriminator::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;
         return;
-    }
-
-    inline unsigned KTVariableSpectrumDiscriminator::GetMinBin() const
-    {
-        return fMinBin;
     }
 
     inline void KTVariableSpectrumDiscriminator::SetMinBin(unsigned bin)
@@ -269,16 +245,13 @@ namespace Katydid
         return;
     }
 
-    inline unsigned KTVariableSpectrumDiscriminator::GetMaxBin() const
-    {
-        return fMaxBin;
-    }
-
     inline void KTVariableSpectrumDiscriminator::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;
         return;
     }
+
+
 } /* namespace Katydid */
 #endif /* KTVARIABLESPECTRUMDISCRIMINATOR_HH_ */

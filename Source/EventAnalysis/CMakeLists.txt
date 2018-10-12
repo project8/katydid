@@ -5,69 +5,108 @@
 #set (EVENTANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EventAnalysisDict.cxx)
 
 set (EVENTANALYSIS_HEADERFILES
-    KTCandidateCleaner.hh
-    KTCandidateTrackFinder.hh
+    CutClasses/KTEventFirstTrackNPointsCut.hh
+    CutClasses/KTEventFirstTrackNUPCut.hh
+    CutClasses/KTEventFirstTrackPowerCut.hh
+    CutClasses/KTEventFirstTrackSNRCut.hh
+    CutClasses/KTEventTimeCut.hh
+    CutClasses/KTEventTimeInAcqCut.hh
+    CutClasses/KTLinearFitCut.hh
+    CutClasses/KTMultiPeakTrackEventSequenceIDCut.hh
+    CutClasses/KTMultiPeakTrackMultiplicityCut.hh
+    CutClasses/KTPowerFitCut.hh
+    CutClasses/KTProcessedTrackCut.hh
+    CutClasses/KTSequentialLineNUPCut.hh
+    CutClasses/KTSequentialLinePointDensityCut.hh
+    CutClasses/KTSequentialLineSNRCut.hh
+    CutClasses/KTTrackFreqCut.hh
+    CutClasses/KTTrackMainbandCut.hh
+    CutClasses/KTTrackMVACut.hh
+    CutClasses/KTTrackTimeCut.hh
     KTCollinearTrackClustering.hh
+
     KTDataCutter.hh
-    KTDBScan.hh
     KTDistanceMatrix.hh
-    KTDBScanEventClustering.hh
-    KTDBScanTrackClustering.hh
-    KTEventTimeCut.hh
+    KTDBSCANEventClustering.hh
+    KTDBSCANTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
     KTIterativeTrackClustering.hh
-    KTLinearFitCut.hh
     KTMultiPeakEventBuilder.hh
+    KTMultiPeakTrackProcessing.hh
     KTMultiPeakTrackBuilder.hh
-    KTMultiPeakTrackEventSequenceIDCut.hh
-    KTMultiPeakTrackMultiplicityCut.hh
     KTMultiSliceClustering.hh
     KTOverlappingTrackClustering.hh
-    KTPowerFitCut.hh
-    KTProcessedTrackCut.hh
+    KTQuadraticPhaseShift.hh
+    KTRPClassifier.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
-    KTTrackProcessing.hh
-    KTTrackFreqCut.hh
-    KTTrackTimeCut.hh
+    KTTrackProcessingDoubleCuts.hh
+    KTTrackProcessingWeightedSlope.hh
 )
 
 set (EVENTANALYSIS_SOURCEFILES
-    KTCandidateCleaner.cc
-    KTCandidateTrackFinder.cc
+    CutClasses/KTEventFirstTrackNPointsCut.cc
+    CutClasses/KTEventFirstTrackNUPCut.cc
+    CutClasses/KTEventFirstTrackPowerCut.cc
+    CutClasses/KTEventFirstTrackSNRCut.cc
+    CutClasses/KTEventTimeCut.cc
+    CutClasses/KTEventTimeInAcqCut.cc
+    CutClasses/KTLinearFitCut.cc
+    CutClasses/KTMultiPeakTrackEventSequenceIDCut.cc
+    CutClasses/KTMultiPeakTrackMultiplicityCut.cc
+    CutClasses/KTSequentialLineNUPCut.cc
+    CutClasses/KTSequentialLinePointDensityCut.cc
+    CutClasses/KTSequentialLineSNRCut.cc
     KTCollinearTrackClustering.cc
+    CutClasses/KTPowerFitCut.cc
+    CutClasses/KTProcessedTrackCut.cc
+    CutClasses/KTTrackMainbandCut.cc
+    CutClasses/KTTrackMVACut.cc
+    CutClasses/KTTrackFreqCut.cc
+    CutClasses/KTTrackTimeCut.cc
+
     KTDataCutter.cc
-    KTDBScanEventClustering.cc
-    KTDBScanTrackClustering.cc
-    KTEventTimeCut.cc
+    KTDBSCANEventClustering.cc
+    KTDBSCANTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
     KTIterativeTrackClustering.cc
-    KTLinearFitCut.cc
     KTMultiPeakEventBuilder.cc
+    KTMultiPeakTrackProcessing.cc
     KTMultiPeakTrackBuilder.cc
-    KTMultiPeakTrackEventSequenceIDCut.cc
-    KTMultiPeakTrackMultiplicityCut.cc
     KTMultiSliceClustering.cc
     KTOverlappingTrackClustering.cc
-    KTPowerFitCut.cc
-    KTProcessedTrackCut.cc
+    KTRPClassifier.cc
+    KTQuadraticPhaseShift.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
-    KTTrackProcessing.cc
-    KTTrackFreqCut.cc
-    KTTrackTimeCut.cc
+    KTTrackProcessingDoubleCuts.cc
+    KTTrackProcessingWeightedSlope.cc
+
 )
 
 if (ROOT_FOUND)
-    set (EVENTANALYSIS_HEADERFILES 
-        ${EVENTANALYSIS_HEADERFILES}   
+    set (EVENTANALYSIS_HEADERFILES
+        ${EVENTANALYSIS_HEADERFILES}
         KTLinearDensityProbeFit.hh
+        KTTMVAClassifier.hh
     )
     set (EVENTANALYSIS_SOURCEFILES
         ${EVENTANALYSIS_SOURCEFILES}
         KTLinearDensityProbeFit.cc
+        KTTMVAClassifier.cc
     )
 endif (ROOT_FOUND)
+
+if (DLIB_FOUND)
+    set (EVENTANALYSIS_HEADERFILES
+        ${EVENTANALYSIS_HEADERFILES}
+        KTDLIBClassifier.hh
+    )
+    set (EVENTANALYSIS_SOURCEFILES
+        ${EVENTANALYSIS_SOURCEFILES}
+        KTDLIBClassifier.cc
+    )
+endif (DLIB_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility

@@ -33,6 +33,9 @@ namespace Katydid
 
             MEMBERVARIABLE(bool, IsCut);
 
+            MEMBERVARIABLE(double, MVAClassifier);
+            MEMBERVARIABLE(bool, Mainband);
+
             MEMBERVARIABLE(double, StartTimeInAcq);
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
@@ -43,6 +46,13 @@ namespace Katydid
             MEMBERVARIABLE(double, Slope);
             MEMBERVARIABLE(double, Intercept);
             MEMBERVARIABLE(double, TotalPower);
+            MEMBERVARIABLE(unsigned, NTrackBins);
+            MEMBERVARIABLE(double, TotalTrackSNR);
+            MEMBERVARIABLE(double, MaxTrackSNR);
+            MEMBERVARIABLE(double, TotalTrackNUP);
+            MEMBERVARIABLE(double, MaxTrackNUP);
+            MEMBERVARIABLE(double, TotalWideTrackSNR);
+            MEMBERVARIABLE(double, TotalWideTrackNUP);
 
             MEMBERVARIABLE(double, StartTimeInRunCSigma);
             MEMBERVARIABLE(double, EndTimeInRunCSigma);
@@ -59,32 +69,44 @@ namespace Katydid
 
     };
 
+    struct AllTrackData
+    {
+        Nymph::KTDataPtr fData;
+        KTProcessedTrackData& fProcTrack;
+
+        AllTrackData( Nymph::KTDataPtr data, KTProcessedTrackData& track ) : fData( data ), fProcTrack( track ) {}
+        AllTrackData( Nymph::KTDataPtr data ) : fData( data ), fProcTrack( data->Of< KTProcessedTrackData >() ) {}
+    };
+
     // containers of KTProcessedTrackData
     struct TrackTimeComp
     {
-        bool operator() (const KTProcessedTrackData& lhs, const KTProcessedTrackData& rhs) const
+        bool operator() (const AllTrackData& lhs, const AllTrackData& rhs) const
         {
-            if (lhs.GetEventSequenceID() != rhs.GetEventSequenceID()) return lhs.GetEventSequenceID() < rhs.GetEventSequenceID();
-            if (lhs.GetStartTimeInRunC() != rhs.GetStartTimeInRunC()) return lhs.GetStartTimeInRunC() < rhs.GetStartTimeInRunC();
-            if (lhs.GetEndTimeInRunC() != rhs.GetEndTimeInRunC()) return lhs.GetEndTimeInRunC() < rhs.GetEndTimeInRunC();
-            if (lhs.GetStartFrequency() != rhs.GetStartFrequency()) return lhs.GetStartFrequency() < rhs.GetStartFrequency();
-            return lhs.GetEndFrequency() < rhs.GetEndFrequency();
+            if (lhs.fProcTrack.GetEventSequenceID() != rhs.fProcTrack.GetEventSequenceID()) return lhs.fProcTrack.GetEventSequenceID() < rhs.fProcTrack.GetEventSequenceID();
+            if (lhs.fProcTrack.GetStartTimeInRunC() != rhs.fProcTrack.GetStartTimeInRunC()) return lhs.fProcTrack.GetStartTimeInRunC() < rhs.fProcTrack.GetStartTimeInRunC();
+            if (lhs.fProcTrack.GetEndTimeInRunC() != rhs.fProcTrack.GetEndTimeInRunC()) return lhs.fProcTrack.GetEndTimeInRunC() < rhs.fProcTrack.GetEndTimeInRunC();
+            if (lhs.fProcTrack.GetStartFrequency() != rhs.fProcTrack.GetStartFrequency()) return lhs.fProcTrack.GetStartFrequency() < rhs.fProcTrack.GetStartFrequency();
+            return lhs.fProcTrack.GetEndFrequency() < rhs.fProcTrack.GetEndFrequency();
         }
     };
-    typedef std::set< KTProcessedTrackData, TrackTimeComp > TrackSet;
+
+    typedef std::set< AllTrackData, TrackTimeComp > TrackSet;
     typedef TrackSet::iterator TrackSetIt;
     typedef TrackSet::const_iterator TrackSetCIt;
+
     struct TrackSetCItComp
     {
         bool operator() (const TrackSetCIt& lhs, const TrackSetCIt& rhs) const
         {
-            if (lhs->GetEventSequenceID() != rhs->GetEventSequenceID()) return lhs->GetEventSequenceID() < rhs->GetEventSequenceID();
-            if (lhs->GetStartTimeInRunC() != rhs->GetStartTimeInRunC()) return lhs->GetStartTimeInRunC() < rhs->GetStartTimeInRunC();
-            if (lhs->GetEndTimeInRunC() != rhs->GetEndTimeInRunC()) return lhs->GetEndTimeInRunC() < rhs->GetEndTimeInRunC();
-            if (lhs->GetStartFrequency() != rhs->GetStartFrequency()) return lhs->GetStartFrequency() < rhs->GetStartFrequency();
-            return lhs->GetEndFrequency() < rhs->GetEndFrequency();
+            if (lhs->fProcTrack.GetEventSequenceID() != rhs->fProcTrack.GetEventSequenceID()) return lhs->fProcTrack.GetEventSequenceID() < rhs->fProcTrack.GetEventSequenceID();
+            if (lhs->fProcTrack.GetStartTimeInRunC() != rhs->fProcTrack.GetStartTimeInRunC()) return lhs->fProcTrack.GetStartTimeInRunC() < rhs->fProcTrack.GetStartTimeInRunC();
+            if (lhs->fProcTrack.GetEndTimeInRunC() != rhs->fProcTrack.GetEndTimeInRunC()) return lhs->fProcTrack.GetEndTimeInRunC() < rhs->fProcTrack.GetEndTimeInRunC();
+            if (lhs->fProcTrack.GetStartFrequency() != rhs->fProcTrack.GetStartFrequency()) return lhs->fProcTrack.GetStartFrequency() < rhs->fProcTrack.GetStartFrequency();
+            return lhs->fProcTrack.GetEndFrequency() < rhs->fProcTrack.GetEndFrequency();
         }
     };
+
     typedef std::set< TrackSetCIt, TrackSetCItComp > TrackSetCItSet;
 
 } /* namespace Katydid */

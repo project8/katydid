@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.9.1)
+project (Katydid VERSION 2.14.0)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -40,9 +40,13 @@ option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
 option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
 option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
+option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
 
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
+set_option( Cicada_ENABLE_KATYDID_NAMESPACE FALSE )
+set_option( Cicada_ADD_CICADA_PY TRUE )
+set_option( Cicada_ENABLE_EXECUTABLES FALSE )
 
 
 ##############
@@ -53,6 +57,11 @@ set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 pbuilder_add_submodule( Nymph Nymph )
 nymph_process_options()
 add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
+
+# Cicada
+if (Katydid_USE_ROOT)
+    pbuilder_add_submodule( Cicada Cicada )
+endif (Katydid_USE_ROOT)
 
 # Mantis
 if (Katydid_USE_MANTIS)
@@ -133,7 +142,7 @@ endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)
-    find_package (ROOT 5.28 COMPONENTS Gui Spectrum)
+    find_package (ROOT 6.00 COMPONENTS Gui Spectrum TMVA)
 else (Katydid_USE_ROOT)
     set (ROOT_FOUND FALSE)
 endif (Katydid_USE_ROOT)
@@ -183,6 +192,21 @@ if (EIGEN3_FOUND)
    message (STATUS "Eigen found.")
    include_directories (${EIGEN3_INCLUDE_DIR})
 endif (EIGEN3_FOUND)
+
+# dlib
+if (Katydid_USE_DLIB)
+    find_package(DLIB)
+endif (Katydid_USE_DLIB)
+if (DLIB_FOUND)
+    message (STATUS "DLIB include dir: ${DLIB_INCLUDE_DIR}")
+    message (STATUS "DLIB libraries: ${DLIB_LIBRARIES}")
+    add_definitions(-DUSE_DLIB)
+    include_directories (${DLIB_INCLUDE_DIR})
+    pbuilder_add_ext_libraries (${DLIB_LIBRARIES})
+else (DLIB_FOUND)
+    message (STATUS "Building without DLIB")
+    remove_definitions(-DUSE_DLIB)
+endif (DLIB_FOUND)
 
 # OpenMP
 #find_package (OpenMP)

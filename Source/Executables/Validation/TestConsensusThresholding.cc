@@ -6,8 +6,8 @@
 */
 
 #include "KTConsensusThresholding.hh"
+#include "KTDBSCANTrackClustering.hh"
 #include "KTKDTreeData.hh"
-#include "KTDBScanTrackClustering.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -24,7 +24,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBScanTrackClustering");
+KTLOGGER(testlog, "TestDBSCANTrackClustering");
 
 int main()
 {
@@ -218,7 +218,7 @@ int main()
     KTINFO(testlog, "Number of points after CT: " << kdTreeData.GetSetOfPoints().size());
 
 
-    KTDBScanTrackClustering clustering;
+    KTDBSCANTrackClustering clustering;
 
     clustering.SetMinPoints(5);
 
@@ -266,7 +266,7 @@ int main()
 #endif
     unsigned iCand = 0;
 
-    typedef KTSparseWaterfallCandidateData::Points Points;
+    typedef KTDiscriminatedPoints Points;
 
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {

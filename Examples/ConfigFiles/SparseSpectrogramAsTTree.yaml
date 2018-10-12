@@ -1,0 +1,105 @@
+processor-toolbox:
+
+    processors:
+        - { type: "egg-processor",          name: "egg1" }
+        - { type: "forward-fftw",           name: "fft1" }
+        - { type: "convert-to-power",       name: "to-ps1" }
+        - { type: "data-accumulator",       name: "acc" }
+        - { type: "gain-variation",         name: "gainvar" }
+        - { type: "egg-processor",          name: "egg2" }
+        - { type: "forward-fftw",           name: "fft2" }
+        - { type: "convert-to-power",       name: "to-ps2" }
+        - { type: "gain-normalization",     name: "gain-norm" }
+        - { type: "spectrum-discriminator", name: "discrim" }
+        - { type: "create-kd-tree",         name: "kd-tree" }
+        - { type: "root-tree-writer",       name: "rtw" }
+   
+    connections:
+            - signal: "egg1:header"
+              slot: "fft1:header"
+            - signal: "egg2:header"
+              slot: "fft2:header"
+            - signal: "egg2:header"
+              slot: "kd-tree:header"
+            - signal: "egg2:header"
+              slot: "rtw:header"
+
+            - signal: "egg1:ts"
+              slot: "fft1:ts-fftw"
+            - signal: "fft1:fft"
+              slot: "to-ps1:fs-fftw-to-psd"
+            - signal: "to-ps1:psd"
+              slot: "acc:ps"
+            - signal: "acc:ps-finished"
+              slot: "gainvar:ps"
+            - signal: "gainvar:gain-var"
+              slot: "gain-norm:gv"
+
+            - signal: "egg2:ts"
+              slot: "fft2:ts-fftw"
+            - signal: "fft2:fft"
+              slot: "to-ps2:fs-fftw-to-psd"
+            - signal: "to-ps2:psd"
+              slot: "gain-norm:ps-pre"
+            - signal: "gain-norm:norm-ps"
+              slot: "discrim:norm-ps"
+            - signal: "discrim:disc-1d"
+              slot: "kd-tree:disc-1d"
+            - signal: "discrim:disc-1d"
+              slot: "rtw:disc-1d"
+            - signal: "kd-tree:kd-tree"
+              slot: "rtw:kd-tree"
+
+            - signal: "egg2:egg-done"
+              slot: "kd-tree:done"
+
+    run-queue:
+        - egg1
+        - egg2
+
+    
+egg1:
+    filename: "my_data_file.egg"
+    egg-reader: egg3
+    number-of-slices: 5000
+    slice-size: 8192
+    stride: 8192
+    progress-report-interval: 1000
+
+fft1:
+    transform-flag: "ESTIMATE"
+
+acc:
+    number-to-average: 0
+    signal-interval: 0
+
+gainvar:
+    normalize: false
+    min-frequency: 2e6
+    max-frequency: 98e6
+    fit-points: 50
+
+
+egg2:
+    filename: "my_data_file.egg"
+    egg-reader: egg3
+    number-of-slices: 5000
+    slice-size: 8192
+    stride: 8192
+    progress-report-interval: 1000
+
+fft2:
+    transform-flag: "ESTIMATE"
+
+discrim:
+    min-frequency: 8e6
+    max-frequency: 92e6
+    snr-threshold-power: 5.0
+
+kd-tree:
+    distance-method: "euclidean"
+
+rtw:
+    output-file: "my_ss_ttree_file.root"
+    file-flag: "recreate"
+

@@ -20,19 +20,23 @@
 
 namespace Katydid
 {
-    
+    typedef KTPhysicalArray< 1, KTFrequencySpectrumFFTW* > KTMultiFSFFTW;
 
     class KTMultiFSDataFFTWCore
     {
         public:
+            typedef KTMultiFSFFTW multi_spectrum_type;
+            typedef KTFrequencySpectrumFFTW spectrum_type;
+
+        public:
             KTMultiFSDataFFTWCore();
             virtual ~KTMultiFSDataFFTWCore();
 
-            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra(unsigned component = 0) const;
-            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra(unsigned component = 0);
+            const KTMultiFSFFTW* GetSpectra(unsigned component = 0) const;
+            KTMultiFSFFTW* GetSpectra(unsigned component = 0);
             unsigned GetNComponents() const;
 
-            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra, unsigned component = 0);
+            void SetSpectra(KTMultiFSFFTW* spectra, unsigned component = 0);
             void SetSpectrum(KTFrequencySpectrumFFTW* spectrum, unsigned iSpect, unsigned component = 0);
 
             void SetNSpectra(unsigned nSpectra);
@@ -41,7 +45,7 @@ namespace Katydid
         protected:
             void DeleteSpectra(unsigned component = 0);
 
-            std::vector< KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* > fSpectra;
+            std::vector< KTMultiFSFFTW* > fSpectra;
 
 #ifdef ROOT_FOUND
         public:
@@ -53,12 +57,12 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(unsigned component) const
+    inline const KTMultiFSFFTW* KTMultiFSDataFFTWCore::GetSpectra(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(unsigned component)
+    inline KTMultiFSFFTW* KTMultiFSDataFFTWCore::GetSpectra(unsigned component)
     {
         return fSpectra[component];
     }
@@ -68,25 +72,11 @@ namespace Katydid
         return unsigned(fSpectra.size());
     }
 
-    inline void KTMultiFSDataFFTWCore::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra, unsigned component)
+    inline void KTMultiFSDataFFTWCore::SetSpectra(KTMultiFSFFTW* spectra, unsigned component)
     {
-        if (component >= fSpectra.size())
-            SetNComponents(component+1);
+        if (component >= fSpectra.size()) SetNComponents(component+1);
         DeleteSpectra(component);
         fSpectra[component] = spectra;
-        return;
-    }
-
-    inline void KTMultiFSDataFFTWCore::DeleteSpectra(unsigned component)
-    {
-        if (component >= fSpectra.size())
-            return;
-        for (KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >::iterator iter = fSpectra[component]->begin(); iter != fSpectra[component]->end(); iter++)
-        {
-            delete *iter;
-        }
-        delete fSpectra[component];
-        fSpectra[component] = NULL;
         return;
     }
 

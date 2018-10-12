@@ -23,8 +23,6 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
-    //class KTSlidingWindowFSData;
-    //class KTSlidingWindowFSDataFFTW;
     class KTSpline;
  
 
@@ -32,9 +30,19 @@ namespace Katydid
      @class KTGainNormalization
      @author N. S. Oblath
 
-     @brief Normalizes a frequency spectrum using a KTGainVariationData object.
+     @brief Normalizes spectrum data using the background shape and variance.
 
      @details
+     Background shape and variance are supplied in a KTGainVariation object.  That can be either pre-calculated and provided using
+     the SetPreCalcGainVar() function ("gv" slot), or provided with each slice to be normalized.  When using the pre-calculated gain variation,
+     use one of the "-pre" slots / Normalize() functions with a single data object argument.
+
+     The normalized bin value, \f$\hat{x}\f$ is calculated as follows:
+     \f[
+         \hat{x} = \langle\mu\rangle + (x - \mu) * \sqrt{\frac{\langle\sigma^2\rangle}{\sigma^2}},
+     \f]
+     where \f$x\f$ is the unnormalized bin value, \f$\mu\f$ is the background mean at that bin, \f$\sigma^2\f$ is the background variance at
+     that bin, \f$\langle\mu\rangle\f$ is the mean of the background mean, and \f$\langle\sigma^2\rangle\f$ is the mean of the background variance.
  
      Configuration name: "gain-normalization"
 
@@ -46,7 +54,9 @@ namespace Katydid
 
      Slots:
      - "fs-polar": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
+     - "fs-polar-pre": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum based on the pre-calculated gain variation; Requires KTFrequencySpectrumDataPolar; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
      - "fs-fftw": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
+     - "fs-fftw-pre": void (Nymph::KTDataPtr) -- Normalize a frequency spectrum based on the pre-calculated gain variation; Requires KTFrequencySpectrumDataFFTW; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
      - "ps": void (Nymph::KTDataPtr) -- Normalizes a power spectrum; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTNormalizedPSData; Emits signal norm-ps
      - "ps-pre": void (Nymph::KTDataPtr) -- Normalizes a power spectrum based on the pre-calculated gain variation; Requires KTPowerSpectrumData; Adds KTNormalizedPSData; Emits signal norm-ps
      - "gv": void (Nymph::KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
@@ -88,22 +98,23 @@ namespace Katydid
         public:
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
 
+            bool Normalize(KTFrequencySpectrumDataPolar& fsData);
+            bool Normalize(KTFrequencySpectrumDataFFTW& fsData);
             bool Normalize(KTPowerSpectrumData& psData);
 
             bool Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
             bool Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
             bool Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvdata);
 
-            //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
-            //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
-
-            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
-            KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
-            KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline);
+            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance);
+            KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance);
+            KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline, const KTSpline* varSpline, double& normalizedMean, double& normalizedVariance);
 
         private:
             KTGainVariationData fGVData;
             std::vector< double > fMagnitudeCache;
+            double fMeanGV;
+            double fMeanGVVariance;
 
             //***************
             // Signals
@@ -113,8 +124,6 @@ namespace Katydid
             Nymph::KTSignalData fFSPolarSignal;
             Nymph::KTSignalData fFSFFTWSignal;
             Nymph::KTSignalData fPSSignal;
-            //Nymph::KTSignalData fSWFSSignal;
-            //Nymph::KTSignalData fSWFSFFTWSignal;
 
             //***************
             // Slots
@@ -127,6 +136,8 @@ namespace Katydid
 
             Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
 
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarPreCalcSlot;
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWPreCalcSlot;
             Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
 
     };

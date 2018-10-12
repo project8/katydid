@@ -16,118 +16,113 @@ class TClonesArray;
 
 namespace Katydid
 {
-    //***********************
-    // TProcessedTrackData
-    //***********************
+    //************************
+    // TDiscriminatedPoint
+    //************************
 
-    class KTProcessedTrackData;
+    class KTDiscriminatedPoint;
 
-    class TProcessedTrackData : public TObject
+    class TDiscriminatedPoint : public TObject
     {
-            MEMBERVARIABLE(UInt_t, Component);
-            MEMBERVARIABLE(UInt_t, AcquisitionID);
-            MEMBERVARIABLE(UInt_t, TrackID);
-            MEMBERVARIABLE(UInt_t, EventID);
-            MEMBERVARIABLE(Int_t, EventSequenceID);
 
-            MEMBERVARIABLE(Bool_t, IsCut);
-
-            MEMBERVARIABLE(Double_t, StartTimeInRunC);
-            MEMBERVARIABLE(Double_t, StartTimeInAcq);
-            MEMBERVARIABLE(Double_t, EndTimeInRunC);
-            MEMBERVARIABLE(Double_t, TimeLength);
-            MEMBERVARIABLE(Double_t, StartFrequency);
-            MEMBERVARIABLE(Double_t, EndFrequency);
-            MEMBERVARIABLE(Double_t, FrequencyWidth);
-            MEMBERVARIABLE(Double_t, Slope);
-            MEMBERVARIABLE(Double_t, Intercept);
-            MEMBERVARIABLE(Double_t, TotalPower);
-
-            MEMBERVARIABLE(Double_t, StartTimeInRunCSigma);
-            MEMBERVARIABLE(Double_t, EndTimeInRunCSigma);
-            MEMBERVARIABLE(Double_t, TimeLengthSigma);
-            MEMBERVARIABLE(Double_t, StartFrequencySigma);
-            MEMBERVARIABLE(Double_t, EndFrequencySigma);
-            MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
-            MEMBERVARIABLE(Double_t, SlopeSigma);
-            MEMBERVARIABLE(Double_t, InterceptSigma);
-            MEMBERVARIABLE(Double_t, TotalPowerSigma);
+        MEMBERVARIABLE(Double_t, TimeInRunC);
+        MEMBERVARIABLE(Double_t, Frequency);
+        MEMBERVARIABLE(Double_t, Amplitude);
+        MEMBERVARIABLE(Double_t, TimeInAcq);
+        MEMBERVARIABLE(Double_t, Mean);
+        MEMBERVARIABLE(Double_t, Variance);
+        MEMBERVARIABLE(Double_t, NeighborhoodAmplitude);
+        MEMBERVARIABLE(UInt_t, BinInSlice);
 
         public:
-            TProcessedTrackData();
-            TProcessedTrackData(const KTProcessedTrackData& data);
-            TProcessedTrackData(const TProcessedTrackData& orig);
-            virtual ~TProcessedTrackData();
+            TDiscriminatedPoint();
+            TDiscriminatedPoint(const TDiscriminatedPoint& orig);
+            virtual ~TDiscriminatedPoint();
             TObject* Clone(const char* newname="");
-            TProcessedTrackData& operator=(const TProcessedTrackData& rhs);
+            TDiscriminatedPoint& operator=(const TDiscriminatedPoint& rhs);
 
-            void Load(const KTProcessedTrackData& data);
-            void Unload(KTProcessedTrackData& data) const;
-
-            ClassDef(TProcessedTrackData, 1);
+            ClassDef(TDiscriminatedPoint, 1);
     };
 
     //************************
-    // TMultiTrackEventData
+    // TSparseWaterFallCandidateData
     //************************
 
-    class KTMultiTrackEventData;
+    class KTSparseWaterfallCandidateData;
 
-    class TMultiTrackEventData : public TObject
+    class TSparseWaterfallCandidateData : public TObject
     {
         MEMBERVARIABLE(UInt_t, Component);
         MEMBERVARIABLE(UInt_t, AcquisitionID);
-        MEMBERVARIABLE(UInt_t, EventID);
-        MEMBERVARIABLE(UInt_t, TotalEventSequences);
+        MEMBERVARIABLE(UInt_t, CandidateID);
 
-        MEMBERVARIABLE(Double_t, StartTimeInRunC);
-        MEMBERVARIABLE(Double_t, StartTimeInAcq);
-        MEMBERVARIABLE(Double_t, EndTimeInRunC);
+        MEMBERVARIABLE(Double_t, TimeInRunC);
         MEMBERVARIABLE(Double_t, TimeLength);
-        MEMBERVARIABLE(Double_t, StartFrequency);
-        MEMBERVARIABLE(Double_t, EndFrequency);
-        MEMBERVARIABLE(Double_t, MinimumFrequency);
-        MEMBERVARIABLE(Double_t, MaximumFrequency);
+        MEMBERVARIABLE(Double_t, MinFrequency);
+        MEMBERVARIABLE(Double_t, MaxFrequency);
         MEMBERVARIABLE(Double_t, FrequencyWidth);
 
-        MEMBERVARIABLE(Double_t, StartTimeInRunCSigma);
-        MEMBERVARIABLE(Double_t, EndTimeInRunCSigma);
-        MEMBERVARIABLE(Double_t, TimeLengthSigma);
-        MEMBERVARIABLE(Double_t, StartFrequencySigma);
-        MEMBERVARIABLE(Double_t, EndFrequencySigma);
-        MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
-
-        MEMBERVARIABLE(UInt_t, FirstTrackID);
-        MEMBERVARIABLE(Double_t, FirstTrackTimeLength);
-        MEMBERVARIABLE(Double_t, FirstTrackFrequencyWidth);
-        MEMBERVARIABLE(Double_t, FirstTrackSlope);
-        MEMBERVARIABLE(Double_t, FirstTrackIntercept);
-        MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
-
-        MEMBERVARIABLE(Double_t, UnknownEventTopology);
-
         public:
-            TClonesArray* GetTracks() {return fTracks;}
+            TClonesArray* GetPoints() {return fPoints;}
 
         private:
-            TClonesArray* fTracks; //->
+            TClonesArray* fPoints;
 
         public:
-            TMultiTrackEventData();
-            TMultiTrackEventData(const KTMultiTrackEventData& data);
-            TMultiTrackEventData(const TMultiTrackEventData& orig);
-            virtual ~TMultiTrackEventData();
+            TSparseWaterfallCandidateData();
+            TSparseWaterfallCandidateData(const TSparseWaterfallCandidateData& orig);
+            virtual ~TSparseWaterfallCandidateData();
             TObject* Clone(const char* newname="");
-            TMultiTrackEventData& operator=(const TMultiTrackEventData& rhs);
+            TSparseWaterfallCandidateData& operator=(const TSparseWaterfallCandidateData& rhs);
 
-            void Load(const KTMultiTrackEventData& data);
-            void Unload(KTMultiTrackEventData& data) const;
+            std::string GetBranchName() { return std::string("SparseWaterfall"); } // Defines the default name of the object saved inside the output tree
 
-            ClassDef(TMultiTrackEventData, 1);
+            ClassDef(TSparseWaterfallCandidateData, 1);
     };
 
+    //************************
+    // TSequentialLineData
+    //************************
 
+    class KTSequentialLineData;
+
+    class TSequentialLineData : public TObject
+    {
+        MEMBERVARIABLE(UInt_t, Component);
+        MEMBERVARIABLE(UInt_t, AcquisitionID);
+        MEMBERVARIABLE(UInt_t, CandidateID);
+
+        MEMBERVARIABLE(Double_t, StartTimeInRunC);
+        MEMBERVARIABLE(Double_t, EndTimeInRunC);
+        MEMBERVARIABLE(Double_t, StartTimeInAcq);
+        MEMBERVARIABLE(Double_t, StartFrequency);
+        MEMBERVARIABLE(Double_t, EndFrequency);
+        MEMBERVARIABLE(Double_t, Slope);
+
+        MEMBERVARIABLE(Double_t, TotalPower);
+        MEMBERVARIABLE(Double_t, TotalTrackSNR);
+        MEMBERVARIABLE(Double_t, TotalTrackNUP);
+        MEMBERVARIABLE(Double_t, TotalWidePower);
+        MEMBERVARIABLE(Double_t, TotalWideTrackSNR);
+        MEMBERVARIABLE(Double_t, TotalWideTrackNUP);
+
+        public:
+            TClonesArray* GetPoints() {return fPoints;}
+
+        private:
+            TClonesArray* fPoints;
+
+        public:
+            TSequentialLineData();
+            TSequentialLineData(const TSequentialLineData& orig);
+            virtual ~TSequentialLineData();
+            TObject* Clone(const char* newname="");
+            TSequentialLineData& operator=(const TSequentialLineData& rhs);
+
+            std::string GetBranchName() { return std::string("SequentialLine"); } // Defines the default name of the object saved inside the output tree
+
+            ClassDef(TSequentialLineData, 1);
+    };
 }
-
 
 #endif /* KTROOTDATA_HH_ */

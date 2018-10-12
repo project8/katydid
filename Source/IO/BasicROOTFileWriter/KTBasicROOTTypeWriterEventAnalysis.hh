@@ -12,6 +12,8 @@
 
 #include "KTData.hh"
 
+class TList;
+
 namespace Katydid
 {
     
@@ -22,6 +24,16 @@ namespace Katydid
             virtual ~KTBasicROOTTypeWriterEventAnalysis();
 
             void RegisterSlots();
+
+
+            //************************
+            // Processed Track
+            //************************
+        public:
+            void WriteProcTrack(Nymph::KTDataPtr data);
+
+        private:
+            TList* fTrackList;
 
 
             //************************

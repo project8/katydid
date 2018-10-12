@@ -15,12 +15,27 @@
 
 #include "KTSlot.hh"
 #include "KTLogger.hh"
+#include "KTMemberVariable.hh"
 
 #include <vector>
 
 namespace Katydid
 {
     KTLOGGER(avlog_hh, "KTLinearDensityProbeFit.hh");
+
+    /// function to evaluate gaussian function
+    inline double GausEval( double arg, double sigma )
+    {
+        return exp( -0.5*arg*arg/(sigma*sigma) );
+    }
+
+    /// Function to define a TF1
+    /// Sum of npeaks Gaussian peaks on a linear background
+    /// Background is specified by par[0] and par[1]
+    /// Gaussian peaks are specified by all other elements of par
+    /// npeaks is initialized in the header file
+    double SumOfGaussians( double *x, double *par );
+
 
     class KTProcessedTrackData;
     class KTDiscriminatedPoints2DData;
@@ -59,90 +74,58 @@ namespace Katydid
             anticipated that these results will differ between signal and sideband peaks, in a way which is not necessarily simple.
 
      Available configuration values:
+     - "do-density-maximization": bool -- whether or not to perform the density maximization algorithm
+     - "do-projection-analysis": bool -- whether or not to perform the rotate-and-project analysis
      - "min-frequency": double -- minimum frequency bound for intercept
      - "max-frequency": double -- maximum frequency bound for intercept
-     - "min-bin": unsigned -- bin associated with minimum frequency bound
-     - "max-bin": unsigned -- bin associated with maximum frequency bound
      - "probe-width-big": double -- wide value of 's' in the above description, the Gaussian width of the error metric
      - "probe-width-small": double -- narrow value of 's'
      - "step-size": double -- increment in the intercept sweep
      - "spectrum-tolerance": double -- 'sigma' in the TSpectrum::Search function; roughly the minimum number of bins which must separate distinct peaks
      - "spectrum-threshold": double -- 'threshold' in the TSpectrum::Search function; peaks with amplitude less than threshold*highest_peak are discarded
-     - "algorithm": unsigned -- specifies which algorithm to use, 1 or 2. Any other value will default to performing both algorithms.
 
      Slots:
      - "thresh-points": void (Nymph::KTDataPtr) -- Performs fit analysis on a set of 2D Points; Requires KTProcessedTrackData, KTDiscriminatedPoints2DData, and KTPSCollectionData; Adds KTLinearFitResult
      - "gv": void (Nymph::KTDataPtr) -- Stores gain variation for later use with spectrogram; Requires KTGainVariationData
-     
+
      Signals:
      - "density-fit": void (Nymph::KTDataPtr) -- Emitted upon completion of density maximization; Guarantees KTLinearFitResult
      - "power-fit": void (Nymph::KTDataPtr) -- Emitted upon completion of power analysis; Guarantees KTPowerFitData
-    */
+     */
 
     class KTLinearDensityProbeFit : public Nymph::KTProcessor
     {
-    	public:
+        public:
             KTLinearDensityProbeFit(const std::string& name = "linear-density-fit");
             virtual ~KTLinearDensityProbeFit();
 
             bool Configure(const scarab::param_node* node);
 
-            double GetMinFrequency() const;
-            void SetMinFrequency(double freq);
+            MEMBERVARIABLE(bool, DoDensityMaximization);
+            MEMBERVARIABLE(bool, DoProjectionAnalysis);
 
-            double GetMaxFrequency() const;
-            void SetMaxFrequency(double freq);
+            MEMBERVARIABLE(double, MinFrequency);
+            MEMBERVARIABLE(double, MaxFrequency);
 
-            unsigned GetMinBin() const;
-            void SetMinBin(unsigned bin);
+            MEMBERVARIABLE(double, ProbeWidthBig);
+            MEMBERVARIABLE(double, ProbeWidthSmall);
 
-            unsigned GetMaxBin() const;
-            void SetMaxBin(unsigned bin);
-
-         	double GetProbeWidthBig() const;
-         	void SetProbeWidthBig( double sigma );
-
-         	double GetProbeWidthSmall() const;
-         	void SetProbeWidthSmall( double sigma );
-
-         	double GetStepSize() const;
-         	void SetStepSize( double dalpha );
-
-            double GetTolerance() const;
-            void SetTolerance( double sigma );
-
-            double GetThreshold() const;
-            void SetThreshold( double threshold );            
-
-         	unsigned GetAlgorithm() const;
-         	void SetAlgorithm( unsigned alg );
-
-        private:
-            double fMinFrequency;
-            double fMaxFrequency;
-            unsigned fMinBin;
-            unsigned fMaxBin;
-            bool fCalculateMinBin;
-            bool fCalculateMaxBin;
-            double fProbeWidthBig;
-            double fProbeWidthSmall;
-            double fStepSize;
-            double fTolerance;
-            double fThreshold;
-            unsigned fAlgorithm;
-
-            int npeaks;
+            MEMBERVARIABLE(double, StepSize);
+            MEMBERVARIABLE(double, Tolerance);
+            MEMBERVARIABLE(double, Threshold);
 
         public:
             bool ChooseAlgorithm(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts, KTPSCollectionData& fullSpectrogram);
             bool SetPreCalcGainVar(KTGainVariationData& gvData);
-        	bool DensityMaximization(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts, KTPSCollectionData& fullSpectrogram);
+            bool DensityMaximization(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts, KTPSCollectionData& fullSpectrogram);
             bool ProjectionAnalysis(KTProcessedTrackData& data, KTDiscriminatedPoints2DData& pts, KTPSCollectionData& fullSpectrogram);
             bool PerformTest(KTDiscriminatedPoints2DData& pts, KTLinearFitResult& newData, double fProbeWidth, double fStepSize, unsigned component=0);
-        	double findIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width );
+            double FindIntercept( KTDiscriminatedPoints2DData& pts, double dalpha, double q, double width );
 
         private:
             KTGainVariationData fGVData;
+
+            int fNPeaks;
 
             //***************
             // Signals
@@ -160,119 +143,6 @@ namespace Katydid
             void SlotFunctionThreshPoints( Nymph::KTDataPtr data );
             Nymph::KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
     };
-
-    inline double KTLinearDensityProbeFit::GetMinFrequency() const
-    {
-        return fMinFrequency;
-    }
-
-    inline void KTLinearDensityProbeFit::SetMinFrequency(double freq)
-    {
-        fMinFrequency = freq;
-        return;
-    }
-
-    inline double KTLinearDensityProbeFit::GetMaxFrequency() const
-    {
-        return fMaxFrequency;
-    }
-
-    inline void KTLinearDensityProbeFit::SetMaxFrequency(double freq)
-    {
-        fMaxFrequency = freq;
-        return;
-    }
-
-    inline unsigned KTLinearDensityProbeFit::GetMinBin() const
-    {
-        return fMinBin;
-    }
-
-    inline void KTLinearDensityProbeFit::SetMinBin(unsigned bin)
-    {
-        fMinBin = bin;
-        fCalculateMinBin = false;
-        return;
-    }
-
-    inline unsigned KTLinearDensityProbeFit::GetMaxBin() const
-    {
-        return fMaxBin;
-    }
-
-    inline void KTLinearDensityProbeFit::SetMaxBin(unsigned bin)
-    {
-        fMaxBin = bin;
-        fCalculateMaxBin = false;
-        return;
-    }
-
-    inline double KTLinearDensityProbeFit::GetProbeWidthBig() const
-    {
-    	return fProbeWidthBig;
-    }
-
-    inline void KTLinearDensityProbeFit::SetProbeWidthBig(double sigma)
-    {
-    	fProbeWidthBig = sigma;
-    	return;
-    }
-
-    inline double KTLinearDensityProbeFit::GetProbeWidthSmall() const
-    {
-    	return fProbeWidthSmall;
-    }
-
-    inline void KTLinearDensityProbeFit::SetProbeWidthSmall(double sigma)
-    {
-    	fProbeWidthSmall = sigma;
-    	return;
-    }
-
-    inline double KTLinearDensityProbeFit::GetStepSize() const
-    {
-    	return fStepSize;
-    }
-    
-    inline void KTLinearDensityProbeFit::SetStepSize(double dalpha)
-    {
-    	fStepSize = dalpha;
-    	return;
-    }
-
-    inline double KTLinearDensityProbeFit::GetTolerance() const
-    {
-        return fTolerance;
-    }
-    
-    inline void KTLinearDensityProbeFit::SetTolerance(double sigma)
-    {
-        fTolerance = sigma;
-        return;
-    }
-
-    inline double KTLinearDensityProbeFit::GetThreshold() const
-    {
-        return fThreshold;
-    }
-    
-    inline void KTLinearDensityProbeFit::SetThreshold(double threshold)
-    {
-        fThreshold = threshold;
-        return;
-    }
-
-    inline unsigned KTLinearDensityProbeFit::GetAlgorithm() const
-    {
-    	return fAlgorithm;
-    }
-    
-    inline void KTLinearDensityProbeFit::SetAlgorithm(unsigned alg)
-    {
-    	fAlgorithm = alg;
-    	return;
-    }
-
 
 } /* namespace Katydid */
 

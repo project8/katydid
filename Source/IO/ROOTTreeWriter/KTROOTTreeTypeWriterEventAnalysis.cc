@@ -7,25 +7,36 @@
 
 #include "KTROOTTreeTypeWriterEventAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTFrequencyCandidate.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLinearFitResult.hh"
 #include "KTLogger.hh"
+#include "KTClassifierResultsData.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
+#include "KTProcessedMPTData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTSequentialLineData.hh"
 #include "KTWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
-//#include "TFrequencyCandidateData.hh"
+#include "CClassifierResultsData.hh"
+#include "CMTEWithClassifierResultsData.hh"
+#include "CProcessedMPTData.hh"
+#include "CROOTData.hh"
+#include "KTROOTData.hh"
 
 #include "TFile.h"
 #include "TGraph.h"
 #include "TGraph2D.h"
 #include "TH2.h"
 #include "TTree.h"
+#include "TClonesArray.h"
+#include "TNtupleD.h"
 
 #include <sstream>
 
@@ -41,31 +52,39 @@ namespace Katydid
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterEventAnalysis::KTROOTTreeTypeWriterEventAnalysis() :
-            KTROOTTreeTypeWriter(),
-            //KTTypeWriterEventAnalysis()
-            fFreqCandidateTree(NULL),
-            fWaterfallCandidateTree(NULL),
-            fSparseWaterfallCandidateTree(NULL),
-            fProcessedTrackTree(NULL),
-            fMultiPeakTrackTree(NULL),
-            fMultiTrackEventTree(NULL),
-            fLinearFitResultTree(NULL),
-            fPowerFitDataTree(NULL),
-            fFreqCandidateData(),
-            fWaterfallCandidateData(),
-            fSparseWaterfallCandidateData(),
-            fProcessedTrackDataPtr(NULL),
-            fMultiPeakTrackData(),
-            fMultiTrackEventDataPtr(NULL),
-            fLineFitData(),
-            fPowerFitData()
+                    KTROOTTreeTypeWriter(),
+                    //KTTypeWriterEventAnalysis()
+                    fFreqCandidateTree(NULL),
+                    fWaterfallCandidateTree(NULL),
+                    fSparseWaterfallCandidateTree(NULL),
+                    fSequentialLineTree(NULL),
+                    fProcessedMPTTree(NULL),
+                    fProcessedTrackTree(NULL),
+                    fMultiPeakTrackTree(NULL),
+                    fMultiTrackEventTree(NULL),
+                    fMTEWithClassifierResultsTree(NULL),
+                    fLinearFitResultTree(NULL),
+                    fPowerFitDataTree(NULL),
+                    fFreqCandidateData(),
+                    fWaterfallCandidateData(),
+                    fSparseWaterfallCandidateDataPtr(NULL),
+                    fSequentialLineDataPtr(NULL),
+                    fProcessedTrackDataPtr(NULL),
+                    fProcessedMPTDataPtr(NULL),
+                    fMultiPeakTrackData(),
+                    fMultiTrackEventDataPtr(NULL),
+                    fMTEWithClassifierResultsDataPtr(NULL),
+                    fLineFitData(),
+                    fPowerFitData()
     {
     }
 
     KTROOTTreeTypeWriterEventAnalysis::~KTROOTTreeTypeWriterEventAnalysis()
     {
+        delete fProcessedMPTDataPtr;
         delete fProcessedTrackDataPtr;
         delete fMultiTrackEventDataPtr;
+        delete fMTEWithClassifierResultsDataPtr;
     }
 
 
@@ -74,9 +93,11 @@ namespace Katydid
         fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates);
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate);
         fWriter->RegisterSlot("swfc", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
+        fWriter->RegisterSlot("processed-mpt", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT);
         fWriter->RegisterSlot("proc-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("mp-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
         fWriter->RegisterSlot("mt-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
+        fWriter->RegisterSlot("mte-with-cr", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMTEWithClassifierResults);
         fWriter->RegisterSlot("density-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData);
         fWriter->RegisterSlot("power-fit", this, &KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData);
         return;
@@ -120,7 +141,7 @@ namespace Katydid
                 fFreqCandidateData.fAmplitudeSum = it->GetAmplitudeSum();
 
                 fFreqCandidateTree->Fill();
-           }
+            }
         }
 
         return;
@@ -209,8 +230,8 @@ namespace Katydid
         fWaterfallCandidateData.fTimeLength = wcData.GetTimeLength();
         fWaterfallCandidateData.fFirstSliceNumber = wcData.GetFirstSliceNumber();
         fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
-        fWaterfallCandidateData.fMinFrequency = wcData.GetMinimumFrequency();
-        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaximumFrequency();
+        fWaterfallCandidateData.fMinFrequency = wcData.GetMinFrequency();
+        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaxFrequency();
         fWaterfallCandidateData.fMeanStartFrequency = wcData.GetMeanStartFrequency();
         fWaterfallCandidateData.fMeanEndFrequency = wcData.GetMeanEndFrequency();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
@@ -280,14 +301,141 @@ namespace Katydid
     // Sparse Waterfall Candidates
     //****************************
 
+    // void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
+    // {
+    //     KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
+    //     KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
+
+    //     if (! fWriter->OpenAndVerifyFile()) return;
+
+    //     if (fSparseWaterfallCandidateTree == NULL)
+    //     {
+    //         if (! SetupSparseWaterfallCandidateTree())
+    //         {
+    //             KTERROR(publog, "Something went wrong while setting up the sparse waterfall candidate tree! Nothing was written.");
+    //             return;
+    //         }
+    //     }
+
+    //     // Load() also clears any existing data
+    //     //fFreqCandidateData->Load(*data);
+    //     fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
+    //     fSparseWaterfallCandidateData.fAcquisitionID = swcData.GetAcquisitionID();
+    //     //fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
+    //     //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
+    //     fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
+    //     fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
+    //     fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinFrequency();
+    //     fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaxFrequency();
+    //     fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
+
+    //     const KTDiscriminatedPoints& points = swcData.GetPoints();
+    //     // KTDEBUG(publog, "# points in sparse waterfall candidate " << points.size());
+
+    //     if (points.size() == 0)
+    //     {
+    //         KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
+    //         return;
+    //     }
+
+    //     fSparseWaterfallCandidateData.fPoints = new TNtupleD("Points","Points","Frequency:TimeInRunC");
+    //     unsigned iPoint = 0;
+    //     for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+    //     {
+    //         KTDEBUG(publog, "In loop " << iPoint);
+    //         // TDiscriminatedPoint* point = (TDiscriminatedPoint*) fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
+    //         // TDiscriminatedPoint* point = (TDiscriminatedPoint*)fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
+    //         KTDEBUG(publog, "Past constructon " << iPoint);
+    //         // point->fTimeInRunC = pIt->fTimeInRunC;
+    //         // point->fFrequency = pIt->fFrequency;
+    //         // point->fAmplitude = pIt->fAmplitude;
+    //         // point->fTimeInAcq = pIt->fTimeInAcq;
+    //         // point->fMean = pIt->fMean;
+    //         // point->fVariance = pIt->fVariance;
+    //         // point->fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;            
+    //         // fSparseWaterfallCandidateData.fPoints[iPoint] = new TDiscriminatedPoint();
+    //         // fSparseWaterfallCandidateData.fPoints[iPoint]->fFrequency = pIt->fTimeInRunC;
+    //         fSparseWaterfallCandidateData.fPoints->Fill(pIt->fTimeInRunC,pIt->fFrequency);
+    //         // point->fFrequency = pIt->fFrequency;
+    //         // point->fAmplitude = pIt->fAmplitude;
+    //         // point->fTimeInAcq = pIt->fTimeInAcq;
+    //         // point->fMean = pIt->fMean;
+    //         // point->fVariance = pIt->fVariance;
+    //         // point->fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;
+    //         // fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
+    //         ++iPoint;
+    //     }
+    //     // fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
+    //     // KTDEBUG(publog, "Candidate info:\n"
+    //             // << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
+    //     //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
+    //     //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
+
+    //     fSparseWaterfallCandidateTree->Fill();
+    //     // fSparseWaterfallCandidateData.fPoints->Clear();
+
+    //     return;
+    // }
+
+    // bool KTROOTTreeTypeWriterEventAnalysis::SetupSparseWaterfallCandidateTree()
+    // {
+    //     if( fWriter->GetAccumulate() )
+    //     {
+    //         fWriter->GetFile()->GetObject( "swfCand", fSparseWaterfallCandidateTree );
+
+    //         if( fSparseWaterfallCandidateTree != NULL )
+    //         {
+    //             KTINFO( publog, "Tree already exists; will add to it" );
+    //             fWriter->AddTree( fSparseWaterfallCandidateTree );
+
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("Component", &fSparseWaterfallCandidateData.fComponent);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("CandidateID", &fSparseWaterfallCandidateData.fCandidateID);
+    //             //fSparseWaterfallCandidateTree->SetBranchAddress("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth);
+    //             //fSparseWaterfallCandidateTree->SetBranchAddress("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("TimeLength", &fSparseWaterfallCandidateData.fTimeLength);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth);
+    //             fSparseWaterfallCandidateTree->SetBranchAddress("Points", &fSparseWaterfallCandidateData.fPoints);
+
+    //             return true;
+    //         }
+    //     }
+
+    //     fSparseWaterfallCandidateTree = new TTree("swfCand", "Sparse Waterfall Candidates");
+    //     if (fSparseWaterfallCandidateTree == NULL)
+    //     {
+    //         KTERROR(publog, "Tree was not created!");
+    //         return false;
+    //     }
+    //     fWriter->AddTree(fSparseWaterfallCandidateTree);
+
+    //     fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/i");
+    //     fSparseWaterfallCandidateTree->Branch("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID, "fAcquisitionID/i");
+    //     fSparseWaterfallCandidateTree->Branch("CandidateID", &fSparseWaterfallCandidateData.fCandidateID, "fCandidateID/i");
+    //     //fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
+    //     //fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
+    //     fSparseWaterfallCandidateTree->Branch("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC, "fTimeInRunC/d");
+    //     fSparseWaterfallCandidateTree->Branch("TimeLength", &fSparseWaterfallCandidateData.fTimeLength, "fTimeLength/d");
+    //     fSparseWaterfallCandidateTree->Branch("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
+    //     fSparseWaterfallCandidateTree->Branch("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
+    //     fSparseWaterfallCandidateTree->Branch("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
+    //     fSparseWaterfallCandidateTree->Branch("Points", &fSparseWaterfallCandidateData.fPoints, 32000, 0);
+
+    //     return true;
+    // }
+
+
     void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
-        KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
+        KTSparseWaterfallCandidateData& swfData = data->Of< KTSparseWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        if (fSparseWaterfallCandidateTree == NULL)
+        if (fSparseWaterfallCandidateDataPtr == NULL)
         {
             if (! SetupSparseWaterfallCandidateTree())
             {
@@ -296,40 +444,12 @@ namespace Katydid
             }
         }
 
-        // Load() also clears any existing data
-        //fFreqCandidateData->Load(*data);
-        fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
-        fSparseWaterfallCandidateData.fAcquisitionID = swcData.GetAcquisitionID();
-        //fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
-        //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
-        fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
-        fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
-        fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinimumFrequency();
-        fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
-        fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
-
-        const KTSparseWaterfallCandidateData::Points& points = swcData.GetPoints();
-
-        if (points.size() == 0)
-        {
-            KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
-            return;
-        }
-
-        fSparseWaterfallCandidateData.fPoints = new TGraph2D(points.size());
-        unsigned iPoint = 0;
-        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
-        {
-            fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
-            ++iPoint;
-        }
-        fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
-        KTDEBUG(publog, "Candidate info:\n"
-                << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
-                //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
-                //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
+        KT2ROOT::LoadSparseWaterfallCandidateData(swfData, *fSparseWaterfallCandidateDataPtr);
+        KTDEBUG(publog, "Before filling");
+        KTDEBUG(publog, fSparseWaterfallCandidateDataPtr->GetComponent());
 
         fSparseWaterfallCandidateTree->Fill();
+        KTDEBUG(publog, "After filling");
 
         return;
     }
@@ -338,30 +458,20 @@ namespace Katydid
     {
         if( fWriter->GetAccumulate() )
         {
-            fWriter->GetFile()->GetObject( "swfCand", fSparseWaterfallCandidateTree );
+            fWriter->GetFile()->GetObject( "sparseWaterfall", fSparseWaterfallCandidateTree );
 
             if( fSparseWaterfallCandidateTree != NULL )
             {
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fSparseWaterfallCandidateTree );
 
-                fSparseWaterfallCandidateTree->SetBranchAddress("Component", &fSparseWaterfallCandidateData.fComponent);
-                fSparseWaterfallCandidateTree->SetBranchAddress("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID);
-                fSparseWaterfallCandidateTree->SetBranchAddress("CandidateID", &fSparseWaterfallCandidateData.fCandidateID);
-                //fSparseWaterfallCandidateTree->SetBranchAddress("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth);
-                //fSparseWaterfallCandidateTree->SetBranchAddress("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth);
-                fSparseWaterfallCandidateTree->SetBranchAddress("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC);
-                fSparseWaterfallCandidateTree->SetBranchAddress("TimeLength", &fSparseWaterfallCandidateData.fTimeLength);
-                fSparseWaterfallCandidateTree->SetBranchAddress("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency);
-                fSparseWaterfallCandidateTree->SetBranchAddress("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency);
-                fSparseWaterfallCandidateTree->SetBranchAddress("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth);
-                fSparseWaterfallCandidateTree->SetBranchAddress("Points", &fSparseWaterfallCandidateData.fPoints);
+                fSparseWaterfallCandidateTree->SetBranchAddress(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), &fSparseWaterfallCandidateDataPtr);
 
                 return true;
             }
         }
 
-        fSparseWaterfallCandidateTree = new TTree("swfCand", "Sparse Waterfall Candidates");
+        fSparseWaterfallCandidateTree = new TTree("sparseWaterfall", "Sparse Waterfall Candidate");
         if (fSparseWaterfallCandidateTree == NULL)
         {
             KTERROR(publog, "Tree was not created!");
@@ -369,20 +479,13 @@ namespace Katydid
         }
         fWriter->AddTree(fSparseWaterfallCandidateTree);
 
-        fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/i");
-        fSparseWaterfallCandidateTree->Branch("AcquisitionID", &fSparseWaterfallCandidateData.fAcquisitionID, "fAcquisitionID/i");
-        fSparseWaterfallCandidateTree->Branch("CandidateID", &fSparseWaterfallCandidateData.fCandidateID, "fCandidateID/i");
-        //fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
-        //fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
-        fSparseWaterfallCandidateTree->Branch("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC, "fTimeInRunC/d");
-        fSparseWaterfallCandidateTree->Branch("TimeLength", &fSparseWaterfallCandidateData.fTimeLength, "fTimeLength/d");
-        fSparseWaterfallCandidateTree->Branch("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
-        fSparseWaterfallCandidateTree->Branch("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
-        fSparseWaterfallCandidateTree->Branch("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
-        fSparseWaterfallCandidateTree->Branch("Points", &fSparseWaterfallCandidateData.fPoints, 32000, 0);
+        fSparseWaterfallCandidateDataPtr = new TSparseWaterfallCandidateData();
+
+        fSparseWaterfallCandidateTree->Branch(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), "Katydid::TSparseWaterfallCandidateData", &fSparseWaterfallCandidateDataPtr);
 
         return true;
     }
+
 
     //****************
     // Processed Track
@@ -409,10 +512,10 @@ namespace Katydid
             KTINFO(publog, "Tree already exists!");
             fWriter->AddTree( fProcessedTrackTree );
 
-            fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
+            fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
         }
 
-        fProcessedTrackDataPtr->Load(ptData);
+        KT2ROOT::LoadProcTrackData(ptData, *fProcessedTrackDataPtr);
 
         fProcessedTrackTree->Fill();
 
@@ -430,7 +533,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedTrackTree );
 
-                fProcessedTrackTree->SetBranchAddress("Track", &fProcessedTrackDataPtr);
+                fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
 
                 return true;
             }
@@ -444,9 +547,135 @@ namespace Katydid
         }
         fWriter->AddTree(fProcessedTrackTree);
 
+        //fProcessedTrackDataPtr = new Cicada::TProcessedTrackData();
+
+        fProcessedTrackTree->Branch(fProcessedTrackDataPtr->GetBranchName().c_str(), "Cicada::TProcessedTrackData", &fProcessedTrackDataPtr);
+
+        return true;
+    }
+
+
+    //*********************
+    // Sequential Line Data
+    //*********************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteSequentialLine(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to sequential line root tree");
+        KTSequentialLineData& ptData = data->Of< KTSequentialLineData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "seqLines", fSequentialLineTree );
+
+        if (fSequentialLineTree == NULL)
+        {
+            if (! SetupSequentialLineTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the sequential line tree! Nothing was written.");
+                return;
+            }
+        }
+        else
+        {
+            KTINFO(publog, "Tree already exists!");
+            fWriter->AddTree( fSequentialLineTree );
+
+            fSequentialLineTree->SetBranchAddress(fSequentialLineDataPtr->GetBranchName().c_str(), &fSequentialLineDataPtr);
+        }
+
+        KT2ROOT::LoadSequentialLineData(ptData, *fSequentialLineDataPtr);
+
+        fSequentialLineTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupSequentialLineTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "seqLines", fSequentialLineTree );
+
+            if( fSequentialLineTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fSequentialLineTree );
+
+                fSequentialLineTree->SetBranchAddress(fSequentialLineDataPtr->GetBranchName().c_str(), &fSequentialLineDataPtr);
+
+                return true;
+            }
+        }
+
+        fSequentialLineTree = new TTree("seqLines", "Sequential lines");
+        if (fSequentialLineTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fSequentialLineTree);
+
+        fSequentialLineTree->Branch(fSequentialLineDataPtr->GetBranchName().c_str(), "Katydid::TSequentialLineData", &fSequentialLineDataPtr);
+
+        return true;
+    }
+
+    //****************************
+    // Processed Multi-Peak Track
+    //****************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to processed multi-peak track root tree");
+        KTProcessedMPTData& pMPTData = data->Of< KTProcessedMPTData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        fWriter->GetFile()->GetObject( "procMPTs", fProcessedMPTTree );
+
+        if (fProcessedMPTTree == NULL)
+        {
+            if (! SetupProcessedMPTTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the processed multi-peak track tree! Nothing was written.");
+                return;
+            }
+        }
+
+        KT2ROOT::LoadProcMPTData(pMPTData, *fProcessedMPTDataPtr);
+
+        fProcessedMPTTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupProcessedMPTTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "procMPTs", fProcessedMPTTree );
+
+            if( fProcessedMPTTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fProcessedMPTTree );
+
+                fProcessedMPTTree->SetBranchAddress(fProcessedMPTDataPtr->GetBranchName().c_str(), &fProcessedMPTDataPtr);
+
+                return true;
+            }
+        }
+
+        fProcessedMPTTree = new TTree("procMPTs", "Processed Multi-Peak Tracks");
+        if (fProcessedMPTTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fProcessedMPTTree);
+
         //fProcessedTrackDataPtr = new TProcessedTrackData();
 
-        fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
+        fProcessedMPTTree->Branch(fProcessedMPTDataPtr->GetBranchName().c_str(), "Katydid::TProcessedMPTData", &fProcessedMPTDataPtr);
 
         return true;
     }
@@ -490,7 +719,7 @@ namespace Katydid
         }
 
         fMultiPeakTrackTree->Fill();
-        
+
         return;
     }
 
@@ -560,7 +789,7 @@ namespace Katydid
             }
         }
 
-        fMultiTrackEventDataPtr->Load(mteData);
+        KT2ROOT::LoadMultiTrackEventData(mteData, *fMultiTrackEventDataPtr);
 
         fMultiTrackEventTree->Fill();
 
@@ -578,7 +807,7 @@ namespace Katydid
                 KTINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMultiTrackEventTree );
 
-                fMultiTrackEventTree->SetBranchAddress("Event", &fMultiTrackEventDataPtr);
+                fMultiTrackEventTree->SetBranchAddress(fMultiTrackEventDataPtr->GetBranchName().c_str(), &fMultiTrackEventDataPtr);
 
                 return true;
             }
@@ -592,9 +821,69 @@ namespace Katydid
         }
         fWriter->AddTree(fMultiTrackEventTree);
 
-        fMultiTrackEventDataPtr = new TMultiTrackEventData();
+        fMultiTrackEventDataPtr = new Cicada::TMultiTrackEventData();
 
-        fMultiTrackEventTree->Branch("Event", "Katydid::TMultiTrackEventData", &fMultiTrackEventDataPtr);
+        fMultiTrackEventTree->Branch(fMultiTrackEventDataPtr->GetBranchName().c_str(), "Cicada::TMultiTrackEventData", &fMultiTrackEventDataPtr);
+
+        return true;
+    }
+
+    //*****************************
+    // MTE with Classifier Results
+    //*****************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteMTEWithClassifierResults(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to classified event root tree");
+        KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fMTEWithClassifierResultsTree == NULL)
+        {
+            if (! SetupMTEWithClassifierResultsTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the classified event tree! Nothing was written.");
+                return;
+            }
+        }
+
+        KT2ROOT::LoadMTEWithClassifierResultsData(mteData, *fMTEWithClassifierResultsDataPtr);
+        //fClassifiedEventDataPtr->Load(mteData);
+
+        fMTEWithClassifierResultsTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupMTEWithClassifierResultsTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "MTEWithClassifierResults", fMTEWithClassifierResultsTree );
+
+            if( fMTEWithClassifierResultsTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fMTEWithClassifierResultsTree );
+
+                fMTEWithClassifierResultsTree->SetBranchAddress(fMTEWithClassifierResultsDataPtr->GetBranchName().c_str(), &fMTEWithClassifierResultsDataPtr);
+
+                return true;
+            }
+        }
+
+        fMTEWithClassifierResultsTree = new TTree("MTEWithClassifierResults", "Multi-Track Events with Classifier Results");
+        if (fMTEWithClassifierResultsTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fMTEWithClassifierResultsTree);
+
+        fMTEWithClassifierResultsDataPtr = new Cicada::TMTEWithClassifierResultsData();
+
+        fMTEWithClassifierResultsTree->Branch(fMTEWithClassifierResultsDataPtr->GetBranchName().c_str(), "Cicada::TMTEWithClassifierResultsData", &fMTEWithClassifierResultsDataPtr);
 
         return true;
     }
@@ -619,22 +908,22 @@ namespace Katydid
             }
         }
 
-        for (fLineFitData.fComponent = 0; fLineFitData.fComponent < lfData.GetNComponents(); fLineFitData.fComponent++)
+        for (fLineFitData.fFitNumber = 0; fLineFitData.fFitNumber < lfData.GetNFits(); fLineFitData.fFitNumber++)
         {
-            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fComponent );
-            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fComponent );
-            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fComponent );
-            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fComponent );
-            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fComponent );
-            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fComponent );
-            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fComponent );
-            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fComponent );
-            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fComponent );
-            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fComponent );
-            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fComponent );
+            fLineFitData.fSlope = lfData.GetSlope( fLineFitData.fFitNumber );
+            fLineFitData.fIntercept = lfData.GetIntercept( fLineFitData.fFitNumber );
+            fLineFitData.fStartingFrequency = lfData.GetStartingFrequency( fLineFitData.fFitNumber );
+            fLineFitData.fTrackDuration = lfData.GetTrackDuration( fLineFitData.fFitNumber );
+            fLineFitData.fSidebandSeparation = lfData.GetSidebandSeparation( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_sigma_1 = lfData.GetFineProbe_sigma_1( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_sigma_2 = lfData.GetFineProbe_sigma_2( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_SNR_1 = lfData.GetFineProbe_SNR_1( fLineFitData.fFitNumber );
+            //fLineFitData.fFineProbe_SNR_2 = lfData.GetFineProbe_SNR_2( fLineFitData.fFitNumber );
+            fLineFitData.fFFT_peak = lfData.GetFFT_peak( fLineFitData.fFitNumber );
+            fLineFitData.fFFT_SNR = lfData.GetFFT_SNR( fLineFitData.fFitNumber );
+            fLineFitData.fFit_width = lfData.GetFit_width( fLineFitData.fFitNumber );
+            fLineFitData.fNPoints = lfData.GetNPoints( fLineFitData.fFitNumber );
+            fLineFitData.fProbeWidth = lfData.GetProbeWidth( fLineFitData.fFitNumber );
 
             fLinearFitResultTree->Fill();
         }
@@ -653,7 +942,7 @@ namespace Katydid
                 KTINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fLinearFitResultTree );
 
-                fLinearFitResultTree->SetBranchAddress( "Component", &fLineFitData.fComponent );
+                fLinearFitResultTree->SetBranchAddress( "FitNumber", &fLineFitData.fFitNumber );
                 fLinearFitResultTree->SetBranchAddress( "Slope", &fLineFitData.fSlope );
                 fLinearFitResultTree->SetBranchAddress( "Intercept", &fLineFitData.fIntercept );
                 fLinearFitResultTree->SetBranchAddress( "StartingFrequency", &fLineFitData.fStartingFrequency );
@@ -681,7 +970,7 @@ namespace Katydid
         }
         fWriter->AddTree( fLinearFitResultTree );
 
-        fLinearFitResultTree->Branch( "Component", &fLineFitData.fComponent, "fComponent/i" );
+        fLinearFitResultTree->Branch( "FitNumber", &fLineFitData.fFitNumber, "fFitNumber/i" );
         fLinearFitResultTree->Branch( "Slope", &fLineFitData.fSlope, "fSlope/d" );
         fLinearFitResultTree->Branch( "Intercept", &fLineFitData.fIntercept, "fIntercept/d" );
         fLinearFitResultTree->Branch( "StartingFrequency", &fLineFitData.fStartingFrequency, "fStartingFrequency/d" );
@@ -704,16 +993,6 @@ namespace Katydid
     // Power Fit Data
     //**************************
 
-    std::vector<double> * pNorm;
-    std::vector<double> * pMean;
-    std::vector<double> * pSigma;
-    std::vector<double> * pMaximum;
-    
-    std::vector<double> * pNormErr;
-    std::vector<double> * pMeanErr;
-    std::vector<double> * pSigmaErr;
-    std::vector<double> * pMaximumErr;
-
     void KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data)
     {
         KTDEBUG(publog, "Attempting to write to power fit data root tree");
@@ -730,56 +1009,53 @@ namespace Katydid
             }
         }
 
-        for (fPowerFitData.fComponent = 0; fPowerFitData.fComponent < pfData.GetNComponents(); fPowerFitData.fComponent++)
+        fPowerFitData.fNorm = pfData.GetNorm();
+        fPowerFitData.fMean = pfData.GetMean();
+        fPowerFitData.fSigma = pfData.GetSigma();
+        fPowerFitData.fMaximum = pfData.GetMaximum();
+
+        fPowerFitData.fNormErr = pfData.GetNormErr();
+        fPowerFitData.fMeanErr = pfData.GetMeanErr();
+        fPowerFitData.fSigmaErr = pfData.GetSigmaErr();
+        fPowerFitData.fMaximumErr = pfData.GetMaximumErr();
+
+        fPowerFitData.fIsValid = pfData.GetIsValid();
+        fPowerFitData.fMainPeak = pfData.GetMainPeak();
+        fPowerFitData.fNPeaks = pfData.GetNPeaks();
+
+        fPowerFitData.fAverage = pfData.GetAverage();
+        fPowerFitData.fRMS = pfData.GetRMS();
+        fPowerFitData.fSkewness = pfData.GetSkewness();
+        fPowerFitData.fKurtosis = pfData.GetKurtosis();
+
+        fPowerFitData.fNormCentral = pfData.GetNormCentral();
+        fPowerFitData.fMeanCentral = pfData.GetMeanCentral();
+        fPowerFitData.fSigmaCentral = pfData.GetSigmaCentral();
+        fPowerFitData.fMaximumCentral = pfData.GetMaximumCentral();
+
+        fPowerFitData.fRMSAwayFromCentral = pfData.GetRMSAwayFromCentral();
+        fPowerFitData.fCentralPowerFraction = pfData.GetCentralPowerFraction();
+
+        fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept();
+
+        const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints();
+
+        if (points.size() == 0)
         {
-            fPowerFitData.fNorm = pfData.GetNorm( fPowerFitData.fComponent );
-            fPowerFitData.fMean = pfData.GetMean( fPowerFitData.fComponent );
-            fPowerFitData.fSigma = pfData.GetSigma( fPowerFitData.fComponent );
-            fPowerFitData.fMaximum = pfData.GetMaximum( fPowerFitData.fComponent );
-
-            fPowerFitData.fNormErr = pfData.GetNormErr( fPowerFitData.fComponent );
-            fPowerFitData.fMeanErr = pfData.GetMeanErr( fPowerFitData.fComponent );
-            fPowerFitData.fSigmaErr = pfData.GetSigmaErr( fPowerFitData.fComponent );
-            fPowerFitData.fMaximumErr = pfData.GetMaximumErr( fPowerFitData.fComponent );
-
-            fPowerFitData.fIsValid = pfData.GetIsValid( fPowerFitData.fComponent );
-            fPowerFitData.fMainPeak = pfData.GetMainPeak( fPowerFitData.fComponent );
-            fPowerFitData.fNPeaks = pfData.GetNPeaks( fPowerFitData.fComponent );
-
-            fPowerFitData.fAverage = pfData.GetAverage( fPowerFitData.fComponent );
-            fPowerFitData.fRMS = pfData.GetRMS( fPowerFitData.fComponent );
-            fPowerFitData.fSkewness = pfData.GetSkewness( fPowerFitData.fComponent );
-            fPowerFitData.fKurtosis = pfData.GetKurtosis( fPowerFitData.fComponent );
-
-            fPowerFitData.fNormCentral = pfData.GetNormCentral( fPowerFitData.fComponent );
-            fPowerFitData.fMeanCentral = pfData.GetMeanCentral( fPowerFitData.fComponent );
-            fPowerFitData.fSigmaCentral = pfData.GetSigmaCentral( fPowerFitData.fComponent );
-            fPowerFitData.fMaximumCentral = pfData.GetMaximumCentral( fPowerFitData.fComponent );
-
-            fPowerFitData.fRMSAwayFromCentral = pfData.GetRMSAwayFromCentral( fPowerFitData.fComponent );
-            fPowerFitData.fCentralPowerRatio = pfData.GetCentralPowerRatio( fPowerFitData.fComponent );
-
-            fPowerFitData.fTrackIntercept = pfData.GetTrackIntercept( fPowerFitData.fComponent );
-
-            const KTPowerFitData::SetOfPoints& points = pfData.GetSetOfPoints( fPowerFitData.fComponent );
-
-            if (points.size() == 0)
-            {
-                KTWARN(publog, "No points in power fit data; nothing written to ROOT file");
-                return;
-            }
-
-            fPowerFitData.fPoints = new TGraph(points.size());
-            unsigned iPoint = 0;
-            for (KTPowerFitData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
-            {
-                fPowerFitData.fPoints->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
-                ++iPoint;
-            }
-            //fPowerFitData.fPoints->SetDirectory(NULL);
-
-            fPowerFitDataTree->Fill();
+            KTWARN(publog, "No points in power fit data; nothing written to ROOT file");
+            return;
         }
+
+        fPowerFitData.fPoints = new TGraph(points.size());
+        unsigned iPoint = 0;
+        for (KTPowerFitData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+        {
+            fPowerFitData.fPoints->SetPoint(iPoint, pIt->second.fAbscissa, pIt->second.fOrdinate);
+            ++iPoint;
+        }
+        //fPowerFitData.fPoints->SetDirectory(NULL);
+
+        fPowerFitDataTree->Fill();
 
         return;
     }
@@ -795,8 +1071,6 @@ namespace Katydid
                 KTINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fPowerFitDataTree );
 
-                fPowerFitDataTree->SetBranchAddress( "Component", &fPowerFitData.fComponent );
-
                 fPowerFitData.fNorm.push_back(0.);
                 fPowerFitData.fMean.push_back(0.);
                 fPowerFitData.fSigma.push_back(0.);
@@ -807,25 +1081,15 @@ namespace Katydid
                 fPowerFitData.fSigmaErr.push_back(0.);
                 fPowerFitData.fMaximumErr.push_back(0.);
 
-                pNorm = &fPowerFitData.fNorm;
-                pMean = &fPowerFitData.fMean;
-                pSigma = &fPowerFitData.fSigma;
-                pMaximum = &fPowerFitData.fMaximum;
-                
-                pNormErr = &fPowerFitData.fNormErr;
-                pMeanErr = &fPowerFitData.fMeanErr;
-                pSigmaErr = &fPowerFitData.fSigmaErr;
-                pMaximumErr = &fPowerFitData.fMaximumErr;
+                fPowerFitDataTree->SetBranchAddress( "Norm", &fPowerFitData.fNorm );
+                fPowerFitDataTree->SetBranchAddress( "Mean", &fPowerFitData.fMean );
+                fPowerFitDataTree->SetBranchAddress( "Sigma", &fPowerFitData.fSigma );
+                fPowerFitDataTree->SetBranchAddress( "Maximum", &fPowerFitData.fMaximum );
 
-                fPowerFitDataTree->SetBranchAddress( "Norm", &pNorm );
-                fPowerFitDataTree->SetBranchAddress( "Mean", &pMean );
-                fPowerFitDataTree->SetBranchAddress( "Sigma", &pSigma );
-                fPowerFitDataTree->SetBranchAddress( "Maximum", &pMaximum );
-
-                fPowerFitDataTree->SetBranchAddress( "NormErr", &pNormErr );
-                fPowerFitDataTree->SetBranchAddress( "MeanErr", &pMeanErr );
-                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &pSigmaErr );
-                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &pMaximumErr);
+                fPowerFitDataTree->SetBranchAddress( "NormErr", &fPowerFitData.fNormErr );
+                fPowerFitDataTree->SetBranchAddress( "MeanErr", &fPowerFitData.fMeanErr );
+                fPowerFitDataTree->SetBranchAddress( "SigmaErr", &fPowerFitData.fSigmaErr );
+                fPowerFitDataTree->SetBranchAddress( "MaximumErr", &fPowerFitData.fMaximumErr);
 
                 fPowerFitDataTree->SetBranchAddress( "IsValid", &fPowerFitData.fIsValid );
                 fPowerFitDataTree->SetBranchAddress( "MainPeak", &fPowerFitData.fMainPeak );
@@ -844,7 +1108,7 @@ namespace Katydid
                 fPowerFitDataTree->SetBranchAddress( "MaximumCentral", &fPowerFitData.fMaximumCentral );
 
                 fPowerFitDataTree->SetBranchAddress( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral );
-                fPowerFitDataTree->SetBranchAddress( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio );
+                fPowerFitDataTree->SetBranchAddress( "CentralPowerFraction", &fPowerFitData.fCentralPowerFraction );
 
                 fPowerFitDataTree->SetBranchAddress( "TrackIntercept", &fPowerFitData.fTrackIntercept );
 
@@ -860,8 +1124,6 @@ namespace Katydid
         }
         fWriter->AddTree( fPowerFitDataTree );
 
-        fPowerFitDataTree->Branch( "Component", &fPowerFitData.fComponent, "fComponent/i" );
-
         fPowerFitData.fNorm.push_back(0.);
         fPowerFitData.fMean.push_back(0.);
         fPowerFitData.fSigma.push_back(0.);
@@ -872,26 +1134,16 @@ namespace Katydid
         fPowerFitData.fSigmaErr.push_back(0.);
         fPowerFitData.fMaximumErr.push_back(0.);
 
-        pNorm = &fPowerFitData.fNorm;
-        pMean = &fPowerFitData.fMean;
-        pSigma = &fPowerFitData.fSigma;
-        pMaximum = &fPowerFitData.fMaximum;
-        
-        pNormErr = &fPowerFitData.fNormErr;
-        pMeanErr = &fPowerFitData.fMeanErr;
-        pSigmaErr = &fPowerFitData.fSigmaErr;
-        pMaximumErr = &fPowerFitData.fMaximumErr;
+        fPowerFitDataTree->Branch( "Norm", "std::vector<double>", &fPowerFitData.fNorm );
+        fPowerFitDataTree->Branch( "Mean", "std::vector<double>", &fPowerFitData.fMean );
+        fPowerFitDataTree->Branch( "Sigma", "std::vector<double>", &fPowerFitData.fSigma );
+        fPowerFitDataTree->Branch( "Maximum", "std::vector<double>", &fPowerFitData.fMaximum );
 
-        fPowerFitDataTree->Branch( "Norm", "std::vector<double>", &pNorm );
-        fPowerFitDataTree->Branch( "Mean", "std::vector<double>", &pMean );
-        fPowerFitDataTree->Branch( "Sigma", "std::vector<double>", &pSigma );
-        fPowerFitDataTree->Branch( "Maximum", "std::vector<double>", &pMaximum );
+        fPowerFitDataTree->Branch( "NormErr", "std::vector<double>", &fPowerFitData.fNormErr );
+        fPowerFitDataTree->Branch( "MeanErr", "std::vector<double>", &fPowerFitData.fMeanErr );
+        fPowerFitDataTree->Branch( "SigmaErr", "std::vector<double>", &fPowerFitData.fSigmaErr );
+        fPowerFitDataTree->Branch( "MaximumErr", "std::vector<double>", &fPowerFitData.fMaximumErr );
 
-        fPowerFitDataTree->Branch( "NormErr", "std::vector<double>", &pNormErr );
-        fPowerFitDataTree->Branch( "MeanErr", "std::vector<double>", &pMeanErr );
-        fPowerFitDataTree->Branch( "SigmaErr", "std::vector<double>", &pSigmaErr );
-        fPowerFitDataTree->Branch( "MaximumErr", "std::vector<double>", &pMaximumErr );
-                
         fPowerFitDataTree->Branch( "IsValid", &fPowerFitData.fIsValid, "fIsValid/i" );
         fPowerFitDataTree->Branch( "MainPeak", &fPowerFitData.fMainPeak, "fMainPeak/i" );
         fPowerFitDataTree->Branch( "NPeaks", &fPowerFitData.fNPeaks, "fNPeaks/i" );
@@ -909,7 +1161,7 @@ namespace Katydid
         fPowerFitDataTree->Branch( "MaximumCentral", &fPowerFitData.fMaximumCentral, "fMaximumCentral/d" );
 
         fPowerFitDataTree->Branch( "RMSAwayFromCentral", &fPowerFitData.fRMSAwayFromCentral, "fRMSAwayFromCentral/d" );
-        fPowerFitDataTree->Branch( "CentralPowerRatio", &fPowerFitData.fCentralPowerRatio, "fCentralPowerRatio/d" );
+        fPowerFitDataTree->Branch( "CentralPowerFraction", &fPowerFitData.fCentralPowerFraction, "fCentralPowerFraction/d" );
 
         fPowerFitDataTree->Branch( "TrackIntercept", &fPowerFitData.fTrackIntercept, "fTrackIntercept/d" );
 

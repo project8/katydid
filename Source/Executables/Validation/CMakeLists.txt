@@ -17,7 +17,9 @@ if (Katydid_ENABLE_TESTING)
         TestComplexPolar
         TestCutableArray
         TestCutIterator
+        TestDBSCAN
         TestMinMaxBin
+        TestNanoflann
         TestRandom
         TestVector
     )
@@ -38,6 +40,8 @@ if (Katydid_ENABLE_TESTING)
         TestDPTReader
         #TestFrequencySpectrumFFTW
         TestJSONWriter
+        TestKDTree
+        TestKDTreeData
         #TestMultiFileJSONReader
         TestSmoothing
         #TestASCIIFileWriter
@@ -64,20 +68,24 @@ if (Katydid_ENABLE_TESTING)
         TestConvolution1D
         TestCorrelator
         TestDataAccumulator
-        TestDBScan
-        TestDBScanTrackClustering
-        TestDistanceClustering
+        TestDBSCANNoiseFiltering
+        TestDBSCANTrackClustering
+        # TestDistanceClustering
+        TestGainNormalization
+        TestGainVariationProcessor
         #TestHoughTransform  # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
-        TestKDTree
-        TestKDTreeData
-        TestLinearDensityProbe
-        TestMultiSliceClustering
-        TestNanoflann
+        # TestLinearDensityProbe
+        # TestMultiSliceClustering
+        TestSequentialTrackFinder
         #TestSimpleClustering # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
         #TestSlidingWindowFFT
         TestSpectrogramCollector
+        TestSpectrogramStriper
+        TestSpectrogramStriperSwaps
         TestSpectrumDiscriminator
+        TestTrackProcessing
         TestWindowFunction
+        
     )
     
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
@@ -115,14 +123,17 @@ if (Katydid_ENABLE_TESTING)
             KatydidIO
             KatydidTransform
             KatydidSpectrumAnalysis
+            KatydidEventAnalysis
         )
         
         set( PROGRAMS
+           TestBackgroundFlattening
            TestBasicROOTFileWriter
-           TestGainVariation
+           #TestGainVariation  # This is removed because the GV calculation without variance data is not done correctly and has been temporarily removed
            TestROOTDictionary
+           TestROOTTreeWritingViaCicada
            TestROOTWriterFileManager
-           TestROOTWritingToSameFile
+        #    TestROOTWritingToSameFile
         )
         
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )

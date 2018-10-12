@@ -12,6 +12,7 @@
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTSparseWaterfallCandidateData.hh"
+#include "KTDiscriminatedPoint.hh"
 
 #include <cmath>
 
@@ -56,16 +57,16 @@ namespace Katydid
     {
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(1);
 
-        const KTSparseWaterfallCandidateData::Points& points = data.GetPoints();
+        const KTDiscriminatedPoints& points = data.GetPoints();
 
-        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
+        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinFrequency(), data.GetFrequencyWidth());
         if (newTransform == NULL)
         {
             KTERROR(htlog, "Something went wrong in the transform");
         }
         else
         {
-            newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth(), 0);
+            newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinFrequency(), data.GetFrequencyWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 

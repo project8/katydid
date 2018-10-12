@@ -12,6 +12,7 @@
 #include "KTData.hh"
 
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumVarianceData.hh"
 
 #include <vector>
 
@@ -47,6 +48,35 @@ namespace Katydid
             std::vector< KTFrequencySpectrumFFTW* > fSpectra;
 
     };
+
+
+    class KTFrequencySpectrumDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataFFTW >
+    {
+        public:
+            KTFrequencySpectrumDataFFTW();
+            virtual ~KTFrequencySpectrumDataFFTW();
+
+            virtual KTFrequencySpectrumDataFFTW& SetNComponents(unsigned components);
+
+        public:
+            static const std::string sName;
+
+    };
+
+
+    class KTFrequencySpectrumVarianceDataFFTW : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTFrequencySpectrumVarianceDataFFTW >
+    {
+        public:
+            KTFrequencySpectrumVarianceDataFFTW();
+            virtual ~KTFrequencySpectrumVarianceDataFFTW();
+
+            KTFrequencySpectrumVarianceDataFFTW& SetNComponents(unsigned channels);
+
+        public:
+            static const std::string sName;
+
+    };
+
 
     inline const KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTWCore::GetSpectrumFFTW(unsigned component) const
     {
@@ -91,19 +121,6 @@ namespace Katydid
         return;
     }
 
-
-    class KTFrequencySpectrumDataFFTW : public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataFFTW >
-    {
-        public:
-            KTFrequencySpectrumDataFFTW();
-            virtual ~KTFrequencySpectrumDataFFTW();
-
-            virtual KTFrequencySpectrumDataFFTW& SetNComponents(unsigned components);
-
-        public:
-            static const std::string sName;
-
-    };
 
 } /* namespace Katydid */
 

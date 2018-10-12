@@ -64,6 +64,13 @@ namespace Katydid
             MEMBERVARIABLE(double, FirstTrackSlope);
             MEMBERVARIABLE(double, FirstTrackIntercept);
             MEMBERVARIABLE(double, FirstTrackTotalPower);
+            MEMBERVARIABLE(int, FirstTrackNTrackBins);
+            MEMBERVARIABLE(double, FirstTrackTotalSNR);
+            MEMBERVARIABLE(double, FirstTrackMaxSNR);
+            MEMBERVARIABLE(double, FirstTrackTotalNUP);
+            MEMBERVARIABLE(double, FirstTrackMaxNUP);
+            MEMBERVARIABLE(double, FirstTrackTotalWideSNR);
+            MEMBERVARIABLE(double, FirstTrackTotalWideNUP);
 
             // this member variable is set by event building
             MEMBERVARIABLE(bool, UnknownEventTopology); // if True, indicates that the reconstruction was unable to deal with the event
@@ -75,6 +82,7 @@ namespace Katydid
             //const KTProcessedTrackData& GetTrack(unsigned id) const;
             //KTProcessedTrackData& GetTrack(unsigned id);
 
+            void AddTrack(const AllTrackData& track);
             void AddTrack(const KTProcessedTrackData& track);
             /// Add a collection of tracks to the next EventSequenceID
             void AddTracks(TrackSetCItSet tracks);
@@ -153,14 +161,13 @@ namespace Katydid
 
     struct MTRComp
     {
-        bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs)
+        bool operator() (const MultiPeakTrackRef& lhs, const MultiPeakTrackRef& rhs) const
         {
             if (lhs.fMeanStartTimeInRunC != rhs.fMeanStartTimeInRunC) return lhs.fMeanStartTimeInRunC < rhs.fMeanStartTimeInRunC;
             return lhs.fMeanEndTimeInRunC < rhs.fMeanEndTimeInRunC;
         }
 
     };
-
 
     class KTMultiPeakTrackData : public Nymph::KTExtensibleData< KTMultiPeakTrackData >
     {
