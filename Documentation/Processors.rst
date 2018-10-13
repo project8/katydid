@@ -15,145 +15,215 @@ EventAnalysis
 -------------
 
 .. toggle-header::
-    :header: ``KTCollinearTrackClustering``
+    :header: **KTCollinearTrackClustering**
 
 .. toggle-header::
-    :header: ``KTDataCutter``
+    :header: **KTDataCutter**
 
 .. toggle-header::
-    :header: ``KTDBSCANEventClustering``
+    :header: **KTDBSCANEventClustering**
 
 .. toggle-header::
-    :header: ``KTDBSCANTrackClustering``
+    :header: **KTDBSCANTrackClustering**
 
 .. toggle-header::
-    :header: ``KTDLIBClassifier``
+    :header: **KTDLIBClassifier**
 
 .. toggle-header::
-    :header: ``KTFrequencyCandidateIdentifier``
+    :header: **KTFrequencyCandidateIdentifier**
 
 .. toggle-header::
-    :header: ``KTIterativeTrackClustering``
+    :header: **KTIterativeTrackClustering**
 
 .. toggle-header::
-    :header: ``KTLinearDensityProbeFit``
+    :header: **KTLinearDensityProbeFit**
 
 .. toggle-header::
-    :header: ``KTMultiPeakEventBuilder``
+    :header: **KTMultiPeakEventBuilder**
 
 .. toggle-header::
-    :header: ``KTMultiPeakTrackProcessing``
+    :header: **KTMultiPeakTrackProcessing**
 
 .. toggle-header::
-    :header: ``KTMultiSliceClustering``
+    :header: **KTMultiSliceClustering**
 
 .. toggle-header::
-    :header: ``KTOverlappingTrackClustering``
+    :header: **KTOverlappingTrackClustering**
 
 .. toggle-header::
-    :header: ``KTQuadraticPhaseShift``
+    :header: **KTQuadraticPhaseShift**
 
 .. toggle-header::
-    :header: ``KTRPClassifier``
+    :header: **KTRPClassifier**
 
 .. toggle-header::
-    :header: ``KTSidebandCorrection``
+    :header: **KTSidebandCorrection**
 
 .. toggle-header::
-    :header: ``KTSpectrogramCollector``
+    :header: **KTSpectrogramCollector**
 
 .. toggle-header::
-    :header: ``KTMVAClassifier``
+    :header: **KTMVAClassifier**
 
 .. toggle-header::
-    :header: ``KTTrackProcessingDoubleCuts``
+    :header: **KTTrackProcessingDoubleCuts**
 
 .. toggle-header::
-    :header: ``KTTrackProcessingWeightedSlope``
+    :header: **KTTrackProcessingWeightedSlope**
 
 IO
 --
 
 .. toggle-header::
-    :header: ``KTBasicAsciiWriter``
+    :header: **KTBasicAsciiWriter**
 
 .. toggle-header::
-    :header: ``KTBasicROOTFileWriter``
+    :header: **KTBasicROOTFileWriter**
 
 .. toggle-header::
-    :header: ``KTHDF5Writer``
+    :header: **KTHDF5Writer**
 
 .. toggle-header::
-    :header: ``KTImageWriter``
+    :header: **KTImageWriter**
 
 .. toggle-header::
-    :header: ``KTJSONWriter``
+    :header: **KTJSONWriter**
 
 .. toggle-header::
-    :header: ``KTMultiSliceROOTWriter``
+    :header: **KTMultiSliceROOTWriter**
 
 .. toggle-header::
-    :header: ``KTOfficialCandidatesWriter``
+    :header: **KTOfficialCandidatesWriter**
 
 .. toggle-header::
-    :header: ``KTROOTSpectrogramWriter``
+    :header: **KTROOTSpectrogramWriter**
 
 .. toggle-header::
-    :header: ``KTROOTTreeWriter``
+    :header: **KTROOTTreeWriter**
 
 .. toggle-header::
-    :header: ``KTTerminalWriter``
+    :header: **KTTerminalWriter**
 
 .. toggle-header::
-    :header: ``KTDPTReader``
+    :header: **KTDPTReader**
 
 .. toggle-header::
-    :header: ``KTMultiFileJSONReader``
+    :header: **KTMultiFileJSONReader**
 
 .. toggle-header::
-    :header: ``KTMultiFileROOTTreeReader``
+    :header: **KTMultiFileROOTTreeReader**
 
 
 SpectrumAnalysis
 ----------------
 
+.. toggle-header::
+    :header: **KTAmplitudeCounter**
 
+.. toggle-header::
+    :header: **KTAmplitudeDistributor**
+
+.. toggle-header::
+    :header: **KTAnalyticAssociator**
+
+.. toggle-header::
+    :header: **KTBiasedACM**
+
+.. toggle-header::
+    :header: **KTConsensusThresholding**
+
+.. toggle-header::
+    :header: **KTConvolutions**
+
+.. toggle-header::
+    :header: **KTCorrelator**
+
+.. toggle-header::
+    :header: **KTCreateKDTree**
+
+.. toggle-header::
+    :header: **KTDataAccumulator**
+
+.. toggle-header::
+    :header: **KTDBSCANNoiseFilter**
+
+.. toggle-header::
+    :header: **KTDistanceClustering**
+
+.. toggle-header::
+    :header: **KTGainNormalization**
+
+.. toggle-header::
+    :header: **KTGainVarChi2Test**
+
+.. toggle-header::
+    :header: **KTGainVariationProcessor**
+
+.. toggle-header::
+    :header: **KTHoughTransform**
+
+.. toggle-header::
+    :header: **KTMergeKDTree**
+
+.. toggle-header::
+    :header: **KTNNFilter**
+
+.. toggle-header::
+    :header: **KTRQProcessor**
+
+.. toggle-header::
+    :header: **KTSequentialTrackFinder**
+
+.. toggle-header::
+    :header: **KTSpectrogramStriper**
+
+.. toggle-header::
+    :header: **KTSpectrumDiscriminator**
+
+.. toggle-header::
+    :header: **KTSwitchFFTWPolar**
+
+.. toggle-header::
+    :header: **KTVariableSpectrumDiscriminator**
+
+.. toggle-header::
+    :header: **KTWignerVille**
 
 
 Time
 ----
 
 .. toggle-header::
-    :header: ``KTDAC``
+    :header: **KTDAC**
 
 .. toggle-header::
-    :header: ``KTDigitizerTests``
+    :header: **KTDigitizerTests**
 
 .. toggle-header::
-    :header: ``KTEggProcessor``
+    :header: **KTEggProcessor**
 
 .. toggle-header::
-    :header: ``KTEggWriter``
+    :header: **KTEggWriter**
 
 .. toggle-header::
-    :header: ``KTMantis``
+    :header: **KTMantis**
 
 .. toggle-header::
-    :header: ``KT
+    :header: **KT
 
 
 Transform
 ---------
 
 .. toggle-header::
-    :header: ``KTConvertToPower``
+    :header: **KTConvertToPower**
 
 .. toggle-header::
-    :header: ``KTForwardFFTW``
+    :header: **KTForwardFFTW**
 
 .. toggle-header::
-    :header: ``KTReverseFFTW``
+    :header: **KTReverseFFTW**
 
 .. toggle-header::
-    :header: ``KTWindower``
+    :header: **KTWindower**
 
