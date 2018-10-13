@@ -9,7 +9,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``collinear-track-clustering``
 
     Signals:
 
@@ -24,7 +24,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``data-cutter``
 
     Signals:
 
@@ -39,7 +39,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``dbscan-event-clustering``
 
     Signals:
 
@@ -54,7 +54,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``dbscan-track-clustering``
 
     Signals:
 
@@ -69,7 +69,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``dblib-classifier``
 
     Signals:
 
@@ -84,7 +84,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``frequency-candidate-identifier``
 
     Signals:
 
@@ -99,7 +99,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``iterative-track-clustering``
 
     Signals:
 
@@ -114,7 +114,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``linear-density-probe-fit``
 
     Signals:
 
@@ -129,7 +129,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``multi-peak-event-builder``
 
     Signals:
 
@@ -144,7 +144,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``mpt-processing``
 
     Signals:
 
@@ -159,7 +159,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``multi-slice-clustering``
 
     Signals:
 
@@ -174,7 +174,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``overlapping-track-clustering``
 
     Signals:
 
@@ -189,7 +189,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``quadratic-phase``
 
     Signals:
 
@@ -204,7 +204,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``rp-classifier``
 
     Signals:
 
@@ -219,7 +219,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``sideband-correction``
 
     Signals:
 
@@ -234,7 +234,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``spectrogram-collector``
 
     Signals:
 
@@ -245,11 +245,11 @@ EventAnalysis
         * 
 
 .. toggle-header::
-    :header: **KTMVAClassifier**
+    :header: **KTTMVAClassifier**
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``tmva-classifier``
 
     Signals:
 
@@ -264,7 +264,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``track-processing-double-cuts``
 
     Signals:
 
@@ -279,7 +279,7 @@ EventAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``track-processing-weighted-slope``
 
     Signals:
 
@@ -298,7 +298,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``basic-ascii-writer``
 
     Signals:
 
@@ -313,7 +313,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``basic-root-file-writer``
 
     Signals:
 
@@ -328,7 +328,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``hdf5-writer``
 
     Signals:
 
@@ -343,7 +343,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``image-writer``
 
     Signals:
 
@@ -358,7 +358,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``json-writer``
 
     Signals:
 
@@ -373,7 +373,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``multi-slice-root-writer``
 
     Signals:
 
@@ -388,7 +388,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``official-candidate-writer``
 
     Signals:
 
@@ -403,7 +403,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``root-spectrogram-writer``
 
     Signals:
 
@@ -418,7 +418,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``root-tree-writer``
 
     Signals:
 
@@ -433,7 +433,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``terminal-writer``
 
     Signals:
 
@@ -448,22 +448,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
-
-    Signals:
-
-        * 
-
-    Slots:
-
-        * 
-
-.. toggle-header::
-    :header: **KTMultiFileJSONReader**
-
-    Description: 
-
-    Configuration type: ````
+    Configuration type: ``dpt-reader``
 
     Signals:
 
@@ -478,7 +463,7 @@ IO
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``multi-file-root-tree-reader``
 
     Signals:
 
@@ -497,7 +482,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``amplitude-counter``
 
     Signals:
 
@@ -512,7 +497,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``amplitude-distributor``
 
     Signals:
 
@@ -527,22 +512,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
-
-    Signals:
-
-        * 
-
-    Slots:
-
-        * 
-
-.. toggle-header::
-    :header: **KTBiasedACM**
-
-    Description: 
-
-    Configuration type: ````
+    Configuration type: ``analytic-associator``
 
     Signals:
 
@@ -557,7 +527,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``consensus-thresholding``
 
     Signals:
 
@@ -568,11 +538,11 @@ SpectrumAnalysis
         * 
 
 .. toggle-header::
-    :header: **KTConvolutions**
+    :header: **KTConvolution**
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``convolution``
 
     Signals:
 
@@ -587,7 +557,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``correlator``
 
     Signals:
 
@@ -602,7 +572,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``create-kd-tree``
 
     Signals:
 
@@ -617,7 +587,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``data-accumulator``
 
     Signals:
 
@@ -632,7 +602,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``dbscan-noise-filter``
 
     Signals:
 
@@ -647,7 +617,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``distance-clustering``
 
     Signals:
 
@@ -662,7 +632,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``gain-normalization``
 
     Signals:
 
@@ -677,7 +647,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``variable-spectrum-chi2test``
 
     Signals:
 
@@ -692,7 +662,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``gain-vairation-processor``
 
     Signals:
 
@@ -707,7 +677,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``hough-transform``
 
     Signals:
 
@@ -722,7 +692,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``merge-kd-tree``
 
     Signals:
 
@@ -737,7 +707,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``nn-filter``
 
     Signals:
 
@@ -752,7 +722,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``rayleigh-quotient``
 
     Signals:
 
@@ -767,7 +737,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``sequential-track-finder``
 
     Signals:
 
@@ -782,7 +752,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``spectrogram-striper``
 
     Signals:
 
@@ -797,7 +767,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``spectrum-discriminator``
 
     Signals:
 
@@ -812,7 +782,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``switch-fftw-polar``
 
     Signals:
 
@@ -827,7 +797,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``variable-spectrum-discriminator``
 
     Signals:
 
@@ -842,7 +812,7 @@ SpectrumAnalysis
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``wigner-ville``
 
     Signals:
 
@@ -861,7 +831,7 @@ Time
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``dac``
 
     Signals:
 
@@ -876,7 +846,7 @@ Time
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``digitizer-tests``
 
     Signals:
 
@@ -891,7 +861,7 @@ Time
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``egg-processor``
 
     Signals:
 
@@ -906,7 +876,7 @@ Time
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``egg-writer``
 
     Signals:
 
@@ -921,7 +891,7 @@ Time
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``mantis``
 
     Signals:
 
@@ -940,7 +910,7 @@ Transform
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``convert-to-power``
 
     Signals:
 
@@ -955,7 +925,7 @@ Transform
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``forward-fftw``
 
     Signals:
 
@@ -970,7 +940,7 @@ Transform
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``reverse-fftw``
 
     Signals:
 
@@ -985,7 +955,7 @@ Transform
 
     Description: 
 
-    Configuration type: ````
+    Configuration type: ``windower``
 
     Signals:
 
