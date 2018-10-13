@@ -7,17 +7,24 @@ EventAnalysis
 .. toggle-header::
     :header: **KTCollinearTrackClustering**
 
-    Description: 
+    Description: Clusters tracks together in the slope/intercept plane with an elliptical boundary
 
     Configuration type: ``collinear-track-clustering``
 
-    Signals:
+    Available configuration values:
 
-        * 
+         * ``slope-radius``: clustering tolerance in the slope axis
+         * ``frequency-radius``: clustering tolernace in the intercept axis
 
-    Slots:
+     Slots:
 
-        * 
+         * ``track``: ``void (KTDataPtr)`` -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTProcessedTrackData.
+         * ``do-clustering``: ``void ()`` -- Triggers clustering algorithm
+
+     Signals:
+
+         * ``track``: ``void (KTDataPtr)`` -- Emitted for each group found; Guarantees KTProcessedTrackData.
+         * ``tracks-done``: ``void ()`` -- Emitted when track clustering is complete
 
 .. toggle-header::
     :header: **KTDataCutter**
