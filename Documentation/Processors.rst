@@ -7,6 +7,8 @@ EventAnalysis
 .. toggle-header::
     :header: **KTCollinearTrackClustering**
 
+    Author: E. Zayas
+
     Description: Clusters tracks together in the slope/intercept plane with an elliptical boundary
 
     Configuration type: ``collinear-track-clustering``
@@ -29,7 +31,9 @@ EventAnalysis
 .. toggle-header::
     :header: **KTDataCutter**
 
-    Description: 
+    Author: E. Zayas
+
+    Description: Makes cuts on data objects based on member variables
 
     Configuration type: ``data-cutter``
 
