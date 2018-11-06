@@ -1,6 +1,6 @@
 FROM project8/p8compute_dependencies:v0.1.0 as katydid_common
 
-ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid-2.14.0
+ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid-v2.14.0
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
     cd $KATYDID_BUILD_PREFIX &&\
