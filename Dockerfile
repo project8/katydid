@@ -23,7 +23,7 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
     git clone https://github.com/project8/katydid &&\
     cd katydid &&\
     git fetch && git fetch --tags &&\
-    git checkout v2.14.0 &&\
+    git checkout $KATYDID_TAG &&\
     git submodule update --init --recursive &&\
     mkdir build &&\
     cd build &&\
