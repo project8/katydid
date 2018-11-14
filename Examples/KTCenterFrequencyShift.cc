@@ -41,29 +41,12 @@ namespace Katydid
 
     bool KTCenterFrequencyShift::ShiftCF( KTProcessedTrackData& trackData )
     {
-        double oldFreq = trackData.GetStartFrequency();
-        double shift = GetCF();
-
-        trackData.SetStartFrequency( oldFreq + shift );
-
         return true;
     }
 
     void KTCenterFrequencyShift::SlotFunctionTrack( Nymph::KTDataPtr data )
     {
-        if (! data->Has< KTProcessedTrackData >())
-        {
-            KTERROR(evlog, "Data not found with type < KTProcessedTrackData >!");
-            return;
-        }
 
-        if( ! ShiftCF( data->Of< KTProcessedTrackData >() ) )
-        {
-            KTERROR(evlog, "Analysis failed.");
-            return;
-        }
-
-        fTrackSignal( data );
     }
 
 } // namespace Katydid

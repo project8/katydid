@@ -25,7 +25,6 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTTrackTimeCut.hh
     KTCollinearTrackClustering.hh
 
-    KTCenterFrequencyShift.hh
     KTDataCutter.hh
     KTDistanceMatrix.hh
     KTDBSCANEventClustering.hh
@@ -66,7 +65,6 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTTrackFreqCut.cc
     CutClasses/KTTrackTimeCut.cc
 
-    KTCenterFrequencyShift.cc
     KTDataCutter.cc
     KTDBSCANEventClustering.cc
     KTDBSCANTrackClustering.cc
