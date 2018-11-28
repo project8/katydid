@@ -1,5 +1,8 @@
 FROM project8/p8compute_dependencies:v0.2.0 as katydid_common
 
+ARG build_type=Release
+ENV KATYDID_BUILD_TYPE=$build_type
+
 #ENV KATYDID_TAG=v2.14.0
 ENV KATYDID_TAG=feature/rootdict
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
@@ -28,8 +31,10 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
     git submodule update --init --recursive &&\
     mkdir build &&\
     cd build &&\
-    cmake -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX .. &&\
-    cmake -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX .. &&\
+    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX .. &&\
+    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX .. &&\
     make -j3 install &&\
     /bin/true
 
