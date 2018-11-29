@@ -3,8 +3,7 @@ FROM project8/p8compute_dependencies:v0.2.0 as katydid_common
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
 
-#ENV KATYDID_TAG=v2.14.0
-ENV KATYDID_TAG=feature/rootdict
+ENV KATYDID_TAG=v2.14.0
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
