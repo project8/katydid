@@ -323,8 +323,8 @@ get_directory_property (Katydid_COMP_DEFS COMPILE_DEFINITIONS)
 pbuilder_install_config_files()
 
 # Install the this_katydid_root script
-configure_file( this_katydid_root.sh.in this_katydid_root.sh )
-pbuilder_install_files( ${BIN_INSTALL_DIR} ${CMAKE_CURRENT_BINARY_DIR}/this_katydid_root.sh )
+configure_file( this_katydid.sh.in this_katydid.sh )
+pbuilder_install_files( ${BIN_INSTALL_DIR} ${CMAKE_CURRENT_BINARY_DIR}/this_katydid.sh )
 
 # Install the example CMakeLists file for building with this installation of Katydid
 configure_file (${PROJECT_SOURCE_DIR}/Examples/CustomApplications/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)

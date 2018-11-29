@@ -1,0 +1,5 @@
+# Sets necessary environment variables to use this installation of Katydid
+
+source @BIN_INSTALL_DIR@/this_cicada.sh
+
+export ROOT_INCLUDE_PATH=@INCLUDE_INSTALL_DIR@@Katydid_PARENT_INC_DIR_PATH@:@INCLUDE_INSTALL_DIR@@Katydid_PARENT_INC_DIR_PATH@/Cicada:@INCLUDE_INSTALL_DIR@@Katydid_PARENT_INC_DIR_PATH@/Nymph/Scarab:$ROOT_INCLUDE_PATH
