@@ -1,6 +1,17 @@
 Installation 
 =============
 
+Docker
+------
+
+Katydid is available in a Docker container.  You can start up a Katydid container with the following command:
+
+    host> docker run -it --rm project8/katydid:latest /bin/bash
+    
+In the container you need to source two scripts to fully setup the environment.
+
+    docker> source $KATYDID_BUILD_PREFIX/setup.sh
+    docker> source $KATYDID_BUILD_PREFIX/bin/this_katydid.sh
 
 
 Operating System Support
