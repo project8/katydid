@@ -50,17 +50,14 @@ Directory Structure
 *  External - A few dependencies that are included with the distribution.
 *  Nymph - Submodule
 *  OldAnalysis - Dump for old source files.
-*  Source
-  *  Data - Classes that store the data as it gets processed.
-  *  Evaluation - Processors for determining how well an analysis is performing.
-  *  EventAnalysis - Processors that act on individual events (e.g. tracks, clusters of tracks, etc.).
-  *  Executables - Source code for Katydid executables and test programs.
-  *  IO - Writer and reader classes.
-  *  Simulation - An attempt at integrating a simulation into Katydid (use Locust_MC instead)
-  *  SpectrumAnalysis - Processors that act on spectrum-like data.
-  *  Time - Processors that act on data in the time domain.
-  *  Transform - Processors involved in transforming between the time and frequency domains.
-  *  Utility - Generic classes that can be used throughout Katydid.
+*  Source - current source files (more docs in that folder)
+
+
+
+Tips on Installing the Dependencies
+-----------------------------------
+
+MacOS: [Homebrew](https://brew.sh/) is a convenient package manager. Before using it for the installation, make sure that the version available on brew is compatible with what is listed in the dependency list above. [CMake](http://brewformulas.org/Cmake), [Boost](http://brewformulas.org/Boost), [Hdf5](http://brewformulas.org/Hdf5), [Protobuf](http://brewformulas.org/Protobuf), and [Root](http://brewformulas.org/root) are all available through brew via the instructions in these links.
 
 
 Installing
@@ -88,7 +85,7 @@ The following steps will build Katydid from scratch.  Starting with a terminal w
 
   You should set the CMake variable `CMAKE_BUILD_TYPE` to either `RELEASE`, `STANDARD`, or `DEBUG` (default), in order
   of how much text output you would like (from least to most) and how much compiler optimization
-  should be performed (from most to least).
+  should be performed (from most to least). You may wish to to activate C++14 support with USE_CPP14=ON if your ROOT version was built with C++14 support.
 
   Variables that start with `Katydid_` will control which parts of Katydid are built.
 

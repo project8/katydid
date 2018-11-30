@@ -82,8 +82,6 @@ namespace Katydid
     };
 
 
-    class KTROOTWriterFileManager;
-
   /*!
      @class KTImageWriter
      @author N. S. Oblath
@@ -131,7 +129,7 @@ namespace Katydid
     class KTImageWriter : public Nymph::KTWriterWithTypists< KTImageWriter, KTImageTypeWriter >//public KTWriter
     {
         public:
-            KTImageWriter(const std::string& name = "root-spectrogram-writer");
+            KTImageWriter(const std::string& name = "image-writer");
             virtual ~KTImageWriter();
 
             bool Configure(const scarab::param_node* node);

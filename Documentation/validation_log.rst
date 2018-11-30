@@ -43,7 +43,22 @@ Fixes:
 Log
 ---
 
-Version: 2.14.0
+Version: 2.15.0 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: November 30, 2018
+'''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Dockerfile based on the p8compute-dependencies container
+* Updated Cicada to v1.3.0
+* Fixed ROOT dictionary builds so they don't hard-code source-tree file locations
+    * Validated by loading libraries in ROOT and in ROOT via Python
+
+
+* Version: 2.14.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Release Date: October 8, 2018
