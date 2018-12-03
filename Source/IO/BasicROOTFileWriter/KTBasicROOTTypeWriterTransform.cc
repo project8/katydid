@@ -73,6 +73,7 @@ namespace Katydid
         fWriter->RegisterSlot("tf-polar-power", this, &KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPower);
         fWriter->RegisterSlot("multi-fs-polar", this, &KTBasicROOTTypeWriterTransform::WriteMultiFSDataPolar);
         fWriter->RegisterSlot("multi-fs-fftw", this, &KTBasicROOTTypeWriterTransform::WriteMultiFSDataFFTW);
+        fWriter->RegisterSlot("multi-ps-data", this, &KTBasicROOTTypeWriterTransform::WriteMultiPSData);
         return;
     }
 
