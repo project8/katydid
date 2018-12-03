@@ -15,6 +15,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTData.hh"
+#include "KTMultiPSData.hh"
 
 #include <set>
 #include <algorithm>
@@ -55,8 +56,23 @@ namespace Katydid
     }
 
     // Emit Signal
-    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data )
+    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data, unsigned comp )
     {
+        // Convert to KTMultiPSData
+
+        KTPSCollectionData& dataObj = data->Of< KTPSCollectionData >();
+        KTPSCollectionData::collection currentSpectra = dataObj.GetSpectra();
+        KTMultiPS* multiSpectrum = new KTMultiPS( currentSpectra.size(), currentSpectra.begin()->first, currentSpectra.rbegin()->first );
+        
+        int iElement = 0;
+        for( KTPSCollectionData::collection::iterator it = currentSpectra.begin(); it != currentSpectra.end(); ++it )
+        {
+            (*multiSpectrum)(iElement) = it->second;
+            iElement++;
+        }
+
+        dataObj.SetSpectra( multiSpectrum, comp );
+
         fWaterfallSignal( data );
     }
 
@@ -439,7 +455,7 @@ namespace Katydid
                     KTINFO(evlog, "New start time: " << it->second->GetStartTime());
                     KTINFO(evlog, "New end time: " << it->second->GetEndTime());
 
-                    FinishSC( it->first );
+                    FinishSC( it->first, component );
                 }
                 else
                 {

@@ -16,6 +16,7 @@
 #include "KTSliceHeader.hh"
 #include "KTMultiFSDataPolar.hh"
 #include "KTMultiFSDataFFTW.hh"
+#include "KTMultiPSData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTTimeFrequencyDataPolar.hh"
@@ -722,6 +723,35 @@ namespace Katydid
             TH2D* mfsHist = fsData.CreateMagnitudeHistogram(iPlot, histName);
             mfsHist->SetDirectory(fWriter->GetFile());
             mfsHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        }
+        return;
+    }
+
+    //*****************
+    // Multi-PS Data
+    //*****************
+
+    void KTBasicROOTTypeWriterTransform::WriteMultiPSData(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTMultiPSData& psData = data->Of<KTMultiPSData>();
+        unsigned nComponents = psData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
+        {
+            stringstream conv;
+            conv << "histMPS_" << sliceNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* mpsHist = psData.CreatePowerHistogram(iPlot, histName);
+            mpsHist->SetDirectory(fWriter->GetFile());
+            mpsHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;

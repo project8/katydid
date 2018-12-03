@@ -100,7 +100,7 @@ namespace Katydid
             bool ReceiveMPTrack(KTMultiPeakTrackData& data);
             bool ReceiveMPEvent(KTMultiTrackEventData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
-            void FinishSC( Nymph::KTDataPtr data );
+            void FinishSC( Nymph::KTDataPtr data, unsigned comp );
 
         private:
             struct KTTrackCompare

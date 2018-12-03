@@ -16,7 +16,7 @@ namespace Katydid
     const std::string KTPSCollectionData::sName("ps-collection");
 
     KTPSCollectionData::KTPSCollectionData() :
-            KTExtensibleData< KTPSCollectionData >(),
+            KTMultiPSData(),
             fSpectra(),
             fStartTime(0.),
             fEndTime(0.001),
@@ -30,7 +30,7 @@ namespace Katydid
     }
 
     KTPSCollectionData::KTPSCollectionData(const KTPSCollectionData& orig) :
-            KTExtensibleData< KTPSCollectionData >(orig),
+            KTMultiPSData(orig),
             fSpectra(),
             fStartTime(orig.fStartTime),
             fEndTime(orig.fEndTime),

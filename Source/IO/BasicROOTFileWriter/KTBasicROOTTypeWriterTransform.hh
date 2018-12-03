@@ -19,6 +19,7 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTW;
     class KTMultiFSDataPolar;
     class KTMultiFSDataFFTW;
+    class KTMultiPSData;
     class KTPowerSpectrumData;
 
     class KTBasicROOTTypeWriterTransform : public KTBasicROOTTypeWriter
@@ -79,6 +80,13 @@ namespace Katydid
         public:
             void WriteMultiFSDataPolar(Nymph::KTDataPtr data);
             void WriteMultiFSDataFFTW(Nymph::KTDataPtr data);
+
+            //************************
+            // Multi-PS Data
+            //************************
+        public:
+            void WriteMultiPSData(Nymph::KTDataPtr data);
+
     };
 
 } /* namespace Katydid */

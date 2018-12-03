@@ -12,6 +12,8 @@
 
 #include "KTMemberVariable.hh"
 
+#include "KTMultiPSData.hh"
+
 #include <vector>
 #include <map>
 
@@ -21,7 +23,7 @@ namespace Katydid
     class KTTimeSeriesFFTW;
     class KTSliceHeader;
 
-    class KTPSCollectionData : public Nymph::KTExtensibleData< KTPSCollectionData >
+    class KTPSCollectionData : public KTMultiPSData
     {
         public:
             typedef std::map< double, KTPowerSpectrum* > collection;
