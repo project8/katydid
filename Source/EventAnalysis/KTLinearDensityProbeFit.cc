@@ -260,10 +260,10 @@ namespace Katydid
 
         double ps_xmin = fullSpectrogram.GetStartTime();
         double ps_xmax = fullSpectrogram.GetEndTime();
-        double ps_ymin = fullSpectrogram.GetSpectra().begin()->second->GetRangeMin();
+        double ps_ymin = (*fullSpectrogram.GetSpectra())(0)->GetRangeMin();
         //     ps_ymax will not be necessary
         double ps_dx   = fullSpectrogram.GetDeltaT();
-        double ps_dy   = fullSpectrogram.GetSpectra().begin()->second->GetFrequencyBinWidth();
+        double ps_dy   = (*fullSpectrogram.GetSpectra())(0)->GetFrequencyBinWidth();
 
         // We add +1 for the underflow bin
         int xBinStart = floor( (data.GetStartTimeInAcq() - ps_xmin) / ps_dx ) + 1;
@@ -289,22 +289,22 @@ namespace Katydid
         KTSpline* spline = fGVData.GetSpline(trackComponent);
 
         // First we compute the unweighted projection
-        const KTPSCollectionData::collection& spectra = fullSpectrogram.GetSpectra();
+        const KTPhysicalArray< 1, KTPowerSpectrum* > spectra = *fullSpectrogram.GetSpectra();
         vector< double > unweighted(spectra.size());
-        for( KTPSCollectionData::collection::const_iterator it = spectra.begin(); it != spectra.end(); ++it )
+        for( KTPhysicalArray< 1, KTPowerSpectrum* >::const_iterator it = spectra.begin(); it != spectra.end(); ++it )
         {
             // Set x value and starting y-bin
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
-            yBinStart = it->second->FindBin( alphaBoundLower + q_fit * xVal );
+            yBinStart = (*it)->FindBin( alphaBoundLower + q_fit * xVal );
 
             // Unweighted power = sum of raw power spectrum
             unweighted[iSpectrum] = 0;
-            for( int iBin = yBinStart; iBin < yBinStart + yWindow && iBin < it->second->GetNFrequencyBins(); ++iBin )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow && iBin < (*it)->GetNFrequencyBins(); ++iBin )
             {
                 yVal = ps_ymin + ps_dy * (iBin - 1);
 
                 // We reevaluate the spline rather than deal with the appropriate index of power_minus_bkgd
-                unweighted[iSpectrum] += (*it->second)(iBin) - spline->Evaluate( yVal );
+                unweighted[iSpectrum] += (**it)(iBin) - spline->Evaluate( yVal );
             }
             ++iSpectrum;
         }
@@ -315,20 +315,20 @@ namespace Katydid
         double cumulative = 0.;
         iSpectrum = 0;
         vector< double > weighted(spectra.size());
-        for( KTPSCollectionData::collection::const_iterator it = spectra.begin(); it != spectra.end(); ++it )
+        for( KTPhysicalArray< 1, KTPowerSpectrum* >::const_iterator it = spectra.begin(); it != spectra.end(); ++it )
         {
             cumulative = 0.;
 
             xVal = ps_xmin + (iSpectrum - 1) * ps_dx;
-            yBinStart = it->second->FindBin( alphaBoundLower + q_fit * xVal );
+            yBinStart = (*it)->FindBin( alphaBoundLower + q_fit * xVal );
 
-            for( int iBin = yBinStart; iBin < yBinStart + yWindow && iBin < it->second->GetNFrequencyBins(); ++iBin )
+            for( int iBin = yBinStart; iBin < yBinStart + yWindow && iBin < (*it)->GetNFrequencyBins(); ++iBin )
             {
                 yVal = ps_ymin + ps_dy * (iBin - 1);
 
                 // Calculate delta-f using the fit values
                 delta_f = yVal - (q_fit * xVal + newData.GetIntercept(0));
-                cumulative += delta_f * ((*it->second)(iBin) - spline->Evaluate( yVal )) / unweighted[iSpectrum];
+                cumulative += delta_f * ((**it)(iBin) - spline->Evaluate( yVal )) / unweighted[iSpectrum];
             }
 
             weighted[iSpectrum] = cumulative;

@@ -91,7 +91,7 @@ namespace Katydid
  #endif
 
 
-    const std::string KTMultiPSData::sName("multi-fs-fftw");
+    const std::string KTMultiPSData::sName("multi-ps");
 
     KTMultiPSData::KTMultiPSData() :
             KTMultiPSDataCore(),

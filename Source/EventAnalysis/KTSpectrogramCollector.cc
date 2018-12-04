@@ -58,21 +58,6 @@ namespace Katydid
     // Emit Signal
     void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data, unsigned comp )
     {
-        // Convert to KTMultiPSData
-
-        KTPSCollectionData& dataObj = data->Of< KTPSCollectionData >();
-        KTPSCollectionData::collection currentSpectra = dataObj.GetSpectra();
-        KTMultiPS* multiSpectrum = new KTMultiPS( currentSpectra.size(), currentSpectra.begin()->first, currentSpectra.rbegin()->first );
-        
-        int iElement = 0;
-        for( KTPSCollectionData::collection::iterator it = currentSpectra.begin(); it != currentSpectra.end(); ++it )
-        {
-            (*multiSpectrum)(iElement) = it->second;
-            iElement++;
-        }
-
-        dataObj.SetSpectra( multiSpectrum, comp );
-
         fWaterfallSignal( data );
     }
 
@@ -428,7 +413,7 @@ namespace Katydid
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
                 KTDEBUG(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
-                it->second->AddSpectrum( slice.GetTimeInAcq(), &ps );
+                it->second->AddSpectrum( slice.GetTimeInAcq(),  &ps, component );
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->SetFilling( true );
             }
