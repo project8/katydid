@@ -19,15 +19,21 @@ RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
 ########################
 FROM katydid_common as katydid_done
 
+COPY Cicada /tmp_source/Cicada
+COPY cmake /tmp_source/cmake
+COPY Examples /tmp_source/Examples
+COPY External /tmp_source/External
+COPY Nymph /tmp_source/Nymph
+COPY Source /tmp_source/Source
+COPY CMakeLists.txt /tmp_source/CMakeLists.txt
+COPY KatydidConfig.cmake.in /tmp_source/KatydidConfig.cmake.in
+COPY KatydidConfig.hh.in /tmp_source/KatydidConfig.hh.in
+COPY libkatydid.rootmap /tmp_source/libkatydid.rootmap
+COPY this_katydid.sh.in /tmp_source/this_katydid.sh.in
+
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
 RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
-    mkdir /tmp_install &&\
-    cd /tmp_install &&\
-    git clone https://github.com/project8/katydid &&\
-    cd katydid &&\
-    git fetch && git fetch --tags &&\
-    git checkout $KATYDID_TAG &&\
-    git submodule update --init --recursive &&\
+    cd /tmp_katydid &&\
     mkdir build &&\
     cd build &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
