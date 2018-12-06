@@ -1,9 +1,9 @@
-FROM project8/p8compute_dependencies:v0.2.0 as katydid_common
+FROM project8/p8compute_dependencies:v0.3.0 as katydid_common
 
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
 
-ENV KATYDID_TAG=v2.15.0
+ENV KATYDID_TAG=v2.15.1
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
@@ -19,15 +19,22 @@ RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
 ########################
 FROM katydid_common as katydid_done
 
+COPY Cicada /tmp_source/Cicada
+COPY cmake /tmp_source/cmake
+COPY Examples /tmp_source/Examples
+COPY External /tmp_source/External
+COPY Nymph /tmp_source/Nymph
+COPY Source /tmp_source/Source
+COPY CMakeLists.txt /tmp_source/CMakeLists.txt
+COPY KatydidConfig.cmake.in /tmp_source/KatydidConfig.cmake.in
+COPY KatydidConfig.hh.in /tmp_source/KatydidConfig.hh.in
+COPY libkatydid.rootmap /tmp_source/libkatydid.rootmap
+COPY this_katydid.sh.in /tmp_source/this_katydid.sh.in
+COPY .git /tmp_source/.git
+
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
 RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
-    mkdir /tmp_install &&\
-    cd /tmp_install &&\
-    git clone https://github.com/project8/katydid &&\
-    cd katydid &&\
-    git fetch && git fetch --tags &&\
-    git checkout $KATYDID_TAG &&\
-    git submodule update --init --recursive &&\
+    cd /tmp_source &&\
     mkdir build &&\
     cd build &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \

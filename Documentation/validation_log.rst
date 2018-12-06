@@ -43,6 +43,19 @@ Fixes:
 Log
 ---
 
+Version: 2.15.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: December 6, 2018
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+* Updated Cicada to v1.3.2
+
+
 Version: 2.15.0 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
