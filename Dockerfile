@@ -30,10 +30,11 @@ COPY KatydidConfig.cmake.in /tmp_source/KatydidConfig.cmake.in
 COPY KatydidConfig.hh.in /tmp_source/KatydidConfig.hh.in
 COPY libkatydid.rootmap /tmp_source/libkatydid.rootmap
 COPY this_katydid.sh.in /tmp_source/this_katydid.sh.in
+COPY .git /tmp_source/.git
 
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
 RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
-    cd /tmp_katydid &&\
+    cd /tmp_source &&\
     mkdir build &&\
     cd build &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
