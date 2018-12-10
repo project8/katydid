@@ -52,6 +52,11 @@ namespace Katydid
 
     void KTPSCollectionData::AddSpectrum(double timeStamp, KTPowerSpectrum* spectrum, unsigned iComponent)
     {
+        if( fSpectra.size() <= iComponent )
+        {
+            SetNComponents( iComponent );
+        }
+
         // If fSpectra is empty then this is the first spectrum received
         // We must compute the min and max bin, and the number of bins
         if( fSpectra[iComponent]->empty() )
