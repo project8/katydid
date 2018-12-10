@@ -54,7 +54,7 @@ namespace Katydid
     {
         if( fSpectra.size() <= iComponent )
         {
-            SetNComponents( iComponent );
+            SetNComponents( iComponent + 1 );
         }
 
         // If fSpectra is empty then this is the first spectrum received
