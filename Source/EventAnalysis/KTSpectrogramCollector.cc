@@ -97,8 +97,8 @@ namespace Katydid
         *newTrack = trackData;
 
         // Configure PSCollectionData timestamps
-        newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
-        newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
+        newWaterfall->SetStartTime( trackData.GetStartTimeInAcq() - fLeadTime );
+        newWaterfall->SetEndTime( trackData.GetStartTimeInAcq() + trackData.GetTimeLength() + fTrailTime );
 
         KTINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
         KTINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
@@ -170,13 +170,13 @@ namespace Katydid
             aTrack.SetIntercept( (**it).fProcTrack.GetIntercept() );
 
             // Assign overall start/end time and frequency
-            if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
+            if( overallStartTime < 0 || aTrack.GetStartTimeInAcq() < overallStartTime )
             {
-                overallStartTime = aTrack.GetStartTimeInRunC();
+                overallStartTime = aTrack.GetStartTimeInAcq();
             }
-            if( overallEndTime < 0 || aTrack.GetEndTimeInRunC() > overallEndTime )
+            if( overallEndTime < 0 || aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength() > overallEndTime )
             {
-                overallEndTime = aTrack.GetEndTimeInRunC();
+                overallEndTime = aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength();
             }
 
             if( minStartFrequency < 0 || aTrack.GetStartFrequency() < minStartFrequency )
@@ -307,13 +307,13 @@ namespace Katydid
                 }
 
                 // Assign overall start/end time and frequency
-                if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
+                if( overallStartTime < 0 || aTrack.GetStartTimeInAcq() < overallStartTime )
                 {
-                    overallStartTime = aTrack.GetStartTimeInRunC();
+                    overallStartTime = aTrack.GetStartTimeInAcq();
                 }
-                if( overallEndTime < 0 || aTrack.GetEndTimeInRunC() > overallEndTime )
+                if( overallEndTime < 0 || aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength() > overallEndTime )
                 {
-                    overallEndTime = aTrack.GetEndTimeInRunC();
+                    overallEndTime = aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength();
                 }
                 if( overallStartFrequency < 0 || aTrack.GetStartFrequency() < overallStartFrequency )
                 {
@@ -351,8 +351,8 @@ namespace Katydid
         else
         {
             // Otherwise we may simply assign them from the mpEventData object directly
-            overallStartTime = mpEventData.GetStartTimeInRunC();
-            overallEndTime = mpEventData.GetEndTimeInRunC();
+            overallStartTime = mpEventData.GetStartTimeInAcq();
+            overallEndTime = mpEventData.GetStartTimeInAcq() + mpEventData.GetTimeLength();
             overallStartFrequency = mpEventData.GetStartFrequency();
             overallEndFrequency = mpEventData.GetEndFrequency();
             mpt = mpEventData.GetNTracks();
@@ -413,8 +413,8 @@ namespace Katydid
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
                 KTDEBUG(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
-                it->second->AddSpectrum( slice.GetTimeInAcq(),  &ps, component );
                 it->second->SetDeltaT( slice.GetSliceLength() );
+                it->second->AddSpectrum( slice.GetTimeInAcq(),  &ps, component );
                 it->second->SetFilling( true );
             }
             else

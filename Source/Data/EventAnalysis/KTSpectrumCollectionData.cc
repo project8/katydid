@@ -52,15 +52,19 @@ namespace Katydid
 
     void KTPSCollectionData::AddSpectrum(double timeStamp, KTPowerSpectrum* spectrum, unsigned iComponent)
     {
+        std::cout << "Adding spectrum" << std::endl;
+
         if( fSpectra.size() <= iComponent )
         {
             SetNComponents( iComponent + 1 );
+            std::cout << "Set N components: " << fSpectra.size() << std::endl;
         }
 
         // If fSpectra is empty then this is the first spectrum received
         // We must compute the min and max bin, and the number of bins
-        if( fSpectra[iComponent]->empty() )
+        if( fSpectra[iComponent] == NULL )
         {
+            std::cout << "Proceeding with spectrum" << std::endl;
             SetMinBin( spectrum->FindBin( GetMinFreq() ) );
             SetMaxBin( spectrum->FindBin( GetMaxFreq() ) );
 
@@ -81,6 +85,7 @@ namespace Katydid
             SetMaxFreq( maxFreq );
 
             unsigned iSpectra = (int)((fEndTime - fStartTime) / (double)fDeltaT) + 1;
+            std::cout << "iSpectra = " << iSpectra << std::endl;
 
             fSpectra[iComponent] = new KTMultiPS(iSpectra, fStartTime, fEndTime);
         }
@@ -104,9 +109,18 @@ namespace Katydid
             (*newSpectrum)(i - GetMinBin()) = (*spectrum)(i);
         }
 
+        std::cout << "Setting spectrum" << std::endl;
+
         // add new spectrum to fSpectra
+        std::cout << "Timestamp = " << timeStamp << std::endl;
+        std::cout << "fStartTime = " << fStartTime << std::endl;
+        std::cout << "DeltaT = " << fDeltaT << std::endl;
         unsigned iSpectrum = (int)((timeStamp - fStartTime) / (double)fDeltaT) + 1;
+        std::cout << "iSpectrum = " << iSpectrum << std::endl;
+
         SetSpectrum( newSpectrum, iSpectrum, iComponent );
+
+        std::cout << "Finished setting spectrum" << std::endl;
 
         return;
     }
