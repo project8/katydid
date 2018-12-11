@@ -105,7 +105,7 @@ namespace Katydid
         }
 
         // add new spectrum to fSpectra
-        unsigned iSpectrum = (int)((timeStamp - fStartTime) / (double)fDeltaT) + 1;
+        unsigned iSpectrum = (int)((timeStamp - fStartTime) / (double)fDeltaT);
         SetSpectrum( newSpectrum, iSpectrum, iComponent );
 
         return;

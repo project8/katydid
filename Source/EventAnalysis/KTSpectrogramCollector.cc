@@ -351,8 +351,8 @@ namespace Katydid
         else
         {
             // Otherwise we may simply assign them from the mpEventData object directly
-            overallStartTime = mpEventData.GetStartTimeInAcq();
-            overallEndTime = mpEventData.GetStartTimeInAcq() + mpEventData.GetTimeLength();
+            overallStartTime = mpEventData.GetStartTimeInRunC();
+            overallEndTime = mpEventData.GetStartTimeInRunC() + mpEventData.GetTimeLength();
             overallStartFrequency = mpEventData.GetStartFrequency();
             overallEndFrequency = mpEventData.GetEndFrequency();
             mpt = mpEventData.GetNTracks();
@@ -412,9 +412,9 @@ namespace Katydid
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
-                KTDEBUG(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
+                KTINFO(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
                 it->second->SetDeltaT( slice.GetSliceLength() );
-                it->second->AddSpectrum( slice.GetTimeInAcq(),  &ps, component );
+                it->second->AddSpectrum( slice.GetTimeInRun(),  &ps, component );
                 it->second->SetFilling( true );
             }
             else
