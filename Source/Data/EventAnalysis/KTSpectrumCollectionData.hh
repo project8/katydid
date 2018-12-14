@@ -44,6 +44,7 @@ namespace Katydid
             MEMBERVARIABLEREF(unsigned, MinBin);
             MEMBERVARIABLEREF(unsigned, MaxBin);
             MEMBERVARIABLEREF(bool, Filling);
+            MEMBERVARIABLEREF(uint64_t, SpectrogramCounter);
 
         public:
             static const std::string sName;

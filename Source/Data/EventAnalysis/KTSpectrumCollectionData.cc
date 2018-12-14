@@ -25,7 +25,8 @@ namespace Katydid
             fMaxFreq(150e6),
             fMinBin(0),
             fMaxBin(1),
-            fFilling(false)
+            fFilling(false),
+            fSpectrogramCounter(0)
     {
     }
 

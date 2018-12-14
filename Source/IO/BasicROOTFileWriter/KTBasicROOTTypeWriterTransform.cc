@@ -17,6 +17,7 @@
 #include "KTMultiFSDataPolar.hh"
 #include "KTMultiFSDataFFTW.hh"
 #include "KTMultiPSData.hh"
+#include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTTimeFrequencyDataPolar.hh"
@@ -735,19 +736,29 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterTransform::WriteMultiPSData(Nymph::KTDataPtr data)
     {
+        KTINFO(publog, "Got multi-ps signal, going to write spectrogram");
+        bool hastype = data->Has<KTMultiPSData>();
+        KTDEBUG(publog, "Has data: "<<hastype);
+        bool hastype1 = data->Has<KTPSCollectionData>();
+        KTDEBUG(publog, "Has data: "<<hastype1);
         if (! data) return;
 
-        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        //uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        //KTDEBUG(publog, "Slice number: "<<sliceNumber);
 
-        KTMultiPSData& psData = data->Of<KTMultiPSData>();
+        KTPSCollectionData& psData = data->Of<KTPSCollectionData>();
         unsigned nComponents = psData.GetNComponents();
+        KTDEBUG(publog, "nComponents: "<<nComponents);
+
+        uint64_t spectrogramNumber = psData.GetSpectrogramCounter();
+        KTDEBUG(publog, "Slice number: "<<spectrogramNumber);
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
         for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
         {
             stringstream conv;
-            conv << "histMPS_" << sliceNumber << "_" << iPlot;
+            conv << "histMPS_" << spectrogramNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH2D* mpsHist = psData.CreatePowerHistogram(iPlot, histName);

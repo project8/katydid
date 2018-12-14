@@ -80,6 +80,7 @@ namespace Katydid
             MEMBERVARIABLE(bool, FullEvent);
             MEMBERVARIABLE(double, PrevSliceTimeInRun);
             MEMBERVARIABLE(double, PrevSliceTimeInAcq);
+            MEMBERVARIABLE(uint64_t, NSpectrograms);
 
         public:
             void SetMinFrequency( double freq );

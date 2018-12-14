@@ -43,6 +43,7 @@ namespace Katydid
             fFullEvent(false),
             fPrevSliceTimeInRun(0.),
             fPrevSliceTimeInAcq(0.),
+            fNSpectrograms(0),
             fWaterfallSignal("ps-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
             fMPTrackSlot("mp-track", this, &KTSpectrogramCollector::ReceiveMPTrack),
@@ -394,6 +395,8 @@ namespace Katydid
         }
 
         // Add to fWaterfallSets
+        fNSpectrograms +=1;
+        newWaterfall->SetSpectrogramCounter(fNSpectrograms);
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
         KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
