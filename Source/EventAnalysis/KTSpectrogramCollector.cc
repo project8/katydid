@@ -395,9 +395,9 @@ namespace Katydid
         }
 
         // Add to fWaterfallSets
-        fNSpectrograms +=1;
         newWaterfall->SetSpectrogramCounter(fNSpectrograms);
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
+        fNSpectrograms +=1;
 
         KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
         KTINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
