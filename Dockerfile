@@ -7,11 +7,12 @@ ENV KATYDID_TAG=v2.15.1
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
+    chmod -R 777 $KATYDID_BUILD_PREFIX/.. &&\
     cd $KATYDID_BUILD_PREFIX &&\
     echo "source ${COMMON_BUILD_PREFIX}/setup.sh" > setup.sh &&\
     echo "export KATYDID_TAG=${KATYDID_TAG}" >> setup.sh &&\
     echo "export KATYDID_BUILD_PREFIX=${KATYDID_BUILD_PREFIX}" >> setup.sh &&\
-    echo 'ln -sf $KATYDID_BUILD_PREFIX $KATYDID_BUILD_PREFIX/../current || /bin/true' >> setup.sh &&\
+    echo 'ln -sfT $KATYDID_BUILD_PREFIX $KATYDID_BUILD_PREFIX/../current' >> setup.sh &&\
     echo 'export PATH=$KATYDID_BUILD_PREFIX/bin:$PATH' >> setup.sh &&\
     echo 'export LD_LIBRARY_PATH=$KATYDID_BUILD_PREFIX/lib:$LD_LIBRARY_PATH' >> setup.sh &&\
     /bin/true
