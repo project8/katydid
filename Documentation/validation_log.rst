@@ -43,6 +43,18 @@ Fixes:
 Log
 ---
 
+Version: 2.15.2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: December 21, 2018
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+
+
 Version: 2.15.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
