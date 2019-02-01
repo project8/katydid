@@ -11,6 +11,7 @@
 #include "KTKDTreeData.hh"
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
+#include "KTPowerSpectrumData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
 
@@ -36,14 +37,17 @@ namespace Katydid
     KTROOTTreeTypeWriterSpectrumAnalysis::KTROOTTreeTypeWriterSpectrumAnalysis() :
             KTROOTTreeTypeWriter(),
             //KTTypeWriterSpectrumAnalysis()
+            fPowerCache(),
             fDiscPoints1DTree(NULL),
             fKDTreeTree(NULL),
             fAmpDistTree(NULL),
             fHoughTree(NULL),
+            fFlattenedPSDTree(NULL),
             fDiscPoints1DData(),
             fKDTreePointData(),
             fAmpDistData(),
-            fHoughData()
+            fHoughData(),
+            fFlattenedPSDData()
     {
     }
 
@@ -59,6 +63,7 @@ namespace Katydid
         fWriter->RegisterSlot("kd-tree-scaled", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTreeScaled);
         fWriter->RegisterSlot("amp-dist", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteAmplitudeDistributions);
         fWriter->RegisterSlot("hough", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData);
+        fWriter->RegisterSlot("flatten", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedPSDData);
         return;
     }
 
@@ -463,6 +468,88 @@ namespace Katydid
         fHoughTree->Branch("XScale", &fHoughData.fXScale, "fXScale/d");
         fHoughTree->Branch("YOffset", &fHoughData.fYOffset, "fYOffset/d");
         fHoughTree->Branch("YScale", &fHoughData.fYScale, "fYScale/d");
+
+        return true;
+    }
+
+    //*************************
+    // Flattened PS Data
+    //*************************
+
+    void KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedPSDData(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write psd data root tree");
+        KTPowerSpectrumData& psData = data->Of< KTPowerSpectrumData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fFlattenedPSDTree == NULL)
+        {
+            if (! SetupFlattenedPSDTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the psd tree! Nothing was written.");
+                return;
+            }
+        }
+
+        bool fillPowerCache = fPowerCache.empty();
+
+        for (fFlattenedPSDData.fComponent = 0; fFlattenedPSDData.fComponent < psData.GetNComponents(); fFlattenedPSDData.fComponent++)
+        {
+            KTPowerSpectrum* spectrum = psData.GetSpectrum(fFlattenedPSDData.fComponent);
+            spectrum->ConvertToPowerSpectralDensity();
+
+            if( fillPowerCache )
+            {
+                fPowerCache.push_back( *spectrum );
+                continue;
+            }
+
+            for( unsigned iFreqBin = 0; iFreqBin < spectrum->GetNFrequencyBins(); ++iFreqBin )
+            {
+                fFlattenedPSDData.fPSDValue = (fPowerCache[fFlattenedPSDData.fComponent])(iFreqBin);
+                fFlattenedPSDData.fLabel = (int)((*spectrum)(iFreqBin) > 0.0);
+
+                fFlattenedPSDTree->Fill();
+            }
+
+            fPowerCache.clear();
+        }
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterSpectrumAnalysis::SetupFlattenedPSDTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "flattenedPSD", fFlattenedPSDTree );
+
+            if( fFlattenedPSDTree != NULL )
+            {
+                KTINFO( publog, "Tree already exists; will add to it" );
+                fWriter->AddTree( fFlattenedPSDTree );
+
+                fFlattenedPSDTree->SetBranchAddress( "Component", &fFlattenedPSDData.fComponent );
+                fFlattenedPSDTree->SetBranchAddress( "Power", &fFlattenedPSDData.fPSDValue );
+                fFlattenedPSDTree->SetBranchAddress( "Label", &fFlattenedPSDData.fLabel );
+
+                return true;
+            }
+        }
+
+        fFlattenedPSDTree = new TTree("flattenedPSD", "Flattened Spectrum");
+        if (fFlattenedPSDTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fFlattenedPSDTree);
+
+
+        fFlattenedPSDTree->Branch( "Component", &fFlattenedPSDData.fComponent, "fComponent/i" );
+        fFlattenedPSDTree->Branch( "Power", &fFlattenedPSDData.fPSDValue, "fPSDValue/d" );
+        fFlattenedPSDTree->Branch( "Label", &fFlattenedPSDData.fLabel, "fLabel/i" );
 
         return true;
     }

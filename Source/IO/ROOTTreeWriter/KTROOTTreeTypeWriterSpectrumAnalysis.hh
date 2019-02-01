@@ -22,6 +22,7 @@
 class TH1D;
 class TH2D;
 class TTree;
+class KTPowerSpectrum;
 
 namespace Katydid
 {
@@ -82,6 +83,13 @@ namespace Katydid
         Double_t fYScale;
     };
 
+    struct TFlattenedSpectrumData
+    {
+        UInt_t fComponent;
+        Double_t fPSDValue;
+        Double_t fLabel;
+    };
+
 
     class KTROOTTreeTypeWriterSpectrumAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterSpectrumAnalysis
     {
@@ -97,30 +105,37 @@ namespace Katydid
             void WriteKDTreeScaled(Nymph::KTDataPtr data);
             void WriteAmplitudeDistributions(Nymph::KTDataPtr data);
             void WriteHoughData(Nymph::KTDataPtr data);
+            void WriteFlattenedPSDData(Nymph::KTDataPtr data);
 
         public:
             TTree* GetDiscriminatedPoints1DTree() const;
             TTree* GetKDTreeTree() const;
             TTree* GetAmplitudeDistributionTree() const;
             TTree* GetHoughTree() const;
+            TTree* GetFlattenedPSDTree() const;
 
         private:
             bool SetupDiscriminatedPoints1DTree();
             bool SetupKDTreeTree();
             bool SetupAmplitudeDistributionTree();
             bool SetupHoughTree();
+            bool SetupFlattenedPSDTree();
 
             void DoWriteKDTree(KTKDTreeData& kdtData, double xScaling, double yScaling);
+
+            std::vector< KTPowerSpectrum > fPowerCache;
 
             TTree* fDiscPoints1DTree;
             TTree* fKDTreeTree;
             TTree* fAmpDistTree;
             TTree* fHoughTree;
+            TTree* fFlattenedPSDTree;
 
             TDiscriminatedPoints1DData fDiscPoints1DData;
             TKDTreePointData fKDTreePointData;
             TAmplitudeDistributionData fAmpDistData;
             THoughData fHoughData;
+            TFlattenedSpectrumData fFlattenedPSDData;
 
     };
 
