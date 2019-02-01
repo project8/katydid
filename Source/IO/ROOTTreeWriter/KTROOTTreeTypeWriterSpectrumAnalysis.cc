@@ -65,6 +65,7 @@ namespace Katydid
         fWriter->RegisterSlot("amp-dist", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteAmplitudeDistributions);
         fWriter->RegisterSlot("hough", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData);
         fWriter->RegisterSlot("flatten", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedPSDData);
+        fWriter->RegisterSlot("mask", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedLabelMask);
         return;
     }
 
@@ -544,7 +545,7 @@ namespace Katydid
 
         if (fFlattenedLabelMaskTree == NULL)
         {
-            if (! SetupFlattenedPSDTree())
+            if (! SetupFlattenedLabelMaskTree())
             {
                 KTERROR(publog, "Something went wrong while setting up the psd tree! Nothing was written.");
                 return;
@@ -555,7 +556,15 @@ namespace Katydid
         
         for( unsigned iFreqBin = 0; iFreqBin < spectrum->GetNFrequencyBins(); ++iFreqBin )
         {
-                fLabel = (int)((*spectrum)(iFreqBin) > 0.0);
+                if( (*spectrum)(iFreqBin) > 0.0 )
+                {
+                    fLabel = 1;
+                }
+                else
+                {
+                    fLabel = 0;
+                }
+
                 fFlattenedLabelMaskTree->Fill();
         }
 
@@ -579,7 +588,7 @@ namespace Katydid
             }
         }
 
-        fFlattenedPSDTree = new TTree("flattenedPSDLabels", "Flattened Spectrum Labels");
+        fFlattenedLabelMaskTree = new TTree("flattenedPSDLabels", "Flattened Spectrum Labels");
         if (fFlattenedLabelMaskTree == NULL)
         {
             KTERROR(publog, "Tree was not created!");
