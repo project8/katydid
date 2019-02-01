@@ -83,14 +83,6 @@ namespace Katydid
         Double_t fYScale;
     };
 
-    struct TFlattenedSpectrumData
-    {
-        UInt_t fComponent;
-        Double_t fPSDValue;
-        Double_t fLabel;
-    };
-
-
     class KTROOTTreeTypeWriterSpectrumAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterSpectrumAnalysis
     {
         public:
@@ -106,6 +98,7 @@ namespace Katydid
             void WriteAmplitudeDistributions(Nymph::KTDataPtr data);
             void WriteHoughData(Nymph::KTDataPtr data);
             void WriteFlattenedPSDData(Nymph::KTDataPtr data);
+            void WriteFlattenedLabelMask(Nymph::KTDataPtr data);
 
         public:
             TTree* GetDiscriminatedPoints1DTree() const;
@@ -113,6 +106,7 @@ namespace Katydid
             TTree* GetAmplitudeDistributionTree() const;
             TTree* GetHoughTree() const;
             TTree* GetFlattenedPSDTree() const;
+            TTree* GetFlattenedLabelMaskTree() const;
 
         private:
             bool SetupDiscriminatedPoints1DTree();
@@ -120,23 +114,24 @@ namespace Katydid
             bool SetupAmplitudeDistributionTree();
             bool SetupHoughTree();
             bool SetupFlattenedPSDTree();
+            bool SetupFlattenedLabelMaskTree();
 
             void DoWriteKDTree(KTKDTreeData& kdtData, double xScaling, double yScaling);
-
-            std::vector< KTPowerSpectrum > fPowerCache;
 
             TTree* fDiscPoints1DTree;
             TTree* fKDTreeTree;
             TTree* fAmpDistTree;
             TTree* fHoughTree;
             TTree* fFlattenedPSDTree;
+            TTree* fFlattenedLabelMaskTree;
 
             TDiscriminatedPoints1DData fDiscPoints1DData;
             TKDTreePointData fKDTreePointData;
             TAmplitudeDistributionData fAmpDistData;
             THoughData fHoughData;
-            TFlattenedSpectrumData fFlattenedPSDData;
 
+            double fPowerValue;
+            int fLabel;
     };
 
     inline TTree* KTROOTTreeTypeWriterSpectrumAnalysis::GetDiscriminatedPoints1DTree() const
