@@ -556,8 +556,9 @@ namespace Katydid
         
         for( unsigned iFreqBin = 0; iFreqBin < spectrum->GetNFrequencyBins(); ++iFreqBin )
         {
-                if( (*spectrum)(iFreqBin) > 0.0 )
+                if( (*spectrum)(iFreqBin) > 1.0e-17 )
                 {
+                    KTPROG( publog, "Nonzero power = " << (*spectrum)(iFreqBin) );
                     fLabel = 1;
                 }
                 else
