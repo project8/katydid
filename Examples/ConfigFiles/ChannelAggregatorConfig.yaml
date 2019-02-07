@@ -1,0 +1,40 @@
+processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: forward-fftw
+        name: fft
+      - type: convert-to-power
+        name: to-ps
+      - type: channel-aggregator
+        name: ch-sum
+      - type: basic-root-writer
+        name: writer
+
+    connections:
+      - signal: "egg:header"
+        slot: "fft:header"
+      - signal: "egg:ts"
+        slot: "fft:ts-fftw"
+      - signal: "fft:fft"
+        slot: "to-ps:fs-fftw-to-psd"
+      - signal: "to-ps:psd"
+        slot: "ch-sum:ps-ch"
+      - signal: "ch-sum:ps"
+        slot: "writer:ps"
+
+    run-queue:
+      - egg
+
+egg:
+    filename: "locust_mc_0.5e-3s_Seed55_LO25.8781G.egg"
+    egg-reader: egg3
+    slice-size: 16384
+    number-of-slices: 1
+
+fft:
+    transform-flag: ESTIMATE
+
+writer:
+    output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.egg"
+    file-flag: recreate
