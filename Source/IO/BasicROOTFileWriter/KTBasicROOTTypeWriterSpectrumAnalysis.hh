@@ -89,6 +89,13 @@ namespace Katydid
         public:
             void WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data);
 
+            //************************
+            // Bilateral Filter Data
+            //************************
+
+        public:
+            void WriteBilateralFilteredFSDataFFTW(Nymph::KTDataPtr data);
+
 #ifdef ENABLE_TUTORIAL
             //************************
             // LPF Tutorial Data
