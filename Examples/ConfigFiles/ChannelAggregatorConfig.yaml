@@ -36,5 +36,5 @@ fft:
     transform-flag: ESTIMATE
 
 writer:
-    output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.egg"
+    output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.root"
     file-flag: recreate
