@@ -9,7 +9,7 @@
 
 namespace Katydid
 {
-  KTChannelAggregatedDataCore::KTChannelAggregatedDataCore()
+  KTChannelAggregatedDataCore::KTChannelAggregatedDataCore(): KTFrequencyDomainArrayData()
   {
   }
   

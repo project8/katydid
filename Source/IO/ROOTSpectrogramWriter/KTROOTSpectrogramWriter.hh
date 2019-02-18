@@ -71,6 +71,11 @@ namespace Katydid
             void AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle);
             template< typename XDataType >
             void AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle);
+      
+            template< typename XDataType >
+            void AddAggregatePowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle);
+            template< typename XDataType >
+            void AddAggregatePSDDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle);
 
             void OutputASpectrogramSet(DataTypeBundle& dataBundle, bool cloneSpectrograms);
             void ClearASpectrogramSet(DataTypeBundle& dataBundle);
@@ -111,6 +116,8 @@ namespace Katydid
      - "fs-polar": void (Nymph::KTDataPtr) -- Contribute a slice to a FS-polar spectrogram.  Requires KTFrequencySpectrumDataPolar.
      - "ps": void (Nymph::KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
      - "psd": void (Nymph::KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
+     - "agg-ps": void (Nymph::KTDataPtr) -- Contribute a slice to a power spectrogram.  Requires KTPowerSpectrumData.
+     - "agg-psd": void (Nymph::KTDataPtr) -- Contribute a slice to a PSD spectrogram.  Requires KTPowerSpectrumData.
      - "proc-track": void (Nymph::KTDataPtr) -- Contribute a line representing a track; all lines will be written to the root file together, and can be drawn on top of a spectrogram.  Requires KTProcessedTrackData.
      - "write-file": void () -- Write out the ROOT file of any spectrograms that were built.
 
@@ -252,6 +259,92 @@ namespace Katydid
 
          return;
      }
+  
+  template< class XDataType >
+  void KTROOTSpectrogramTypeWriter::AddAggregatePowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle)
+  {
+    KTDEBUG( publog_rsw, "Aggregating power-spectrum-type data for spectrogram writer" );
+    // Slice header contains information about time slices
+    KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
+    double timeInRun = sliceHeader.GetTimeInRun();
+    double sliceLength = sliceHeader.GetSliceLength();
+    bool isNewAcq = sliceHeader.GetIsNewAcquisition();
+    // Check if this is a slice we should care about.
+    // The first slice of interest will contain the writer's min time;
+    // The last slice of interest will contain the writer's max time.
+    if (fWriter->GetMode() == KTROOTSpectrogramWriter::kSequential || (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime()))
+    {
+      // Ok, this is a slice we should pay attention to.
+      XDataType& fsData = data->Of< XDataType >();
+      unsigned nComponents = fsData.GetNComponents();
+      // Make sure that there is only one component(i.e., channel) in the aggregated data
+      if (nComponents!=1) {
+        KTWARN(publog_rsw,"More than 1 component in aggregated data");
+        return;
+      }
+      int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
+      // Checks to see if new histogram needs to be opened
+      if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
+      
+        // Get the component information, fsData should have only one component anyway
+        KTPowerSpectrum* spectrum = fsData.GetSpectrum(0);
+        spectrum->ConvertToPowerSpectrum();// Not completely sure if this is needed
+        // Technically a vector of histograms are not needed, but this maintains consistency
+        TH2D* spectrogram = dataBundle.fSpectrograms[0].fSpectrogram;
+        unsigned iSpectFreqBin = 0;
+        if (iSpectTimeBin > spectrogram->GetNbinsX()) return;
+        // Loop over all the frequency bins and fill the histogram
+        for (unsigned iFreqBin = dataBundle.fSpectrograms[0].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[0].fLastFreqBin; ++iFreqBin)
+        {
+          spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
+          ++iSpectFreqBin;
+        }
+    }
+    return;
+  }
+  
+  template< class XDataType >
+  void KTROOTSpectrogramTypeWriter::AddAggregatePSDDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle)
+  {
+    KTDEBUG( publog_rsw, "Aggregating power-spectrum-type data for spectrogram writer" );
+    // Slice header contains information about time slices
+    KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
+    double timeInRun = sliceHeader.GetTimeInRun();
+    double sliceLength = sliceHeader.GetSliceLength();
+    bool isNewAcq = sliceHeader.GetIsNewAcquisition();
+    // Check if this is a slice we should care about.
+    // The first slice of interest will contain the writer's min time;
+    // The last slice of interest will contain the writer's max time.
+    if (fWriter->GetMode() == KTROOTSpectrogramWriter::kSequential || (timeInRun + sliceLength >= fWriter->GetMinTime() && timeInRun <= fWriter->GetMaxTime()))
+    {
+      // Ok, this is a slice we should pay attention to.
+      XDataType& fsData = data->Of< XDataType >();
+      unsigned nComponents = fsData.GetNComponents();
+      // Make sure that there is only one component(i.e., channel) in the aggregated data
+      if (nComponents!=1) {
+        KTWARN(publog_rsw,"More than 1 component in aggregated data");
+        return;
+      }
+      int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
+      // Checks to see if new histogram needs to be opened
+      if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
+      
+      // Get the component information, fsData should have only one component anyway
+      KTPowerSpectrum* spectrum = fsData.GetSpectrum(0);
+      spectrum->ConvertToPowerSpectralDensity();// Not completely sure if this is needed
+      // Technically a vector of histograms are not needed, but this maintains consistency
+      TH2D* spectrogram = dataBundle.fSpectrograms[0].fSpectrogram;
+      unsigned iSpectFreqBin = 0;
+      if (iSpectTimeBin > spectrogram->GetNbinsX()) return;
+      // Loop over all the frequency bins and fill the histogram
+      for (unsigned iFreqBin = dataBundle.fSpectrograms[0].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[0].fLastFreqBin; ++iFreqBin)
+      {
+        spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
+        ++iSpectFreqBin;
+      }
+    }
+    return;
+  }
 
      template< class XDataType >
      void KTROOTSpectrogramTypeWriter::AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle)

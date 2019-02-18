@@ -18,10 +18,11 @@ namespace Katydid
   
   KTChannelAggregator::KTChannelAggregator(const std::string& name) :
   KTProcessor(name),
-  fMemberVariable1(0.),
-  // If you would like to build this template as-is, you must comment out the following slot initializations because they use made-up data types
-  fChSumSlot("ps-ch", this, &KTChannelAggregator::SumChannels, &summedData),
-  summedData("ps", this)
+  fMemberVariable1(0.),//Currently a dummy variable
+  fChPowerSumSlot("ps", this, &KTChannelAggregator::SumChannelPower, &fSummedPowerData),
+  fChPSDSumSlot("psd", this, &KTChannelAggregator::SumChannelPSD, &fSummedPSDData),
+  fSummedPowerData("agg-ps", this),
+  fSummedPSDData("agg-psd", this)
   {
   }
   
@@ -32,34 +33,54 @@ namespace Katydid
   bool KTChannelAggregator::Configure(const scarab::param_node* node)
   {
     if (node == NULL) return false;
-    
+    //Currently a dummy variable
     SetMemberVariable1(node->get_value< double >("member-variable-1", fMemberVariable1));
     
+    std::cout << "Member variable value: " << fMemberVariable1 <<std::endl;
     return true;
   }
   
-  bool KTChannelAggregator::SumChannels( KTPowerSpectrumData& chData )
+  bool KTChannelAggregator::SumChannelPower(KTPowerSpectrumData& chData)
   {
     unsigned nComponents = chData.GetNComponents();
+    
     int arraySize=(chData.GetSpectrum(0))->size();
-    KTChannelAggregatedData& newData = chData.Of< KTChannelAggregatedData >().SetNComponents(nComponents);
+    KTChannelAggregatedData& newData = chData.Of< KTChannelAggregatedData >().SetNComponents(1);
     
     KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(arraySize, chData.GetSpectrum(0)->GetRangeMin(), chData.GetSpectrum(0)->GetRangeMax());
+
+    NullPowerSpectrum(*newSpectrum);
     //Looping through all the components
     for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
     {
       (*newSpectrum)+=(*chData.GetSpectrum(iComponent));
-      KTDEBUG(evlog, "Channel aggregation completed");
+      newSpectrum->ConvertToPowerSpectrum();
+      KTDEBUG(evlog, "Channel "<< iComponent <<" added to the aggregate");
     }
     newData.SetSpectrum(newSpectrum, 0);
-    for (unsigned i = 0; i < newSpectrum->size(); ++i)
-    {
-      //Currently adds the channel power spectrum for all the segments and print out for
-      if(i%100==0)
-        std::cout<< i<< "  "<< (*chData.GetSpectrum(0))(i) << " "<< (*newSpectrum)(i) <<std::endl;
-    }
     KTINFO(evlog, "Completed channel aggegation of " << nComponents << " power spectra");
+    return true;
+  }
+  
+  bool KTChannelAggregator::SumChannelPSD(KTPowerSpectrumData& chData)
+  {
+    unsigned nComponents = chData.GetNComponents();
     
+    int arraySize=(chData.GetSpectrum(0))->size();
+    KTChannelAggregatedData& newData = chData.Of< KTChannelAggregatedData >().SetNComponents(1);
+    
+    KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(arraySize, chData.GetSpectrum(0)->GetRangeMin(), chData.GetSpectrum(0)->GetRangeMax());
+
+    NullPowerSpectrum(*newSpectrum);
+    //Looping through all the components
+    for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+    {
+      (*newSpectrum)+=(*chData.GetSpectrum(iComponent));
+      newSpectrum->ConvertToPowerSpectralDensity();
+      KTDEBUG(evlog, "Channel "<< iComponent <<" added to the aggregate");
+    }
+    newData.SetSpectrum(newSpectrum, 0);
+    KTINFO(evlog, "Completed channel aggegation of " << nComponents << " power spectra");
     return true;
   }
 } // namespace Katydid

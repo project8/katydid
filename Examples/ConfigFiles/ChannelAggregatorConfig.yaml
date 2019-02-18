@@ -10,6 +10,8 @@ processor-toolbox:
         name: ch-sum
       - type: basic-root-writer
         name: writer
+      - type: root-spectrogram-writer
+        name: waterfall-writer
 
     connections:
       - signal: "egg:header"
@@ -18,10 +20,30 @@ processor-toolbox:
         slot: "fft:ts-fftw"
       - signal: "fft:fft"
         slot: "to-ps:fs-fftw-to-psd"
+      - signal: "fft:fft"
+        slot: "to-ps:fs-fftw-to-ps"
       - signal: "to-ps:psd"
-        slot: "ch-sum:ps-ch"
-      - signal: "ch-sum:ps"
+        slot: "ch-sum:psd"
+      - signal: "to-ps:ps"
+        slot: "ch-sum:ps"
+      - signal: "ch-sum:agg-psd"
+        slot: "writer:agg-psd"
+      - signal: "ch-sum:agg-ps"
+        slot: "writer:agg-ps"
+      - signal: "to-ps:psd"
+        slot: "writer:psd"
+      - signal: "to-ps:ps"
         slot: "writer:ps"
+      - signal: "to-ps:ps"
+        slot: "waterfall-writer:ps"
+      - signal: "to-ps:psd"
+        slot: "waterfall-writer:psd"
+      - signal: "ch-sum:agg-ps"
+        slot: "waterfall-writer:agg-ps"
+      - signal: "ch-sum:agg-psd"
+        slot: "waterfall-writer:agg-psd"
+      - signal: "egg:egg-done"
+        slot: "waterfall-writer:write-file"
 
     run-queue:
       - egg
@@ -29,8 +51,9 @@ processor-toolbox:
 egg:
     filename: "locust_mc_0.5e-3s_Seed55_LO25.8781G.egg"
     egg-reader: egg3
-    slice-size: 16384
-    number-of-slices: 1
+    slice-size: 4096
+    number-of-slices: 20
+    stride: 4096
 
 fft:
     transform-flag: ESTIMATE
@@ -38,3 +61,11 @@ fft:
 writer:
     output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.root"
     file-flag: recreate
+
+waterfall-writer:
+    output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.root"
+    file-flag: recreate
+    min-time: 0.0
+    max-time: 0.001
+    min-freq: 0.0e6
+    max-freq: 200.0e6

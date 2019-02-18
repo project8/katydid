@@ -3,7 +3,6 @@
  *
  *  Created on: Jan 28, 2019
  *      Author: P. T. Surukuchi
- *  Copied from KTPowerSpectrumData.hh. Currently a placeholder data class and needs revision to adjust to suit the needs for channel summed data.
  */
 
 #ifndef KTCHANNELAGGREGATEDDATA_HH_
@@ -17,7 +16,7 @@
 
 namespace Katydid
 {
-  class KTChannelAggregatedDataCore
+  class KTChannelAggregatedDataCore: public KTFrequencyDomainArrayData
   {
   public:
     typedef KTPowerSpectrum spectrum_type;
@@ -31,8 +30,8 @@ namespace Katydid
     const KTPowerSpectrum* GetSpectrum(unsigned component = 0) const;
     KTPowerSpectrum* GetSpectrum(unsigned component = 0);
     
-//    const KTFrequencyDomainArray* GetArray(unsigned component = 0) const;
-//    KTFrequencyDomainArray* GetArray(unsigned component = 0);
+    const KTFrequencyDomainArray* GetArray(unsigned component = 0) const;
+    KTFrequencyDomainArray* GetArray(unsigned component = 0);
     
     void SetSpectrum(KTPowerSpectrum* spectrum, unsigned component = 0);
     
@@ -66,16 +65,16 @@ namespace Katydid
     return fSpectra[component];
   }
   
-// Needs implementation
-//  inline const KTFrequencyDomainArray* KTChannelAggregatedDataCore::GetArray(unsigned component) const
-//  {
-//    return fSpectra[component];
-//  }
-//
-//  inline KTFrequencyDomainArray* KTChannelAggregatedDataCore::GetArray(unsigned component)
-//  {
-//    return fSpectra[component];
-//  }
+  // Needs implementation
+  inline const KTFrequencyDomainArray* KTChannelAggregatedDataCore::GetArray(unsigned component) const
+  {
+    return fSpectra[component];
+  }
+  
+  inline KTFrequencyDomainArray* KTChannelAggregatedDataCore::GetArray(unsigned component)
+  {
+    return fSpectra[component];
+  }
   
   inline unsigned KTChannelAggregatedDataCore::GetNComponents() const
   {
