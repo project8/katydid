@@ -23,8 +23,9 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTTrackMainbandCut.hh
     CutClasses/KTTrackMVACut.hh
     CutClasses/KTTrackTimeCut.hh
+    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.hh
+    
     KTCollinearTrackClustering.hh
-
     KTDataCutter.hh
     KTDistanceMatrix.hh
     KTDBSCANEventClustering.hh
@@ -64,6 +65,7 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTTrackMVACut.cc
     CutClasses/KTTrackFreqCut.cc
     CutClasses/KTTrackTimeCut.cc
+    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.cc
 
     KTDataCutter.cc
     KTDBSCANEventClustering.cc
