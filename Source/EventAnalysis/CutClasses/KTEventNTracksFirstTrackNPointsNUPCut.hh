@@ -1,5 +1,5 @@
 /*
- * KTEventFirstTrackNPointsCut.hh
+ * KTEventNTracksFirstTrackNPointsNUPCut.hh
  *
  *  Created on: February 18, 2019
  *      Author: Yuhao
@@ -16,14 +16,15 @@ namespace Katydid
     class KTMultiTrackEventData;
 
     /*
-     @class KTEventFirstTrackNPointsCut
+     @class KTEventNTracksFirstTrackNPointsNUPCut
      @author Yuhao
-     @brief Cut on the number of points in a first track
+     @brief Cut based on the number of points in a first track and number of tracks in an event. 
+     Made by combining features of EventFirstTrackNUPCut and EventFirstTrackNPointsCut.
      @details
      Configuration name: "event-ntracks-first-track-npoints-nup-cut"
      Available configuration values:
-     - "n-points-in-event-first-track": int -- minimum number of points in the first track
-     - "n-tracks-in-event": int -- if event sequence has less than this number of events the cut is applied
+     - "n-points-in-event-first-track": int -- number of points in the first track
+     - "n-tracks-in-event": int -- if event sequence has this number of events the thresholds specified in the cut is applied
      - "min-average-nup": double -- minimum nup per unit length in the first track for the event to pass the cut
      - "min-total-nup": double -- minimum total nup in the first track for the event to pass the cut
      - "min-max-track-nup": double -- minimum maximum nup in the first track for the event to pass the cut
