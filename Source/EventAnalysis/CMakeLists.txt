@@ -9,6 +9,7 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTEventFirstTrackNUPCut.hh
     CutClasses/KTEventFirstTrackPowerCut.hh
     CutClasses/KTEventFirstTrackSNRCut.hh
+    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.hh
     CutClasses/KTEventTimeCut.hh
     CutClasses/KTEventTimeInAcqCut.hh
     CutClasses/KTLinearFitCut.hh
@@ -23,7 +24,7 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTTrackMainbandCut.hh
     CutClasses/KTTrackMVACut.hh
     CutClasses/KTTrackTimeCut.hh
-    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.hh
+
     
     KTCollinearTrackClustering.hh
     KTDataCutter.hh
@@ -50,6 +51,7 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTEventFirstTrackNUPCut.cc
     CutClasses/KTEventFirstTrackPowerCut.cc
     CutClasses/KTEventFirstTrackSNRCut.cc
+    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.cc
     CutClasses/KTEventTimeCut.cc
     CutClasses/KTEventTimeInAcqCut.cc
     CutClasses/KTLinearFitCut.cc
@@ -65,7 +67,6 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTTrackMVACut.cc
     CutClasses/KTTrackFreqCut.cc
     CutClasses/KTTrackTimeCut.cc
-    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.cc
 
     KTDataCutter.cc
     KTDBSCANEventClustering.cc
