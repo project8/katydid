@@ -18,7 +18,6 @@ namespace Katydid
   
   KTChannelAggregator::KTChannelAggregator(const std::string& name) :
   KTProcessor(name),
-  fMemberVariable1(0.),//Currently a dummy variable
   fChPowerSumSlot("ps", this, &KTChannelAggregator::SumChannelPower, &fSummedPowerData),
   fChPSDSumSlot("psd", this, &KTChannelAggregator::SumChannelPSD, &fSummedPSDData),
   fSummedPowerData("agg-ps", this),
@@ -33,10 +32,6 @@ namespace Katydid
   bool KTChannelAggregator::Configure(const scarab::param_node* node)
   {
     if (node == NULL) return false;
-    //Currently a dummy variable
-    SetMemberVariable1(node->get_value< double >("member-variable-1", fMemberVariable1));
-    
-    std::cout << "Member variable value: " << fMemberVariable1 <<std::endl;
     return true;
   }
   

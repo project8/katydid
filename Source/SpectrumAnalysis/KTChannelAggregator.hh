@@ -37,6 +37,7 @@ namespace Katydid
    Slots:
    - "ps": void (Nymph::KTDataPtr) -- Adds channels power, will also need to include summation using FFTW-phase information; Requires KTChannelAggregatedData; Adds summation of the channel results; Emits signal "agg-ps"
    - "psd": void (Nymph::KTDataPtr) -- Adds channels PSD, will also need to include summation using FFTW-phase information; Requires KTChannelAggregatedData; Adds summation of the channel results; Emits signal "agg-psd"
+   - "fft-phase": void (Nymph::KTDataPtr) -- Adds channels PSD and power using FFTW-phase information for appropriate phase addition; Requires KTChannelAggregatedData; Adds summation of the channel results; Emits signal "agg-psd"
    
    Signals:
    - "agg-ps": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTChannelAggregatedData
@@ -50,13 +51,6 @@ namespace Katydid
     virtual ~KTChannelAggregator();
     
     bool Configure(const scarab::param_node* node);
-    
-    double GetMemberVariable1() const;//Currently a dummy variable
-    void SetMemberVariable1(double value);
-    
-  private:
-    double fMemberVariable1;//Currently a dummy variable
-    
   private:
     // This function is called once for each time slice
     bool SumChannelPower( KTPowerSpectrumData& );
@@ -83,19 +77,6 @@ namespace Katydid
     Nymph::KTSlotDataOneType< KTPowerSpectrumData > fChPowerSumSlot;
     Nymph::KTSlotDataOneType< KTPowerSpectrumData > fChPSDSumSlot;
   };
-  
-  //Currently a dummy variable
-  inline double KTChannelAggregator::GetMemberVariable1() const
-  {
-    return fMemberVariable1;
-  }
-  
-  //Currently a dummy variable
-  inline void KTChannelAggregator::SetMemberVariable1(double value)
-  {
-    fMemberVariable1 = value;
-    return;
-  }
   
   inline bool KTChannelAggregator::NullPowerSpectrum(KTPowerSpectrum &spectrum)
   {
