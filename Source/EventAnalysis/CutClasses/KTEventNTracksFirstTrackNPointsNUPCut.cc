@@ -34,6 +34,68 @@ namespace Katydid
 
     bool KTEventNTracksFirstTrackNPointsNUPCut::Configure(const scarab::param_node* node)
     {
+        /*
+    parameters:
+      - ft-npoints: 3
+        ntracks: 1
+        min-total-nup: 0
+        min-average-nup: 13
+        min-max-track-nup: 0
+      - ft-npoints: 3
+        ntracks: 2
+        min-total-nup: 0
+        min-average-nup: 11
+        min-max-track-nup: 0
+      - ft-npoints: 3
+        ntracks: 3
+        min-total-nup: 0
+        min-average-nup: 7.8
+        min-max-track-nup: 0
+      - ft-npoints: 4
+        ntracks: 1
+        min-total-nup: 0
+        min-average-nup: 10
+        min-max-track-nup: 0
+      - ft-npoints: 4
+        ntracks: 2
+        min-total-nup: 0
+        min-average-nup: 8.5
+        min-max-track-nup: 0
+      - ft-npoints: 5
+        ntracks: 1
+        min-total-nup: 0
+        min-average-nup: 7.8
+        min-max-track-nup: 0
+      - ft-npoints: 5
+        ntracks: 2
+        min-total-nup: 0
+        min-average-nup: 7.8
+        min-max-track-nup: 0
+      - ft-npoints: 6
+        ntracks: 1
+        min-total-nup: 0
+        min-average-nup: 8.5
+        min-max-track-nup: 0
+      - ft-npoints: 7
+        ntracks: 1
+        min-total-nup: 0
+        min-average-nup: 7.3
+        min-max-track-nup: 0
+
+        To fill in the cut parameters:
+        1. scan array to get dimensions
+        2. create 2D array with those dimensions
+        3. store offset and maximum of both dimensions
+        3. fill 2D array with -1
+        4. fill in values given
+        5. for each row:
+            1. scan horizontally from left to find first >=0 value, then fill back in to the left side
+            2. scan horizontally from the right to find the first >=0 value, then fill back in to the right side
+            3. check for holes in between and fill from the left
+
+        Need to work out function to retrieve the cut parameters with appropriate bounding
+
+         */
         if (node == NULL) return true;
 
         SetEventFirstTrackNPoints( node->get_value< unsigned >( "n-points-in-event-first-track", GetEventFirstTrackNPoints() ) );
