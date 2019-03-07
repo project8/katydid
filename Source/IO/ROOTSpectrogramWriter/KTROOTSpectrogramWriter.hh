@@ -273,6 +273,7 @@ namespace Katydid
              int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
              if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
 
+             KTDEBUG( publog_rsw, "Finished updating spectrograms" );
              // add this slice's data to the spectrogram
              for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
              {
@@ -287,6 +288,7 @@ namespace Katydid
                      spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
                      ++iSpectFreqBin;
                  }
+                 KTDEBUG( publog_rsw, "Finished this component" );
              }
          }
 

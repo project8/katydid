@@ -19,6 +19,7 @@ namespace Katydid
     class KTSliceHeader;
     class KTProcessedTrackData;
     class KTTimeSeriesData;
+    class KTFrequencySpectrumDataFFTW;
 
     /*
      @class KTQuadraticPhaseShift
@@ -39,6 +40,7 @@ namespace Katydid
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Sets the value of q equal to the slope of a track; Requires KTProcessedTrackData; Adds nothing
      - "ts": void (Nymph::KTDataPtr) -- Multiplies a time series by the quadratic phase; Requires KTTimeSeriesData and KTSliceHeader; Adds nothing
+     - "fs": void (Nymph::KTDataPtr) -- Multiplies a frequency spectrum by the quadratic phase; Requires KTFrequencySpectrumDataFFTW and KTSliceHeader; Adds nothing
 
      Signals:
      - "ts": void (Nymph::KTDataPtr) -- Emitted upon successful time series processing; Guarantees KTTimeSeriesData and KTSliceHeader
@@ -60,7 +62,8 @@ namespace Katydid
 
         public:
             bool AssignPhase( KTProcessedTrackData& trackData );
-            bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTSliceHeader& slice );
+            bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newData, KTSliceHeader& slice );
+            bool ProcessFrequencySpectrum( KTFrequencySpectrumDataFFTW& fsData, KTFrequencySpectrumDataFFTW& newData, KTSliceHeader& slice );
 
             //***************
             // Signals
@@ -68,13 +71,15 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTSSignal;
+            Nymph::KTSignalData fFSSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            Nymph::KTSlotDataTwoTypes< KTTimeSeriesData, KTSliceHeader > fTSSlot;
+            void SlotFunctionTS( Nymph::KTDataPtr data );
+            void SlotFunctionFS( Nymph::KTDataPtr data );
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fProcTrackSlot;
 
     };
