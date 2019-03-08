@@ -96,6 +96,8 @@ namespace Katydid
     void KTROOTSpectrogramTypeWriterTransform::AddPSDData(Nymph::KTDataPtr data)
     {
         AddPowerSpectralDensityDataCoreHelper< KTPowerSpectrumData >(data, fPSDBundle);
+
+        std::cout << "Exiting slot function" << std::endl;
         return;
     }
 

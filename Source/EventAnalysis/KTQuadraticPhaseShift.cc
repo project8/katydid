@@ -60,7 +60,7 @@ namespace Katydid
         double phase = 0.;                      // argument of current TS value
         double q = fSlope;                      // q-value to determine phase shift
 
-        KTINFO(evlog, "Set up time series and slice parameters.");
+        KTINFO(evlog, "Set up time series and slice parameters. q = " << q);
         
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
@@ -87,6 +87,9 @@ namespace Katydid
                 // Assign components from norm and new phase
                 (*newTS)(iBin)[0] = norm * cos( phase );
                 (*newTS)(iBin)[1] = norm * sin( phase );
+
+                //KTDEBUG( evlog, "Old bin: " << (*ts)(iBin)[0] << " + " << (*ts)(iBin)[1] << "j" );
+                //KTDEBUG( evlog, "New bin: " << (*newTS)(iBin)[0] << " + " << (*newTS)(iBin)[1] << "j" );
             }
 
             newData.SetTimeSeries( newTS, iComponent );
@@ -170,7 +173,12 @@ namespace Katydid
         Nymph::KTDataPtr newData( new Nymph::KTData() );
         KTSliceHeader& newSlc = newData->Of< KTSliceHeader >();
         KTSliceHeader& oldSlc = data->Of< KTSliceHeader >();
-        newSlc = oldSlc;
+
+        newSlc.SetSliceSize( oldSlc.GetSliceSize() );
+        newSlc.SetSampleRate( oldSlc.GetSampleRate() );
+        newSlc.SetTimeInRun( oldSlc.GetTimeInRun() );
+        newSlc.SetSliceLength( oldSlc.GetSliceLength() );
+        newSlc.SetIsNewAcquisition( oldSlc.GetIsNewAcquisition() );
 
         KTTimeSeriesData& newTS = newData->Of< KTTimeSeriesData >();
 
@@ -200,7 +208,12 @@ namespace Katydid
         Nymph::KTDataPtr newData( new Nymph::KTData() );
         KTSliceHeader& newSlc = newData->Of< KTSliceHeader >();
         KTSliceHeader& oldSlc = data->Of< KTSliceHeader >();
-        newSlc = oldSlc;
+        
+        newSlc.SetSliceSize( oldSlc.GetSliceSize() );
+        newSlc.SetSampleRate( oldSlc.GetSampleRate() );
+        newSlc.SetTimeInRun( oldSlc.GetTimeInRun() );
+        newSlc.SetSliceLength( oldSlc.GetSliceLength() );
+        newSlc.SetIsNewAcquisition( oldSlc.GetIsNewAcquisition() );
 
         KTFrequencySpectrumDataFFTW& newFS = newData->Of< KTFrequencySpectrumDataFFTW >();
 

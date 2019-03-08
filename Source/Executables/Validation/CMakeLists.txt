@@ -104,7 +104,9 @@ if (Katydid_ENABLE_TESTING)
         )
         
         set( PROGRAMS
+           TestComboFFTW
            TestForwardFFTW
+           TestReverseFFTW
            TestWignerVille
         )
         
