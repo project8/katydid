@@ -31,6 +31,8 @@ namespace Katydid
             fInitialized(false),
             fForwardFFT(),
             fReverseFFT(),
+            fChirpSlot("ts-chirp", this, &KTFractionalFFT::ProcessTimeSeriesChirpOnly, &fTSSignal),
+            fTSSignal("ts", this),
             fTSFSSignal("ts-and-fs", this)
     {
         RegisterSlot( "ts", this, &KTFractionalFFT::SlotFunctionTS );
@@ -78,11 +80,62 @@ namespace Katydid
         return true;
     }
 
+    bool KTFractionalFFT::ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTSliceHeader& slice )
+    {
+        KTDEBUG(evlog, "Receiving time series for fractional FFT");
+
+        KTTimeSeriesFFTW* ts = nullptr;   // time series from data
+        
+        double norm = 0.;                       // norm of the current TS value
+        double phase = 0.;                      // argument of current TS value
+        double time = slice.GetTimeInAcq();   // time value of the current bin
+        double q = fAlpha;
+
+        for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
+        {
+            KTDEBUG(evlog, "Processing component: " << iComponent);
+
+            // get TS from data object and make the new TS
+            ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
+            if( ts == nullptr )
+            {
+                KTWARN(evlog, "Couldn't find time series object. Continuing to next component");
+                continue;
+            }
+            
+            // Loop through all bins
+            for( unsigned iBin = 0; iBin < ts->GetNTimeBins(); ++iBin )
+            {
+                // Obtain norm and phase from components
+                norm = std::hypot( (*ts)(iBin)[0], (*ts)(iBin)[1] );
+                phase = atan2( (*ts)(iBin)[1], (*ts)(iBin)[0] );
+
+                // Shift phase
+                phase -= q * time * time;
+
+                // Assign components from norm and new phase
+                (*ts)(iBin)[0] = norm * cos( phase );
+                (*ts)(iBin)[1] = norm * sin( phase );
+
+                // Increment time value
+                time += slice.GetBinWidth();
+            }
+        }
+
+        return true;
+    }
+
     bool KTFractionalFFT::ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTFrequencySpectrumDataFFTW& newFSData, KTSliceHeader& slice )
     {
         KTDEBUG(evlog, "Receiving time series for fractional FFT");
 
         KTTimeSeriesFFTW* ts = nullptr;   // time series from data
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
+        KTFrequencySpectrumFFTW* fs = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
+
+        fs->SetNTimeBins( slice.GetSliceSize() );
+        newFS->SetNTimeBins( slice.GetSliceSize() );
 
         KTINFO(evlog, "q1 N/pi = " << tan( 0.5 * fAlpha ));
         KTINFO(evlog, "q2 N/pi = " << sin( fAlpha ));
@@ -91,6 +144,7 @@ namespace Katydid
         double phase = 0.;                      // argument of current TS value
         double q1 = tan( 0.5 * fAlpha ) * KTMath::Pi() / (double)(slice.GetSliceSize());
         double q2 = sin( fAlpha ) * KTMath::Pi() / (double)(slice.GetSliceSize());
+        double time = slice.GetTimeInAcq();   // time value of the current bin
 
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
@@ -120,7 +174,7 @@ namespace Katydid
             }
 
             // Forward FFT
-            KTFrequencySpectrumFFTW* fs = fForwardFFT.Transform(ts);
+            fs = fForwardFFT.Transform(ts);
 
             // Second chirp transform
             for( unsigned iBin = 0; iBin < fs->GetNFrequencyBins(); ++iBin )
@@ -138,9 +192,7 @@ namespace Katydid
             }
 
             // Reverse FFT
-            KTTimeSeriesFFTW* newTS = fReverseFFT.TransformToComplex( fs );
-            KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( ts->GetNTimeBins(), 0.0, slice.GetSampleRate() );
-            newFS->SetNTimeBins( ts->GetNTimeBins() );
+            newTS = fReverseFFT.TransformToComplex( fs );
 
             // Third chirp transform
             for( unsigned iBin = 0; iBin < newTS->GetNTimeBins(); ++iBin )
@@ -150,13 +202,15 @@ namespace Katydid
                 phase = atan2( (*newTS)(iBin)[1], (*newTS)(iBin)[0] );
 
                 // Shift phase
-                phase -= q1 * (double)(iBin) * (double)(iBin);
+                phase -= q1 * time * time;
 
                 // Assign components from norm and new phase
                 (*newTS)(iBin)[0] = norm * cos( phase );
                 (*newTS)(iBin)[1] = norm * sin( phase );
                 (*newFS)(iBin)[0] = norm * cos( phase );
                 (*newFS)(iBin)[1] = norm * sin( phase );
+
+                time += slice.GetBinWidth();
             }
 
             newTSData.SetTimeSeries( newTS, iComponent );

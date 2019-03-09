@@ -35,6 +35,7 @@ namespace Katydid
 
      Available configuration values:
      - "alpha": double -- value of q, in Hz/s
+     - "chirp-only": bool -- if true, performs single chirp transform instead of fractional fft
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Sets the value of q equal to the slope of a track; Requires KTProcessedTrackData; Adds nothing
@@ -53,6 +54,7 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, Alpha);
+            MEMBERVARIABLE(bool, ChirpOnly);
             MEMBERVARIABLE(bool, Initialized);
 
         private:
@@ -63,6 +65,7 @@ namespace Katydid
         public:
             bool Initialize(unsigned s);
             bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTFrequencySpectrumDataFFTW& newFSData, KTSliceHeader& slice );
+            bool ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTSliceHeader& slice );
             
             //***************
             // Signals
@@ -70,10 +73,12 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTSFSSignal;
+            Nymph::KTSignalData fTSSignal;
 
             //***************
             // Slots
             //***************
+            Nymph::KTSlotDataTwoTypes< KTTimeSeriesData, KTSliceHeader > fChirpSlot;
 
         private:
             void SlotFunctionTS( Nymph::KTDataPtr data );
