@@ -4,31 +4,20 @@
         "processors":
         [
             { "type": "egg-processor",          "name": "egg" },
-            { "type": "fractional-fft",        "name": "chirp" },
-            { "type": "forward-fftw",           "name": "fft" },
+            { "type": "fractional-fft",         "name": "frac" },
             { "type": "convert-to-power",       "name": "to-ps" },
-            { "type": "root-spectrogram-writer",       "name": "rootw"}
+            { "type": "root-spectrogram-writer",       "name": "rootw" }
         ],
         
         "connections":
         [
             {
-                "signal": "egg:header",
-                "slot": "fft:header"
-            },
-
-            {
                 "signal": "egg:ts",
-                "slot": "chirp:ts"
+                "slot": "frac:ts"
             },
 
             {
-                "signal": "chirp:ts-and-fs",
-                "slot": "fft:ts-fftw"
-            },
-
-            {
-                "signal": "fft:fft",
+                "signal": "frac:ts-and-fs",
                 "slot": "to-ps:fs-fftw-to-psd"
             },
 
@@ -58,22 +47,18 @@
 
     },
 
-    "chirp":
+    "frac":
     {
-        "alpha": 0.002
-    },
-
-    "fft":
-    {
-        "transform-flag": "ESTIMATE"
+        "alpha": 1.57079632679489661923132169,
+        "chirp-only": false
     },
 
     "rootw":
     {
-        "output-file": "spectrogram.root",
+        "output-file": "spectrogram-normal.root",
         "min-time": 0.0,
         "max-time": 0.05,
-        "min-freq": 118.0e6,
+        "min-freq": 115.0e6,
         "max-freq": 130.0e6,
         "file-flag": "recreate"
     }

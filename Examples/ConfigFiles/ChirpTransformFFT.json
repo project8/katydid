@@ -1,0 +1,80 @@
+{
+    "processor-toolbox":
+    {
+        "processors":
+        [
+            { "type": "egg-processor",          "name": "egg" },
+            { "type": "quadratic-phase",        "name": "chirp" },
+            { "type": "forward-fftw",           "name": "fft" },
+            { "type": "convert-to-power",       "name": "to-ps" },
+            { "type": "root-spectrogram-writer",       "name": "rootw"}
+        ],
+        
+        "connections":
+        [
+            {
+                "signal": "egg:header",
+                "slot": "fft:header"
+            },
+
+            {
+                "signal": "egg:ts",
+                "slot": "chirp:ts"
+            },
+
+            {
+                "signal": "chirp:ts",
+                "slot": "fft:ts-fftw"
+            },
+
+            {
+                "signal": "fft:fft",
+                "slot": "to-ps:fs-fftw-to-psd"
+            },
+
+            {
+                "signal": "to-ps:psd",
+                "slot": "rootw:psd"
+            },
+
+            {
+                "signal": "egg:egg-done",
+                "slot": "rootw:write-file"
+            }
+        ],
+        
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+        
+    "egg":
+    {
+        "filename": "locust_faketrack.egg",
+        "egg-reader": "rsamat",
+        "number-of-slices": 0,
+        "slice-size": 8192
+
+    },
+
+    "chirp":
+    {
+        "slope": 12.0e8
+    },
+
+    "fft":
+    {
+        "transform-flag": "ESTIMATE"
+    },
+
+    "rootw":
+    {
+        "output-file": "spectrogram-quadraticphase.root",
+        "min-time": 0.0,
+        "max-time": 0.05,
+        "min-freq": 115.0e6,
+        "max-freq": 130.0e6,
+        "file-flag": "recreate"
+    }
+}
