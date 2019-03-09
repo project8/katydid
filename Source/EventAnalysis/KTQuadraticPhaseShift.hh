@@ -19,29 +19,21 @@ namespace Katydid
     class KTSliceHeader;
     class KTProcessedTrackData;
     class KTTimeSeriesData;
-    class KTFrequencySpectrumDataFFTW;
 
     /*
      @class KTQuadraticPhaseShift
      @author E. Zayas
-
      @brief Multiplies a time series by a quadratic phase exp( -i q t^2 ) where q is the slope of a track
-
      @details
      This processor performs the transformation (t, w) -> (t, w + q t) in time/frequency space by multiplying a quadratic phase
      by a time series. The value of q can be acquired from a track, or fixed in the config file (the latter should probably only
      be used for testing).
-
      Configuration name: "quadratic-phase"
-
      Available configuration values:
      - "slope": double -- value of q, in Hz/s
-
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Sets the value of q equal to the slope of a track; Requires KTProcessedTrackData; Adds nothing
      - "ts": void (Nymph::KTDataPtr) -- Multiplies a time series by the quadratic phase; Requires KTTimeSeriesData and KTSliceHeader; Adds nothing
-     - "fs": void (Nymph::KTDataPtr) -- Multiplies a frequency spectrum by the quadratic phase; Requires KTFrequencySpectrumDataFFTW and KTSliceHeader; Adds nothing
-
      Signals:
      - "ts": void (Nymph::KTDataPtr) -- Emitted upon successful time series processing; Guarantees KTTimeSeriesData and KTSliceHeader
     */
@@ -62,8 +54,7 @@ namespace Katydid
 
         public:
             bool AssignPhase( KTProcessedTrackData& trackData );
-            bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newData, KTSliceHeader& slice );
-            bool ProcessFrequencySpectrum( KTFrequencySpectrumDataFFTW& fsData, KTFrequencySpectrumDataFFTW& newData, KTSliceHeader& slice );
+            bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTSliceHeader& slice );
 
             //***************
             // Signals
@@ -71,15 +62,13 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fTSSignal;
-            Nymph::KTSignalData fFSSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            void SlotFunctionTS( Nymph::KTDataPtr data );
-            void SlotFunctionFS( Nymph::KTDataPtr data );
+            Nymph::KTSlotDataTwoTypes< KTTimeSeriesData, KTSliceHeader > fTSSlot;
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fProcTrackSlot;
 
     };
