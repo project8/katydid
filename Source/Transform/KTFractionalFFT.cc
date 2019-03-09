@@ -74,6 +74,7 @@ namespace Katydid
             return false;
         }
 
+        fInitialized = true;
         return true;
     }
 
@@ -111,7 +112,7 @@ namespace Katydid
                 phase = atan2( (*ts)(iBin)[1], (*ts)(iBin)[0] );
 
                 // Shift phase
-                phase -= q1 * (double)(iBin - 0.5 * slice.GetSliceSize()) * (double)(iBin - 0.5 * slice.GetSliceSize());
+                phase -= q1 * (double)(iBin) * (double)(iBin);
 
                 // Assign components from norm and new phase
                 (*ts)(iBin)[0] = norm * cos( phase );
@@ -129,11 +130,11 @@ namespace Katydid
                 phase = atan2( (*fs)(iBin)[1], (*fs)(iBin)[0] );
 
                 // Shift phase
-                phase -= q2 * (double)(iBin - 0.5 * slice.GetSliceSize()) * (double)(iBin - 0.5 * slice.GetSliceSize());
+                phase -= q2 * (double)(iBin) * (double)(iBin);
 
                 // Assign components from norm and new phase
-                (*ts)(iBin)[0] = norm * cos( phase );
-                (*ts)(iBin)[1] = norm * sin( phase );
+                (*fs)(iBin)[0] = norm * cos( phase );
+                (*fs)(iBin)[1] = norm * sin( phase );
             }
 
             // Reverse FFT
@@ -149,7 +150,7 @@ namespace Katydid
                 phase = atan2( (*newTS)(iBin)[1], (*newTS)(iBin)[0] );
 
                 // Shift phase
-                phase -= q1 * (double)(iBin - 0.5 * slice.GetSliceSize()) * (double)(iBin - 0.5 * slice.GetSliceSize());
+                phase -= q1 * (double)(iBin) * (double)(iBin);
 
                 // Assign components from norm and new phase
                 (*newTS)(iBin)[0] = norm * cos( phase );

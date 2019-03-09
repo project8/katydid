@@ -19,12 +19,11 @@
 
             {
                 "signal": "egg:ts",
-                "slot": "chirp:ts",
-                "order": 1
+                "slot": "chirp:ts"
             },
 
             {
-                "signal": "chirp:ts",
+                "signal": "chirp:ts-and-fs",
                 "slot": "fft:ts-fftw"
             },
 
@@ -61,7 +60,7 @@
 
     "chirp":
     {
-        "slope": 0.0
+        "alpha": 0.002
     },
 
     "fft":
@@ -74,8 +73,8 @@
         "output-file": "spectrogram.root",
         "min-time": 0.0,
         "max-time": 0.05,
-        "min-freq": 50.0e6,
-        "max-freq": 150.0e6,
+        "min-freq": 118.0e6,
+        "max-freq": 130.0e6,
         "file-flag": "recreate"
     }
 }
