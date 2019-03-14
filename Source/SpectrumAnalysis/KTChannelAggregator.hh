@@ -12,6 +12,7 @@
 #include "KTData.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTChannelAggregatedData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 
 #include "KTSlot.hh"
 
@@ -55,11 +56,14 @@ namespace Katydid
     // This function is called once for each time slice
     bool SumChannelPower( KTPowerSpectrumData& );
     bool SumChannelPSD( KTPowerSpectrumData& );
+    bool SumChannelPowerWithPhase( KTFrequencySpectrumDataFFTW& );
+//    bool SumChannelPSDWithPhase( KTPowerSpectrumData& );
     
   private:
     //PTS: This needs fixing, currently just setting each element to 0. But why does it have to be done to begin with.
-    // Perhaps a some function in the utilities to do this ?
+    // Perhaps there is some function in the utilities to do this ?
     bool NullPowerSpectrum(KTPowerSpectrum &);
+    bool NullFreqSpectrum(KTFrequencySpectrumFFTW &);
     //    KTPowerSpectrum* SumChannels(const KTPowerSpectrum* powerSpectrum) const;
     //***************
     // Signals
@@ -68,6 +72,8 @@ namespace Katydid
   private:
     Nymph::KTSignalData fSummedPowerData;
     Nymph::KTSignalData fSummedPSDData;
+    Nymph::KTSignalData fPhaseSummedPowerData;
+//    Nymph::KTSignalData fPhaseSummedPSDData;
     
     //***************
     // Slots
@@ -76,6 +82,8 @@ namespace Katydid
   private:
     Nymph::KTSlotDataOneType< KTPowerSpectrumData > fChPowerSumSlot;
     Nymph::KTSlotDataOneType< KTPowerSpectrumData > fChPSDSumSlot;
+    Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fPhaseChPowerSumSlot;
+//    Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPhaseChPSDSumSlot;
   };
   
   inline bool KTChannelAggregator::NullPowerSpectrum(KTPowerSpectrum &spectrum)
@@ -87,6 +95,14 @@ namespace Katydid
     return true;
   }
   
+  inline bool KTChannelAggregator::NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum)
+  {
+    for (unsigned i = 0; i < freqSpectrum.size(); ++i)
+    {
+      freqSpectrum.SetRect(i,0.0,0.0);
+    }
+    return true;
+  }
   
 }
 
