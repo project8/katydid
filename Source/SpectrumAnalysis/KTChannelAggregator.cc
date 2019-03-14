@@ -116,4 +116,42 @@ namespace Katydid
     newFreqData.SetSpectrum(newFreqSpectrum, 0);
     return true;
   }
+
+  bool KTChannelAggregator::SumChannelPowerWithVmagVPhase(KTFrequencySpectrumDataFFTW& fftwData)
+  {
+    // Get the number of frequency bins from the first component of fftwData
+    // Breaks if fftwData is empty
+    int nFreqBins=(fftwData.GetSpectrumFFTW(0))->GetNFrequencyBins();
+    KTFrequencySpectrumDataFFTW& newFreqData=fftwData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(1);
+    // Assuming that N(Freq bins) = N(input bins)
+    KTFrequencySpectrumFFTW* newFreqSpectrum=new KTFrequencySpectrumFFTW(nFreqBins, newFreqData.GetSpectrumFFTW(0)->GetRangeMin(), fftwData.GetSpectrumFFTW(0)->GetRangeMax());
+//    NullFreqSpectrum(*newFreqSpectrum);
+
+    // Loop over each component
+    for (unsigned iComponent=0; iComponent<fftwData.GetNComponents(); ++iComponent){
+      KTFrequencySpectrumFFTW* freqSpectrum =fftwData.GetSpectrumFFTW(iComponent);
+      //Loop over each frequency bin
+      for (unsigned iFreqBin=0; iFreqBin<freqSpectrum->GetNFrequencyBins(); ++iFreqBin){
+    	double vphase = atan(freqSpectrum->GetImag(iFreqBin)/freqSpectrum->GetReal(iFreqBin));
+    	double vmag = pow(freqSpectrum->GetReal(iFreqBin)*freqSpectrum->GetReal(iFreqBin) +
+    		freqSpectrum->GetImag(iFreqBin)*freqSpectrum->GetImag(iFreqBin), 0.5);
+        double testVal=newFreqSpectrum->GetReal(iFreqBin);
+        double realVal=vmag*cos(vphase)+newFreqSpectrum->GetReal(iFreqBin);
+        double imagVal=vmag*sin(vphase)+newFreqSpectrum->GetImag(iFreqBin);
+        (*newFreqSpectrum)(iFreqBin)[0]=realVal;
+        (*newFreqSpectrum)(iFreqBin)[1]=imagVal;
+
+      if(newFreqSpectrum->GetAbs(iFreqBin)>1e-6)  std::cout<< testVal<<" : "<<newFreqSpectrum->GetReal(iFreqBin) << std::endl;
+      }
+    }
+
+    for (unsigned iFreqBin=0; iFreqBin<newFreqSpectrum->GetNFrequencyBins(); ++iFreqBin){
+      if(newFreqSpectrum->GetAbs(iFreqBin)>1e-6){
+        std::cout<<iFreqBin<<"    "<<fftwData.GetSpectrumFFTW(0)->GetAbs(iFreqBin)<<"   "<<newFreqSpectrum->GetAbs(iFreqBin)<<std::endl;
+      }
+    }
+    newFreqData.SetSpectrum(newFreqSpectrum, 0);
+    return true;
+  }
+
 } // namespace Katydid

@@ -57,6 +57,7 @@ namespace Katydid
     bool SumChannelPower( KTPowerSpectrumData& );
     bool SumChannelPSD( KTPowerSpectrumData& );
     bool SumChannelPowerWithPhase( KTFrequencySpectrumDataFFTW& );
+    bool SumChannelPowerWithVmagVPhase( KTFrequencySpectrumDataFFTW& );
 //    bool SumChannelPSDWithPhase( KTPowerSpectrumData& );
     
   private:
