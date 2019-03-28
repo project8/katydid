@@ -52,16 +52,15 @@
     "egg":
     {
         "filename": "locust_faketrack.egg",
-        "egg-reader": "rsamat",
+        "egg-reader": "egg3",
         "number-of-slices": 0,
-        "slice-size": 8192
+        "slice-size": 262144
 
     },
 
     "frac":
     {
-        "alpha": 12.0e8,
-        "chirp-only": true
+        "alpha": 14.051e8
     },
 
     "fft":
@@ -73,9 +72,9 @@
     {
         "output-file": "spectrogram-frfft.root",
         "min-time": 0.0,
-        "max-time": 0.05,
-        "min-freq": 115.0e6,
-        "max-freq": 130.0e6,
+        "max-time": 0.1,
+        "min-freq": 13.855e6,
+        "max-freq": 13.875e6,
         "file-flag": "recreate"
     }
 }
