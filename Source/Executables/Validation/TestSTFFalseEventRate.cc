@@ -27,10 +27,14 @@ KTLOGGER(testlog, "TestSTFFalseEventRate");
 int main()
 {
     // Simulation parameters
-    int nSlices = 10;
+    double runTime = 0.001;
     int sliceSize = 4096;
     double acquisitionRate = 100.0e6;
-    double SNRthreshold = 8.0;
+    double SNRthreshold = 6.0;
+
+    int nSlices = runTime * acquisitionRate / (double)sliceSize;
+    double timeBinWidth = (double)sliceSize / (double)acquisitionRate;
+    double freqBinWidth = acquisitionRate / (double)sliceSize;
 
     // Processors and cuts
     KTSequentialTrackFinder stf;
@@ -65,12 +69,12 @@ int main()
     {
         // Slice header
         KTSliceHeader header;
-        header.SetBinWidth(1.0 / (double)acquisitionRate * (double)sliceSize);
-        header.SetTimeInAcq(1.0 / (double)acquisitionRate * (double)sliceSize * (double)iSlice);
-        header.SetTimeInRun(1.0 / (double)acquisitionRate * (double)sliceSize * (double)iSlice);
-        header.SetSampleRate(100.e6);
-        header.SetRawSliceSize(4096);
-        header.SetAcquisitionID(5);
+        header.SetBinWidth( timeBinWidth );
+        header.SetTimeInAcq( timeBinWidth * (double)iSlice );
+        header.SetTimeInRun( timeBinWidth * (double)iSlice);
+        header.SetSampleRate( acquisitionRate );
+        header.SetRawSliceSize( sliceSize );
+        header.SetAcquisitionID( 5 );
 
         // Points
         KTDiscriminatedPoints1DData disc1d;
@@ -81,7 +85,7 @@ int main()
             double power = -1.0 * log( uniformRandom() ) + SNRthreshold;
             double iBin = uniformRandom() * (double)sliceSize;
 
-            disc1d.AddPoint( (int)iBin, KTDiscriminatedPoints1DData::Point( acquisitionRate / (double)sliceSize * (iBin + 0.5), power, SNRthreshold, 1.0, 1.0, 1.0 ), 0 );
+            disc1d.AddPoint( (int)iBin, KTDiscriminatedPoints1DData::Point( freqBinWidth * (iBin + 0.5), power, SNRthreshold, 1.0, 1.0, 1.0 ), 0 );
         }
 
         // Run stf
