@@ -13,8 +13,11 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTChannelAggregatedData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTAxisProperties.hh"
 
 #include "KTSlot.hh"
+
+#include "KTMath.hh"
 
 namespace Katydid
 {
@@ -36,13 +39,10 @@ namespace Katydid
    Configuration name: "channel-aggregator"
    
    Slots:
-   - "ps": void (Nymph::KTDataPtr) -- Adds channels power, will also need to include summation using FFTW-phase information; Requires KTChannelAggregatedData; Adds summation of the channel results; Emits signal "agg-ps"
-   - "psd": void (Nymph::KTDataPtr) -- Adds channels PSD, will also need to include summation using FFTW-phase information; Requires KTChannelAggregatedData; Adds summation of the channel results; Emits signal "agg-psd"
-   - "fft-phase": void (Nymph::KTDataPtr) -- Adds channels PSD and power using FFTW-phase information for appropriate phase addition; Requires KTChannelAggregatedData; Adds summation of the channel results; Emits signal "agg-psd"
+   - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
    
    Signals:
-   - "agg-ps": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTChannelAggregatedData
-   - "agg-psd": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTChannelAggregatedData
+   - "fft": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTFrequencySpectrumDataFFTW
    */
   
   class KTChannelAggregator : public Nymph::KTProcessor
@@ -53,48 +53,46 @@ namespace Katydid
     
     bool Configure(const scarab::param_node* node);
   private:
+    
+    // in meters, should not be hard-coded
+    // FIX has to come as an input from config file ?
+    double fActiveRadius = 0.0516;
+    
     // This function is called once for each time slice
-    bool SumChannelPower( KTPowerSpectrumData& );
-    bool SumChannelPSD( KTPowerSpectrumData& );
-    bool SumChannelPowerWithPhase( KTFrequencySpectrumDataFFTW& );
-    bool SumChannelPowerWithVmagVPhase( KTFrequencySpectrumDataFFTW& );
-//    bool SumChannelPSDWithPhase( KTPowerSpectrumData& );
+//    bool SumChannelPower( KTPowerSpectrumData& );
+//    bool SumChannelPSD( KTPowerSpectrumData& );
+    bool SumChannelVoltageWithPhase( KTFrequencySpectrumDataFFTW& );
+    
+    /// Returns the phase shift based on a given point, angle of the channel and the wavelength
+    double GetPhaseShift(double,double,double,double);
+    
+    /// Get location of the point in the grid based on the given grid number and the size of the grid.
+    /* Returns true if the assigment went well, false if there was some mistake
+     */
+    bool GetGridLocation(int,int,double &);
+    
+    /// Convert frquency to wavlength
+    double ConvertFrequencyToWavelength(double);
     
   private:
     //PTS: This needs fixing, currently just setting each element to 0. But why does it have to be done to begin with.
     // Perhaps there is some function in the utilities to do this ?
-    bool NullPowerSpectrum(KTPowerSpectrum &);
     bool NullFreqSpectrum(KTFrequencySpectrumFFTW &);
-    //    KTPowerSpectrum* SumChannels(const KTPowerSpectrum* powerSpectrum) const;
+    
     //***************
     // Signals
     //***************
     
   private:
-    Nymph::KTSignalData fSummedPowerData;
-    Nymph::KTSignalData fSummedPSDData;
-    Nymph::KTSignalData fPhaseSummedPowerData;
-//    Nymph::KTSignalData fPhaseSummedPSDData;
+    Nymph::KTSignalData fSummedFrequencyData;
     
     //***************
     // Slots
     //***************
     
   private:
-    Nymph::KTSlotDataOneType< KTPowerSpectrumData > fChPowerSumSlot;
-    Nymph::KTSlotDataOneType< KTPowerSpectrumData > fChPSDSumSlot;
-    Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fPhaseChPowerSumSlot;
-//    Nymph::KTSlotDataOneType< KTPowerSpectrumData > fPhaseChPSDSumSlot;
+    Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fPhaseChFrequencySumSlot;
   };
-  
-  inline bool KTChannelAggregator::NullPowerSpectrum(KTPowerSpectrum &spectrum)
-  {
-    for (unsigned i = 0; i < spectrum.size(); ++i)
-    {
-      spectrum(i)=0.0;
-    }
-    return true;
-  }
   
   inline bool KTChannelAggregator::NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum)
   {
