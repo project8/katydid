@@ -20,6 +20,8 @@ This executable tests the finding of STF candidates by generating uniform spectr
 #include "KTROOTTreeTypeWriterEventAnalysis.hh"
 #include "KTRandom.hh"
 
+#include <random>
+
 using namespace Katydid;
 
 KTLOGGER(testlog, "TestSTFFalseEventRate");
@@ -27,10 +29,18 @@ KTLOGGER(testlog, "TestSTFFalseEventRate");
 int main()
 {
     // Simulation parameters
-    int nSlices = 10;
+    double runTime = 10.0;
     int sliceSize = 4096;
     double acquisitionRate = 100.0e6;
-    double SNRthreshold = 8.0;
+    double SNRthreshold = 6.0;
+    int progInterval = 100000;
+
+    int nSlices = runTime * acquisitionRate / (double)sliceSize;
+    double timeBinWidth = (double)sliceSize / (double)acquisitionRate;
+    double freqBinWidth = acquisitionRate / (double)sliceSize;
+
+    KTPROG( testlog, "Running false event simulation for " << runTime << " seconds" );
+    KTPROG( testlog, "Total slices: " << nSlices );
 
     // Processors and cuts
     KTSequentialTrackFinder stf;
@@ -57,79 +67,90 @@ int main()
     densitycut.SetMinDensity(0.0);
 
     // Random engines
+    KTRNGEngine* engine = KTGlobalRNGEngine::get_instance();
+    std::random_device rd;
+    engine->SetSeed( rd() );
+
     KTRNGUniform01<> uniformRandom;
     KTRNGPoisson<> poissonRandom;
 
     // Create fake data for every slice and run stf
-    for (unsigned iSlice = 0; iSlice < nSlices; ++iSlice )
+    for( unsigned iSlice = 0; iSlice < nSlices; ++iSlice )
     {
+        if( iSlice % progInterval == 0 )
+        {
+            KTPROG( testlog, "Processing slice: " << iSlice << " / " << nSlices );
+        }
         // Slice header
         KTSliceHeader header;
-        header.SetBinWidth(1.0 / (double)acquisitionRate * (double)sliceSize);
-        header.SetTimeInAcq(1.0 / (double)acquisitionRate * (double)sliceSize * (double)iSlice);
-        header.SetTimeInRun(1.0 / (double)acquisitionRate * (double)sliceSize * (double)iSlice);
-        header.SetSampleRate(100.e6);
-        header.SetRawSliceSize(4096);
-        header.SetAcquisitionID(5);
+        header.SetBinWidth( timeBinWidth );
+        header.SetTimeInAcq( timeBinWidth * (double)iSlice );
+        header.SetTimeInRun( timeBinWidth * (double)iSlice);
+        header.SetSampleRate( acquisitionRate );
+        header.SetRawSliceSize( sliceSize );
+        header.SetAcquisitionID( 5 );
 
         // Points
         KTDiscriminatedPoints1DData disc1d;
         int nPoints = poissonRandom( exp( -1.0 * SNRthreshold ) * (double)sliceSize );
-        KTPROG( testlog, nPoints );
         for( unsigned iPoint = 0; iPoint < nPoints; ++iPoint )
         {
             double power = -1.0 * log( uniformRandom() ) + SNRthreshold;
             double iBin = uniformRandom() * (double)sliceSize;
 
-            disc1d.AddPoint( (int)iBin, KTDiscriminatedPoints1DData::Point( acquisitionRate / (double)sliceSize * (iBin + 0.5), power, SNRthreshold, 1.0, 1.0, 1.0 ), 0 );
+            disc1d.AddPoint( (int)iBin, KTDiscriminatedPoints1DData::Point( freqBinWidth * (iBin + 0.5), power, SNRthreshold, 1.0, 1.0, 1.0 ), 0 );
         }
 
-        // Run stf
+        // Send points to STF
         stf.CollectDiscrimPointsFromSlice( header, disc1d );
     }
+
+    // Finish STF
     stf.AcquisitionIsOver();
+
+    KTPROG( testlog, "Finished!" );
 
     // Get STF output
     const std::set< Nymph::KTDataPtr >& candidates = stf.GetCandidates();
-    KTPROG(testlog, "Candidates found: " << candidates.size());
+    KTPROG( testlog, "Candidates found: " << candidates.size() );
 
     // Run OTC
-    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
+    for( std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt )
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
-        otc.TakeSeqLineCandidate(sqlData);
+        otc.TakeSeqLineCandidate( sqlData );
     }
     otc.Run();
 
     // Get OTC output
     std::set< Nymph::KTDataPtr > otccandidates = otc.GetCandidates();
-    KTPROG(testlog, "OTC Candidates found: " << otccandidates.size());
+    KTPROG( testlog, "OTC Candidates found: " << otccandidates.size() );
 
     // Run ITC
-    for (std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt)
+    for( std::set< Nymph::KTDataPtr >::const_iterator cIt = otccandidates.begin(); cIt != otccandidates.end(); ++cIt )
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
-        itc.TakeSeqLineCandidate(sqlData);
+        itc.TakeSeqLineCandidate( sqlData );
     }
     itc.Run();
 
     // Get ITC output
     std::set< Nymph::KTDataPtr > itccandidates = itc.GetCandidates();
-    KTPROG(testlog, "ITC Candidates found: " << itccandidates.size());
+    KTPROG( testlog, "ITC Candidates found: " << itccandidates.size() );
 
     // Apply cuts
     std::set< Nymph::KTDataPtr >::const_iterator cIt = itccandidates.begin();
-    while(cIt != itccandidates.end())
+    while( cIt != itccandidates.end() )
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
 
         Nymph::KTData data = (*cIt)->Of< Nymph::KTData >();
-        nupcut.Apply(data, sqlData);
-        densitycut.Apply(data, sqlData);
+        nupcut.Apply( data, sqlData );
+        densitycut.Apply( data, sqlData );
 
-        if (data.GetCutStatus().IsCut() == true)
+        if( data.GetCutStatus().IsCut() )
         {
-            cIt = itccandidates.erase(cIt);
+            cIt = itccandidates.erase( cIt );
         }
         else
         {
@@ -137,7 +158,7 @@ int main()
         }
     }
 
-    KTPROG(testlog, "ITC Candidates after Cut: " << itccandidates.size());
+    KTPROG( testlog, "ITC Candidates after Cut: " << itccandidates.size() );
 
     if( itccandidates.size() < 1 )
     {
@@ -148,13 +169,12 @@ int main()
     
 #ifdef ROOT_FOUND
     KTROOTTreeWriter writer;
-    writer.SetFilename("TestSequentialLineData_output.root");
-    writer.SetFileFlag("recreate");
+    writer.SetFilename( "TestSequentialLineData_output.root" );
+    writer.SetFileFlag( "recreate" );
 
     KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
-    treeTypeWriter.SetWriter(&writer);
-    treeTypeWriter.WriteSequentialLine(*itccandidates.begin());
-    KTINFO(testlog, "Processed track saved in file");
+    treeTypeWriter.SetWriter( &writer );
+    treeTypeWriter.WriteSequentialLine( *itccandidates.begin() );
 #endif
 
     return 0;
