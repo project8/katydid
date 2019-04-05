@@ -2,6 +2,8 @@ FROM project8/p8compute_dependencies:v0.4.0 as katydid_common
 
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
+ARG build_tests_exe=FALSE
+ENV KATYDID_BUILD_TESTS_EXE=$build_tests_exe
 
 ENV KATYDID_TAG=v2.15.2
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
@@ -40,10 +42,10 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
     cd build &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
           -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=TRUE .. &&\
+          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE .. &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
           -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=TRUE .. &&\
+          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE .. &&\
     make -j3 install &&\
     /bin/true
 

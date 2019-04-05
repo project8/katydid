@@ -19,7 +19,7 @@ language: ruby
 services:
 - docker
 script:
-- docker build -t katydid --build-arg build_type=DEBUG .
+- docker build -t katydid --build-arg build_type=DEBUG --build-arg build_tests_exe=TRUE .
 - docker run -v /home/travis/build/project8/katydid:/katydid katydid /bin/sh -c "source /usr/local/p8/katydid/v2.15.2/setup.sh; source /usr/local/p8/katydid/v2.15.2/bin/this_cicada.sh; cd /katydid/CI; bash test.sh"
 notifications:
   slack:
