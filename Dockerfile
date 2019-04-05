@@ -39,9 +39,11 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
     mkdir build &&\
     cd build &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX .. &&\
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
+          -D Katydid_ENABLE_TESTING:BOOL=TRUE .. &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX .. &&\
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
+          -D Katydid_ENABLE_TESTING:BOOL=TRUE .. &&\
     make -j3 install &&\
     /bin/true
 
