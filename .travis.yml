@@ -1,20 +1,3 @@
-# language: cpp
-# sudo: required
-# dist: trusty
-# compiler:
-#     - clang
-# os:
-#     - osx
-# osx_image: xcode9.3
-# ruby: 2.2.0
-# before_install:
-#     - if [ $TRAVIS_OS_NAME == osx ]; then rm '/usr/local/include/c++' && brew update && brew upgrade python && brew install root hdf5 fftw libmatio ; fi
-# script:
-#     - if [ $TRAVIS_OS_NAME == osx ]; then source CI/build.sh ; fi
-#     - if [ $TRAVIS_OS_NAME == osx ]; then source CI/test.sh ; fi
-# notifications:
-#     slack:
-#         secure: iOhvvtns12IDO/t4rV+1WlKNfqJ0bt462OnMASKfA/kCzI11rQvVBLdMt4IMsmkGo7bW3vluBrdJSnidvu8RT78NFRaaTVDvfHGMBvF0J8qHCajTAt1zrqYsQNhK7rAXBiJKj4giqGvocavaCfk7vvcLC9nHfl+tHH6Ez2xZlzysKQ/ZZRVqIr/bkt3QuizrDvdWlKhEl6BRlzS0ZTqCx5/A2BN0vghlGyx/cLOi9SrJg0CenvS/4C5g610zR6c3E2ycQ4rxYln2hc0sjE6tUMfV6oKHodeySTYCjzLFSZXjSQYid9JRy5N4c3fR5UmqICX5NVDid8HjZximSjqcNgMjCnDceobJPJ7p9e7aA+zk67YYKMHS0OC+PoDyO9s50NuCR7zEh3FQL5/wvjFhhaE04AsN6EHe1jOPY7CFOPj1LJYBCRF8FN7Rr8387xviVnuoZjjMaX4aZCZ8E930yi4JtB/4Q4dWCLM4Xouy9I+A9qCqSQf5n2TClF+1oHdkImfZBgLw6QxibhxnlkgpTID50jbN96xd/2hdhe9eTKy1M5IlOKFbLIjfRkFA+r16qIktqbiqJeastzCJJiPMLhncuuNQHIiiFg4YdKtUfFaxCDZAj7FHWpcDlfqJ0cqLvkEKuc0WgtBfA1d99KS1LzRKFvXcKBPXaTRdK2UQcuQ=
 language: ruby
 services:
 - docker
@@ -23,4 +6,4 @@ script:
 - docker run -v /home/travis/build/project8/katydid:/katydid katydid /bin/sh -c "source /usr/local/p8/katydid/v2.15.2/setup.sh; source /usr/local/p8/katydid/v2.15.2/bin/this_cicada.sh; cd /katydid/CI; bash test.sh"
 notifications:
   slack:
-    secure: L4e0yeIgPKvs9jnhMrdr5u2IMygwlNVYs0NHvANXtkAy2FIetzqBLcCHwxwHDr1r3XoNLCGdJN0rda/Ae/057nuz4NAbDzZW8Ui5GuAluw/Z8IPGrQM0JST5JSza4HkjI9ynL065eddbOhTR5aP2DkrUkPAaAC69HvgUPw7/UnZ8aSyzvL9LlNW7Yq3YvU5n/qtBW/YtLnewyJ/SaPSfWMfrm3eiYm8d1yoYg3AbdFC/89riFhBDRqgsaxsaVUjOsEXLeD6V2lHsv2eu/uR4MwP7IwBIABgexYBhKzOXKn9BUkAnwEzNDaLeIJuoCiI6ju2ReE0pUeiLxOMxgAapF8LM2AfWlZJ9LFBrayWpKF4UnRETWTMHw/d7Ued6Eooe5VqbRjXNxe+LHuLPmXDSAm2u7+8Kji2QMzBAvPKA2nOH3hIZ5VwiKpXAv+LHkKfnSyFeeozUFZh0BiVnV4I3+1IeE5Wrgq2P3o8V1fHkfzwxbEzf8Fv2YAVziwCrM6zYY/vlGWRiqph/riXwyxaZpw+yOGoLuSG291a511rdC+CHNgaMiya+A8v4IWCDR4l7OOYKOs/GKQmBJroI5NxE0vaNg+NGUW1a+3NHbkocLINAyAnCnw3lBFAsC1/E+ZOrb26xWiyCjSXxWLvcyq40XwhSNobjoim+g7K2RfcNk2w=
+    secure: CxDi0lQHrpumKeZlV35i9PSdKWkn/KVbw5qJYQTot6TlJO+8/CjVQS7jQDuN7zL/oZBeoU1unpbVoN+fojkYWwLQUMh93ADVBfVsJTpSQbEzuTE14w2kJf8J0P+QKIl7ZH4g7tfwHyUkgxWCLPWeWGgQySE9a0sXbYWOTlKOnPMhfSVod+HQffwYUue4W46l2erQRzSpfOybKgmtj5ZzGxqbXBeejhzKv2JA1NGo0B04tMNY4LSvIIT360mnuIee5O4JzM08XyjYAadW4uXNb6Wv9GeZuDugjIxEBZdVbUZDnJ8+XJC+Pn7zvahkCZqYQHyjRkllzDsp55yHZPCC1Smew5DeJJXAsOjMuubzgmBieq50qTcKCCjwdbLBe4qvkjhDfSPHsuWzMQfkTUBpFelug8Kcw9BiSYn3GrznsNiDGhMBoe7N3SA18czGdhGWRJQUdlzrvrVH1bvS4q9G+h+GOTY17wFrjJNZ9FlBr8TD/fP2qTtBHresBjc8MtCDrmYuVgtm7LMOxNIdMt4yIJhlEc7EGRwL+MX/NLLbABFEBzWZTUmy7zD9ZhE4anW1cPqQldtsQXT9uX52Cv3uYpBgw33yV8bYyuYW3ehnjcDyGQThdbZeO8MBceokAiLcU52UXyUf3z1zEw1iPqSFTk/AB9r96TxAnOKzsmOLp8Q=
