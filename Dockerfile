@@ -1,4 +1,4 @@
-FROM project8/p8compute_dependencies:v0.4.0 as katydid_common
+FROM project8/p8compute_dependencies:v0.5.0 as katydid_common
 
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
