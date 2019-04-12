@@ -11,20 +11,15 @@
 
 namespace Katydid
 {
-  KTLOGGER(evlog, "KTChannelAggregator");
+  KTLOGGER(agglog, "KTChannelAggregator");
   
   // Register the processor
   KT_REGISTER_PROCESSOR(KTChannelAggregator, "channel-aggregator");
   
   KTChannelAggregator::KTChannelAggregator(const std::string& name) :
   KTProcessor(name),
-//  fChPowerSumSlot("ps", this, &KTChannelAggregator::SumChannelPower, &fSummedPowerData),
-//  fChPSDSumSlot("psd", this, &KTChannelAggregator::SumChannelPSD, &fSummedPSDData),
   fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
-//  fSummedPowerData("agg-ps", this),
-//  fSummedPSDData("agg-psd", this),
   fSummedFrequencyData("fft", this)
-  //  fPhaseSummedPSDData("agg-psd-phase", this)
   {
   }
   
@@ -37,52 +32,6 @@ namespace Katydid
     if (node == NULL) return false;
     return true;
   }
-  
-  /*
-  bool KTChannelAggregator::SumChannelPower(KTPowerSpectrumData& chData)
-  {
-    unsigned nComponents = chData.GetNComponents();
-    
-    int arraySize=(chData.GetSpectrum(0))->size();
-    KTChannelAggregatedData& newData = chData.Of< KTChannelAggregatedData >().SetNComponents(1);
-    
-    KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(arraySize, chData.GetSpectrum(0)->GetRangeMin(), chData.GetSpectrum(0)->GetRangeMax());
-    
-    NullPowerSpectrum(*newSpectrum);
-    //Looping through all the components
-    for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-    {
-      (*newSpectrum)+=(*chData.GetSpectrum(iComponent));
-      newSpectrum->ConvertToPowerSpectrum();
-      KTDEBUG(evlog, "Channel "<< iComponent <<" added to the aggregate");
-    }
-    newData.SetSpectrum(newSpectrum, 0);
-    KTINFO(evlog, "Completed channel aggegation of " << nComponents << " power spectra");
-    return true;
-  }
-  
-  bool KTChannelAggregator::SumChannelPSD(KTPowerSpectrumData& chData)
-  {
-    unsigned nComponents = chData.GetNComponents();
-    
-    int arraySize=(chData.GetSpectrum(0))->size();
-    KTChannelAggregatedData& newData = chData.Of< KTChannelAggregatedData >().SetNComponents(1);
-    
-    KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(arraySize, chData.GetSpectrum(0)->GetRangeMin(), chData.GetSpectrum(0)->GetRangeMax());
-    
-    NullPowerSpectrum(*newSpectrum);
-    //Looping through all the components
-    for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-    {
-      (*newSpectrum)+=(*chData.GetSpectrum(iComponent));
-      newSpectrum->ConvertToPowerSpectralDensity();
-      KTDEBUG(evlog, "Channel "<< iComponent <<" added to the aggregate");
-    }
-    newData.SetSpectrum(newSpectrum, 0);
-    KTINFO(evlog, "Completed channel aggegation of " << nComponents << " power spectra");
-    return true;
-  }
-  */
   
   bool ApplyPhaseShift(double &realVal, double &imagVal, double phase)
   {
@@ -107,12 +56,31 @@ namespace Katydid
   
   bool KTChannelAggregator::GetGridLocation(int gridNumber, int gridSize, double &gridLocation)
   {
-    //gridNumber goes from 0 to gridSize-1 and the gridLocation is the numerical location of the point
-    //check to make sure that the the requested points are smaller than the grid size
     if (gridNumber>=gridSize) return false;
     gridLocation=fActiveRadius*(((2.0*gridNumber+1.0)/gridSize)-1);
     return true;
   }
+  
+  /*
+   int KTAggregatedFrequencySpectrumDataFFTW::DefineRectangularGrid(unsigned int gridSizeX, unsigned int gridSizeY)
+   {
+   //gridNumber goes from 0 to gridSize-1 and the gridLocation is the numerical location of the point
+   //check to make sure that the the requested points are smaller than the grid size
+   if(GetIsGridDefined()) return -1;
+   for (unsigned int nX=0; nX<gridSizeX; nX++) {
+   for (unsigned int nY=0; nY<gridSizeY; nY++) {
+   double gridLocationX=fActiveRadius*(((2.0*nX+1.0)/gridSizeX)-1);
+   double gridLocationY=fActiveRadius*(((2.0*nY+1.0)/gridSizeY)-1);
+   fGridPoints[nX+nY*gridSizeY]=std::make_pair(gridLocationX,gridLocationY);
+   }
+   }
+   return fGridPoints.size();
+   }
+   
+   int KTAggregatedFrequencySpectrumDataFFTW::DefineSquareGrid(unsigned int gridSize)
+   {
+   return DefineRectangularGrid(gridSize,gridSize);
+   }*/
   
   bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
   {
@@ -159,76 +127,83 @@ namespace Katydid
     
     // Assume a square grid. i.e, number of points in X= no of points in Y
     int nGridPoints=29;
-    // Loop over all grid points and find the one that gives the highest value
-    for (int iGridX=0; iGridX<nGridPoints; iGridX++) { // Loop over the X grid points
-      double gridLocationX=0.0;
-      if(!GetGridLocation(iGridX,nGridPoints,gridLocationX)) KTERROR(evlog, "Error in finding grid X location");
-      for (int iGridY=0; iGridY<nGridPoints; iGridY++) { // Loop over the Y grid points
-        double gridLocationY=0.0;
-        if(!GetGridLocation(iGridY,nGridPoints,gridLocationY)) KTERROR(evlog, "Error in finding grid Y location");
-        
+    KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData=fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nGridPoints*nGridPoints);
+    
+    int nTotalGridPoints=0;
+    // Loop over the grid points and fill the values
+    for (int iGridX=0; iGridX<nGridPoints; iGridX++) {
+      double gridLocationX=0;
+      GetGridLocation(iGridX,nGridPoints,gridLocationX);
+      for (int iGridY=0; iGridY<nGridPoints; iGridY++) {
+        double gridLocationY=0;
+        GetGridLocation(iGridY,nGridPoints,gridLocationY);
         // Check to make sure that the grid point is within the active detector volume, skip otherwise
         if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
-        NullFreqSpectrum(*newFreqSpectrum);
-        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent){
-          // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
-          double channelAngle=2*KTMath::Pi()*iComponent/nComponents;
-          double phaseShift=GetPhaseShift(gridLocationX,gridLocationY,wavelength,channelAngle);
-          // Get the frequency spectrum for that specific component
-          freqSpectrum =fftwData.GetSpectrumFFTW(iComponent);
-          double maxVoltage=0.0;
-          int maxFrequencyBin=0;
-          //Loop over the frequency bins
-          for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
-            double realVal=freqSpectrum->GetReal(iFreqBin);
-            double imagVal=freqSpectrum->GetImag(iFreqBin);
-            ApplyPhaseShift(realVal,imagVal,-phaseShift);
-            double summedRealVal=realVal+newFreqSpectrum->GetReal(iFreqBin);
-            double summedImagVal=imagVal+newFreqSpectrum->GetImag(iFreqBin);
-            (*newFreqSpectrum)(iFreqBin)[0]=summedRealVal;
-            (*newFreqSpectrum)(iFreqBin)[1]=summedImagVal;
-          }// End of loop over freq bins
-        }
-        // Loop over all the freq bins and get the highest value and the corresponding X and Y grid locations.
-        for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
-          if(newFreqSpectrum->GetAbs(iFreqBin)>maxValue){
-            maxValue=newFreqSpectrum->GetAbs(iFreqBin);
-            maxGridLocationX=gridLocationX;
-            maxGridLocationY=gridLocationY;
-          }
-        }
-      }// End of Y grid
-    }// End of X grid
-    
-    double tempMaxVoltage=0.0;
-    
-    NullFreqSpectrum(*newFreqSpectrum);
-    // Based on the best grid location phase shift all the frequency bins and assign the phase shifted values to the new KTFrequencySpectrumDataFFTW data object
-    for (unsigned iComponent=0; iComponent<nComponents; ++iComponent){
-      // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
-      double channelAngle=2*KTMath::Pi()*iComponent/nComponents;
-      double phaseShift=GetPhaseShift(maxGridLocationX,maxGridLocationY,wavelength,channelAngle);
-      // Get the frequency spectrum for that specific component
-      freqSpectrum =fftwData.GetSpectrumFFTW(iComponent);
-      //Loop over the frequency bins
-      for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
-        double realVal=freqSpectrum->GetReal(iFreqBin);
-        double imagVal=freqSpectrum->GetImag(iFreqBin);
-        ApplyPhaseShift(realVal,imagVal,-phaseShift);
-        double summedRealVal=realVal+newFreqSpectrum->GetReal(iFreqBin);
-        double summedImagVal=imagVal+newFreqSpectrum->GetImag(iFreqBin);
-        (*newFreqSpectrum)(iFreqBin)[0]=summedRealVal;
-        (*newFreqSpectrum)(iFreqBin)[1]=summedImagVal;
-        if(tempMaxVoltage<newFreqSpectrum->GetAbs(iFreqBin))tempMaxVoltage=newFreqSpectrum->GetAbs(iFreqBin);
+        newAggFreqData.SetGridPoint(nTotalGridPoints,gridLocationX,gridLocationY);
+        newAggFreqData.GetGridPoint(nTotalGridPoints,gridLocationX,gridLocationY);
+        nTotalGridPoints++;
       }
     }
-//    std::cout<< cumulativeAbsVoltage << ": " <<tempMaxVoltage<<std::endl;
-//    std::cout << maxGridLocationX << ":"<<maxGridLocationY<<std::endl;
-    
-    //Adding a new empty KTFrequencySpectrumFFTW object to the list
-    KTFrequencySpectrumDataFFTW& newFreqData=fftwData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents+1);
-    //Add the new KTFrequencySpectrumFFTW object corresponding to the channel summed frequency sepctrum as the N+1th (where N is the number of channels)  object
-    newFreqData.SetSpectrum(newFreqSpectrum, nComponents);
+    newAggFreqData=fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nTotalGridPoints);
+    std::cout << newAggFreqData.GetNComponents() <<std::endl;
+    // Loop over all grid points and find the one that gives the highest value
+    for (int iGrid=0; iGrid<nTotalGridPoints; iGrid++) { // Loop over the grid points
+      double gridLocationX=0;
+      double gridLocationY=0;
+      newAggFreqData.GetGridPoint(iGrid,gridLocationX,gridLocationY);
+      
+      NullFreqSpectrum(*newFreqSpectrum);
+      
+      for (unsigned iComponent=0; iComponent<nComponents; ++iComponent){
+        // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
+        double channelAngle=2*KTMath::Pi()*iComponent/nComponents;
+        double phaseShift=GetPhaseShift(gridLocationX,gridLocationY,wavelength,channelAngle);
+        // Get the frequency spectrum for that specific component
+        freqSpectrum =fftwData.GetSpectrumFFTW(iComponent);
+        double maxVoltage=0.0;
+        int maxFrequencyBin=0;
+        //Loop over the frequency bins
+        for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
+          double realVal=freqSpectrum->GetReal(iFreqBin);
+          double imagVal=freqSpectrum->GetImag(iFreqBin);
+          ApplyPhaseShift(realVal,imagVal,-phaseShift);
+          double summedRealVal=realVal+newFreqSpectrum->GetReal(iFreqBin);
+          double summedImagVal=imagVal+newFreqSpectrum->GetImag(iFreqBin);
+          (*newFreqSpectrum)(iFreqBin)[0]=summedRealVal;
+          (*newFreqSpectrum)(iFreqBin)[1]=summedImagVal;
+        }// End of loop over freq bins
+      }// End of loop over all comps
+      newAggFreqData.SetSpectrum(newFreqSpectrum, iGrid);
+      // Loop over all the freq bins and get the highest value and the corresponding X and Y grid locations.
+    }// End of grid
+    /*
+     double tempMaxVoltage=0.0;
+     
+     NullFreqSpectrum(*newFreqSpectrum);
+     // Based on the best grid location phase shift all the frequency bins and assign the phase shifted values to the new KTFrequencySpectrumDataFFTW data object
+     for (unsigned iComponent=0; iComponent<nComponents; ++iComponent){
+     // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
+     double channelAngle=2*KTMath::Pi()*iComponent/nComponents;
+     double phaseShift=GetPhaseShift(maxGridLocationX,maxGridLocationY,wavelength,channelAngle);
+     // Get the frequency spectrum for that specific component
+     freqSpectrum =fftwData.GetSpectrumFFTW(iComponent);
+     //Loop over the frequency bins
+     for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
+     double realVal=freqSpectrum->GetReal(iFreqBin);
+     double imagVal=freqSpectrum->GetImag(iFreqBin);
+     ApplyPhaseShift(realVal,imagVal,-phaseShift);
+     double summedRealVal=realVal+newFreqSpectrum->GetReal(iFreqBin);
+     double summedImagVal=imagVal+newFreqSpectrum->GetImag(iFreqBin);
+     (*newFreqSpectrum)(iFreqBin)[0]=summedRealVal;
+     (*newFreqSpectrum)(iFreqBin)[1]=summedImagVal;
+     if(tempMaxVoltage<newFreqSpectrum->GetAbs(iFreqBin))tempMaxVoltage=newFreqSpectrum->GetAbs(iFreqBin);
+     }
+     }
+     //    std::cout<< cumulativeAbsVoltage << ": " <<tempMaxVoltage<<std::endl;
+     //    std::cout << maxGridLocationX << ":"<<maxGridLocationY<<std::endl;
+     
+     //Add the new KTFrequencySpectrumFFTW object corresponding to the channel summed frequency sepctrum as the N+1th (where N is the number of channels)  object
+     newAggFreqData.SetSpectrum(newFreqSpectrum, nComponents);*/
     return true;
   }
 }

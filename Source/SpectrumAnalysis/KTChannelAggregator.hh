@@ -52,15 +52,27 @@ namespace Katydid
     virtual ~KTChannelAggregator();
     
     bool Configure(const scarab::param_node* node);
+    
+    /*
+     Set radius of the active area assuming a circular active area.
+     */
+    virtual void SetActiveRadius(double);
+    
+    /*
+     Get radius of the active area.
+     */
+    virtual double GetActiveRadius() const;
+    
+    bool GetIsGridDefined() const;
   private:
     
     // in meters, should not be hard-coded
-    // FIX has to come as an input from config file ?
+    // PTS: Has to come as an input from config file ?
     double fActiveRadius = 0.0516;
     
-    // This function is called once for each time slice
-//    bool SumChannelPower( KTPowerSpectrumData& );
-//    bool SumChannelPSD( KTPowerSpectrumData& );
+    //For exception handling to make sure the grid is defined before the spectra are assigned.
+    bool fIsGridDefined=false;
+    
     bool SumChannelVoltageWithPhase( KTFrequencySpectrumDataFFTW& );
     
     /// Returns the phase shift based on a given point, angle of the channel and the wavelength
@@ -103,6 +115,21 @@ namespace Katydid
     return true;
   }
   
+  inline double KTChannelAggregator::GetActiveRadius() const
+  {
+    return fActiveRadius;
+  }
+  
+  inline void KTChannelAggregator::SetActiveRadius(double radius)
+  {
+    fActiveRadius=radius;
+    return;
+  }
+  
+  inline bool KTChannelAggregator::GetIsGridDefined() const
+  {
+    return fIsGridDefined;
+  }
 }
 
 #endif  /* KTCHANNELAGGREGATOR_HH_  */

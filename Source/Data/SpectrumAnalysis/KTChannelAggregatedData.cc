@@ -1,7 +1,7 @@
 /*
  * KTChannelAggregatedData.cc
  *
- *  Created on: Jan 28, 2019
+ *  Created on: Apr 8, 2019
  *      Author: P. T. Surukuchi
  */
 
@@ -9,39 +9,33 @@
 
 namespace Katydid
 {
-  KTChannelAggregatedDataCore::KTChannelAggregatedDataCore(): KTFrequencyDomainArrayData()
+  
+  const std::string KTAggregatedFrequencySpectrumDataFFTW::sName("aggregated-frequency-spectrum-fftw");
+  
+  KTAggregatedFrequencySpectrumDataFFTW::KTAggregatedFrequencySpectrumDataFFTW() :
+  KTFrequencySpectrumDataFFTWCore(),
+  KTExtensibleData()
   {
   }
   
-  KTChannelAggregatedDataCore::~KTChannelAggregatedDataCore()
-  {
-    while (! fSpectra.empty())
-    {
-      delete fSpectra.back();
-      fSpectra.pop_back();
-    }
-  }
-  
-  const std::string KTChannelAggregatedData::sName("channel-aggregate");
-  
-  KTChannelAggregatedData::KTChannelAggregatedData() :
-  KTChannelAggregatedDataCore(),
-  KTExtensibleData<KTChannelAggregatedData>()
+  KTAggregatedFrequencySpectrumDataFFTW::~KTAggregatedFrequencySpectrumDataFFTW()
   {
   }
   
-  KTChannelAggregatedData::~KTChannelAggregatedData()
-  {
-  }
-  
-  KTChannelAggregatedData& KTChannelAggregatedData::SetNComponents(unsigned num)
+  KTAggregatedFrequencySpectrumDataFFTW& KTAggregatedFrequencySpectrumDataFFTW::SetNComponents(unsigned num)
   {
     unsigned oldSize = fSpectra.size();
+    
+    // If old size is bigger than num, delete all the extra terms
     for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
     {
       delete fSpectra[iComponent];
     }
+    if(oldSize>num)fGridPoints.erase(fGridPoints.begin()+num,fGridPoints.begin()+oldSize);
+    
+    //Resize old size is smaller than old size
     fSpectra.resize(num);
+    fGridPoints.resize(num);
     for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
     {
       fSpectra[iComponent] = NULL;

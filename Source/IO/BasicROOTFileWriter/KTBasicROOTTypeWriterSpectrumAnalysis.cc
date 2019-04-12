@@ -78,8 +78,8 @@ namespace Katydid
     fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
     fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
     fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
-    fWriter->RegisterSlot("agg-ps", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerData);
-    fWriter->RegisterSlot("agg-psd", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDData);
+//    fWriter->RegisterSlot("agg-ps", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerData);
+//    fWriter->RegisterSlot("agg-psd", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDData);
 #ifdef ENABLE_TUTORIAL
     fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar);
     fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW);
@@ -762,6 +762,7 @@ namespace Katydid
   //************************
   // Channel Aggregated Data
   //************************
+  /*
   void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerData(Nymph::KTDataPtr data)
   {
     if (! data) return;
@@ -808,7 +809,7 @@ namespace Katydid
     //        powerSpectrum->Write(); //Redundant
     KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
     return;
-  }
+  }*/
   
 #ifdef ENABLE_TUTORIAL
   void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar(Nymph::KTDataPtr data)

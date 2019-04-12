@@ -1,8 +1,14 @@
-/*
- * KTChannelAggregatedData.hh
- *
- *  Created on: Jan 28, 2019
- *      Author: P. T. Surukuchi
+/**
+ @file KTAggregatedFrequencyData
+ @brief Contains KTAggregatedFrequencyData
+ @details The summed spectra from all the channels in the azimuthal direction.
+ Also includes of the reconstructed radial position of the electron.
+ Currently voltage summation in the frequency domain is performed.
+ Can be extended to the power summation and in the time domain.
+ Warning: It is the user's responsibility to make sure that the spectra
+ corresponds to the right grid point.
+ @author: P. T. Surukuchi
+ @date: Apr 8, 2019
  */
 
 #ifndef KTCHANNELAGGREGATEDDATA_HH_
@@ -10,85 +16,51 @@
 
 #include "KTData.hh"
 
-#include "KTPowerSpectrum.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 
 #include <vector>
 
 namespace Katydid
 {
-  class KTChannelAggregatedDataCore: public KTFrequencyDomainArrayData
+  
+  class KTAggregatedFrequencySpectrumDataFFTW :public KTFrequencySpectrumDataFFTWCore,public Nymph::KTExtensibleData< KTAggregatedFrequencySpectrumDataFFTW >
   {
   public:
-    typedef KTPowerSpectrum spectrum_type;
+    KTAggregatedFrequencySpectrumDataFFTW();
+    virtual ~KTAggregatedFrequencySpectrumDataFFTW();
     
-  public:
-    KTChannelAggregatedDataCore(); // Constructor
-    virtual ~KTChannelAggregatedDataCore(); // Destructor
+    virtual KTAggregatedFrequencySpectrumDataFFTW& SetNComponents(unsigned);
     
-    virtual unsigned GetNComponents() const;
+    /*
+     Set the X,Y pair corresponding to the component.
+     */
+    virtual void SetGridPoint(int,double,double);
     
-    const KTPowerSpectrum* GetSpectrum(unsigned component = 0) const;
-    KTPowerSpectrum* GetSpectrum(unsigned component = 0);
-    
-    const KTFrequencyDomainArray* GetArray(unsigned component = 0) const;
-    KTFrequencyDomainArray* GetArray(unsigned component = 0);
-    
-    void SetSpectrum(KTPowerSpectrum* spectrum, unsigned component = 0);
-    
-    virtual KTChannelAggregatedDataCore& SetNComponents(unsigned channels) = 0;
-    
-  protected:
-    std::vector< KTPowerSpectrum* > fSpectra;
-  };
-  
-  
-  class KTChannelAggregatedData : public KTChannelAggregatedDataCore, public Nymph::KTExtensibleData< KTChannelAggregatedData >
-  {
-  public:
-    KTChannelAggregatedData();
-    virtual ~KTChannelAggregatedData();
-    
-    KTChannelAggregatedData& SetNComponents(unsigned channels);
+    /*
+     Get the X,Y pair corresponding to the component number.
+     */
+    virtual void GetGridPoint(int,double &, double &) const;
     
   public:
     static const std::string sName;
     
+  protected:
+    std::vector<std::pair<double,double>> fGridPoints;
   };
   
-  inline const KTPowerSpectrum* KTChannelAggregatedDataCore::GetSpectrum(unsigned component) const
+  inline void KTAggregatedFrequencySpectrumDataFFTW::SetGridPoint(int component,double gridValueX,double gridValueY)
   {
-    return fSpectra[component];
-  }
-  
-  inline KTPowerSpectrum* KTChannelAggregatedDataCore::GetSpectrum(unsigned component)
-  {
-    return fSpectra[component];
-  }
-  
-  // Needs implementation
-  inline const KTFrequencyDomainArray* KTChannelAggregatedDataCore::GetArray(unsigned component) const
-  {
-    return fSpectra[component];
-  }
-  
-  inline KTFrequencyDomainArray* KTChannelAggregatedDataCore::GetArray(unsigned component)
-  {
-    return fSpectra[component];
-  }
-  
-  inline unsigned KTChannelAggregatedDataCore::GetNComponents() const
-  {
-    return unsigned(fSpectra.size());
-  }
-  
-  inline void KTChannelAggregatedDataCore::SetSpectrum(KTPowerSpectrum* spectrum, unsigned component)
-  {
-    if (component >= fSpectra.size()) SetNComponents(component+1);
-    else delete fSpectra[component];
-    fSpectra[component] = spectrum;
+    fGridPoints[component]=std::make_pair(gridValueX,gridValueY);
     return;
   }
   
+  inline void KTAggregatedFrequencySpectrumDataFFTW::GetGridPoint(int component, double &gridLocationX,double &gridLocationY) const
+  {
+    gridLocationX=fGridPoints[component].first;
+    gridLocationY=fGridPoints[component].second;
+    return;
+  }
 } /* namespace Katydid */
 
 #endif /* KTCHANNELAGGREGATEDDATA_HH_ */

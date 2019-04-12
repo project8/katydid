@@ -94,8 +94,8 @@ namespace Katydid
       // Aggregated Channel Data
       //************************
     public:
-      void WriteChannelAggregatedPowerData(Nymph::KTDataPtr data);
-      void WriteChannelAggregatedPSDData(Nymph::KTDataPtr data);
+//      void WriteChannelAggregatedPowerData(Nymph::KTDataPtr data);
+//      void WriteChannelAggregatedPSDData(Nymph::KTDataPtr data);
 
 #ifdef ENABLE_TUTORIAL
             //************************
