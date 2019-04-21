@@ -14,12 +14,13 @@ namespace Katydid
   
   KTAggregatedFrequencySpectrumDataFFTW::KTAggregatedFrequencySpectrumDataFFTW() :
   KTFrequencySpectrumDataFFTWCore(),
-  KTExtensibleData()
+  KTExtensibleData<KTAggregatedFrequencySpectrumDataFFTW>()
   {
   }
   
   KTAggregatedFrequencySpectrumDataFFTW::~KTAggregatedFrequencySpectrumDataFFTW()
   {
+    fGridPoints.clear();
   }
   
   KTAggregatedFrequencySpectrumDataFFTW& KTAggregatedFrequencySpectrumDataFFTW::SetNComponents(unsigned num)

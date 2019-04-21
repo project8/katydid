@@ -88,9 +88,9 @@ namespace Katydid
     // Get the number of frequency bins from the first component of fftwData
     int nFreqBins=freqSpectrum->GetNFrequencyBins();
     int nComponents=fftwData.GetNComponents(); // Get number of components
-    KTFrequencySpectrumFFTW* newFreqSpectrum=new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
+    KTFrequencySpectrumFFTW* tempFreqSpectrum=new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
     // Empty values in the frequency spectrum, not sure if this is needed but there were some issues when this was not done for the power spectrum
-    NullFreqSpectrum(*newFreqSpectrum);
+    NullFreqSpectrum(*tempFreqSpectrum);
     
     std::vector<double> maxVoltages;
     std::vector<int> maxValueFrequencyBins;
@@ -102,10 +102,10 @@ namespace Katydid
       int maxFrequencyBin=0;
       //Loop over the frequency bins
       for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
-        double realVal=freqSpectrum->GetReal(iFreqBin)+newFreqSpectrum->GetReal(iFreqBin);
-        double imagVal=freqSpectrum->GetImag(iFreqBin)+newFreqSpectrum->GetImag(iFreqBin);
-        (*newFreqSpectrum)(iFreqBin)[0]=realVal;
-        (*newFreqSpectrum)(iFreqBin)[1]=imagVal;
+        double realVal=freqSpectrum->GetReal(iFreqBin)+tempFreqSpectrum->GetReal(iFreqBin);
+        double imagVal=freqSpectrum->GetImag(iFreqBin)+tempFreqSpectrum->GetImag(iFreqBin);
+        (*tempFreqSpectrum)(iFreqBin)[0]=realVal;
+        (*tempFreqSpectrum)(iFreqBin)[1]=imagVal;
         if(freqSpectrum->GetAbs(iFreqBin)>maxVoltage){
           maxVoltage=freqSpectrum->GetAbs(iFreqBin);
           maxFrequencyBin=iFreqBin;
@@ -116,6 +116,7 @@ namespace Katydid
       //      maxValues[iComponent]=maxValue;
       //(*newFreqSpectrum)+=*freqSpectrum;// This gives weird results, not sure why
     }// end of components loop
+    delete tempFreqSpectrum;
     double cumulativeAbsVoltage=0.0;
     // This can be used for the comparison with the phase-summed values and make sure that the phase-summation is done right.
     for (auto& maxVolts : maxVoltages)cumulativeAbsVoltage += maxVolts;
@@ -126,7 +127,7 @@ namespace Katydid
     double maxGridLocationY=0.0;
     
     // Assume a square grid. i.e, number of points in X= no of points in Y
-    int nGridPoints=29;
+    int nGridPoints=2;
     KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData=fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nGridPoints*nGridPoints);
     
     int nTotalGridPoints=0;
@@ -145,15 +146,16 @@ namespace Katydid
       }
     }
     newAggFreqData=fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nTotalGridPoints);
-    std::cout << newAggFreqData.GetNComponents() <<std::endl;
     // Loop over all grid points and find the one that gives the highest value
     for (int iGrid=0; iGrid<nTotalGridPoints; iGrid++) { // Loop over the grid points
       double gridLocationX=0;
       double gridLocationY=0;
       newAggFreqData.GetGridPoint(iGrid,gridLocationX,gridLocationY);
       
-      NullFreqSpectrum(*newFreqSpectrum);
       
+      KTFrequencySpectrumFFTW* newFreqSpectrum=new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
+      // Empty values in the frequency spectrum, not sure if this is needed but there were some issues when this was not done for the power spectrum
+      NullFreqSpectrum(*newFreqSpectrum);
       for (unsigned iComponent=0; iComponent<nComponents; ++iComponent){
         // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
         double channelAngle=2*KTMath::Pi()*iComponent/nComponents;
