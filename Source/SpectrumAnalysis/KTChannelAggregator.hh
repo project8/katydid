@@ -83,6 +83,9 @@ namespace Katydid
      */
     bool GetGridLocation(int,int,double &);
     
+    /// Apply shift phase to the supplied points based on the phase provided
+    bool ApplyPhaseShift(double &, double &, double);
+    
     /// Convert frquency to wavlength
     double ConvertFrequencyToWavelength(double);
     

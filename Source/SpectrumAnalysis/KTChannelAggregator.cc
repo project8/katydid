@@ -33,7 +33,7 @@ namespace Katydid
     return true;
   }
   
-  bool ApplyPhaseShift(double &realVal, double &imagVal, double phase)
+  bool KTChannelAggregator::ApplyPhaseShift(double &realVal, double &imagVal, double phase)
   {
     double tempRealVal=realVal;
     double tempImagVal=imagVal;
