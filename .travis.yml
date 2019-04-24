@@ -3,7 +3,7 @@ services:
 - docker
 script:
 - docker build -t katydid --build-arg build_type=DEBUG --build-arg build_tests_exe=TRUE .
-- docker run --rm -it katydid /bin/sh -c "source \$KATYDID_BUILD_PREFIX/setup.sh; source \$KATYDID_BUILD_PREFIX/bin/this_cicada.sh; cd /katydid/CI; bash test.sh"
+- docker run --rm -it katydid /bin/sh -c "source \$KATYDID_BUILD_PREFIX/setup.sh; source \$KATYDID_BUILD_PREFIX/bin/this_cicada.sh; cd $KATYDID_BUILD_PREFIX/CI; bash test.sh"
 notifications:
   slack:
     secure: CxDi0lQHrpumKeZlV35i9PSdKWkn/KVbw5qJYQTot6TlJO+8/CjVQS7jQDuN7zL/oZBeoU1unpbVoN+fojkYWwLQUMh93ADVBfVsJTpSQbEzuTE14w2kJf8J0P+QKIl7ZH4g7tfwHyUkgxWCLPWeWGgQySE9a0sXbYWOTlKOnPMhfSVod+HQffwYUue4W46l2erQRzSpfOybKgmtj5ZzGxqbXBeejhzKv2JA1NGo0B04tMNY4LSvIIT360mnuIee5O4JzM08XyjYAadW4uXNb6Wv9GeZuDugjIxEBZdVbUZDnJ8+XJC+Pn7zvahkCZqYQHyjRkllzDsp55yHZPCC1Smew5DeJJXAsOjMuubzgmBieq50qTcKCCjwdbLBe4qvkjhDfSPHsuWzMQfkTUBpFelug8Kcw9BiSYn3GrznsNiDGhMBoe7N3SA18czGdhGWRJQUdlzrvrVH1bvS4q9G+h+GOTY17wFrjJNZ9FlBr8TD/fP2qTtBHresBjc8MtCDrmYuVgtm7LMOxNIdMt4yIJhlEc7EGRwL+MX/NLLbABFEBzWZTUmy7zD9ZhE4anW1cPqQldtsQXT9uX52Cv3uYpBgw33yV8bYyuYW3ehnjcDyGQThdbZeO8MBceokAiLcU52UXyUf3z1zEw1iPqSFTk/AB9r96TxAnOKzsmOLp8Q=
