@@ -4,14 +4,13 @@ processor-toolbox:
         name: egg
       - type: forward-fftw
         name: fft
-      - type: convert-to-power
-        name: to-ps
       - type: channel-aggregator
         name: ch-sum
+      - type: channesum-optimizer
+        name: ch-opt
       - type: basic-root-writer
         name: writer
-      - type: root-spectrogram-writer
-        name: waterfall-writer
+
 
     connections:
       - signal: "egg:header"
@@ -19,31 +18,14 @@ processor-toolbox:
       - signal: "egg:ts"
         slot: "fft:ts-fftw"
       - signal: "fft:fft"
-        slot: "to-ps:fs-fftw-to-psd"
-      - signal: "fft:fft"
-        slot: "to-ps:fs-fftw-to-ps"
-      - signal: "to-ps:psd"
-        slot: "ch-sum:psd"
-      - signal: "to-ps:ps"
-        slot: "ch-sum:ps"
-      - signal: "ch-sum:agg-psd"
-        slot: "writer:agg-psd"
-      - signal: "ch-sum:agg-ps"
-        slot: "writer:agg-ps"
-      - signal: "to-ps:psd"
-        slot: "writer:psd"
-      - signal: "to-ps:ps"
-        slot: "writer:ps"
-      - signal: "to-ps:ps"
-        slot: "waterfall-writer:ps"
-      - signal: "to-ps:psd"
-        slot: "waterfall-writer:psd"
-      - signal: "ch-sum:agg-ps"
-        slot: "waterfall-writer:agg-ps"
-      - signal: "ch-sum:agg-psd"
-        slot: "waterfall-writer:agg-psd"
-      - signal: "egg:egg-done"
-        slot: "waterfall-writer:write-file"
+        slot: "ch-sum:fft"
+      - signal: "ch-sum:fft"
+        slot: "ch-opt:fft"
+      - signal: "ch-opt:fft"
+        slot: "writer:agg-fs-fftw"
+      - signal: "ch-opt:fft"
+        slot: "writer:agg-grid-fftw"
+
 
     run-queue:
       - egg
@@ -51,21 +33,18 @@ processor-toolbox:
 egg:
     filename: "locust_mc_0.5e-3s_Seed55_LO25.8781G.egg"
     egg-reader: egg3
-    slice-size: 4096
-    number-of-slices: 20
-    stride: 4096
+    slice-size: 8192
+    number-of-slices: 10
+    stride: 8192
 
 fft:
     transform-flag: ESTIMATE
 
-writer:
-    output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.root"
-    file-flag: recreate
+ch-sum:
+    grid-size=25
+    active-radius=0.0516
+    wavelength=0.011
 
-waterfall-writer:
-    output-file: "locust_mc_0.5e-3s_Seed55_LO25.8781G_summed.root"
+writer:
+    output-file: "Summed_Channels.root"
     file-flag: recreate
-    min-time: 0.0
-    max-time: 0.001
-    min-freq: 0.0e6
-    max-freq: 200.0e6

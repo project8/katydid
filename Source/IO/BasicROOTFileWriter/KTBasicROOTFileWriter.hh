@@ -45,6 +45,7 @@ namespace Katydid
      - "hough":
      - "gain-var":
      - "fs-fftw":
+     - "agg-fs-fftw":
      - "fs-polar":
      - "fs-fftw-phase":
      - "fs-polar-phase":

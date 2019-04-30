@@ -70,13 +70,20 @@ namespace Katydid
     // PTS: Has to come as an input from config file ?
     double fActiveRadius = 0.0516;
     
+    // Get the grid size assuming a square grid
+    // Set default to 30 currently
+    int fNGrid = 30;
+    
+    // PTS:: for 18.6 keV electrons, this somehow needs to come from the data file or config file
+    double fWavelength=0.0115;
+    
     //For exception handling to make sure the grid is defined before the spectra are assigned.
     bool fIsGridDefined=false;
     
     bool SumChannelVoltageWithPhase( KTFrequencySpectrumDataFFTW& );
     
     /// Returns the phase shift based on a given point, angle of the channel and the wavelength
-    double GetPhaseShift(double,double,double,double);
+    double GetPhaseShift(double,double,double,double) const;
     
     /// Get location of the point in the grid based on the given grid number and the size of the grid.
     /* Returns true if the assigment went well, false if there was some mistake

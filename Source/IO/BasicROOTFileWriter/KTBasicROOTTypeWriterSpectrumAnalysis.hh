@@ -94,6 +94,8 @@ namespace Katydid
       // Aggregated Channel Data
       //************************
     public:
+            void WriteAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data);
+            void WriteAggregatedFrequencySpectrumGrid(Nymph::KTDataPtr data);
 //      void WriteChannelAggregatedPowerData(Nymph::KTDataPtr data);
 //      void WriteChannelAggregatedPSDData(Nymph::KTDataPtr data);
 

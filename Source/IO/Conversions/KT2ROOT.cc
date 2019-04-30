@@ -25,6 +25,8 @@
 #include "KTTimeSeriesReal.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTSequentialLineData.hh"
+#include "KTChannelAggregatedData.hh"
+#include "KTMath.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
@@ -474,6 +476,27 @@ namespace Katydid
         hist->SetXTitle("Power (W)");
         return hist;
     }
+  
+    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name)
+    {
+      // Currently only assume a square grid
+      unsigned int nComponents = fs.GetNComponents();
+      int nGridPoints=0;
+//      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
+      nGridPoints=std::sqrt(nComponents);
+      double fActiveRadius = fs.GetActiveRadius(); // PTS: This has to be set using
+      TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
+      for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
+      {
+        int xBin=iComponents/nGridPoints;
+        int yBin=iComponents%nGridPoints;
+        hist->SetBinContent(xBin+1,yBin+1,fs.GetSummedGridVoltage(iComponents));
+      }
+      hist->SetXTitle("X Axis (m)");
+      hist->SetYTitle("Y Axis (m)");
+      return hist;
+    }
+  
 
     TH1D* KT2ROOT::CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name)
     {

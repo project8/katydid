@@ -45,6 +45,7 @@ namespace Katydid
     class KTSparseWaterfallCandidateData;
     class KTSequentialLineData;
     class KTDiscriminatedPoint;
+    class KTAggregatedFrequencySpectrumDataFFTW;
 
     class TDiscriminatedPoint;
     class TSparseWaterfallCandidateData;
@@ -104,6 +105,8 @@ namespace Katydid
 
             static TH1D* CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumMagDist");
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
+      
+            static TH2D* CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "hFrequencySpectrumGrid");
 
             static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");
 

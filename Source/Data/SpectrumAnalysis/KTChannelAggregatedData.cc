@@ -33,10 +33,13 @@ namespace Katydid
       delete fSpectra[iComponent];
     }
     if(oldSize>num)fGridPoints.erase(fGridPoints.begin()+num,fGridPoints.begin()+oldSize);
+    if(oldSize>num)fSummedGridVoltages.erase(fSummedGridVoltages.begin()+num,fSummedGridVoltages.begin()+oldSize);
     
     //Resize old size is smaller than old size
     fSpectra.resize(num);
     fGridPoints.resize(num);
+    fSummedGridVoltages.resize(num);
+    
     for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
     {
       fSpectra[iComponent] = NULL;
