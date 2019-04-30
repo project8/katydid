@@ -61,6 +61,7 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, Alpha);
+            MEMBERVARIABLEREF_NOSET(bool, CalculateAlpha);
             MEMBERVARIABLE(double, Slope)
             MEMBERVARIABLE(bool, ChirpOnly);
             MEMBERVARIABLE(bool, Initialized);
@@ -75,6 +76,7 @@ namespace Katydid
             bool Initialize(unsigned s);
             bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTFrequencySpectrumDataFFTW& newFSData, KTSliceHeader& slice );
             bool ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTSliceHeader& slice );
+            bool AssignSlopeParams( KTProcessedTrackData& trackData );
             
             //***************
             // Signals
@@ -88,6 +90,7 @@ namespace Katydid
             // Slots
             //***************
             Nymph::KTSlotDataTwoTypes< KTTimeSeriesData, KTSliceHeader > fChirpSlot;
+            Nymph::KTSlotDataOneType< KTProcessedTrackData > fProcTrackSlot;
 
         private:
             void SlotFunctionTS( Nymph::KTDataPtr data );

@@ -28,12 +28,14 @@ namespace Katydid
     KTFractionalFFT::KTFractionalFFT(const std::string& name) :
             KTProcessor(name),
             fAlpha(0.),
+            fCalculateAlpha(false),
             fSlope(0.),
             fInitialized(false),
             fTransformFlag("ESTIMATE"),
             fForwardFFT(),
             fReverseFFT(),
             fChirpSlot("ts-chirp", this, &KTFractionalFFT::ProcessTimeSeriesChirpOnly, &fTSSignal),
+            fProcTrackSlot("track", this, &KTFractionalFFT::AssignSlopeParams),
             fTSSignal("ts", this),
             fTSFSSignal("ts-and-fs", this)
     {
@@ -141,6 +143,12 @@ namespace Katydid
 
         KTINFO(evlog, "q1 N/pi = " << tan( 0.5 * fAlpha ));
         KTINFO(evlog, "q2 N/pi = " << sin( fAlpha ));
+
+        if( fCalculateAlpha )
+        {
+            fAlpha = atan2( fSlope * slice.GetBinWidth() * slice.GetBinWidth(), 1.0 );
+            KTINFO(evlog, "Calculated alpha = " << fAlpha);
+        }
 
         double norm = 0.;                       // norm of the current TS value
         double phase = 0.;                      // argument of current TS value
@@ -252,6 +260,16 @@ namespace Katydid
 
         KTDEBUG(evlog, "Emitting signal");
         fTSFSSignal( newData );
+    }
+
+    bool KTFractionalFFT::AssignSlopeParams( KTProcessedTrackData& trackData )
+    {
+        SetSlope( trackData.GetSlope() );
+        fCalculateAlpha = true;
+
+        KTINFO(evlog, "Set q-value: " << GetSlope());
+
+        return true;
     }
 
 } // namespace Katydid
