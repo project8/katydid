@@ -1,7 +1,7 @@
 /*
  * KTFractionalFFT.cc
  *
- *  Created on: Jan 17, 2017
+ *  Created on: Mar 8, 2019
  *      Author: ezayas
  */
 
@@ -28,7 +28,9 @@ namespace Katydid
     KTFractionalFFT::KTFractionalFFT(const std::string& name) :
             KTProcessor(name),
             fAlpha(0.),
+            fSlope(0.),
             fInitialized(false),
+            fTransformFlag("ESTIMATE"),
             fForwardFFT(),
             fReverseFFT(),
             fChirpSlot("ts-chirp", this, &KTFractionalFFT::ProcessTimeSeriesChirpOnly, &fTSSignal),
@@ -47,6 +49,8 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetAlpha(node->get_value< double >("alpha", fAlpha));
+        SetSlope(node->get_value< double >("slope", fSlope));
+        SetTransformFlag(node->get_value("transform-flag", fTransformFlag));
 
         return true;
     }
@@ -60,9 +64,9 @@ namespace Katydid
 
         fForwardFFT.SetComplexAsIQ( true );
         fForwardFFT.SetTimeSize( s );
-        fForwardFFT.SetTransformFlag( "ESTIMATE" );
+        fForwardFFT.SetTransformFlag( fTransformFlag );
         fReverseFFT.SetTimeSize( s );
-        fReverseFFT.SetTransformFlag( "ESTIMATE" );
+        fReverseFFT.SetTransformFlag( fTransformFlag );
 
         if (! fForwardFFT.InitializeForComplexTDD())
         {
@@ -84,12 +88,12 @@ namespace Katydid
     {
         KTDEBUG(evlog, "Receiving time series for fractional FFT");
 
-        KTTimeSeriesFFTW* ts = nullptr;   // time series from data
+        KTTimeSeriesFFTW* ts = nullptr;         // time series from data
         
         double norm = 0.;                       // norm of the current TS value
         double phase = 0.;                      // argument of current TS value
-        double tVal = slice.GetTimeInAcq();   // time value of the current bin
-        double q = fAlpha;
+        double binOffset = slice.GetTimeInAcq() / (double)slice.GetBinWidth();
+        double q = fSlope * KTMath::Pi() * slice.GetBinWidth() * slice.GetBinWidth();
 
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
@@ -111,14 +115,11 @@ namespace Katydid
                 phase = atan2( (*ts)(iBin)[1], (*ts)(iBin)[0] );
 
                 // Shift phase
-                phase -= q * tVal * tVal;
+                phase -= q * ((double)iBin + binOffset) * ((double)iBin + binOffset);
 
                 // Assign components from norm and new phase
                 (*ts)(iBin)[0] = norm * cos( phase );
                 (*ts)(iBin)[1] = norm * sin( phase );
-
-                // Increment time value
-                tVal += slice.GetBinWidth();
             }
         }
 
@@ -130,6 +131,7 @@ namespace Katydid
         KTDEBUG(evlog, "Receiving time series for fractional FFT");
 
         KTTimeSeriesFFTW* ts = nullptr;   // time series from data
+        KTTimeSeriesFFTW* tsDup = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
         KTFrequencySpectrumFFTW* fs = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
@@ -168,12 +170,12 @@ namespace Katydid
                 phase -= q1 * (double)iBin * (double)iBin;
 
                 // Assign components from norm and new phase
-                (*ts)(iBin)[0] = norm * cos( phase );
-                (*ts)(iBin)[1] = norm * sin( phase );
+                (*tsDup)(iBin)[0] = norm * cos( phase );
+                (*tsDup)(iBin)[1] = norm * sin( phase );
             }
 
             // Forward FFT
-            fs = fForwardFFT.Transform(ts);
+            fs = fForwardFFT.Transform( tsDup );
 
             // Second chirp transform
             for( unsigned iBin = 0; iBin < fs->GetNFrequencyBins(); ++iBin )
@@ -241,11 +243,7 @@ namespace Katydid
         KTSliceHeader& newSlc = newData->Of< KTSliceHeader >();
         KTSliceHeader& oldSlc = data->Of< KTSliceHeader >();
 
-        newSlc.SetSliceSize( oldSlc.GetSliceSize() );
-        newSlc.SetSampleRate( oldSlc.GetSampleRate() );
-        newSlc.SetTimeInRun( oldSlc.GetTimeInRun() );
-        newSlc.SetSliceLength( oldSlc.GetSliceLength() );
-        newSlc.SetIsNewAcquisition( oldSlc.GetIsNewAcquisition() );
+        newSlc.CopySliceHeaderOnly( oldSlc );
 
         if( ! ProcessTimeSeries( data->Of< KTTimeSeriesData >(), newData->Of< KTTimeSeriesData >(), newData->Of< KTFrequencySpectrumDataFFTW >(), newSlc ) )
         {

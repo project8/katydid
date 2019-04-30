@@ -1,7 +1,7 @@
 /*
  * KTFractionalFFT.hh
  *
- *  Created on: Jan 17, 2017
+ *  Created on: Mar 8, 2019
  *      Author: ezayas
  */
 
@@ -26,22 +26,29 @@ namespace Katydid
      @class KTFractionalFFT
      @author E. Zayas
 
-     @brief [todo]
+     @brief Performs chirp transform and Fractional FFT via the Garcia algorithm
 
      @details
-     [todo]
+     Separate slots for the chirp transform and Fractional FFT, both of which take a time series data object. The Fractional FFT
+     is performed via chirp -> FFT -> chirp -> Reverse FFT -> chirp, as in Garcia et al. Applied Optics 35, 35. 1996
+     Track slope / rotation angle can be specified directly in the config, or by an incoming track
+     The chirp-only transform is performed in-place. The Fractional FFT is not. The Fractional FFT uses a custom slot function
+     to create a new data pointer, rather than append to the old one. This avoids complications with the ordinary FFT further in the
+     analysis chain.
 
-     Configuration name: "quadratic-phase"
+     Configuration name: "fracitonal-fft"
 
      Available configuration values:
-     - "alpha": double -- value of q, in Hz/s
-     - "chirp-only": bool -- if true, performs single chirp transform instead of fractional fft
+     - "alpha": double -- rotation angle for fractional FFT, in radians
+     - "slope": double -- track slope for chirp transform, in Hz/s
 
      Slots:
-     - "track": void (Nymph::KTDataPtr) -- Sets the value of q equal to the slope of a track; Requires KTProcessedTrackData; Adds nothing
-     - "ts": void (Nymph::KTDataPtr) -- Multiplies a time series by the quadratic phase; Requires KTTimeSeriesData and KTSliceHeader; Adds nothing
+     - "track": void (Nymph::KTDataPtr) -- Sets the value of slope and alpha from a track; Requires KTProcessedTrackData; Adds nothing
+     - "ts": void (Nymph::KTDataPtr) -- Performs fractional FFT on time series; Requires KTTimeSeriesData and KTSliceHeader; Adds KTFrequencySpectrumDataFFTW
+     - "ts-chirp": void (Nymph::KTDataPtr) -- Performs chirp transform on time series; Requires KTTimeSeriesData and KTSliceHeader; Adds nothing
  
      Signals:
+     - "ts": void (Nymph::KTDataPtr) -- Emitted upon successful chirp transform; Guarantees KTTimeSeriesData
      - "ts-and-fs": void (Nymph::KTDataPtr) -- Emitted upon successful time series processing; Guarantees KTTimeSeriesData, KTFrequencySpectrumDataFFTW and KTSliceHeader
     */
 
@@ -54,8 +61,10 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             MEMBERVARIABLE(double, Alpha);
+            MEMBERVARIABLE(double, Slope)
             MEMBERVARIABLE(bool, ChirpOnly);
             MEMBERVARIABLE(bool, Initialized);
+            MEMBERVARIABLE(std::string, TransformFlag);
 
         private:
 
