@@ -217,7 +217,6 @@ namespace Katydid
                 }
 
                 dataBundle.fTimeAxisMin = timeInRun;
-                KTPROG( publog, "fTimeAxisMin = " << dataBundle.fTimeAxisMin );
 
                 // calculate the properties of the time axis
                 if (mode == KTROOTSpectrogramWriter::kSingle)
