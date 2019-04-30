@@ -36,7 +36,6 @@ set (EVENTANALYSIS_HEADERFILES
     KTMultiPeakTrackBuilder.hh
     KTMultiSliceClustering.hh
     KTOverlappingTrackClustering.hh
-    KTQuadraticPhaseShift.hh
     KTRPClassifier.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
@@ -76,7 +75,6 @@ set (EVENTANALYSIS_SOURCEFILES
     KTMultiSliceClustering.cc
     KTOverlappingTrackClustering.cc
     KTRPClassifier.cc
-    KTQuadraticPhaseShift.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
     KTTrackProcessingDoubleCuts.cc
