@@ -134,11 +134,10 @@ namespace Katydid
 
         KTTimeSeriesFFTW* ts = nullptr;   // time series from data
         KTTimeSeriesFFTW* tsDup = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
-        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
-        KTFrequencySpectrumFFTW* fs = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
+        KTTimeSeriesFFTW* newTS;
+        KTFrequencySpectrumFFTW* fs;
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
 
-        fs->SetNTimeBins( slice.GetSliceSize() );
         newFS->SetNTimeBins( slice.GetSliceSize() );
 
         KTINFO(evlog, "q1 N/pi = " << tan( 0.5 * fAlpha ));
@@ -184,6 +183,7 @@ namespace Katydid
 
             // Forward FFT
             fs = fForwardFFT.Transform( tsDup );
+            fs->SetNTimeBins( slice.GetSliceSize() );
 
             // Second chirp transform
             for( unsigned iBin = 0; iBin < fs->GetNFrequencyBins(); ++iBin )
@@ -223,6 +223,9 @@ namespace Katydid
             newTSData.SetTimeSeries( newTS, iComponent );
             newFSData.SetSpectrum( newFS, iComponent );
         }
+
+        delete tsDup;
+        delete fs;
 
         return true;
     }
