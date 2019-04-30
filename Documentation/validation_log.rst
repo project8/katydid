@@ -43,6 +43,18 @@ Fixes:
 Log
 ---
 
+Version: 2.15.3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: April 10, 2019
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+
+
 Version: 2.15.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
