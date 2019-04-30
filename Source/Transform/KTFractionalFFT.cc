@@ -88,7 +88,7 @@ namespace Katydid
         
         double norm = 0.;                       // norm of the current TS value
         double phase = 0.;                      // argument of current TS value
-        double time = slice.GetTimeInAcq();   // time value of the current bin
+        double tVal = slice.GetTimeInAcq();   // time value of the current bin
         double q = fAlpha;
 
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
@@ -111,14 +111,14 @@ namespace Katydid
                 phase = atan2( (*ts)(iBin)[1], (*ts)(iBin)[0] );
 
                 // Shift phase
-                phase -= q * time * time;
+                phase -= q * tVal * tVal;
 
                 // Assign components from norm and new phase
                 (*ts)(iBin)[0] = norm * cos( phase );
                 (*ts)(iBin)[1] = norm * sin( phase );
 
                 // Increment time value
-                time += slice.GetBinWidth();
+                tVal += slice.GetBinWidth();
             }
         }
 
@@ -144,8 +144,7 @@ namespace Katydid
         double phase = 0.;                      // argument of current TS value
         double q1 = tan( 0.5 * fAlpha ) * KTMath::Pi() / (double)(slice.GetSliceSize());
         double q2 = sin( fAlpha ) * KTMath::Pi() / (double)(slice.GetSliceSize());
-        double time = slice.GetTimeInAcq();   // time value of the current bin
-
+        
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
             KTDEBUG(evlog, "Processing component: " << iComponent);
@@ -166,7 +165,7 @@ namespace Katydid
                 phase = atan2( (*ts)(iBin)[1], (*ts)(iBin)[0] );
 
                 // Shift phase
-                phase -= q1 * (double)(iBin) * (double)(iBin);
+                phase -= q1 * (double)iBin * (double)iBin;
 
                 // Assign components from norm and new phase
                 (*ts)(iBin)[0] = norm * cos( phase );
@@ -184,7 +183,7 @@ namespace Katydid
                 phase = atan2( (*fs)(iBin)[1], (*fs)(iBin)[0] );
 
                 // Shift phase
-                phase -= q2 * (double)(iBin) * (double)(iBin);
+                phase -= q2 * (double)iBin * (double)iBin;
 
                 // Assign components from norm and new phase
                 (*fs)(iBin)[0] = norm * cos( phase );
@@ -202,15 +201,13 @@ namespace Katydid
                 phase = atan2( (*newTS)(iBin)[1], (*newTS)(iBin)[0] );
 
                 // Shift phase
-                phase -= q1 * time * time;
+                phase -= q1 * (double)iBin * (double)iBin;
 
                 // Assign components from norm and new phase
                 (*newTS)(iBin)[0] = norm * cos( phase );
                 (*newTS)(iBin)[1] = norm * sin( phase );
                 (*newFS)(iBin)[0] = norm * cos( phase );
                 (*newFS)(iBin)[1] = norm * sin( phase );
-
-                time += slice.GetBinWidth();
             }
 
             newTSData.SetTimeSeries( newTS, iComponent );
