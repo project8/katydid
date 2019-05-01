@@ -6,7 +6,7 @@ processor-toolbox:
         name: fft
       - type: channel-aggregator
         name: ch-sum
-      - type: channesum-optimizer
+      - type: channelsum-optimizer
         name: ch-opt
       - type: basic-root-writer
         name: writer
@@ -41,9 +41,9 @@ fft:
     transform-flag: ESTIMATE
 
 ch-sum:
-    grid-size=25
-    active-radius=0.0516
-    wavelength=0.011
+    grid-size: 25
+    active-radius: 0.0516
+    wavelength: 0.011
 
 writer:
     output-file: "Summed_Channels.root"
