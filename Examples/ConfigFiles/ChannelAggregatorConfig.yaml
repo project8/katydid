@@ -8,8 +8,12 @@ processor-toolbox:
         name: ch-sum
       - type: channelsum-optimizer
         name: ch-opt
+      - type: convert-to-power
+        name: to-ps
       - type: basic-root-writer
         name: writer
+      - type: root-spectrogram-writer
+        name: waterfall-writer
 
 
     connections:
@@ -21,10 +25,12 @@ processor-toolbox:
         slot: "ch-sum:fft"
       - signal: "ch-sum:fft"
         slot: "ch-opt:fft"
-      - signal: "ch-opt:fft"
+      - signal: "ch-sum:fft"
+        slot: "to-ps:aggfs-fftw-to-ps"
+      - signal: "ch-sum:fft"
         slot: "writer:agg-fs-fftw"
-      - signal: "ch-opt:fft"
-        slot: "writer:agg-grid-fftw"
+      - signal: "to-ps:ps"
+        slot: "writer:agg-ps"
 
 
     run-queue:
@@ -41,10 +47,10 @@ fft:
     transform-flag: ESTIMATE
 
 ch-sum:
-    grid-size: 25
+    grid-size: 5
     active-radius: 0.0516
     wavelength: 0.011
 
 writer:
-    output-file: "Summed_Channels.root"
+    output-file: "Summed_Channels_Test.root"
     file-flag: recreate

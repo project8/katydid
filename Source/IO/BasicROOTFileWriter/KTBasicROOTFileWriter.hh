@@ -61,6 +61,8 @@ namespace Katydid
      - "norm-fs-polar":
      - "ps":
      - "psd":
+     - "agg-ps":
+     - "agg-psd":
      - "ps-dist":
      - "psd-dist":
      - "ps-var":

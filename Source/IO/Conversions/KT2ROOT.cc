@@ -484,7 +484,7 @@ namespace Katydid
       int nGridPoints=0;
 //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
       nGridPoints=std::sqrt(nComponents);
-      double fActiveRadius = fs.GetActiveRadius(); // PTS: This has to be set using
+      double fActiveRadius = fs.GetActiveRadius();
       TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
       for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
       {

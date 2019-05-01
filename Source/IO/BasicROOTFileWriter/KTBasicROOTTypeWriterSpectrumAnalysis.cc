@@ -80,8 +80,8 @@ namespace Katydid
     fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
     fWriter->RegisterSlot("agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumFFTWData);
     fWriter->RegisterSlot("agg-grid-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumGrid);
-//    fWriter->RegisterSlot("agg-ps", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerData);
-//    fWriter->RegisterSlot("agg-psd", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDData);
+    fWriter->RegisterSlot("agg-ps", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerData);
+    fWriter->RegisterSlot("agg-psd", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDData);
 #ifdef ENABLE_TUTORIAL
     fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar);
     fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW);
@@ -816,29 +816,35 @@ namespace Katydid
       return;
     }
   
-  /*
+  
   void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerData(Nymph::KTDataPtr data)
   {
     if (! data) return;
     
     uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
     
-    KTChannelAggregatedData& sumData = data->Of<KTChannelAggregatedData>();
+    KTPowerSpectrumData& sumData = data->Of<KTPowerSpectrumData>();
     unsigned nComponents = sumData.GetNComponents();
     
     if (! fWriter->OpenAndVerifyFile()) return;
     
-    KTPowerSpectrum* spectrum = sumData.GetSpectrum(0);
-    if (spectrum == NULL) return;
-    stringstream conv;
-    conv << "histAggChPS_" << sliceNumber;
-    string histName;
-    conv >> histName;
-    TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
-    powerSpectrum->SetDirectory(fWriter->GetFile());
-    //        powerSpectrum->Write(); //Redundant
-    KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-    return;
+    for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+      {
+          KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
+          if (spectrum != NULL)
+          {
+              spectrum->ConvertToPowerSpectrum();
+              stringstream conv;
+              conv << "histAggChPS_" << sliceNumber << "_" << iChannel;
+              string histName;
+              conv >> histName;
+              TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
+              powerSpectrum->SetDirectory(fWriter->GetFile());
+              powerSpectrum->Write();
+              KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+          }
+      }
+      return;
   }
   
   void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDData(Nymph::KTDataPtr data)
@@ -847,7 +853,7 @@ namespace Katydid
     
     uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
     
-    KTChannelAggregatedData& sumData = data->Of<KTChannelAggregatedData>();
+    KTPowerSpectrumData& sumData = data->Of<KTPowerSpectrumData>();
     unsigned nComponents = sumData.GetNComponents();
     
     if (! fWriter->OpenAndVerifyFile()) return;
@@ -863,7 +869,7 @@ namespace Katydid
     //        powerSpectrum->Write(); //Redundant
     KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
     return;
-  }*/
+  }
   
 #ifdef ENABLE_TUTORIAL
   void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar(Nymph::KTDataPtr data)

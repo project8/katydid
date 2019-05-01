@@ -11,6 +11,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumPolar.hh"
+#include "KTChannelAggregatedData.hh"
 #include "KTLogger.hh"
 
 #include "KTPowerSpectrum.hh"
@@ -31,6 +32,8 @@ namespace Katydid
             fFSPToPSDSlot("fs-polar-to-psd", this, &KTConvertToPower::ToPowerSpectralDensity, &fPowerSpectralDensitySignal),
             fFSFToPSSlot("fs-fftw-to-ps", this, &KTConvertToPower::ToPowerSpectrum, &fPowerSpectrumSignal),
             fFSFToPSDSlot("fs-fftw-to-psd", this, &KTConvertToPower::ToPowerSpectralDensity, &fPowerSpectralDensitySignal),
+            fAggFSFToPSSlot("aggfs-fftw-to-ps", this, &KTConvertToPower::ToPowerSpectrum, &fPowerSpectrumSignal),
+            fAggFSFToPSDSlot("aggfs-fftw-to-psd", this, &KTConvertToPower::ToPowerSpectralDensity, &fPowerSpectralDensitySignal),
             fPSDToPSSlot("psd-to-ps", this, &KTConvertToPower::ToPowerSpectrum, &fPowerSpectrumSignal),
             fPSToPSDSlot("ps-to-psd", this, &KTConvertToPower::ToPowerSpectralDensity, &fPowerSpectralDensitySignal),
             fPowerSpectrumSignal("ps", this),
@@ -63,6 +66,7 @@ namespace Katydid
         }
         return true;
     }
+    
     bool KTConvertToPower::ToPowerSpectralDensity(KTFrequencySpectrumDataPolar& data)
     {
         unsigned nComponents = data.GetNComponents();
@@ -90,6 +94,32 @@ namespace Katydid
     }
 
     bool KTConvertToPower::ToPowerSpectralDensity(KTFrequencySpectrumDataFFTW& data)
+    {
+        unsigned nComponents = data.GetNComponents();
+        KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >().SetNComponents(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
+            spectrum->ConvertToPowerSpectralDensity();
+            psData.SetSpectrum(spectrum, iComponent);
+        }
+        return true;
+    }
+    
+    bool KTConvertToPower::ToPowerSpectrum(KTAggregatedFrequencySpectrumDataFFTW& data)
+    {
+        unsigned nComponents = data.GetNComponents();
+        KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >().SetNComponents(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
+            spectrum->ConvertToPowerSpectrum();
+            psData.SetSpectrum(spectrum, iComponent);
+        }
+        return true;
+    }
+    
+    bool KTConvertToPower::ToPowerSpectralDensity(KTAggregatedFrequencySpectrumDataFFTW& data)
     {
         unsigned nComponents = data.GetNComponents();
         KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >().SetNComponents(nComponents);

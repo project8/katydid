@@ -9,18 +9,16 @@
 
 namespace Katydid
 {
-  
   const std::string KTAggregatedFrequencySpectrumDataFFTW::sName("aggregated-frequency-spectrum-fftw");
   
   KTAggregatedFrequencySpectrumDataFFTW::KTAggregatedFrequencySpectrumDataFFTW() :
-  KTFrequencySpectrumDataFFTWCore(),
+  KTGrid(),
   KTExtensibleData<KTAggregatedFrequencySpectrumDataFFTW>()
   {
   }
   
   KTAggregatedFrequencySpectrumDataFFTW::~KTAggregatedFrequencySpectrumDataFFTW()
   {
-    fGridPoints.clear();
   }
   
   KTAggregatedFrequencySpectrumDataFFTW& KTAggregatedFrequencySpectrumDataFFTW::SetNComponents(unsigned num)
@@ -32,18 +30,15 @@ namespace Katydid
     {
       delete fSpectra[iComponent];
     }
-    if(oldSize>num)fGridPoints.erase(fGridPoints.begin()+num,fGridPoints.begin()+oldSize);
-    if(oldSize>num)fSummedGridVoltages.erase(fSummedGridVoltages.begin()+num,fSummedGridVoltages.begin()+oldSize);
     
     //Resize old size is smaller than old size
     fSpectra.resize(num);
-    fGridPoints.resize(num);
-    fSummedGridVoltages.resize(num);
     
     for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
     {
       fSpectra[iComponent] = NULL;
     }
+    SetNGridPoints(num);
     return *this;
   }
   
