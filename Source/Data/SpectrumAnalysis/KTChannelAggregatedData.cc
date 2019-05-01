@@ -9,10 +9,29 @@
 
 namespace Katydid
 {
+  KTAggregatedDataCore::KTAggregatedDataCore()
+  {
+  }
+  
+  KTAggregatedDataCore::~KTAggregatedDataCore()
+  {
+    fGridPoints.clear();
+  }
+  
+  void KTAggregatedDataCore::SetNGridPoints(unsigned num)
+  {
+    unsigned oldSize = fGridPoints.size();
+    if(oldSize>num)
+    {
+      fGridPoints.erase(fGridPoints.begin()+num,fGridPoints.begin()+oldSize);
+    }
+    fGridPoints.resize(num);
+  }
+  
   const std::string KTAggregatedFrequencySpectrumDataFFTW::sName("aggregated-frequency-spectrum-fftw");
   
   KTAggregatedFrequencySpectrumDataFFTW::KTAggregatedFrequencySpectrumDataFFTW() :
-  KTGrid(),
+  KTAggregatedDataCore(),
   KTExtensibleData<KTAggregatedFrequencySpectrumDataFFTW>()
   {
   }
