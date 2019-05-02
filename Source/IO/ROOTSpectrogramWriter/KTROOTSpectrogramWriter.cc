@@ -301,7 +301,7 @@ namespace Katydid
         for (auto spectIt = dataBundle.fSpectrograms.begin(); spectIt != dataBundle.fSpectrograms.end(); ++spectIt)
         {
             TH2D* spectrogram = spectIt->fSpectrogram;
-            KTWARN(publog, "Writing histogram <" << spectrogram->GetName() << ">");
+            KTDEBUG(publog, "Writing histogram <" << spectrogram->GetName() << ">");
             if (cloneSpectrograms)
             {
                 spectIt->fSpectrogram = new TH2D();

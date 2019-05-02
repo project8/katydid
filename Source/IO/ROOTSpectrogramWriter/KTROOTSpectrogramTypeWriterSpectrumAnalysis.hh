@@ -29,10 +29,10 @@ namespace Katydid
     //            void AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
     //            void OutputFrequencySpectrumDataFFTW();
     // Add aggregated power spectrum histogram time slices to make a spectrogram
-//    void AddAggregatePowerSpectrumData(Nymph::KTDataPtr data);
+    void AddAggregatePowerSpectrumData(Nymph::KTDataPtr data);
     
     // Add aggregated PSD histogram time slices to make a spectrogram
-//    void AddAggregatePSDSpectrumData(Nymph::KTDataPtr data);
+    void AddAggregatePSDSpectrumData(Nymph::KTDataPtr data);
     
   private:
     //            DataTypeBundle fFSPolarBundle;

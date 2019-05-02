@@ -477,20 +477,40 @@ namespace Katydid
         return hist;
     }
   
-    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name)
+    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
     {
       // Currently only assume a square grid
-      unsigned int nComponents = fs.GetNComponents();
+      unsigned int nComponents = aggfs.GetNComponents();
       int nGridPoints=0;
 //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
       nGridPoints=std::sqrt(nComponents);
-      double fActiveRadius = fs.GetActiveRadius();
+      double fActiveRadius = aggfs.GetActiveRadius();
       TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
       for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
       {
         int xBin=iComponents/nGridPoints;
         int yBin=iComponents%nGridPoints;
-        hist->SetBinContent(xBin+1,yBin+1,fs.GetSummedGridVoltage(iComponents));
+        hist->SetBinContent(xBin+1,yBin+1,aggfs.GetSummedGridVoltage(iComponents));
+      }
+      hist->SetXTitle("X Axis (m)");
+      hist->SetYTitle("Y Axis (m)");
+      return hist;
+    }
+  
+    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
+    {
+      // Currently only assume a square grid
+      unsigned int nComponents = aggps.GetNComponents();
+      int nGridPoints=0;
+      //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
+      nGridPoints=std::sqrt(nComponents);
+      double fActiveRadius = aggps.GetActiveRadius();
+      TH2D* hist = new TH2D(name.c_str(), "Power Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
+      for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
+      {
+        int xBin=iComponents/nGridPoints;
+        int yBin=iComponents%nGridPoints;
+        hist->SetBinContent(xBin+1,yBin+1,aggps.GetSummedGridPower(iComponents));
       }
       hist->SetXTitle("X Axis (m)");
       hist->SetYTitle("Y Axis (m)");

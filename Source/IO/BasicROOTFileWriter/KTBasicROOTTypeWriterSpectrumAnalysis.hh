@@ -96,8 +96,10 @@ namespace Katydid
     public:
             void WriteAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data);
             void WriteAggregatedFrequencySpectrumGrid(Nymph::KTDataPtr data);
-            void WriteChannelAggregatedPowerData(Nymph::KTDataPtr data);
-            void WriteChannelAggregatedPSDData(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPowerSpectrumData(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPowerSpectrumGrid(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPSDSpectrumData(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPSDSpectrumGrid(Nymph::KTDataPtr data);
 
 #ifdef ENABLE_TUTORIAL
             //************************

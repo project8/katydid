@@ -35,10 +35,10 @@ namespace Katydid
    @details
    
    Slots:
-   - "fft": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggreagted channels; Requires KTAggregatedFrequencySpectrumDataFFTW;Finds the point that optimizes the aggreagted channels ; Emits signal "fft"
+   - "agg-fft": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggreagted channels; Requires KTAggregatedFrequencySpectrumDataFFTW;Finds the point that optimizes the aggreagted channels ; Emits signal "fft"
    
    Signals:
-   - "fft": void (Nymph::KTDataPtr) -- Emitted upon finding the optimized point ; Guarantees KTFrequencySpectrumDataFFTW
+   - "agg-fft": void (Nymph::KTDataPtr) -- Emitted upon finding the optimized point ; Guarantees KTFrequencySpectrumDataFFTW
    */
   
   class KTAggregatedChannelOptimizer : public Nymph::KTProcessor

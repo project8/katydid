@@ -16,8 +16,8 @@ processor-toolbox:
         slot: "fft:ts-fftw"
       - signal: "fft:fft"
         slot: "to-ps:fs-fftw-to-psd"
-      - signal: "to-ps:psd"
-        slot: "writer:ps"
+      - signal: "to-ps:ps"
+        slot: "writer:agg-ps"
 
     run-queue:
       - egg

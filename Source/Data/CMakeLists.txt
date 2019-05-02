@@ -13,7 +13,6 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTDiscriminatedPoints2DData.hh
     SpectrumAnalysis/KTGainVarChi2Data.hh
     SpectrumAnalysis/KTGainVariationData.hh
-    SpectrumAnalysis/KTGrid.hh
     SpectrumAnalysis/KTHoughData.hh
     SpectrumAnalysis/KTKDTree.hh
     SpectrumAnalysis/KTKDTreeData.hh
@@ -81,7 +80,6 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTDiscriminatedPoints2DData.cc
     SpectrumAnalysis/KTGainVarChi2Data.cc
     SpectrumAnalysis/KTGainVariationData.cc
-    SpectrumAnalysis/KTGrid.cc
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
     SpectrumAnalysis/KTNormalizedFSData.cc

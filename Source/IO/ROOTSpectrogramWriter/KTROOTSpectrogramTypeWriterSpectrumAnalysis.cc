@@ -59,8 +59,8 @@ namespace Katydid
   {
     //        fWriter->RegisterSlot("fs-polar", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddFrequencySpectrumDataPolar);
     //        fWriter->RegisterSlot("fs-fftw", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddFrequencySpectrumDataFFTW);
-//    fWriter->RegisterSlot("agg-ps", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePowerSpectrumData);
-//    fWriter->RegisterSlot("agg-psd", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData);
+    fWriter->RegisterSlot("agg-ps", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePowerSpectrumData);
+    fWriter->RegisterSlot("agg-psd", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData);
     return;
   }
   
@@ -79,23 +79,22 @@ namespace Katydid
    {
    AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWBundle);
    return;
-   }
+   }*/
   //********************
   // Power Spectrum Data
   //********************
   
   void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePowerSpectrumData(Nymph::KTDataPtr data)
   {
-    AddAggregatePowerSpectrumDataCoreHelper< KTChannelAggregatedData >(data, fPowerBundle);
+    AddAggregatePowerSpectrumDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPowerBundle);
     return;
   }
   
   void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData(Nymph::KTDataPtr data)
   {
-    AddAggregatePSDDataCoreHelper< KTChannelAggregatedData >(data, fPSDBundle);
+    AddAggregatePSDDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPSDBundle);
     return;
   }
-   
-   */
+  
   
 } /* namespace Katydid */

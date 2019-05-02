@@ -277,28 +277,25 @@ namespace Katydid
       // Ok, this is a slice we should pay attention to.
       XDataType& fsData = data->Of< XDataType >();
       unsigned nComponents = fsData.GetNComponents();
-      // Make sure that there is only one component(i.e., channel) in the aggregated data
-      if (nComponents!=1) {
-        KTWARN(publog_rsw,"More than 1 component in aggregated data");
-        return;
-      }
+      
       int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
       // Checks to see if new histogram needs to be opened
       if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
-      
+     for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
+      {
         // Get the component information, fsData should have only one component anyway
-        KTPowerSpectrum* spectrum = fsData.GetSpectrum(0);
-        spectrum->ConvertToPowerSpectrum();// Not completely sure if this is needed
-        // Technically a vector of histograms are not needed, but this maintains consistency
-        TH2D* spectrogram = dataBundle.fSpectrograms[0].fSpectrogram;
+        KTPowerSpectrum* spectrum = fsData.GetSpectrum(iComponents);
+        spectrum->ConvertToPowerSpectrum();
+        TH2D* spectrogram = dataBundle.fSpectrograms[iComponents].fSpectrogram;
         unsigned iSpectFreqBin = 0;
         if (iSpectTimeBin > spectrogram->GetNbinsX()) return;
         // Loop over all the frequency bins and fill the histogram
-        for (unsigned iFreqBin = dataBundle.fSpectrograms[0].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[0].fLastFreqBin; ++iFreqBin)
+        for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponents].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponents].fLastFreqBin; ++iFreqBin)
         {
           spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
           ++iSpectFreqBin;
         }
+      }
     }
     return;
   }
@@ -320,28 +317,27 @@ namespace Katydid
       // Ok, this is a slice we should pay attention to.
       XDataType& fsData = data->Of< XDataType >();
       unsigned nComponents = fsData.GetNComponents();
-      // Make sure that there is only one component(i.e., channel) in the aggregated data
-      if (nComponents!=1) {
-        KTWARN(publog_rsw,"More than 1 component in aggregated data");
-        return;
-      }
+
       int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
       // Checks to see if new histogram needs to be opened
       if (iSpectTimeBin <= 0 ) return; // do this check here instead of down in the component loop to save time
       
+      for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
+      {
       // Get the component information, fsData should have only one component anyway
-      KTPowerSpectrum* spectrum = fsData.GetSpectrum(0);
+      KTPowerSpectrum* spectrum = fsData.GetSpectrum(iComponents);
       spectrum->ConvertToPowerSpectralDensity();// Not completely sure if this is needed
       // Technically a vector of histograms are not needed, but this maintains consistency
-      TH2D* spectrogram = dataBundle.fSpectrograms[0].fSpectrogram;
+      TH2D* spectrogram = dataBundle.fSpectrograms[iComponents].fSpectrogram;
       unsigned iSpectFreqBin = 0;
       if (iSpectTimeBin > spectrogram->GetNbinsX()) return;
       // Loop over all the frequency bins and fill the histogram
-      for (unsigned iFreqBin = dataBundle.fSpectrograms[0].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[0].fLastFreqBin; ++iFreqBin)
+      for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponents].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponents].fLastFreqBin; ++iFreqBin)
       {
         spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
         ++iSpectFreqBin;
       }
+    }
     }
     return;
   }

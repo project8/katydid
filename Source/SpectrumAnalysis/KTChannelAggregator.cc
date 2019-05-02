@@ -19,7 +19,7 @@ namespace Katydid
   KTChannelAggregator::KTChannelAggregator(const std::string& name) :
   KTProcessor(name),
   fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
-  fSummedFrequencyData("fft", this)
+  fSummedFrequencyData("agg-fft", this)
   {
   }
   
@@ -68,6 +68,7 @@ namespace Katydid
   bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
   {
     const KTFrequencySpectrumFFTW* freqSpectrum=fftwData.GetSpectrumFFTW(0);
+    int nTimeBins=freqSpectrum->GetNTimeBins();
     // Get the number of frequency bins from the first component of fftwData
     int nFreqBins=freqSpectrum->GetNFrequencyBins();
     int nComponents=fftwData.GetNComponents(); // Get number of components
@@ -117,13 +118,14 @@ namespace Katydid
         for (unsigned iFreqBin=0; iFreqBin<nFreqBins; ++iFreqBin){
           double realVal=freqSpectrum->GetReal(iFreqBin);
           double imagVal=freqSpectrum->GetImag(iFreqBin);
-          ApplyPhaseShift(realVal,imagVal,-phaseShift);
+          ApplyPhaseShift(realVal,imagVal,phaseShift);
           double summedRealVal=realVal+newFreqSpectrum->GetReal(iFreqBin);
           double summedImagVal=imagVal+newFreqSpectrum->GetImag(iFreqBin);
           (*newFreqSpectrum)(iFreqBin)[0]=summedRealVal;
           (*newFreqSpectrum)(iFreqBin)[1]=summedImagVal;
         }// End of loop over freq bins
       }// End of loop over all comps
+      newFreqSpectrum->SetNTimeBins(nTimeBins);
       newAggFreqData.SetSpectrum(newFreqSpectrum, iGrid);
       
       double maxVoltageFreq=0.0;

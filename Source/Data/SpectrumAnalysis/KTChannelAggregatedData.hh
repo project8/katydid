@@ -1,10 +1,10 @@
 /**
  @file KTAggregatedFrequencyData
- @brief Contains KTAggregatedFrequencyData
+ @brief Contains KTAggregatedDataCore and KTAggregatedFrequencySpectrumDataFFTW
  @details The summed spectra from all the channels in the azimuthal direction.
- Also includes of the reconstructed radial position of the electron.
+ Also includes the reconstructed position of the electron in cartesian coordinate system.
  Currently voltage summation in the frequency domain is performed.
- Can be extended to the power summation and in the time domain.
+ Can be extended to the power summation as well as in the time domain.
  Warning: It is the user's responsibility to make sure that the spectra
  corresponds to the right grid point.
  @author: P. T. Surukuchi
@@ -18,6 +18,7 @@
 
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTPowerSpectrumData.hh"
 
 #include <vector>
 
@@ -113,13 +114,30 @@ namespace Katydid
     
     virtual ~KTAggregatedFrequencySpectrumDataFFTW();
     
-    static const std::string sName;
-    
     virtual KTAggregatedFrequencySpectrumDataFFTW& SetNComponents(unsigned);
     
     virtual void SetSummedGridVoltage(int,double);
     
     virtual double GetSummedGridVoltage(int) const;
+    
+    static const std::string sName;
+  };
+  
+  
+  class KTAggregatedPowerSpectrumData :public KTAggregatedDataCore,public KTPowerSpectrumDataCore,public Nymph::KTExtensibleData< KTAggregatedPowerSpectrumData >
+  {
+  public:
+    KTAggregatedPowerSpectrumData();
+    
+    virtual ~KTAggregatedPowerSpectrumData();
+    
+    virtual KTAggregatedPowerSpectrumData& SetNComponents(unsigned);
+    
+    virtual void SetSummedGridPower(int,double);
+    
+    virtual double GetSummedGridPower(int) const;
+    
+    static const std::string sName;
   };
   
   inline int KTAggregatedDataCore::GetNGridPoints()
@@ -196,6 +214,15 @@ namespace Katydid
   }
   
   inline double KTAggregatedFrequencySpectrumDataFFTW::GetSummedGridVoltage(int component) const{
+    return KTAggregatedDataCore::GetSummedGridMagnitude(component);
+  }
+  
+  inline void KTAggregatedPowerSpectrumData::SetSummedGridPower(int component,double magnitude)
+  {
+    KTAggregatedDataCore::SetSummedGridMagnitude(component,magnitude);
+  }
+  
+  inline double KTAggregatedPowerSpectrumData::GetSummedGridPower(int component) const{
     return KTAggregatedDataCore::GetSummedGridMagnitude(component);
   }
   
