@@ -61,7 +61,6 @@ namespace Katydid
 			double min_max_track_nup;
 		};
     	
-    	thresholds thr[100][100]={0};
     public:
         KTEventNTracksFirstTrackNPointsNUPCut_nso(const std::string& name = "event-ntracks-first-track-npoints-nup-cut-nso");
         ~KTEventNTracksFirstTrackNPointsNUPCut_nso();

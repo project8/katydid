@@ -140,12 +140,16 @@ namespace Katydid
                 return false;
             }
         }
+        
         return true;
     }
 
     bool KTEventNTracksFirstTrackNPointsNUPCut_nso::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {        
-        /*for (int i=0;i<fDimensionFTNPoints;i++)
+        
+        thresholds thr[fDimensionFTNPoints][fDimensionNTracks];
+        
+        for (int i=0;i<fDimensionFTNPoints;i++)
         {
         	for (int j=0;j<fDimensionNTracks;j++)
         	{
@@ -153,8 +157,8 @@ namespace Katydid
         	thr[i][j].min_average_nup=0;
         	thr[i][j].min_max_track_nup=0;
         	};
-        };*/
-        
+        };
+
         thr[3-1][1-1].min_average_nup=13;
         thr[3-1][2-1].min_average_nup=11;
         thr[3-1][3-1].min_average_nup=7.8;
@@ -170,8 +174,8 @@ namespace Katydid
         
         
         bool isCut = false;
-//		if( eventData.GetTotalEventSequences() > 0 and eventData.GetFirstTrackNTrackBins() > 0 )
-//		{	
+		if( eventData.GetTotalEventSequences() <=fDimensionNTracks and eventData.GetFirstTrackNTrackBins() <= fDimensionFTNPoints )
+		{	
 			if ( fWideOrNarrow == wide_or_narrow::narrow )
 			{
 				if( eventData.GetFirstTrackTotalNUP() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_total_nup )
@@ -225,7 +229,7 @@ namespace Katydid
 				KTWARN("max_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_max_track_nup);
 				isCut = true;
 			}
-//		}
+		}
 		data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
 
 		return isCut;
