@@ -10,6 +10,8 @@
 
 #include "KTCut.hh"
 
+#include <vector>
+
 namespace Katydid
 {
 
@@ -42,12 +44,12 @@ namespace Katydid
         };
 
 	private:
-        enum class wide_or_narrow
+        enum class WideOrNarrow
         {
             wide,
             narrow
         };
-        enum class time_or_bin_average
+        enum class TimeOrBinAvg
         {
             time,
             bin
@@ -56,9 +58,11 @@ namespace Katydid
 	private:    
         struct thresholds
 		{
-			double min_total_nup;
-			double min_average_nup;
-			double min_max_track_nup;
+			double fMinTotalNUP;
+			double fMinAverageNUP;
+			double fMinMaxNUP;
+			bool fFilled;
+			thresholds() : fMinTotalNUP(-1.), fMinAverageNUP(-1.), fMinMaxNUP(-1.), fFilled(false) {}
 		};
     	
     public:
@@ -67,15 +71,10 @@ namespace Katydid
 
         bool Configure(const scarab::param_node* node);
 
-        MEMBERVARIABLE(unsigned, DimensionFTNPoints);
-        MEMBERVARIABLE(unsigned, DimensionNTracks);
-        MEMBERVARIABLE(unsigned, EventFirstTrackNPoints);
-        MEMBERVARIABLE(unsigned, EventNTracks);
-        MEMBERVARIABLE(double, MinTotalNUP);
-        MEMBERVARIABLE(double, MinAverageNUP);
-        MEMBERVARIABLE(double, MinMaxNUP);
-        MEMBERVARIABLE(wide_or_narrow, WideOrNarrow);
-        MEMBERVARIABLE(time_or_bin_average, TimeOrBinAverage);
+        MEMBERVARIABLEREF(std::vector< std::vector< thresholds > >, Thresholds);
+
+        MEMBERVARIABLE(WideOrNarrow, WideOrNarrow);
+        MEMBERVARIABLE(TimeOrBinAvg, TimeOrBinAverage);
         
     public:
         bool Apply(Nymph::KTData& data, KTMultiTrackEventData& eventData);

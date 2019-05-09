@@ -10,6 +10,8 @@
 
 #include "KTLogger.hh"
 
+using std::vector;
+
 namespace Katydid
 {
     KTLOGGER(ecnuplog, "KTEventNTracksFirstTrackNPointsNUPCut_nso");
@@ -19,16 +21,10 @@ namespace Katydid
     KT_REGISTER_CUT(KTEventNTracksFirstTrackNPointsNUPCut_nso);
 
     KTEventNTracksFirstTrackNPointsNUPCut_nso::KTEventNTracksFirstTrackNPointsNUPCut_nso(const std::string& name) :
-         KTCutOneArg(name),
-         fDimensionFTNPoints(2),
-         fDimensionNTracks(2),
-         fEventFirstTrackNPoints(0),
-         fEventNTracks(0),
-         fMinTotalNUP(0.),
-         fMinAverageNUP(0.),
-         fMinMaxNUP(0.),
-         fWideOrNarrow( wide_or_narrow::wide ),
-         fTimeOrBinAverage( time_or_bin_average::time )
+                 KTCutOneArg(name),
+                 fThresholds(),
+                 fWideOrNarrow( WideOrNarrow::wide ),
+                 fTimeOrBinAverage( TimeOrBinAvg::time )
     {}
 
     KTEventNTracksFirstTrackNPointsNUPCut_nso::~KTEventNTracksFirstTrackNPointsNUPCut_nso()
@@ -36,6 +32,146 @@ namespace Katydid
 
     bool KTEventNTracksFirstTrackNPointsNUPCut_nso::Configure(const scarab::param_node* node)
     {
+        if (node == NULL) return false;
+
+        if (! node->has("parameters") || ! node->at("parameters")->is_array())
+        {
+            KTERROR(ecnuplog, "No cut parameters were provided, or \"parameters\" was not an array");
+            return false;
+        }
+
+        const scarab::param_array* parameters = node->array_at("parameters");
+        unsigned nParamSets = parameters->size();
+
+        // Create the vector that will temporarily hold the parameter sets after the first loop
+        struct extendedThresholds : thresholds
+        {
+            unsigned fFTNPoints;
+            unsigned fNTracks;
+        };
+        vector< extendedThresholds > tempThresholds(nParamSets);
+
+        // First loop: extract all parameters, and the max dimensions of the thresholds array
+        unsigned maxFTNPointsConfig = 0;
+        unsigned maxNTracksConfig = 0;
+        unsigned tempThreshPos = 0;
+        for (auto paramIt = parameters->begin(); paramIt != parameters->end(); ++paramIt)
+        {
+            if (! (*paramIt)->is_node())
+            {
+                KTERROR(ecnuplog, "Invalid set of parameters");
+                return false;
+            }
+            const scarab::param_node& oneSetOfParams = (*paramIt)->as_node();
+
+            try
+            {
+                unsigned ftNPoints = oneSetOfParams.get_value< unsigned >("ft-npoints");
+                unsigned nTracks = oneSetOfParams.get_value< unsigned >("ntracks");
+                if (ftNPoints > maxFTNPointsConfig) maxFTNPointsConfig = ftNPoints;
+                if (nTracks > maxNTracksConfig) maxNTracksConfig = nTracks;
+
+                tempThresholds[tempThreshPos].fFTNPoints = ftNPoints;
+                tempThresholds[tempThreshPos].fNTracks = nTracks;
+
+                tempThresholds[tempThreshPos].fMinTotalNUP = oneSetOfParams.get_value< double >("min-total-nup");
+                tempThresholds[tempThreshPos].fMinAverageNUP = oneSetOfParams.get_value< double >("min-average-nup");
+                tempThresholds[tempThreshPos].fMinMaxNUP = oneSetOfParams.get_value< double >("min-max-track-nup");
+            }
+            catch( scarab::error& e )
+            {
+                // this will catch scarab::errors from param_node::get_value in the case that a parameter is missing
+                KTERROR(ecnuplog, "An incomplete set of parameters was found: " << oneSetOfParams);
+                return false;
+            }
+
+            ++tempThreshPos;
+        }
+
+        // Create the 2D thresholds array
+        // Dimensions are are maxNTracksConfig + 1 rows by maxFTNPointsConfig + 1 columns
+        // Positions in the array for zero n-tracks and zero ft-npoints are kept to make later indexing of fThresholds simpler
+        ++maxNTracksConfig;
+        ++maxFTNPointsConfig;
+        fThresholds.clear();
+        fThresholds.resize(maxNTracksConfig);
+        // skip the first row; there will never be 0 tracks
+        for (unsigned iRow = 1; iRow < maxNTracksConfig; ++iRow)
+        {
+            fThresholds[iRow].resize(maxFTNPointsConfig);
+        }
+
+        // Second loop: fill in the 2D array
+        for (auto oneParamSet : tempThresholds)
+        {
+            fThresholds[oneParamSet.fNTracks][oneParamSet.fFTNPoints].fMinTotalNUP = oneParamSet.fMinTotalNUP;
+            fThresholds[oneParamSet.fNTracks][oneParamSet.fFTNPoints].fMinAverageNUP = oneParamSet.fMinAverageNUP;
+            fThresholds[oneParamSet.fNTracks][oneParamSet.fFTNPoints].fMinMaxNUP = oneParamSet.fMinMaxNUP;
+            fThresholds[oneParamSet.fNTracks][oneParamSet.fFTNPoints].fFilled = true;
+        }
+
+        // Now fill in any gaps in rows
+#ifndef NDEBUG
+        unsigned iRow = 0;
+#endif
+        for (auto oneRow : fThresholds)
+        {
+            if (oneRow.empty()) continue;
+
+            unsigned iFilledPos = 0;
+            // find the first non-zero position from the left, and fill that value to the left
+            for (iFilledPos = 0; ! oneRow[iFilledPos].fFilled && iFilledPos != oneRow.size(); ++iFilledPos);
+            KTDEBUG(ecnuplog, "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRow.size());
+            if (iFilledPos == oneRow.size())
+            {
+                KTWARN(ecnuplog, "Empty threshold row found");
+                continue;
+            }
+            for (unsigned iPos = 1; iPos < iFilledPos; ++iPos)
+            {
+                oneRow[iPos] = oneRow[iFilledPos];
+            }
+
+            // find the first non-zero position from the right, and fill that value to the right
+            // there's no risk of finding an unfilled row, since we would have caught that in the previous section
+            for (iFilledPos = oneRow.size()-1; ! oneRow[iFilledPos].fFilled; --iFilledPos) {}
+            KTDEBUG(ecnuplog, "Row " << iRow << ": last filled position is " << iFilledPos);
+            for (unsigned iPos = oneRow.size()-1; iPos > iFilledPos; --iPos)
+            {
+                oneRow[iPos] = oneRow[iFilledPos];
+            }
+
+            // fill in any holes from left to right
+            // there are no completely unfilled rows
+            // rows will have a minimum size of 2
+            // for a given position, if it's unfilled, then fill from the position to the left
+            for (unsigned iPos = 1; iPos < oneRow.size(); ++iPos)
+            {
+                if (! oneRow[iPos].fFilled)
+                {
+                    oneRow[iPos] = oneRow[iPos-1];
+                }
+            }
+
+#ifndef NDEBUG
+            ++iRow;
+#endif
+        }
+
+#ifndef NDEBUG
+        std::stringstream arrayStream;
+        for (auto oneRow : fThresholds)
+        {
+            arrayStream << "[ ";
+            for (auto oneParamSet : oneRow)
+            {
+                arrayStream << "[" << oneParamSet.fMinTotalNUP << ", " << oneParamSet.fMinAverageNUP << ", " << oneParamSet.fMinMaxNUP << "] ";
+            }
+            arrayStream << "]\n";
+        }
+        KTDEBUG(ecnuplog, "Final thresholds array:\n" << arrayStream.str());
+#endif
+
         /*
     parameters:
       - ft-npoints: 3
@@ -98,25 +234,16 @@ namespace Katydid
         Need to work out function to retrieve the cut parameters with appropriate bounding
 
          */
-        if (node == NULL) return true;
-
-        SetDimensionFTNPoints( node->get_value< unsigned >( "n-dimensions-in-event-first-track-n-points", GetDimensionFTNPoints() ) );
-        SetDimensionNTracks( node->get_value< unsigned >( "n-dimensions-n-tracks-in-event", GetDimensionNTracks() ) );
-        SetEventFirstTrackNPoints( node->get_value< unsigned >( "n-points-in-event-first-track", GetEventFirstTrackNPoints() ) );
-        SetEventNTracks( node->get_value< unsigned >( "n-tracks-in-event", GetEventNTracks() ) );
-        SetMinTotalNUP( node->get_value< double >( "min-total-nup", GetMinTotalNUP() ) );
-        SetMinAverageNUP( node->get_value< double >( "min-average-nup", GetMinAverageNUP() ) );
-        SetMinMaxNUP( node->get_value< double >("min-max-track-nup", GetMinMaxNUP() ) );
 
         if (node->has("wide-or-narrow"))
         {
             if (node->get_value("wide-or-narrow") == "wide")
             {
-                SetWideOrNarrow(wide_or_narrow::wide);
+                SetWideOrNarrow(WideOrNarrow::wide);
             }
             else if (node->get_value("wide-or-narrow") == "narrow")
             {
-                SetWideOrNarrow(wide_or_narrow::narrow);
+                SetWideOrNarrow(WideOrNarrow::narrow);
             }
             else
             {
@@ -128,11 +255,11 @@ namespace Katydid
         {
             if (node->get_value("time-or-bin-average") == "time")
             {
-                SetTimeOrBinAverage(time_or_bin_average:: time);
+                SetTimeOrBinAverage(TimeOrBinAvg:: time);
             }
             else if (node->get_value("time-or-bin-average") == "bin")
             {
-                SetTimeOrBinAverage(time_or_bin_average::bin);
+                SetTimeOrBinAverage(TimeOrBinAvg::bin);
             }
             else
             {
@@ -140,99 +267,53 @@ namespace Katydid
                 return false;
             }
         }
-        
+
         return true;
     }
 
     bool KTEventNTracksFirstTrackNPointsNUPCut_nso::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {        
-        
-        thresholds thr[fDimensionFTNPoints][fDimensionNTracks];
-        
-        for (int i=0;i<fDimensionFTNPoints;i++)
-        {
-        	for (int j=0;j<fDimensionNTracks;j++)
-        	{
-        	thr[i][j].min_total_nup=0;
-        	thr[i][j].min_average_nup=0;
-        	thr[i][j].min_max_track_nup=0;
-        	};
-        };
-
-        thr[3-1][1-1].min_average_nup=13;
-        thr[3-1][2-1].min_average_nup=11;
-        thr[3-1][3-1].min_average_nup=7.8;
-        thr[4-1][1-1].min_average_nup=10;
-        
-        for (int i=0;i<fDimensionFTNPoints;i++)
-        {
-        	for (int j=0;j<fDimensionNTracks;j++)
-        	{
-        	KTWARN(i<<" "<<j<<" "<<thr[i][j].min_average_nup);
-        	};
-        };
-        
-        
         bool isCut = false;
-		if( eventData.GetTotalEventSequences() <=fDimensionNTracks and eventData.GetFirstTrackNTrackBins() <= fDimensionFTNPoints )
-		{	
-			if ( fWideOrNarrow == wide_or_narrow::narrow )
-			{
-				if( eventData.GetFirstTrackTotalNUP() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_total_nup )
-				{
-					KTWARN("total_nup1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_total_nup);
-					isCut = true;
-				}
-				if ( fTimeOrBinAverage == time_or_bin_average::time )
-				{
-					if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackTimeLength() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup )
-					{
-						KTWARN("average_nup_time1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup);
-						isCut = true;
-					}
-				}
-				else
-				{
-					if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackNTrackBins() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup )
-					{
-						KTWARN("average_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup);
-						isCut = true;
-					}
-				}
-			}
-			else
-			{
-				if( eventData.GetFirstTrackTotalWideNUP() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_total_nup )
-				{
-					KTWARN("total_nup2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_total_nup);
-					isCut = true;
-				}
-				if ( fTimeOrBinAverage == time_or_bin_average::time )
-				{
-					if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackTimeLength() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup )
-					{
-						KTWARN("average_nup_time2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup);
-						isCut = true;
-					}
-				}
-				else
-				{
-					if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackNTrackBins() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup )
-					{
-						KTWARN("average_nup_bin2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_average_nup);
-						isCut = true;
-					}
-				}
-			}
-			if( eventData.GetFirstTrackMaxNUP() < thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_max_track_nup )
-			{
-				KTWARN("max_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<thr[eventData.GetFirstTrackNTrackBins()-1][eventData.GetTotalEventSequences()-1].min_max_track_nup);
-				isCut = true;
-			}
-		}
-		data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
+        unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
+        unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
 
-		return isCut;
+        double ftTotalNUP = eventData.GetFirstTrackTotalNUP();
+        if (fWideOrNarrow == WideOrNarrow::wide)
+        {
+            ftTotalNUP = eventData.GetFirstTrackTotalWideNUP();
+        }
+
+        if( ftTotalNUP < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
+        {
+            KTWARN("total_nup1"<<" "<<ftNPointsIndex<<" "<<nTracksIndex<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
+            isCut = true;
+        }
+        else
+        {
+            double divisor = eventData.GetFirstTrackTimeLength();
+            if (fTimeOrBinAverage == TimeOrBinAvg::bin)
+            {
+                divisor = (double)eventData.GetFirstTrackNTrackBins();
+            }
+
+            if( ftTotalNUP / divisor < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
+            {
+                KTWARN("average_nup_time1"<<" "<<ftNPointsIndex<<" "<<nTracksIndex<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+                isCut = true;
+            }
+            else
+            {
+                if( eventData.GetFirstTrackMaxNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP )
+                {
+                    KTWARN("max_nup_bin1"<<" "<<ftNPointsIndex<<" "<<nTracksIndex<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
+                    isCut = true;
+                }
+            }
+        }
+
+        data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
+
+        return isCut;
     }
 
 } // namespace Katydid
