@@ -43,6 +43,30 @@ Fixes:
 Log
 ---
 
+Version: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: 
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Solving Travis issue [#169](https://github.com/project8/katydid/issues/169): now uses Docker as starting environment
+
+
+Version: 2.15.3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: April 10, 2019
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+
+
 Version: 2.15.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
