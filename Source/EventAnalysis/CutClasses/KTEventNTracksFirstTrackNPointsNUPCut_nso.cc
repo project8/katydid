@@ -120,7 +120,7 @@ namespace Katydid
 
             unsigned iFilledPos = 0;
             // find the first non-zero position from the left, and fill that value to the left
-            for (iFilledPos = 0; ! oneRow[iFilledPos].fFilled && iFilledPos != oneRow.size(); ++iFilledPos);
+            for (iFilledPos = 0; ! oneRow[iFilledPos].fFilled && iFilledPos != oneRow.size(); ++iFilledPos) {}
             KTDEBUG(ecnuplog, "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRow.size());
             if (iFilledPos == oneRow.size())
             {
