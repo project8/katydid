@@ -338,9 +338,9 @@ namespace Katydid
 		{	
 			//KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
 //			unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
-//        	unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
+//			unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
 			unsigned nTracksIndex = eventData.GetTotalEventSequences();
-        	unsigned ftNPointsIndex = eventData.GetFirstTrackNTrackBins();
+			unsigned ftNPointsIndex = eventData.GetFirstTrackNTrackBins();
 			if ( fWideOrNarrow == WideOrNarrow::narrow )
 			{
 				if( eventData.GetFirstTrackTotalNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
