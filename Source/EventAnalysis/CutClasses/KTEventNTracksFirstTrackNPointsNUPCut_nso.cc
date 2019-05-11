@@ -52,8 +52,8 @@ namespace Katydid
         vector< extendedThresholds > tempThresholds(nParamSets);
 
         // First loop: extract all parameters, and the max dimensions of the thresholds array
-        unsigned maxFTNPointsConfig = 0;
-        unsigned maxNTracksConfig = 0;
+        //unsigned maxFTNPointsConfig = 0;
+        //unsigned maxNTracksConfig = 0;
         unsigned tempThreshPos = 0;
         for (auto paramIt = parameters->begin(); paramIt != parameters->end(); ++paramIt)
         {
@@ -93,6 +93,7 @@ namespace Katydid
         // Positions in the array for zero n-tracks and zero ft-npoints are kept to make later indexing of fThresholds simpler
         ++maxNTracksConfig;
         ++maxFTNPointsConfig;
+//      KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
         fThresholds.clear();
         fThresholds.resize(maxNTracksConfig);
         // skip the first row; there will never be 0 tracks
@@ -114,6 +115,7 @@ namespace Katydid
 #ifndef NDEBUG
         unsigned iRow = 0;
 #endif
+        unsigned iRow = 0;
         for (auto oneRow : fThresholds)
         {
             if (oneRow.empty()) continue;
@@ -122,6 +124,7 @@ namespace Katydid
             // find the first non-zero position from the left, and fill that value to the left
             for (iFilledPos = 0; ! oneRow[iFilledPos].fFilled && iFilledPos != oneRow.size(); ++iFilledPos) {}
             KTDEBUG(ecnuplog, "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRow.size());
+//          KTWARN( "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRow.size());
             if (iFilledPos == oneRow.size())
             {
                 KTWARN(ecnuplog, "Empty threshold row found");
@@ -136,6 +139,7 @@ namespace Katydid
             // there's no risk of finding an unfilled row, since we would have caught that in the previous section
             for (iFilledPos = oneRow.size()-1; ! oneRow[iFilledPos].fFilled; --iFilledPos) {}
             KTDEBUG(ecnuplog, "Row " << iRow << ": last filled position is " << iFilledPos);
+//          KTWARN("Row " << iRow << ": last filled position is " << iFilledPos);
             for (unsigned iPos = oneRow.size()-1; iPos > iFilledPos; --iPos)
             {
                 oneRow[iPos] = oneRow[iFilledPos];
@@ -156,6 +160,7 @@ namespace Katydid
 #ifndef NDEBUG
             ++iRow;
 #endif
+//        	++iRow;
         }
 
 #ifndef NDEBUG
@@ -171,7 +176,17 @@ namespace Katydid
         }
         KTDEBUG(ecnuplog, "Final thresholds array:\n" << arrayStream.str());
 #endif
-
+/*        std::stringstream arrayStream;
+        for (auto oneRow : fThresholds)
+        {
+            arrayStream << "[ ";
+            for (auto oneParamSet : oneRow)
+            {
+                arrayStream << "[" << oneParamSet.fMinTotalNUP << ", " << oneParamSet.fMinAverageNUP << ", " << oneParamSet.fMinMaxNUP << "] ";
+            }
+            arrayStream << "]\n";
+        }
+        KTWARN("Final thresholds array:\n" << arrayStream.str());*/
         /*
     parameters:
       - ft-npoints: 3
@@ -273,7 +288,7 @@ namespace Katydid
 
     bool KTEventNTracksFirstTrackNPointsNUPCut_nso::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {        
-        bool isCut = false;
+/*      bool isCut = false;
         unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
         unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
 
@@ -313,7 +328,78 @@ namespace Katydid
 
         data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
 
-        return isCut;
+        return isCut;*/
+    	bool isCut = false;
+    	//KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
+    	//When the index is outside of the dimensions of the threshold matrix, there would still be values for thresholds since the size of the 
+    	//threshold matrix is not preassigned. These values are usually really big and events got cut accordingly and somehow 
+    	//cause a problem in opening root in writing mode for reasons I don't know. 
+		if( eventData.GetTotalEventSequences() < maxNTracksConfig and eventData.GetFirstTrackNTrackBins() < maxFTNPointsConfig )
+		{	
+			//KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
+//			unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
+//        	unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
+			unsigned nTracksIndex = eventData.GetTotalEventSequences();
+        	unsigned ftNPointsIndex = eventData.GetFirstTrackNTrackBins();
+			if ( fWideOrNarrow == WideOrNarrow::narrow )
+			{
+				if( eventData.GetFirstTrackTotalNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
+				{
+//					KTWARN("total_nup1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
+					isCut = true;
+				}
+				if ( fTimeOrBinAverage == TimeOrBinAvg:: time )
+				{
+					if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackTimeLength() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
+					{
+//						KTWARN("average_nup_time1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+						isCut = true;
+					}
+				}
+				else
+				{
+					if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackNTrackBins() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
+					{
+//						KTWARN("average_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+						isCut = true;
+					}
+				}
+			}
+			else
+			{
+				if( eventData.GetFirstTrackTotalWideNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
+				{
+//					KTWARN("total_nup2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
+					isCut = true;
+				}
+				if ( fTimeOrBinAverage == TimeOrBinAvg:: time )
+				{
+					if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackTimeLength() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
+					{
+//						KTWARN("average_nup_time2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+						isCut = true;
+					}
+				}
+				else
+				{
+					if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackNTrackBins() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
+					{
+//						KTWARN("average_nup_bin2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+						isCut = true;
+					}
+				}
+			}
+			if( eventData.GetFirstTrackMaxNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP )
+			{
+//				KTWARN("max_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
+				isCut = true;
+			}
+		}
+		data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
+
+		return isCut;
     }
+    
+    
 
 } // namespace Katydid

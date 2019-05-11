@@ -64,6 +64,8 @@ namespace Katydid
 			bool fFilled;
 			thresholds() : fMinTotalNUP(-1.), fMinAverageNUP(-1.), fMinMaxNUP(-1.), fFilled(false) {}
 		};
+    	unsigned maxFTNPointsConfig = 0;
+    	unsigned maxNTracksConfig = 0;
     	
     public:
         KTEventNTracksFirstTrackNPointsNUPCut_nso(const std::string& name = "event-ntracks-first-track-npoints-nup-cut-nso");
