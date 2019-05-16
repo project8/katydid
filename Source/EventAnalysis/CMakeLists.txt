@@ -10,12 +10,12 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTEventFirstTrackPowerCut.hh
     CutClasses/KTEventFirstTrackSNRCut.hh
     CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.hh
-    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut_nso.hh
     CutClasses/KTEventTimeCut.hh
     CutClasses/KTEventTimeInAcqCut.hh
     CutClasses/KTLinearFitCut.hh
     CutClasses/KTMultiPeakTrackEventSequenceIDCut.hh
     CutClasses/KTMultiPeakTrackMultiplicityCut.hh
+    CutClasses/KTNTracksNPointsNUPCut.hh
     CutClasses/KTPowerFitCut.hh
     CutClasses/KTProcessedTrackCut.hh
     CutClasses/KTSequentialLineNUPCut.hh
@@ -26,7 +26,6 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTTrackMVACut.hh
     CutClasses/KTTrackTimeCut.hh
 
-    
     KTCollinearTrackClustering.hh
     KTDataCutter.hh
     KTDistanceMatrix.hh
@@ -53,12 +52,12 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTEventFirstTrackPowerCut.cc
     CutClasses/KTEventFirstTrackSNRCut.cc
     CutClasses/KTEventNTracksFirstTrackNPointsNUPCut.cc
-    CutClasses/KTEventNTracksFirstTrackNPointsNUPCut_nso.cc
     CutClasses/KTEventTimeCut.cc
     CutClasses/KTEventTimeInAcqCut.cc
     CutClasses/KTLinearFitCut.cc
     CutClasses/KTMultiPeakTrackEventSequenceIDCut.cc
     CutClasses/KTMultiPeakTrackMultiplicityCut.cc
+    CutClasses/KTNTracksNPointsNUPCut.cc
     CutClasses/KTSequentialLineNUPCut.cc
     CutClasses/KTSequentialLinePointDensityCut.cc
     CutClasses/KTSequentialLineSNRCut.cc

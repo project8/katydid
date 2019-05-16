@@ -53,8 +53,8 @@ namespace Katydid
         vector< extendedThresholds > tempThresholds(nParamSets);
 
         // First loop: extract all parameters, and the max dimensions of the thresholds array
-        //unsigned maxFTNPointsConfig = 0;
-        //unsigned maxNTracksConfig = 0;
+        unsigned maxFTNPointsConfig = 0;
+        unsigned maxNTracksConfig = 0;
         unsigned tempThreshPos = 0;
         for (auto paramIt = parameters->begin(); paramIt != parameters->end(); ++paramIt)
         {
@@ -94,7 +94,7 @@ namespace Katydid
         // Positions in the array for zero n-tracks and zero ft-npoints are kept to make later indexing of fThresholds simpler
         ++maxNTracksConfig;
         ++maxFTNPointsConfig;
-//      KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
+        KTDEBUG(ecnuplog, "maxNTracksConfig = " << maxNTracksConfig << "  " << "maxFTNPointsConfig = " << maxFTNPointsConfig);
         fThresholds.clear();
         fThresholds.resize(maxNTracksConfig);
         // skip the first row; there will never be 0 tracks
@@ -112,84 +112,88 @@ namespace Katydid
             fThresholds[oneParamSet.fNTracks][oneParamSet.fFTNPoints].fFilled = true;
         }
 
+#ifndef NDEBUG
+        {
+            std::stringstream arrayStream;
+            for (auto oneRow : fThresholds)
+            {
+                arrayStream << "[ ";
+                for (auto oneParamSet : oneRow)
+                {
+                    arrayStream << "[" << oneParamSet.fMinTotalNUP << ", " << oneParamSet.fMinAverageNUP << ", " << oneParamSet.fMinMaxNUP << "] ";
+                }
+                arrayStream << "]\n";
+            }
+            KTDEBUG(ecnuplog, "Thresholds prior to filling:\n" << arrayStream.str());
+        }
+#endif
+
         // Now fill in any gaps in rows
 #ifndef NDEBUG
         unsigned iRow = 0;
 #endif
-        unsigned iRow = 0;
-        for (auto oneRow : fThresholds)
+        for (auto oneRowPtr = fThresholds.begin(); oneRowPtr != fThresholds.end(); ++oneRowPtr)
         {
-            if (oneRow.empty()) continue;
+            if (oneRowPtr->empty()) continue;
 
             unsigned iFilledPos = 0;
             // find the first non-zero position from the left, and fill that value to the left
-            for (iFilledPos = 0; ! oneRow[iFilledPos].fFilled && iFilledPos != oneRow.size(); ++iFilledPos) {}
-            KTDEBUG(ecnuplog, "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRow.size());
-//          KTWARN( "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRow.size());
-            if (iFilledPos == oneRow.size())
+            for (iFilledPos = 0; ! (*oneRowPtr)[iFilledPos].fFilled && iFilledPos != oneRowPtr->size(); ++iFilledPos) {}
+            KTDEBUG(ecnuplog, "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRowPtr->size());
+            if (iFilledPos == oneRowPtr->size())
             {
                 KTWARN(ecnuplog, "Empty threshold row found");
                 continue;
             }
             for (unsigned iPos = 1; iPos < iFilledPos; ++iPos)
             {
-                oneRow[iPos] = oneRow[iFilledPos];
+                (*oneRowPtr)[iPos] = (*oneRowPtr)[iFilledPos];
             }
 
             // find the first non-zero position from the right, and fill that value to the right
             // there's no risk of finding an unfilled row, since we would have caught that in the previous section
-            for (iFilledPos = oneRow.size()-1; ! oneRow[iFilledPos].fFilled; --iFilledPos) {}
+            for (iFilledPos = oneRowPtr->size()-1; ! (*oneRowPtr)[iFilledPos].fFilled; --iFilledPos) {}
             KTDEBUG(ecnuplog, "Row " << iRow << ": last filled position is " << iFilledPos);
-//          KTWARN("Row " << iRow << ": last filled position is " << iFilledPos);
-            for (unsigned iPos = oneRow.size()-1; iPos > iFilledPos; --iPos)
+            for (unsigned iPos = oneRowPtr->size()-1; iPos > iFilledPos; --iPos)
             {
-                oneRow[iPos] = oneRow[iFilledPos];
+                (*oneRowPtr)[iPos] = (*oneRowPtr)[iFilledPos];
             }
 
             // fill in any holes from left to right
             // there are no completely unfilled rows
             // rows will have a minimum size of 2
             // for a given position, if it's unfilled, then fill from the position to the left
-            for (unsigned iPos = 1; iPos < oneRow.size(); ++iPos)
+            for (unsigned iPos = 1; iPos < oneRowPtr->size(); ++iPos)
             {
-                if (! oneRow[iPos].fFilled)
+                if (! (*oneRowPtr)[iPos].fFilled)
                 {
-                    oneRow[iPos] = oneRow[iPos-1];
+                    (*oneRowPtr)[iPos] = (*oneRowPtr)[iPos-1];
                 }
             }
 
 #ifndef NDEBUG
             ++iRow;
 #endif
-//        	++iRow;
         }
 
 #ifndef NDEBUG
-        std::stringstream arrayStream;
-        for (auto oneRow : fThresholds)
         {
-            arrayStream << "[ ";
-            for (auto oneParamSet : oneRow)
+            std::stringstream arrayStream;
+            for (auto oneRow : fThresholds)
             {
-                arrayStream << "[" << oneParamSet.fMinTotalNUP << ", " << oneParamSet.fMinAverageNUP << ", " << oneParamSet.fMinMaxNUP << "] ";
+                arrayStream << "[ ";
+                for (auto oneParamSet : oneRow)
+                {
+                    arrayStream << "[" << oneParamSet.fMinTotalNUP << ", " << oneParamSet.fMinAverageNUP << ", " << oneParamSet.fMinMaxNUP << "] ";
+                }
+                arrayStream << "]\n";
             }
-            arrayStream << "]\n";
+            KTDEBUG(ecnuplog, "Thresholds prior to filling:\n" << arrayStream.str());
         }
-        KTDEBUG(ecnuplog, "Final thresholds array:\n" << arrayStream.str());
 #endif
-/*        std::stringstream arrayStream;
-        for (auto oneRow : fThresholds)
-        {
-            arrayStream << "[ ";
-            for (auto oneParamSet : oneRow)
-            {
-                arrayStream << "[" << oneParamSet.fMinTotalNUP << ", " << oneParamSet.fMinAverageNUP << ", " << oneParamSet.fMinMaxNUP << "] ";
-            }
-            arrayStream << "]\n";
-        }
-        KTWARN("Final thresholds array:\n" << arrayStream.str());*/
-        /*
-    parameters:
+
+/*
+     parameters:
       - ft-npoints: 3
         ntracks: 1
         min-total-nup: 0
