@@ -291,6 +291,7 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Transform
     ${PROJECT_SOURCE_DIR}/Source/SpectrumAnalysis
     ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/EventAnalysis/CutClasses
 )
 
 add_subdirectory (Source/Utility)
