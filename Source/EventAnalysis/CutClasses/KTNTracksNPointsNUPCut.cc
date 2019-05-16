@@ -5,7 +5,8 @@
  *      Author: Yuhao
  */
 
-#include "KTEventNTracksFirstTrackNPointsNUPCut_nso.hh"
+#include "KTNTracksNPointsNUPCut.hh"
+
 #include "KTMultiTrackEventData.hh"
 
 #include "KTLogger.hh"
@@ -14,23 +15,23 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(ecnuplog, "KTEventNTracksFirstTrackNPointsNUPCut_nso");
+    KTLOGGER(ecnuplog, "KTNTracksNPointsNUPCut");
 
-    const std::string KTEventNTracksFirstTrackNPointsNUPCut_nso::Result::sName = "event-ntracks-first-track-npoints-nup-cut-nso";
+    const std::string KTNTracksNPointsNUPCut::Result::sName = "event-ntracks-first-track-npoints-nup-cut-nso";
 
-    KT_REGISTER_CUT(KTEventNTracksFirstTrackNPointsNUPCut_nso);
+    KT_REGISTER_CUT(KTNTracksNPointsNUPCut);
 
-    KTEventNTracksFirstTrackNPointsNUPCut_nso::KTEventNTracksFirstTrackNPointsNUPCut_nso(const std::string& name) :
+    KTNTracksNPointsNUPCut::KTNTracksNPointsNUPCut(const std::string& name) :
                  KTCutOneArg(name),
                  fThresholds(),
                  fWideOrNarrow( WideOrNarrow::wide ),
                  fTimeOrBinAverage( TimeOrBinAvg::time )
     {}
 
-    KTEventNTracksFirstTrackNPointsNUPCut_nso::~KTEventNTracksFirstTrackNPointsNUPCut_nso()
+    KTNTracksNPointsNUPCut::~KTNTracksNPointsNUPCut()
     {}
 
-    bool KTEventNTracksFirstTrackNPointsNUPCut_nso::Configure(const scarab::param_node* node)
+    bool KTNTracksNPointsNUPCut::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
@@ -286,7 +287,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTEventNTracksFirstTrackNPointsNUPCut_nso::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
+    bool KTNTracksNPointsNUPCut::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {        
 /*      bool isCut = false;
         unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
@@ -326,7 +327,7 @@ namespace Katydid
             }
         }
 
-        data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
+        data.GetCutStatus().AddCutResult< KTNTracksNPointsNUPCut::Result >(isCut);
 
         return isCut;*/
     	bool isCut = false;
@@ -395,7 +396,7 @@ namespace Katydid
 				isCut = true;
 			}
 		}
-		data.GetCutStatus().AddCutResult< KTEventNTracksFirstTrackNPointsNUPCut_nso::Result >(isCut);
+		data.GetCutStatus().AddCutResult< KTNTracksNPointsNUPCut::Result >(isCut);
 
 		return isCut;
     }

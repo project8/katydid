@@ -5,8 +5,8 @@
  *      Author: Yuhao
  */
 
-#ifndef KTEVENTNTRACKSFIRSTTRACKNPOINTSNUPCUTNSO_HH_
-#define KTEVENTNTRACKSFIRSTTRACKNPOINTSNUPCUTNSO_HH_
+#ifndef KTNTRACKSNPOINTSNUPCUT_HH_
+#define KTNTRACKSNPOINTSNUPCUT_HH_
 
 #include "KTCut.hh"
 
@@ -18,7 +18,7 @@ namespace Katydid
     class KTMultiTrackEventData;
 
     /*
-     @class KTEventNTracksFirstTrackNPointsNUPCut
+     @class KTNTracksNPointsNUPCut
      @author Yuhao
      @brief Cut based on the number of points in a first track and number of tracks in an event. 
      Made by combining features of EventFirstTrackNUPCut and EventFirstTrackNPointsCut.
@@ -34,7 +34,7 @@ namespace Katydid
      - "time-or-bin-average": string -- decides whether to divide total NUP by track time length or track NTrackBins
     */
 
-    class KTEventNTracksFirstTrackNPointsNUPCut_nso : public Nymph::KTCutOneArg< KTMultiTrackEventData >
+    class KTNTracksNPointsNUPCut : public Nymph::KTCutOneArg< KTMultiTrackEventData >
     {
 
     public:
@@ -68,8 +68,8 @@ namespace Katydid
     	unsigned maxNTracksConfig = 0;
     	
     public:
-        KTEventNTracksFirstTrackNPointsNUPCut_nso(const std::string& name = "event-ntracks-first-track-npoints-nup-cut-nso");
-        ~KTEventNTracksFirstTrackNPointsNUPCut_nso();
+    	KTNTracksNPointsNUPCut(const std::string& name = "event-ntracks-first-track-npoints-nup-cut-nso");
+        virtual ~KTNTracksNPointsNUPCut();
 
         bool Configure(const scarab::param_node* node);
 
@@ -84,4 +84,4 @@ namespace Katydid
     };
 } // namespace Katydid
 
-#endif /* KTEVENTFIRSTTRACKNPOINTSCUT_HH_ */
+#endif /* KTNTRACKSNPOINTSNUPCUT_HH_ */
