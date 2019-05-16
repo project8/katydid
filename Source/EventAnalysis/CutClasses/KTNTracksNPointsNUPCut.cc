@@ -293,9 +293,13 @@ namespace Katydid
 
     bool KTNTracksNPointsNUPCut::Apply( Nymph::KTData& data, KTMultiTrackEventData& eventData )
     {        
-/*      bool isCut = false;
-        unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
-        unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
+        bool isCut = false;
+        unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size() - 1);
+        unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size() - 1);
+
+        KTDEBUG(ecnuplog, "Applying n-tracks/n-points/nup cut; (" << eventData.GetTotalEventSequences() << ", " << eventData.GetFirstTrackNTrackBins() << ")");
+        KTDEBUG(ecnuplog, "Using indices: (" << nTracksIndex << ", " << ftNPointsIndex << ")");
+        KTDEBUG(ecnuplog, "Cut thresholds: " << fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP << ", " << fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP << ", " << fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP)
 
         double ftTotalNUP = eventData.GetFirstTrackTotalNUP();
         if (fWideOrNarrow == WideOrNarrow::wide)
@@ -305,7 +309,7 @@ namespace Katydid
 
         if( ftTotalNUP < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
         {
-            KTWARN("total_nup1"<<" "<<ftNPointsIndex<<" "<<nTracksIndex<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
+            KTDEBUG(ecnuplog, "Event is cut based on total NUP: " << ftTotalNUP << " < " << fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
             isCut = true;
         }
         else
@@ -318,14 +322,14 @@ namespace Katydid
 
             if( ftTotalNUP / divisor < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
             {
-                KTWARN("average_nup_time1"<<" "<<ftNPointsIndex<<" "<<nTracksIndex<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+                KTDEBUG(ecnuplog, "Event is cut based on average NUP: " << ftTotalNUP / divisor << " < " <<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
                 isCut = true;
             }
             else
             {
                 if( eventData.GetFirstTrackMaxNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP )
                 {
-                    KTWARN("max_nup_bin1"<<" "<<ftNPointsIndex<<" "<<nTracksIndex<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
+                    KTDEBUG(ecnuplog, "Event is cut based on max NUP: " << eventData.GetFirstTrackMaxNUP() << " < " << fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
                     isCut = true;
                 }
             }
@@ -333,76 +337,7 @@ namespace Katydid
 
         data.GetCutStatus().AddCutResult< KTNTracksNPointsNUPCut::Result >(isCut);
 
-        return isCut;*/
-    	bool isCut = false;
-    	//KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
-    	//When the index is outside of the dimensions of the threshold matrix, there would still be values for thresholds since the size of the 
-    	//threshold matrix is not preassigned. These values are usually really big and events got cut accordingly and somehow 
-    	//cause a problem in opening root in writing mode for reasons I don't know. 
-		if( eventData.GetTotalEventSequences() < maxNTracksConfig and eventData.GetFirstTrackNTrackBins() < maxFTNPointsConfig )
-		{	
-			//KTWARN( "maxNTracksConfig " << maxNTracksConfig <<" " << "maxFTNPointsConfig " << maxFTNPointsConfig);
-//			unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size());
-//			unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size());
-			unsigned nTracksIndex = eventData.GetTotalEventSequences();
-			unsigned ftNPointsIndex = eventData.GetFirstTrackNTrackBins();
-			if ( fWideOrNarrow == WideOrNarrow::narrow )
-			{
-				if( eventData.GetFirstTrackTotalNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
-				{
-//					KTWARN("total_nup1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
-					isCut = true;
-				}
-				if ( fTimeOrBinAverage == TimeOrBinAvg:: time )
-				{
-					if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackTimeLength() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
-					{
-//						KTWARN("average_nup_time1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
-						isCut = true;
-					}
-				}
-				else
-				{
-					if( eventData.GetFirstTrackTotalNUP() / eventData.GetFirstTrackNTrackBins() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
-					{
-//						KTWARN("average_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
-						isCut = true;
-					}
-				}
-			}
-			else
-			{
-				if( eventData.GetFirstTrackTotalWideNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
-				{
-//					KTWARN("total_nup2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
-					isCut = true;
-				}
-				if ( fTimeOrBinAverage == TimeOrBinAvg:: time )
-				{
-					if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackTimeLength() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
-					{
-//						KTWARN("average_nup_time2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
-						isCut = true;
-					}
-				}
-				else
-				{
-					if( eventData.GetFirstTrackTotalWideNUP() / eventData.GetFirstTrackNTrackBins() < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
-					{
-//						KTWARN("average_nup_bin2"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
-						isCut = true;
-					}
-				}
-			}
-			if( eventData.GetFirstTrackMaxNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP )
-			{
-//				KTWARN("max_nup_bin1"<<" "<<eventData.GetFirstTrackNTrackBins()<<" "<<eventData.GetTotalEventSequences()<<" "<<fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
-				isCut = true;
-			}
-		}
-		data.GetCutStatus().AddCutResult< KTNTracksNPointsNUPCut::Result >(isCut);
-
-		return isCut;
+        return isCut;
     }
     
     

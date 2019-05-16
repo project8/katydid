@@ -7,11 +7,20 @@
 
 #include "KTNTracksNPointsNUPCut.hh"
 
+#include "KTMultiTrackEventData.hh"
+
+#include "KTLogger.hh"
+
 using namespace Katydid;
 
 using scarab::param_node;
 using scarab::param_array;
 using scarab::param_value;
+
+using Nymph::KTDataPtr;
+using Nymph::KTData;
+
+KTLOGGER(testlog, "TestNTracksNPointsNUPCut");
 
 int main()
 {
@@ -136,9 +145,60 @@ int main()
                 min-max-track-nup: 0
 */
 
+    // Create and configure the cut
+    KTPROG(testlog, "Creating and configuring the processor");
     KTNTracksNPointsNUPCut tCut;
-
     tCut.Configure(&tConfig);
+
+    // Second, test the application of the cut to some data
+
+    // Create some data
+    KTDataPtr dataPtr(new KTData());
+    KTData& data = dataPtr->Of< KTData >();
+    KTMultiTrackEventData& mteData = dataPtr->Of< KTMultiTrackEventData >();
+
+    // Minimal set of data needed for the cut
+    KTPROG(testlog, "Testing data inside the parameter array; should be cut by total NUP");
+    mteData.SetTotalEventSequences(1);
+    mteData.SetFirstTrackNTrackBins(4);
+    mteData.SetFirstTrackTotalNUP(10.);
+    mteData.SetFirstTrackTotalWideNUP(10.);
+    mteData.SetFirstTrackTimeLength(1.);
+    mteData.SetFirstTrackMaxNUP(5.);
+
+    tCut.Apply(data, mteData);
+
+    KTPROG(testlog, "Testing data inside the parameter array; should pass cuts");
+    mteData.SetTotalEventSequences(3);
+    mteData.SetFirstTrackNTrackBins(1);
+    mteData.SetFirstTrackTotalNUP(20.);
+    mteData.SetFirstTrackTotalWideNUP(20.);
+
+    tCut.Apply(data, mteData);
+
+    KTPROG(testlog, "Testing data outside the parameter array (ntracks too large); should pass cuts");
+    mteData.SetTotalEventSequences(4);
+    mteData.SetFirstTrackNTrackBins(1);
+    mteData.SetFirstTrackTotalNUP(20.);
+    mteData.SetFirstTrackTotalWideNUP(20.);
+
+    tCut.Apply(data, mteData);
+
+    KTPROG(testlog, "Testing data outside the parameter array (npoints too large); should pass cuts");
+    mteData.SetTotalEventSequences(3);
+    mteData.SetFirstTrackNTrackBins(10);
+    mteData.SetFirstTrackTotalNUP(20.);
+    mteData.SetFirstTrackTotalWideNUP(20.);
+
+    tCut.Apply(data, mteData);
+
+    KTPROG(testlog, "Testing data outside the parameter array (npoints too large); should be cut by total NUP");
+    mteData.SetTotalEventSequences(80);
+    mteData.SetFirstTrackNTrackBins(100);
+    mteData.SetFirstTrackTotalNUP(5.);
+    mteData.SetFirstTrackTotalWideNUP(5.);
+
+    tCut.Apply(data, mteData);
 
     return 0;
 }
