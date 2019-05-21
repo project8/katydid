@@ -98,8 +98,8 @@ namespace Katydid
         *newTrack = trackData;
 
         // Configure PSCollectionData timestamps
-        newWaterfall->SetStartTime( trackData.GetStartTimeInAcq() - fLeadTime );
-        newWaterfall->SetEndTime( trackData.GetStartTimeInAcq() + trackData.GetTimeLength() + fTrailTime );
+        newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
+        newWaterfall->SetEndTime( trackData.GetStartTimeInRunC() + trackData.GetTimeLength() + fTrailTime );
 
         KTINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
         KTINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
@@ -171,13 +171,13 @@ namespace Katydid
             aTrack.SetIntercept( (**it).fProcTrack.GetIntercept() );
 
             // Assign overall start/end time and frequency
-            if( overallStartTime < 0 || aTrack.GetStartTimeInAcq() < overallStartTime )
+            if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
             {
-                overallStartTime = aTrack.GetStartTimeInAcq();
+                overallStartTime = aTrack.GetStartTimeInRunC();
             }
-            if( overallEndTime < 0 || aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength() > overallEndTime )
+            if( overallEndTime < 0 || aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength() > overallEndTime )
             {
-                overallEndTime = aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength();
+                overallEndTime = aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength();
             }
 
             if( minStartFrequency < 0 || aTrack.GetStartFrequency() < minStartFrequency )
@@ -308,13 +308,13 @@ namespace Katydid
                 }
 
                 // Assign overall start/end time and frequency
-                if( overallStartTime < 0 || aTrack.GetStartTimeInAcq() < overallStartTime )
+                if( overallStartTime < 0 || aTrack.GetStartTimeInRunC() < overallStartTime )
                 {
-                    overallStartTime = aTrack.GetStartTimeInAcq();
+                    overallStartTime = aTrack.GetStartTimeInRunC();
                 }
-                if( overallEndTime < 0 || aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength() > overallEndTime )
+                if( overallEndTime < 0 || aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength() > overallEndTime )
                 {
-                    overallEndTime = aTrack.GetStartTimeInAcq() + aTrack.GetTimeLength();
+                    overallEndTime = aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength();
                 }
                 if( overallStartFrequency < 0 || aTrack.GetStartFrequency() < overallStartFrequency )
                 {
