@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # Miscalleneous 
-./build/bin/TestRandom
+TestRandom
 
 # Spectrum Analysis
-./build/bin/TestTrackProcessing
+TestTrackProcessing
 
 # Event Analysis
-./build/bin/TestDBScanTrackClustering
-./build/bin/TestSequentialTrackFinder
-./build/bin/TestSpectrumDiscriminator
+# TestDBScanTrackClustering
+TestSequentialTrackFinder
+TestSpectrumDiscriminator

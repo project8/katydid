@@ -43,6 +43,55 @@ Fixes:
 Log
 ---
 
+Version: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: 
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Solving Travis issue [#169](https://github.com/project8/katydid/issues/169): now uses Docker as starting environment
+
+
+Version: 2.15.3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: April 10, 2019
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+
+
+Version: 2.15.2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: December 21, 2018
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+
+
+Version: 2.15.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: December 6, 2018
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+* Updated Cicada to v1.3.2
+
+
 Version: 2.15.0 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.1)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.15.0)
+project (Katydid VERSION 2.15.3)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -42,7 +42,9 @@ option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)"
 option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
 option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
 
+set_option( Scarab_BUILD_PARAM TRUE )
 set_option( Scarab_BUILD_CODEC_YAML TRUE )
+set_option( Scarab_BUILD_CODEC_JSON TRUE )
 set_option( Nymph_BUILD_NYMPH_EXE FALSE )
 set_option( Cicada_ENABLE_KATYDID_NAMESPACE FALSE )
 set_option( Cicada_ADD_CICADA_PY TRUE )
