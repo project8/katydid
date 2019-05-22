@@ -165,6 +165,7 @@ namespace Katydid
             aTrack.SetEventSequenceID( (**it).fProcTrack.GetEventSequenceID() );
             aTrack.SetStartTimeInRunC( (**it).fProcTrack.GetStartTimeInRunC() );
             aTrack.SetEndTimeInRunC( (**it).fProcTrack.GetEndTimeInRunC() );
+            aTrack.SetTimeLength( (**it).fProcTrack.GetTimeLength() );
             aTrack.SetStartFrequency( (**it).fProcTrack.GetStartFrequency() );
             aTrack.SetEndFrequency( (**it).fProcTrack.GetEndFrequency() );
             aTrack.SetSlope( (**it).fProcTrack.GetSlope() );
@@ -295,6 +296,7 @@ namespace Katydid
                 aTrack.SetEventSequenceID( it->fProcTrack.GetEventSequenceID() );
                 aTrack.SetStartTimeInRunC( it->fProcTrack.GetStartTimeInRunC() );
                 aTrack.SetEndTimeInRunC( it->fProcTrack.GetEndTimeInRunC() );
+                aTrack.SetTimeLength( it->fProcTrack.GetTimeLength() );
                 aTrack.SetStartFrequency( it->fProcTrack.GetStartFrequency() );
                 aTrack.SetEndFrequency( it->fProcTrack.GetEndFrequency() );
                 aTrack.SetSlope( it->fProcTrack.GetSlope() );
