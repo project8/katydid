@@ -18,8 +18,6 @@
 #include "KT2ROOT.hh"
 
 #include <vector>
-#include <set>
-#include <map>
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -71,18 +69,13 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
 
 int main()
 {
-    typedef std::map< double, KTPowerSpectrum* > collection;
+    KTINFO(testlog, "Hi!");
+    typedef KTMultiPS collection;
 #ifdef ROOT_FOUND
     TRandom3 rand(0);
 #endif
 
-    struct KTTrackCompare
-    {
-        bool operator() (const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > rhs) const
-        {
-            return lhs.second->GetStartTime() < rhs.second->GetStartTime();
-        }
-    };
+    KTINFO(testlog, "Hi!");
 
     double t_bin = 10e-6;   // Length of a time bin
 
@@ -251,12 +244,16 @@ int main()
     for( int i = 0; i < nPlots; i++ )
     {
         plot->Reset();  // Clear histogram
-        for (collection::const_iterator it = result[i].GetSpectra().begin(); it != result[i].GetSpectra().end(); ++it)
+        double timeStamp = result[i].GetStartTime();
+        double timeStep = result[i].GetDeltaT();
+        for (collection::const_iterator it = result[i].GetSpectra()->begin(); it != result[i].GetSpectra()->end(); ++it)
         {
-            for( int j = 0; j < it->second->GetNFrequencyBins(); j++)
+            for( int j = 0; j < (*it)->GetNFrequencyBins(); j++)
             {
-                plot->Fill( it->first, j * it->second->GetFrequencyBinWidth() + result[i].GetSpectra().begin()->second->GetRangeMin(), (*it->second)(j) );
+                plot->Fill( timeStamp, j * (*it)->GetFrequencyBinWidth() + (*it)->GetRangeMin(), (**it)(j) );
             }
+
+            timeStamp += timeStep;
         }
 
         KTINFO(testlog, "Writing spectrogram for track " << i);
