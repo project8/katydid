@@ -1,5 +1,5 @@
 /*
- * KTEventNTracksFirstTrackNPointsNUPCut.cc
+ * KTNTracksNPointsNUPCut.cc
  *
  *  Created on: February 18, 2019
  *      Author: Yuhao
@@ -17,16 +17,22 @@ namespace Katydid
 {
     KTLOGGER(ecnuplog, "KTNTracksNPointsNUPCut");
 
-    const std::string KTNTracksNPointsNUPCut::Result::sName = "event-ntracks-first-track-npoints-nup-cut-nso";
+    const std::string KTNTracksNPointsNUPCut::Result::sName = "ntracks-npoints-nup-cut";
 
     KT_REGISTER_CUT(KTNTracksNPointsNUPCut);
 
     KTNTracksNPointsNUPCut::KTNTracksNPointsNUPCut(const std::string& name) :
-                 KTCutOneArg(name),
-                 fThresholds(),
-                 fWideOrNarrow( WideOrNarrow::wide ),
-                 fTimeOrBinAverage( TimeOrBinAvg::time )
-    {}
+             KTCutOneArg(name),
+             fThresholds(),
+             fDefaultThresholds(),
+             fWideOrNarrow( WideOrNarrow::wide ),
+             fTimeOrBinAverage( TimeOrBinAvg::time )
+    {
+        fDefaultThresholds.fMinAverageNUP = 0.;
+        fDefaultThresholds.fMinTotalNUP = 0.;
+        fDefaultThresholds.fMinMaxNUP = 0.;
+        fDefaultThresholds.fFilled = true;
+    }
 
     KTNTracksNPointsNUPCut::~KTNTracksNPointsNUPCut()
     {}
@@ -41,14 +47,22 @@ namespace Katydid
             return false;
         }
 
+        const scarab::param_node* defaults = node->node_at("default-parameters");
+        if (defaults != nullptr)
+        {
+            fDefaultThresholds.fMinAverageNUP = defaults->get_value("min-average-nup", fDefaultThresholds.fMinAverageNUP);
+            fDefaultThresholds.fMinTotalNUP = defaults->get_value("min-total-nup", fDefaultThresholds.fMinTotalNUP);
+            fDefaultThresholds.fMinMaxNUP = defaults->get_value("min-max-nup", fDefaultThresholds.fMinMaxNUP);
+        }
+
         const scarab::param_array* parameters = node->array_at("parameters");
         unsigned nParamSets = parameters->size();
 
         // Create the vector that will temporarily hold the parameter sets after the first loop
         struct extendedThresholds : thresholds
         {
-            unsigned fFTNPoints;
-            unsigned fNTracks;
+                unsigned fFTNPoints;
+                unsigned fNTracks;
         };
         vector< extendedThresholds > tempThresholds(nParamSets);
 
@@ -77,7 +91,7 @@ namespace Katydid
 
                 tempThresholds[tempThreshPos].fMinTotalNUP = oneSetOfParams.get_value< double >("min-total-nup");
                 tempThresholds[tempThreshPos].fMinAverageNUP = oneSetOfParams.get_value< double >("min-average-nup");
-                tempThresholds[tempThreshPos].fMinMaxNUP = oneSetOfParams.get_value< double >("min-max-track-nup");
+                tempThresholds[tempThreshPos].fMinMaxNUP = oneSetOfParams.get_value< double >("min-max-nup");
             }
             catch( scarab::error& e )
             {
@@ -90,10 +104,10 @@ namespace Katydid
         }
 
         // Create the 2D thresholds array
-        // Dimensions are are maxNTracksConfig + 1 rows by maxFTNPointsConfig + 1 columns
+        // Dimensions are are maxNTracksConfig + 2 rows by maxFTNPointsConfig + 2 columns so that we fill the thresholds at the edges with the default values
         // Positions in the array for zero n-tracks and zero ft-npoints are kept to make later indexing of fThresholds simpler
-        ++maxNTracksConfig;
-        ++maxFTNPointsConfig;
+        maxNTracksConfig += 2;
+        maxFTNPointsConfig += 2;
         KTDEBUG(ecnuplog, "maxNTracksConfig = " << maxNTracksConfig << "  " << "maxFTNPointsConfig = " << maxFTNPointsConfig);
         fThresholds.clear();
         fThresholds.resize(maxNTracksConfig);
@@ -113,7 +127,7 @@ namespace Katydid
         }
 
 #ifndef NDEBUG
-        {
+        {   // print threshold before filling
             std::stringstream arrayStream;
             for (auto oneRow : fThresholds)
             {
@@ -128,56 +142,23 @@ namespace Katydid
         }
 #endif
 
-        // Now fill in any gaps in rows
-#ifndef NDEBUG
-        unsigned iRow = 0;
-#endif
+        // Now fill in any gaps in rows with the default thresholds
         for (auto oneRowPtr = fThresholds.begin(); oneRowPtr != fThresholds.end(); ++oneRowPtr)
         {
-            if (oneRowPtr->empty()) continue;
+            if (oneRowPtr->empty()) continue; // this should only be the case for the first row in the 2D array
 
-            unsigned iFilledPos = 0;
-            // find the first non-zero position from the left, and fill that value to the left
-            for (iFilledPos = 0; ! (*oneRowPtr)[iFilledPos].fFilled && iFilledPos != oneRowPtr->size(); ++iFilledPos) {}
-            KTDEBUG(ecnuplog, "Row " << iRow << ": first filled position is " << iFilledPos << " or it ranged out at " << oneRowPtr->size());
-            if (iFilledPos == oneRowPtr->size())
+            for (auto oneThreshPtr = oneRowPtr->begin(); oneThreshPtr != oneRowPtr->end(); ++oneThreshPtr)
             {
-                KTWARN(ecnuplog, "Empty threshold row found");
-                continue;
-            }
-            for (unsigned iPos = 1; iPos < iFilledPos; ++iPos)
-            {
-                (*oneRowPtr)[iPos] = (*oneRowPtr)[iFilledPos];
-            }
-
-            // find the first non-zero position from the right, and fill that value to the right
-            // there's no risk of finding an unfilled row, since we would have caught that in the previous section
-            for (iFilledPos = oneRowPtr->size()-1; ! (*oneRowPtr)[iFilledPos].fFilled; --iFilledPos) {}
-            KTDEBUG(ecnuplog, "Row " << iRow << ": last filled position is " << iFilledPos);
-            for (unsigned iPos = oneRowPtr->size()-1; iPos > iFilledPos; --iPos)
-            {
-                (*oneRowPtr)[iPos] = (*oneRowPtr)[iFilledPos];
-            }
-
-            // fill in any holes from left to right
-            // there are no completely unfilled rows
-            // rows will have a minimum size of 2
-            // for a given position, if it's unfilled, then fill from the position to the left
-            for (unsigned iPos = 1; iPos < oneRowPtr->size(); ++iPos)
-            {
-                if (! (*oneRowPtr)[iPos].fFilled)
+                if (! oneThreshPtr->fFilled)
                 {
-                    (*oneRowPtr)[iPos] = (*oneRowPtr)[iPos-1];
+                    (*oneThreshPtr) = fDefaultThresholds;
                 }
             }
 
-#ifndef NDEBUG
-            ++iRow;
-#endif
         }
 
 #ifndef NDEBUG
-        {
+        {   // print thresholds before filling
             std::stringstream arrayStream;
             for (auto oneRow : fThresholds)
             {
@@ -191,69 +172,6 @@ namespace Katydid
             KTDEBUG(ecnuplog, "Thresholds prior to filling:\n" << arrayStream.str());
         }
 #endif
-
-/*
-     parameters:
-      - ft-npoints: 3
-        ntracks: 1
-        min-total-nup: 0
-        min-average-nup: 13
-        min-max-track-nup: 0
-      - ft-npoints: 3
-        ntracks: 2
-        min-total-nup: 0
-        min-average-nup: 11
-        min-max-track-nup: 0
-      - ft-npoints: 3
-        ntracks: 3
-        min-total-nup: 0
-        min-average-nup: 7.8
-        min-max-track-nup: 0
-      - ft-npoints: 4
-        ntracks: 1
-        min-total-nup: 0
-        min-average-nup: 10
-        min-max-track-nup: 0
-      - ft-npoints: 4
-        ntracks: 2
-        min-total-nup: 0
-        min-average-nup: 8.5
-        min-max-track-nup: 0
-      - ft-npoints: 5
-        ntracks: 1
-        min-total-nup: 0
-        min-average-nup: 7.8
-        min-max-track-nup: 0
-      - ft-npoints: 5
-        ntracks: 2
-        min-total-nup: 0
-        min-average-nup: 7.8
-        min-max-track-nup: 0
-      - ft-npoints: 6
-        ntracks: 1
-        min-total-nup: 0
-        min-average-nup: 8.5
-        min-max-track-nup: 0
-      - ft-npoints: 7
-        ntracks: 1
-        min-total-nup: 0
-        min-average-nup: 7.3
-        min-max-track-nup: 0
-
-        To fill in the cut parameters:
-        1. scan array to get dimensions
-        2. create 2D array with those dimensions
-        3. store offset and maximum of both dimensions
-        3. fill 2D array with -1
-        4. fill in values given
-        5. for each row:
-            1. scan horizontally from left to find first >=0 value, then fill back in to the left side
-            2. scan horizontally from the right to find the first >=0 value, then fill back in to the right side
-            3. check for holes in between and fill from the left
-
-        Need to work out function to retrieve the cut parameters with appropriate bounding
-
-         */
 
         if (node->has("wide-or-narrow"))
         {
@@ -339,7 +257,7 @@ namespace Katydid
 
         return isCut;
     }
-    
-    
+
+
 
 } // namespace Katydid

@@ -29,6 +29,13 @@ int main()
     // Create the config
     param_node tConfig;
 
+    param_node tDefaultParams;
+    tDefaultParams.add("min-total-nup", param_value(0.));
+    tDefaultParams.add("min-average-nup", param_value(2.));
+    tDefaultParams.add("min-max-nup", param_value(0.));
+
+    tConfig.add("default-parameters", tDefaultParams);
+
     param_array tCutParams;
 
     param_node tOneCut;
@@ -36,113 +43,118 @@ int main()
     tOneCut.add("ntracks", param_value(1));
     tOneCut.add("min-total-nup", param_value(0.));
     tOneCut.add("min-average-nup", param_value(13.));
-    tOneCut.add("min-max-track-nup", param_value(0.));
+    tOneCut.add("min-max-nup", param_value(0.));
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(3);
     tOneCut.value_at("ntracks")->set(2);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(11.);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(3);
     tOneCut.value_at("ntracks")->set(3);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(7.8);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(4);
     tOneCut.value_at("ntracks")->set(2);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(10.);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(4);
     tOneCut.value_at("ntracks")->set(2);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(8.5);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(5);
     tOneCut.value_at("ntracks")->set(1);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(7.8);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(5);
     tOneCut.value_at("ntracks")->set(2);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(7.8);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(6);
     tOneCut.value_at("ntracks")->set(1);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(8.5);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tOneCut.value_at("ft-npoints")->set(7);
     tOneCut.value_at("ntracks")->set(1);
     tOneCut.value_at("min-total-nup")->set(0.);
     tOneCut.value_at("min-average-nup")->set(7.3);
-    tOneCut.value_at("min-max-track-nup")->set(0.);
+    tOneCut.value_at("min-max-nup")->set(0.);
     tCutParams.push_back(tOneCut);
 
     tConfig.add("parameters", tCutParams);
 /*
+            default-parameters:
+                min-total-nup: 0
+                min-average-nup: 2
+                min-max-nup: 0
+
             parameters:
               - ft-npoints: 3
                 ntracks: 1
                 min-total-nup: 0
                 min-average-nup: 13
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 3
                 ntracks: 2
                 min-total-nup: 0
                 min-average-nup: 11
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 3
                 ntracks: 3
                 min-total-nup: 0
                 min-average-nup: 7.8
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 4
                 ntracks: 1
                 min-total-nup: 0
                 min-average-nup: 10
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 4
                 ntracks: 2
                 min-total-nup: 0
                 min-average-nup: 8.5
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 5
                 ntracks: 1
                 min-total-nup: 0
                 min-average-nup: 7.8
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 5
                 ntracks: 2
                 min-total-nup: 0
                 min-average-nup: 7.8
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 6
                 ntracks: 1
                 min-total-nup: 0
                 min-average-nup: 8.5
-                min-max-track-nup: 0
+                min-max-nup: 0
               - ft-npoints: 7
                 ntracks: 1
                 min-total-nup: 0
                 min-average-nup: 7.3
-                min-max-track-nup: 0
+                min-max-nup: 0
 */
 
     // Create and configure the cut
@@ -158,11 +170,11 @@ int main()
     KTMultiTrackEventData& mteData = dataPtr->Of< KTMultiTrackEventData >();
 
     // Minimal set of data needed for the cut
-    KTPROG(testlog, "Testing data inside the parameter array; should be cut by total NUP");
+    KTPROG(testlog, "Testing data inside the parameter array; should be cut by average NUP");
     mteData.SetTotalEventSequences(1);
     mteData.SetFirstTrackNTrackBins(4);
-    mteData.SetFirstTrackTotalNUP(10.);
-    mteData.SetFirstTrackTotalWideNUP(10.);
+    mteData.SetFirstTrackTotalNUP(1.);
+    mteData.SetFirstTrackTotalWideNUP(1.);
     mteData.SetFirstTrackTimeLength(1.);
     mteData.SetFirstTrackMaxNUP(5.);
 
@@ -192,11 +204,11 @@ int main()
 
     tCut.Apply(data, mteData);
 
-    KTPROG(testlog, "Testing data outside the parameter array (npoints too large); should be cut by total NUP");
+    KTPROG(testlog, "Testing data outside the parameter array (npoints too large); should be cut by average NUP");
     mteData.SetTotalEventSequences(80);
     mteData.SetFirstTrackNTrackBins(100);
-    mteData.SetFirstTrackTotalNUP(5.);
-    mteData.SetFirstTrackTotalWideNUP(5.);
+    mteData.SetFirstTrackTotalNUP(1.);
+    mteData.SetFirstTrackTotalWideNUP(1.);
 
     tCut.Apply(data, mteData);
 
