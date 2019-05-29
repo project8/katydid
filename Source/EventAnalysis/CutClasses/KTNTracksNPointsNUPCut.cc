@@ -169,7 +169,7 @@ namespace Katydid
                 }
                 arrayStream << "]\n";
             }
-            KTDEBUG(ecnuplog, "Thresholds prior to filling:\n" << arrayStream.str());
+            KTDEBUG(ecnuplog, "Thresholds after filling:\n" << arrayStream.str());
         }
 #endif
 
