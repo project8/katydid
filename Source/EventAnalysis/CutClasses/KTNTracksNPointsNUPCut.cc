@@ -2,7 +2,7 @@
  * KTNTracksNPointsNUPCut.cc
  *
  *  Created on: February 18, 2019
- *      Author: Yuhao
+ *      Author: Yuhao, Noah
  */
 
 #include "KTNTracksNPointsNUPCut.hh"
