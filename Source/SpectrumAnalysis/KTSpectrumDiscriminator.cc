@@ -262,7 +262,7 @@ namespace Katydid
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
@@ -355,7 +355,7 @@ namespace Katydid
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
             }
 
@@ -448,7 +448,7 @@ namespace Katydid
                     this->SumAdjacentBinAmplitude(spectrum, neighborhoodAmplitude, iBin);
                     neighborhoodAmplitude = neighborhoodAmplitude - (2* fNeighborhoodRadius ) * mean;
 
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin), value, threshold, mean, variance, neighborhoodAmplitude), iComponent);
                 }
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
