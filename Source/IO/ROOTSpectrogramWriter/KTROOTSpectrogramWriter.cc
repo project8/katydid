@@ -190,7 +190,7 @@ namespace Katydid
                 else // mode == KTROOTSpectrogramWriter::kSequential
                 {
                     OutputASpectrogramSet(dataBundle, true);
-                    dataBundle.fCurrentTimeBin = 0; // it'll get ++1'd later
+                    dataBundle.fCurrentTimeBin = 0; // it'll get ++1'd later to follow the ROOT bin numbering scheme
                 }
             }
         }
@@ -291,7 +291,7 @@ namespace Katydid
             }
         }
 
-        return dataBundle.fCurrentTimeBin;
+        return dataBundle.fCurrentTimeBin; // ROOT histogram bin numbering scheme, [1, nBins]
     }
 
     void KTROOTSpectrogramTypeWriter::OutputASpectrogramSet(DataTypeBundle& dataBundle, bool cloneSpectrograms)
