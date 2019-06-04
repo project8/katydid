@@ -11,6 +11,10 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTSliceHeader.hh"
 
+#include "KTLogger.hh"
+
+KTLOGGER(scdlog, "SpectrogramCollectionData");
+
 namespace Katydid
 {
     const std::string KTPSCollectionData::sName("ps-collection");
@@ -51,7 +55,7 @@ namespace Katydid
         return *this;
     }
 
-    void KTPSCollectionData::AddSpectrum(double timeStamp, KTPowerSpectrum* spectrum, unsigned iComponent)
+    void KTPSCollectionData::AddSpectrum(double timeStamp, const KTPowerSpectrum& spectrum, unsigned iComponent)
     {
         if( fSpectra.size() <= iComponent )
         {
@@ -62,8 +66,8 @@ namespace Katydid
         // We must compute the min and max bin, and the number of bins
         if( fSpectra[iComponent] == NULL )
         {
-            SetMinBin( spectrum->FindBin( GetMinFreq() ) );
-            SetMaxBin( spectrum->FindBin( GetMaxFreq() ) );
+            SetMinBin( spectrum.FindBin( GetMinFreq() ) );
+            SetMaxBin( spectrum.FindBin( GetMaxFreq() ) );
 
             if( GetMinBin() > GetMaxBin() )
             {
@@ -74,15 +78,15 @@ namespace Katydid
             // minFreq is below this by exactly half the number of bins times the frequency step
             // maxFreq is above this by exactly half the number of bins times the frequency step
             double midFreq = 0.5 * (GetMinFreq() + GetMaxFreq());
-            double minFreq = midFreq - (0.5 * (GetMaxBin() - GetMinBin() + 1) * spectrum->GetFrequencyBinWidth());
-            double maxFreq = midFreq + (0.5 * (GetMaxBin() - GetMinBin() + 1) * spectrum->GetFrequencyBinWidth());
+            double minFreq = midFreq - (0.5 * (GetMaxBin() - GetMinBin() + 1) * spectrum.GetFrequencyBinWidth());
+            double maxFreq = midFreq + (0.5 * (GetMaxBin() - GetMinBin() + 1) * spectrum.GetFrequencyBinWidth());
 
             // This way the center frequency is preserved but the precise bounds are adjusted to match the bin width
             SetMinFreq( minFreq );
             SetMaxFreq( maxFreq );
 
             unsigned iSpectra = (int)((fEndTime - fStartTime) / (double)fDeltaT) + 1;
-
+            KTWARN(scdlog, "Number of spectra in this new multips: " << iSpectra);
             fSpectra[iComponent] = new KTMultiPS(iSpectra, fStartTime, fEndTime);
         }
 
@@ -102,11 +106,12 @@ namespace Katydid
         // fill new spectrum
         for( int i = GetMinBin(); i <= GetMaxBin(); ++i )
         {
-            (*newSpectrum)(i - GetMinBin()) = (*spectrum)(i);
+            (*newSpectrum)(i - GetMinBin()) = spectrum(i);
         }
 
         // add new spectrum to fSpectra
         unsigned iSpectrum = (int)((timeStamp - fStartTime) / (double)fDeltaT);
+        KTWARN(scdlog, "Adding spectrum " << iSpectrum);
         SetSpectrum( newSpectrum, iSpectrum, iComponent );
 
         return;

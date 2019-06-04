@@ -35,7 +35,7 @@ namespace Katydid
 
             KTPSCollectionData& SetNComponents(unsigned component);
 
-            void AddSpectrum(double timeStamp, KTPowerSpectrum* spectrum, unsigned iComponent);
+            void AddSpectrum(double timeStamp, const KTPowerSpectrum& spectrum, unsigned iComponent);
             MEMBERVARIABLEREF(double, StartTime);
             MEMBERVARIABLEREF(double, EndTime);
             MEMBERVARIABLEREF(double, DeltaT);
