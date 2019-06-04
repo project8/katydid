@@ -53,6 +53,7 @@ New Features:
 '''''''''''''
 
 * N-Tracks, N-Points NUP Cut added
+* Added the ability to skip a specified number of records into an egg file
 
 Fixes:
 '''''''''''''
