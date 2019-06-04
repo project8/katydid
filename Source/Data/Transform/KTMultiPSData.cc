@@ -66,11 +66,15 @@ namespace Katydid
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
 
+        KTPowerSpectrum* firstPS = NULL;
+        for (int iBinX=0; iBinX<(int)fSpectra[component]->size() && firstPS==NULL; ++iBinX) firstPS = (*fSpectra[component])(iBinX);
+        if (firstPS == NULL) return NULL;
+
         TH2D* hist = new TH2D(name.c_str(), "Power Spectra",
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
-                (*fSpectra[component])(0)->size(), (*fSpectra[component])(0)->GetRangeMin(), (*fSpectra[component])(0)->GetRangeMax());
+                firstPS->size(), firstPS->GetRangeMin(), firstPS->GetRangeMax());
 
-        KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        KTINFO(datalog, "Frequency axis: " << firstPS->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         for (int iBinX=0; iBinX<(int)fSpectra[component]->size(); ++iBinX)
