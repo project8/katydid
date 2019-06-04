@@ -59,6 +59,9 @@ Fixes:
 '''''''''''''
 
 * Solving Travis issue [#169](https://github.com/project8/katydid/issues/169): now uses Docker as starting environment
+* Fixed spectrogram bin offset problem (between spectrograms and discriminated points)
+    * A 1-bin offset was caused by a bin indexing problem (ROOT-histogram indexing, starting at 1, needed to be used)
+    * A 1/2 bin offset was caused by a mistake in the spectrum discriminators, when points were assigned frequency-axis values
 
 
 Version: 2.15.3
