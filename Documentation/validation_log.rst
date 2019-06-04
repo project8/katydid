@@ -49,6 +49,11 @@ Version:
 Release Date: 
 '''''''''''''''''''''''''''''''
 
+New Features:
+'''''''''''''
+
+* N-Tracks, N-Points NUP Cut added
+
 Fixes:
 '''''''''''''
 
