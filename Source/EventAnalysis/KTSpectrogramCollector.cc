@@ -93,6 +93,7 @@ namespace Katydid
         Nymph::KTDataPtr ptr( new Nymph::KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
+        newWaterfall->SetNComponents(1);
 
         // Configure the track to retain all of the old information
         *newTrack = trackData;
@@ -411,15 +412,17 @@ namespace Katydid
     {
         KTDEBUG(evlog, "Now cross-checking slice timestamp with known tracks");
         // Iterate through each track which has been added
-        for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
+        for( auto it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
+            KTDEBUG(evlog, "slice's time in run: " << slice.GetTimeInRun() << ";  compared to track [" << it->second->GetStartTime() << ", " << it->second->GetEndTime() << "]");
             // If the slice time coincides with the track time window, add the spectrum
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
                 KTINFO(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
                 it->second->SetDeltaT( slice.GetSliceLength() );
-                it->second->AddSpectrum( slice.GetTimeInRun(),  &ps, component );
+                it->second->AddSpectrum( slice.GetTimeInRun(), ps, component );
+                KTWARN(evlog, "spectra size now: " << it->second->GetSpectra(component)->size())
                 it->second->SetFilling( true );
             }
             else
@@ -471,7 +474,9 @@ namespace Katydid
         int fWSsize = fWaterfallSets.size();
         std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
+        {
             fWaterfallSets.push_back( blankSet );
+        }
 
         // Add track
         if( !AddTrack( data, iComponent ) )
@@ -490,7 +495,9 @@ namespace Katydid
         int fWSsize = fWaterfallSets.size();
         std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
+        {
             fWaterfallSets.push_back( blankSet );
+        }
 
         // Add track
         if( !AddMPTrack( data, iComponent ) )
@@ -509,7 +516,9 @@ namespace Katydid
         int fWSsize = fWaterfallSets.size();
         std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
+        {
             fWaterfallSets.push_back( blankSet );
+        }
 
         // Add track
         if( !AddMPEvent( data, iComponent ) )

@@ -126,7 +126,7 @@ namespace Katydid
             // It is necessary to store the Nymph::KTDataPtr because the signal must contain this object when it emits, and each spectrogram must have a
             // unique associated Nymph::KTDataPtr
 
-            std::vector< std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
+            std::vector< WaterfallSet > fWaterfallSets;
 
             //***************
             // Signals
