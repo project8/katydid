@@ -53,7 +53,8 @@ namespace Katydid
      - "stride": unsigned -- Specify how many bins to advance between slices
         (leave unset to make stride == slice-size; i.e. no overlap or skipping
          between slices)
-     - "start-time": double -- Specify how far into the file to start (in seconds)
+     - "start-time": double -- Specify how far into the file to start (in seconds); if "start-record" is non-zero, this will be ignored
+     - "start-record": unsigned -- Specify which record to start on; if "start-time" is present and this is non-zero, start-time will be ignored
      - "normalize-voltages": bool -- Flag to toggle the normalization of ADC
         values from the egg file (default: true)
      - "dac": object -- configure the DAC
@@ -96,7 +97,8 @@ namespace Katydid
 
             MEMBERVARIABLE(unsigned, SliceSize);
             MEMBERVARIABLE(unsigned, Stride);
-            MEMBERVARIABLE(double, StartTime);
+            MEMBERVARIABLE(double, StartTime); // will only be used if fStartRecord is 0
+            MEMBERVARIABLE(unsigned, StartRecord);
 
             MEMBERVARIABLE(bool, NormalizeVoltages);
 

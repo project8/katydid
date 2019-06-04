@@ -40,6 +40,7 @@ namespace Katydid
             fSliceSize(1024),
             fStride(1024),
             fStartTime(0.),
+            fStartRecord(0),
             fDAC(new KTDAC()),
             fNormalizeVoltages(true),
             fHeaderSignal("header", this),
@@ -102,6 +103,7 @@ namespace Katydid
             fStride = node->get_value< unsigned >("stride", fSliceSize);
             // specify the time in the run to start
             fStartTime = node->get_value< double >("start-time", fStartTime);
+            fStartRecord = node->get_value< unsigned >("start-record", fStartRecord);
 
             if (fSliceSize == 0)
             {
