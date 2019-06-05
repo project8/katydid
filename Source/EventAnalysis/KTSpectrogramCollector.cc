@@ -419,10 +419,9 @@ namespace Katydid
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
-                KTINFO(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
+                KTINFO(evlog, "Adding spectrum. Time in acquisition = " << slice.GetTimeInAcq());
                 it->second->SetDeltaT( slice.GetSliceLength() );
                 it->second->AddSpectrum( slice.GetTimeInRun(), ps, component );
-                KTWARN(evlog, "spectra size now: " << it->second->GetSpectra(component)->size())
                 it->second->SetFilling( true );
             }
             else

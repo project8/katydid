@@ -88,6 +88,10 @@ namespace Katydid
             unsigned iSpectra = (int)((fEndTime - fStartTime) / (double)fDeltaT) + 1;
             KTWARN(scdlog, "Number of spectra in this new multips: " << iSpectra);
             fSpectra[iComponent] = new KTMultiPS(iSpectra, fStartTime, fEndTime);
+            for (auto spectrumIt = fSpectra[iComponent]->begin(); spectrumIt != fSpectra[iComponent]->end(); ++spectrumIt)
+            {
+                *spectrumIt = NULL;
+            }
         }
 
         // When fSpectra is not empty, no 'Set' commands are used, only 'Get' for frequency and bin info
@@ -111,7 +115,7 @@ namespace Katydid
 
         // add new spectrum to fSpectra
         unsigned iSpectrum = (int)((timeStamp - fStartTime) / (double)fDeltaT);
-        KTWARN(scdlog, "Adding spectrum " << iSpectrum);
+        KTDEBUG(scdlog, "Adding spectrum " << iSpectrum);
         SetSpectrum( newSpectrum, iSpectrum, iComponent );
 
         return;
