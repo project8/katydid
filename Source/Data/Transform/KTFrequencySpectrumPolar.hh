@@ -23,6 +23,7 @@ namespace Katydid
         public:
             KTFrequencySpectrumPolar();
             KTFrequencySpectrumPolar(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            KTFrequencySpectrumPolar(complexpolar< double > value, size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTFrequencySpectrumPolar(const KTFrequencySpectrumPolar& orig);
             virtual ~KTFrequencySpectrumPolar();
 
