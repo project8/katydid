@@ -63,12 +63,27 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH2D* KTMultiPSDataCore::CreatePowerHistogram(unsigned component, const std::string& name) const
     {
-        if (component >= fSpectra.size()) return NULL;
-        if (fSpectra[component]->empty()) return NULL;
+        if (component >= fSpectra.size())
+        {
+            KTERROR(datalog, "Component too large. Returning null");
+            return NULL;
+        }
+        if (fSpectra[component] == NULL)
+        {
+            KTERROR(datalog, "Spectrum empty. Returning null");
+            return NULL;
+        }
 
         KTPowerSpectrum* firstPS = NULL;
-        for (int iBinX=0; iBinX<(int)fSpectra[component]->size() && firstPS==NULL; ++iBinX) firstPS = (*fSpectra[component])(iBinX);
-        if (firstPS == NULL) return NULL;
+        for (int iBinX=0; iBinX<(int)fSpectra[component]->size() && firstPS==NULL; ++iBinX)
+        {
+            firstPS = (*fSpectra[component])(iBinX);
+        }
+        if (firstPS == NULL)
+        {
+            KTERROR(datalog, "First power spectrum didn't fill. Returning null");
+            return NULL;
+        }
 
         TH2D* hist = new TH2D(name.c_str(), "Power Spectra",
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
