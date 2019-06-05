@@ -76,7 +76,6 @@ namespace Katydid
             return NULL;
         }
 
-        KTWARN(datalog, " " << (*fSpectra[component])(0) << "  " << (*fSpectra[component])(1) << "  " << (*fSpectra[component])(2) << "  " << (*fSpectra[component])(3) );
         KTPowerSpectrum* firstPS = NULL;
         int firstPSBin = 0;
         for (; firstPSBin<(int)fSpectra[component]->size() && firstPS==NULL; ++firstPSBin)
