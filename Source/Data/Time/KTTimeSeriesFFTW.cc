@@ -25,20 +25,27 @@ namespace Katydid
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >()
     {
-        fData[0][0] = 0.;
-        fData[0][1] = 0.;
     }
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(size_t nBins, double rangeMin, double rangeMax) :
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
     {
+    }
+
+    KTTimeSeriesFFTW::KTTimeSeriesFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin, double rangeMax) :
+            KTTimeSeriesFFTW(nBins, rangeMin, rangeMax)
+    {
+        if (value.size() != 2)
+        {
+            throw std::runtime_error("Invalid initial complex value; requires 2 elements");
+        }
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            fData[iBin][0] = 0.;
-            fData[iBin][1] = 0.;
+            std::copy(value.begin(), value.end(), fData[iBin]);
         }
     }
+
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig) :
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >(orig)

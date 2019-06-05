@@ -233,45 +233,45 @@ namespace Katydid
         double tempMaxFrequency = std::min( data.GetMaxFreq(), fMaxFrequency );
 
         // Min and Max bins must be recalculated with these temp frequencies
-        SetMinBin(data.GetSpectra().begin()->second->FindBin(tempMinFrequency));
+        SetMinBin((*data.GetSpectra())(0)->FindBin(tempMinFrequency));
         KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
     
-        SetMaxBin(data.GetSpectra().begin()->second->FindBin(tempMaxFrequency) - 1); // -1 to avoid out-of-range error
+        SetMaxBin((*data.GetSpectra())(0)->FindBin(tempMaxFrequency) - 1); // -1 to avoid out-of-range error
         KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         
         // Parametrize 2D and 1D point objects
 
-        newData.SetNBinsX( data.GetSpectra().size() );
-        newData.SetNBinsY( data.GetSpectra().begin()->second->GetNFrequencyBins() );
+        newData.SetNBinsX( data.GetSpectra()->GetNBins() );
+        newData.SetNBinsY( (*data.GetSpectra())(0)->GetNFrequencyBins() );
         newData.SetBinWidthX( data.GetDeltaT() );
-        newData.SetBinWidthY( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
+        newData.SetBinWidthY( (*data.GetSpectra())(0)->GetFrequencyBinWidth() );
 
         newDataSlice.SetNComponents( 1 );
-        newDataSlice.SetNBins( data.GetSpectra().begin()->second->GetNFrequencyBins() );
-        newDataSlice.SetBinWidth( data.GetSpectra().begin()->second->GetFrequencyBinWidth() );
+        newDataSlice.SetNBins( (*data.GetSpectra())(0)->GetNFrequencyBins() );
+        newDataSlice.SetBinWidth( (*data.GetSpectra())(0)->GetFrequencyBinWidth() );
 
         // X and Y bin width for the 2D points
         double XbinWidth = data.GetDeltaT();
-        double YbinWidth = data.GetSpectra().begin()->second->GetFrequencyBinWidth();
+        double YbinWidth = (*data.GetSpectra())(0)->GetFrequencyBinWidth();
 
         // X and Y of first bin
         double Xmin = data.GetStartTime();
-        double Ymin = data.GetSpectra().begin()->second->GetRangeMin();
+        double Ymin = (*data.GetSpectra())(0)->GetRangeMin();
 
         KTDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
 
-        unsigned nSpectra = data.GetSpectra().size();   // Number of time slices in the spectrogram collection
+        unsigned nSpectra = data.GetSpectra()->GetNBins();     // Number of time slices in the spectrogram collection
         unsigned nPoints = 0;                           // Number of points above threshold in one slice
         unsigned sliceNumber = 0;                       // Slice counter
 
         // Iterate through the power spectra
-        for( std::map< double, KTPowerSpectrum* >::const_iterator it = data.GetSpectra().begin(); it != data.GetSpectra().end(); ++it )
+        for( KTPhysicalArray< 1, KTPowerSpectrum* >::const_iterator it = data.GetSpectra()->begin(); it != data.GetSpectra()->end(); ++it )
         {
             // To avoid confusion using newDataSlice in a loop, each time slice with be associated to a new component
             newDataSlice.SetNComponents( sliceNumber + 1 );
 
             // Discriminate the 1D spectrum
-            if (! DiscriminateSpectrum(it->second, gvData.GetSpline(0), gvData.GetVarianceSpline(0), newDataSlice, sliceNumber))
+            if (! DiscriminateSpectrum(*it, gvData.GetSpline(0), gvData.GetVarianceSpline(0), newDataSlice, sliceNumber))
             {
                 KTERROR(sdlog, "Discrimination on spectrogram (slice " << sliceNumber << ") failed");
                 return false;
@@ -281,9 +281,9 @@ namespace Katydid
             KTDEBUG(sdlog, "Spectrogram slice " << sliceNumber << " has " << nPoints << " points above threshold");
 
             // Iterate through the 1D points and add them to the 2D points
-            for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); it != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++it )
+            for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pointsIt = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); pointsIt != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++pointsIt )
             {
-                newData.AddPoint( sliceNumber, it->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + Xmin, YbinWidth * ((double)it->first+0.5) + Ymin, it->second.fOrdinate, it->second.fThreshold, it->second.fMean, it->second.fVariance, it->second.fNeighborhoodAmplitude ), 0 );
+                newData.AddPoint( sliceNumber, pointsIt->first, KTDiscriminatedPoints2DData::Point( XbinWidth * ((double)sliceNumber+0.5) + Xmin, YbinWidth * ((double)pointsIt->first+0.5) + Ymin, pointsIt->second.fOrdinate, pointsIt->second.fThreshold, pointsIt->second.fMean, pointsIt->second.fVariance, pointsIt->second.fNeighborhoodAmplitude ), 0 );
             }
 
             sliceNumber++;

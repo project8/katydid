@@ -54,6 +54,7 @@ New Features:
 
 * N-Tracks, N-Points NUP Cut added
 * Added the ability to skip a specified number of records into an egg file
+* Added default value option for construction of KTPhysicalArrays and their derived classes
 
 Fixes:
 '''''''''''''

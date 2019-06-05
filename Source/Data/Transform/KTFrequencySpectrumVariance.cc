@@ -17,6 +17,15 @@ namespace Katydid
         SetDataLabel("Arb");
     }
 
+    KTFrequencySpectrumVariance::KTFrequencySpectrumVariance(double value, size_t nBins, double rangeMin, double rangeMax) :
+            KTFrequencySpectrumVariance(nBins, rangeMin, rangeMax)
+    {
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            fData[index] = value;
+        }
+    }
+
     KTFrequencySpectrumVariance::KTFrequencySpectrumVariance(const KTFrequencySpectrumVariance& orig) :
             KTPhysicalArray< 1, double >(orig),
             KTFrequencyDomainArray(orig)

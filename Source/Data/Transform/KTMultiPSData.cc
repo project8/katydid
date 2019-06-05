@@ -63,21 +63,50 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH2D* KTMultiPSDataCore::CreatePowerHistogram(unsigned component, const std::string& name) const
     {
-        if (component >= fSpectra.size()) return NULL;
-        if (fSpectra[component]->empty()) return NULL;
+        static unsigned histCount = 0;
 
-        TH2D* hist = new TH2D(name.c_str(), "Power Spectra",
+        if (component >= fSpectra.size())
+        {
+            KTWARN(datalog, "Component too large. Returning null");
+            return NULL;
+        }
+        if (fSpectra[component] == NULL)
+        {
+            KTWARN(datalog, "Spectrum empty. Returning null");
+            return NULL;
+        }
+
+        KTPowerSpectrum* firstPS = NULL;
+        int firstPSBin = 0;
+        for (; firstPSBin<(int)fSpectra[component]->size() && firstPS==NULL; ++firstPSBin)
+        {
+            firstPS = (*fSpectra[component])(firstPSBin);
+        }
+        if (firstPS == NULL)
+        {
+            KTWARN(datalog, "First power spectrum didn't fill. Returning null");
+            return NULL;
+        }
+        else
+        {
+            --firstPSBin; // need to decrement firstPSBin, because it was incremented at the end of the last time through the loop
+            KTDEBUG(datalog, "First non-zero power spectrum in the multiPS: " << firstPSBin);
+        }
+
+        std::string strName = name + "_" + std::to_string(histCount);
+
+        TH2D* hist = new TH2D(strName.c_str(), "Power Spectra",
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
-                (*fSpectra[component])(0)->size(), (*fSpectra[component])(0)->GetRangeMin(), (*fSpectra[component])(0)->GetRangeMax());
+                firstPS->size(), firstPS->GetRangeMin(), firstPS->GetRangeMax());
 
-        KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        KTINFO(datalog, "Frequency axis: " << firstPS->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)
+        for (int iBinX=firstPSBin; iBinX<(int)fSpectra[component]->size(); ++iBinX)
         {
-            KTPowerSpectrum* ps = (*fSpectra[component])(iBinX-1);
+            KTPowerSpectrum* ps = (*fSpectra[component])(iBinX);
             if (ps == NULL) continue;
-            for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
+            for (int iBinY=0; iBinY<hist->GetNbinsY(); ++iBinY)
             {
                 hist->SetBinContent(iBinX, iBinY, (*ps)(iBinY));
             }
@@ -85,13 +114,16 @@ namespace Katydid
 
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Frequency (Hz)");
+
+        ++histCount;
+
         return hist;
     }
 
  #endif
 
 
-    const std::string KTMultiPSData::sName("multi-fs-fftw");
+    const std::string KTMultiPSData::sName("multi-ps");
 
     KTMultiPSData::KTMultiPSData() :
             KTMultiPSDataCore(),

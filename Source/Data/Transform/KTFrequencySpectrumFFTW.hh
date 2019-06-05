@@ -25,6 +25,7 @@ namespace Katydid
         public:
             KTFrequencySpectrumFFTW();
             KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
+            KTFrequencySpectrumFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
             KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
             virtual ~KTFrequencySpectrumFFTW();
 

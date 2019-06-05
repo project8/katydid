@@ -174,8 +174,7 @@ namespace Katydid
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesReal* dataTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
-                KTTimeSeriesReal* newTS = new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
-                (*newTS) *= 0.;
+                KTTimeSeriesReal* newTS = new KTTimeSeriesReal(0., dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
                 accData.SetTimeSeries(newTS, iComponent);
             }
         }
@@ -226,8 +225,7 @@ namespace Katydid
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesFFTW* dataTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
-                KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
-                (*newTS) *= 0.;
+                KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW({0., 0.}, dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
                 accData.SetTimeSeries(newTS, iComponent);
             }
         }
