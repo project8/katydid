@@ -65,12 +65,12 @@ namespace Katydid
     {
         if (component >= fSpectra.size())
         {
-            KTERROR(datalog, "Component too large. Returning null");
+            KTWARN(datalog, "Component too large. Returning null");
             return NULL;
         }
         if (fSpectra[component] == NULL)
         {
-            KTERROR(datalog, "Spectrum empty. Returning null");
+            KTWARN(datalog, "Spectrum empty. Returning null");
             return NULL;
         }
 
@@ -81,7 +81,7 @@ namespace Katydid
         }
         if (firstPS == NULL)
         {
-            KTERROR(datalog, "First power spectrum didn't fill. Returning null");
+            KTWARN(datalog, "First power spectrum didn't fill. Returning null");
             return NULL;
         }
 
