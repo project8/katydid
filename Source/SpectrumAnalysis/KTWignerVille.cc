@@ -39,7 +39,7 @@ namespace Katydid
             fSliceSampleOffset(0),
             fAdvanceStartIteratorOnNewSlice(false),
             fSliceBreak(),
-            fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
+            fInputArray(new KTTimeSeriesFFTW({0., 0.}, 1,0.,1.)),
             fUseWindowFunction(false),
             fWindower(new KTWindower()),
             fFFT(new KTForwardFFTW()),
@@ -127,7 +127,7 @@ namespace Katydid
 
         // initialize the input array
         delete fInputArray;
-        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., double(fWindowSize) * timeBW);
+        fInputArray = new KTTimeSeriesFFTW({0., 0.}, fWindowSize, 0., double(fWindowSize) * timeBW);
 
         // initialize the output arrays
         if (fNWindowsToAverage > 1)
@@ -261,7 +261,7 @@ namespace Katydid
         if (fInputArray->size() != size)
         {
             delete fInputArray;
-            fInputArray = new KTTimeSeriesFFTW(size,
+            fInputArray = new KTTimeSeriesFFTW({0., 0.}, size,
                     data1->GetRangeMin(),
                     data1->GetRangeMax() + 0.5 * data1->GetBinWidth());
             KTWARN(wvlog, "Setting the input array size to " << size);

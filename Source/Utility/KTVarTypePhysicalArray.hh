@@ -174,8 +174,14 @@ namespace Katydid
             template< typename XDataType >
             KTVarTypePhysicalArray(size_t nBins, double rangeMin=0., double rangeMax=1.);
 
+            /// Own-data constructor w/ data-type template and initial value
+            /// Axis range values do not have default values to avoid ambiguous function signatures
+            template< typename XDataType >
+            KTVarTypePhysicalArray(XDataType value, size_t nBins, double rangeMin, double rangeMax);
+
             /// Own-data constructor w/ data type & format specified
-            KTVarTypePhysicalArray(size_t dataTypeSize, uint32_t dataFormat, size_t nBins, double rangeMin=0., double rangeMax=1.);
+            /// Axis range values do not have default values to avoid ambiguous function signatures
+            KTVarTypePhysicalArray(size_t dataTypeSize, uint32_t dataFormat, size_t nBins, double rangeMin, double rangeMax);
 
             /// Interface-only (copyData = false) or copy (copyData = true; default) constructor
             template< typename XOrigInterfaceType >
@@ -286,6 +292,18 @@ namespace Katydid
         }
         catch( Nymph::KTException& e ) {throw e;}
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
+    }
+
+    template< typename XInterfaceType >
+    template< typename XDataType >
+    KTVarTypePhysicalArray< XInterfaceType >::KTVarTypePhysicalArray(XDataType value, size_t nBins, double rangeMin, double rangeMax) :
+            KTVarTypePhysicalArray< XInterfaceType >(nBins, rangeMin, rangeMax)
+    {
+        XDataType* data = reinterpret_cast< XDataType* >(fUByteData);
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            fUByteData[index] = value;
+        }
     }
 
     template< typename XInterfaceType >

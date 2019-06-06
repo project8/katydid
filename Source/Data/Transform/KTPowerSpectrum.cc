@@ -22,6 +22,16 @@ namespace Katydid
         SetAxisLabel("Frequency (Hz)");
         SetDataLabel("Power (W)");
     }
+
+    KTPowerSpectrum::KTPowerSpectrum(double value, size_t nBins, double rangeMin, double rangeMax) :
+            KTPowerSpectrum(nBins, rangeMin, rangeMax)
+    {
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            fData[index] = value;
+        }
+    }
+
     KTPowerSpectrum::KTPowerSpectrum(const KTPowerSpectrum& orig) :
             KTPhysicalArray< 1, double >(orig),
             KTFrequencyDomainArray(orig),

@@ -1,17 +1,9 @@
-language: cpp
-sudo: required
-dist: trusty
-compiler:
-    - clang
-os:
-    - osx
-osx_image: xcode9.3
-ruby: 2.2.0
-before_install:
-    - if [ $TRAVIS_OS_NAME == osx ]; then rm '/usr/local/include/c++' && brew update && brew upgrade python && brew install root hdf5 fftw libmatio ; fi
+language: ruby
+services:
+- docker
 script:
-    - if [ $TRAVIS_OS_NAME == osx ]; then source CI/build.sh ; fi
-    - if [ $TRAVIS_OS_NAME == osx ]; then source CI/test.sh ; fi
+- docker build -t katydid --build-arg build_type=DEBUG --build-arg build_tests_exe=TRUE .
+- docker run --rm -it katydid /bin/sh -c "source \$KATYDID_BUILD_PREFIX/setup.sh; source \$KATYDID_BUILD_PREFIX/bin/this_cicada.sh; cd \$KATYDID_BUILD_PREFIX/CI; bash test.sh"
 notifications:
-    slack:
-        secure: iOhvvtns12IDO/t4rV+1WlKNfqJ0bt462OnMASKfA/kCzI11rQvVBLdMt4IMsmkGo7bW3vluBrdJSnidvu8RT78NFRaaTVDvfHGMBvF0J8qHCajTAt1zrqYsQNhK7rAXBiJKj4giqGvocavaCfk7vvcLC9nHfl+tHH6Ez2xZlzysKQ/ZZRVqIr/bkt3QuizrDvdWlKhEl6BRlzS0ZTqCx5/A2BN0vghlGyx/cLOi9SrJg0CenvS/4C5g610zR6c3E2ycQ4rxYln2hc0sjE6tUMfV6oKHodeySTYCjzLFSZXjSQYid9JRy5N4c3fR5UmqICX5NVDid8HjZximSjqcNgMjCnDceobJPJ7p9e7aA+zk67YYKMHS0OC+PoDyO9s50NuCR7zEh3FQL5/wvjFhhaE04AsN6EHe1jOPY7CFOPj1LJYBCRF8FN7Rr8387xviVnuoZjjMaX4aZCZ8E930yi4JtB/4Q4dWCLM4Xouy9I+A9qCqSQf5n2TClF+1oHdkImfZBgLw6QxibhxnlkgpTID50jbN96xd/2hdhe9eTKy1M5IlOKFbLIjfRkFA+r16qIktqbiqJeastzCJJiPMLhncuuNQHIiiFg4YdKtUfFaxCDZAj7FHWpcDlfqJ0cqLvkEKuc0WgtBfA1d99KS1LzRKFvXcKBPXaTRdK2UQcuQ=
+  slack:
+    secure: CxDi0lQHrpumKeZlV35i9PSdKWkn/KVbw5qJYQTot6TlJO+8/CjVQS7jQDuN7zL/oZBeoU1unpbVoN+fojkYWwLQUMh93ADVBfVsJTpSQbEzuTE14w2kJf8J0P+QKIl7ZH4g7tfwHyUkgxWCLPWeWGgQySE9a0sXbYWOTlKOnPMhfSVod+HQffwYUue4W46l2erQRzSpfOybKgmtj5ZzGxqbXBeejhzKv2JA1NGo0B04tMNY4LSvIIT360mnuIee5O4JzM08XyjYAadW4uXNb6Wv9GeZuDugjIxEBZdVbUZDnJ8+XJC+Pn7zvahkCZqYQHyjRkllzDsp55yHZPCC1Smew5DeJJXAsOjMuubzgmBieq50qTcKCCjwdbLBe4qvkjhDfSPHsuWzMQfkTUBpFelug8Kcw9BiSYn3GrznsNiDGhMBoe7N3SA18czGdhGWRJQUdlzrvrVH1bvS4q9G+h+GOTY17wFrjJNZ9FlBr8TD/fP2qTtBHresBjc8MtCDrmYuVgtm7LMOxNIdMt4yIJhlEc7EGRwL+MX/NLLbABFEBzWZTUmy7zD9ZhE4anW1cPqQldtsQXT9uX52Cv3uYpBgw33yV8bYyuYW3ehnjcDyGQThdbZeO8MBceokAiLcU52UXyUf3z1zEw1iPqSFTk/AB9r96TxAnOKzsmOLp8Q=

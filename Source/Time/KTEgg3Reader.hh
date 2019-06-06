@@ -77,10 +77,14 @@ namespace Katydid
             double GetStartTime() const;
             void SetStartTime(double time);
 
+            unsigned GetStartRecord() const;
+            void SetStartRecord(unsigned rec);
+
         protected:
             unsigned fSliceSize;
             unsigned fStride;
             double fStartTime;
+            unsigned fStartRecord;
 
         public:
             bool Configure(const KTEggProcessor& eggProc);
@@ -195,6 +199,17 @@ namespace Katydid
     inline void KTEgg3Reader::SetStartTime(double time)
     {
         fStartTime = time;
+        return;
+    }
+
+    inline unsigned KTEgg3Reader::GetStartRecord() const
+    {
+        return fStartRecord;
+    }
+
+    inline void KTEgg3Reader::SetStartRecord(unsigned rec)
+    {
+        fStartRecord = rec;
         return;
     }
 

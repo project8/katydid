@@ -15,6 +15,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTData.hh"
+#include "KTMultiPSData.hh"
 
 #include <set>
 #include <algorithm>
@@ -42,6 +43,7 @@ namespace Katydid
             fFullEvent(false),
             fPrevSliceTimeInRun(0.),
             fPrevSliceTimeInAcq(0.),
+            fNSpectrograms(0),
             fWaterfallSignal("ps-coll", this),
             fTrackSlot("track", this, &KTSpectrogramCollector::ReceiveTrack),
             fMPTrackSlot("mp-track", this, &KTSpectrogramCollector::ReceiveMPTrack),
@@ -55,7 +57,7 @@ namespace Katydid
     }
 
     // Emit Signal
-    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data )
+    void KTSpectrogramCollector::FinishSC( Nymph::KTDataPtr data, unsigned comp )
     {
         fWaterfallSignal( data );
     }
@@ -91,13 +93,14 @@ namespace Katydid
         Nymph::KTDataPtr ptr( new Nymph::KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
         KTPSCollectionData* newWaterfall = &ptr->Of< KTPSCollectionData >();
+        newWaterfall->SetNComponents(1);
 
         // Configure the track to retain all of the old information
         *newTrack = trackData;
 
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
-        newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
+        newWaterfall->SetEndTime( trackData.GetStartTimeInRunC() + trackData.GetTimeLength() + fTrailTime );
 
         KTINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
         KTINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
@@ -163,6 +166,7 @@ namespace Katydid
             aTrack.SetEventSequenceID( (**it).fProcTrack.GetEventSequenceID() );
             aTrack.SetStartTimeInRunC( (**it).fProcTrack.GetStartTimeInRunC() );
             aTrack.SetEndTimeInRunC( (**it).fProcTrack.GetEndTimeInRunC() );
+            aTrack.SetTimeLength( (**it).fProcTrack.GetTimeLength() );
             aTrack.SetStartFrequency( (**it).fProcTrack.GetStartFrequency() );
             aTrack.SetEndFrequency( (**it).fProcTrack.GetEndFrequency() );
             aTrack.SetSlope( (**it).fProcTrack.GetSlope() );
@@ -173,9 +177,9 @@ namespace Katydid
             {
                 overallStartTime = aTrack.GetStartTimeInRunC();
             }
-            if( overallEndTime < 0 || aTrack.GetEndTimeInRunC() > overallEndTime )
+            if( overallEndTime < 0 || aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength() > overallEndTime )
             {
-                overallEndTime = aTrack.GetEndTimeInRunC();
+                overallEndTime = aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength();
             }
 
             if( minStartFrequency < 0 || aTrack.GetStartFrequency() < minStartFrequency )
@@ -293,6 +297,7 @@ namespace Katydid
                 aTrack.SetEventSequenceID( it->fProcTrack.GetEventSequenceID() );
                 aTrack.SetStartTimeInRunC( it->fProcTrack.GetStartTimeInRunC() );
                 aTrack.SetEndTimeInRunC( it->fProcTrack.GetEndTimeInRunC() );
+                aTrack.SetTimeLength( it->fProcTrack.GetTimeLength() );
                 aTrack.SetStartFrequency( it->fProcTrack.GetStartFrequency() );
                 aTrack.SetEndFrequency( it->fProcTrack.GetEndFrequency() );
                 aTrack.SetSlope( it->fProcTrack.GetSlope() );
@@ -310,9 +315,9 @@ namespace Katydid
                 {
                     overallStartTime = aTrack.GetStartTimeInRunC();
                 }
-                if( overallEndTime < 0 || aTrack.GetEndTimeInRunC() > overallEndTime )
+                if( overallEndTime < 0 || aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength() > overallEndTime )
                 {
-                    overallEndTime = aTrack.GetEndTimeInRunC();
+                    overallEndTime = aTrack.GetStartTimeInRunC() + aTrack.GetTimeLength();
                 }
                 if( overallStartFrequency < 0 || aTrack.GetStartFrequency() < overallStartFrequency )
                 {
@@ -351,7 +356,7 @@ namespace Katydid
         {
             // Otherwise we may simply assign them from the mpEventData object directly
             overallStartTime = mpEventData.GetStartTimeInRunC();
-            overallEndTime = mpEventData.GetEndTimeInRunC();
+            overallEndTime = mpEventData.GetStartTimeInRunC() + mpEventData.GetTimeLength();
             overallStartFrequency = mpEventData.GetStartFrequency();
             overallEndFrequency = mpEventData.GetEndFrequency();
             mpt = mpEventData.GetNTracks();
@@ -393,7 +398,9 @@ namespace Katydid
         }
 
         // Add to fWaterfallSets
+        newWaterfall->SetSpectrogramCounter(fNSpectrograms);
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
+        fNSpectrograms +=1;
 
         KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
         KTINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
@@ -405,15 +412,16 @@ namespace Katydid
     {
         KTDEBUG(evlog, "Now cross-checking slice timestamp with known tracks");
         // Iterate through each track which has been added
-        for( std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare >::const_iterator it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
+        for( auto it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
+            KTDEBUG(evlog, "slice's time in run: " << slice.GetTimeInRun() << ";  compared to track [" << it->second->GetStartTime() << ", " << it->second->GetEndTime() << "]");
             // If the slice time coincides with the track time window, add the spectrum
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
-                KTDEBUG(evlog, "Adding spectrum. Time in acqusition = " << slice.GetTimeInAcq());
-                it->second->AddSpectrum( slice.GetTimeInAcq(), &ps );
+                KTINFO(evlog, "Adding spectrum. Time in acquisition = " << slice.GetTimeInAcq());
                 it->second->SetDeltaT( slice.GetSliceLength() );
+                it->second->AddSpectrum( slice.GetTimeInRun(), ps, component );
                 it->second->SetFilling( true );
             }
             else
@@ -439,7 +447,7 @@ namespace Katydid
                     KTINFO(evlog, "New start time: " << it->second->GetStartTime());
                     KTINFO(evlog, "New end time: " << it->second->GetEndTime());
 
-                    FinishSC( it->first );
+                    FinishSC( it->first, component );
                 }
                 else
                 {
@@ -465,7 +473,9 @@ namespace Katydid
         int fWSsize = fWaterfallSets.size();
         std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
+        {
             fWaterfallSets.push_back( blankSet );
+        }
 
         // Add track
         if( !AddTrack( data, iComponent ) )
@@ -484,7 +494,9 @@ namespace Katydid
         int fWSsize = fWaterfallSets.size();
         std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
+        {
             fWaterfallSets.push_back( blankSet );
+        }
 
         // Add track
         if( !AddMPTrack( data, iComponent ) )
@@ -503,7 +515,9 @@ namespace Katydid
         int fWSsize = fWaterfallSets.size();
         std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > blankSet;
         for( int i = fWSsize; i <= iComponent; i++ )
+        {
             fWaterfallSets.push_back( blankSet );
+        }
 
         // Add track
         if( !AddMPEvent( data, iComponent ) )

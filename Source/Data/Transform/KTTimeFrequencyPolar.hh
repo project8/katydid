@@ -29,6 +29,7 @@ namespace Katydid
         public:
             KTTimeFrequencyPolar();
             KTTimeFrequencyPolar(size_t nTimeBins, double timeRangeMin, double timeRangeMax, size_t nFreqBins, double freqRangeMin, double freqRangeMax);
+            KTTimeFrequencyPolar(complexpolar< double > value, size_t nTimeBins, double timeRangeMin, double timeRangeMax, size_t nFreqBins, double freqRangeMin, double freqRangeMax);
             KTTimeFrequencyPolar(const KTTimeFrequencyPolar& orig);
             virtual ~KTTimeFrequencyPolar();
 

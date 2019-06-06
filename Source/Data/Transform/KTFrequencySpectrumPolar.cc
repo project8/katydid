@@ -39,6 +39,16 @@ namespace Katydid
             fNTimeBins(0)
     {
     }
+
+    KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(complexpolar< double > value, size_t nBins, double rangeMin, double rangeMax) :
+            KTFrequencySpectrumPolar(nBins, rangeMin, rangeMax)
+    {
+        for (unsigned index=0; index < nBins; ++index)
+        {
+            fData[index] = value;
+        }
+    }
+
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(const KTFrequencySpectrumPolar& orig) :
             KTPhysicalArray< 1, complexpolar< double > >(orig),
             KTFrequencySpectrum(),

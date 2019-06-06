@@ -186,7 +186,7 @@ namespace Katydid {
       // number of elements in the incoming time series divided by the chunk size.
       unsigned nOut = nElem/fChunkSize;
       KTTimeSeriesData& nDt = c.Of<KTTimeSeriesData>().SetNComponents(1);
-      KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nOut);
+      KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(0., nOut);
 
       // Grab clock tick for elapsed time calculation
       std::clock_t t0 = clock();

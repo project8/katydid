@@ -66,7 +66,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        const std::map< double, KTPowerSpectrum* > spectra = psColl.GetSpectra();
+        KTPhysicalArray< 1, KTPowerSpectrum* > spectra = *psColl.GetSpectra();
 
         //KTDEBUG(publog, "2");
         if (!spectra.empty())
@@ -75,8 +75,11 @@ namespace Katydid
             conv << "histPSColl_" << sliceNumber;
             string histName;
             conv >> histName;
-            TH2D* psCollection = KT2ROOT::CreatePowerHistogram(spectra, histName);
-            fWriter->Draw(psCollection);
+            for( unsigned i=0; i < psColl.GetNComponents(); ++i)
+            {
+                TH2D* psCollection = psColl.CreatePowerHistogram(i, histName);
+                fWriter->Draw(psCollection);
+            }
         }
 
         return;

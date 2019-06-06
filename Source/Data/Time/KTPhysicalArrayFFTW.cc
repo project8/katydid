@@ -33,6 +33,16 @@ namespace Katydid
         fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * nBins);
     }
 
+    KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray(fftw_complex value, size_t nBins, double rangeMin, double rangeMax) :
+            KTPhysicalArray< 1, fftw_complex>(nBins, rangeMin, rangeMax)
+    {
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            fData[index][0] = value[0];
+            fData[index][1] = value[1];
+        }
+    }
+
 
     KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray(const KTPhysicalArray< 1, fftw_complex >& orig) :
             KTAxisProperties< 1 >(orig),

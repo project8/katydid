@@ -8,7 +8,6 @@
 #include "KTSingleChannelDAC.hh"
 
 #include "KTEggHeader.hh"
-#include "KTRawTimeSeries.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
