@@ -43,10 +43,10 @@ Fixes:
 Log
 ---
 
-Version: 
+Version: 2.16.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Release Date: 
+Release Date: June 6, 2019
 '''''''''''''''''''''''''''''''
 
 New Features:
