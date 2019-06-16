@@ -80,6 +80,7 @@ namespace Katydid
             MEMBERVARIABLE(bool, FullEvent);
             MEMBERVARIABLE(double, PrevSliceTimeInRun);
             MEMBERVARIABLE(double, PrevSliceTimeInAcq);
+            MEMBERVARIABLE(uint64_t, NSpectrograms);
 
         public:
             void SetMinFrequency( double freq );
@@ -100,7 +101,7 @@ namespace Katydid
             bool ReceiveMPTrack(KTMultiPeakTrackData& data);
             bool ReceiveMPEvent(KTMultiTrackEventData& data);
             bool ReceiveSpectrum(KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit = false);
-            void FinishSC( Nymph::KTDataPtr data );
+            void FinishSC( Nymph::KTDataPtr data, unsigned comp );
 
         private:
             struct KTTrackCompare
@@ -125,7 +126,7 @@ namespace Katydid
             // It is necessary to store the Nymph::KTDataPtr because the signal must contain this object when it emits, and each spectrogram must have a
             // unique associated Nymph::KTDataPtr
 
-            std::vector< std::set< std::pair< Nymph::KTDataPtr, KTPSCollectionData* >, KTTrackCompare > > fWaterfallSets;
+            std::vector< WaterfallSet > fWaterfallSets;
 
             //***************
             // Signals

@@ -18,8 +18,6 @@
 #include "KT2ROOT.hh"
 
 #include <vector>
-#include <set>
-#include <map>
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -32,6 +30,16 @@ using namespace Katydid;
 using namespace std;
 
 KTLOGGER(testlog, "TestSpectrogramCollector");
+
+
+unsigned nTimeBins = 1000;
+double timeBinWidth = 1e-6;   // Length of a time bin
+unsigned nFreqBins = 100;
+double freqBinWidth = 1.e6;
+double freqMin = 50.e6;
+double freqMax = 150.e6;
+
+
 
 // Method to determine whether a line intersects a bin with finite size
 // The line extends over a finite segment from (x1,y1) to (x2,y2)
@@ -69,198 +77,186 @@ bool lineIntersects( double x1, double y1, double x2, double y2, double xx1, dou
     }
 }
 
+double BinToFreq(unsigned iBin)
+{
+    return (double)iBin * freqBinWidth + freqMin;
+}
+
+double BinToTime(unsigned iBin)
+{
+    return (double)iBin * timeBinWidth;
+}
+
 int main()
 {
-    typedef std::map< double, KTPowerSpectrum* > collection;
+    typedef KTMultiPS collection;
 #ifdef ROOT_FOUND
     TRandom3 rand(0);
 #endif
 
-    struct KTTrackCompare
-    {
-        bool operator() (const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > lhs, const std::pair< Nymph::KTDataPtr, KTPSCollectionData* > rhs) const
-        {
-            return lhs.second->GetStartTime() < rhs.second->GetStartTime();
-        }
-    };
-
-    double t_bin = 10e-6;   // Length of a time bin
-
     // Declare all required data objects
-    std::vector< KTPowerSpectrumData* > psArray;
-    std::vector< KTSliceHeader* > sArray;
-    std::vector< KTProcessedTrackData > trackArray;
-    KTPowerSpectrum* ps;
-    KTPowerSpectrumData* psData;
-    KTFrequencySpectrumPolar* fftw;
-    KTSliceHeader* s;
+    std::vector< KTPowerSpectrumData > psArray(nTimeBins);
+    std::vector< KTSliceHeader > sArray(nTimeBins);
+
+    std::vector< KTProcessedTrackData > trackArray(5);
 
     // Next we create 5 tracks with specific start and end points
     // Some tracks overlap in the time domain
 
-    KTProcessedTrackData tr1;
-    tr1.SetComponent( 0 );
-    tr1.SetStartTimeInRunC( 5e-5 );
-    tr1.SetEndTimeInRunC( 15e-5 );
-    tr1.SetStartFrequency( 80e6 );
-    tr1.SetEndFrequency( 85e6 );
-    trackArray.push_back( tr1 );
+    trackArray[0].SetComponent( 0 );
+    trackArray[0].SetStartTimeInRunC( 5e-5 );
+    trackArray[0].SetEndTimeInRunC( 15e-5 );
+    trackArray[0].SetTimeLength( 10e-5 );
+    trackArray[0].SetStartFrequency( 80e6 );
+    trackArray[0].SetEndFrequency( 85e6 );
 
-    KTProcessedTrackData tr2;
-    tr2.SetComponent( 0 );
-    tr2.SetStartTimeInRunC( 20e-5 );
-    tr2.SetEndTimeInRunC( 45e-5 );
-    tr2.SetStartFrequency( 60e6 );
-    tr2.SetEndFrequency( 65e6 );
-    trackArray.push_back( tr2 );
+    trackArray[1].SetComponent( 0 );
+    trackArray[1].SetStartTimeInRunC( 20e-5 );
+    trackArray[1].SetEndTimeInRunC( 45e-5 );
+    trackArray[1].SetTimeLength( 25e-5 );
+    trackArray[1].SetStartFrequency( 60e6 );
+    trackArray[1].SetEndFrequency( 65e6 );
     
-    KTProcessedTrackData tr3;
-    tr3.SetComponent( 0 );
-    tr3.SetStartTimeInRunC( 45e-5 );
-    tr3.SetEndTimeInRunC( 55e-5 );
-    tr3.SetStartFrequency( 90e6 );
-    tr3.SetEndFrequency( 91e6 );
-    trackArray.push_back( tr3 );
+    trackArray[2].SetComponent( 0 );
+    trackArray[2].SetStartTimeInRunC( 45e-5 );
+    trackArray[2].SetEndTimeInRunC( 55e-5 );
+    trackArray[2].SetTimeLength( 10e-5 );
+    trackArray[2].SetStartFrequency( 90e6 );
+    trackArray[2].SetEndFrequency( 91e6 );
     
-    KTProcessedTrackData tr4;
-    tr4.SetComponent( 0 );
-    tr4.SetStartTimeInRunC( 50e-5 );
-    tr4.SetEndTimeInRunC( 85e-5 );
-    tr4.SetStartFrequency( 125e6 );
-    tr4.SetEndFrequency( 135e6 );
-    trackArray.push_back( tr4 );
+    trackArray[3].SetComponent( 0 );
+    trackArray[3].SetStartTimeInRunC( 50e-5 );
+    trackArray[3].SetEndTimeInRunC( 85e-5 );
+    trackArray[3].SetTimeLength( 35e-5 );
+    trackArray[3].SetStartFrequency( 125e6 );
+    trackArray[3].SetEndFrequency( 135e6 );
     
-    KTProcessedTrackData tr5;
-    tr5.SetComponent( 0 );
-    tr5.SetStartTimeInRunC( 80e-5 );
-    tr5.SetEndTimeInRunC( 90e-5 );
-    tr5.SetStartFrequency( 105e6 );
-    tr5.SetEndFrequency( 106e6 );
-    trackArray.push_back( tr5 );
+    trackArray[4].SetComponent( 0 );
+    trackArray[4].SetStartTimeInRunC( 80e-5 );
+    trackArray[4].SetEndTimeInRunC( 90e-5 );
+    trackArray[4].SetTimeLength( 10e-5 );
+    trackArray[4].SetStartFrequency( 105e6 );
+    trackArray[4].SetEndFrequency( 106e6 );
 
     // Create power spectra to send to the spectrogram collector
     KTINFO(testlog, "Creating Power Spectra");
 
-    for( double t = 0; t < t_bin * 100; t += t_bin )
+    for( unsigned tBin = 0; tBin < nTimeBins; ++tBin )
     {
+        KTDEBUG(testlog, "Creating spectrum " << tBin);
         // Create new frequency spectrum
-        fftw = new KTFrequencySpectrumPolar( 100, 50e6, 150e6 );
+        KTFrequencySpectrumPolar* fftw = new KTFrequencySpectrumPolar( nFreqBins, freqMin, freqMax );
 
         // Fill Spectrum
-        for (unsigned iBin=0; iBin<100; iBin++)
+        for (unsigned fBin=0; fBin<nFreqBins; fBin++)
         {
     #ifdef ROOT_FOUND
-            (*fftw)(iBin).set_polar(rand.Gaus(1e-5, 0.2e-5), 0.);
+            (*fftw)(fBin).set_polar(rand.Gaus(1e-5, 0.2e-5), 0.);
     #else
-            (*fftw)(iBin).set_polar(1e-5, 0.);
+            (*fftw)(fBin).set_polar(1e-5, 0.);
     #endif
 
             // If any track intersects the bin, fill by a factor of 3 greater magnitude
-            if( lineIntersects( tr1.GetStartTimeInRunC(), tr1.GetStartFrequency(), tr1.GetEndTimeInRunC(), tr1.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
-                lineIntersects( tr2.GetStartTimeInRunC(), tr2.GetStartFrequency(), tr2.GetEndTimeInRunC(), tr2.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
-                lineIntersects( tr3.GetStartTimeInRunC(), tr3.GetStartFrequency(), tr3.GetEndTimeInRunC(), tr3.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
-                lineIntersects( tr4.GetStartTimeInRunC(), tr4.GetStartFrequency(), tr4.GetEndTimeInRunC(), tr4.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) ||
-                lineIntersects( tr5.GetStartTimeInRunC(), tr5.GetStartFrequency(), tr5.GetEndTimeInRunC(), tr5.GetEndFrequency(), t, iBin * 1e6 + 50e6, t + t_bin, (iBin + 1) * 1e6 + 50e6 ) )
+            if( lineIntersects( trackArray[0].GetStartTimeInRunC(), trackArray[0].GetStartFrequency(), trackArray[0].GetEndTimeInRunC(), trackArray[0].GetEndFrequency(), BinToTime(tBin), BinToFreq(fBin), BinToTime(tBin+1), BinToFreq(fBin + 1) ) ||
+                lineIntersects( trackArray[1].GetStartTimeInRunC(), trackArray[1].GetStartFrequency(), trackArray[1].GetEndTimeInRunC(), trackArray[1].GetEndFrequency(), BinToTime(tBin), BinToFreq(fBin), BinToTime(tBin+1), BinToFreq(fBin + 1) ) ||
+                lineIntersects( trackArray[2].GetStartTimeInRunC(), trackArray[2].GetStartFrequency(), trackArray[2].GetEndTimeInRunC(), trackArray[2].GetEndFrequency(), BinToTime(tBin), BinToFreq(fBin), BinToTime(tBin+1), BinToFreq(fBin + 1) ) ||
+                lineIntersects( trackArray[3].GetStartTimeInRunC(), trackArray[3].GetStartFrequency(), trackArray[3].GetEndTimeInRunC(), trackArray[3].GetEndFrequency(), BinToTime(tBin), BinToFreq(fBin), BinToTime(tBin+1), BinToFreq(fBin + 1) ) ||
+                lineIntersects( trackArray[4].GetStartTimeInRunC(), trackArray[4].GetStartFrequency(), trackArray[4].GetEndTimeInRunC(), trackArray[4].GetEndFrequency(), BinToTime(tBin), BinToFreq(fBin), BinToTime(tBin+1), BinToFreq(fBin + 1) ) )
             {
         #ifdef ROOT_FOUND
-                (*fftw)(iBin).set_polar(rand.Gaus(3e-5, 0.6e-5), 0.);
+                (*fftw)(fBin).set_polar(rand.Gaus(3e-5, 0.6e-5), 0.);
         #else
-                (*fftw)(iBin).set_polar(3e-5, 0.);
+                (*fftw)(fBin).set_polar(3e-5, 0.);
         #endif
             }
         }
     
         fftw->SetNTimeBins( 1 );    // Default is zero, causing a divergence with the scaling
 
-        // Initialize KTPowerSpectrumData object and slice header
-        psData = new KTPowerSpectrumData();
-        psData->SetNComponents( 1 );
-        s = new KTSliceHeader();
-
         // Send a log message just the first time
-        if( t == 0 )
-            KTINFO(testlog, "Finished filling first spectrum. 99 to go");
+        if( tBin == 0 )
+        {
+            KTINFO(testlog, "Finished filling first spectrum. " << nTimeBins-1 << " to go");
+        }
 
+        KTDEBUG(testlog, "Adding spectrum to ps array");
+        // Initialize KTPowerSpectrumData object and slice header
+        psArray[tBin].SetNComponents( 1 );
+
+        KTDEBUG(testlog, "Creating power spectrum");
         // Configure psData and s
-        ps = fftw->CreatePowerSpectrum();
+        KTPowerSpectrum* ps = fftw->CreatePowerSpectrum();
         ps->ConvertToPowerSpectrum();
-        psData->SetSpectrum( ps, 0 );
-        s->SetTimeInRun( t );
-        s->SetTimeInAcq( t );
-        s->SetSliceLength( t_bin );
-
-        // Add to vectors
-        psArray.push_back( psData );
-        sArray.push_back( s );
+        psArray[tBin].SetSpectrum( ps, 0 );
+        
+        KTDEBUG(testlog, "Creating slice header");
+        sArray[tBin].SetTimeInRun( (double)tBin*timeBinWidth );
+        sArray[tBin].SetTimeInAcq( (double)tBin*timeBinWidth );
+        sArray[tBin].SetSliceLength( timeBinWidth );
 
         // Log
-        if( t == 0 )
-            KTINFO(testlog, "Finished processing first spectrum. 99 to go");
+        if( tBin == 0 )
+        {
+            KTINFO(testlog, "Finished processing first spectrum. " << nTimeBins-1 << " to go");
+        }
     }
 
     // Now we create and configure the spectrogram collector
     KTSpectrogramCollector spec;
-    spec.SetMinFrequency( 50e6 );
-    spec.SetMaxFrequency( 150e6 );
+    spec.SetMinFrequency( freqMin );
+    spec.SetMaxFrequency( freqMax );
     spec.SetLeadTime( 20e-6 );
     spec.SetTrailTime( 20e-6 );
 
     // Add tracks to listen
     KTINFO(testlog, "Adding tracks to the spectrogram collector");
     for( int i = 0; i < 5; i++ )
-        if( !spec.ReceiveTrack( trackArray[i] ) )
+    {
+        KTDEBUG(testlog, "Adding track " << i);
+        if( ! spec.ReceiveTrack( trackArray[i] ) )
+        {
             KTERROR(testlog, "Something went wrong adding track" << i);
+        }
+    }
 
     // Add spectra
     KTINFO(testlog, "Adding spectra to the spectrogram collector");
-    for( int i = 0; i < 100; i++ )
+    for( int i = 0; i < nTimeBins; i++ )
     {
-        if( !spec.ReceiveSpectrum( *psArray[i], *sArray[i] ) )
+        KTDEBUG(testlog, "Adding spectrum " << i);
+        if( ! spec.ReceiveSpectrum( psArray[i], sArray[i] ) )
+        {
             KTERROR(testlog, "Something went wrong adding spectrum" << i);
+        }
     }
-
-    // The result is a KTPSCollectionData for each track
-    std::vector< KTPSCollectionData > result;
 
     KTINFO(testlog, "Finished receiving spectra. Begin retrieving produced spectrograms");
 
-    // Fill the result vector and count the number of plots
-    int nPlots = 0;
-    for( KTSpectrogramCollector::WaterfallSet::const_iterator it = spec.WaterfallSets()[0].begin(); it != spec.WaterfallSets()[0].end(); ++it )
-    {
-        result.push_back( it->first->Of< KTPSCollectionData >() );
-        nPlots++;
-    }
+    // The result is a KTPSCollectionData for each track
+    const KTSpectrogramCollector::WaterfallSet& spectrograms = spec.WaterfallSets()[0];
 
-    if( nPlots == 0 )
+    if( spectrograms.size() == 0 )
     {
         KTERROR(testlog, "No spectrograms were produced!");
     }
     else
     {
-        KTINFO(testlog, "Produced " << nPlots << " spectrograms");
+        KTINFO(testlog, "Produced " << spectrograms.size() << " spectrograms");
     }
 
     // Fill a TH2D for each spectrogram and write to a file
 
 #ifdef ROOT_FOUND
     TFile* file = new TFile( "spectrogram-collector-test.root", "recreate" );
-    std::vector< TH2D* > plots;
-
-    TH2D* plot = new TH2D( "Spectrogram Collection Plot", "Spectrogram Collection Plot", 100, 0, t_bin * 100, 100, 50e6, 150e6 );
-    for( int i = 0; i < nPlots; i++ )
+    unsigned iSpect = 0;
+    for (auto spectIter = spectrograms.begin(); spectIter != spectrograms.end(); ++spectIter)
     {
-        plot->Reset();  // Clear histogram
-        for (collection::const_iterator it = result[i].GetSpectra().begin(); it != result[i].GetSpectra().end(); ++it)
-        {
-            for( int j = 0; j < it->second->GetNFrequencyBins(); j++)
-            {
-                plot->Fill( it->first, j * it->second->GetFrequencyBinWidth() + result[i].GetSpectra().begin()->second->GetRangeMin(), (*it->second)(j) );
-            }
-        }
-
-        KTINFO(testlog, "Writing spectrogram for track " << i);
-        plot->Write( TString::Format("track-%i", i) );
+        KTINFO(testlog, "Writing spectrogram " << iSpect);
+        //KTWARN(testlog, spectIter->second->GetSpectra()->size() );
+        TH2D* hist = spectIter->second->CreatePowerHistogram(0);
+        if (hist) hist->Write(TString::Format("track-%i", iSpect));
+        else KTERROR(testlog, "Empty histogram");
+        ++iSpect;
     }
 
     // Cleanup

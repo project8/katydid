@@ -57,6 +57,7 @@ namespace Katydid
      - "fs-var-polar":
      - "multi-fs-fftw":
      - "multi-fs-polar":
+     - "multi-ps":
      - "norm-fs-fftw":
      - "norm-fs-polar":
      - "ps":

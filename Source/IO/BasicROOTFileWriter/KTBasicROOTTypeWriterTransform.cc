@@ -16,6 +16,8 @@
 #include "KTSliceHeader.hh"
 #include "KTMultiFSDataPolar.hh"
 #include "KTMultiFSDataFFTW.hh"
+#include "KTMultiPSData.hh"
+#include "KTSpectrumCollectionData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTTimeFrequencyDataPolar.hh"
@@ -72,6 +74,7 @@ namespace Katydid
         fWriter->RegisterSlot("tf-polar-power", this, &KTBasicROOTTypeWriterTransform::WriteTimeFrequencyDataPolarPower);
         fWriter->RegisterSlot("multi-fs-polar", this, &KTBasicROOTTypeWriterTransform::WriteMultiFSDataPolar);
         fWriter->RegisterSlot("multi-fs-fftw", this, &KTBasicROOTTypeWriterTransform::WriteMultiFSDataFFTW);
+        fWriter->RegisterSlot("multi-ps", this, &KTBasicROOTTypeWriterTransform::WriteMultiPSData);
         return;
     }
 
@@ -722,6 +725,45 @@ namespace Katydid
             TH2D* mfsHist = fsData.CreateMagnitudeHistogram(iPlot, histName);
             mfsHist->SetDirectory(fWriter->GetFile());
             mfsHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        }
+        return;
+    }
+
+    //*****************
+    // Multi-PS Data
+    //*****************
+
+    void KTBasicROOTTypeWriterTransform::WriteMultiPSData(Nymph::KTDataPtr data)
+    {
+        KTINFO(publog, "Got multi-ps signal, going to write spectrogram");
+        bool hastype = data->Has<KTMultiPSData>();
+        KTDEBUG(publog, "Has data: "<<hastype);
+        bool hastype1 = data->Has<KTPSCollectionData>();
+        KTDEBUG(publog, "Has data: "<<hastype1);
+        if (! data) return;
+
+        //uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        //KTDEBUG(publog, "Slice number: "<<sliceNumber);
+
+        KTPSCollectionData& psData = data->Of<KTPSCollectionData>();
+        unsigned nComponents = psData.GetNComponents();
+        KTDEBUG(publog, "nComponents: "<<nComponents);
+
+        uint64_t spectrogramNumber = psData.GetSpectrogramCounter();
+        KTDEBUG(publog, "Slice number: "<<spectrogramNumber);
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
+        {
+            stringstream conv;
+            conv << "histMPS_" << spectrogramNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* mpsHist = psData.CreatePowerHistogram(iPlot, histName);
+            mpsHist->SetDirectory(fWriter->GetFile());
+            mpsHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;
