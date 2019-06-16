@@ -51,15 +51,15 @@ using std::string;
 namespace Katydid
 {
     KTLOGGER(dblog, "KT2ROOT");
-
+    
     KT2ROOT::KT2ROOT()
     {
     }
-
+    
     KT2ROOT::~KT2ROOT()
     {
     }
-
+    
     TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName, int complexSampleIndex)
     {
         unsigned nBins = ts->size();
@@ -84,22 +84,22 @@ namespace Katydid
         }
         //**** DEBUG ****//
         /*
-        std::stringstream tsstream, histstream;
-        for (unsigned i=0; i<10; ++i)
-        {
-            tsstream << (*ts)(i) << "  ";
-            histstream << hist->GetBinContent((int)i+1) << "  ";
-        }
-        KTWARN( dblog, "ts: " << tsstream.str() );
-        KTWARN( dblog, "hist: " << histstream.str() );
-        */
+         std::stringstream tsstream, histstream;
+         for (unsigned i=0; i<10; ++i)
+         {
+         tsstream << (*ts)(i) << "  ";
+         histstream << hist->GetBinContent((int)i+1) << "  ";
+         }
+         KTWARN( dblog, "ts: " << tsstream.str() );
+         KTWARN( dblog, "hist: " << histstream.str() );
+         */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (ADC)");
         return hist;
-
+        
     }
-
+    
     TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName, int complexSampleIndex)
     {
         unsigned nBins = ts->size();
@@ -124,22 +124,22 @@ namespace Katydid
         }
         //**** DEBUG ****//
         /*
-        std::stringstream tsstream, histstream;
-        for (unsigned i=0; i<10; ++i)
-        {
-            tsstream << (*ts)(i) << "  ";
-            histstream << hist->GetBinContent((int)i+1) << "  ";
-        }
-        KTWARN( dblog, "ts: " << tsstream.str() );
-        KTWARN( dblog, "hist: " << histstream.str() );
-        */
+         std::stringstream tsstream, histstream;
+         for (unsigned i=0; i<10; ++i)
+         {
+         tsstream << (*ts)(i) << "  ";
+         histstream << hist->GetBinContent((int)i+1) << "  ";
+         }
+         KTWARN( dblog, "ts: " << tsstream.str() );
+         KTWARN( dblog, "hist: " << histstream.str() );
+         */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (ADC)");
         return hist;
-
+        
     }
-
+    
     TH1I* KT2ROOT::CreateHistogram(const KTTimeSeriesDist* tsDist, const string& histName)
     {
         unsigned nBins = tsDist->size();
@@ -152,32 +152,32 @@ namespace Katydid
         hist->SetYTitle("Occurrences (#)");
         return hist;
     }
-
+    
     /*TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
-    {
-        unsigned tMaxMag = 0;
-        unsigned tMinMag = UINT16_MAX;//std::numeric_limits<int16_t>::max();
-        unsigned nBins = ts->GetNBins();
-        unsigned value;
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            value = (*ts)(iBin);
-            //value *= value;
-            if (value < tMinMag) tMinMag = value;
-            if (value > tMaxMag) tMaxMag = value;
-        }
-        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1I* hist = new TH1I(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            //value = (*this)(iBin);
-            //hist->Fill(value*value);
-            hist->Fill((*ts)(iBin));
-        }
-        hist->SetXTitle("Voltage (V)");
-        return hist;
-    }*/
-
+     {
+     unsigned tMaxMag = 0;
+     unsigned tMinMag = UINT16_MAX;//std::numeric_limits<int16_t>::max();
+     unsigned nBins = ts->GetNBins();
+     unsigned value;
+     for (unsigned iBin=0; iBin<nBins; ++iBin)
+     {
+     value = (*ts)(iBin);
+     //value *= value;
+     if (value < tMinMag) tMinMag = value;
+     if (value > tMaxMag) tMaxMag = value;
+     }
+     if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+     TH1I* hist = new TH1I(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+     for (unsigned iBin=0; iBin<nBins; ++iBin)
+     {
+     //value = (*this)(iBin);
+     //hist->Fill(value*value);
+     hist->Fill((*ts)(iBin));
+     }
+     hist->SetXTitle("Voltage (V)");
+     return hist;
+     }*/
+    
     TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         unsigned nBins = ts->GetNBins();
@@ -190,7 +190,7 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
+    
     static TH1D* CreateHistogramReal(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesReal")
     {
         unsigned nBins = ts->GetNBins();
@@ -203,7 +203,7 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
+    
     static TH1D* CreateHistogramImag(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesImag")
     {
         unsigned nBins = ts->GetNBins();
@@ -216,33 +216,33 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
+    
     /*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
-    {
-        double tMaxMag = -DBL_MAX;
-        double tMinMag = DBL_MAX;
-        unsigned nBins = ts->GetNTimeBins();
-        double value;
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            value = (*ts)(iBin)[0];
-            //value *= value;
-            if (value < tMinMag) tMinMag = value;
-            if (value > tMaxMag) tMaxMag = value;
-        }
-        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            //value = (*this)(iBin);
-            //hist->Fill(value*value);
-            hist->Fill((*ts)(iBin)[0]);
-        }
-        hist->SetXTitle("Voltage (V)");
-        return hist;
-    }
-*/
-
+     {
+     double tMaxMag = -DBL_MAX;
+     double tMinMag = DBL_MAX;
+     unsigned nBins = ts->GetNTimeBins();
+     double value;
+     for (unsigned iBin=0; iBin<nBins; ++iBin)
+     {
+     value = (*ts)(iBin)[0];
+     //value *= value;
+     if (value < tMinMag) tMinMag = value;
+     if (value > tMaxMag) tMaxMag = value;
+     }
+     if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+     TH1D* hist = new TH1D(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+     for (unsigned iBin=0; iBin<nBins; ++iBin)
+     {
+     //value = (*this)(iBin);
+     //hist->Fill(value*value);
+     hist->Fill((*ts)(iBin)[0]);
+     }
+     hist->SetXTitle("Voltage (V)");
+     return hist;
+     }
+     */
+    
     TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
     {
         unsigned nBins = ts->GetNBins();
@@ -267,33 +267,33 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
-/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
-    {
-        double tMaxMag = -DBL_MAX;
-        double tMinMag = DBL_MAX;
-        unsigned nBins = ts->GetNTimeBins();
-        double value;
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            value = (*ts)(iBin);
-            //value *= value;
-            if (value < tMinMag) tMinMag = value;
-            if (value > tMaxMag) tMaxMag = value;
-        }
-        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            //value = (*this)(iBin);
-            //hist->Fill(value*value);
-            hist->Fill((*ts)(iBin));
-        }
-        hist->SetXTitle("Voltage (V)");
-        return hist;
-    }
-*/
-
+    
+    /*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
+     {
+     double tMaxMag = -DBL_MAX;
+     double tMinMag = DBL_MAX;
+     unsigned nBins = ts->GetNTimeBins();
+     double value;
+     for (unsigned iBin=0; iBin<nBins; ++iBin)
+     {
+     value = (*ts)(iBin);
+     //value *= value;
+     if (value < tMinMag) tMinMag = value;
+     if (value > tMaxMag) tMaxMag = value;
+     }
+     if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+     TH1D* hist = new TH1D(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+     for (unsigned iBin=0; iBin<nBins; ++iBin)
+     {
+     //value = (*this)(iBin);
+     //hist->Fill(value*value);
+     hist->Fill((*ts)(iBin));
+     }
+     hist->SetXTitle("Voltage (V)");
+     return hist;
+     }
+     */
+    
     TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -306,7 +306,7 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePhaseHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -319,7 +319,7 @@ namespace Katydid
         hist->SetYTitle("Phase");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePowerHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -335,7 +335,7 @@ namespace Katydid
         hist->SetYTitle("Power (W)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
     {
         double tMaxMag = -1.;
@@ -358,7 +358,7 @@ namespace Katydid
         hist->SetXTitle("Voltage (V)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePowerDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
     {
         double tMaxMag = -1.;
@@ -384,7 +384,7 @@ namespace Katydid
         hist->SetXTitle("Power (W)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -397,7 +397,7 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePhaseHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -410,24 +410,24 @@ namespace Katydid
         hist->SetYTitle("Phase");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePowerHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
         double value, valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)fs->GetNTimeBins();
-
+        
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, scaling * ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
         }
-
+        
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -451,7 +451,7 @@ namespace Katydid
         hist->SetXTitle("Voltage (V)");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -476,48 +476,48 @@ namespace Katydid
         hist->SetXTitle("Power (W)");
         return hist;
     }
-  
+    
     TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
     {
-      // Currently only assume a square grid
-      unsigned int nComponents = aggfs.GetNComponents();
-      int nGridPoints=0;
-//      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
-      nGridPoints=std::sqrt(nComponents);
-      double fActiveRadius = aggfs.GetActiveRadius();
-      TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
-      for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
-      {
-        int xBin=iComponents/nGridPoints;
-        int yBin=iComponents%nGridPoints;
-        hist->SetBinContent(xBin+1,yBin+1,aggfs.GetSummedGridVoltage(iComponents));
-      }
-      hist->SetXTitle("X Axis (m)");
-      hist->SetYTitle("Y Axis (m)");
-      return hist;
+        // Currently only assume a square grid
+        unsigned int nComponents = aggfs.GetNComponents();
+        int nGridPoints=0;
+        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
+        nGridPoints=std::sqrt(nComponents);
+        double fActiveRadius = aggfs.GetActiveRadius();
+        TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
+        for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
+        {
+            int xBin=iComponents/nGridPoints;
+            int yBin=iComponents%nGridPoints;
+            hist->SetBinContent(xBin+1,yBin+1,aggfs.GetSummedGridVoltage(iComponents));
+        }
+        hist->SetXTitle("X Axis (m)");
+        hist->SetYTitle("Y Axis (m)");
+        return hist;
     }
-  
+    
     TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
     {
-      // Currently only assume a square grid
-      unsigned int nComponents = aggps.GetNComponents();
-      int nGridPoints=0;
-      //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
-      nGridPoints=std::sqrt(nComponents);
-      double fActiveRadius = aggps.GetActiveRadius();
-      TH2D* hist = new TH2D(name.c_str(), "Power Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
-      for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
-      {
-        int xBin=iComponents/nGridPoints;
-        int yBin=iComponents%nGridPoints;
-        hist->SetBinContent(xBin+1,yBin+1,aggps.GetSummedGridPower(iComponents));
-      }
-      hist->SetXTitle("X Axis (m)");
-      hist->SetYTitle("Y Axis (m)");
-      return hist;
+        // Currently only assume a square grid
+        unsigned int nComponents = aggps.GetNComponents();
+        int nGridPoints=0;
+        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
+        nGridPoints=std::sqrt(nComponents);
+        double fActiveRadius = aggps.GetActiveRadius();
+        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum Grid",nGridPoints, -fActiveRadius, fActiveRadius,nGridPoints,-fActiveRadius, fActiveRadius);
+        for (unsigned int iComponents=0; iComponents<nComponents; ++iComponents)
+        {
+            int xBin=iComponents/nGridPoints;
+            int yBin=iComponents%nGridPoints;
+            hist->SetBinContent(xBin+1,yBin+1,aggps.GetSummedGridPower(iComponents));
+        }
+        hist->SetXTitle("X Axis (m)");
+        hist->SetYTitle("Y Axis (m)");
+        return hist;
     }
-  
-
+    
+    
     TH1D* KT2ROOT::CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name)
     {
         unsigned nBins = fs->size();
@@ -530,7 +530,7 @@ namespace Katydid
         hist->SetYTitle("Voltage^{2} (V^{2})");
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePowerHistogram(const KTPowerSpectrum* ps, const std::string& name)
     {
         unsigned nBins = ps->size();
@@ -544,7 +544,7 @@ namespace Katydid
         hist->SetYTitle(ps->GetDataLabel().c_str());
         return hist;
     }
-
+    
     TH1D* KT2ROOT::CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name)
     {
         double value = (*ps)(0);
@@ -566,13 +566,13 @@ namespace Katydid
         hist->SetXTitle(ps->GetDataLabel().c_str());
         return hist;
     }
-
+    
     TH2D* KT2ROOT::CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName)
     {
         TH2D* hist = new TH2D(histName.c_str(), histName.c_str(),
-                ht->size(1), ht->GetRangeMin(1), ht->GetRangeMax(1),
-                ht->size(2), ht->GetRangeMin(2), ht->GetRangeMax(2));
-
+                              ht->size(1), ht->GetRangeMin(1), ht->GetRangeMax(1),
+                              ht->size(2), ht->GetRangeMin(2), ht->GetRangeMax(2));
+        
         for (int iBinX=1; iBinX<=(int)ht->size(1); iBinX++)
         {
             for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
@@ -580,23 +580,23 @@ namespace Katydid
                 hist->SetBinContent(iBinX, iBinY, (*ht)(iBinX-1, iBinY-1));
             }
         }
-
+        
         return hist;
-
+        
     }
-
+    
     TH2D* KT2ROOT::CreatePowerHistogram(std::map< double, KTPowerSpectrum* > psColl, const std::string& histName)
     {
         std::map< double, KTPowerSpectrum* >::iterator it = psColl.begin();
         unsigned nBinsX = psColl.size(), nBinsY = it->second->size();
-
+        
         double minTime = 1, maxTime = 0;
         double minFreq, maxFreq;
-
+        
         KTPowerSpectrum* ps = it->second;
         minFreq = ps->GetRangeMin();
         maxFreq = ps->GetRangeMax();
-
+        
         for( std::map< double, KTPowerSpectrum* >::iterator iter = psColl.begin(); it != psColl.end(); ++it)
         {
             if( it->first < minTime )
@@ -608,11 +608,11 @@ namespace Katydid
                 maxTime = it->first;
             }
         }
-
+        
         TH2D* hist = new TH2D(histName.c_str(), histName.c_str(),
-                (int)nBinsX, minTime, maxTime,
-                (int)nBinsY, minFreq, maxFreq);
-
+                              (int)nBinsX, minTime, maxTime,
+                              (int)nBinsY, minFreq, maxFreq);
+        
         int iBinX = 1, iBinY = 1;
         for (it = psColl.begin(); it != psColl.end(); ++it)
         {
@@ -624,22 +624,22 @@ namespace Katydid
         }
         
         return hist;
-
+        
     }
-
+    
     TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTPowerFitData* pf, const std::string& histName)
     {
         std::map< unsigned, KTPowerFitData::Point >::iterator it;
         std::map< unsigned, KTPowerFitData::Point > SetOfPoints = pf->GetSetOfPoints();
-
+        
         double minFreq, maxFreq;
         unsigned nBins = SetOfPoints.size();
         minFreq = SetOfPoints.begin()->second.fAbscissa;
         maxFreq = SetOfPoints.rbegin()->second.fAbscissa;
-
+        
         TH1D* hist = new TH1D(histName.c_str(), histName.c_str(),
-                (int)nBins, minFreq, maxFreq);
-
+                              (int)nBins, minFreq, maxFreq);
+        
         int iBin = 1;
         for (it = SetOfPoints.begin(); it != SetOfPoints.end(); ++it)
         {
@@ -648,15 +648,15 @@ namespace Katydid
         }
         
         return hist;
-
+        
     }
-
+    
     void KT2ROOT::LoadProcTrackData(const KTProcessedTrackData& ptData, Cicada::TProcessedTrackData& rootPTData)
     {
         rootPTData.SetComponent(ptData.GetComponent()); rootPTData.SetAcquisitionID(ptData.GetAcquisitionID()); rootPTData.SetTrackID(ptData.GetTrackID()); rootPTData.SetEventID(ptData.GetEventID()); rootPTData.SetEventSequenceID(ptData.GetEventSequenceID()); rootPTData.SetIsCut(ptData.GetIsCut());
         rootPTData.SetStartTimeInRunC(ptData.GetStartTimeInRunC()); rootPTData.SetStartTimeInAcq(ptData.GetStartTimeInAcq()); rootPTData.SetEndTimeInRunC(ptData.GetEndTimeInRunC()); rootPTData.SetTimeLength(ptData.GetTimeLength());
         rootPTData.SetStartFrequency(ptData.GetStartFrequency()); rootPTData.SetEndFrequency(ptData.GetEndFrequency()); rootPTData.SetFrequencyWidth(ptData.GetFrequencyWidth());
-        rootPTData.SetSlope(ptData.GetSlope()); rootPTData.SetIntercept(ptData.GetIntercept()); 
+        rootPTData.SetSlope(ptData.GetSlope()); rootPTData.SetIntercept(ptData.GetIntercept());
         rootPTData.SetTotalPower(ptData.GetTotalPower()); rootPTData.SetNTrackBins(ptData.GetNTrackBins()); rootPTData.SetTotalTrackSNR(ptData.GetTotalTrackSNR()); rootPTData.SetMaxTrackSNR(ptData.GetMaxTrackSNR()); rootPTData.SetTotalWideTrackSNR(ptData.GetTotalWideTrackSNR());
         rootPTData.SetNTrackBins(ptData.GetNTrackBins()); rootPTData.SetTotalTrackNUP(ptData.GetTotalTrackNUP()); rootPTData.SetMaxTrackNUP(ptData.GetMaxTrackNUP()); rootPTData.SetTotalWideTrackNUP(ptData.GetTotalWideTrackNUP());
         rootPTData.SetStartTimeInRunCSigma(ptData.GetStartTimeInRunCSigma()); rootPTData.SetEndTimeInRunCSigma(ptData.GetEndTimeInRunCSigma()); rootPTData.SetTimeLengthSigma(ptData.GetTimeLengthSigma());
@@ -664,20 +664,20 @@ namespace Katydid
         rootPTData.SetSlopeSigma(ptData.GetSlopeSigma()); rootPTData.SetInterceptSigma(ptData.GetInterceptSigma()); rootPTData.SetTotalPowerSigma(ptData.GetTotalPowerSigma());
         return;
     }
-
+    
     void KT2ROOT::UnloadProcTrackData(KTProcessedTrackData& ptData, const Cicada::TProcessedTrackData& rootPTData)
     {
         ptData.SetComponent(rootPTData.GetComponent()); ptData.SetAcquisitionID(rootPTData.GetAcquisitionID()); ptData.SetTrackID(rootPTData.GetTrackID()); ptData.SetEventID(rootPTData.GetEventID()); ptData.SetEventSequenceID(rootPTData.GetEventSequenceID()); ptData.SetIsCut(rootPTData.GetIsCut());
         ptData.SetStartTimeInRunC(rootPTData.GetStartTimeInRunC()); ptData.SetStartTimeInAcq(rootPTData.GetStartTimeInAcq()); ptData.SetEndTimeInRunC(rootPTData.GetEndTimeInRunC()); ptData.SetTimeLength(rootPTData.GetTimeLength());
         ptData.SetStartFrequency(rootPTData.GetStartFrequency()); ptData.SetEndFrequency(rootPTData.GetEndFrequency()); ptData.SetFrequencyWidth(rootPTData.GetFrequencyWidth());
-        ptData.SetSlope(rootPTData.GetSlope()); ptData.SetIntercept(rootPTData.GetIntercept()); 
+        ptData.SetSlope(rootPTData.GetSlope()); ptData.SetIntercept(rootPTData.GetIntercept());
         ptData.SetTotalPower(rootPTData.GetTotalPower()); ptData.SetNTrackBins(rootPTData.GetNTrackBins()); ptData.SetTotalTrackSNR(rootPTData.GetTotalTrackSNR()); ptData.SetMaxTrackSNR(rootPTData.GetMaxTrackSNR()); ptData.SetTotalWideTrackSNR(rootPTData.GetTotalWideTrackSNR());
         ptData.SetNTrackBins(rootPTData.GetNTrackBins()); ptData.SetTotalTrackNUP(rootPTData.GetTotalTrackNUP()); ptData.SetMaxTrackNUP(rootPTData.GetMaxTrackNUP()); ptData.SetTotalWideTrackNUP(rootPTData.GetTotalWideTrackNUP());
         ptData.SetStartTimeInRunCSigma(rootPTData.GetStartTimeInRunCSigma()); ptData.SetEndTimeInRunCSigma(rootPTData.GetEndTimeInRunCSigma()); ptData.SetTimeLengthSigma(rootPTData.GetTimeLengthSigma());
         ptData.SetStartFrequencySigma(rootPTData.GetStartFrequencySigma()); ptData.SetEndFrequencySigma(rootPTData.GetEndFrequencySigma()); ptData.SetFrequencyWidthSigma(rootPTData.GetFrequencyWidthSigma());
         ptData.SetSlopeSigma(rootPTData.GetSlopeSigma()); ptData.SetInterceptSigma(rootPTData.GetInterceptSigma()); ptData.SetTotalPowerSigma(rootPTData.GetTotalPowerSigma());
     }
-
+    
     void KT2ROOT::LoadClassifierResultsData(const KTClassifierResultsData& crData, Cicada::TClassifierResultsData& rootCRData)
     {
         rootCRData.SetComponent(crData.GetComponent());
@@ -686,7 +686,7 @@ namespace Katydid
         rootCRData.SetSideBand(crData.GetSideBand());
         return;
     }
-
+    
     void KT2ROOT::UnloadClassifierResultsData(KTClassifierResultsData& crData, const Cicada::TClassifierResultsData& rootCRData)
     {
         crData.SetComponent(rootCRData.GetComponent());
@@ -695,7 +695,7 @@ namespace Katydid
         crData.SetSideBand(rootCRData.GetSideBand());
         return;
     }
-
+    
     void KT2ROOT::LoadMultiTrackEventData(const KTMultiTrackEventData& mteData, Cicada::TMultiTrackEventData& rootMTEData)
     {
         rootMTEData.SetComponent(mteData.GetComponent()); rootMTEData.SetAcquisitionID(mteData.GetAcquisitionID()); rootMTEData.SetEventID(mteData.GetEventID()); rootMTEData.SetTotalEventSequences(mteData.GetTotalEventSequences());
@@ -718,7 +718,7 @@ namespace Katydid
         }
         return;
     }
-
+    
     void KT2ROOT::UnloadMultiTrackEventData(KTMultiTrackEventData& mteData, const Cicada::TMultiTrackEventData& rootMTEData)
     {
         mteData.ClearTracks(); // do this first, since it clears some of the member variables other than just fTracks
@@ -740,7 +740,7 @@ namespace Katydid
         }
         return;
     }
-
+    
     void KT2ROOT::LoadProcMPTData(const KTProcessedMPTData& mptData, Cicada::TProcessedMPTData& rootMPTData)
     {
         rootMPTData.SetComponent(mptData.GetComponent());
@@ -755,11 +755,11 @@ namespace Katydid
         mptData.SetAxialFrequency(rootMPTData.GetAxialFrequency());
         return;
     }
-
+    
     void KT2ROOT::LoadMTEWithClassifierResultsData(const KTMultiTrackEventData& mteData, Cicada::TMTEWithClassifierResultsData& rootMTECRData)
     {
         LoadMultiTrackEventData(mteData, rootMTECRData);
-
+        
         Int_t nTracks = (Int_t)mteData.GetNTracks();
         TClonesArray* classifierResults = rootMTECRData.GetClassifierResults();
         classifierResults->Clear(); classifierResults->Expand(nTracks);
@@ -776,7 +776,7 @@ namespace Katydid
     void KT2ROOT::UnloadMTEWithClassifierResultsData(KTMultiTrackEventData& mteData, const Cicada::TMTEWithClassifierResultsData& rootMTECRData)
     {
         UnloadMultiTrackEventData(mteData, rootMTECRData);
-
+        
         const TClonesArray* classifierResults = rootMTECRData.GetClassifierResults();
         Int_t nTracks = classifierResults->GetSize();
         // loop over tracks that have already been unloaded so we can add to each track
@@ -793,15 +793,15 @@ namespace Katydid
     
     void KT2ROOT::LoadSparseWaterfallCandidateData(const KTSparseWaterfallCandidateData& swfData, TSparseWaterfallCandidateData& rootSWfData)
     {
-        rootSWfData.SetComponent(swfData.GetComponent()); 
-        rootSWfData.SetAcquisitionID(swfData.GetAcquisitionID()); 
+        rootSWfData.SetComponent(swfData.GetComponent());
+        rootSWfData.SetAcquisitionID(swfData.GetAcquisitionID());
         rootSWfData.SetCandidateID(swfData.GetCandidateID());
         rootSWfData.SetTimeInRunC(swfData.GetTimeInRunC());
-        rootSWfData.SetTimeLength(swfData.GetTimeLength()); 
-        rootSWfData.SetMinFrequency(swfData.GetMinFrequency()); 
-        rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency()); 
+        rootSWfData.SetTimeLength(swfData.GetTimeLength());
+        rootSWfData.SetMinFrequency(swfData.GetMinFrequency());
+        rootSWfData.SetMaxFrequency(swfData.GetMaxFrequency());
         rootSWfData.SetFrequencyWidth(swfData.GetFrequencyWidth());
-
+        
         //
         Int_t nPoints = (Int_t)swfData.GetPoints().size();
         TClonesArray* points = rootSWfData.GetPoints();
@@ -822,33 +822,33 @@ namespace Katydid
         }
         return;
     }
-
+    
     // void KT2ROOT::UnloadSparseWaterfallCandidateData(KTSparseWaterfallCandidateData& swfData, const TSparseWaterfallCandidateData& rootSWfData)
     // {
-        // TODO
-        // return;
+    // TODO
+    // return;
     // }
-        
+    
     void KT2ROOT::LoadSequentialLineData(const KTSequentialLineData& seqData, TSequentialLineData& rootSEQData)
     {
-        rootSEQData.SetComponent(seqData.GetComponent()); 
-        rootSEQData.SetAcquisitionID(seqData.GetAcquisitionID()); 
+        rootSEQData.SetComponent(seqData.GetComponent());
+        rootSEQData.SetAcquisitionID(seqData.GetAcquisitionID());
         rootSEQData.SetCandidateID(seqData.GetCandidateID());
-
+        
         rootSEQData.SetStartTimeInRunC(seqData.GetStartTimeInRunC());
         rootSEQData.SetEndTimeInRunC(seqData.GetEndTimeInRunC());
         rootSEQData.SetStartTimeInAcq(seqData.GetStartTimeInAcq());
         rootSEQData.SetStartFrequency(seqData.GetStartFrequency());
         rootSEQData.SetEndFrequency(seqData.GetEndFrequency());
         rootSEQData.SetSlope(seqData.GetSlope());
-
+        
         rootSEQData.SetTotalPower(seqData.GetTotalPower());
         rootSEQData.SetTotalTrackSNR(seqData.GetTotalSNR());
         rootSEQData.SetTotalTrackNUP(seqData.GetTotalNUP());
         rootSEQData.SetTotalWidePower(seqData.GetTotalWidePower());
         rootSEQData.SetTotalWideTrackSNR(seqData.GetTotalWideSNR());
         rootSEQData.SetTotalWideTrackNUP(seqData.GetTotalWideNUP());
-
+        
         
         Int_t nPoints = (Int_t)seqData.GetLinePoints().size();
         TClonesArray* points = rootSEQData.GetPoints();
@@ -868,11 +868,11 @@ namespace Katydid
         }
         return;
     }
-
+    
     // void KT2ROOT::UnloadSequentialLineData(KTSequentialLineData& seqData, const TSequentialLineData& rootSEQData)
     // {
-        // TODO
-        // return;
+    // TODO
+    // return;
     // }
-
+    
 } /* namespace Katydid */

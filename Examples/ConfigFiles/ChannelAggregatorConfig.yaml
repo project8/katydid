@@ -6,7 +6,7 @@ processor-toolbox:
         name: fft
       - type: channel-aggregator
         name: ch-sum
-      - type: channelsum-optimizer
+      - type: aggregated-channel-optimizer
         name: ch-opt
       - type: convert-to-power
         name: to-ps

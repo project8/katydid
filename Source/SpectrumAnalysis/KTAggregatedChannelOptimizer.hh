@@ -20,53 +20,53 @@
 
 namespace Katydid
 {
-  
-  KTLOGGER(avlog_hh, "KTAggregatedChannelOptimizer.hh");
-  
-  class KTAggregatedFrequencySpectrumDataFFTW;
-  class KTFrequencySpectrumDataFFTW;
-  
-  /*
-   @class KTAggregatedChannelOptimizer
-   @author P. T. Surukuchi
-   
-   @brief Finds the point that optimizes the aggreagted channels
-   
-   @details
-   
-   Slots:
-   - "agg-fft": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggreagted channels; Requires KTAggregatedFrequencySpectrumDataFFTW;Finds the point that optimizes the aggreagted channels ; Emits signal "fft"
-   
-   Signals:
-   - "agg-fft": void (Nymph::KTDataPtr) -- Emitted upon finding the optimized point ; Guarantees KTFrequencySpectrumDataFFTW
-   */
-  
-  class KTAggregatedChannelOptimizer : public Nymph::KTProcessor
-  {
-  public:
-    KTAggregatedChannelOptimizer(const std::string& name = "channelsum-optimizer");
-    virtual ~KTAggregatedChannelOptimizer();
     
-    bool Configure(const scarab::param_node* node);
+    KTLOGGER(avlog_hh, "KTAggregatedChannelOptimizer.hh");
     
-  private:
+    class KTAggregatedFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataFFTW;
     
-    bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& );
+    /*
+     @class KTAggregatedChannelOptimizer
+     @author P. T. Surukuchi
+     
+     @brief Finds the point that optimizes the aggreagted channels
+     
+     @details
+     
+     Slots:
+     - "agg-fft": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggreagted channels; Requires KTAggregatedFrequencySpectrumDataFFTW;Finds the point that optimizes the aggreagted channels ; Emits signal "fft"
+     
+     Signals:
+     - "agg-fft": void (Nymph::KTDataPtr) -- Emitted upon finding the optimized point ; Guarantees KTFrequencySpectrumDataFFTW
+     */
     
-    //***************
-    // Signals
-    //***************
-    
-  private:
-    Nymph::KTSignalData fSummedFrequencyData;
-    
-    //***************
-    // Slots
-    //***************
-    
-  private:
-    Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
-  };
+    class KTAggregatedChannelOptimizer : public Nymph::KTProcessor
+    {
+    public:
+        KTAggregatedChannelOptimizer(const std::string& name = "aggregated-channel-optimizer");
+        virtual ~KTAggregatedChannelOptimizer();
+        
+        bool Configure(const scarab::param_node* node);
+        
+    private:
+        
+        bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& );
+        
+        //***************
+        // Signals
+        //***************
+        
+    private:
+        Nymph::KTSignalData fSummedFrequencyData;
+        
+        //***************
+        // Slots
+        //***************
+        
+    private:
+        Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
+    };
 }
 
 #endif  /* KTAGGREGATEDCHANNELOPTIMIZER_HH_  */
