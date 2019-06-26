@@ -43,16 +43,27 @@ Fixes:
 Log
 ---
 
-Version: 
+Version: 2.16.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Release Date: 
+Release Date: June 6, 2019
 '''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* N-Tracks, N-Points NUP Cut added
+* Added the ability to skip a specified number of records into an egg file
+* Added default value option for construction of KTPhysicalArrays and their derived classes
+* Added the ability to write the output of the spectrogram collector via the basic ROOT writer
 
 Fixes:
 '''''''''''''
 
 * Solving Travis issue [#169](https://github.com/project8/katydid/issues/169): now uses Docker as starting environment
+* Fixed spectrogram bin offset problem (between spectrograms and discriminated points)
+    * A 1-bin offset was caused by a bin indexing problem (ROOT-histogram indexing, starting at 1, needed to be used)
+    * A 1/2 bin offset was caused by a mistake in the spectrum discriminators, when points were assigned frequency-axis values
 
 
 Version: 2.15.3

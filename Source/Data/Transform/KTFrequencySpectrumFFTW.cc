@@ -61,6 +61,15 @@ namespace Katydid
         //KTINFO(fslog, "neg freq offset: " << fLeftOfCenterOffset);
     }
 
+    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin, double rangeMax, bool arrayOrderIsFlipped) :
+            KTFrequencySpectrumFFTW(nBins, rangeMin, rangeMax, arrayOrderIsFlipped)
+    {
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            std::copy(value.begin(), value.end(), fData[index]);
+        }
+    }
+
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
             KTPhysicalArray< 1, fftw_complex >(orig),
             KTFrequencySpectrum(),

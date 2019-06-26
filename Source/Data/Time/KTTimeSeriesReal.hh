@@ -19,6 +19,7 @@ namespace Katydid
         public:
             KTTimeSeriesReal();
             KTTimeSeriesReal(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            KTTimeSeriesReal(double value, size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTTimeSeriesReal(const KTTimeSeriesReal& orig);
             virtual ~KTTimeSeriesReal();
 

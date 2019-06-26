@@ -30,6 +30,7 @@ namespace Katydid
 
         public:
             KTPowerSpectrum(size_t nBins=1, double rangeMin=0., double rangeMax=1.);
+            KTPowerSpectrum(double value, size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTPowerSpectrum(const KTPowerSpectrum& orig);
             virtual ~KTPowerSpectrum();
 

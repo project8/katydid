@@ -220,11 +220,11 @@ namespace Katydid
         {
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                tsData.SetTimeSeries(new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
+                tsData.SetTimeSeries(new KTTimeSeriesReal(0., fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
             }
             else
             {
-                tsData.SetTimeSeries(new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
+                tsData.SetTimeSeries(new KTTimeSeriesFFTW({0., 0.}, fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
             }
         }
 

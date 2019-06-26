@@ -57,7 +57,7 @@ namespace Katydid
                 unsigned fNTimeBins;
                 double fTimeAxisMin;
                 double fTimeAxisMax;
-                int fCurrentTimeBin;
+                int fCurrentTimeBin; // bin numbering according to ROOT histogram numbering [1, nBins]
                 DataTypeBundle(const std::string& histNameBase);
             };
 
@@ -204,7 +204,7 @@ namespace Katydid
                  for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponent].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << iSpectTimeBin << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
-                     spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, spectrum->GetAbs(iFreqBin));
+                     spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin+1, spectrum->GetAbs(iFreqBin));
                      ++iSpectFreqBin;
                  }
              }
@@ -244,7 +244,7 @@ namespace Katydid
                  for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponent].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
-                     spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
+                     spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin+1, (*spectrum)(iFreqBin));
                      ++iSpectFreqBin;
                  }
              }
@@ -285,7 +285,7 @@ namespace Katydid
                  for (unsigned iFreqBin = dataBundle.fSpectrograms[iComponent].fFirstFreqBin; iFreqBin <= dataBundle.fSpectrograms[iComponent].fLastFreqBin; ++iFreqBin)
                  {
                      //std::cout << "spectrum bin: " << iFreqBin << "   spectrogram bins (" << fFSFFTWSpectrograms[iComponent].fNextTimeBinToFill << ", " << iSpectFreqBin << "    value: " << spectrum->GetAbs(iFreqBin) << std::endl;
-                     spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin, (*spectrum)(iFreqBin));
+                     spectrogram->SetBinContent(iSpectTimeBin, iSpectFreqBin+1, (*spectrum)(iFreqBin));
                      ++iSpectFreqBin;
                  }
                  KTDEBUG( publog_rsw, "Finished this component" );

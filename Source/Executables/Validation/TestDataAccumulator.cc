@@ -34,8 +34,7 @@ int main()
         KTINFO(vallog, "Iteration: " << iAcc);
 
         KTTimeSeriesData newData;
-        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, 0., nBins + 1);
-        (*newTS) *= 0.;
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(0., nBins, 0., nBins + 1);
         (*newTS)(iAcc * multiplier) = 1.;
         newData.SetTimeSeries(newTS, 0);
 
@@ -47,8 +46,7 @@ int main()
         KTINFO(vallog, "Iteration: " << nToAccumulate + iAcc);
 
         KTTimeSeriesData newData;
-        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, 0., nBins + 1);
-        (*newTS) *= 0.;
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(0., nBins, 0., nBins + 1);
         (*newTS)(iAcc * multiplier + 1) = 1.;
         newData.SetTimeSeries(newTS, 0);
 

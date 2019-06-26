@@ -37,6 +37,19 @@ namespace Katydid
             KTTimeFrequency()
     {
     }
+
+    KTTimeFrequencyPolar::KTTimeFrequencyPolar(complexpolar< double > value, size_t nTimeBins, double timeRangeMin, double timeRangeMax, size_t nFreqBins, double freqRangeMin, double freqRangeMax) :
+            KTTimeFrequencyPolar(nTimeBins, timeRangeMin, timeRangeMax, nFreqBins, freqRangeMin, freqRangeMax)
+    {
+        for (unsigned xIndex = 0; xIndex < nTimeBins; ++xIndex)
+        {
+            for (unsigned yIndex = 0; yIndex < nFreqBins; ++yIndex)
+            {
+                fData(xIndex, yIndex) = value;
+            }
+        }
+    }
+
     KTTimeFrequencyPolar::KTTimeFrequencyPolar(const KTTimeFrequencyPolar& orig) :
             KTPhysicalArray< 2, complexpolar< double > >(orig),
             KTTimeFrequency()
