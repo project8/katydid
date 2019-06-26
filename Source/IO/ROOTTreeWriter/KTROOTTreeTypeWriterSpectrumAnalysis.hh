@@ -22,7 +22,6 @@
 class TH1D;
 class TH2D;
 class TTree;
-class KTPowerSpectrum;
 
 namespace Katydid
 {

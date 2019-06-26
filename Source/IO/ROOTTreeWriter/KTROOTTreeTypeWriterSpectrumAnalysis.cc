@@ -35,20 +35,20 @@ namespace Katydid
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterSpectrumAnalysis > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterSpectrumAnalysis::KTROOTTreeTypeWriterSpectrumAnalysis() :
-            KTROOTTreeTypeWriter(),
-            //KTTypeWriterSpectrumAnalysis()
-            fDiscPoints1DTree(NULL),
-            fKDTreeTree(NULL),
-            fAmpDistTree(NULL),
-            fHoughTree(NULL),
-            fFlattenedPSDTree(NULL),
-            fFlattenedLabelMaskTree(NULL),
-            fDiscPoints1DData(),
-            fKDTreePointData(),
-            fAmpDistData(),
-            fHoughData(),
-            fPowerValue(0.0),
-            fLabel(0)
+                    KTROOTTreeTypeWriter(),
+                    //KTTypeWriterSpectrumAnalysis()
+                    fDiscPoints1DTree(NULL),
+                    fKDTreeTree(NULL),
+                    fAmpDistTree(NULL),
+                    fHoughTree(NULL),
+                    fFlattenedPSDTree(NULL),
+                    fFlattenedLabelMaskTree(NULL),
+                    fDiscPoints1DData(),
+                    fKDTreePointData(),
+                    fAmpDistData(),
+                    fHoughData(),
+                    fPowerValue(0.0),
+                    fLabel(0)
     {
     }
 
@@ -64,8 +64,8 @@ namespace Katydid
         fWriter->RegisterSlot("kd-tree-scaled", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteKDTreeScaled);
         fWriter->RegisterSlot("amp-dist", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteAmplitudeDistributions);
         fWriter->RegisterSlot("hough", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData);
-        fWriter->RegisterSlot("flatten", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedPSDData);
-        fWriter->RegisterSlot("mask", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedLabelMask);
+        fWriter->RegisterSlot("ps-flat", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedPSDData);
+        fWriter->RegisterSlot("ps-mask", this, &KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedLabelMask);
         return;
     }
 
@@ -107,7 +107,7 @@ namespace Katydid
                 fDiscPoints1DData.fNeighborhoodAmplitude = it->second.fNeighborhoodAmplitude;
 
                 fDiscPoints1DTree->Fill();
-           }
+            }
         }
 
         return;
@@ -134,7 +134,7 @@ namespace Katydid
                 fDiscPoints1DTree->SetBranchAddress("Mean", &fDiscPoints1DData.fMean);
                 fDiscPoints1DTree->SetBranchAddress("Variance", &fDiscPoints1DData.fVariance);
                 fDiscPoints1DTree->SetBranchAddress("NeighborhoodAmplitude", &fDiscPoints1DData.fNeighborhoodAmplitude);
-                
+
                 return true;
             }
         }
@@ -246,7 +246,7 @@ namespace Katydid
                     fKDTreeTree->Fill();
                     ++pid;
                 }
-           }
+            }
         }
         lastSlice = lastSliceThisData;
 
@@ -351,7 +351,7 @@ namespace Katydid
                 fAmpDistData.fDistribution->SetDirectory(NULL);
 
                 fAmpDistTree->Fill();
-           }
+            }
         }
 
         return;
@@ -495,11 +495,11 @@ namespace Katydid
         }
 
         KTPowerSpectrum* spectrum = psData.GetSpectrum(0);
-        
+
         for( unsigned iFreqBin = 0; iFreqBin < spectrum->GetNFrequencyBins(); ++iFreqBin )
         {
-                fPowerValue = (*spectrum)(iFreqBin);
-                fFlattenedPSDTree->Fill();
+            fPowerValue = (*spectrum)(iFreqBin);
+            fFlattenedPSDTree->Fill();
         }
 
         return;
@@ -532,7 +532,7 @@ namespace Katydid
 
 
         fFlattenedPSDTree->Branch( "Power", &fPowerValue, "fPower/d" );
-        
+
         return true;
     }
 
@@ -553,20 +553,20 @@ namespace Katydid
         }
 
         KTPowerSpectrum* spectrum = psData.GetSpectrum(0);
-        
+
         for( unsigned iFreqBin = 0; iFreqBin < spectrum->GetNFrequencyBins(); ++iFreqBin )
         {
-                if( (*spectrum)(iFreqBin) > 1.0e-17 )
-                {
-                    KTPROG( publog, "Nonzero power = " << (*spectrum)(iFreqBin) );
-                    fLabel = 1;
-                }
-                else
-                {
-                    fLabel = 0;
-                }
+            if( (*spectrum)(iFreqBin) > 1.0e-17 )
+            {
+                KTDEBUG( publog, "Nonzero power = " << (*spectrum)(iFreqBin) );
+                fLabel = 1;
+            }
+            else
+            {
+                fLabel = 0;
+            }
 
-                fFlattenedLabelMaskTree->Fill();
+            fFlattenedLabelMaskTree->Fill();
         }
 
         return;
@@ -599,7 +599,7 @@ namespace Katydid
 
 
         fFlattenedLabelMaskTree->Branch( "Label", &fLabel, "fLabel/i" );
-        
+
         return true;
     }
 
