@@ -41,6 +41,7 @@ namespace Katydid
      Available configuration values:
      - "alpha": double -- rotation angle for fractional FFT, in radians
      - "slope": double -- track slope for chirp transform, in Hz/s
+     - "transform-flag": string -- flag that determines how much planning is done prior to any transforms (see KTForwardFFTW.hh)
 
      Slots:
      - "track": void (Nymph::KTDataPtr) -- Sets the value of slope and alpha from a track; Requires KTProcessedTrackData; Adds nothing
@@ -63,7 +64,6 @@ namespace Katydid
             MEMBERVARIABLE(double, Alpha);
             MEMBERVARIABLEREF_NOSET(bool, CalculateAlpha);
             MEMBERVARIABLE(double, Slope)
-            MEMBERVARIABLE(bool, ChirpOnly);
             MEMBERVARIABLE(bool, Initialized);
             MEMBERVARIABLE(std::string, TransformFlag);
 
