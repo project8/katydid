@@ -34,12 +34,12 @@ namespace Katydid
             fTransformFlag("ESTIMATE"),
             fForwardFFT(),
             fReverseFFT(),
-            fChirpSlot("ts-chirp", this, &KTFractionalFFT::ProcessTimeSeriesChirpOnly, &fTSSignal),
             fProcTrackSlot("track", this, &KTFractionalFFT::AssignSlopeParams),
             fTSSignal("ts", this),
             fTSFSSignal("ts-and-fs", this)
     {
         RegisterSlot( "ts", this, &KTFractionalFFT::SlotFunctionTS );
+        RegisterSlot( "ts-chirp", this, &KTFractionalFFT::SlotFunctionTSChirpOnly );
     }
 
     KTFractionalFFT::~KTFractionalFFT()
@@ -86,10 +86,11 @@ namespace Katydid
         return true;
     }
 
-    bool KTFractionalFFT::ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTSliceHeader& slice )
+    bool KTFractionalFFT::ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTSliceHeader& slice )
     {
         KTDEBUG(evlog, "Receiving time series for fractional FFT");
 
+        KTTimeSeriesFFTW tsDup( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
         double binOffset = slice.GetTimeInAcq() / (double)slice.GetBinWidth();
         double chirpRate = fSlope * KTMath::Pi() * slice.GetBinWidth() * slice.GetBinWidth();
 
@@ -121,9 +122,11 @@ namespace Katydid
                 phase -= chirpRate * ((double)iBin + binOffset) * ((double)iBin + binOffset);
 
                 // Assign components from norm and new phase
-                (*ts)(iBin)[0] = norm * cos( phase );
-                (*ts)(iBin)[1] = norm * sin( phase );
+                (tsDup)(iBin)[0] = norm * cos( phase );
+                (tsDup)(iBin)[1] = norm * sin( phase );
             }
+
+            newTSData.SetTimeSeries( &tsDup, iComponent );
         }
 
         return true;
@@ -138,9 +141,6 @@ namespace Katydid
         KTFrequencySpectrumFFTW newFS( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
 
         newFS.SetNTimeBins( slice.GetSliceSize() );
-
-        KTINFO(evlog, "q1 N/pi = " << tan( 0.5 * fAlpha ));
-        KTINFO(evlog, "q2 N/pi = " << sin( fAlpha ));
 
         if( fCalculateAlpha )
         {
@@ -232,6 +232,41 @@ namespace Katydid
         return true;
     }
 
+    void KTFractionalFFT::SlotFunctionTSChirpOnly( Nymph::KTDataPtr data )
+    {
+        if (! data->Has< KTTimeSeriesData >())
+        {
+            KTERROR(evlog, "Data not found with type < KTTimeSeriesData >!");
+            return;
+        }
+
+        if (! data->Has< KTSliceHeader >())
+        {
+            KTERROR(evlog, "Data not found with type < KTSliceHeader >!");
+            return;
+        }
+
+        if( ! Initialize( data->Of< KTSliceHeader >().GetSliceSize() ) )
+        {
+            KTERROR(evlog, "Something went wrong initializing the FFTs!");
+            return;
+        }
+
+        Nymph::KTDataPtr newData( new Nymph::KTData() );
+        KTSliceHeader& newSlc = newData->Of< KTSliceHeader >();
+        KTSliceHeader& oldSlc = data->Of< KTSliceHeader >();
+
+        newSlc.CopySliceHeaderOnly( oldSlc );
+
+        if( ! ProcessTimeSeriesChirpOnly( data->Of< KTTimeSeriesData >(), newData->Of< KTTimeSeriesData >(), newSlc ) )
+        {
+            KTERROR(evlog, "Something went wrong with the chirp transform");
+        }
+
+        KTDEBUG(evlog, "Emitting signal");
+        fTSSignal( newData );
+    }
+
     void KTFractionalFFT::SlotFunctionTS( Nymph::KTDataPtr data )
     {
         if (! data->Has< KTTimeSeriesData >())
@@ -272,7 +307,7 @@ namespace Katydid
         SetSlope( trackData.GetSlope() );
         fCalculateAlpha = true;
 
-        KTINFO(evlog, "Set q-value: " << GetSlope());
+        KTINFO(evlog, "Set chirp slope: " << GetSlope());
 
         return true;
     }

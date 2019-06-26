@@ -1,0 +1,47 @@
+processor-toolbox:
+
+    processors:
+
+        - type: egg-processor
+          name: egg
+        - type: fractional-fft
+          name: frac
+        - type: convert-to-power
+          name: to-ps
+        - type: root-spectrogram-writer
+          name: rootw
+
+    connections:
+
+        - signal: egg:ts
+          slot: frac:ts
+
+        - signal: frac:ts-and-fs
+          slot: to-ps:fs-fftw-to-psd
+
+        - signal: to-ps:psd
+          slot: rootw:psd
+
+        - signal: egg:egg-done
+          slot: rootw:write-file
+
+    run-queue:
+        - egg
+
+egg:
+    filename: "foo.egg"
+    egg-reader: egg3
+    number-of-slices: 0
+    slice-size: 4096
+
+
+frac:
+    alpha: 1.57079632679489661923132169
+
+rootw:
+    output-file: "spectrogram-normal.root"
+    min-time: 0.0
+    max-time: 0.03
+    min-freq: 15.0e6
+    max-freq: 30.0e6
+    file-flag: "RECREATE"

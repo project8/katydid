@@ -29,14 +29,25 @@ namespace Katydid
      @brief Performs chirp transform and Fractional FFT via the Garcia algorithm
 
      @details
-     Separate slots for the chirp transform and Fractional FFT, both of which take a time series data object. The Fractional FFT
-     is performed via chirp -> FFT -> chirp -> Reverse FFT -> chirp, as in Garcia et al. Applied Optics 35, 35. 1996
-     Track slope / rotation angle can be specified directly in the config, or by an incoming track
-     The chirp-only transform is performed in-place. The Fractional FFT is not. The Fractional FFT uses a custom slot function
-     to create a new data pointer, rather than append to the old one. This avoids complications with the ordinary FFT further in the
-     analysis chain.
+     This processor performs two different but related operations: the chirp transform and fractional FFT. They are accomplished through
+     separate slot functions that each require a time series and slice header to be present.
 
-     Configuration name: "fracitonal-fft"
+     (a) The chirp transform shifts the phase of a time series by -q * t^2 where q is called the chirp rate. A new data pointer is emitted
+         with the slice header and transformed time series data.
+
+     (b) The fractional FFT is performed via chirp_1 -> FFT -> chirp_2 -> Reverse FFT -> chirp_1, as in Garcia et al. The journal reference is:
+     Applied Optics 35, 35 (1996). This process uses two different chirp rates (denoted above by _1 and _2) that are both calculated from the
+     rotation angle. The output is both a time series and fourier series with exactly the same data -- that is, they are not related by a
+     transform but instead the bin content in each is identical. The domain of this fractional FFT output is a mix of time and frequency, so this allows
+     the user to take advantage of either case.
+
+     The chirp rate / rotation angle may be specified in one of two ways:
+     - Extracted from a track, via the "track" slot. For both transforms, the parameter is calculated from the track slope.
+     - Directly in the config, via "slope" for the chirp transform or "alpha" for the fractional FFT. In this case, neither parameter is calculated from
+       the other so the correct one must be used for the desired transform. Use of the "track" slot calculates both parameters and thus overrides this option
+       for either transform.
+
+     Configuration name: "fractional-fft"
 
      Available configuration values:
      - "alpha": double -- rotation angle for fractional FFT, in radians
@@ -75,7 +86,7 @@ namespace Katydid
         public:
             bool Initialize(unsigned s);
             bool ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTFrequencySpectrumDataFFTW& newFSData, KTSliceHeader& slice );
-            bool ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTSliceHeader& slice );
+            bool ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTSliceHeader& slice );
             bool AssignSlopeParams( KTProcessedTrackData& trackData );
             
             //***************
@@ -89,11 +100,12 @@ namespace Katydid
             //***************
             // Slots
             //***************
-            Nymph::KTSlotDataTwoTypes< KTTimeSeriesData, KTSliceHeader > fChirpSlot;
+
             Nymph::KTSlotDataOneType< KTProcessedTrackData > fProcTrackSlot;
 
         private:
             void SlotFunctionTS( Nymph::KTDataPtr data );
+            void SlotFunctionTSChirpOnly( Nymph::KTDataPtr data );
 
     };
 }
