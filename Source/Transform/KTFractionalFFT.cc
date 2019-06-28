@@ -90,7 +90,6 @@ namespace Katydid
     {
         KTDEBUG(evlog, "Receiving time series for fractional FFT");
 
-        KTTimeSeriesFFTW tsDup( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
         double binOffset = slice.GetTimeInAcq() / (double)slice.GetBinWidth();
         double chirpRate = fSlope * KTMath::Pi() * slice.GetBinWidth() * slice.GetBinWidth();
 
@@ -100,6 +99,7 @@ namespace Katydid
 
             // Initialize vars
             KTTimeSeriesFFTW* ts = nullptr;     // time series from data
+            KTTimeSeriesFFTW* tsDup = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
             double norm = 0.;                   // norm of the current TS value
             double phase = 0.;                  // argument of current TS value
 
@@ -122,11 +122,11 @@ namespace Katydid
                 phase -= chirpRate * ((double)iBin + binOffset) * ((double)iBin + binOffset);
 
                 // Assign components from norm and new phase
-                (tsDup)(iBin)[0] = norm * cos( phase );
-                (tsDup)(iBin)[1] = norm * sin( phase );
+                (*tsDup)(iBin)[0] = norm * cos( phase );
+                (*tsDup)(iBin)[1] = norm * sin( phase );
             }
 
-            newTSData.SetTimeSeries( &tsDup, iComponent );
+            newTSData.SetTimeSeries( tsDup, iComponent );
         }
 
         return true;
@@ -138,9 +138,6 @@ namespace Katydid
 
         // Intermediate data objects that need to be initialized here
         KTTimeSeriesFFTW tsDup( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
-        KTFrequencySpectrumFFTW newFS( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
-
-        newFS.SetNTimeBins( slice.GetSliceSize() );
 
         if( fCalculateAlpha )
         {
@@ -160,6 +157,8 @@ namespace Katydid
             KTTimeSeriesFFTW* ts = nullptr;     // time series from data
             KTTimeSeriesFFTW* newTS;            // output time series
             KTFrequencySpectrumFFTW* fs;        // transformed data
+            KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
+            newFS->SetNTimeBins( slice.GetSliceSize() );
             double norm = 0.;
             double phase = 0.;   
 
@@ -221,12 +220,12 @@ namespace Katydid
                 // Assign components from norm and new phase
                 (*newTS)(iBin)[0] = norm * cos( phase );
                 (*newTS)(iBin)[1] = norm * sin( phase );
-                (newFS)(iBin)[0] = norm * cos( phase );
-                (newFS)(iBin)[1] = norm * sin( phase );
+                (*newFS)(iBin)[0] = norm * cos( phase );
+                (*newFS)(iBin)[1] = norm * sin( phase );
             }
 
             newTSData.SetTimeSeries( newTS, iComponent );
-            newFSData.SetSpectrum( &newFS, iComponent );
+            newFSData.SetSpectrum( newFS, iComponent );
         }
 
         return true;
