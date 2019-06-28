@@ -17,35 +17,34 @@ using std::vector;
 namespace Katydid
 {
     static Nymph::KTTIRegistrar< KTROOTSpectrogramTypeWriter, KTROOTSpectrogramTypeWriterSpectrumAnalysis > sRSTWTRegistrar;
-    
+
     KTROOTSpectrogramTypeWriterSpectrumAnalysis::KTROOTSpectrogramTypeWriterSpectrumAnalysis() :
-    KTROOTSpectrogramTypeWriter(),
-    //KTTypeWriterTransform()
-    //            fFSPolarBundle("FSPolarSpectrogram"),
-    //            fFSFFTWBundle("FSFFTWSpectrogram"),
-    fPowerBundle("AggregatePowerSpectrogram"),
-    fPSDBundle("AggregatePSDSpectrogram")
+            KTROOTSpectrogramTypeWriter(),
+            //KTTypeWriterTransform()
+            //            fFSPolarBundle("FSPolarSpectrogram"),
+            //            fFSFFTWBundle("FSFFTWSpectrogram"),
+            fPowerBundle("AggregatePowerSpectrogram"), fPSDBundle("AggregatePSDSpectrogram")
     {
     }
-    
+
     KTROOTSpectrogramTypeWriterSpectrumAnalysis::~KTROOTSpectrogramTypeWriterSpectrumAnalysis()
     {
     }
-    
+
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::OutputSpectrograms()
     {
-        if (! fWriter->OpenAndVerifyFile()) return;
-        
+        if (!fWriter->OpenAndVerifyFile()) return;
+
         KTDEBUG("calling output each spectrogram set")
         // OutputASpectrogramSet takes the spectrograms in the corresponding bundle and writes them to the root file.
         //        OutputASpectrogramSet(fFSPolarBundle, false);
         //        OutputASpectrogramSet(fFSFFTWBundle, false);
         OutputASpectrogramSet(fPowerBundle, false);
         OutputASpectrogramSet(fPSDBundle, false);
-        
+
         return;
     }
-    
+
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::ClearSpectrograms()
     {
         //        ClearASpectrogramSet(fFSPolarBundle);
@@ -54,7 +53,7 @@ namespace Katydid
         ClearASpectrogramSet(fPSDBundle);
         return;
     }
-    
+
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::RegisterSlots()
     {
         //        fWriter->RegisterSlot("fs-polar", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddFrequencySpectrumDataPolar);
@@ -63,7 +62,7 @@ namespace Katydid
         fWriter->RegisterSlot("agg-psd", this, &KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData);
         return;
     }
-    
+
     /*
      //************************
      // Frequency Spectrum Data
@@ -83,18 +82,16 @@ namespace Katydid
     //********************
     // Power Spectrum Data
     //********************
-    
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePowerSpectrumData(Nymph::KTDataPtr data)
     {
         AddAggregatePowerSpectrumDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPowerBundle);
         return;
     }
-    
+
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData(Nymph::KTDataPtr data)
     {
         AddAggregatePSDDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPSDBundle);
         return;
     }
-    
-    
+
 } /* namespace Katydid */

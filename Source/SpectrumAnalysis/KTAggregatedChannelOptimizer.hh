@@ -43,29 +43,29 @@ namespace Katydid
     
     class KTAggregatedChannelOptimizer : public Nymph::KTProcessor
     {
-    public:
-        KTAggregatedChannelOptimizer(const std::string& name = "aggregated-channel-optimizer");
-        virtual ~KTAggregatedChannelOptimizer();
-        
-        bool Configure(const scarab::param_node* node);
-        
-    private:
-        
-        bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& );
-        
-        //***************
-        // Signals
-        //***************
-        
-    private:
-        Nymph::KTSignalData fSummedFrequencyData;
-        
-        //***************
-        // Slots
-        //***************
-        
-    private:
-        Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
+        public:
+            KTAggregatedChannelOptimizer(const std::string& name = "aggregated-channel-optimizer");
+            virtual ~KTAggregatedChannelOptimizer();
+
+            bool Configure(const scarab::param_node* node);
+
+        private:
+
+            bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& aggData);
+
+            //***************
+            // Signals
+            //***************
+
+        private:
+            Nymph::KTSignalData fSummedFrequencyData;
+
+            //***************
+            // Slots
+            //***************
+
+        private:
+            Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
     };
 }
 

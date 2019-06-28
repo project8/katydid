@@ -41,21 +41,21 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTBasicROOTTypeWRiterAnalysis");
-    
-    
+    KTLOGGER(publog, "KTBasicROOTTypeWriterAnalysis");
+
+
     static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterSpectrumAnalysis > sBRTWAnalysisRegistrar;
-    
+
     KTBasicROOTTypeWriterSpectrumAnalysis::KTBasicROOTTypeWriterSpectrumAnalysis() :
-    KTBasicROOTTypeWriter()
+            KTBasicROOTTypeWriter()
     {
     }
-    
+
     KTBasicROOTTypeWriterSpectrumAnalysis::~KTBasicROOTTypeWriterSpectrumAnalysis()
     {
     }
-    
-    
+
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::RegisterSlots()
     {
         fWriter->RegisterSlot("snr-power", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteSNRPower);
@@ -91,23 +91,23 @@ namespace Katydid
 #endif
         return;
     }
-    
+
     //************************
     // SNR
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteSNRPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTPowerSpectrumData& psData = data->Of< KTPowerSpectrumData >();
         KTGainVariationData& gvData = data->Of< KTGainVariationData >();
         unsigned nComponents = psData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTPowerSpectrum* spectrum = psData.GetSpectrum(iComponent);
@@ -128,22 +128,22 @@ namespace Katydid
         }
         return;
     }
-    
+
     //************************
     // Frequency Spectrum Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedFSDataPolar& fsData = data->Of<KTNormalizedFSDataPolar>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
@@ -161,18 +161,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedFSDataFFTW& fsData = data->Of<KTNormalizedFSDataFFTW>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
@@ -190,18 +190,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolarPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedFSDataPolar& fsData = data->Of<KTNormalizedFSDataPolar>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
@@ -219,18 +219,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTWPhase(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedFSDataFFTW& fsData = data->Of<KTNormalizedFSDataFFTW>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
@@ -248,18 +248,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataPolarPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedFSDataPolar& fsData = data->Of<KTNormalizedFSDataPolar>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
@@ -277,18 +277,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedFSDataFFTWPower(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedFSDataFFTW& fsData = data->Of<KTNormalizedFSDataFFTW>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
@@ -306,18 +306,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteNormalizedPSData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTNormalizedPSData& psData = data->Of<KTNormalizedPSData>();
         unsigned nComponents = psData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             KTPowerSpectrum* spectrum = psData.GetSpectrum(iChannel);
@@ -336,23 +336,23 @@ namespace Katydid
         }
         return;
     }
-    
-    
+
+
     //************************
     // Analytic Associate Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAnalyticAssociateData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAnalyticAssociateData& aaData = data->Of<KTAnalyticAssociateData>();
         unsigned nComponents = aaData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTTimeSeries* timeSeries = aaData.GetTimeSeries(iPair);
@@ -373,18 +373,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAnalyticAssociateDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAnalyticAssociateData& aaData = data->Of<KTAnalyticAssociateData>();
         unsigned nComponents = aaData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTTimeSeries* timeSeries = aaData.GetTimeSeries(iPair);
@@ -405,22 +405,22 @@ namespace Katydid
         }
         return;
     }
-    
+
     //************************
     // Correlation Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
         unsigned nComponents = corrData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
@@ -433,7 +433,7 @@ namespace Katydid
                 TH1D* corrHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
-                "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
+                        "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fWriter->GetFile());
                 corrHist->Write();
@@ -442,18 +442,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
         unsigned nComponents = corrData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
@@ -466,7 +466,7 @@ namespace Katydid
                 TH1D* corrHist = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
-                "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
+                        "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fWriter->GetFile());
                 corrHist->Write();
@@ -475,7 +475,7 @@ namespace Katydid
         }
         return;
     }
-    
+
     //************************
     // Correlation Data
     //************************
@@ -483,14 +483,14 @@ namespace Katydid
      void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationTSData(Nymph::KTDataPtr data)
      {
      if (! data) return;
-     
+
      uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-     
+
      KTCorrelationTSData& tsData = data->Of<KTCorrelationTSData>();
      unsigned nComponents = tsData.GetNComponents();
-     
+
      if (! fWriter->OpenAndVerifyFile()) return;
-     
+
      for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
      {
      const KTTimeSeries* timeSeries = tsData.GetTimeSeries(iComponent);
@@ -508,18 +508,18 @@ namespace Katydid
      }
      return;
      }
-     
+
      void KTBasicROOTTypeWriterSpectrumAnalysis::WriteCorrelationTSDataDistribution(Nymph::KTDataPtr data)
      {
      if (! data) return;
-     
+
      uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-     
+
      KTCorrelationTSData& tsData = data->Of<KTCorrelationTSData>();
      unsigned nComponents = tsData.GetNComponents();
-     
+
      if (! fWriter->OpenAndVerifyFile()) return;
-     
+
      for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
      {
      const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
@@ -541,18 +541,18 @@ namespace Katydid
     //************************
     // Hough Transform Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteHoughData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTHoughData& houghData = data->Of<KTHoughData>();
         unsigned nComponents = houghData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPlot=0; iPlot<nComponents; iPlot++)
         {
             stringstream conv;
@@ -569,22 +569,22 @@ namespace Katydid
         }
         return;
     }
-    
+
     //************************
     // Gain Variation Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteGainVariationData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTGainVariationData& gvData = data->Of<KTGainVariationData>();
         unsigned nComponents = gvData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPlot=0; iPlot<nComponents; iPlot++)
         {
             stringstream conv;
@@ -602,7 +602,7 @@ namespace Katydid
             gvVarHist->SetDirectory(fWriter->GetFile());
             gvVarHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-            
+
             /*
              stringstream conv2;
              string splineName;
@@ -622,22 +622,22 @@ namespace Katydid
         }
         return;
     }
-    
+
     //************************
     // WignerVille Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTWignerVilleData& wvData = data->Of<KTWignerVilleData>();
         unsigned nComponents = wvData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
@@ -650,7 +650,7 @@ namespace Katydid
                 TH1D* corrHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
-                "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
+                        "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fWriter->GetFile());
                 corrHist->Write();
@@ -659,18 +659,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTWignerVilleData& wvData = data->Of<KTWignerVilleData>();
         unsigned nComponents = wvData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
@@ -683,7 +683,7 @@ namespace Katydid
                 TH1D* corrHist = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
-                "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
+                        "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fWriter->GetFile());
                 corrHist->Write();
@@ -692,18 +692,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTWV2DData& fsData = data->Of<KTWV2DData>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
         {
             stringstream conv;
@@ -717,20 +717,20 @@ namespace Katydid
         }
         return;
     }
-    
+
     //************************
     // KDTree Data
     //************************
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         static unsigned kdTreeSpectNum = 0;
-        
+
         KTKDTreeData& kdtData = data->Of< KTKDTreeData >();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         double xScaling = kdtData.GetXScaling();
         double yScaling = kdtData.GetYScaling();
         for (unsigned iComponent = 0; iComponent < kdtData.GetNComponents(); iComponent++)
@@ -738,9 +738,9 @@ namespace Katydid
             const KTKDTreeData::SetOfPoints& points = kdtData.GetSetOfPoints(iComponent);
             const KTKDTreeData::TreeIndex* index = kdtData.GetTreeIndex(iComponent);
             unsigned pid = 0;
-            
+
             KTDEBUG(publog, "Creating sparse spectrogram graph from KDTree with " << points.size() << " points");
-            
+
             TGraph* grSpectrogram = new TGraph(points.size());
             stringstream conv;
             conv << "grKDTreeSSpect_" << kdTreeSpectNum << "_" << iComponent;
@@ -748,88 +748,89 @@ namespace Katydid
             conv >> grName;
             grSpectrogram->SetName(grName.c_str());
             grSpectrogram->SetTitle("Sparse Spectrogram (from KDTree)");
-            
+
             for (KTKDTreeData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
             {
                 grSpectrogram->SetPoint(pid, it->fCoords[0] * xScaling, it->fCoords[1] * yScaling);
                 ++pid;
             }
-            
+
             fWriter->GetFile()->cd();
             grSpectrogram->Write();
             KTDEBUG(publog, "Graph <" << grName << "> written to ROOT file");
         }
-        
+
         return;
     }
-    
+
     //************************
     // Channel Aggregated Data
     //************************
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAggregatedFrequencySpectrumDataFFTW& sumData = data->Of<KTAggregatedFrequencySpectrumDataFFTW>();
         unsigned nComponents = sumData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
-            if (spectrum != NULL) {
+            if (spectrum != NULL)
+            {
                 stringstream conv;
                 conv << "histAggFFTW_" << sliceNumber<<"_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* aggregatedFrequencySpectrum = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 aggregatedFrequencySpectrum->SetDirectory(fWriter->GetFile());
-                
+
                 aggregatedFrequencySpectrum->Write(); //Redundant
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumGrid(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAggregatedFrequencySpectrumDataFFTW& sumData = data->Of<KTAggregatedFrequencySpectrumDataFFTW>();
         unsigned nComponents = sumData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         stringstream conv;
         conv << "histAggGridFFTW_" << sliceNumber;
         string histName;
         conv >> histName;
         TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
         aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
-        
+
         aggregatedGridHistogram->Write(); //Redundant
         KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         return;
     }
-    
-    
+
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerSpectrumData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAggregatedPowerSpectrumData& sumData = data->Of<KTAggregatedPowerSpectrumData>();
         unsigned nComponents = sumData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
@@ -848,41 +849,41 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerSpectrumGrid(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAggregatedPowerSpectrumData& sumData = data->Of<KTAggregatedPowerSpectrumData>();
         unsigned nComponents = sumData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         stringstream conv;
         conv << "histAggGridPower_" << sliceNumber;
         string histName;
         conv >> histName;
         TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
         aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
-        
+
         aggregatedGridHistogram->Write(); //Redundant
         KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDSpectrumData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAggregatedPowerSpectrumData& sumData = data->Of<KTAggregatedPowerSpectrumData>();
         unsigned nComponents = sumData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
@@ -900,42 +901,42 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPSDSpectrumGrid(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTAggregatedPowerSpectrumData& sumData = data->Of<KTAggregatedPowerSpectrumData>();
         unsigned nComponents = sumData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         stringstream conv;
         conv << "histAggGridPSD_" << sliceNumber;
         string histName;
         conv >> histName;
         TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
         aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
-        
+
         aggregatedGridHistogram->Write(); //Redundant
         KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         return;
     }
-    
+
 #ifdef ENABLE_TUTORIAL
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataPolar(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTLowPassFilteredFSDataPolar& fsData = data->Of<KTLowPassFilteredFSDataPolar>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
@@ -953,18 +954,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredFSDataFFTW(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTLowPassFilteredFSDataFFTW& fsData = data->Of<KTLowPassFilteredFSDataFFTW>();
         unsigned nComponents = fsData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
@@ -982,18 +983,18 @@ namespace Katydid
         }
         return;
     }
-    
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteLowPassFilteredPSData(Nymph::KTDataPtr data)
     {
         if (! data) return;
-        
+
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        
+
         KTLowPassFilteredPSData& psData = data->Of<KTLowPassFilteredPSData>();
         unsigned nComponents = psData.GetNComponents();
-        
+
         if (! fWriter->OpenAndVerifyFile()) return;
-        
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             KTPowerSpectrum* spectrum = psData.GetSpectrum(iChannel);
@@ -1013,5 +1014,5 @@ namespace Katydid
         return;
     }
 #endif /* ENABLE_TUTORIAL */
-    
+
 } /* namespace Katydid */

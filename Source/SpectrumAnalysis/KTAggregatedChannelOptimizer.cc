@@ -17,9 +17,9 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTAggregatedChannelOptimizer, "aggregated-channel-optimizer");
     
     KTAggregatedChannelOptimizer::KTAggregatedChannelOptimizer(const std::string& name) :
-    KTProcessor(name),
-    fOptimalSumSlot("agg-fft", this, &KTAggregatedChannelOptimizer::FindOptimumSum, &fSummedFrequencyData),
-    fSummedFrequencyData("agg-fft", this)
+            KTProcessor(name),
+            fSummedFrequencyData("agg-fft", this),
+            fOptimalSumSlot("agg-fft", this, &KTAggregatedChannelOptimizer::FindOptimumSum, &fSummedFrequencyData)
     {
     }
     
