@@ -43,21 +43,21 @@ namespace Katydid
         protected:
             struct SpectrogramPack
             {
-                    TH2D* fSpectrogram;
-                    unsigned fFirstFreqBin; // frequency-axis bin 0 is this bin in the incoming data
-                    unsigned fLastFreqBin; // frequency-axis last-bin is this bin in the incoming data
+                TH2D* fSpectrogram;
+                unsigned fFirstFreqBin; // frequency-axis bin 0 is this bin in the incoming data
+                unsigned fLastFreqBin; // frequency-axis last-bin is this bin in the incoming data
             };
 
             struct DataTypeBundle
             {
-                    std::vector< SpectrogramPack > fSpectrograms; // vector over components
-                    std::string fHistNameBase;
-                    unsigned fHistCount;
-                    unsigned fNTimeBins;
-                    double fTimeAxisMin;
-                    double fTimeAxisMax;
-                    int fCurrentTimeBin;
-                    DataTypeBundle(const std::string& histNameBase);
+                std::vector< SpectrogramPack > fSpectrograms; // vector over components
+                std::string fHistNameBase;
+                unsigned fHistCount;
+                unsigned fNTimeBins;
+                double fTimeAxisMin;
+                double fTimeAxisMax;
+                int fCurrentTimeBin;
+                DataTypeBundle(const std::string& histNameBase);
             };
 
             /// Checks to see if new spectrograms are needed, and creates them if so
@@ -141,20 +141,20 @@ namespace Katydid
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
 
-        MEMBERVARIABLEREF(std::string, Filename);
-        MEMBERVARIABLEREF(std::string, FileFlag);
+            MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLEREF(std::string, FileFlag);
 
-        MEMBERVARIABLE(Mode, Mode);
+            MEMBERVARIABLE(Mode, Mode);
 
-        MEMBERVARIABLE(double, MinTime); // in sec
-        MEMBERVARIABLE(double, MaxTime); // in sec
+            MEMBERVARIABLE(double, MinTime); // in sec
+            MEMBERVARIABLE(double, MaxTime); // in sec
 
-        MEMBERVARIABLE(unsigned, NTimeBins);
+            MEMBERVARIABLE(unsigned, NTimeBins);
 
-        MEMBERVARIABLE(double, MinFreq); // in Hz
-        MEMBERVARIABLE(double, MaxFreq); // in Hz
+            MEMBERVARIABLE(double, MinFreq); // in Hz
+            MEMBERVARIABLE(double, MaxFreq); // in Hz
 
-        MEMBERVARIABLE_NOSET(TFile*, File);
+            MEMBERVARIABLE_NOSET(TFile*, File);
 
             bool OpenAndVerifyFile();
             void WriteFile();

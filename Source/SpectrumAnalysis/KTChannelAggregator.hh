@@ -57,17 +57,17 @@ namespace Katydid
 
             // in meters, should not be hard-coded
             // PTS: Has to come as an input from config file ?
-        MEMBERVARIABLE(double, ActiveRadius);
+            MEMBERVARIABLE(double, ActiveRadius);
 
             // Get the grid size assuming a square grid
             // Set default to 30 currently
-        MEMBERVARIABLE(int, NGrid);
+            MEMBERVARIABLE(int, NGrid);
 
             // PTS:: for 18.6 keV electrons, this somehow needs to come from the data file or config file
-        MEMBERVARIABLE(double, Wavelength);
+            MEMBERVARIABLE(double, Wavelength);
 
             //For exception handling to make sure the grid is defined before the spectra are assigned.
-        MEMBERVARIABLE(bool, IsGridDefined);
+            MEMBERVARIABLE(bool, IsGridDefined);
 
         private:
             bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW&);

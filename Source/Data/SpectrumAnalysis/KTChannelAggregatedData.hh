@@ -95,11 +95,11 @@ namespace Katydid
         public:
 
             /// The radius of the active detector volume
-        MEMBERVARIABLE(double, ActiveRadius);
+            MEMBERVARIABLE(double, ActiveRadius);
 
-        MEMBERVARIABLE(bool, IsGridOptimized);
+            MEMBERVARIABLE(bool, IsGridOptimized);
 
-        MEMBERVARIABLE(bool, IsSquareGrid);
+            MEMBERVARIABLE(bool, IsSquareGrid);
     };
 
     class KTAggregatedFrequencySpectrumDataFFTW : public KTAggregatedDataCore, public KTFrequencySpectrumDataFFTWCore, public Nymph::KTExtensibleData< KTAggregatedFrequencySpectrumDataFFTW >

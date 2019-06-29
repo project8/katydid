@@ -104,7 +104,7 @@ namespace Katydid
             //************************
             // LPF Tutorial Data
             //************************
-            public:
+        public:
             void WriteLowPassFilteredFSDataPolar(Nymph::KTDataPtr data);
             void WriteLowPassFilteredFSDataFFTW(Nymph::KTDataPtr data);
             void WriteLowPassFilteredPSData(Nymph::KTDataPtr data);
