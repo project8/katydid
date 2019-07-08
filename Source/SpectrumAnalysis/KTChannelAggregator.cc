@@ -18,8 +18,8 @@ namespace Katydid
 
     KTChannelAggregator::KTChannelAggregator(const std::string& name) :
             KTProcessor(name),
-            fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
             fSummedFrequencyData("agg-fft", this),
+            fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
             fActiveRadius(0.0516),
             fNGrid(30),
             fWavelength(0.0115),
