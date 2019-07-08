@@ -64,6 +64,7 @@ if (Katydid_ENABLE_TESTING)
     
     set( PROGRAMS
         Test2DDiscrim
+        TestChannelAggregator
         TestConsensusThresholding
         TestConvolution1D
         TestCorrelator
