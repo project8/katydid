@@ -21,8 +21,6 @@
 namespace Katydid
 {
     
-    KTLOGGER(avlog_hh, "KTAggregatedChannelOptimizer.hh");
-    
     class KTAggregatedFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTW;
     

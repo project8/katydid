@@ -24,8 +24,6 @@
 namespace Katydid
 {
 
-    KTLOGGER(avlog_hh, "KTChannelAggregator.hh");
-
     class KTChannelAggregatedData;
     class KTPowerSpectrumData;
 

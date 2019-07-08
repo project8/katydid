@@ -11,7 +11,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(agglog, "KTAggregatedChannelOptimizer");
+    KTLOGGER(aggoptlog, "KTAggregatedChannelOptimizer");
     
     // Register the processor
     KT_REGISTER_PROCESSOR(KTAggregatedChannelOptimizer, "aggregated-channel-optimizer");
