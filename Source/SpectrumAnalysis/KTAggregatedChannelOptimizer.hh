@@ -46,10 +46,10 @@ namespace Katydid
             virtual ~KTAggregatedChannelOptimizer();
 
             bool Configure(const scarab::param_node* node);
+        
+            bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& aggData);
 
         private:
-
-            bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& aggData);
 
             //***************
             // Signals

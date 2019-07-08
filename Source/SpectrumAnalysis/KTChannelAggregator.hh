@@ -71,9 +71,10 @@ namespace Katydid
 
             //For exception handling to make sure the grid is defined before the spectra are assigned.
             MEMBERVARIABLE(bool, IsGridDefined);
+        
+            bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
 
         private:
-            bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
 
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
