@@ -33,33 +33,33 @@ namespace Katydid
 
             virtual ~KTAggregatedDataCore();
 
-            virtual void SetNGridPoints(unsigned);
+            virtual void SetNGridPoints(unsigned num);
 
             int GetNGridPoints();
 
             /*
              Set the X,Y pair corresponding to the grid point number.
              */
-            virtual void SetGridPoint(int, double, double);
+            virtual void SetGridPoint(int component, double gridValueX, double gridValueY);
 
             /*
              Get the X,Y pair corresponding to the grid point number.
              */
-            virtual void GetGridPoint(int, double &, double &) const;
+            virtual void GetGridPoint(int component, double &gridLocationX, double &gridLocationY) const;
 
             //Set the X,Y pair corresponding to the grid point number.
-            virtual void SetSummedGridMagnitude(int, double);
+            virtual void SetSummedGridMagnitude(int component, double magnitude);
 
             //
-            virtual double GetSummedGridMagnitude(int) const;
+            virtual double GetSummedGridMagnitude(int component) const;
 
             /// Set the grid number and the value of the optimal grid point
-            virtual void SetOptimizedGridPointValue(int, double);
+            virtual void SetOptimizedGridPointValue(int nGridPoint, double value);
 
             /*
              Set the element number in the vector of the grid point that corresponds to the optimum summed value.
              */
-            virtual void SetOptimizedGridPoint(int);
+            virtual void SetOptimizedGridPoint(int nGridPoint);
 
             /*
              Get the element number in the vector of the grid point that corresponds to the optimum summed value.
