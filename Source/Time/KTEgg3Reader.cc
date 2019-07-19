@@ -265,7 +265,8 @@ namespace Katydid
                 isNewAcquisition = true;
 
                 // if we're at the beginning of the run, load the first record
-                if (! fM3Stream->ReadRecord(startingRecordShift))
+                // second argument specifies that monarch should not go to the first record if it's a new acquisition
+                if (! fM3Stream->ReadRecord(startingRecordShift, false))
                 {
                     KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();
