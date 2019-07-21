@@ -38,8 +38,8 @@ namespace Katydid
             //            DataTypeBundle fFSPolarBundle;
             //            DataTypeBundle fFSFFTWBundle;
             // DataTypeBundle is a struct with some the histograms and timing and histogram count information used by KTROOTSpectrogramWriter
-            DataTypeBundle fPowerBundle;
-            DataTypeBundle fPSDBundle;
+            DataTypeBundle fAggPowerBundle;
+            DataTypeBundle fAggPSDBundle;
 
         public:
             void OutputSpectrograms();

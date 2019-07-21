@@ -23,7 +23,8 @@ namespace Katydid
             //KTTypeWriterTransform()
             //            fFSPolarBundle("FSPolarSpectrogram"),
             //            fFSFFTWBundle("FSFFTWSpectrogram"),
-            fPowerBundle("AggregatePowerSpectrogram"), fPSDBundle("AggregatePSDSpectrogram")
+            fAggPowerBundle("AggregatePowerSpectrogram"),
+            fAggPSDBundle("AggregatePSDSpectrogram")
     {
     }
 
@@ -39,8 +40,8 @@ namespace Katydid
         // OutputASpectrogramSet takes the spectrograms in the corresponding bundle and writes them to the root file.
         //        OutputASpectrogramSet(fFSPolarBundle, false);
         //        OutputASpectrogramSet(fFSFFTWBundle, false);
-        OutputASpectrogramSet(fPowerBundle, false);
-        OutputASpectrogramSet(fPSDBundle, false);
+        OutputASpectrogramSet(fAggPowerBundle, false);
+        OutputASpectrogramSet(fAggPSDBundle, false);
 
         return;
     }
@@ -49,8 +50,8 @@ namespace Katydid
     {
         //        ClearASpectrogramSet(fFSPolarBundle);
         //        ClearASpectrogramSet(fFSFFTWBundle);
-        ClearASpectrogramSet(fPowerBundle);
-        ClearASpectrogramSet(fPSDBundle);
+        ClearASpectrogramSet(fAggPowerBundle);
+        ClearASpectrogramSet(fAggPSDBundle);
         return;
     }
 
@@ -63,11 +64,10 @@ namespace Katydid
         return;
     }
 
-    /*
      //************************
-     // Frequency Spectrum Data
+     // Aggregated Frequency Spectrum Data
      //************************
-     
+/*
      void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
      {
      AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataPolar >(data, fFSPolarBundle);
@@ -78,19 +78,20 @@ namespace Katydid
      {
      AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWBundle);
      return;
-     }*/
+     }
+*/
     //********************
-    // Power Spectrum Data
+    // Aggregated Power Spectrum Data
     //********************
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePowerSpectrumData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectrumDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPowerBundle);
+        AddPowerSpectrumDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fAggPowerBundle);
         return;
     }
 
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData(Nymph::KTDataPtr data)
     {
-        AddPowerSpectralDensityDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPSDBundle);
+        AddPowerSpectralDensityDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fAggPSDBundle);
         return;
     }
 
