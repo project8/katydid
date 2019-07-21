@@ -84,13 +84,13 @@ namespace Katydid
     //********************
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePowerSpectrumData(Nymph::KTDataPtr data)
     {
-        AddAggregatePowerSpectrumDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPowerBundle);
+        AddPowerSpectrumDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPowerBundle);
         return;
     }
 
     void KTROOTSpectrogramTypeWriterSpectrumAnalysis::AddAggregatePSDSpectrumData(Nymph::KTDataPtr data)
     {
-        AddAggregatePSDDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPSDBundle);
+        AddPowerSpectralDensityDataCoreHelper< KTAggregatedPowerSpectrumData >(data, fPSDBundle);
         return;
     }
 
