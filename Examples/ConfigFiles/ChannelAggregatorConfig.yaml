@@ -51,7 +51,7 @@ processor-toolbox:
       - egg
 
 egg:
-    filename: "locust_mc_0.5e-3s_x1.5cm_y0cm_Seed55_LO25.8781G.egg"
+    filename: "locust_mc_multichannel.egg"
     egg-reader: egg3
     slice-size: 8192
     number-of-slices: 10
@@ -76,3 +76,4 @@ waterfall-writer:
     max-time: 0.025
     min-freq: 0.0e6
     max-freq: 200.0e6
+    
