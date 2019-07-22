@@ -98,13 +98,12 @@ namespace Katydid
             KTDEBUG(evlog, "Processing component: " << iComponent);
 
             // Initialize vars
-            KTTimeSeriesFFTW* ts = nullptr;     // time series from data
             KTTimeSeriesFFTW* tsDup = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
             double norm = 0.;                   // norm of the current TS value
             double phase = 0.;                  // argument of current TS value
 
-            // get TS from data object and make the new TS
-            ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
+            // get TS from data object and make the new TS; remains owned by tsData
+            KTTimeSeriesFFTW* ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
             if( ts == nullptr )
             {
                 KTWARN(evlog, "Couldn't find time series object. Continuing to next component");
@@ -126,7 +125,7 @@ namespace Katydid
                 (*tsDup)(iBin)[1] = norm * sin( phase );
             }
 
-            newTSData.SetTimeSeries( tsDup, iComponent );
+            newTSData.SetTimeSeries( tsDup, iComponent );  // tsDup now owned by newTSData
         }
 
         return true;
@@ -154,16 +153,11 @@ namespace Katydid
             KTDEBUG(evlog, "Processing component: " << iComponent);
 
             // Initialize vars
-            KTTimeSeriesFFTW* ts = nullptr;     // time series from data
-            KTTimeSeriesFFTW* newTS;            // output time series
-            KTFrequencySpectrumFFTW* fs;        // transformed data
-            KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
-            newFS->SetNTimeBins( slice.GetSliceSize() );
             double norm = 0.;
             double phase = 0.;   
 
-            // get TS from data object and make the new TS
-            ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
+            // get TS from data object and make the new TS; remains owned by tsData
+            KTTimeSeriesFFTW* ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
             if( ts == nullptr )
             {
                 KTWARN(evlog, "Couldn't find time series object. Continuing to next component");
@@ -186,7 +180,7 @@ namespace Katydid
             }
 
             // Forward FFT
-            fs = fForwardFFT.Transform( &tsDup );
+            KTFrequencySpectrumFFTW* fs = fForwardFFT.Transform( &tsDup );
             fs->SetNTimeBins( slice.GetSliceSize() );
 
             // Second chirp transform
@@ -205,7 +199,11 @@ namespace Katydid
             }
 
             // Reverse FFT
-            newTS = fReverseFFT.TransformToComplex( fs );
+            KTTimeSeriesFFTW* newTS = fReverseFFT.TransformToComplex( fs );
+            KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW( slice.GetSliceSize(), 0.0, slice.GetSampleRate() );
+            newFS->SetNTimeBins( slice.GetSliceSize() );
+
+            delete fs;  // cleanup of fs
 
             // Third chirp transform
             for( unsigned iBin = 0; iBin < newTS->GetNTimeBins(); ++iBin )
@@ -224,8 +222,8 @@ namespace Katydid
                 (*newFS)(iBin)[1] = norm * sin( phase );
             }
 
-            newTSData.SetTimeSeries( newTS, iComponent );
-            newFSData.SetSpectrum( newFS, iComponent );
+            newTSData.SetTimeSeries( newTS, iComponent );  // newTS now owned by newTSData
+            newFSData.SetSpectrum( newFS, iComponent );  // newFS now owned by newFSData
         }
 
         return true;
