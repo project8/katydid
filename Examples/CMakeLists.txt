@@ -18,8 +18,10 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/HDF5/ConvertEggToHDF5.json
     
     ConfigFiles/ChannelAggregatorConfig.yaml
+    ConfigFiles/ChirpTransformWithFrFFT.yaml
     ConfigFiles/DisplayFFT.yaml
     ConfigFiles/DisplaySpectrograms.yaml
+    ConfigFiles/FractionalFFTAsOrdinaryFFT.yaml
     ConfigFiles/GainVariation.yaml
     ConfigFiles/KatydidPSConfig.yaml
     ConfigFiles/NormalizedPS.yaml
@@ -29,6 +31,7 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/SparseSpectrogramFromKDTree.yaml
     ConfigFiles/SpectrogramConfig.yaml
     ConfigFiles/SpectrogramImageConfig.yaml
+    ConfigFiles/TrackConstructionConfig.yaml
 )
 
 pbuilder_install_config (${EXAMPLE_CONFIGFILES})
