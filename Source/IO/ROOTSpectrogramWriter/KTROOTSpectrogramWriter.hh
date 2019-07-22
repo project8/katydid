@@ -123,7 +123,8 @@ namespace Katydid
         public:
             enum Mode
             {
-                kSingle, kSequential
+                kSingle,
+                kSequential
             };
 
         public:
