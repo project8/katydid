@@ -43,6 +43,23 @@ Fixes:
 Log
 ---
 
+Version: 2.17.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: July ??, 2019
+'''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Digital beamforming: KTChannelAggregator and KTAggregatedChannelOptimizer
+
+Fixes:
+'''''''''''''
+
+* Fixed issue with `start-record` in KTEggReader.
+
+
 Version: 2.16.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

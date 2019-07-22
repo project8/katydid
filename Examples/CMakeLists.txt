@@ -17,6 +17,7 @@ set (EXAMPLE_CONFIGFILES
     ConfigFiles/HDF5/AveragePS.json
     ConfigFiles/HDF5/ConvertEggToHDF5.json
     
+    ConfigFiles/ChannelAggregatorConfig.yaml
     ConfigFiles/DisplayFFT.yaml
     ConfigFiles/DisplaySpectrograms.yaml
     ConfigFiles/GainVariation.yaml

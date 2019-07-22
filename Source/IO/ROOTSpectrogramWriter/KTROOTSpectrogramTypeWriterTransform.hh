@@ -23,16 +23,12 @@ namespace Katydid
 
         public:
             void AddFrequencySpectrumDataPolar(Nymph::KTDataPtr data);
-            void OutputFrequencySpectrumDataPolar();
 
             void AddFrequencySpectrumDataFFTW(Nymph::KTDataPtr data);
-            void OutputFrequencySpectrumDataFFTW();
 
             void AddPowerSpectrumData(Nymph::KTDataPtr data);
-            void OutputPowerSpectrumData();
 
             void AddPSDData(Nymph::KTDataPtr data);
-            void OutputPSDData();
 
         private:
             DataTypeBundle fFSPolarBundle;

@@ -2,8 +2,10 @@
 # Author: N. Oblath
 
 set (SPECTRUMANALYSIS_HEADERFILES
+    KTAggregatedChannelOptimizer.hh
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
+    KTChannelAggregator.hh
     KTConsensusThresholding.hh
     KTConvolution.hh
     KTCorrelator.hh
@@ -25,8 +27,10 @@ set (SPECTRUMANALYSIS_HEADERFILES
 )
 
 set (SPECTRUMANALYSIS_SOURCEFILES
+    KTAggregatedChannelOptimizer.cc
     KTAmplitudeCounter.cc
     KTAmplitudeDistributor.cc
+    KTChannelAggregator.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc
     KTConvolution.cc
