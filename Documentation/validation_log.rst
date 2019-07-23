@@ -46,7 +46,7 @@ Log
 Version: 2.17.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Release Date: July ??, 2019
+Release Date: July 23, 2019
 '''''''''''''''''''''''''''''''
 
 New Features:
