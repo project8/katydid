@@ -123,7 +123,8 @@ namespace Katydid
         public:
             enum Mode
             {
-                kSingle, kSequential
+                kSingle,
+                kSequential
             };
 
         public:
@@ -289,5 +290,6 @@ namespace Katydid
 
         return;
     }
+
 } /* namespace Katydid */
 #endif /* KTROOTSPECTROGRAMWRITER_HH_ */

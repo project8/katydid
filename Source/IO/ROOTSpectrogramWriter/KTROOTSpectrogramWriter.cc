@@ -216,6 +216,8 @@ namespace Katydid
                     dataBundle.fHistCount = 0;
                 }
 
+                dataBundle.fTimeAxisMin = timeInRun;
+
                 // calculate the properties of the time axis
                 if (mode == KTROOTSpectrogramWriter::kSingle)
                 {
@@ -225,7 +227,7 @@ namespace Katydid
                 {
                     dataBundle.fNTimeBins = fWriter->GetNTimeBins();
                 }
-                dataBundle.fTimeAxisMin = timeInRun;
+
                 dataBundle.fTimeAxisMax = dataBundle.fTimeAxisMin + sliceLength * (double)dataBundle.fNTimeBins;
                 KTDEBUG(publog, dataBundle.fNTimeBins << "  " << dataBundle.fTimeAxisMin << "  " << dataBundle.fTimeAxisMax);
 

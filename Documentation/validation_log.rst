@@ -53,6 +53,7 @@ New Features:
 '''''''''''''
 
 * Digital beamforming: KTChannelAggregator and KTAggregatedChannelOptimizer
+* Fractional FFT: KTFractionalFFT
 
 Fixes:
 '''''''''''''
