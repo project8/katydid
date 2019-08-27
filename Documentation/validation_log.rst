@@ -43,6 +43,18 @@ Fixes:
 Log
 ---
 
+Version: 2.17.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: August 27, 2019
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Docker base image switched to p8compute_dependencies v0.9.0.
+
+
 Version: 2.17.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
