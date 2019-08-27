@@ -1,11 +1,11 @@
-FROM project8/p8compute_dependencies:v0.7.0 as katydid_common
+FROM project8/p8compute_dependencies:v0.9.0 as katydid_common
 
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
 ARG build_tests_exe=FALSE
 ENV KATYDID_BUILD_TESTS_EXE=$build_tests_exe
 
-ENV KATYDID_TAG=v2.17.0
+ENV KATYDID_TAG=v2.17.1
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
