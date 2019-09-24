@@ -14,6 +14,7 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTLinearFitCut.hh
     CutClasses/KTMultiPeakTrackEventSequenceIDCut.hh
     CutClasses/KTMultiPeakTrackMultiplicityCut.hh
+    CutClasses/KTNTracksNPointsNUPCut.hh
     CutClasses/KTPowerFitCut.hh
     CutClasses/KTProcessedTrackCut.hh
     CutClasses/KTSequentialLineNUPCut.hh
@@ -23,8 +24,8 @@ set (EVENTANALYSIS_HEADERFILES
     CutClasses/KTTrackMainbandCut.hh
     CutClasses/KTTrackMVACut.hh
     CutClasses/KTTrackTimeCut.hh
-    KTCollinearTrackClustering.hh
 
+    KTCollinearTrackClustering.hh
     KTDataCutter.hh
     KTDistanceMatrix.hh
     KTDBSCANEventClustering.hh
@@ -36,7 +37,6 @@ set (EVENTANALYSIS_HEADERFILES
     KTMultiPeakTrackBuilder.hh
     KTMultiSliceClustering.hh
     KTOverlappingTrackClustering.hh
-    KTQuadraticPhaseShift.hh
     KTRPClassifier.hh
     KTSidebandCorrection.hh
     KTSpectrogramCollector.hh
@@ -54,6 +54,7 @@ set (EVENTANALYSIS_SOURCEFILES
     CutClasses/KTLinearFitCut.cc
     CutClasses/KTMultiPeakTrackEventSequenceIDCut.cc
     CutClasses/KTMultiPeakTrackMultiplicityCut.cc
+    CutClasses/KTNTracksNPointsNUPCut.cc
     CutClasses/KTSequentialLineNUPCut.cc
     CutClasses/KTSequentialLinePointDensityCut.cc
     CutClasses/KTSequentialLineSNRCut.cc
@@ -76,7 +77,6 @@ set (EVENTANALYSIS_SOURCEFILES
     KTMultiSliceClustering.cc
     KTOverlappingTrackClustering.cc
     KTRPClassifier.cc
-    KTQuadraticPhaseShift.cc
     KTSidebandCorrection.cc
     KTSpectrogramCollector.cc
     KTTrackProcessingDoubleCuts.cc

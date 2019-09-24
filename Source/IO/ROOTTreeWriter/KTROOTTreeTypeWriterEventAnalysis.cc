@@ -93,6 +93,7 @@ namespace Katydid
         fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteFrequencyCandidates);
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate);
         fWriter->RegisterSlot("swfc", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
+        fWriter->RegisterSlot("seq-cand", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSequentialLine);
         fWriter->RegisterSlot("processed-mpt", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT);
         fWriter->RegisterSlot("proc-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("mp-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);

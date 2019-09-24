@@ -39,6 +39,7 @@ namespace Katydid
             fSliceSize(1024),
             fStride(0),
             fStartTime(0.),
+            fStartRecord(0),
             //fHatchNextSlicePtr(NULL),
             fFilenames(),
             fCurrentFileIt(),
@@ -78,6 +79,7 @@ namespace Katydid
         SetSliceSize(eggProc.GetSliceSize());
         SetStride(eggProc.GetStride());
         SetStartTime(eggProc.GetStartTime());
+        SetStartRecord(eggProc.GetStartRecord());
         return true;
     }
 
@@ -192,12 +194,17 @@ namespace Katydid
         fReadState.fCurrentRecord = 0;
 
         // skip forward in the run if fStartTime is non-zero
-        if (fStartTime > 0.)
+        if (fStartRecord == 0 && fStartTime > 0.)
         {
             double recordLength = fRecordSize * fBinWidth; // seconds
             unsigned recordSkips = (unsigned)(fStartTime / recordLength);
             fReadState.fStartOfLastSliceRecord = recordSkips;
             fReadState.fStartOfLastSliceReadPtr = (unsigned)((fStartTime - (double)recordSkips * recordLength) / fBinWidth);;
+        }
+        else if (fStartRecord != 0)
+        {
+            fReadState.fStartOfLastSliceRecord = fStartRecord;
+            // fReadState.fStartOfLastSliceReadPtr stays 0
         }
 
         fSliceNumber = 0;
@@ -258,7 +265,8 @@ namespace Katydid
                 isNewAcquisition = true;
 
                 // if we're at the beginning of the run, load the first record
-                if (! fM3Stream->ReadRecord(startingRecordShift))
+                // second argument specifies that monarch should not go to the first record if it's a new acquisition
+                if (! fM3Stream->ReadRecord(startingRecordShift, false))
                 {
                     KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();

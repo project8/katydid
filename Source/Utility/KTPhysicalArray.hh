@@ -221,6 +221,7 @@ namespace Katydid
         public:
             KTPhysicalArray();
             explicit KTPhysicalArray(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            explicit KTPhysicalArray(XDataType value, size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTPhysicalArray(const KTPhysicalArray< 1, value_type >& orig);
             virtual ~KTPhysicalArray();
 
@@ -284,6 +285,16 @@ namespace Katydid
     {
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
         fData = new XDataType[ nBins ];
+    }
+
+    template< typename XDataType >
+    KTPhysicalArray< 1, XDataType >::KTPhysicalArray(XDataType value, size_t nBins, double rangeMin, double rangeMax) :
+            KTPhysicalArray< 1, XDataType >(nBins, rangeMin, rangeMax)
+    {
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            fData[index] = value;
+        }
     }
 
     template< typename XDataType >
@@ -550,6 +561,7 @@ namespace Katydid
         public:
             KTPhysicalArray();
             KTPhysicalArray(size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax);
+            KTPhysicalArray(XDataType value, size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax);
             KTPhysicalArray(const KTPhysicalArray< 2, value_type >& orig);
             virtual ~KTPhysicalArray();
 
@@ -635,6 +647,19 @@ namespace Katydid
         SetRangeMax(1, xRangeMax);
         SetRangeMax(2, yRangeMax);
         //KTDEBUG(utillog_physarr, "created matrix with (" << fData.size1() << ", " << fData.size2() << ")");
+    }
+
+    template< typename XDataType >
+    KTPhysicalArray< 2, XDataType >::KTPhysicalArray(XDataType value, size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax) :
+            KTPhysicalArray(xNBins, xRangeMin, xRangeMax, yNBins, yRangeMin, yRangeMax)
+    {
+        for (unsigned xIndex = 0; xIndex < xNBins; ++xIndex)
+        {
+            for (unsigned yIndex = 0; yIndex < yNBins; ++yIndex)
+            {
+                fData(xIndex, yIndex) = value;
+            }
+        }
     }
 
     template< typename XDataType >

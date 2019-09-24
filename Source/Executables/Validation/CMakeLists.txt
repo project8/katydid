@@ -64,6 +64,7 @@ if (Katydid_ENABLE_TESTING)
     
     set( PROGRAMS
         Test2DDiscrim
+        TestChannelAggregator
         TestConsensusThresholding
         TestConvolution1D
         TestCorrelator
@@ -76,6 +77,7 @@ if (Katydid_ENABLE_TESTING)
         #TestHoughTransform  # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
         # TestLinearDensityProbe
         # TestMultiSliceClustering
+        TestNTracksNPointsNUPCut
         TestSequentialTrackFinder
         #TestSimpleClustering # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
         #TestSlidingWindowFFT
@@ -105,7 +107,9 @@ if (Katydid_ENABLE_TESTING)
         )
         
         set( PROGRAMS
+           TestComboFFTW
            TestForwardFFTW
+           TestReverseFFTW
            TestWignerVille
         )
         

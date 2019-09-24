@@ -11,6 +11,8 @@
 #include "KTPhysicalArrayFFTW.hh"
 #include "KTTimeSeries.hh"
 
+#include <initializer_list>
+
 namespace Katydid
 {
     
@@ -21,6 +23,7 @@ namespace Katydid
         public:
             KTTimeSeriesFFTW();
             KTTimeSeriesFFTW(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            KTTimeSeriesFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig);
             virtual ~KTTimeSeriesFFTW();
 

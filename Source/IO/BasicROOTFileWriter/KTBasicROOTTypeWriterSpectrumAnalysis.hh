@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    
+
     class KTBasicROOTTypeWriterSpectrumAnalysis : public KTBasicROOTTypeWriter
     {
         public:
@@ -88,6 +88,17 @@ namespace Katydid
             //************************
         public:
             void WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data);
+
+            //************************
+            // Aggregated Channel Data
+            //************************
+        public:
+            void WriteAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data);
+            void WriteAggregatedFrequencySpectrumGrid(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPowerSpectrumData(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPowerSpectrumGrid(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPSDSpectrumData(Nymph::KTDataPtr data);
+            void WriteChannelAggregatedPSDSpectrumGrid(Nymph::KTDataPtr data);
 
 #ifdef ENABLE_TUTORIAL
             //************************

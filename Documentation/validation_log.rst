@@ -43,6 +43,59 @@ Fixes:
 Log
 ---
 
+Version: 2.17.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: July 23, 2019
+'''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* Digital beamforming: KTChannelAggregator and KTAggregatedChannelOptimizer
+* Fractional FFT: KTFractionalFFT
+
+Fixes:
+'''''''''''''
+
+* Fixed issue with `start-record` in KTEggReader.
+
+
+Version: 2.16.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: June 6, 2019
+'''''''''''''''''''''''''''''''
+
+New Features:
+'''''''''''''
+
+* N-Tracks, N-Points NUP Cut added
+* Added the ability to skip a specified number of records into an egg file
+* Added default value option for construction of KTPhysicalArrays and their derived classes
+* Added the ability to write the output of the spectrogram collector via the basic ROOT writer
+
+Fixes:
+'''''''''''''
+
+* Solving Travis issue [#169](https://github.com/project8/katydid/issues/169): now uses Docker as starting environment
+* Fixed spectrogram bin offset problem (between spectrograms and discriminated points)
+    * A 1-bin offset was caused by a bin indexing problem (ROOT-histogram indexing, starting at 1, needed to be used)
+    * A 1/2 bin offset was caused by a mistake in the spectrum discriminators, when points were assigned frequency-axis values
+
+
+Version: 2.15.3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: April 10, 2019
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Updated Dockerfile for new dependencies
+
+
 Version: 2.15.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,0 +1,31 @@
+#general:
+*.swp
+*.o
+*.so
+*.a
+*.dylib
+
+#mac
+.DS_Store
+
+#from Eclipse
+.project
+.cproject
+
+#from cmake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+build*/
+cbuild*/
+cmake_install.cmake
+*Dict.h
+*Dict.cxx
+Documentation/ReferenceGuide/Doxyfile
+Source/Main/ExtractEvents
+Source/Main/SimpleElectronHunt
+Source/Applications/Main/SimpleElectronHunt
+install_manifest.txt
+
+# from emacs
+*~

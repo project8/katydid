@@ -4,6 +4,7 @@
 set (DATA_HEADERFILES
     SpectrumAnalysis/KTAmplitudeDistribution.hh
     SpectrumAnalysis/KTAnalyticAssociateData.hh
+    SpectrumAnalysis/KTChannelAggregatedData.hh
     SpectrumAnalysis/KTCluster1DData.hh
     SpectrumAnalysis/KTCorrelationData.hh
     SpectrumAnalysis/KTCorrelationTSData.hh
@@ -17,7 +18,6 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTKDTreeData.hh
     SpectrumAnalysis/KTNormalizedFSData.hh
     SpectrumAnalysis/KTPointCloud.hh
-    SpectrumAnalysis/KTSequentialLineData.hh
     SpectrumAnalysis/KTTimeSeriesDist.hh
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
@@ -31,6 +31,7 @@ set (DATA_HEADERFILES
     EventAnalysis/KTProcessedMPTData.hh
     EventAnalysis/KTProcessedTrackData.hh
     EventAnalysis/KTRPTrackData.hh
+    EventAnalysis/KTSequentialLineData.hh
     EventAnalysis/KTSparseWaterfallCandidateData.hh
     EventAnalysis/KTSpectrumCollectionData.hh
     EventAnalysis/KTWaterfallCandidateData.hh
@@ -71,6 +72,7 @@ set (DATA_HEADERFILES
 set (DATA_SOURCEFILES
     SpectrumAnalysis/KTAmplitudeDistribution.cc
     SpectrumAnalysis/KTAnalyticAssociateData.cc
+    SpectrumAnalysis/KTChannelAggregatedData.cc
     SpectrumAnalysis/KTCluster1DData.cc
     SpectrumAnalysis/KTCorrelationData.cc
     SpectrumAnalysis/KTCorrelationTSData.cc
@@ -81,7 +83,6 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTHoughData.cc
     SpectrumAnalysis/KTKDTreeData.cc
     SpectrumAnalysis/KTNormalizedFSData.cc
-    SpectrumAnalysis/KTSequentialLineData.cc
     SpectrumAnalysis/KTTimeSeriesDist.cc
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
@@ -95,6 +96,7 @@ set (DATA_SOURCEFILES
     EventAnalysis/KTProcessedMPTData.cc
     EventAnalysis/KTProcessedTrackData.cc
     EventAnalysis/KTRPTrackData.cc
+    EventAnalysis/KTSequentialLineData.cc
     EventAnalysis/KTSparseWaterfallCandidateData.cc
     EventAnalysis/KTSpectrumCollectionData.cc
     EventAnalysis/KTWaterfallCandidateData.cc
