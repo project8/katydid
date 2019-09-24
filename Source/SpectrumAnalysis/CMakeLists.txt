@@ -11,6 +11,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTDataAccumulator.hh
     KTDBSCANNoiseFiltering.hh
     KTDistanceClustering.hh
+    KTFakeSparseSpectrogramProcessor.hh
 #    KTGainVarChi2Test.hh
     KTGainVariationProcessor.hh
     KTHoughTransform.hh
@@ -34,6 +35,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTDataAccumulator.cc
     KTDBSCANNoiseFiltering.cc
     KTDistanceClustering.cc
+    KTFakeSparseSpectrogramProcessor.cc
 #    KTGainVarChi2Test.cc
     KTGainVariationProcessor.cc
     KTHoughTransform.cc
