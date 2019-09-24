@@ -1,0 +1,315 @@
+processor-toolbox:
+
+    processors:
+
+        - type: fake-sparse-spectrogram-processor
+          name: fss-processor
+
+        - type: sequential-track-finder
+          name: seq-tr-clust
+        - type: overlapping-track-clustering
+          name: otc
+        - type: iterative-track-clustering
+          name: itc
+        - type: track-proc-ws
+          name: tr-proc-ws
+        - type: multi-peak-track-builder
+          name: mptb
+        - type: multi-peak-event-builder
+          name: mpeb
+
+        - type: apply-cut
+          name: ac1b
+        - type: apply-cut
+          name: event-nup-cut
+        - type: apply-cut
+          name: event-time-cut
+
+        - type: root-tree-writer
+          name: trw
+
+    connections:
+
+        - signal: "fss-processor:disc-1d"
+          slot: "seq-tr-clust:disc-1d"
+
+        - signal: "seq-tr-clust:seq-cand"
+          slot: "otc:seq-cand"
+
+        - signal: "otc:seq-cand"
+          slot: "itc:seq-cand"
+
+        - signal: "itc:seq-cand"
+          slot: "ac1b:apply"
+
+        - signal: "ac1b:pass"
+          slot: "tr-proc-ws:seq-cand"
+
+        - signal: "tr-proc-ws:track"
+          slot: "mptb:track"
+
+        - signal: "tr-proc-ws:track"
+          slot: "trw:proc-track"
+
+        - signal: "fss-processor:egg-done"
+          slot: "seq-tr-clust:done"
+
+        - signal: "seq-tr-clust:clustering-done"
+          slot: "otc:do-clustering"
+
+        - signal: "otc:clustering-done"
+          slot: "itc:do-clustering"
+
+        - signal: "itc:clustering-done"
+          slot: "mptb:do-clustering"
+
+        - signal: "mptb:mpt"
+          slot: "mpeb:mpt"
+
+        - signal: "mptb:mpt-done"
+          slot: "mpeb:do-clustering"
+
+        - signal: "mpeb:event"
+          slot: "event-nup-cut:apply"
+
+        - signal: "event-nup-cut:pass"
+          slot: "event-time-cut:apply"
+
+        - signal: "event-time-cut:pass"
+          slot: "trw:mt-event"
+
+    run-queue:
+        - fss-processor
+
+fss-processor:
+    run-time: 100.0
+    slice-size: 4096
+    acquisition-rate: 100.0e6
+    snr-threshold: 6.0
+    progress-report-interval: 100000
+
+seq-tr-clust:
+    min-frequency: 5e6
+    max-frequency: 95e6
+    initial-slope : 800e6                # slope of a track with 1 point
+    slope-method: weighted-first-point-ref
+    n-slope-points: 10
+    time-gap-tolerance: 0.1e-3
+    frequency-acceptance: 56e3
+    trimming-threshold: 6.0            # snr threshold for the first and last point of a candidate
+    min-points: 3
+    min-slope: 0
+
+otc:
+    max-track-width: 150e3          # For most tracks this only needs to be 150e3-ish. Only curved tracks profit from this number being bigger
+
+itc:
+    time-gap-tolerance: 1.0e-3
+    frequency-acceptance: 100.0e3
+    max-track-width: 100.0e3
+
+tr-proc-ws:
+    min-slope: 0
+
+mptb:
+    sideband-time-tol: 1e-3
+
+mpeb:
+    jump-time-tol: 3.0e-3
+
+
+ac1b:
+    seq-line-nup-cut:               # can be applied after stf, after otc or after itc
+        min-total-nup: 0
+        min-average-nup: 7.0
+        time-or-bin-average: bin
+        wide-or-narrow: wide        # wide is default
+
+
+event-nup-cut:
+    ntracks-npoints-nup-cut:      # cut events if the summed or average nup is below threshold
+        wide-or-narrow: wide        # wide is default
+        time-or-bin-average: bin
+
+        default-parameters: # default-parameters are thresholds for event first track nup cut
+            min-total-nup: 0
+            min-average-nup: 7.454357052489394
+            min-max-nup: 0
+
+        parameters:
+          - ft-npoints: 3
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 15.74668644848628
+            min-max-nup: 0
+
+          - ft-npoints: 3
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 14.396403491431705
+            min-max-nup: 0
+
+          - ft-npoints: 3
+            ntracks: 3
+            min-total-nup: 0
+            min-average-nup: 13.032932650345844
+            min-max-nup: 0
+
+          - ft-npoints: 3
+            ntracks: 4
+            min-total-nup: 0
+            min-average-nup: 11.651179906121854
+            min-max-nup: 0
+
+          - ft-npoints: 3
+            ntracks: 5
+            min-total-nup: 0
+            min-average-nup: 10.242207772240628
+            min-max-nup: 0
+
+          - ft-npoints: 3
+            ntracks: 6
+            min-total-nup: 0
+            min-average-nup: 8.78782196327628
+            min-max-nup: 0
+
+          - ft-npoints: 4
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 12.735418234003228
+            min-max-nup: 0
+
+          - ft-npoints: 4
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 11.681651640175646
+            min-max-nup: 0
+
+          - ft-npoints: 4
+            ntracks: 3
+            min-total-nup: 0
+            min-average-nup: 10.610759932504259
+            min-max-nup: 0
+
+          - ft-npoints: 4
+            ntracks: 4
+            min-total-nup: 0
+            min-average-nup: 9.515056968514685
+            min-max-nup: 0
+
+          - ft-npoints: 4
+            ntracks: 5
+            min-total-nup: 0
+            min-average-nup: 8.379691045166915
+            min-max-nup: 0
+
+          - ft-npoints: 5
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 10.869025304065605
+            min-max-nup: 0
+
+          - ft-npoints: 5
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 9.987041877860296
+            min-max-nup: 0
+
+          - ft-npoints: 5
+            ntracks: 3
+            min-total-nup: 0
+            min-average-nup: 9.083012737896947
+            min-max-nup: 0
+
+          - ft-npoints: 5
+            ntracks: 4
+            min-total-nup: 0
+            min-average-nup: 8.144983909889586
+            min-max-nup: 0
+
+          - ft-npoints: 6
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 9.831510394306793
+            min-max-nup: 0
+
+          - ft-npoints: 6
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 9.148730213081482
+            min-max-nup: 0
+
+          - ft-npoints: 6
+            ntracks: 3
+            min-total-nup: 0
+            min-average-nup: 8.436488780835134
+            min-max-nup: 0
+
+          - ft-npoints: 6
+            ntracks: 4
+            min-total-nup: 0
+            min-average-nup: 7.67794591793375
+            min-max-nup: 0
+
+          - ft-npoints: 7
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 8.893879615160312
+            min-max-nup: 0
+
+          - ft-npoints: 7
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 8.294285562892895
+            min-max-nup: 0
+
+          - ft-npoints: 7
+            ntracks: 3
+            min-total-nup: 0
+            min-average-nup: 7.658861173418163
+            min-max-nup: 0
+
+          - ft-npoints: 8
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 8.277213651025455
+            min-max-nup: 0
+
+          - ft-npoints: 8
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 7.722303890626092
+            min-max-nup: 0
+
+          - ft-npoints: 9
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 7.9962037692806796
+            min-max-nup: 0
+
+          - ft-npoints: 9
+            ntracks: 2
+            min-total-nup: 0
+            min-average-nup: 7.46339335340889
+            min-max-nup: 0
+
+          - ft-npoints: 10
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 7.725369787485035
+            min-max-nup: 0
+
+          - ft-npoints: 11
+            ntracks: 1
+            min-total-nup: 0
+            min-average-nup: 7.454357052489394
+            min-max-nup: 0
+
+event-time-cut:
+    event-time-in-acq-cut:
+        min-time: 0.5e-3
+        max-time: 5
+
+trw:
+    output-file: "TracksAndEvents.root"
+    file-flag: recreate
