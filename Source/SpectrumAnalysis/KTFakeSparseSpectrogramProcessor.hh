@@ -30,7 +30,7 @@ namespace Katydid
      Available configuration options: (all required except the last)
      - "run-time": double -- Time to simulate (in seconds)
      - "slice-size": unsigned -- Size of the time series
-     - "acquisition-rate": unsigned -- Samples per second. With slice size and runtime determines number of slices.
+     - "acquisition-rate": double -- Samples per second. With slice size and runtime determines number of slices.
      - "snr-threshold": double -- Exponential suppression factor; determines density of points
      - "progress-report-interval": unsigned -- Interval (# of slices) between 
         reporting progress (mainly relevant for RELEASE builds); turn off by
@@ -51,7 +51,7 @@ namespace Katydid
 
             MEMBERVARIABLE( double, RunTime );
             MEMBERVARIABLE( unsigned, SliceSize );
-            MEMBERVARIABLE( unsigned, AcquisitionRate );
+            MEMBERVARIABLE( double, AcquisitionRate );
             MEMBERVARIABLE( double, SNRThreshold );
             MEMBERVARIABLE( unsigned, ProgInterval );
 

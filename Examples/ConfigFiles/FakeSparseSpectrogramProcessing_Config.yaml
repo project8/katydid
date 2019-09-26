@@ -82,11 +82,11 @@ processor-toolbox:
         - fss-processor
 
 fss-processor:
-    run-time: 100.0
+    run-time: 1.0
     slice-size: 4096
     acquisition-rate: 100.0e6
-    snr-threshold: 6.0
-    progress-report-interval: 100000
+    snr-threshold: 5.0
+    progress-report-interval: 10000
 
 seq-tr-clust:
     min-frequency: 5e6

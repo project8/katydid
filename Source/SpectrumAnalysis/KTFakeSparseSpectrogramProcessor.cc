@@ -25,7 +25,7 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fRunTime(1.0e-6),
             fSliceSize(1),
-            fAcquisitionRate(1),
+            fAcquisitionRate(1.),
             fSNRThreshold(0.0),
             fProgInterval(1),
             fDisc1DSignal("disc-1d", this),
@@ -41,7 +41,7 @@ namespace Katydid
     {
         fRunTime = node->get_value< double >( "run-time", fRunTime );
         fSliceSize = node->get_value< unsigned >( "slice-size", fSliceSize );
-        fAcquisitionRate = node->get_value< unsigned >( "acquisition-rate", fAcquisitionRate );
+        fAcquisitionRate = node->get_value< double >( "acquisition-rate", fAcquisitionRate );
         fSNRThreshold = node->get_value< double >( "snr-threshold", fSNRThreshold );
         fProgInterval = node->get_value< unsigned >( "progress-report-interval", fProgInterval );
 
@@ -93,7 +93,7 @@ namespace Katydid
                 double power = -1.0 * log( uniformRandom() ) + fSNRThreshold;
                 double iBin = uniformRandom() * (double)fSliceSize;
 
-                disc1d.AddPoint( (int)iBin, KTDiscriminatedPoints1DData::Point( freqBinWidth * (iBin + 0.5), power, fSNRThreshold, 1.0, 1.0, 1.0 ), 0 );
+                disc1d.AddPoint( (int)iBin, KTDiscriminatedPoints1DData::Point( freqBinWidth * (iBin + 0.5), power, fSNRThreshold, 1.0, 1.0, power ), 0 );
             }
 
             // Emit signal
