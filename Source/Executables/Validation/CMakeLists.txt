@@ -85,7 +85,6 @@ if (Katydid_ENABLE_TESTING)
         TestSpectrogramStriper
         TestSpectrogramStriperSwaps
         TestSpectrumDiscriminator
-        TestSTFFalseEventRate
         TestTrackProcessing
         TestWindowFunction
         
