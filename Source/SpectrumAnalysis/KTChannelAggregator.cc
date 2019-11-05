@@ -141,7 +141,7 @@ namespace Katydid
 		// Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
 		if(fUseAntiSpiralPhaseShifts)
 		{
-		    phaseShift+=fAntiSpiralPhaseShifts.at(iComponent);
+		    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
 		}
                 // Get the frequency spectrum for that specific component
                 freqSpectrum = fftwData.GetSpectrumFFTW(iComponent);
