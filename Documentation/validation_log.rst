@@ -43,6 +43,18 @@ Fixes:
 Log
 ---
 
+Version: 2.17.2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: November 12, 2019
+'''''''''''''''''''''''''''''''
+
+Fixes:
+'''''''''''''
+
+* Dockerfile fix to allow library replacement
+
+
 Version: 2.17.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

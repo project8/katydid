@@ -5,7 +5,7 @@ ENV KATYDID_BUILD_TYPE=$build_type
 ARG build_tests_exe=FALSE
 ENV KATYDID_BUILD_TESTS_EXE=$build_tests_exe
 
-ENV KATYDID_TAG=v2.17.1
+ENV KATYDID_TAG=v2.17.2
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
@@ -43,10 +43,12 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
     cd build &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
           -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE .. &&\
+          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
+          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
     cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
           -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE .. &&\
+          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
+          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
     make -j3 install &&\
     /bin/true
 
