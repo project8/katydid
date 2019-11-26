@@ -3,12 +3,21 @@
  *
  *  Created on: May 21, 2013
  *      Author: nsoblath
- *
  *  KDTreeData can be written either with "kd-tree" or "kd-tree-scaled".
  *  The latter scales the time and frequency values back to their original units.
  *  Both functions share the same TTree, so only one should be used in a given writer instance.
  *  To write to both, please use two RTW instances.
  */
+ 
+ /*
+  *  Mask threshold added on: Nov 26, 2019
+  *      Author: Yuhao
+  * Configuration name: "root-writer-spectrum-analysis"
+  * 
+  * Available configuration values:
+  * "mask-threshold": double -- mask threshold, bin with power bigger than mask threshold would be marked as 1, 
+  * 0 otherwise.
+  */
 
 #ifndef KTROOTTREETYPEWRITERSPECTRUMANALYSIS_HH_
 #define KTROOTTREETYPEWRITERSPECTRUMANALYSIS_HH_
@@ -85,10 +94,14 @@ namespace Katydid
     class KTROOTTreeTypeWriterSpectrumAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterSpectrumAnalysis
     {
         public:
-            KTROOTTreeTypeWriterSpectrumAnalysis();
+            KTROOTTreeTypeWriterSpectrumAnalysis(const std::string& name = "root-writer-spectrum-analysis");
             virtual ~KTROOTTreeTypeWriterSpectrumAnalysis();
 
             void RegisterSlots();
+
+        bool Configure(const scarab::param_node* node);
+
+        MEMBERVARIABLE(double, MaskThreshold);
 
         public:
             void WriteDiscriminatedPoints1D(Nymph::KTDataPtr data);

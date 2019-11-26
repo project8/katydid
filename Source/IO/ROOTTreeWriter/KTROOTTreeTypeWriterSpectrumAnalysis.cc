@@ -48,7 +48,8 @@ namespace Katydid
                     fAmpDistData(),
                     fHoughData(),
                     fPowerValue(0.0),
-                    fLabel(0)
+                    fLabel(0),
+                    fMaskThreshold(1.0e-17)
     {
     }
 
@@ -554,9 +555,10 @@ namespace Katydid
 
         KTPowerSpectrum* spectrum = psData.GetSpectrum(0);
 
+        SetMaskThreshold( node->get_value< double >( "mask-threshold", GetMaskThreshold() ) );
         for( unsigned iFreqBin = 0; iFreqBin < spectrum->GetNFrequencyBins(); ++iFreqBin )
         {
-            if( (*spectrum)(iFreqBin) > 1.0e-17 )
+            if( (*spectrum)(iFreqBin) > fMaskThreshold )
             {
                 KTDEBUG( publog, "Nonzero power = " << (*spectrum)(iFreqBin) );
                 fLabel = 1;
