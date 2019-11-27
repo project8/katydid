@@ -31,10 +31,12 @@ using std::string;
 namespace Katydid
 {
     KTLOGGER(publog, "KTROOTTreeTypeWriterSpectrumAnalysis");
+    
+    const std::string KTROOTTreeTypeWriterSpectrumAnalysis::Result::sName = "root-writer-spectrum-analysis";
 
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterSpectrumAnalysis > sRTTWCRegistrar;
 
-    KTROOTTreeTypeWriterSpectrumAnalysis::KTROOTTreeTypeWriterSpectrumAnalysis() :
+    KTROOTTreeTypeWriterSpectrumAnalysis::KTROOTTreeTypeWriterSpectrumAnalysis(const std::string& name) :
                     KTROOTTreeTypeWriter(),
                     //KTTypeWriterSpectrumAnalysis()
                     fDiscPoints1DTree(NULL),
