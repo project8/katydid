@@ -64,6 +64,7 @@ ch-sum:
     grid-size: 5
     active-radius: 0.0516
     wavelength: 0.011
+    use-antispiral-phase-shifts: true
 
 writer:
     output-file: "Summed_Channels.root"
