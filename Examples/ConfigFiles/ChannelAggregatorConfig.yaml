@@ -64,6 +64,8 @@ ch-sum:
     grid-size: 5
     active-radius: 0.0516
     wavelength: 0.011
+    min-freq: 100.0e6
+    max-freq: 140.0e6
     use-antispiral-phase-shifts: true
 
 writer:

@@ -24,6 +24,8 @@ namespace Katydid
             fNGrid(30),
             fWavelength(0.0115),
             fIsGridDefined(false),
+	    fSummationMinFreq(100e6),
+	    fSummationMaxFreq(140e6),
 	    fUseAntiSpiralPhaseShifts(false),
 	    fAntiSpiralPhaseShifts()
     {
@@ -40,6 +42,8 @@ namespace Katydid
             fNGrid = node->get_value< signed int >("grid-size", fNGrid);
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
             fWavelength = node->get_value< double >("wavelength", fWavelength);
+            fSummationMinFreq= node->get_value< double >("min-freq", fSummationMinFreq);
+            fSummationMaxFreq= node->get_value< double >("max-freq", fSummationMaxFreq);
             fUseAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fUseAntiSpiralPhaseShifts);
         }
         return true;
@@ -166,6 +170,7 @@ namespace Katydid
             //Loop over all the freq bins and get the highest value and save to the aggregated frequency data
             for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
             {
+		if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
                 if (newFreqSpectrum->GetAbs(iFreqBin) > maxVoltageFreq)
                 {
                     maxVoltageFreq = newFreqSpectrum->GetAbs(iFreqBin);

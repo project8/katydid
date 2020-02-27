@@ -42,6 +42,8 @@ namespace Katydid
      - "active-radius": double -- The active radius of the detection volume
      - "grid-size": signed int -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
      - "wavelength": double -- Wavelength of the cyclotron motion
+     - "min-freq": double -- The minimum frequency value above which the channel aggregated spectrum is calculated. This particularly helps in enforcing bramforming around the central peak and avoiding side bands
+     - "max-freq": double -- The maximum frequency value below which the channel aggregated spectrum is calculated
      - "use-antispiral-phase-shifts": bool, -- A flad to indicate whether to use antispiral phase shifts
  
      Slots:
@@ -71,6 +73,12 @@ namespace Katydid
 
             //For exception handling to make sure the grid is defined before the spectra are assigned.
             MEMBERVARIABLE(bool, IsGridDefined);
+            
+	    //The minimum frequency value above which the channel aggregated spectrum is calculated
+            MEMBERVARIABLE(double, SummationMinFreq);
+
+	    //The maximum frequency value below which the channel aggregated spectrum is calculated
+            MEMBERVARIABLE(double, SummationMaxFreq);
 
 	    //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
 	    //If selected this option will make sure that there is a relative phase-shift applied 
