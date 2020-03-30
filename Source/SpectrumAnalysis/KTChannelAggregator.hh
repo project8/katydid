@@ -41,6 +41,8 @@ namespace Katydid
      Available configuration options:
      - "active-radius": double -- The active radius of the detection volume
      - "grid-size": signed int -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
+     - "use-grid-text-file": bool, -- Check whether to define the grid based on an input text file 
+     - "grid-text-file": : std::string, -- Text file which has the user-defined grid positions 
      - "wavelength": double -- Wavelength of the cyclotron motion
      - "min-freq": double -- The minimum frequency value above which the channel aggregated spectrum is calculated. This particularly helps in enforcing bramforming around the central peak and avoiding side bands
      - "max-freq": double -- The maximum frequency value below which the channel aggregated spectrum is calculated
@@ -74,6 +76,12 @@ namespace Katydid
             //For exception handling to make sure the grid is defined before the spectra are assigned.
             MEMBERVARIABLE(bool, IsGridDefined);
             
+            // A boolean value to check whether the grid should be defined by the user
+            MEMBERVARIABLE(bool, IsUserDefinedGrid);
+
+            // The text file to be used for the user-defined grid
+            MEMBERVARIABLE(std::string, UserDefinedGridFile);
+
 	    //The minimum frequency value above which the channel aggregated spectrum is calculated
             MEMBERVARIABLE(double, SummationMinFreq);
 

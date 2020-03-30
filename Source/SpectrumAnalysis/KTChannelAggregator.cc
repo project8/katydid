@@ -22,8 +22,10 @@ namespace Katydid
             fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
             fActiveRadius(0.0516),
             fNGrid(30),
-            fWavelength(0.0115),
             fIsGridDefined(false),
+            fIsUserDefinedGrid(false),
+            fUserDefinedGridFile(""),
+            fWavelength(0.0115),
 	    fSummationMinFreq(100e6),
 	    fSummationMaxFreq(140e6),
 	    fUseAntiSpiralPhaseShifts(false),
@@ -40,6 +42,8 @@ namespace Katydid
         if (node != NULL)
         {
             fNGrid = node->get_value< signed int >("grid-size", fNGrid);
+            fIsUserDefinedGrid = node->get_value< bool >("use-grid-text-file", fIsUserDefinedGrid);
+            fUserDefinedGridFile = node->get_value< >("grid-text-file", fUserDefinedGridFile);
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
             fWavelength = node->get_value< double >("wavelength", fWavelength);
             fSummationMinFreq= node->get_value< double >("min-freq", fSummationMinFreq);
