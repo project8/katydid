@@ -36,7 +36,7 @@ namespace Katydid
             virtual void SetNGridPoints(unsigned num);
 
             int GetNGridPoints();
-
+            
             /*
              Set the X,Y pair corresponding to the grid point number.
              */
@@ -47,10 +47,19 @@ namespace Katydid
              */
             virtual void GetGridPoint(int component, double &gridLocationX, double &gridLocationY, double &gridValueZ) const;
 
+            ///Set the number of axial points
+            /* 
+             The points along the axis are discrete since it is defined by the number of rings/suarrays used
+             */
+            virtual void SetNAxialPositions(unsigned num);
+
+            ///Get the number of axial points
+            int GetNAxialPositions() const;
+
             //Set the X,Y pair corresponding to the grid point number.
             virtual void SetSummedGridMagnitude(int component, double magnitude);
 
-            //
+            //Get the magnitude given the component
             virtual double GetSummedGridMagnitude(int component) const;
 
             /// Set the grid number and the value of the optimal grid point
@@ -79,6 +88,9 @@ namespace Katydid
                     /// The Y position of the grid point
                     double fGridPointY;
 
+                    /// The Z index of the grid point
+                    double fZIndex;
+
                     /// The Z position of the grid point
                     double fGridPointZ;
 
@@ -88,6 +100,8 @@ namespace Katydid
             typedef std::vector< KTGrid > SetOfGridPoints;
 
             SetOfGridPoints fGridPoints;
+
+            unsigned fNAxialPositions;
 
             /// The element in the vector corresponding to the optimized grid point
             int fOptimizedGridPoint;
@@ -156,6 +170,16 @@ namespace Katydid
         gridLocationY = fGridPoints[component].fGridPointY;
         gridLocationZ = fGridPoints[component].fGridPointZ;
         return;
+    }
+
+    inline void KTAggregatedDataCore::SetNAxialPositions(unsigned num)
+    {
+        fNAxialPositions=num;
+    }
+
+    inline int KTAggregatedDataCore::GetNAxialPositions() const
+    {
+        return fNAxialPositions;
     }
 
     inline void KTAggregatedDataCore::SetSummedGridMagnitude(int component, double magnitude)

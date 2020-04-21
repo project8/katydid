@@ -31,6 +31,7 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph2D.h"
 
 #include <sstream>
 
@@ -808,14 +809,15 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridFFTW_" << sliceNumber;
-        string histName;
-        conv >> histName;
-        TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        conv << "graphAggGridFFTW_" << sliceNumber;
+        string graphName;
+        conv >> graphName;
+        //TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
+        TGraph2D* aggregatedGridGraph = KT2ROOT::CreateGridGraph(sumData,graphName);
+        //aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        aggregatedGridGraph->SetDirectory(fWriter->GetFile());
 
-        aggregatedGridHistogram->Write(); //Redundant
-        KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;
     }
 

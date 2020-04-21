@@ -65,6 +65,8 @@ namespace Katydid
         // Setting up the active radius of the KTAggregatedFrequencySpectrumDataFFTW object to maintain consistency
         // This doesn't need to be done if there is a way to provide config values to data objects
         newAggFreqData.SetActiveRadius(radius);
+        // Set the number of rings present
+        newAggFreqData.SetNAxialPositions(fNRings);
 
         int nTotalGridPoints = 0;
         // Loop over the grid points and rings and fill the values
@@ -85,6 +87,7 @@ namespace Katydid
                 }
             }
         }
+
         int  gridPointsPerRing=nTotalGridPoints/fNRings;
         for (unsigned iRing = 0; iRing < fNRings; ++iRing)
         {

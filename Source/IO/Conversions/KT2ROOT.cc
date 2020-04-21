@@ -37,6 +37,7 @@
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph2D.h"
 
 #include <cfloat>
 #include "stdint.h"
@@ -495,6 +496,26 @@ namespace Katydid
         hist->SetXTitle("X Axis (m)");
         hist->SetYTitle("Y Axis (m)");
         return hist;
+    }
+
+    TGraph2D* KT2ROOT::CreateGridGraph(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
+    {
+        unsigned int nComponents = aggfs.GetNComponents();
+        int nGridPoints = 0;
+        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
+        nGridPoints = std::sqrt(nComponents);
+        double fActiveRadius = aggfs.GetActiveRadius();
+        TGraph2D* graph = new TGraph2D();
+        graph->SetName(name.c_str());
+        for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
+        {
+            double xPos,yPos,zPos;
+            aggfs.GetGridPoint(iComponents,xPos,yPos,zPos);
+            graph->SetPoint(iComponents,xPos,yPos,aggfs.GetSummedGridVoltage(iComponents));
+        }
+        graph->GetXaxis()->SetTitle("X Axis (m)");
+        graph->GetYaxis()->SetTitle("Y Axis (m)");
+        return graph;
     }
 
     TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
