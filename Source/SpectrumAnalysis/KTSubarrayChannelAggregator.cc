@@ -17,7 +17,8 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTSubarrayChannelAggregator, "subarray-channel-aggregator");
 
     KTSubarrayChannelAggregator::KTSubarrayChannelAggregator(const std::string& name) :
-        KTChannelAggregator(name)
+        KTChannelAggregator(name),
+        fNRings(1)
     {
     }
 
@@ -59,7 +60,7 @@ namespace Katydid
         double radius = GetActiveRadius();
 
         // Assume a square grid. i.e, number of points in X= no of points in Y
-        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nGrid * nGrid*fNRings);
+        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nGrid*nGrid*fNRings);
 
         // Setting up the active radius of the KTAggregatedFrequencySpectrumDataFFTW object to maintain consistency
         // This doesn't need to be done if there is a way to provide config values to data objects
@@ -79,12 +80,12 @@ namespace Katydid
                     GetGridLocation(iGridY, nGrid, gridLocationY);
                     // Check to make sure that the grid point is within the active detector volume, skip otherwise
                     //        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(radius,2)) continue;
-                    newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY);
+                    newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,iRing);
                     ++nTotalGridPoints;
                 }
             }
         }
-        int  gridPointsPerRing=nTotalGridPoints/nGrid;
+        int  gridPointsPerRing=nTotalGridPoints/fNRings;
         for (unsigned iRing = 0; iRing < fNRings; ++iRing)
         {
             // Loop over all grid points and find the one that gives the highest value
@@ -95,8 +96,9 @@ namespace Katydid
                 NullFreqSpectrum(*newFreqSpectrum);
                 double gridLocationX = 0;
                 double gridLocationY = 0;
+                double gridLocationZ = 0;
                 int ringLocation = 0;
-                newAggFreqData.GetGridPoint(iGrid+gridPointsPerRing*iRing, gridLocationX, gridLocationY);
+                newAggFreqData.GetGridPoint(iGrid+gridPointsPerRing*iRing, gridLocationX, gridLocationY,gridLocationZ);
                 for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
@@ -106,9 +108,10 @@ namespace Katydid
                     if(GetUseAntiSpiralPhaseShifts())
                     {
                         phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
+                        //std::cout<<"phasehift "<<phaseShift<<std::endl;
                     }
                     // Get the frequency spectrum for that specific component
-                    freqSpectrum = fftwData.GetSpectrumFFTW(iComponent);
+                    freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
                     double maxVoltage = 0.0;
                     int maxFrequencyBin = 0;
                     //Loop over the frequency bins
@@ -137,8 +140,9 @@ namespace Katydid
                     }
                 } // end of freqeuncy bin loops
                 newAggFreqData.SetSummedGridVoltage(iGrid+gridPointsPerRing*iRing, maxVoltageFreq);
-            }// End of loop over all rings
-        } // End of grid
+            } // End of grid loop
+        }// End of loop over all rings
+        KTDEBUG(agglog,"Channel summation performed over "<< fNRings<<" rings and "<<gridPointsPerRing<<" grid points per ring");
         return true;
     }
 }

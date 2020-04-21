@@ -24,8 +24,8 @@ namespace Katydid
             fNGrid(30),
             fWavelength(0.0115),
             fIsGridDefined(false),
-	    fSummationMinFreq(100e6),
-	    fSummationMaxFreq(140e6),
+	    fSummationMinFreq(0e6),
+	    fSummationMaxFreq(200e6),
 	    fUseAntiSpiralPhaseShifts(false),
 	    fAntiSpiralPhaseShifts()
     {
@@ -124,7 +124,7 @@ namespace Katydid
                 GetGridLocation(iGridY, fNGrid, gridLocationY);
                 // Check to make sure that the grid point is within the active detector volume, skip otherwise
                 //        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
-                newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY);
+                newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,0.0);
                 ++nTotalGridPoints;
             }
         }
@@ -133,7 +133,8 @@ namespace Katydid
         { // Loop over the grid points
             double gridLocationX = 0;
             double gridLocationY = 0;
-            newAggFreqData.GetGridPoint(iGrid, gridLocationX, gridLocationY);
+            double gridLocationZ = 0;
+            newAggFreqData.GetGridPoint(iGrid, gridLocationX, gridLocationY,gridLocationZ);
             KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
             // Empty values in the frequency spectrum, not sure if this is needed but there were some issues when this was not done for the power spectrum
             NullFreqSpectrum(*newFreqSpectrum);
@@ -142,11 +143,11 @@ namespace Katydid
                 // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
                 double channelAngle = 2 * KTMath::Pi() * iComponent / nComponents;
                 double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
-		// Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
-		if(fUseAntiSpiralPhaseShifts)
-		{
-		    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
-		}
+		        if(fUseAntiSpiralPhaseShifts)
+		        {
+		            phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
+                        std::cout<<"phasehift "<<phaseShift<<std::endl;
+		        }
                 // Get the frequency spectrum for that specific component
                 freqSpectrum = fftwData.GetSpectrumFFTW(iComponent);
                 double maxVoltage = 0.0;

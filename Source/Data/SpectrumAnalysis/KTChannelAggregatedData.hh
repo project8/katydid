@@ -40,12 +40,12 @@ namespace Katydid
             /*
              Set the X,Y pair corresponding to the grid point number.
              */
-            virtual void SetGridPoint(int component, double gridValueX, double gridValueY);
+            virtual void SetGridPoint(int component, double gridValueX, double gridValueY, double gridValueZ);
 
             /*
              Get the X,Y pair corresponding to the grid point number.
              */
-            virtual void GetGridPoint(int component, double &gridLocationX, double &gridLocationY) const;
+            virtual void GetGridPoint(int component, double &gridLocationX, double &gridLocationY, double &gridValueZ) const;
 
             //Set the X,Y pair corresponding to the grid point number.
             virtual void SetSummedGridMagnitude(int component, double magnitude);
@@ -78,6 +78,9 @@ namespace Katydid
 
                     /// The Y position of the grid point
                     double fGridPointY;
+
+                    /// The Z position of the grid point
+                    double fGridPointZ;
 
                     /// Magnitude at the defined grid location
                     double fMagnitude;
@@ -139,17 +142,19 @@ namespace Katydid
         return fGridPoints.size();
     }
 
-    inline void KTAggregatedDataCore::SetGridPoint(int component, double gridValueX, double gridValueY)
+    inline void KTAggregatedDataCore::SetGridPoint(int component, double gridValueX, double gridValueY, double gridValueZ)
     {
         fGridPoints[component].fGridPointX = gridValueX;
         fGridPoints[component].fGridPointY = gridValueY;
+        fGridPoints[component].fGridPointZ = gridValueZ;
         return;
     }
 
-    inline void KTAggregatedDataCore::GetGridPoint(int component, double &gridLocationX, double &gridLocationY) const
+    inline void KTAggregatedDataCore::GetGridPoint(int component, double &gridLocationX, double &gridLocationY, double &gridLocationZ) const
     {
         gridLocationX = fGridPoints[component].fGridPointX;
         gridLocationY = fGridPoints[component].fGridPointY;
+        gridLocationZ = fGridPoints[component].fGridPointZ;
         return;
     }
 

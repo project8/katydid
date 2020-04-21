@@ -45,10 +45,9 @@ namespace Katydid
         // Loop over each component and find and save the maximum summed absolute voltages and the corresponding frequencies
         for (unsigned iGridPoint=0; iGridPoint<nGridPoints; ++iGridPoint)
         {
-            double gridLocationX;
-            double gridLocationY;
+            //double gridLocationX,gridLocationY,gridLocationZ;
             freqSpectrum=aggData.GetSpectrumFFTW(iGridPoint);
-            aggData.GetGridPoint(iGridPoint,gridLocationX,gridLocationY);
+            //aggData.GetGridPoint(iGridPoint,gridLocationX,gridLocationY,gridLocationZ);
             double maxVoltageFreq=aggData.GetSummedGridVoltage(iGridPoint);
             
             if(maxVoltageFreq>maxVoltage)
@@ -60,6 +59,7 @@ namespace Katydid
         }// end of grid points loop
         
         aggData.SetOptimizedGridPointValue(maxGridPoint,maxVoltage);
+        std::cout<< " maxGridPoint "<< maxGridPoint<< " maxVoltage "<<maxVoltage<<std::endl;
         return true;
     }
 }

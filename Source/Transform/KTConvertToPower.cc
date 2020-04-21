@@ -117,9 +117,9 @@ namespace Katydid
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
             spectrum->ConvertToPowerSpectrum();
             psData.SetSpectrum(spectrum, iComponent);
-            double gridLocationX, gridLocationY;
-            data.GetGridPoint(iComponent,gridLocationX,gridLocationY);
-            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY);
+            double gridLocationX, gridLocationY, gridLocationZ;
+            data.GetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
+            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
         return true;
@@ -136,9 +136,9 @@ namespace Katydid
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
             spectrum->ConvertToPowerSpectralDensity();
             psData.SetSpectrum(spectrum, iComponent);
-            double gridLocationX, gridLocationY;
-            data.GetGridPoint(iComponent,gridLocationX,gridLocationY);
-            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY);
+            double gridLocationX, gridLocationY,gridLocationZ;
+            data.GetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
+            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
         return true;
