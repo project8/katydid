@@ -867,14 +867,17 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridPower_" << sliceNumber;
-        string histName;
-        conv >> histName;
-        TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        conv << "graphAggGridPower_" << sliceNumber;
+        string graphName;
+        conv >> graphName;
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
+        for (int i=0;i<aggregatedGridGraphs.size();++i) 
+        {
+            aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
+            aggregatedGridGraphs.at(i)->Write();//Redundant
+        }
 
-        aggregatedGridHistogram->Write(); //Redundant
-        KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;
     }
 
@@ -919,14 +922,17 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridPSD_" << sliceNumber;
-        string histName;
-        conv >> histName;
-        TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        conv << "graphAggGridPSD_" << sliceNumber;
+        string graphName;
+        conv >> graphName;
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
+        for (int i=0;i<aggregatedGridGraphs.size();++i) 
+        {
+            aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
+            aggregatedGridGraphs.at(i)->Write();//Redundant
+        }
 
-        aggregatedGridHistogram->Write(); //Redundant
-        KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;
     }
 

@@ -108,9 +108,7 @@ namespace Katydid
             static TH1D* CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumMagDist");
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
 
-            static TH2D* CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "hFrequencySpectrumGrid");
-            static std::vector<TGraph2D*> CreateGridGraphs(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "gPowerSpectrumGrid");
-            static TH2D* CreateGridHistogram(const KTAggregatedPowerSpectrumData& fs, const std::string& name = "hPowerSpectrumGrid");
+            static std::vector<TGraph2D*> CreateGridGraphs(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "gFrequencySpectrumGrid");
 
             static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");
 
@@ -122,6 +120,7 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrumPower");
 
             static TH2D* CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName = "hHoughData");
+            static std::vector<TGraph2D*> CreateGridGraphs(const KTAggregatedPowerSpectrumData& fs, const std::string& name = "gPowerSpectrumGrid");
 
             //*********************
             // Spectrum Collection

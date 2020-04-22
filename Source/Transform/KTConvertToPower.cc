@@ -112,6 +112,7 @@ namespace Katydid
         KTAggregatedPowerSpectrumData& psData = data.Of< KTAggregatedPowerSpectrumData >().SetNComponents(nComponents);
         double activeRadius=data.GetActiveRadius();
         psData.SetActiveRadius(activeRadius);
+        psData.SetNAxialPositions(data.GetNAxialPositions());
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
@@ -131,6 +132,7 @@ namespace Katydid
         KTAggregatedPowerSpectrumData& psData = data.Of< KTAggregatedPowerSpectrumData >().SetNComponents(nComponents);
         double activeRadius=data.GetActiveRadius();
         psData.SetActiveRadius(activeRadius);
+        psData.SetNAxialPositions(data.GetNAxialPositions());
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();

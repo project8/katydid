@@ -59,7 +59,9 @@ namespace Katydid
         }// end of grid points loop
         
         aggData.SetOptimizedGridPointValue(maxGridPoint,maxVoltage);
-        std::cout<< " maxGridPoint "<< maxGridPoint<< " maxVoltage "<<maxVoltage<<std::endl;
+        double x,y,z;
+        aggData.GetGridPoint(maxGridPoint,x,y,z);
+        KTDEBUG(aggoptlog,"Optimized grid point found at ("<<x<<","<<y<<","<<z<< ") with the maximum voltage of "<<maxVoltage);
         return true;
     }
 }
