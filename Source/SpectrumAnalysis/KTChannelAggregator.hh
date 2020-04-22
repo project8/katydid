@@ -45,6 +45,7 @@ namespace Katydid
      - "min-freq": double -- The minimum frequency value above which the channel aggregated spectrum is calculated. This particularly helps in enforcing bramforming around the central peak and avoiding side bands
      - "max-freq": double -- The maximum frequency value below which the channel aggregated spectrum is calculated
      - "use-antispiral-phase-shifts": bool, -- A flad to indicate whether to use antispiral phase shifts
+     - "n-rings": signed int -- Number of axial rings
  
      Slots:
      - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
@@ -79,6 +80,9 @@ namespace Katydid
 
 	        //The maximum frequency value below which the channel aggregated spectrum is calculated
             MEMBERVARIABLE(double, SummationMaxFreq);
+
+            // Number of axial rings/subarrays
+            MEMBERVARIABLE(int, NRings);
 
 	        //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
 	        //If selected this option will make sure that there is a relative phase-shift applied 
