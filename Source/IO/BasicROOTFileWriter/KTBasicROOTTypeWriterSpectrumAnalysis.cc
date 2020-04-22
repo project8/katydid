@@ -34,6 +34,7 @@
 #include "TGraph2D.h"
 
 #include <sstream>
+#include <vector>
 
 
 
@@ -812,10 +813,12 @@ namespace Katydid
         conv << "graphAggGridFFTW_" << sliceNumber;
         string graphName;
         conv >> graphName;
-        //TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        TGraph2D* aggregatedGridGraph = KT2ROOT::CreateGridGraph(sumData,graphName);
-        //aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
-        aggregatedGridGraph->SetDirectory(fWriter->GetFile());
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
+        for (int i=0;i<aggregatedGridGraphs.size();++i) 
+        {
+            aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
+            aggregatedGridGraphs.at(i)->Write();
+        }
 
         KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;

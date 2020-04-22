@@ -10,6 +10,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include "KTPhysicalArray.hh"
 #include "KTVarTypePhysicalArray.hh"
@@ -108,7 +109,7 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
 
             static TH2D* CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "hFrequencySpectrumGrid");
-            static TGraph2D* CreateGridGraph(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "gPowerSpectrumGrid");
+            static std::vector<TGraph2D*> CreateGridGraphs(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "gPowerSpectrumGrid");
             static TH2D* CreateGridHistogram(const KTAggregatedPowerSpectrumData& fs, const std::string& name = "hPowerSpectrumGrid");
 
             static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");

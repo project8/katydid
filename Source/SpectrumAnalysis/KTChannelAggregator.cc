@@ -24,10 +24,10 @@ namespace Katydid
             fNGrid(30),
             fWavelength(0.0115),
             fIsGridDefined(false),
-	    fSummationMinFreq(0e6),
-	    fSummationMaxFreq(200e6),
-	    fUseAntiSpiralPhaseShifts(false),
-	    fAntiSpiralPhaseShifts()
+	        fSummationMinFreq(0e6),
+	        fSummationMaxFreq(200e6),
+	        fUseAntiSpiralPhaseShifts(false),
+	        fAntiSpiralPhaseShifts()
     {
     }
 
@@ -100,7 +100,7 @@ namespace Katydid
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
         int nComponents = fftwData.GetNComponents(); // Get number of components
 
-	GenerateAntiSpiralPhaseShifts(nComponents);
+	    GenerateAntiSpiralPhaseShifts(nComponents);
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
@@ -172,7 +172,7 @@ namespace Katydid
             //Loop over all the freq bins and get the highest value and save to the aggregated frequency data
             for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
             {
-		if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
+		    if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
                 if (newFreqSpectrum->GetAbs(iFreqBin) > maxVoltageFreq)
                 {
                     maxVoltageFreq = newFreqSpectrum->GetAbs(iFreqBin);
