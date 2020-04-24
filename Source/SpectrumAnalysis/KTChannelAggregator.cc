@@ -112,13 +112,13 @@ namespace Katydid
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
 
-        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid * fNGrid);
+        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid*fNGrid*fNRings);
 
         // Setting up the active radius of the KTAggregatedFrequencySpectrumDataFFTW object to maintain consistency
         // This doesn't need to be done if there is a way to provide config values to data objects
         newAggFreqData.SetActiveRadius(fActiveRadius);
         // Set the number of rings present
-        newAggFreqData.SetNAxialPositions(1);
+        newAggFreqData.SetNAxialPositions(fNGrid);
 
         int nTotalGridPoints = 0;
         // Loop over the grid points and rings and fill the values
