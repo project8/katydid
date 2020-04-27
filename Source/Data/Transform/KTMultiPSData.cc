@@ -108,7 +108,7 @@ namespace Katydid
             if (ps == NULL) continue;
             for (int iBinY=0; iBinY<hist->GetNbinsY(); ++iBinY)
             {
-                hist->SetBinContent(iBinX, iBinY, (*ps)(iBinY));
+                hist->SetBinContent(iBinX+1, iBinY+1, (*ps)(iBinY));
             }
         }
 
