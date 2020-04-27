@@ -417,7 +417,8 @@ namespace Katydid
             KTDEBUG(evlog, "slice's time in run: " << slice.GetTimeInRun() << ";  compared to track [" << it->second->GetStartTime() << ", " << it->second->GetEndTime() << "]");
             // If the slice time coincides with the track time window, add the spectrum
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
-            if( !forceEmit && slice.GetTimeInRun() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
+            // Overlap is defined by the slice end-time being greater than the collection start-time and the slice start-time being less than the collection end-time
+            if( ! forceEmit && slice.GetTimeInRun() + slice.GetSliceLength() >= it->second->GetStartTime() && slice.GetTimeInRun() <= it->second->GetEndTime() )
             {
                 KTINFO(evlog, "Adding spectrum. Time in acquisition = " << slice.GetTimeInAcq());
                 it->second->SetDeltaT( slice.GetSliceLength() );
@@ -435,17 +436,17 @@ namespace Katydid
                     // Emit signal
                     KTINFO(evlog, "Finished a track; emitting signal");
 
-                    KTINFO(evlog, "Old start time: " << it->second->GetStartTime());
-                    KTINFO(evlog, "Old end time: " << it->second->GetEndTime());
+                    KTDEBUG(evlog, "Old start time: " << it->second->GetStartTime());
+                    KTDEBUG(evlog, "Old end time: " << it->second->GetEndTime());
 
-                    KTINFO(evlog, "Slice acquisition time:" << slice.GetTimeInAcq());
+                    KTDEBUG(evlog, "Slice acquisition time:" << slice.GetTimeInAcq());
 
                     // Convert start and end times from run to acquistion
                     it->second->SetStartTime( it->second->GetStartTime() - it->second->GetEndTime() + fPrevSliceTimeInAcq );
                     it->second->SetEndTime( fPrevSliceTimeInAcq );
 
-                    KTINFO(evlog, "New start time: " << it->second->GetStartTime());
-                    KTINFO(evlog, "New end time: " << it->second->GetEndTime());
+                    KTINFO(evlog, "New start time (in acquisition): " << it->second->GetStartTime());
+                    KTINFO(evlog, "New end time (in acquisition): " << it->second->GetEndTime());
 
                     FinishSC( it->first, component );
                 }
