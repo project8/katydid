@@ -23,12 +23,12 @@ namespace Katydid
             KTMultiPSDataCore(),
             KTExtensibleData< KTPSCollectionData >(),
             fStartTime(0.),
-            fEndTime(0.001),
-            fDeltaT(1e-6),
-            fMinFreq(50e6),
-            fMaxFreq(150e6),
+            fEndTime(0.),
+            fDeltaT(-1.),
+            fMinFreq(0.),
+            fMaxFreq(0.),
             fMinBin(0),
-            fMaxBin(1),
+            fMaxBin(0),
             fFilling(false),
             fSpectrogramCounter(0)
     {
