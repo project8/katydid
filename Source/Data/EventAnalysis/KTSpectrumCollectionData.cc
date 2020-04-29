@@ -7,14 +7,11 @@
 
 #include "KTSpectrumCollectionData.hh"
 
-#include "KTMath.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTSliceHeader.hh"
 
 #include "KTLogger.hh"
-
-#include <cmath>
 
 KTLOGGER(scdlog, "SpectrogramCollectionData");
 
@@ -60,7 +57,7 @@ namespace Katydid
 
     void KTPSCollectionData::AddSpectrum(double timeStamp, const KTPowerSpectrum& spectrum, unsigned iComponent)
     {
-        // timeStamp is the start time of the spectrum
+        // timeStamp is the spectrum's time-in-run-c
 
         if( fSpectra.size() <= iComponent )
         {
@@ -97,38 +94,11 @@ namespace Katydid
             SetMinFreq( minFreq );
             SetMaxFreq( maxFreq );
 
-            // Now deal with times
-            // We need to get the time bin boundaries of the data object to agree with the boundaries of the slices, based on this slice
-            if( timeStamp < fStartTime && fStartTime - timeStamp < fDeltaT )
-            {
-                KTDEBUG( scdlog, "Resetting start time of PS collection from <" << fStartTime << "> to <" << timeStamp << ">" );
-                fStartTime = timeStamp;
-            }
-            else if( timeStamp > fStartTime && timeStamp < fEndTime )
-            {
-                double startShift = fDeltaT - std::fmod( timeStamp - fStartTime, fDeltaT );
-                KTDEBUG( scdlog, "Resetting start time of PS collection from <" << fStartTime << "> to <" << fStartTime - startShift << ">" );
-                fStartTime = fStartTime - startShift;
-            }
-            else
-            {
-                KTWARN( scdlog, "Spectrum is outside the time range of this PS collection" );
-                return;
-            }
-
-            double endShift = fDeltaT - std::fmod( fEndTime - fStartTime, fDeltaT );
-            KTDEBUG( scdlog, "Resetting end time of PS collection from <" << fEndTime << "> to <" << fEndTime + endShift << ">" );
-            fEndTime = fEndTime + endShift;
-
-            if( fEndTime < fStartTime )
-            {
-                KTERROR( scdlog, "End time of PS collection is before its start time" );
-                return;
-            }
-
-            unsigned iSpectra = KTMath::Nint((fEndTime - fStartTime) / fDeltaT);
-            KTDEBUG(scdlog, "Number of spectra in this new multips: " << iSpectra);
-            fSpectra[iComponent] = new KTMultiPS(NULL, iSpectra, fStartTime, fEndTime);
+            unsigned nSpectra = KTMath::Nint((fEndTime - fStartTime) / fDeltaT) + 1;
+            KTDEBUG(scdlog, "Number of spectra in this new multi-ps: " << nSpectra);
+            // fStartTime and fEndTime are times-in-run-c.  the spectrum time boundaries need to be the low and high edges of the bins.
+            // So we shift down and up by 0.5*slice length relative to fStartTime and fEndTime for the min and max times, respectively.
+            fSpectra[iComponent] = new KTMultiPS(NULL, nSpectra, fStartTime - 0.5 * fDeltaT, fEndTime + 0.5 * fDeltaT);
         }
 
         // When fSpectra is not empty, no 'Set' commands are used, only 'Get' for frequency and bin info
@@ -139,19 +109,15 @@ namespace Katydid
 
         // initialize new spectrum
         KTPowerSpectrum* newSpectrum = new KTPowerSpectrum( nBins, fMinFreq, fMaxFreq );
-
-        // fill new spectrum
-        for( unsigned i = 0; i < fMinBin; ++i )
+        for( unsigned i = 0; i < nBins; ++i )
         {
             (*newSpectrum)(i) = 0.;
         }
+
+        // fill new spectrum
         for( int i = fMinBin; i <= fMaxBin; ++i )
         {
             (*newSpectrum)(i - fMinBin) = spectrum(i);
-        }
-        for( int i = fMaxBin + 1; i < nBins; ++i )
-        {
-            (*newSpectrum)(i) = 0.;
         }
 
         // add new spectrum to fSpectra
