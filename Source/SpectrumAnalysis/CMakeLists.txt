@@ -5,6 +5,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTAggregatedChannelOptimizer.hh
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
+    KTAxialAggregator.hh
     KTChannelAggregator.hh
     KTConsensusThresholding.hh
     KTConvolution.hh
@@ -21,7 +22,6 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTSequentialTrackFinder.hh
     KTSpectrumDiscriminator.hh
     KTSpectrogramStriper.hh
-    KTSubarrayChannelAggregator.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
     #KTAutoCorrMatrix.hh
@@ -31,6 +31,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTAggregatedChannelOptimizer.cc
     KTAmplitudeCounter.cc
     KTAmplitudeDistributor.cc
+    KTAxialAggregator.cc
     KTChannelAggregator.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc
@@ -47,7 +48,6 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTSequentialTrackFinder.cc
     KTSpectrumDiscriminator.cc
     KTSpectrogramStriper.cc
-    KTSubarrayChannelAggregator.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
     #KTAutoCorrMatrix.cc

@@ -118,7 +118,7 @@ namespace Katydid
         // This doesn't need to be done if there is a way to provide config values to data objects
         newAggFreqData.SetActiveRadius(fActiveRadius);
         // Set the number of rings present
-        newAggFreqData.SetNAxialPositions(fNGrid);
+        newAggFreqData.SetNAxialPositions(fNRings);
 
         int nTotalGridPoints = 0;
         // Loop over the grid points and rings and fill the values
@@ -144,15 +144,16 @@ namespace Katydid
         for (unsigned iRing = 0; iRing < fNRings; ++iRing)
         {
             // Loop over all grid points and find the one that gives the highest value
-            for (int iGrid = 0; iGrid < nTotalGridPoints; ++iGrid)
+            for (int iGrid = 0; iGrid < gridPointsPerRing; ++iGrid)
             { // Loop over the grid points
+                int gridPointNumber=iGrid+gridPointsPerRing*iRing;
                 KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
                 // Empty values in the frequency spectrum, not sure if this is needed but there were some issues when this was not done for the power spectrum
                 NullFreqSpectrum(*newFreqSpectrum);
                 double gridLocationX = 0;
                 double gridLocationY = 0;
                 double gridLocationZ = 0;
-                newAggFreqData.GetGridPoint(iGrid+gridPointsPerRing*iRing, gridLocationX, gridLocationY,gridLocationZ);
+                newAggFreqData.GetGridPoint(gridPointNumber, gridLocationX, gridLocationY,gridLocationZ);
                 for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
@@ -180,7 +181,7 @@ namespace Katydid
                     } // End of loop over freq bins
                 } // End of loop over all comps
                 newFreqSpectrum->SetNTimeBins(nTimeBins);
-                newAggFreqData.SetSpectrum(newFreqSpectrum, iGrid+gridPointsPerRing*iRing);
+                newAggFreqData.SetSpectrum(newFreqSpectrum,gridPointNumber);
 
                 double maxVoltageFreq = 0.0;
                 //Loop over all the freq bins and get the highest value and save to the aggregated frequency data
@@ -192,7 +193,7 @@ namespace Katydid
                         maxVoltageFreq = newFreqSpectrum->GetAbs(iFreqBin);
                     }
                 } // end of freqeuncy bin loops
-                newAggFreqData.SetSummedGridVoltage(iGrid+gridPointsPerRing*iRing, maxVoltageFreq);
+                newAggFreqData.SetSummedGridVoltage(gridPointNumber, maxVoltageFreq);
             } // End of grid
         }// End of loop over all rings
         KTDEBUG(agglog,"Channel summation performed over "<< fNRings<<" rings and "<<gridPointsPerRing<<" grid points per ring");
