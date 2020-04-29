@@ -7,6 +7,7 @@
 
 #include "KTSpectrumCollectionData.hh"
 
+#include "KTMath.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTSliceHeader.hh"
