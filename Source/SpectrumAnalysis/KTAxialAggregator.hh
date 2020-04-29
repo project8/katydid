@@ -11,6 +11,7 @@
 #include "KTProcessor.hh"
 #include "KTData.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTAxialChannelAggregatedData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTAxisProperties.hh"
 
@@ -31,20 +32,20 @@ namespace Katydid
      
      @details
      
-     Configuration name: "axial-aggregator"
+     Configuration name: "axial-channel-aggregator"
      
      Available configuration options:
      Slots:
-     - "axial-agg-fft": void (Nymph::KTDataPtr) -- Adds channels voltages along the axial direction; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
+     - "axial-agg-fft": void (Nymph::KTDataPtr) -- Adds channels voltages along the axial direction; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "ax-agg-fft"
      
      Signals:
-     - "fft": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTFrequencySpectrumDataFFTW
+     - "fft": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTAxialAggregatedFrequencySpectrumDataFFTW 
      */
 
     class KTAxialAggregator : public Nymph::KTProcessor
     {
         public:
-            KTAxialAggregator(const std::string& name = "axial-aggregator");
+            KTAxialAggregator(const std::string& name = "axial-channel-aggregator");
             virtual ~KTAxialAggregator();
 
             bool Configure(const scarab::param_node* node);

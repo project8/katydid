@@ -14,7 +14,7 @@ namespace Katydid
     KTLOGGER(agglog, "KTAxialAggregator");
 
     // Register the processor
-    KT_REGISTER_PROCESSOR(KTAxialAggregator, "axial-aggregator");
+    KT_REGISTER_PROCESSOR(KTAxialAggregator, "axial-channel-aggregator");
 
     KTAxialAggregator::KTAxialAggregator(const std::string& name) :
         KTProcessor(name),
@@ -44,14 +44,13 @@ namespace Katydid
         // Get the number of frequency bins from the first component of fftwData
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
         int nTotalComponents = fftwData.GetNComponents(); // Get number of components
-                std::cout<<"nTotalComponents "<<fftwData.GetNComponents()<<std::endl;
         if(nTotalComponents%fNRings!=0)
         {
             KTERROR(agglog,"The number of rings has to be an integer multiple of total components");
         }
         int nComponents = nTotalComponents/fNRings;// Get number of components
 
-        KTFrequencySpectrumDataFFTW& newAxialSummedFreqData = fftwData.Of< KTFrequencySpectrumDataFFTW>().SetNComponents(nComponents);
+        KTAxialAggregatedFrequencySpectrumDataFFTW& newAxialSummedFreqData = fftwData.Of< KTAxialAggregatedFrequencySpectrumDataFFTW>().SetNComponents(nComponents);
 
         for (int iComponent = 0; iComponent< nComponents; ++iComponent)
         {
@@ -59,7 +58,6 @@ namespace Katydid
             for (int iRing = 0; iRing < fNRings; ++iRing)
             {
                 std::cout<<iComponent+nComponents*iRing<<std::endl;
-                std::cout<<fftwData.GetNComponents()<<std::endl;
                 (*newFreqSpectrum)+=*fftwData.GetSpectrumFFTW(iComponent+nComponents*iRing);
             }// End of loop over all rings
             newAxialSummedFreqData.SetSpectrum(newFreqSpectrum,iComponent);

@@ -12,6 +12,7 @@
 #include "KTData.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTChannelAggregatedData.hh"
+#include "KTAxialChannelAggregatedData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTAxisProperties.hh"
 
@@ -25,6 +26,7 @@ namespace Katydid
 {
 
     class KTChannelAggregatedData;
+    class KTAxialChannelAggregatedData;
     class KTPowerSpectrumData;
 
     /*
@@ -89,6 +91,7 @@ namespace Katydid
 	        MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
         
             virtual bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
+            virtual bool SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData);
 
         protected:
 
@@ -112,6 +115,7 @@ namespace Katydid
             /// Convert frquency to wavlength
             double ConvertFrequencyToWavelength(double frequency);
 
+            virtual bool PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData);
         protected:
             //PTS: This needs fixing, currently just setting each element to 0. But why does it have to be done to begin with.
             // Perhaps there is some function in the utilities to do this ?
@@ -130,6 +134,7 @@ namespace Katydid
 
         protected:
             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fPhaseChFrequencySumSlot;
+            Nymph::KTSlotDataOneType< KTAxialAggregatedFrequencySpectrumDataFFTW> fAxialSumSlot;
     };
 
     inline bool KTChannelAggregator::NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum)

@@ -20,6 +20,7 @@ namespace Katydid
         KTProcessor(name),
         fSummedFrequencyData("agg-fft", this),
         fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
+        fAxialSumSlot("ax-agg-fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
         fActiveRadius(0.0516),
         fNGrid(30),
         fWavelength(0.0115),
@@ -96,6 +97,18 @@ namespace Katydid
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
+        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid*fNGrid*fNRings);
+        return PerformPhaseSummation(fftwData,newAggFreqData);
+    }
+
+    bool KTChannelAggregator::SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData)
+    {
+        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid*fNGrid*fNRings);
+        return PerformPhaseSummation(fftwData,newAggFreqData);
+    }
+
+    bool KTChannelAggregator::PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
+    {
         const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
         int nTimeBins = freqSpectrum->GetNTimeBins();
         // Get the number of frequency bins from the first component of fftwData
@@ -111,8 +124,6 @@ namespace Katydid
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
-
-        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid*fNGrid*fNRings);
 
         // Setting up the active radius of the KTAggregatedFrequencySpectrumDataFFTW object to maintain consistency
         // This doesn't need to be done if there is a way to provide config values to data objects
