@@ -54,11 +54,21 @@ namespace Katydid
 
         for (int iComponent = 0; iComponent< nComponents; ++iComponent)
         {
-                KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
+            KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
             for (int iRing = 0; iRing < fNRings; ++iRing)
             {
-                std::cout<<iComponent+nComponents*iRing<<std::endl;
-                (*newFreqSpectrum)+=*fftwData.GetSpectrumFFTW(iComponent+nComponents*iRing);
+                KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
+                for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
+                {
+                    double realVal = freqSpectrum->GetReal(iFreqBin);
+                    double imagVal = freqSpectrum->GetImag(iFreqBin);
+                    double summedRealVal = realVal + newFreqSpectrum->GetReal(iFreqBin);
+                    double summedImagVal = imagVal + newFreqSpectrum->GetImag(iFreqBin);
+                    (*newFreqSpectrum)(iFreqBin)[0] = summedRealVal;
+                    (*newFreqSpectrum)(iFreqBin)[1] = summedImagVal;
+                // This doesn't seem to work
+                //(*newFreqSpectrum)+=*fftwData.GetSpectrumFFTW(iComponent+nComponents*iRing);
+                }
             }// End of loop over all rings
             newAxialSummedFreqData.SetSpectrum(newFreqSpectrum,iComponent);
         }

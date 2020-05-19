@@ -90,6 +90,12 @@ namespace Katydid
             void WriteKDTreeSparseSpectrogram(Nymph::KTDataPtr data);
 
             //************************
+            // Axial Aggregated Channel Data
+            //************************
+        public:
+            void WriteAxialAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data);
+
+            //************************
             // Aggregated Channel Data
             //************************
         public:

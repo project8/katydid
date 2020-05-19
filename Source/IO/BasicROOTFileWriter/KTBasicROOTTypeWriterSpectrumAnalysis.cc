@@ -24,6 +24,7 @@
 #include "KTWignerVilleData.hh"
 #include "KTWV2DData.hh"
 #include "KTChannelAggregatedData.hh"
+#include "KTAxialChannelAggregatedData.hh"
 
 #ifdef ENABLE_TUTORIAL
 #include "KTLowPassFilteredData.hh"
@@ -80,6 +81,7 @@ namespace Katydid
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
         fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
+        fWriter->RegisterSlot("ax-agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumFFTWData);
         fWriter->RegisterSlot("agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumFFTWData);
         fWriter->RegisterSlot("agg-grid-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumGrid);
         fWriter->RegisterSlot("agg-ps", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerSpectrumData);
@@ -762,6 +764,39 @@ namespace Katydid
             KTDEBUG(publog, "Graph <" << grName << "> written to ROOT file");
         }
 
+        return;
+    }
+
+    //************************
+    // Channel Aggregated Data
+    //************************
+    
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTAxialAggregatedFrequencySpectrumDataFFTW& sumData = data->Of<KTAxialAggregatedFrequencySpectrumDataFFTW>();
+        unsigned nComponents = sumData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histAxAggFFTW_" << sliceNumber<<"_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* axialAggregatedFrequencySpectrum = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
+                axialAggregatedFrequencySpectrum->SetDirectory(fWriter->GetFile());
+
+                axialAggregatedFrequencySpectrum->Write(); //Redundant
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
         return;
     }
 
