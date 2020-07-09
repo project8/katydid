@@ -81,6 +81,7 @@ namespace Katydid
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
         fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
+        fWriter->RegisterSlot("ax-agg-fs-fftw-phase", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumDataFFTWPhase);
         fWriter->RegisterSlot("ax-agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumFFTWData);
         fWriter->RegisterSlot("agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumFFTWData);
         fWriter->RegisterSlot("agg-grid-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumGrid);
@@ -768,9 +769,37 @@ namespace Katydid
     }
 
     //************************
-    // Channel Aggregated Data
+    // Axial Channel Aggregated Data
     //************************
-    
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTAxialAggregatedFrequencySpectrumDataFFTW& sumData = data->Of<KTAxialAggregatedFrequencySpectrumDataFFTW>();
+        unsigned nComponents = sumData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histAxAggPhaseFFTW_" << sliceNumber<<"_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* axialAggregatedFrequencySpectrum = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
+                axialAggregatedFrequencySpectrum->SetDirectory(fWriter->GetFile());
+
+                axialAggregatedFrequencySpectrum->Write(); //Redundant
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
     void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data)
     {
         if (! data) return;

@@ -94,6 +94,7 @@ namespace Katydid
             //************************
         public:
             void WriteAxialAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data);
+            void WriteAxialAggregatedFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data);
 
             //************************
             // Aggregated Channel Data

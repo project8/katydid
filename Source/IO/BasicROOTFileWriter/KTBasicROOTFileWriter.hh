@@ -46,7 +46,9 @@ namespace Katydid
      - "gain-var":
      - "fs-fftw":
      - "agg-fs-fftw":
+     - "ax-agg-fs-fftw-phase":
      - "ax-agg-fs-fftw":
+     - "agg-grid-fftw":
      - "fs-polar":
      - "fs-fftw-phase":
      - "fs-polar-phase":
@@ -64,7 +66,9 @@ namespace Katydid
      - "ps":
      - "psd":
      - "agg-ps":
+     - "agg-grid-ps":
      - "agg-psd":
+     - "agg-grid-psd":
      - "ps-dist":
      - "psd-dist":
      - "ps-var":
