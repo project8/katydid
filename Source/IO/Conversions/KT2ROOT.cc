@@ -37,6 +37,7 @@
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph2D.h"
 
 #include <cfloat>
 #include "stdint.h"
@@ -477,44 +478,63 @@ namespace Katydid
         return hist;
     }
 
-    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
+    std::vector<TGraph2D*> KT2ROOT::CreateGridGraphs(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
     {
-        // Currently only assume a square grid
         unsigned int nComponents = aggfs.GetNComponents();
-        int nGridPoints = 0;
-        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
-        nGridPoints = std::sqrt(nComponents);
         double fActiveRadius = aggfs.GetActiveRadius();
-        TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid", nGridPoints, -fActiveRadius, fActiveRadius, nGridPoints, -fActiveRadius, fActiveRadius);
+        int nZ=aggfs.GetNAxialPositions();
+        std::vector<TGraph2D*> graphs;
+        std::vector<unsigned> pointIndex;
+        pointIndex.assign(nZ,0);
+
+        for(int iZ=0;iZ<nZ;iZ++)
+        {
+            graphs.push_back(new TGraph2D());
+            graphs.at(iZ)->SetName((name+"_"+std::to_string(iZ)).c_str());
+            graphs.at(iZ)->GetXaxis()->SetTitle("X Axis (m)");
+            graphs.at(iZ)->GetYaxis()->SetTitle("Y Axis (m)");
+        }
+
         for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
         {
-            int xBin = iComponents / nGridPoints;
-            int yBin = iComponents % nGridPoints;
-            hist->SetBinContent(xBin + 1, yBin + 1, aggfs.GetSummedGridVoltage(iComponents));
+            double xPos,yPos,zPos;
+            aggfs.GetGridPoint(iComponents,xPos,yPos,zPos);
+            int zIndex=(int)zPos;
+            if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
+            graphs[zIndex]->SetPoint(pointIndex[zIndex],xPos,yPos,aggfs.GetSummedGridVoltage(iComponents));
+            pointIndex[zIndex]+=1;
         }
-        hist->SetXTitle("X Axis (m)");
-        hist->SetYTitle("Y Axis (m)");
-        return hist;
+        return graphs;
     }
 
-    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
+    std::vector<TGraph2D*> KT2ROOT::CreateGridGraphs(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
     {
         // Currently only assume a square grid
         unsigned int nComponents = aggps.GetNComponents();
-        int nGridPoints = 0;
-        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
-        nGridPoints = std::sqrt(nComponents);
         double fActiveRadius = aggps.GetActiveRadius();
-        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum Grid", nGridPoints, -fActiveRadius, fActiveRadius, nGridPoints, -fActiveRadius, fActiveRadius);
+        int nZ=aggps.GetNAxialPositions();
+        std::vector<TGraph2D*> graphs;
+        std::vector<unsigned> pointIndex;
+        pointIndex.assign(nZ,0);
+
+        for(int iZ=0;iZ<nZ;iZ++)
+        {
+            graphs.push_back(new TGraph2D());
+            graphs.at(iZ)->SetName((name+"_"+std::to_string(iZ)).c_str());
+            graphs.at(iZ)->GetXaxis()->SetTitle("X Axis (m)");
+            graphs.at(iZ)->GetYaxis()->SetTitle("Y Axis (m)");
+        }
+
         for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
         {
-            int xBin = iComponents / nGridPoints;
-            int yBin = iComponents % nGridPoints;
-            hist->SetBinContent(xBin + 1, yBin + 1, aggps.GetSummedGridPower(iComponents));
+            double xPos,yPos,zPos;
+            aggps.GetGridPoint(iComponents,xPos,yPos,zPos);
+            int zIndex=(int)zPos;
+            if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
+            graphs[zIndex]->SetPoint(pointIndex[zIndex],xPos,yPos,aggps.GetSummedGridPower(iComponents));
+            pointIndex[zIndex]+=1;
         }
-        hist->SetXTitle("X Axis (m)");
-        hist->SetYTitle("Y Axis (m)");
-        return hist;
+        return graphs;
     }
 
     TH1D* KT2ROOT::CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name)

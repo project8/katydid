@@ -5,6 +5,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTAggregatedChannelOptimizer.hh
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
+    KTAxialAggregator.hh
     KTChannelAggregator.hh
     KTConsensusThresholding.hh
     KTConvolution.hh
@@ -30,6 +31,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTAggregatedChannelOptimizer.cc
     KTAmplitudeCounter.cc
     KTAmplitudeDistributor.cc
+    KTAxialAggregator.cc
     KTChannelAggregator.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc

@@ -12,6 +12,7 @@
 #include "KTData.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTChannelAggregatedData.hh"
+#include "KTAxialChannelAggregatedData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTAxisProperties.hh"
 
@@ -25,6 +26,7 @@ namespace Katydid
 {
 
     class KTChannelAggregatedData;
+    class KTAxialChannelAggregatedData;
     class KTPowerSpectrumData;
 
     /*
@@ -47,6 +49,7 @@ namespace Katydid
      - "min-freq": double -- The minimum frequency value above which the channel aggregated spectrum is calculated. This particularly helps in enforcing bramforming around the central peak and avoiding side bands
      - "max-freq": double -- The maximum frequency value below which the channel aggregated spectrum is calculated
      - "use-antispiral-phase-shifts": bool, -- A flad to indicate whether to use antispiral phase shifts
+     - "n-rings": signed int -- Number of axial rings
  
      Slots:
      - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
@@ -82,22 +85,26 @@ namespace Katydid
             // The text file to be used for the user-defined grid
             MEMBERVARIABLE(std::string, UserDefinedGridFile);
 
-	    //The minimum frequency value above which the channel aggregated spectrum is calculated
+    	    //The minimum frequency value above which the channel aggregated spectrum is calculated
             MEMBERVARIABLE(double, SummationMinFreq);
 
-	    //The maximum frequency value below which the channel aggregated spectrum is calculated
+	        //The maximum frequency value below which the channel aggregated spectrum is calculated
             MEMBERVARIABLE(double, SummationMaxFreq);
 
-	    //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
-	    //If selected this option will make sure that there is a relative phase-shift applied 
-	    MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
+            // Number of axial rings/subarrays
+            MEMBERVARIABLE(int, NRings);
+
+	        //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
+	        //If selected this option will make sure that there is a relative phase-shift applied 
+	        MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
         
-            bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
+            virtual bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
+            virtual bool SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData);
 
-        private:
+        protected:
 
-	    ///map that stores antispiral phase shifts
-	    std::map<int,double> fAntiSpiralPhaseShifts; 
+	        ///map that stores antispiral phase shifts
+	        std::map<int,double> fAntiSpiralPhaseShifts; 
 
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
@@ -110,13 +117,14 @@ namespace Katydid
             /// Apply shift phase to the supplied points based on the phase provided
             bool ApplyPhaseShift(double &realVal, double &imagVal, double phase);
 	    
-	    /// Generate antispiral phase shifts and save in fAntiSpiralPhaseShifts vector to be applied to channels 
-	    bool GenerateAntiSpiralPhaseShifts(int channelCount);
+	        /// Generate antispiral phase shifts and save in fAntiSpiralPhaseShifts vector to be applied to channels 
+	        bool GenerateAntiSpiralPhaseShifts(int channelCount);
 
             /// Convert frquency to wavlength
             double ConvertFrequencyToWavelength(double frequency);
 
-        private:
+            virtual bool PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData);
+        protected:
             //PTS: This needs fixing, currently just setting each element to 0. But why does it have to be done to begin with.
             // Perhaps there is some function in the utilities to do this ?
             bool NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum);
@@ -125,15 +133,16 @@ namespace Katydid
             // Signals
             //***************
 
-        private:
+        protected:
             Nymph::KTSignalData fSummedFrequencyData;
 
             //***************
             // Slots
             //***************
 
-        private:
+        protected:
             Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fPhaseChFrequencySumSlot;
+            Nymph::KTSlotDataOneType< KTAxialAggregatedFrequencySpectrumDataFFTW> fAxialSumSlot;
     };
 
     inline bool KTChannelAggregator::NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum)
