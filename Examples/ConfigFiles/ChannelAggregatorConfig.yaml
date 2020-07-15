@@ -63,6 +63,8 @@ fft:
 ch-sum:
     grid-size: 5
     active-radius: 0.0516
+    use-grid-text-file: true
+    grid-text-file: "../Examples/ConfigFiles/GridPoints.txt"
     wavelength: 0.011
     min-freq: 100.0e6
     max-freq: 140.0e6

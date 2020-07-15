@@ -106,6 +106,13 @@ namespace Katydid
 	        ///map that stores antispiral phase shifts
 	        std::map<int,double> fAntiSpiralPhaseShifts; 
 
+            /// Define the grid based (one per ring)
+            /*If fIsUserDefinedGrid it true, the grid is defined based on text file defined by fUserDefinedGridFile. 
+             * If fIsUserDefinedGrid is false, defines a square grid with fNGrid*fNGrid points
+             * Returns total number of grid points defined
+             */
+            int DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData);
+
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
 

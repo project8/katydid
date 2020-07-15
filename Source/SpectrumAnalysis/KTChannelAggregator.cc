@@ -6,8 +6,10 @@
  */
 
 #include "KTChannelAggregator.hh"
-
 #include "KTLogger.hh"
+
+#include <boost/algorithm/string.hpp>
+using namespace boost::algorithm;
 
 namespace Katydid
 {
@@ -100,14 +102,86 @@ namespace Katydid
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
-        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid*fNGrid*fNRings);
+        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(0);
         return PerformPhaseSummation(fftwData,newAggFreqData);
     }
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData)
     {
-        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid*fNGrid*fNRings);
+        KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(0);
         return PerformPhaseSummation(fftwData,newAggFreqData);
+    }
+
+    int KTChannelAggregator::DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
+    {
+        int nTotalGridPoints=0;
+        for (int iRing = 0; iRing < fNRings; ++iRing)
+        {
+            if(fIsUserDefinedGrid)
+            {
+                if(!ends_with(fUserDefinedGridFile,".txt"))
+                {
+                    //if(!ends_with(fTextFileName.c_str(),".txt"))
+                    KTDEBUG(agglog,"`grid-text-file` file must end in .txt");
+                    return -1;
+                }
+                double gridLocationX;
+                double gridLocationY;
+                std::fstream textFile(fUserDefinedGridFile.c_str(),std::ios::in);
+                if (textFile.fail())
+                {
+                    KTDEBUG(agglog,"`grid-text-file` cannot be opened");
+                    return -1;
+                }
+                while(!textFile.eof())
+                {
+                    std::string lineContent;
+                    while(std::getline(textFile,lineContent))
+                    {
+                        if (lineContent.find('#')!=std::string::npos) continue;
+                        std::string token;
+                        std::stringstream ss(lineContent);
+                        int wordCount=0;
+                        while (ss >> token)
+                        {
+                            if(wordCount==0)gridLocationX=std::stod(token);
+                            else if(wordCount==1)gridLocationY=std::stod(token);
+                            else
+                            {
+                                KTDEBUG(agglog,"`grid-text-file` cannot have more than 2 columns"); 
+                                return -1;
+                            }
+                            ++wordCount;
+                        }
+                        // Check to make sure that the grid point is within the active detector volume, skip otherwise
+                        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
+                        newAggFreqData.SetNComponents(nTotalGridPoints+1);
+                        newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,iRing);
+                        ++nTotalGridPoints;
+                    }
+                }
+            }
+            else
+            {
+                // Loop over the grid points and fill the values
+                for (int iGridX = 0; iGridX < fNGrid; ++iGridX)
+                {
+                    double gridLocationX = 0;
+                    GetGridLocation(iGridX, fNGrid, gridLocationX);
+                    for (int iGridY = 0; iGridY < fNGrid; ++iGridY)
+                    {
+                        double gridLocationY = 0;
+                        GetGridLocation(iGridY, fNGrid, gridLocationY);
+                        // Check to make sure that the grid point is within the active detector volume, skip otherwise
+                        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
+                        newAggFreqData.SetNComponents(nTotalGridPoints+1);
+                        newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,iRing);
+                        ++nTotalGridPoints;
+                    }
+                }
+            }
+        }
+        return nTotalGridPoints;
     }
 
     bool KTChannelAggregator::PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
@@ -134,27 +208,10 @@ namespace Katydid
         // Set the number of rings present
         newAggFreqData.SetNAxialPositions(fNRings);
 
-        int nTotalGridPoints = 0;
-        // Loop over the grid points and rings and fill the values
-        for (int iRing = 0; iRing < fNRings; ++iRing)
-        {
-            // Loop over the grid points and fill the values
-            for (int iGridX = 0; iGridX < fNGrid; ++iGridX)
-            {
-                double gridLocationX = 0;
-                GetGridLocation(iGridX, fNGrid, gridLocationX);
-                for (int iGridY = 0; iGridY < fNGrid; ++iGridY)
-                {
-                    double gridLocationY = 0;
-                    GetGridLocation(iGridY, fNGrid, gridLocationY);
-                    // Check to make sure that the grid point is within the active detector volume, skip otherwise
-                    //        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
-                    newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,iRing);
-                    ++nTotalGridPoints;
-                }
-            }
-        }
+        int nTotalGridPoints = DefineGrid(newAggFreqData);
+        if(nTotalGridPoints<=0) return false;
         int  gridPointsPerRing=nTotalGridPoints/fNRings;
+        // Loop over the grid points and rings and fill the values
         for (unsigned iRing = 0; iRing < fNRings; ++iRing)
         {
             // Loop over all grid points and find the one that gives the highest value
