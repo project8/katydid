@@ -28,6 +28,8 @@ namespace Katydid
         fWavelength(0.0115),
         fIsGridDefined(false),
         fIsUserDefinedGrid(false),
+        fIsPartialRing(false),
+        fPartialRingMultiplicity(),
         fSummationMinFreq(0e6),
         fSummationMaxFreq(200e6),
         fUseAntiSpiralPhaseShifts(false),
@@ -46,6 +48,8 @@ namespace Katydid
         {
             fNGrid = node->get_value< signed int >("grid-size", fNGrid);
             fIsUserDefinedGrid = node->get_value< bool >("use-grid-text-file", fIsUserDefinedGrid);
+            fIsPartialRing= node->get_value< bool >("partial-ring", fIsPartialRing);
+            fPartialRingMultiplicity= node->get_value< int >("partial-ring-Multiplicity", fPartialRingMultiplicity);
             fUserDefinedGridFile = node->get_value< >("grid-text-file", fUserDefinedGridFile);
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
             fWavelength = node->get_value< double >("wavelength", fWavelength);
@@ -191,6 +195,7 @@ namespace Katydid
         // Get the number of frequency bins from the first component of fftwData
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
         int nTotalComponents = fftwData.GetNComponents(); // Get number of components
+        if(fIsPartialRing) nTotalComponents*=fPartialRingMultiplicity;
         if(nTotalComponents%fNRings!=0)
         {
             KTERROR(agglog,"The number of rings has to be an integer multiple of total components");

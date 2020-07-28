@@ -82,6 +82,12 @@ namespace Katydid
             // A boolean value to check whether the grid should be defined by the user
             MEMBERVARIABLE(bool, IsUserDefinedGrid);
 
+            // A boolean to run channel aggreagator when only a partial ring is defined
+            MEMBERVARIABLE(bool, IsPartialRing);
+
+            // If IsPartialRing is true, the total number of channels is the product of the number of channels extracted from the egg file and the PartialRingMultiplicity
+            MEMBERVARIABLE(int, PartialRingMultiplicity)
+
             // The text file to be used for the user-defined grid
             MEMBERVARIABLE(std::string, UserDefinedGridFile);
 
