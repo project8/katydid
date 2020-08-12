@@ -195,7 +195,11 @@ namespace Katydid
         // Get the number of frequency bins from the first component of fftwData
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
         int nTotalComponents = fftwData.GetNComponents(); // Get number of components
-        if(fIsPartialRing) nTotalComponents*=fPartialRingMultiplicity;
+        if(fIsPartialRing)
+        {
+            if(fPartialRingMultiplicity%2!=0 || fPartialRingMultiplicity<=0) return false; // The partial ring case should only work if the multiplicity is even
+            nTotalComponents*=fPartialRingMultiplicity;
+        }
         if(nTotalComponents%fNRings!=0)
         {
             KTERROR(agglog,"The number of rings has to be an integer multiple of total components");
@@ -241,7 +245,14 @@ namespace Katydid
                         phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
                     }
                     // Get the frequency spectrum for that specific component
-                    freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
+                    if(fIsPartialRing) 
+                    { 
+                        int partialNComponents=nComponents/fPartialRingMultiplicity;
+                        // Estimate the channel that needs to be used as a copy for the non-existent iComponent in case of partial rings
+                        int partialComponent=((int)(iComponent/partialNComponents)%2)?(partialNComponents-(iComponent%partialNComponents)-1):(iComponent%partialNComponents);
+                        freqSpectrum = fftwData.GetSpectrumFFTW(partialComponent+iRing*partialNComponents);
+                    }
+                    else freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
                     double maxVoltage = 0.0;
                     int maxFrequencyBin = 0;
                     //Loop over the frequency bins
