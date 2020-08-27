@@ -42,6 +42,7 @@ namespace Katydid
      - "active-radius": double -- The active radius of the detection volume
      - "grid-size": signed int -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
      - "wavelength": double -- Wavelength of the cyclotron motion
+     - "use-antispiral-phase-shifts": bool, -- A flad to indicate whether to use antispiral phase shifts
  
      Slots:
      - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
@@ -59,7 +60,6 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             // in meters, should not be hard-coded
-            // PTS: Has to come as an input from config file ?
             MEMBERVARIABLE(double, ActiveRadius);
 
             // Get the grid size assuming a square grid
@@ -71,10 +71,17 @@ namespace Katydid
 
             //For exception handling to make sure the grid is defined before the spectra are assigned.
             MEMBERVARIABLE(bool, IsGridDefined);
+
+	    //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
+	    //If selected this option will make sure that there is a relative phase-shift applied 
+	    MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
         
             bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
 
         private:
+
+	    ///map that stores antispiral phase shifts
+	    std::map<int,double> fAntiSpiralPhaseShifts; 
 
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
@@ -86,6 +93,9 @@ namespace Katydid
 
             /// Apply shift phase to the supplied points based on the phase provided
             bool ApplyPhaseShift(double &realVal, double &imagVal, double phase);
+	    
+	    /// Generate antispiral phase shifts and save in fAntiSpiralPhaseShifts vector to be applied to channels 
+	    bool GenerateAntiSpiralPhaseShifts(int channelCount);
 
             /// Convert frquency to wavlength
             double ConvertFrequencyToWavelength(double frequency);
