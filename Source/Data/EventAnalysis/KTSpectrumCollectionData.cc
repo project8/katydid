@@ -7,6 +7,7 @@
 
 #include "KTSpectrumCollectionData.hh"
 
+#include "KTMath.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTSliceHeader.hh"
@@ -23,12 +24,12 @@ namespace Katydid
             KTMultiPSDataCore(),
             KTExtensibleData< KTPSCollectionData >(),
             fStartTime(0.),
-            fEndTime(0.001),
-            fDeltaT(1e-6),
-            fMinFreq(50e6),
-            fMaxFreq(150e6),
+            fEndTime(0.),
+            fDeltaT(-1.),
+            fMinFreq(0.),
+            fMaxFreq(0.),
             fMinBin(0),
-            fMaxBin(1),
+            fMaxBin(0),
             fFilling(false),
             fSpectrogramCounter(0)
     {
@@ -57,6 +58,8 @@ namespace Katydid
 
     void KTPSCollectionData::AddSpectrum(double timeStamp, const KTPowerSpectrum& spectrum, unsigned iComponent)
     {
+        // timeStamp is the spectrum's time-in-run-c
+
         if( fSpectra.size() <= iComponent )
         {
             SetNComponents( iComponent + 1 );
@@ -66,51 +69,60 @@ namespace Katydid
         // We must compute the min and max bin, and the number of bins
         if( fSpectra[iComponent] == NULL )
         {
-            SetMinBin( spectrum.FindBin( GetMinFreq() ) );
-            SetMaxBin( spectrum.FindBin( GetMaxFreq() ) );
+            SetMinBin( spectrum.FindBin( fMinFreq ) );
+            SetMaxBin( spectrum.FindBin( fMaxFreq ) );
 
-            if( GetMinBin() > GetMaxBin() )
+            if( fMinBin >= fMaxBin )
             {
+                KTERROR( scdlog, "Min bin is greater than max bin; Min freq <" << fMinFreq << " is probably greater than max freq <" << fMaxFreq << ">" );
+                return;
+            }
+
+            if( fDeltaT <= 0. )
+            {
+                KTERROR( scdlog, "DeltaT has not been set or is invalid: " << fDeltaT );
                 return;
             }
 
             // midFreq is the midpoint of start and end frequencies
             // minFreq is below this by exactly half the number of bins times the frequency step
             // maxFreq is above this by exactly half the number of bins times the frequency step
-            double midFreq = 0.5 * (GetMinFreq() + GetMaxFreq());
-            double minFreq = midFreq - (0.5 * (GetMaxBin() - GetMinBin() + 1) * spectrum.GetFrequencyBinWidth());
-            double maxFreq = midFreq + (0.5 * (GetMaxBin() - GetMinBin() + 1) * spectrum.GetFrequencyBinWidth());
+            double midFreq = 0.5 * (fMinFreq + fMaxFreq);
+            double minFreq = midFreq - (0.5 * (fMaxBin - fMinBin + 1) * spectrum.GetFrequencyBinWidth());
+            double maxFreq = midFreq + (0.5 * (fMaxBin - fMinBin + 1) * spectrum.GetFrequencyBinWidth());
 
             // This way the center frequency is preserved but the precise bounds are adjusted to match the bin width
             SetMinFreq( minFreq );
             SetMaxFreq( maxFreq );
 
-            unsigned iSpectra = (int)((fEndTime - fStartTime) / (double)fDeltaT) + 1;
-            KTWARN(scdlog, "Number of spectra in this new multips: " << iSpectra);
-            fSpectra[iComponent] = new KTMultiPS(NULL, iSpectra, fStartTime, fEndTime);
+            unsigned nSpectra = KTMath::Nint((fEndTime - fStartTime) / fDeltaT) + 1;
+            KTDEBUG(scdlog, "Number of spectra in this new multi-ps: " << nSpectra);
+            // fStartTime and fEndTime are times-in-run-c.  the spectrum time boundaries need to be the low and high edges of the bins.
+            // So we shift down and up by 0.5*slice length relative to fStartTime and fEndTime for the min and max times, respectively.
+            fSpectra[iComponent] = new KTMultiPS(NULL, nSpectra, fStartTime - 0.5 * fDeltaT, fEndTime + 0.5 * fDeltaT);
         }
 
         // When fSpectra is not empty, no 'Set' commands are used, only 'Get' for frequency and bin info
         // This ensures all spectra have the same frequency bounds and number of bins
 
         // nBins is the number of bins in the new spectrum
-        int nBins = GetMaxBin() - GetMinBin() + 1;
+        int nBins = fMaxBin - fMinBin + 1;
 
         // initialize new spectrum
-        KTPowerSpectrum* newSpectrum = new KTPowerSpectrum( nBins, GetMinFreq(), GetMaxFreq() );
-        for( int i = 0; i < nBins; i++ )
+        KTPowerSpectrum* newSpectrum = new KTPowerSpectrum( nBins, fMinFreq, fMaxFreq );
+        for( unsigned i = 0; i < nBins; ++i )
         {
             (*newSpectrum)(i) = 0.;
         }
 
         // fill new spectrum
-        for( int i = GetMinBin(); i <= GetMaxBin(); ++i )
+        for( int i = fMinBin; i <= fMaxBin; ++i )
         {
-            (*newSpectrum)(i - GetMinBin()) = spectrum(i);
+            (*newSpectrum)(i - fMinBin) = spectrum(i);
         }
 
         // add new spectrum to fSpectra
-        unsigned iSpectrum = (int)((timeStamp - fStartTime) / (double)fDeltaT);
+        unsigned iSpectrum = KTMath::Nint((timeStamp - fStartTime) / fDeltaT);
         KTDEBUG(scdlog, "Adding spectrum " << iSpectrum);
         SetSpectrum( newSpectrum, iSpectrum, iComponent );
 
