@@ -122,6 +122,9 @@ namespace Katydid
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
 
+            /// Returns the phase shift based on a given point, angle of the channel and the wavelength
+            double GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
+
             /// Get location of the point in the grid based on the given grid number and the size of the grid.
             /* Returns true if the assigment went well, false if there was some mistake
              */

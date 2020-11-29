@@ -82,6 +82,16 @@ namespace Katydid
         return 2.0 * KTMath::Pi() * pointDistance / wavelength;
     }
 
+    double KTChannelAggregator::GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
+    {
+        // X position based on the angle of the channel
+        double xChannel = fActiveRadius * cos(channelAngle);
+        // X position based on the angle of the channel
+        double yChannel = fActiveRadius * sin(channelAngle);
+        // Angle based on the deltaX and deltaY
+        return atan2(yChannel-yPosition,xChannel-xPosition);
+    }
+
     bool KTChannelAggregator::GetGridLocation(int gridNumber, int gridSize, double &gridLocation)
     {
         if (gridNumber >= gridSize) return false;
@@ -242,7 +252,7 @@ namespace Katydid
                     // Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
                     if(fUseAntiSpiralPhaseShifts)
                     {
-                        phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
+                        phaseShift-=GetAntiSpiralPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
                     }
                     // Get the frequency spectrum for that specific component
                     if(fIsPartialRing) 
@@ -258,6 +268,7 @@ namespace Katydid
                     //Loop over the frequency bins
                     for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
                     {
+                        if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
                         double realVal = freqSpectrum->GetReal(iFreqBin);
                         double imagVal = freqSpectrum->GetImag(iFreqBin);
                         ApplyPhaseShift(realVal, imagVal, phaseShift);
@@ -274,7 +285,6 @@ namespace Katydid
                 //Loop over all the freq bins and get the highest value and save to the aggregated frequency data
                 for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
                 {
-                    if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
                     if (newFreqSpectrum->GetAbs(iFreqBin) > maxVoltageFreq)
                     {
                         maxVoltageFreq = newFreqSpectrum->GetAbs(iFreqBin);
@@ -283,7 +293,7 @@ namespace Katydid
                 newAggFreqData.SetSummedGridVoltage(gridPointNumber, maxVoltageFreq);
             } // End of grid
         }// End of loop over all rings
-        KTDEBUG(agglog,"Channel summation performed over "<< fNRings<<" rings and "<<gridPointsPerRing<<" grid points per ring");
+        KTDEBUG(agglog,"Channel summation performed over "<< fNRings<<" rings and "<<gridPointsPerRing<<" grid points per ring in the range of frequencies ("<< fSummationMinFreq<< "," <<fSummationMaxFreq<<")");
         return true;
     }
 }
