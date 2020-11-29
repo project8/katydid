@@ -32,7 +32,9 @@ namespace Katydid
         fPartialRingMultiplicity(),
         fSummationMinFreq(0e6),
         fSummationMaxFreq(200e6),
-        fUseAntiSpiralPhaseShifts(false),
+        fUseAntiSpiralPhaseShifts(true),
+        fApplyGradBDopplerPhaseShifts(true),
+        fApplyGradBNormalPhaseShifts(true),
         fAntiSpiralPhaseShifts(),
         fNRings(1)
     {
@@ -79,7 +81,10 @@ namespace Katydid
         // Distance of the input point from the input channel
         double pointDistance = pow(pow(xChannel - xPosition, 2) + pow(yChannel - yPosition, 2), 0.5);
         // Phase of the input signal based on the input point, channel location and the wavelength
-        return 2.0 * KTMath::Pi() * pointDistance / wavelength;
+        double phaseShift=2.0 * KTMath::Pi() * pointDistance / wavelength;
+        if(fApplyGradBDopplerPhaseShifts) phaseShift-=0;
+        if(fApplyGradBNormalPhaseShifts) phaseShift-=0;
+        return phaseShift;
     }
 
     double KTChannelAggregator::GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const

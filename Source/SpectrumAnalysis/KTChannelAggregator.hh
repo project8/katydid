@@ -104,6 +104,13 @@ namespace Katydid
 	        //If selected this option will make sure that there is a relative phase-shift applied 
 	        MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
         
+            //There are phase shifts arising from Grad-B related doppler shifts
+	        MEMBERVARIABLE(bool,ApplyGradBDopplerPhaseShifts);
+
+            //There are phase shifts arising from B related doppler shifts
+	        MEMBERVARIABLE(bool,ApplyGradBDopplerPhaseShifts);
+	        MEMBERVARIABLE(bool,ApplyGradBNormalPhaseShifts);
+        
             virtual bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
             virtual bool SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData);
 
