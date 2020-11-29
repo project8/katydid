@@ -43,6 +43,23 @@ Fixes:
 Log
 ---
 
+Version: 2.18.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: August 28, 2020
+'''''''''''''''''''''''''''''''
+
+New Features:
+''''''''''''''
+
+* Antispiral phase shifts in beamforming
+
+Fixes:
+'''''''''''''
+
+* Offset in spectrogram collection
+
+
 Version: 2.17.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
