@@ -7,6 +7,7 @@
 
 #include "KTChannelAggregator.hh"
 #include "KTLogger.hh"
+#include "KTSpline.hh"
 
 #include <boost/algorithm/string.hpp>
 using namespace boost::algorithm;
@@ -26,16 +27,18 @@ namespace Katydid
         fActiveRadius(0.0516),
         fNGrid(30),
         fWavelength(0.0115),
+        fPitchAngle(90),
+        fGradBFrequency(0),
         fIsGridDefined(false),
         fIsUserDefinedGrid(false),
         fIsPartialRing(false),
         fPartialRingMultiplicity(),
         fSummationMinFreq(0e6),
         fSummationMaxFreq(200e6),
-        fUseAntiSpiralPhaseShifts(true),
-        fApplyGradBDopplerPhaseShifts(true),
-        fApplyGradBNormalPhaseShifts(true),
-        fAntiSpiralPhaseShifts(),
+        fApplyAntiSpiralPhaseShifts(true),
+        fApplyGradBDopplerFreqShifts(true),
+        fApplyGradBNormalFreqShifts(true),
+        //fAntiSpiralPhaseShifts(),
         fNRings(1)
     {
     }
@@ -55,10 +58,15 @@ namespace Katydid
             fUserDefinedGridFile = node->get_value< >("grid-text-file", fUserDefinedGridFile);
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
             fWavelength = node->get_value< double >("wavelength", fWavelength);
+            fPitchAngle = node->get_value< double >("pitch-angle", fPitchAngle);
+            fGradBFrequency= node->get_value< double >("gradb-frequency", fGradBFrequency);
+            fPitchAngle = node->get_value< double >("pitch-angle", fPitchAngle);
             fSummationMinFreq= node->get_value< double >("min-freq", fSummationMinFreq);
             fSummationMaxFreq= node->get_value< double >("max-freq", fSummationMaxFreq);
             fNRings = node->get_value< signed int >("n-rings", fNRings);
-            fUseAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fUseAntiSpiralPhaseShifts);
+            fApplyAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fApplyAntiSpiralPhaseShifts);
+            fApplyGradBDopplerFreqShifts= node->get_value< bool>("use-gradb-doppler-freq-shifts", fApplyGradBDopplerFreqShifts);
+            fApplyGradBNormalFreqShifts= node->get_value< bool>("use-gradb-normal-freq-shifts", fApplyGradBNormalFreqShifts);
         }
         return true;
     }
@@ -72,21 +80,6 @@ namespace Katydid
         return true;
     }
 
-    double KTChannelAggregator::GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
-    {
-        // X position based on the angle of the channel
-        double xChannel = fActiveRadius * cos(channelAngle);
-        // X position based on the angle of the channel
-        double yChannel = fActiveRadius * sin(channelAngle);
-        // Distance of the input point from the input channel
-        double pointDistance = pow(pow(xChannel - xPosition, 2) + pow(yChannel - yPosition, 2), 0.5);
-        // Phase of the input signal based on the input point, channel location and the wavelength
-        double phaseShift=2.0 * KTMath::Pi() * pointDistance / wavelength;
-        if(fApplyGradBDopplerPhaseShifts) phaseShift-=0;
-        if(fApplyGradBNormalPhaseShifts) phaseShift-=0;
-        return phaseShift;
-    }
-
     double KTChannelAggregator::GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
     {
         // X position based on the angle of the channel
@@ -97,19 +90,125 @@ namespace Katydid
         return atan2(yChannel-yPosition,xChannel-xPosition);
     }
 
+    double KTChannelAggregator::ConvertWavelengthToFrequency(double wavelength) const
+    {
+        return C/wavelength;
+    }
+
+    // β= |β|cos(theta)
+    //where theta=arccos(((x1-x)*(-y)+(y1-y)*x)/(sqrt(x^2+y^2)*sqrt((x1-x)^2+(y1-y)^2))) = arccos(y1*x-x1*y)/(sqrt(x^2+y^2)*sqrt((x1-x)^2+(y1-y)^2))
+    //theta=arccos((channelY*xPosition-channelX*yPosition)/(sqrt(xPosition^2+yPosition^2)*sqrt((channelX-xPosition)^2+(channelY-yPosition)^2)))
+    double KTChannelAggregator::GetGradBBeta(double xPosition, double yPosition, double channelX, double channelY) const
+    {
+        double numerator=channelY*xPosition-channelX*yPosition;
+        double denominator=sqrt(pow(xPosition,2)+pow(yPosition,2))*sqrt(pow(channelX-xPosition,2)+pow(channelY-yPosition,2));
+        double electronRadius=sqrt(pow(xPosition,2)+pow(yPosition,2));
+        double gradBBeta=fGradBFrequency*electronRadius/C;
+        return gradBBeta*numerator/denominator; 
+    }
+
+    double KTChannelAggregator::GetGradBDopplerFreqShift(double xPosition, double yPosition, double wavelength, double channelX, double channelY) const
+    {
+        double beta=GetGradBBeta(xPosition,yPosition,channelX,channelY);
+        double omega=KTMath::TwoPi()*ConvertWavelengthToFrequency(wavelength);
+        double freqShift=beta*omega/KTMath::TwoPi(); 
+        return freqShift; 
+    }
+
+    double KTChannelAggregator::GetGradBNormalFreqShift(double xPosition, double yPosition, double wavelength, double channelX, double channelY) const
+    {
+        double beta=GetGradBBeta(xPosition,yPosition,channelX,channelY);
+        double channelElectronDistance=sqrt(pow(yPosition-channelY,2)+pow(xPosition-channelX,2));
+        double freqShift=beta*C/channelElectronDistance;
+        return freqShift; 
+    }
+
+    // There's got to be a better way to do this. 
+    bool KTChannelAggregator::ApplyFrequencyShift(KTFrequencySpectrumFFTW &freqSpectrum, double freqShift) const
+    {
+        int nFreqBins = freqSpectrum.GetNFrequencyBins();
+        double* axisValues = new double[nFreqBins];
+        double* realVals = new double[nFreqBins];
+        double* imagVals = new double[nFreqBins];
+        for (unsigned i= 0; i< nFreqBins; ++i)
+        {
+            axisValues[i]=freqSpectrum.GetBinCenter(i);
+            realVals[i]=freqSpectrum.GetReal(i);
+            imagVals[i]=freqSpectrum.GetImag(i);
+        }
+        KTSpline realSpline = KTSpline(axisValues,realVals,nFreqBins);
+        KTSpline imagSpline = KTSpline(axisValues,imagVals,nFreqBins);
+        for (unsigned i= 0; i< nFreqBins; ++i)
+        {
+            if((freqSpectrum.GetBinCenter(i)-freqShift) >realSpline.GetXMin() && (freqSpectrum.GetBinCenter(i)-freqShift) >realSpline.GetXMax())
+            {
+                std::cout<< i<<std::endl;
+                realVals[i]=realSpline.Evaluate(freqSpectrum.GetBinCenter(i)-freqShift);
+                imagVals[i]=imagSpline.Evaluate(freqSpectrum.GetBinCenter(i)-freqShift);
+            }
+        }
+        for (unsigned i= 0; i< nFreqBins; ++i)
+        {
+            freqSpectrum.SetRect( i, realVals[i], imagVals[i]);
+        }
+        delete [] axisValues;
+        delete [] realVals;
+        delete [] imagVals;
+        return true;
+    }
+
+    bool KTChannelAggregator::ApplyFrequencyShifts(KTFrequencySpectrumFFTW &freqSpectrum,double xPosition, double yPosition, double wavelength, double channelAngle) const
+    {
+        bool anyFreqShiftsApplied=false;
+        double xChannel = fActiveRadius * cos(channelAngle);
+        double yChannel = fActiveRadius * sin(channelAngle);
+        double gradBDopShift=0;
+        double gradBNormShift=0;
+        if(fApplyGradBDopplerFreqShifts) 
+        {
+            gradBDopShift=GetGradBDopplerFreqShift(xPosition, yPosition, wavelength, xChannel, yChannel);
+            anyFreqShiftsApplied=true;
+        }
+        if(fApplyGradBNormalFreqShifts) 
+        {
+            gradBNormShift=GetGradBNormalFreqShift(xPosition, yPosition, wavelength, xChannel, yChannel);
+            anyFreqShiftsApplied=true;
+        }
+        if(anyFreqShiftsApplied) ApplyFrequencyShift(freqSpectrum,-gradBDopShift);
+        return anyFreqShiftsApplied;
+    }
+
+    double KTChannelAggregator::GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
+    {
+        // X position based on the angle of the channel
+        double xChannel = fActiveRadius * cos(channelAngle);
+        // X position based on the angle of the channel
+        double yChannel = fActiveRadius * sin(channelAngle);
+        // Distance of the input point from the input channel
+        double pointDistance = pow(pow(xChannel - xPosition, 2) + pow(yChannel - yPosition, 2), 0.5);
+        // Phase of the input signal based on the input point, channel location and the wavelength
+        double phaseShift=KTMath::TwoPi() * pointDistance / wavelength;
+        if(fApplyAntiSpiralPhaseShifts)
+        {
+            phaseShift-=GetAntiSpiralPhaseShift( xPosition, yPosition, wavelength, channelAngle);
+        }
+        return phaseShift;
+    }
+
     bool KTChannelAggregator::GetGridLocation(int gridNumber, int gridSize, double &gridLocation)
     {
         if (gridNumber >= gridSize) return false;
         gridLocation = fActiveRadius * (((2.0 * gridNumber + 1.0) / gridSize) - 1);
         return true;
-    }
+}
 
+    /*
     bool KTChannelAggregator::GenerateAntiSpiralPhaseShifts(int channelCount)
     {
         for(int i=0;i<channelCount;++i)
         {
             double phaseShift=0.0;
-            if(fUseAntiSpiralPhaseShifts) 
+            if(fApplyAntiSpiralPhaseShifts) 
             {
                 phaseShift=i*2*KTMath::Pi()/channelCount;
             }
@@ -117,7 +216,7 @@ namespace Katydid
             fAntiSpiralPhaseShifts.insert(channelPhaseShift);
         }
         return true;
-    }
+    }*/
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
@@ -205,7 +304,7 @@ namespace Katydid
 
     bool KTChannelAggregator::PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
     {
-        const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
+        KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
         int nTimeBins = freqSpectrum->GetNTimeBins();
         // Get the number of frequency bins from the first component of fftwData
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
@@ -221,7 +320,7 @@ namespace Katydid
         }
         int nComponents = nTotalComponents/fNRings;// Get number of components
 
-        GenerateAntiSpiralPhaseShifts(nComponents);
+        //GenerateAntiSpiralPhaseShifts(nComponents);
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
@@ -252,13 +351,8 @@ namespace Katydid
                 for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
-                    double channelAngle = 2 * KTMath::Pi() * iComponent / nComponents;
+                    double channelAngle = KTMath::TwoPi() * iComponent / nComponents;
                     double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
-                    // Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
-                    if(fUseAntiSpiralPhaseShifts)
-                    {
-                        phaseShift-=GetAntiSpiralPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
-                    }
                     // Get the frequency spectrum for that specific component
                     if(fIsPartialRing) 
                     { 
@@ -268,6 +362,7 @@ namespace Katydid
                         freqSpectrum = fftwData.GetSpectrumFFTW(partialComponent+iRing*partialNComponents);
                     }
                     else freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
+                    //ApplyFrequencyShifts(*freqSpectrum,gridLocationX, gridLocationY, fWavelength, channelAngle);
                     double maxVoltage = 0.0;
                     int maxFrequencyBin = 0;
                     //Loop over the frequency bins
