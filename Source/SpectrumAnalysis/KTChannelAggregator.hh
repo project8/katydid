@@ -145,9 +145,9 @@ namespace Katydid
             /// Returns the frequency shift based on Grad-B dependent normal vector, manifests aa frequency shift
             double GetGradBNormalFreqShift(double xPosition, double yPosition, double wavelength, double channelX, double channelY) const;
 
-            bool ApplyFrequencyShift(KTFrequencySpectrumFFTW &freqSpectrum, double freqShift) const;
+            bool ApplyFrequencyShift(const KTFrequencySpectrumFFTW &freqSpectrum,KTFrequencySpectrumFFTW &shiftedFreqSpectrum ,double freqShift) const;
             
-            bool ApplyFrequencyShifts(KTFrequencySpectrumFFTW &freqSpectrum,double xPosition, double yPosition, double wavelength, double channelAngle) const;
+            bool ApplyFrequencyShifts(const KTFrequencySpectrumFFTW &freqSpectrum,KTFrequencySpectrumFFTW &shiftedFreqSpectrum,double xPosition, double yPosition, double wavelength, double channelAngle) const;
            
             /// Get location of the point in the grid based on the given grid number and the size of the grid.
             /* Returns true if the assigment went well, false if there was some mistake

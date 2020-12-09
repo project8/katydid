@@ -124,13 +124,13 @@ namespace Katydid
     }
 
     // There's got to be a better way to do this. 
-    bool KTChannelAggregator::ApplyFrequencyShift(KTFrequencySpectrumFFTW &freqSpectrum, double freqShift) const
+    bool KTChannelAggregator::ApplyFrequencyShift(const KTFrequencySpectrumFFTW &freqSpectrum,KTFrequencySpectrumFFTW &shiftedFreqSpectrum ,double freqShift) const
     {
         int nFreqBins = freqSpectrum.GetNFrequencyBins();
         double* axisValues = new double[nFreqBins];
         double* realVals = new double[nFreqBins];
         double* imagVals = new double[nFreqBins];
-        for (unsigned i= 0; i< nFreqBins; ++i)
+        for (unsigned int i= 0; i< nFreqBins; ++i)
         {
             axisValues[i]=freqSpectrum.GetBinCenter(i);
             realVals[i]=freqSpectrum.GetReal(i);
@@ -138,18 +138,14 @@ namespace Katydid
         }
         KTSpline realSpline = KTSpline(axisValues,realVals,nFreqBins);
         KTSpline imagSpline = KTSpline(axisValues,imagVals,nFreqBins);
-        for (unsigned i= 0; i< nFreqBins; ++i)
+        for (unsigned int i= 0; i< nFreqBins; ++i)
         {
-            if((freqSpectrum.GetBinCenter(i)-freqShift) >realSpline.GetXMin() && (freqSpectrum.GetBinCenter(i)-freqShift) >realSpline.GetXMax())
-            {
-                std::cout<< i<<std::endl;
-                realVals[i]=realSpline.Evaluate(freqSpectrum.GetBinCenter(i)-freqShift);
-                imagVals[i]=imagSpline.Evaluate(freqSpectrum.GetBinCenter(i)-freqShift);
-            }
-        }
-        for (unsigned i= 0; i< nFreqBins; ++i)
-        {
-            freqSpectrum.SetRect( i, realVals[i], imagVals[i]);
+            if((freqSpectrum.GetBinCenter(i)-freqShift) <realSpline.GetXMin() ||  (freqSpectrum.GetBinCenter(i)-freqShift)>realSpline.GetXMax()) continue;
+            if(freqSpectrum.GetBinCenter(i)<fSummationMinFreq || freqSpectrum.GetBinCenter(i)>fSummationMaxFreq) continue;
+            double a=realSpline.Evaluate(freqSpectrum.GetBinCenter(i)+freqShift);
+            double b=imagSpline.Evaluate(freqSpectrum.GetBinCenter(i)+freqShift);
+            std::cout<<i<<": freqSpectrum.GetBinCenter(i) = "<<freqSpectrum.GetBinCenter(i) <<"freqSpectrum.GetReal(i) = "<<freqSpectrum.GetReal(i)<<", freqShift="<<freqShift<<", a="<<a<<", and b"<<b<<std::endl;
+            shiftedFreqSpectrum.SetRect(i,a,b);
         }
         delete [] axisValues;
         delete [] realVals;
@@ -157,7 +153,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTChannelAggregator::ApplyFrequencyShifts(KTFrequencySpectrumFFTW &freqSpectrum,double xPosition, double yPosition, double wavelength, double channelAngle) const
+    bool KTChannelAggregator::ApplyFrequencyShifts(const KTFrequencySpectrumFFTW &freqSpectrum,KTFrequencySpectrumFFTW &shiftedFreqSpectrum,double xPosition, double yPosition, double wavelength, double channelAngle) const
     {
         bool anyFreqShiftsApplied=false;
         double xChannel = fActiveRadius * cos(channelAngle);
@@ -174,7 +170,8 @@ namespace Katydid
             gradBNormShift=GetGradBNormalFreqShift(xPosition, yPosition, wavelength, xChannel, yChannel);
             anyFreqShiftsApplied=true;
         }
-        if(anyFreqShiftsApplied) ApplyFrequencyShift(freqSpectrum,-gradBDopShift);
+        //if(anyFreqShiftsApplied) ApplyFrequencyShift(freqSpectrum,shiftedFreqSpectrum,-gradBDopShift);
+        if(anyFreqShiftsApplied) ApplyFrequencyShift(freqSpectrum,shiftedFreqSpectrum,0);
         return anyFreqShiftsApplied;
     }
 
@@ -342,8 +339,10 @@ namespace Katydid
             { // Loop over the grid points
                 int gridPointNumber=iGrid+gridPointsPerRing*iRing;
                 KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
+                KTFrequencySpectrumFFTW* shiftedFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
                 // Empty values in the frequency spectrum, not sure if this is needed but there were some issues when this was not done for the power spectrum
                 NullFreqSpectrum(*newFreqSpectrum);
+                NullFreqSpectrum(*shiftedFreqSpectrum);
                 double gridLocationX = 0;
                 double gridLocationY = 0;
                 double gridLocationZ = 0;
@@ -362,13 +361,15 @@ namespace Katydid
                         freqSpectrum = fftwData.GetSpectrumFFTW(partialComponent+iRing*partialNComponents);
                     }
                     else freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
-                    //ApplyFrequencyShifts(*freqSpectrum,gridLocationX, gridLocationY, fWavelength, channelAngle);
+                    //ApplyFrequencyShifts(*freqSpectrum,*shiftedFreqSpectrum,gridLocationX, gridLocationY, fWavelength, channelAngle);
                     double maxVoltage = 0.0;
                     int maxFrequencyBin = 0;
                     //Loop over the frequency bins
                     for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
                     {
                         if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
+                        //double realVal = shiftedFreqSpectrum->GetReal(iFreqBin);
+                        //double imagVal = shiftedFreqSpectrum->GetImag(iFreqBin);
                         double realVal = freqSpectrum->GetReal(iFreqBin);
                         double imagVal = freqSpectrum->GetImag(iFreqBin);
                         ApplyPhaseShift(realVal, imagVal, phaseShift);
