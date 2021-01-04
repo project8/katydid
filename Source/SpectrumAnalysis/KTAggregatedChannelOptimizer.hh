@@ -13,6 +13,7 @@
 #include "KTChannelAggregatedData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTAxisProperties.hh"
+#include "KTFSCDCRESUtils.hh"
 
 #include "KTSlot.hh"
 
@@ -49,6 +50,8 @@ namespace Katydid
         
             bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& aggData);
 
+            bool ApplyOptimumFrequencyShifts(KTFrequencySpectrumDataFFTW& fftwData,KTAggregatedFrequencySpectrumDataFFTW& aggData);
+
         private:
 
             //***************
@@ -64,6 +67,7 @@ namespace Katydid
 
         private:
             Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
+            Nymph::KTSlotDataTwoTypes<KTFrequencySpectrumDataFFTW, KTAggregatedFrequencySpectrumDataFFTW > fApplyOptimumFrequencyShiftsSlot;
     };
 }
 

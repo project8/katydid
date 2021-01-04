@@ -46,7 +46,6 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTBasicROOTTypeWriterAnalysis");
 
-
     static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterSpectrumAnalysis > sBRTWAnalysisRegistrar;
 
     KTBasicROOTTypeWriterSpectrumAnalysis::KTBasicROOTTypeWriterSpectrumAnalysis() :
@@ -899,9 +898,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
-
+        int optimizedGridIndex=sumData.GetOptimizedGridPoint();
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            //if(GetSaveOnlyOptimizedAgg() && iChannel!=optimizedGridIndex) continue; // Continue if the fSaveOnlyOptimizedAgg is assgined to be true and the channel number is not same as the optimized grid point
+            if(iChannel!=optimizedGridIndex) continue; 
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
@@ -956,8 +957,10 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
+        int optimizedGridIndex=sumData.GetOptimizedGridPoint();
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue; 
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
             {

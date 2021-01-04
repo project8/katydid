@@ -31,6 +31,7 @@ namespace Katydid
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL),
+            fSaveOnlyOptimizedAgg(true),
             fFileManager(KTROOTWriterFileManager::get_instance())
     {
     }
@@ -47,6 +48,7 @@ namespace Katydid
         {
             SetFilename(node->get_value("output-file", fFilename));
             SetFileFlag(node->get_value("file-flag", fFileFlag));
+            SetSaveOnlyOptimizedAgg(node->get_value("save-only-optimized-aggregated",fSaveOnlyOptimizedAgg));
         }
 
         // Command-line settings

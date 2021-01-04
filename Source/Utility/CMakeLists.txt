@@ -11,7 +11,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTAxisProperties.hh
     KTConstants.hh
     KTCountHistogram.hh
-    KTCRESUtils.hh
+    KTFSCDCRESUtils.hh
     KTCutable.hh
     KTCutableArray.hh
     KTDBSCAN.hh
@@ -39,7 +39,7 @@ set (UTILITY_SOURCEFILES
     complexpolar/specialization.cc
     KTAxisProperties.cc
     KTCountHistogram.cc
-    KTCRESUtils.cc
+    KTFSCDCRESUtils.cc
     KTECDF.cc
     KTKatydidApp.cc
     KTRandom.cc

@@ -113,6 +113,9 @@ namespace Katydid
         double activeRadius=data.GetActiveRadius();
         psData.SetActiveRadius(activeRadius);
         psData.SetNAxialPositions(data.GetNAxialPositions());
+        psData.SetIsSquareGrid(data.GetIsSquareGrid());
+        psData.SetIsGridOptimized(data.GetIsGridOptimized());
+        int optimizedGridPoint=data.GetOptimizedGridPoint();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
@@ -122,6 +125,7 @@ namespace Katydid
             data.GetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
+            if(iComponent==optimizedGridPoint) psData.SetOptimizedGridPointValue(iComponent,psData.GetSummedGridPower(iComponent));
         }
         return true;
     }
@@ -133,6 +137,9 @@ namespace Katydid
         double activeRadius=data.GetActiveRadius();
         psData.SetActiveRadius(activeRadius);
         psData.SetNAxialPositions(data.GetNAxialPositions());
+        psData.SetIsSquareGrid(data.GetIsSquareGrid());
+        psData.SetIsGridOptimized(data.GetIsGridOptimized());
+        int optimizedGridPoint=data.GetOptimizedGridPoint();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
@@ -142,6 +149,7 @@ namespace Katydid
             data.GetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
+            if(iComponent==optimizedGridPoint) psData.SetOptimizedGridPointValue(iComponent,psData.GetSummedGridPower(iComponent));
         }
         return true;
     }
