@@ -37,10 +37,16 @@ namespace Katydid
     {
         if (node != NULL)
         {
+            std::cout << "configuring\n";
+            //std::cout << node;
             fNGrid = node->get_value< signed int >("grid-size", fNGrid);
+            //std::cout << fNGrid;
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
+            //std::cout << fActiveRadius;
             fWavelength = node->get_value< double >("wavelength", fWavelength);
+            //std::cout << fWavelength;
             fUseAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fUseAntiSpiralPhaseShifts);
+            //std::cout << fUseAntiSpiralPhaseShifts;
         }
         return true;
     }
@@ -49,8 +55,13 @@ namespace Katydid
     {
         double tempRealVal = realVal;
         double tempImagVal = imagVal;
+        //std::cout << realVal;
+        //std::cout << imagVal;
         realVal = tempRealVal * cos(phase) - tempImagVal * sin(phase);
         imagVal = tempRealVal * sin(phase) + tempImagVal * cos(phase);
+        //std::cout << realVal;
+        //std::cout << imagVal;
+        //std::cout << "applying the phase shift\n";
         return true;
     }
 
@@ -63,6 +74,10 @@ namespace Katydid
         // Distance of the input point from the input channel
         double pointDistance = pow(pow(xChannel - xPosition, 2) + pow(yChannel - yPosition, 2), 0.5);
         // Phase of the input signal based on the input point, channel location and the wavelength
+        //std::cout << xChannel;
+        //std::cout << yChannel;
+        //std::cout << pointDistance;
+        //std::cout <<"getting the phase shift\n";
         return 2.0 * KTMath::Pi() * pointDistance / wavelength;
     }
 
@@ -70,38 +85,57 @@ namespace Katydid
     {
         if (gridNumber >= gridSize) return false;
         gridLocation = fActiveRadius * (((2.0 * gridNumber + 1.0) / gridSize) - 1);
+        //std::cout << gridLocation;
+        std::cout <<"getting the grid location\n";
         return true;
     }
 
-    bool KTChannelAggregator::GenerateAntiSpiralPhaseShifts(int channelCount)
+    bool KTChannelAggregator::GenerateAntiSpiralPhaseShifts(int channelCount) // method that calculates the antispiral phase shifts for the array
     {
-	for(int i=0;i<channelCount;++i)
+	for(int i=0;i<channelCount;++i) // iterate over the channels
 	{
-	    double phaseShift=0.0;
-	    if(fUseAntiSpiralPhaseShifts) 
+	    double phaseShift=0.0; // declare local variable phaseShift, and set it to 0.0
+	    if(fUseAntiSpiralPhaseShifts) // if we are using the antispiral correction then calculatee the phase shift.
 	    {
-	        phaseShift=i*2*KTMath::Pi()/channelCount;
+	        phaseShift=i*2*KTMath::Pi()/channelCount; //calculate the phaseshift, it depends on the channel index.
 	    }
-	    std::pair<int,double> channelPhaseShift=std::make_pair(i,phaseShift);
-	    fAntiSpiralPhaseShifts.insert(channelPhaseShift);
+	    std::pair<int,double> channelPhaseShift=std::make_pair(i,phaseShift); // declare a std::pair object (think python tuple) with the channel index and associated phaseShift.
+      //std::cout << channelPhaseShift;
+	    fAntiSpiralPhaseShifts.insert(channelPhaseShift); // inserts the pair (channel_ind, phaseShift) into a std::map container object (python dictionary).
+                                                        //insert is a map method
 	}
+      //std::cout << fAntiSpiralPhaseShifts;
+      std::cout <<"Generating antispiral shifts.\n";
 	    return true;
     }
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
-        const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
-        int nTimeBins = freqSpectrum->GetNTimeBins();
+        const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0); //assign the pointer of the 0th or first component of a
+                                                                                  //vector of pointers to KTFrequencySpectrumFFTW data to the pointer variable
+                                                                                  // freqSpectrum
+
+        int nTimeBins = freqSpectrum->GetNTimeBins(); // get the number of time bins from the first component of the vector
+                                                      //fftwData which is a vector of pointers to KTFrequencySpectrumFFTW data
+
         // Get the number of frequency bins from the first component of fftwData
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
-        int nComponents = fftwData.GetNComponents(); // Get number of components
+        int nComponents = fftwData.GetNComponents(); // Get number of components which corresponds to the number of channels in the KTFrequencySpectrum object.
 
-	GenerateAntiSpiralPhaseShifts(nComponents);
+	      GenerateAntiSpiralPhaseShifts(nComponents); // Genererate the antispiral shifts for an antenna array with nComponents worth of antennas.
+                                              // stores them in the member variable of the KTChannelAggregator class fAntiSpiralPhaseShifts.
+                                              // thats why nothing is returned.
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
 
         // Assume a square grid. i.e, number of points in X= no of points in Y
+        // here we're creating a new reference to KTAggregatedFrequencySpectrumDataFFTW and calling it newAggFreqData
+        // the line fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid * fNGrid); is confusing to me.
+        // fftwData is a reference to the data object where the data is stored. I believe that the .Of function is adding KTAggregatedFrequencySpectrumDataFFTW to
+        // the data object. It's weird to me that this is done through interacting with what I thought was just the KTFrequencySpectrumDataFFTW object.
+        // I suppose inheritance makes this possible. The NComponents of the KTAggregatedFrequencySpectrumDataFFTW are set to the square of the NGrid points.
+        // Assumes a square grid.
         KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid * fNGrid);
 
         // Setting up the active radius of the KTAggregatedFrequencySpectrumDataFFTW object to maintain consistency
@@ -113,17 +147,21 @@ namespace Katydid
         for (int iGridX = 0; iGridX < fNGrid; ++iGridX)
         {
             double gridLocationX = 0;
+            // use GetGridLocation so set the value of gridLocationX
             GetGridLocation(iGridX, fNGrid, gridLocationX);
             for (int iGridY = 0; iGridY < fNGrid; ++iGridY)
             {
                 double gridLocationY = 0;
+                // use GetGridLocation so set the value of gridLocationY
                 GetGridLocation(iGridY, fNGrid, gridLocationY);
                 // Check to make sure that the grid point is within the active detector volume, skip otherwise
                 //        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
+                // set the nth gridpoint to the values calculated above.
                 newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY);
                 ++nTotalGridPoints;
             }
         }
+
         // Loop over all grid points and find the one that gives the highest value
         for (int iGrid = 0; iGrid < nTotalGridPoints; ++iGrid)
         { // Loop over the grid points
@@ -138,11 +176,11 @@ namespace Katydid
                 // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
                 double channelAngle = 2 * KTMath::Pi() * iComponent / nComponents;
                 double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
-		// Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
-		if(fUseAntiSpiralPhaseShifts)
-		{
-		    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
-		}
+            		// Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
+            		if(fUseAntiSpiralPhaseShifts)
+            		{
+            		    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
+            		}
                 // Get the frequency spectrum for that specific component
                 freqSpectrum = fftwData.GetSpectrumFFTW(iComponent);
                 double maxVoltage = 0.0;
@@ -176,4 +214,3 @@ namespace Katydid
         return true;
     }
 }
-

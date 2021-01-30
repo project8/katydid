@@ -19,6 +19,7 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
+#include "KTTimeSeriesFFTW.hh"
 
 #include "KTMemberVariable.hh"
 
@@ -118,6 +119,22 @@ namespace Katydid
             static const std::string sName;
     };
 
+    class KTAggregatedTimeSeriesDataFFTW : public KTAggregatedDataCore, public KTTimeSeriesFFTW, public Nymph::KTExtensibleData< KTAggregatedTimeSeriesDataFFTW >
+    {
+        public:
+            KTAggregatedTimeSeriesDataFFTW();
+
+            virtual ~KTAggregatedTimeSeriesDataFFTW();
+
+            virtual KTAggregatedTimeSeriesDataFFTW& SetNComponents(unsigned);
+
+            virtual void SetSummedGridVoltage(int, double);
+
+            virtual double GetSummedGridVoltage(int) const;
+
+            static const std::string sName;
+    };
+
     class KTAggregatedPowerSpectrumData : public KTAggregatedDataCore, public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTAggregatedPowerSpectrumData >
     {
         public:
@@ -199,6 +216,16 @@ namespace Katydid
     }
 
     inline double KTAggregatedFrequencySpectrumDataFFTW::GetSummedGridVoltage(int component) const
+    {
+        return KTAggregatedDataCore::GetSummedGridMagnitude(component);
+    }
+
+    inline void KTAggregatedTimeSeriesDataFFTW::SetSummedGridVoltage(int component, double magnitude)
+    {
+        KTAggregatedDataCore::SetSummedGridMagnitude(component, magnitude);
+    }
+
+    inline double KTAggregatedTimeSeriesDataFFTW::GetSummedGridVoltage(int component) const
     {
         return KTAggregatedDataCore::GetSummedGridMagnitude(component);
     }

@@ -72,6 +72,44 @@ namespace Katydid
 
     /*****************  End of KTAggregatedFrequencySpectrumDataFFTW ************************/
 
+    /*****************  Beginning of KTAggregatedTimeSeriesDataFFTW ************************/
+
+    const std::string KTAggregatedTimeSeriesDataFFTW::sName("aggregated-time-series-fftw");
+
+    KTAggregatedTimeSeriesDataFFTW::KTAggregatedTimeSeriesDataFFTW() :
+            KTAggregatedDataCore(),
+            KTTimeSeriesFFTW(),
+            Nymph::KTExtensibleData< KTAggregatedTimeSeriesDataFFTW >()
+    {
+    }
+
+    KTAggregatedTimeSeriesDataFFTW::~KTAggregatedTimeSeriesDataFFTW()
+    {
+    }
+
+    KTAggregatedTimeSeriesDataFFTW& KTAggregatedTimeSeriesDataFFTW::SetNComponents(unsigned num)
+    {
+        unsigned oldSize = GetData().size();
+
+        // If old size is bigger than num, delete all the extra terms
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
+        {
+            delete fData[iComponent];
+        }
+
+        //Resize old size is smaller than old size
+        fData.resize(num);
+
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
+        {
+            fData[iComponent] = NULL;
+        }
+        SetNGridPoints(num);
+        return *this;
+    }
+
+    /*****************  End of KTAggregatedTimeSeriesDataFFTW ************************/
+
     const std::string KTAggregatedPowerSpectrumData::sName("aggregated-frequency-spectrum-fftw");
 
     KTAggregatedPowerSpectrumData::KTAggregatedPowerSpectrumData() :
@@ -107,4 +145,3 @@ namespace Katydid
     }
 
 } /* namespace Katydid */
-
