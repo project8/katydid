@@ -9,6 +9,8 @@
 #ifndef KTFSCDCRESUTILS_HH_
 #define KTFSCDCRESUTILS_HH_
 
+#include "KTConfigurable.hh"
+
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTMemberVariable.hh"
@@ -19,7 +21,6 @@
 
 namespace Katydid
 {    
-    //TODO: add comments and details here
     /*
      @class KTFSCDCRESUtils
      @author P. T. Surukuchi
@@ -40,11 +41,17 @@ namespace Katydid
      */
 
 
-    class KTFSCDCRESUtils
+    class KTFSCDCRESUtils: public Nymph::KTConfigurable
     {
         public:
             KTFSCDCRESUtils(const std::string& name = "fscd-cres-utils");
             virtual ~KTFSCDCRESUtils();
+
+        public:
+     //       using Nymph::KTSelfConfigurable::Configure;
+
+            bool Configure(const scarab::param_node* node);
+     //       virtual bool IsReady() const;
 
             // PTS: This in reality needs to come from the frequency being used for the phase shift
             MEMBERVARIABLE(double, Wavelength);
@@ -66,11 +73,6 @@ namespace Katydid
 	        MEMBERVARIABLE(bool,ApplyGradBDopplerFreqShifts);
 	        MEMBERVARIABLE(bool,ApplyGradBNormalFreqShifts);
             MEMBERVARIABLE(bool,ApplyFreqShifts);
-
-        public:
-            bool Configure(const scarab::param_node* node);
-            /// Returns the phase shift based on a given point, angle of the channel and the wavelength
-//            double GetDistanceDependentPhi(double xPosition, double yPosition, double wavelength, double channelAngle) const;
 
             /// Convert frquency to wavlength
             double ConvertFrequencyToWavelength(double frequency) const;
@@ -123,8 +125,15 @@ namespace Katydid
 
             double C=299792458;//m/s
 
-            double testConstant=0;
     };
+
+    /*
+    inline bool KTFSCDCRESUtils::IsReady() const
+    {
+        return true;
+    }
+    */
+
     inline bool KTFSCDCRESUtils::NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum)
     {
         for (unsigned i = 0; i < freqSpectrum.size(); ++i)

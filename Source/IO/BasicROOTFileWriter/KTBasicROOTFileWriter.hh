@@ -100,8 +100,6 @@ namespace Katydid
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
 
-            MEMBERVARIABLE(bool,SaveOnlyOptimizedAgg); // Saves histograms only for the optimized grid point for aggregated spectra
-
             const std::string& GetFileFlag() const;
             void SetFileFlag(const std::string& flag);
 

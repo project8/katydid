@@ -42,6 +42,8 @@ namespace Katydid
 
     bool KTChannelAggregator::Configure(const scarab::param_node* node)
     {
+        //fscdCRESUtils.Configure(node->node_at("fscd-cres-utils"));
+        fscdCRESUtils.Configure(node);
         if (node != NULL)
         {
             fNGrid = node->get_value< signed int >("grid-size", fNGrid);
@@ -226,8 +228,10 @@ namespace Katydid
                     for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
                     {
                         if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
-                        double realVal=freqShiftsApplied?shiftedFreqSpectrum->GetReal(iFreqBin):freqSpectrum->GetReal(iFreqBin);
-                        double imagVal=freqShiftsApplied?shiftedFreqSpectrum->GetImag(iFreqBin):freqSpectrum->GetImag(iFreqBin);
+                        //double realVal=freqShiftsApplied?shiftedFreqSpectrum->GetReal(iFreqBin):freqSpectrum->GetReal(iFreqBin);
+                        //double imagVal=freqShiftsApplied?shiftedFreqSpectrum->GetImag(iFreqBin):freqSpectrum->GetImag(iFreqBin);
+                        double realVal=freqSpectrum->GetReal(iFreqBin);
+                        double imagVal=freqSpectrum->GetImag(iFreqBin);
                         fscdCRESUtils.ApplyPhaseShift(realVal, imagVal, phaseShift);
                         double summedRealVal = realVal + newFreqSpectrum->GetReal(iFreqBin);
                         double summedImagVal = imagVal + newFreqSpectrum->GetImag(iFreqBin);

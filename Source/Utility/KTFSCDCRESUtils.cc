@@ -18,6 +18,7 @@ namespace Katydid
     KTLOGGER(creslog, "KTFSCDCRESUtils");
 
     KTFSCDCRESUtils::KTFSCDCRESUtils(const string& name):
+        KTConfigurable(name),
         fWavelength(0.0115),
         fPitchAngle(90),
         fGradBFrequency(0),
@@ -35,8 +36,10 @@ namespace Katydid
 
     bool KTFSCDCRESUtils::Configure(const scarab::param_node* node)
     {
+        std::cout<<"----------------- In Configure -----------------"<<std::endl;
         if (node != NULL)
         {
+            std::cout<<"----------------- In Configure node -----------------"<<std::endl;
             fWavelength = node->get_value< double >("wavelength", fWavelength);
             fPitchAngle = node->get_value< double >("pitch-angle", fPitchAngle);
             fGradBFrequency= node->get_value< double >("gradb-frequency", fGradBFrequency);
@@ -131,6 +134,7 @@ namespace Katydid
     // This function will eventually need to be moved to a more general location
     bool KTFSCDCRESUtils::ApplyFrequencyShift(const KTFrequencySpectrumFFTW &freqSpectrum,KTFrequencySpectrumFFTW &shiftedFreqSpectrum ,double freqShift, double minFreq, double maxFreq) const
     {
+        std::cout<<"Line 134: FSCD CRES: GradB frequency - "<<fGradBFrequency<<std::endl;
         shiftedFreqSpectrum=freqSpectrum;// Copy the input spectrum into the new one before modifying it
         int nFreqBins = freqSpectrum.GetNFrequencyBins();
         double* axisValues = new double[nFreqBins];
@@ -154,8 +158,10 @@ namespace Katydid
             // Skip if out of range of the minimum and maximum frequency spectrum range 
             if(freqSpectrum.GetBinCenter(i)<minFreq || freqSpectrum.GetBinCenter(i)>maxFreq) continue;
             // Evaluate the new real and imag values based on the spline and save them in shiftedFreqSpectrum
+            std::cout<<"Before: "<<freqSpectrum.GetReal(i)<<std::endl;
             double newRealVal=realSpline.Evaluate(freqSpectrum.GetBinCenter(i)+freqShift);
             double newImagVal=imagSpline.Evaluate(freqSpectrum.GetBinCenter(i)+freqShift);
+            std::cout<<"After: "<<newRealVal<<std::endl;
             shiftedFreqSpectrum.SetRect(i,newRealVal,newImagVal);
         }
         delete [] axisValues;
@@ -178,8 +184,8 @@ namespace Katydid
         bool anyFreqShiftsApplied=false;
         double xChannel = fArrayRadius* cos(channelAngle);
         double yChannel = fArrayRadius * sin(channelAngle);
-        double gradBDopShift=0;
-        double gradBNormShift=0;
+        double gradBDopShift=0.0;
+        double gradBNormShift=0.0;
         if(fApplyGradBDopplerFreqShifts) 
         {
             gradBDopShift=GetGradBDopplerFreqShift(xPosition, yPosition, xChannel, yChannel);
@@ -190,16 +196,26 @@ namespace Katydid
             gradBNormShift=GetGradBNormalFreqShift(xPosition, yPosition, xChannel, yChannel);
             anyFreqShiftsApplied=true;
         }
-        return ApplyFrequencyShift(freqSpectrum,shiftedFreqSpectrum,-gradBDopShift-gradBNormShift,minFreq,maxFreq);
+        double shiftVal=-gradBDopShift-gradBNormShift;
+        if(shiftVal!=0) ApplyFrequencyShift(freqSpectrum,shiftedFreqSpectrum,shiftVal,minFreq,maxFreq);
+        shiftVal; 
     }
 
     bool KTFSCDCRESUtils::ApplyFrequencyShifts(KTFrequencySpectrumFFTW &freqSpectrum,double xPosition, double yPosition, double channelAngle, double minFreq, double maxFreq) const
     {
         KTFrequencySpectrumFFTW newFreqSpectrum = freqSpectrum;
-        bool retVal = ApplyFrequencyShifts(freqSpectrum,newFreqSpectrum,xPosition,yPosition,channelAngle,minFreq,maxFreq);
-        freqSpectrum=newFreqSpectrum;
+        bool retVal=ApplyFrequencyShifts(freqSpectrum,newFreqSpectrum,xPosition,yPosition,channelAngle,minFreq,maxFreq);
+        for (unsigned int i= 0; i<  freqSpectrum.GetNFrequencyBins(); ++i)//PTS: Needs more efficient iteration method perhaps
+        {
+            double tmp=freqSpectrum.GetReal(i)-newFreqSpectrum.GetReal(i);
+        }
+        newFreqSpectrum=freqSpectrum;
+        std::cout<<"FSCD CRES: Wavelength - "<<fWavelength<<std::endl;
+        std::cout<<"FSCD CRES: Pitch angle - "<<fPitchAngle<<std::endl;
+        std::cout<<"FSCD CRES: GradB frequency - "<<fGradBFrequency<<std::endl;
+        std::cout<<"FSCD CRES: Array radius - "<<fArrayRadius<<std::endl;
+        std::cout<<"FSCD CRES: Apply frequenc shifts - "<<fApplyFreqShifts<<std::endl;
         return retVal;
     }
-
 
 } /* namespace Katydid */

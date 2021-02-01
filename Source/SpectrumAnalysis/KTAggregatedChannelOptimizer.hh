@@ -68,6 +68,8 @@ namespace Katydid
         private:
             Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
             Nymph::KTSlotDataTwoTypes<KTFrequencySpectrumDataFFTW, KTAggregatedFrequencySpectrumDataFFTW > fApplyOptimumFrequencyShiftsSlot;
+
+            KTFSCDCRESUtils fscdCRESUtils;
     };
 }
 

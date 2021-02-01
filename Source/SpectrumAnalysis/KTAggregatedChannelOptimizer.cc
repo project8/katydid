@@ -32,6 +32,7 @@ namespace Katydid
     bool KTAggregatedChannelOptimizer::Configure(const scarab::param_node* node)
     {
         if (node == NULL) return false;
+        fscdCRESUtils.Configure(node);//node->node_at("fscd-cres-utils"));
         return true;
     }
     
@@ -76,12 +77,13 @@ namespace Katydid
         double x,y,z;
         int maxGridPoint = aggData.GetOptimizedGridPoint();
         aggData.GetGridPoint(maxGridPoint,x,y,z);
-        KTFSCDCRESUtils fscdCRESUtils;
-        std::cout<<fscdCRESUtils.testConstant<<std::endl;
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             freqSpectrum = fftwData.GetSpectrumFFTW(iComponent);
+            KTFrequencySpectrumFFTW* shiftedFreqSpectrum = new KTFrequencySpectrumFFTW(freqSpectrum->GetNFrequencyBins(), freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
             double channelAngle = KTMath::TwoPi() * iComponent / nComponents;
+            //PTS: Change this to actual range
+//            bool freqShiftsApplied=fscdCRESUtils.ApplyFrequencyShifts(*freqSpectrum,*shiftedFreqSpectrum,x,y,channelAngle,0,200e6);
             fscdCRESUtils.ApplyFrequencyShifts(*freqSpectrum,x,y,channelAngle,0,200e6);
         }
         return true;
