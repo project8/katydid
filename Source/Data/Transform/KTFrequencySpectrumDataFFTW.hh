@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    
+
 
     class KTFrequencySpectrumDataFFTWCore : public KTFrequencySpectrumData
     {

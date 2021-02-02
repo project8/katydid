@@ -46,6 +46,7 @@ namespace Katydid
     class KTSequentialLineData;
     class KTDiscriminatedPoint;
     class KTAggregatedFrequencySpectrumDataFFTW;
+    class KTAggregatedTimeSeriesData;
     class KTAggregatedPowerSpectrumData;
 
     class TDiscriminatedPoint;
@@ -107,6 +108,7 @@ namespace Katydid
             static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
 
             static TH2D* CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& fs, const std::string& name = "hFrequencySpectrumGrid");
+            static TH2D* CreateGridHistogram(const KTAggregatedTimeSeriesData& ts, const std::string& name = "hTimeSeriesGrid");
             static TH2D* CreateGridHistogram(const KTAggregatedPowerSpectrumData& fs, const std::string& name = "hPowerSpectrumGrid");
 
             static TH1D* CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name = "hFrequencySpectrumVariance");

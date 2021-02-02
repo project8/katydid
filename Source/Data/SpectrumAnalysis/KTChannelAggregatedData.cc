@@ -72,37 +72,37 @@ namespace Katydid
 
     /*****************  End of KTAggregatedFrequencySpectrumDataFFTW ************************/
 
-    /*****************  Beginning of KTAggregatedTimeSeriesDataFFTW ************************/
+    /*****************  Beginning of KTAggregatedTimeSeriesData ************************/
 
-    const std::string KTAggregatedTimeSeriesDataFFTW::sName("aggregated-time-series-fftw");
+    const std::string KTAggregatedTimeSeriesData::sName("aggregated-time-series");
 
-    KTAggregatedTimeSeriesDataFFTW::KTAggregatedTimeSeriesDataFFTW() :
+    KTAggregatedTimeSeriesData::KTAggregatedTimeSeriesData() :
             KTAggregatedDataCore(),
-            KTTimeSeriesFFTW(),
-            Nymph::KTExtensibleData< KTAggregatedTimeSeriesDataFFTW >()
+            KTTimeSeriesDataCore(),
+            Nymph::KTExtensibleData< KTAggregatedTimeSeriesData >()
     {
     }
 
-    KTAggregatedTimeSeriesDataFFTW::~KTAggregatedTimeSeriesDataFFTW()
+    KTAggregatedTimeSeriesData::~KTAggregatedTimeSeriesData()
     {
     }
 
-    KTAggregatedTimeSeriesDataFFTW& KTAggregatedTimeSeriesDataFFTW::SetNComponents(unsigned num)
+    KTAggregatedTimeSeriesData& KTAggregatedTimeSeriesData::SetNComponents(unsigned num)
     {
-        unsigned oldSize = GetData().size();
+        unsigned oldSize = fTimeSeries.size();
 
         // If old size is bigger than num, delete all the extra terms
         for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
         {
-            delete fData[iComponent];
+            delete fTimeSeries[iComponent];
         }
 
         //Resize old size is smaller than old size
-        fData.resize(num);
+        fTimeSeries.resize(num);
 
         for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
         {
-            fData[iComponent] = NULL;
+            fTimeSeries[iComponent] = NULL;
         }
         SetNGridPoints(num);
         return *this;

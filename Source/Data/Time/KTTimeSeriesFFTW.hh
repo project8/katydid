@@ -12,10 +12,10 @@
 #include "KTTimeSeries.hh"
 
 #include <initializer_list>
-
+#include <cmath>
 namespace Katydid
 {
-    
+
 
 
     class KTTimeSeriesFFTW : public KTTimeSeries, public KTPhysicalArray< 1, fftw_complex >
@@ -37,7 +37,16 @@ namespace Katydid
             virtual void SetValue(unsigned bin, double value);
             virtual double GetValue(unsigned bin) const;
 
+            virtual double GetReal(unsigned bin) const;
+            virtual double GetImag(unsigned bin) const;
+
+            virtual double GetAbs(unsigned bin) const;
+            virtual double GetArg(unsigned bin) const;
+
             virtual void Print(unsigned startPrint, unsigned nToPrint) const;
+            
+        protected:
+            mutable const fftw_complex* fPointCache;
 
 #ifdef ROOT_FOUND
         public:
@@ -74,6 +83,29 @@ namespace Katydid
     {
         return (*this)(bin)[0];
     }
+
+    inline double KTTimeSeriesFFTW::GetReal(unsigned bin) const
+    {
+        return (*this)(bin)[0];
+    }
+
+    inline double KTTimeSeriesFFTW::GetImag(unsigned bin) const
+    {
+        return (*this)(bin)[1];
+    }
+
+    inline double KTTimeSeriesFFTW::GetAbs(unsigned bin) const
+    {
+        fPointCache = &(*this)(bin);
+        return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
+    }
+
+    inline double KTTimeSeriesFFTW::GetArg(unsigned bin) const
+    {
+        fPointCache = &(*this)(bin);
+        return atan2((*fPointCache)[1], (*fPointCache)[0]);
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTTIMESERIESFFTW_HH_ */

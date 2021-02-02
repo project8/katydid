@@ -191,7 +191,7 @@ namespace Katydid
         return hist;
     }
 
-    static TH1D* CreateHistogramReal(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesReal")
+    TH1D* KT2ROOT::CreateHistogramReal(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         unsigned nBins = ts->GetNBins();
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Real)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
@@ -204,7 +204,7 @@ namespace Katydid
         return hist;
     }
 
-    static TH1D* CreateHistogramImag(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesImag")
+    TH1D* KT2ROOT::CreateHistogramImag(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         unsigned nBins = ts->GetNBins();
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Imag)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
@@ -491,6 +491,26 @@ namespace Katydid
             int xBin = iComponents / nGridPoints;
             int yBin = iComponents % nGridPoints;
             hist->SetBinContent(xBin + 1, yBin + 1, aggfs.GetSummedGridVoltage(iComponents));
+        }
+        hist->SetXTitle("X Axis (m)");
+        hist->SetYTitle("Y Axis (m)");
+        return hist;
+    }
+
+    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedTimeSeriesData& aggts, const std::string& name)
+    {
+        // Currently only assume a square grid
+        unsigned int nComponents = aggts.GetNComponents();
+        int nGridPoints = 0;
+        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
+        nGridPoints = std::sqrt(nComponents);
+        double fActiveRadius = aggts.GetActiveRadius();
+        TH2D* hist = new TH2D(name.c_str(), "Time Series Grid", nGridPoints, -fActiveRadius, fActiveRadius, nGridPoints, -fActiveRadius, fActiveRadius);
+        for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
+        {
+            int xBin = iComponents / nGridPoints;
+            int yBin = iComponents % nGridPoints;
+            hist->SetBinContent(xBin + 1, yBin + 1, aggts.GetSummedGridVoltage(iComponents));
         }
         hist->SetXTitle("X Axis (m)");
         hist->SetYTitle("Y Axis (m)");
