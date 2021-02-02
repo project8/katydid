@@ -27,6 +27,7 @@ namespace Katydid
             fWavelength(0.0115),
             fIsGridDefined(false),
       	    fUseAntiSpiralPhaseShifts(false),
+            fGridFreq(0.0),
       	    fAntiSpiralPhaseShifts()
     {
     }
@@ -44,6 +45,7 @@ namespace Katydid
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
             fWavelength = node->get_value< double >("wavelength", fWavelength);
             fUseAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fUseAntiSpiralPhaseShifts);
+            fGridFreq = node->get_value< double >("grid-rotation-freq",fGridFreq);
         }
         return true;
     }
@@ -52,13 +54,8 @@ namespace Katydid
     {
         double tempRealVal = realVal;
         double tempImagVal = imagVal;
-        //std::cout << realVal;
-        //std::cout << imagVal;
         realVal = tempRealVal * cos(phase) - tempImagVal * sin(phase);
         imagVal = tempRealVal * sin(phase) + tempImagVal * cos(phase);
-        //std::cout << realVal;
-        //std::cout << imagVal;
-        //std::cout << "applying the phase shift\n";
         return true;
     }
 
@@ -71,10 +68,26 @@ namespace Katydid
         // Distance of the input point from the input channel
         double pointDistance = pow(pow(xChannel - xPosition, 2) + pow(yChannel - yPosition, 2), 0.5);
         // Phase of the input signal based on the input point, channel location and the wavelength
-        //std::cout << xChannel;
-        //std::cout << yChannel;
-        //std::cout << pointDistance;
-        //std::cout <<"getting the phase shift\n";
+        return 2.0 * KTMath::Pi() * pointDistance / wavelength;
+    }
+
+    double KTChannelAggregator::GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle, double gridFreq, int iTimeBin, double timeBinWidth) const
+    {
+        // x position based on the angle of the channel
+        double xChannel = fActiveRadius * cos(channelAngle);
+        // y position based on the angle of the channel
+        double yChannel = fActiveRadius * sin(channelAngle);
+        // radial position of the grid point
+        double rPosition =  pow(pow(xPosition,2)+pow(yPosition,2),0.5);
+        // angular position of the grid point, add rotation motion in the same line
+        double aPosition = atan2(yPosition,xPosition)+2 * KTMath::Pi() * gridFreq * iTimeBin * timeBinWidth;
+        // calculte the rotated xPosition
+        xPosition = rPosition * cos(aPosition);
+        // calculate the rotated yPosition
+        yPosition = rPosition * sin(aPosition);
+        // Distance of the input point from the input channel
+        double pointDistance = pow(pow(xChannel - xPosition, 2) + pow(yChannel - yPosition, 2), 0.5);
+        // Phase of the input signal based on the input point, channel location and the wavelength
         return 2.0 * KTMath::Pi() * pointDistance / wavelength;
     }
 
@@ -214,6 +227,9 @@ namespace Katydid
 
         int nTimeBins = timeSeries->GetNTimeBins();
 
+        double timeBinWidth = timeSeries->GetTimeBinWidth();
+        //std::cout << timeBinWidth<< std::endl;
+
         int nComponents = timeData.GetNComponents();
 
 	      GenerateAntiSpiralPhaseShifts(nComponents);
@@ -259,19 +275,23 @@ namespace Katydid
             {
                 // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
                 double channelAngle = 2 * KTMath::Pi() * iComponent / nComponents;
-                double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
+                //double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
             		// Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
-            		if(fUseAntiSpiralPhaseShifts)
-            		{
-            		    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
-            		}
+            		//if(fUseAntiSpiralPhaseShifts)
+            		//{
+            		//    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
+            		//}
                 // Get the time series for that specific component. Treat as FFTW series.
                 timeSeries = dynamic_cast< const KTTimeSeriesFFTW* >(timeData.GetTimeSeries(iComponent));
                 double maxVoltage = 0.0;
                 int maxFrequencyBin = 0;
-                //Loop over the frequency bins
+                //Loop over the time bins
                 for (unsigned iTimeBin = 0; iTimeBin < nTimeBins; ++iTimeBin)
                 {
+                    double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle, fGridFreq, iTimeBin, timeBinWidth);
+                    if(fUseAntiSpiralPhaseShifts){
+                      phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
+                    }
                     double realVal = timeSeries->GetReal(iTimeBin);
                     double imagVal = timeSeries->GetImag(iTimeBin);
                     ApplyPhaseShift(realVal, imagVal, phaseShift);
@@ -279,7 +299,7 @@ namespace Katydid
                     double summedImagVal = imagVal + newTimeSeries->GetImag(iTimeBin);
                     (*newTimeSeries)(iTimeBin)[0] = summedRealVal;
                     (*newTimeSeries)(iTimeBin)[1] = summedImagVal;
-                } // End of loop over freq bins
+                } // End of loop over time bins
             } // End of loop over all comps
             newAggTimeData.SetTimeSeries(newTimeSeries, iGrid);
 
@@ -290,6 +310,7 @@ namespace Katydid
                 sumAbsVoltageTime+=newTimeSeries->GetAbs(iTimeBin);
 
             } // end of time bin loops
+            // set grid value to the mean of the sum of the abs voltages.
             newAggTimeData.SetSummedGridVoltage(iGrid,sumAbsVoltageTime/nTimeBins);
 
         } // End of grid

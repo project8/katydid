@@ -45,6 +45,7 @@ namespace Katydid
      - "grid-size": signed int -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
      - "wavelength": double -- Wavelength of the cyclotron motion
      - "use-antispiral-phase-shifts": bool, -- A flag to indicate whether to use antispiral phase shifts
+     - "grid-rotation-freq": double -- rotation frequency in Hz of grid. To correct grad-B motion. Only applies if summing in time domain.
 
      Slots:
      - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
@@ -78,11 +79,11 @@ namespace Katydid
       	    //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
       	    //If selected this option will make sure that there is a relative phase-shift applied
       	    MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
-            //Flag to indicate the summation domain. Defaults to false or frequency domain.
-            //MEMBERVARIABLE(bool,TimeDomain);
+            //Grid rotation frequency. Defaults to 0.0.
+            MEMBERVARIABLE(double, GridFreq);
 
             bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
-            //Overloaded function for KTTimeSeresData
+
             bool SumChannelVoltageWithPhase(KTTimeSeriesData& timeData);
 
         private:
@@ -92,6 +93,8 @@ namespace Katydid
 
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
+            // Returns the phase shift assuming a rotating grid.
+            double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle, double gridFreq, int iTimeBin, double timeBinWidth) const;
 
             /// Get location of the point in the grid based on the given grid number and the size of the grid.
             /* Returns true if the assigment went well, false if there was some mistake
