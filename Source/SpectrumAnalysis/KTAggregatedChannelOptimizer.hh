@@ -20,25 +20,28 @@
 
 namespace Katydid
 {
-    
+
     class KTAggregatedFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTW;
-    
+    class KTAggregatedTimeSeriesData;
+
     /*
      @class KTAggregatedChannelOptimizer
      @author P. T. Surukuchi
-     
+
      @brief Finds the point that optimizes the aggreagted channels
-     
+
      @details
-     
+
      Slots:
-     - "agg-fft": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggreagted channels; Requires KTAggregatedFrequencySpectrumDataFFTW;Finds the point that optimizes the aggreagted channels ; Emits signal "fft"
-     
+     - "agg-fft": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggregated channels; Requires KTAggregatedFrequencySpectrumDataFFTW;Finds the point that optimizes the aggreagted channels ; Emits signal "fft"
+     - "agg-ts": void (Nymph::KTDataPtr) -- Finds the point that optimizes the aggregated channels; Requires KTAggregatedTimeSeriesData;Finds the point that optimizes the aggreagted channels ; Emits signal "agg-ts"
+
      Signals:
      - "agg-fft": void (Nymph::KTDataPtr) -- Emitted upon finding the optimized point ; Guarantees KTFrequencySpectrumDataFFTW
+     - "agg-ts": void (Nymph::KTDataPtr) -- Emitted upon finding the optimized point ; Guarantees KTAggregatedTimeSeriesData
      */
-    
+
     class KTAggregatedChannelOptimizer : public Nymph::KTProcessor
     {
         public:
@@ -46,8 +49,9 @@ namespace Katydid
             virtual ~KTAggregatedChannelOptimizer();
 
             bool Configure(const scarab::param_node* node);
-        
+
             bool FindOptimumSum( KTAggregatedFrequencySpectrumDataFFTW& aggData);
+            bool FindOptimumSum( KTAggregatedTimeSeriesData& aggData);
 
         private:
 
@@ -57,13 +61,15 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fSummedFrequencyData;
+            Nymph::KTSignalData fSummedTimeData;
 
             //***************
             // Slots
             //***************
 
         private:
-            Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalSumSlot;
+            Nymph::KTSlotDataOneType< KTAggregatedFrequencySpectrumDataFFTW > fOptimalFreqSumSlot;
+            Nymph::KTSlotDataOneType< KTAggregatedTimeSeriesData > fOptimalTimeSumSlot;
     };
 }
 
