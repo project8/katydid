@@ -70,6 +70,8 @@ namespace Katydid
 
             /// Get the value of the optimal grid point
             virtual double GetOptimizedGridValue() const;
+            // Get the active radius
+            virtual double GetActiveRadiusValue() const;
 
         protected:
 
@@ -206,6 +208,11 @@ namespace Katydid
         return fOptimizedGridPointValue;
     }
 
+    inline double KTAggregatedDataCore::GetActiveRadiusValue() const
+    {
+        return fActiveRadius;
+    }
+
     //  inline bool KTAggregatedDataCore::GetIsSquareGrid() const
     //  {
     //    return isSquareGrid;
@@ -230,7 +237,7 @@ namespace Katydid
     {
         return KTAggregatedDataCore::GetSummedGridMagnitude(component);
     }
-    
+
     inline void KTAggregatedPowerSpectrumData::SetSummedGridPower(int component, double magnitude)
     {
         KTAggregatedDataCore::SetSummedGridMagnitude(component, magnitude);

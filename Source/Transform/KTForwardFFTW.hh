@@ -24,12 +24,14 @@
 
 namespace Katydid
 {
-    
+
     class KTAnalyticAssociateData;
     class KTEggHeader;
     class KTFrequencySpectrumFFTW;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
+    class KTAggregatedTimeSeriesData;
+    class KTAggregatedFrequencySpectrumDataFFTW;
 
     /*!
      @class KTForwardFFTW
@@ -84,9 +86,11 @@ namespace Katydid
      - "ts-fftw": void (Nymph::KTDataPtr) -- Perform a forward FFT on a complex time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
      - "aa": void (Nymph::KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
      - "ts-real-as-complex": void (Nymph::KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "agg-ts": void (Nymph::KTDataPtr) -- Perform a forward FFT on aggregated time series data; Requires KTAggregatedTimeSeriesData; Adds KTAggregatedFrequencySpectrumFFTW; Emits signal "agg-fft"
 
      Signals:
      - "fft": void (Nymph::KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     - "agg-fft": void (Nymph::KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTAggregatedFrequencySpectrumDataFFTW.
     */
 
     class KTForwardFFTW : public KTFFTW, public Nymph::KTProcessor
@@ -171,6 +175,8 @@ namespace Katydid
 
             /// Forward FFT - Complex Time Data
             bool TransformComplexData(KTTimeSeriesData& tsData);
+            /// Forward FFT - Aggregated Complex Time Data
+            bool TransformComplexData(KTAggregatedTimeSeriesData& tsData);
             /// Forward FFT - Complex Analytic Associate Data
             bool TransformComplexData(KTAnalyticAssociateData& aaData);
             /// Forward FFT - Complex Time Series
@@ -205,6 +211,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fFFTSignal;
+            Nymph::KTSignalData fAggFFTSignal;
 
             //***************
             // Slots
@@ -216,6 +223,7 @@ namespace Katydid
             Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
             Nymph::KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
             Nymph::KTSlotDataOneType< KTTimeSeriesData > fTSRealAsComplexSlot;
+            Nymph::KTSlotDataOneType< KTAggregatedTimeSeriesData > fAggTSComplexSlot;
 
     };
 

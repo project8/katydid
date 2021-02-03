@@ -15,6 +15,7 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+#include "KTChannelAggregatedData.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -46,11 +47,13 @@ namespace Katydid
             fCInputArray(NULL),
             fOutputArray(NULL),
             fFFTSignal("fft", this),
+            fAggFFTSignal("agg-fft", this),
             fHeaderSlot("header", this, &KTForwardFFTW::InitializeWithHeader),
             fTSRealSlot("ts-real", this, &KTForwardFFTW::TransformRealData, &fFFTSignal),
             fTSComplexSlot("ts-fftw", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal),
             fAASlot("aa", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal),
-            fTSRealAsComplexSlot("ts-real-as-complex", this, &KTForwardFFTW::TransformRealDataAsComplex, &fFFTSignal)
+            fTSRealAsComplexSlot("ts-real-as-complex", this, &KTForwardFFTW::TransformRealDataAsComplex, &fFFTSignal),
+            fAggTSComplexSlot("agg-ts", this, &KTForwardFFTW::TransformComplexData, &fAggFFTSignal)
     {
         SetupInternalMaps();
     }
@@ -389,6 +392,81 @@ namespace Katydid
         }
 
         KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
+
+        return true;
+    }
+
+    bool KTForwardFFTW::TransformComplexData(KTAggregatedTimeSeriesData& tsData)
+    {
+        if (fState != kC2C)
+        {
+            KTERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
+            return false;
+        }
+
+        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
+        {
+            SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
+            InitializeForComplexTDD();
+        }
+
+        if (! fIsInitialized)
+        {
+            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+                    << "\tPlease initialize the FFT first, then perform the transform.");
+            return false;
+        }
+
+        UpdateBinningCache(tsData.GetTimeSeries(0)->GetTimeBinWidth());
+
+        unsigned nComponents = tsData.GetNComponents();
+
+        KTAggregatedFrequencySpectrumDataFFTW& newData = tsData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+
+        // set the active detector radius. The radius that defines the grid size.
+        newData.SetActiveRadius(tsData.GetActiveRadiusValue());
+
+        // loop over the grid points of the aggregated time data and set the aggregated frequency data to be the same.
+        double iGridX = 0;
+        double iGridY = 0;
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            tsData.GetGridPoint(iComponent,iGridX,iGridY);
+            newData.SetGridPoint(iComponent,iGridX,iGridY);
+        }
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        { //begin FFT loop over components. In this case the components are the grid points.
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
+            if (nextInput == NULL)
+            {
+                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                return false;
+            }
+
+            KTFrequencySpectrumFFTW* nextResult = FastTransform(nextInput);
+
+            if (nextResult == NULL)
+            {
+                KTERROR(fftwlog, "Grid Point <" << iComponent << "> did not transform correctly.");
+                return false;
+            }
+            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            newData.SetSpectrum(nextResult, iComponent);
+
+            const unsigned nFreqBin = nextResult->GetNFrequencyBins();
+            double maxVoltageFreq = 0.0;
+            for (unsigned iFreqBin = 0; iFreqBin < nFreqBin; ++iFreqBin)
+            {//Loop over all the freq bins and get the highest value and save to the aggregated frequency data
+                if (nextResult->GetAbs(iFreqBin) > maxVoltageFreq)
+                {
+                    maxVoltageFreq = nextResult->GetAbs(iFreqBin);
+                }
+            } // end of freqeuncy bin loops
+            newData.SetSummedGridVoltage(iComponent, maxVoltageFreq);
+        } //end FFT loop
+
+        KTINFO(fftwlog, "FFT complete; " << nComponents << " grid point(s) transformed");
 
         return true;
     }

@@ -874,7 +874,7 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridFFTW_" << sliceNumber;
+        conv << "histAggGridTS_" << sliceNumber;
         string histName;
         conv >> histName;
         TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);

@@ -80,7 +80,7 @@ namespace Katydid
         // radial position of the grid point
         double rPosition =  pow(pow(xPosition,2)+pow(yPosition,2),0.5);
         // angular position of the grid point, add rotation motion in the same line
-        double aPosition = atan2(yPosition,xPosition)+2 * KTMath::Pi() * gridFreq * iTimeBin * timeBinWidth;
+        double aPosition = atan2(yPosition,xPosition) + 2 * KTMath::Pi() * gridFreq * iTimeBin * timeBinWidth;
         // calculte the rotated xPosition
         xPosition = rPosition * cos(aPosition);
         // calculate the rotated yPosition
@@ -118,30 +118,19 @@ namespace Katydid
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
-        const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0); //assign the pointer of the 0th or first component of a
-                                                                                  //vector of pointers to KTFrequencySpectrumFFTW data to the pointer variable
-                                                                                  // freqSpectrum
+        const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
 
-        int nTimeBins = freqSpectrum->GetNTimeBins(); // get the number of time bins from the first component of the vector
-                                                      //fftwData which is a vector of pointers to KTFrequencySpectrumFFTW data
+        int nTimeBins = freqSpectrum->GetNTimeBins();
 
         // Get the number of frequency bins from the first component of fftwData
         int nFreqBins = freqSpectrum->GetNFrequencyBins();
-        int nComponents = fftwData.GetNComponents(); // Get number of components which corresponds to the number of channels in the KTFrequencySpectrum object.
+        int nComponents = fftwData.GetNComponents();
 
-	      GenerateAntiSpiralPhaseShifts(nComponents); // Genererate the antispiral shifts for an antenna array with nComponents worth of antennas.
-                                              // stores them in the member variable of the KTChannelAggregator class fAntiSpiralPhaseShifts.
-                                              // thats why nothing is returned.
+	      GenerateAntiSpiralPhaseShifts(nComponents);
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
 
-        // Assume a square grid. i.e, number of points in X= no of points in Y
-        // here we're creating a new reference to KTAggregatedFrequencySpectrumDataFFTW and calling it newAggFreqData
-        // the line fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid * fNGrid); is confusing to me.
-        // fftwData is a reference to the data object where the data is stored. I believe that the .Of function is adding KTAggregatedFrequencySpectrumDataFFTW to
-        // the data object. It's weird to me that this is done through interacting with what I thought was just the KTFrequencySpectrumDataFFTW object.
-        // I suppose inheritance makes this possible. The NComponents of the KTAggregatedFrequencySpectrumDataFFTW are set to the square of the NGrid points.
         // Assumes a square grid.
         KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(fNGrid * fNGrid);
 
@@ -275,12 +264,6 @@ namespace Katydid
             {
                 // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
                 double channelAngle = 2 * KTMath::Pi() * iComponent / nComponents;
-                //double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
-            		// Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
-            		//if(fUseAntiSpiralPhaseShifts)
-            		//{
-            		//    phaseShift-=fAntiSpiralPhaseShifts.at(iComponent);
-            		//}
                 // Get the time series for that specific component. Treat as FFTW series.
                 timeSeries = dynamic_cast< const KTTimeSeriesFFTW* >(timeData.GetTimeSeries(iComponent));
                 double maxVoltage = 0.0;
