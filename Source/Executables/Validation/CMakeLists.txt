@@ -4,13 +4,13 @@
 if (Katydid_ENABLE_TESTING)
 
     # Executables that do NOT require ROOT, FFTW, or Monarch
-    
+
     # Utility tests
 
     set( LIB_DEPENDENCIES
-        KatydidUtility 
+        KatydidUtility
     )
-    
+
     set( PROGRAMS
         ObjectSize
         TestAxisProperties
@@ -23,7 +23,7 @@ if (Katydid_ENABLE_TESTING)
         TestRandom
         TestVector
     )
-    
+
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
 
 
@@ -34,7 +34,7 @@ if (Katydid_ENABLE_TESTING)
         KatydidData
         KatydidIO
     )
-    
+
     set( PROGRAMS
         TestDataDisplay
         TestDPTReader
@@ -46,7 +46,7 @@ if (Katydid_ENABLE_TESTING)
         TestSmoothing
         #TestASCIIFileWriter
     )
-    
+
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
 
 
@@ -61,10 +61,11 @@ if (Katydid_ENABLE_TESTING)
         KatydidSpectrumAnalysis
         KatydidEventAnalysis
     )
-    
+
     set( PROGRAMS
         Test2DDiscrim
         TestChannelAggregator
+        TestChannelAggregatorTime
         TestConsensusThresholding
         TestConvolution1D
         TestCorrelator
@@ -87,16 +88,16 @@ if (Katydid_ENABLE_TESTING)
         TestSpectrumDiscriminator
         TestTrackProcessing
         TestWindowFunction
-        
+
     )
-    
+
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
 
-             
+
     # executables that DO require FFTW
-    
+
     if (FFTW_FOUND)
-    
+
         set( LIB_DEPENDENCIES
             KatydidUtility
             KatydidData
@@ -104,21 +105,21 @@ if (Katydid_ENABLE_TESTING)
             KatydidTransform
             KatydidSpectrumAnalysis
         )
-        
+
         set( PROGRAMS
            TestComboFFTW
            TestForwardFFTW
            TestReverseFFTW
            TestWignerVille
         )
-        
+
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
 
     endif (FFTW_FOUND)
-    
-    
+
+
     # executables that DO require ROOT
-    
+
     if (ROOT_FOUND)
 
         set( LIB_DEPENDENCIES
@@ -129,7 +130,7 @@ if (Katydid_ENABLE_TESTING)
             KatydidSpectrumAnalysis
             KatydidEventAnalysis
         )
-        
+
         set( PROGRAMS
            TestBackgroundFlattening
            TestBasicROOTFileWriter
@@ -139,28 +140,28 @@ if (Katydid_ENABLE_TESTING)
            TestROOTWriterFileManager
         #    TestROOTWritingToSameFile
         )
-        
+
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
 
     endif (ROOT_FOUND)
-    
+
     # executables that DO require Monarch
-    
+
     if (Katydid_USE_MONARCH)
-    
+
         set( LIB_DEPENDENCIES
             KatydidUtility
             KatydidData
             KatydidIO
             KatydidTime
         )
-        
+
         set( PROGRAMS
            TestEggHatching
         )
-        
+
         pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
 
     endif (Katydid_USE_MONARCH)
-        
-endif (Katydid_ENABLE_TESTING) 
+
+endif (Katydid_ENABLE_TESTING)

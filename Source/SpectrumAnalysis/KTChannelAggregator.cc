@@ -217,12 +217,12 @@ namespace Katydid
         int nTimeBins = timeSeries->GetNTimeBins();
 
         double timeBinWidth = timeSeries->GetTimeBinWidth();
-        //std::cout << timeBinWidth<< std::endl;
+
 
         int nComponents = timeData.GetNComponents();
 
-	      GenerateAntiSpiralPhaseShifts(nComponents);
-
+        GenerateAntiSpiralPhaseShifts(nComponents);
+        
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
