@@ -51,7 +51,7 @@ processor-toolbox:
       - egg
 
 egg:
-    filename: "/Users/ziegler/p8/egg_files/eggs_90deg_1272021/locust_mc_Seed400_Angle90.00_Radius0.100_Pos0.000.egg"
+    filename: "locust_mc_multichannel.egg"
     egg-reader: egg3
     slice-size: 8192
     number-of-slices: 10
@@ -67,11 +67,11 @@ ch-sum:
     use-antispiral-phase-shifts: true
 
 writer:
-    output-file: "/Users/ziegler/p8/builds/katydid/output/Summed_Channels.root"
+    output-file: "Summed_Channels.root"
     file-flag: recreate
 
 waterfall-writer:
-    output-file: "/Users/ziegler/p8/builds/katydid/output/Summed_Channels.root"
+    output-file: "Summed_Channels.root"
     file-flag: recreate
     min-time: 0.0
     max-time: 0.025

@@ -1,0 +1,56 @@
+processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: channel-aggregator
+        name: ch-sum
+      - type: aggregated-channel-optimizer
+        name: ch-opt
+      - type: basic-root-writer
+        name: writer
+      - type: forward-fftw
+        name: fft
+
+
+    connections:
+      - signal: "egg:ts"
+        slot: "ch-sum:ts-fftw"
+      - signal: "ch-sum:agg-ts"
+        slot: "fft:agg-ts"
+      - signal: "ch-sum:agg-ts"
+        slot: "ch-opt:agg-ts"
+      - signal: "fft:agg-fft"
+        slot: "ch-opt:agg-fft"
+      - signal: "ch-sum:agg-ts"
+        slot: "writer:agg-ts-fftw"
+      - signal: "ch-sum:agg-ts"
+        slot: "writer:agg-grid-ts"
+      - signal: "fft:agg-fft"
+        slot: "writer:agg-fs-fftw"
+      - signal: "fft:agg-fft"
+        slot: "writer:agg-grid-fs"
+
+    run-queue:
+      - egg
+
+egg:
+    filename: "locust_mc_multichannel.egg"
+    egg-reader: egg3
+    slice-size: 8192
+    number-of-slices: 4
+    stride: 8192
+
+ch-sum:
+    grid-size: 11
+    active-radius: 0.05
+    wavelength: 0.0116
+    use-antispiral-phase-shifts: true
+    grid-rotation-freq: 3.0e3
+
+writer:
+    output-file: "Summed_Channels.root"
+    file-flag: recreate
+
+fft:
+    transform-flag: ESTIMATE
+    transform-state: c2c
