@@ -17,6 +17,8 @@
 #include <stdexcept>
 #include <iterator>
 
+#include <boost/iterator/iterator_facade.hpp>
+
 namespace Katydid
 {
 
@@ -325,6 +327,49 @@ namespace Katydid
     {
         return array.end();
     }
+    
+    template < typename value_type >
+    class SkipIterator: public boost::iterator_facade< SkipIterator<value_type>, value_type, boost::bidirectional_traversal_tag >
+    {
+        public:
+            
+            SkipIterator():
+                position{ 0 },
+                skip{ 0 }
+            {}
+            
+            explicit SkipIterator(value_type* p, size_t nRows): 
+                position{ p },
+                skip{ nRows } 
+            {}
+            
+            value_type* begin()
+            {
+                return position;
+            }
+            
+            value_type* end()
+            {
+                return position + skip;
+            }
+        
+        private:
+            friend class boost::iterator_core_access;
+
+            void increment() { position += skip; }
+            void decrement() { position -= skip; }
+
+            bool equal(SkipIterator< value_type > const& other) const
+            {
+                return this->position == other.position &&
+                        this->skip == other.skip;
+            }
+
+            value_type& dereference() const { return *position; }
+    
+            value_type* position;
+            size_t skip;
+    };
 
     //*************************
     // 2-D array implementation
@@ -338,9 +383,18 @@ namespace Katydid
             using matrix_type = Eigen::Array< value_type, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor >;
             
             //revisit when eigen 3.4 is released
-            //eigen 3.4 will add proper iterator support
-            using iterator = value_type*; //array_type::iterator;
-            using const_iterator = const value_type*; //array_type::const_iterator;
+            //eigen 3.4 will add proper iterators
+            using row_iterator = value_type*;
+            using const_row_iterator = const value_type*;
+            
+            using col_iterator = SkipIterator<value_type>;
+            using const_col_iterator = SkipIterator< const value_type>;
+            
+            using reverse_row_iterator = std::reverse_iterator< value_type *>;
+            using const_reverse_row_iterator = std::reverse_iterator< const value_type * >;
+            
+            using reverse_col_iterator = SkipIterator<value_type>;
+            using const_reverse_col_iterator = SkipIterator< const value_type>;
 
         private:
             using XNBinsFunctor = KTNBinsInArray< 2, matrix_type >;
@@ -389,25 +443,23 @@ namespace Katydid
             KTPhysicalArray< 2, value_type >& operator/=(const value_type& rhs);
 
         public:
-            //~ const_iterator1 begin1() const;
-            //~ const_iterator2 begin2() const;
-            //~ const_iterator1 end1() const;
-            //~ const_iterator2 end2() const;
-            //~ iterator1 begin1();
-            //~ iterator2 begin2();
-            //~ iterator1 end1();
-            //~ iterator2 end2();
-
-
-          /*  
-            const_reverse_iterator1 rbegin1() const;
-            const_reverse_iterator2 rbegin2() const;
-            const_reverse_iterator1 rend1() const;
-            const_reverse_iterator2 rend2() const;
-            reverse_iterator1 rbegin1();
-            reverse_iterator2 rbegin2();
-            reverse_iterator1 rend1();
-            reverse_iterator2 rend2();  */
+            const_row_iterator begin1() const;
+            const_col_iterator begin2() const;
+            const_row_iterator end1() const;
+            const_col_iterator end2() const;
+            row_iterator begin1();
+            col_iterator begin2();
+            row_iterator end1();
+            col_iterator end2();
+            
+            const_reverse_row_iterator rbegin1() const;
+            const_reverse_col_iterator rbegin2() const;
+            const_reverse_row_iterator rend1() const;
+            const_reverse_col_iterator rend2() const;
+            reverse_row_iterator rbegin1();
+            reverse_col_iterator rbegin2();
+            reverse_row_iterator rend1();
+            reverse_col_iterator rend2();
 
         public:
             value_type GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const;
@@ -664,104 +716,105 @@ namespace Katydid
         fData /= rhs;
         return *this;
     }
+            
 
-/*
-
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_iterator1 KTPhysicalArray< 2, std::complex<double> >::begin1() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_row_iterator KTPhysicalArray< 2, std::complex<double> >::begin1() const
     {
-        return fData.begin1();
+        return fData.data();
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2 KTPhysicalArray< 2, std::complex<double> >::begin2() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_col_iterator KTPhysicalArray< 2, std::complex<double> >::begin2() const
     {
-        return fData.begin2();
+        return const_col_iterator{ fData.data(), size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_iterator1 KTPhysicalArray< 2, std::complex<double> >::end1() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_row_iterator KTPhysicalArray< 2, std::complex<double> >::end1() const
     {
-        return fData.end1();
+        return fData.data() + size(1);
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2 KTPhysicalArray< 2, std::complex<double> >::end2() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_col_iterator KTPhysicalArray< 2, std::complex<double> >::end2() const
     {
-        return fData.end2();
+        return const_col_iterator{ fData.data() + size(1)*size(2), size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::iterator1 KTPhysicalArray< 2, std::complex<double> >::begin1()
+    inline KTPhysicalArray< 2, std::complex<double> >::row_iterator KTPhysicalArray< 2, std::complex<double> >::begin1()
     {
-        return fData.begin1();
+        return fData.data();
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::iterator2 KTPhysicalArray< 2, std::complex<double> >::begin2()
+    inline KTPhysicalArray< 2, std::complex<double> >::col_iterator KTPhysicalArray< 2, std::complex<double> >::begin2()
     {
-        return fData.begin2();
+        return col_iterator{ fData.data(), size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::iterator1 KTPhysicalArray< 2, std::complex<double> >::end1()
+    inline KTPhysicalArray< 2, std::complex<double> >::row_iterator KTPhysicalArray< 2, std::complex<double> >::end1()
     {
-        return fData.end1();
+        return fData.data() + size(1);
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::iterator2 KTPhysicalArray< 2, std::complex<double> >::end2()
+    inline KTPhysicalArray< 2, std::complex<double> >::col_iterator KTPhysicalArray< 2, std::complex<double> >::end2()
     {
-        return fData.end2();
+        return col_iterator{ fData.data() + size(1)*size(2), size(1) };
+    }
+    
+    //*************************
+    // Reverse iterators
+    //*************************
+
+    inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin1() const
+    {
+        return std::reverse_iterator<const std::complex<double>* >{ fData.data() + size(1) };
     }
 
 
-
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_reverse_iterator1 KTPhysicalArray< 2, std::complex<double> >::rbegin1() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin2() const
     {
-        return fData.rbegin1();
+        return const_reverse_col_iterator{ fData.data() + size(1)*size(2), -size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_reverse_iterator2 KTPhysicalArray< 2, std::complex<double> >::rbegin2() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rend1() const
     {
-        return fData.rbegin2();
+        return std::reverse_iterator<const std::complex<double>* >{ fData.data() };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_reverse_iterator1 KTPhysicalArray< 2, std::complex<double> >::rend1() const
+    inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rend2() const
     {
-        return fData.rend1();
+        return const_reverse_col_iterator{ fData.data(), -size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::const_reverse_iterator2 KTPhysicalArray< 2, std::complex<double> >::rend2() const
+    inline KTPhysicalArray< 2, std::complex<double> >::reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin1()
     {
-        return fData.rend2();
+        return std::reverse_iterator< std::complex<double>* >{ fData.data() + size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::reverse_iterator1 KTPhysicalArray< 2, std::complex<double> >::rbegin1()
+    inline KTPhysicalArray< 2, std::complex<double> >::reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin2()
     {
-        return fData.rbegin1();
+        return reverse_col_iterator{ fData.data() + size(1)*size(2), -size(1) };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::reverse_iterator2 KTPhysicalArray< 2, std::complex<double> >::rbegin2()
+    inline KTPhysicalArray< 2, std::complex<double> >::reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rend1()
     {
-        return fData.rbegin2();
+        return std::reverse_iterator< std::complex<double>* >{ fData.data() };
     }
 
 
-    inline typename KTPhysicalArray< 2, std::complex<double> >::reverse_iterator1 KTPhysicalArray< 2, std::complex<double> >::rend1()
+    inline KTPhysicalArray< 2, std::complex<double> >::reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rend2()
     {
-        return fData.rend1();
+        return reverse_col_iterator{ fData.data(), -size(1) };
     }
-
-
-    inline typename KTPhysicalArray< 2, std::complex<double> >::reverse_iterator2 KTPhysicalArray< 2, std::complex<double> >::rend2()
-    {
-        return fData.rend2();
-    } */
 
 
     std::complex<double> KTPhysicalArray< 2, std::complex<double> >::GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const
