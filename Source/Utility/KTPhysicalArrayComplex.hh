@@ -72,6 +72,8 @@ namespace Katydid
             KTPhysicalArray< 1, value_type >& operator-=(const value_type& rhs);
             KTPhysicalArray< 1, value_type >& operator*=(const value_type& rhs);
             KTPhysicalArray< 1, value_type >& operator/=(const value_type& rhs);
+            
+            friend KTPhysicalArray< 1, value_type > operator%(KTPhysicalArray< 2, value_type >& lhs, KTPhysicalArray< 1, value_type >& rhs);
 
         public:
             const_iterator begin() const;
@@ -373,6 +375,11 @@ namespace Katydid
             KTPhysicalArray< 2, value_type >& operator-=(const KTPhysicalArray< 2, value_type >& rhs);
             KTPhysicalArray< 2, value_type >& operator*=(const KTPhysicalArray< 2, value_type >& rhs);
             KTPhysicalArray< 2, value_type >& operator/=(const KTPhysicalArray< 2, value_type >& rhs);
+            
+            //matrix multiplication
+            KTPhysicalArray< 2, value_type >& operator%=(const KTPhysicalArray< 2, value_type >& rhs);
+            
+            friend KTPhysicalArray< 1, value_type > operator%(KTPhysicalArray< 2, value_type >& lhs, KTPhysicalArray< 1, value_type >& rhs);
 
 
             KTPhysicalArray< 2, value_type >& operator+=(const value_type& rhs);
@@ -402,10 +409,96 @@ namespace Katydid
             reverse_iterator2 rend2();  */
 
         public:
-         //   value_type GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const;
-         //   value_type GetMinimumBin(unsigned& minXBin, unsigned& minYBin) const;
+            value_type GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const;
+            value_type GetMinimumBin(unsigned& minXBin, unsigned& minYBin) const;
             /// Returns the pair (min value, max value)
-         //   std::pair< value_type, value_type > GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin);
+            std::pair< value_type, value_type > GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin);
+            
+        private:
+        
+            struct MaxVisitor 
+            {
+        
+                unsigned row;
+                unsigned col;
+                value_type max;
+                
+                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+                {
+                    max=value;
+                    row=i;
+                    col=j;
+                };
+                
+                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+                {
+                    if(std::abs(value)>std::abs(max)) 
+                    {
+                        max=value;
+                        row=i;
+                        col=j;
+                    }
+                };
+            };
+            
+            struct MinVisitor 
+            {
+        
+                unsigned row;
+                unsigned col;
+                value_type min;
+                
+                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+                {
+                    min=value;
+                    row=i;
+                    col=j;
+                };
+                
+                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+                {
+                    if(std::abs(value)<std::abs(min)) 
+                    {
+                        min=value;
+                        row=i;
+                        col=j;
+                    }
+                };
+            };
+            
+            struct MinMaxVisitor {
+        
+                unsigned rowMax;
+                unsigned colMax;
+                unsigned rowMin;
+                unsigned colMin;
+                value_type max;
+                value_type min;
+                
+                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) {
+                    max=value;
+                    min=value;
+                    rowMax=i;
+                    colMax=j;
+                    rowMin=i;
+                    colMin=j;
+                };
+                
+                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) {
+                    if(std::abs(value)>std::abs(max)) 
+                    {
+                        max=value;
+                        rowMax=i;
+                        colMax=j;
+                    }
+                    if(std::abs(value)<std::abs(min))
+                    {
+                        min=value;
+                        rowMin=i;
+                        colMin=j;
+                    }
+                };
+            };
     };
     
     size_t KTPhysicalArray< 2, std::complex<double> >::cols() const
@@ -669,54 +762,40 @@ namespace Katydid
 
     std::complex<double> KTPhysicalArray< 2, std::complex<double> >::GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const
     {
-        return fData.maxCoeff(maxXBin, maxYBin);
+        //return fData.maxCoeff(&maxXBin, &maxYBin); // can be used for real values
+        
+        MaxVisitor mv;
+        fData.visit(mv);
+        maxXBin = mv.row;
+        maxYBin = mv.col;
+        
+        return mv.max;
     }
 
 
     std::complex<double> KTPhysicalArray< 2, std::complex<double> >::GetMinimumBin(unsigned& minXBin, unsigned& minYBin) const
     {
-        return fData.minCoeff(minXBin, minYBin);
+        //return fData.minCoeff(&minXBin, &minYBin); // can be used for real values
+        
+        MinVisitor mv;
+        fData.visit(mv);
+        minXBin = mv.row;
+        minYBin = mv.col;
+        
+        return mv.min;
     }
 
 
     std::pair< std::complex<double>, std::complex<double> > KTPhysicalArray< 2, std::complex<double> >::GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin)
-    {
-        /*
-        typename KTPhysicalArray< 2, std::complex<double> >::const_iterator1 xBinIt = fData.begin1();
-        std::pair< typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2, typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2 > yBinIts = std::minmax_element(xBinIt.begin(), xBinIt.end());
-        minXBin = 0;
-        minYBin = yBinIts.first.index2();
-        maxXBin = 0;
-        maxYBin = yBinIts.second.index2();
-        double minYValue = *yBinIts.first;
-        double maxYValue = *yBinIts.second;
-        double value;
-        for (; xBinIt != fData.end1(); ++xBinIt)
-        {
-            yBinIts = std::minmax_element(xBinIt.begin(), xBinIt.end());
-            value = *yBinIts.first;
-            if (value < minYValue)
-            {
-                minXBin = xBinIt.index1();
-                minYBin = yBinIts.first.index2();
-                minYValue = value;
-            }
-            value = *yBinIts.second;
-            if (value > maxYValue)
-            {
-                maxXBin = xBinIt.index1();
-                maxYBin = yBinIts.second.index2();
-                maxYValue = value;
-            }
-        }
-        return std::make_pair(minYValue, maxYValue);*/
+    { 
+        MinMaxVisitor mv;
+        fData.visit(mv);
+        minXBin = mv.rowMin;
+        minYBin = mv.colMin;
+        maxXBin = mv.rowMax;
+        maxYBin = mv.colMax;
         
-        //sub optimal solution, requires two passes instead of one
-        //revisit with proper iterators
-        std::complex<double> minYValue = fData.minCoeff(minXBin, minYBin);
-        std::complex<double> maxYValue = fData.minCoeff(maxXBin, maxYBin);
-        
-        return std::make_pair(minYValue, maxYValue);
+        return std::make_pair(mv.min, mv.max);
     }
 
     /// Add two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
@@ -763,6 +842,41 @@ namespace Katydid
     {
         ostr << rhs.GetData();
         return ostr;
+    }
+    
+    
+    //*************************
+    // Matrix and Vector operations
+    //*************************
+    
+    inline KTPhysicalArray< 2, std::complex<double> >& KTPhysicalArray< 2, std::complex<double> >::operator%=(const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    {
+        
+        fData = fData.matrix()*rhs.fData.matrix();
+        
+        SetRangeMin(2, rhs.GetRangeMin(2));
+        SetRangeMax(2, rhs.GetRangeMax(2));
+
+        return *this;
+    }
+    
+    inline KTPhysicalArray< 2, std::complex<double> > operator%(KTPhysicalArray< 2, std::complex<double> >& lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    {
+
+        lhs %= rhs;
+        return lhs;
+    }
+    
+    //matrix-vector-multiplication
+    inline KTPhysicalArray< 1, std::complex<double> > operator%(KTPhysicalArray< 2, std::complex<double> >& lhs, KTPhysicalArray< 1, std::complex<double> >& rhs)
+    {
+
+        rhs.fData *= lhs.fData; 
+        
+        rhs.SetRangeMin(lhs.GetRangeMin(1));
+        rhs.SetRangeMax(lhs.GetRangeMax(1));
+        
+        return rhs;
     }
 
 
