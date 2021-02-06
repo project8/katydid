@@ -338,9 +338,9 @@ namespace Katydid
                 skip{ 0 }
             {}
             
-            explicit SkipIterator(value_type* p, size_t nRows): 
+            explicit SkipIterator(value_type* p, long long nRows): 
                 position{ p },
-                skip{ nRows } 
+                skip{ nRows }
             {}
             
             value_type* begin()
@@ -368,7 +368,7 @@ namespace Katydid
             value_type& dereference() const { return *position; }
     
             value_type* position;
-            size_t skip;
+            long long skip;
     };
 
     //*************************
@@ -384,14 +384,14 @@ namespace Katydid
             
             //revisit when eigen 3.4 is released
             //eigen 3.4 will add proper iterators
-            using row_iterator = value_type*;
-            using const_row_iterator = const value_type*;
+            using row_iterator = SkipIterator<value_type>;
+            using const_row_iterator = SkipIterator< const value_type>;
             
             using col_iterator = SkipIterator<value_type>;
             using const_col_iterator = SkipIterator< const value_type>;
             
-            using reverse_row_iterator = std::reverse_iterator< value_type *>;
-            using const_reverse_row_iterator = std::reverse_iterator< const value_type * >;
+            using reverse_row_iterator = SkipIterator<value_type>;
+            using const_reverse_row_iterator = SkipIterator< const value_type>;
             
             using reverse_col_iterator = SkipIterator<value_type>;
             using const_reverse_col_iterator = SkipIterator< const value_type>;
@@ -720,49 +720,49 @@ namespace Katydid
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_row_iterator KTPhysicalArray< 2, std::complex<double> >::begin1() const
     {
-        return fData.data();
+        return const_row_iterator{ fData.data(), 1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_col_iterator KTPhysicalArray< 2, std::complex<double> >::begin2() const
     {
-        return const_col_iterator{ fData.data(), size(1) };
+        return const_col_iterator{ fData.data(), static_cast<long long>(size(1)) };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_row_iterator KTPhysicalArray< 2, std::complex<double> >::end1() const
     {
-        return fData.data() + size(1);
+        return const_row_iterator{ fData.data() + size(1), 1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_col_iterator KTPhysicalArray< 2, std::complex<double> >::end2() const
     {
-        return const_col_iterator{ fData.data() + size(1)*size(2), size(1) };
+        return const_col_iterator{ fData.data() + size(1)*size(2), static_cast<long long>(size(1)) };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::row_iterator KTPhysicalArray< 2, std::complex<double> >::begin1()
     {
-        return fData.data();
+        return row_iterator{ fData.data(), 1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::col_iterator KTPhysicalArray< 2, std::complex<double> >::begin2()
     {
-        return col_iterator{ fData.data(), size(1) };
+        return col_iterator{ fData.data(), static_cast<long long>(size(1)) };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::row_iterator KTPhysicalArray< 2, std::complex<double> >::end1()
     {
-        return fData.data() + size(1);
+        return row_iterator{ fData.data() + size(1), 1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::col_iterator KTPhysicalArray< 2, std::complex<double> >::end2()
     {
-        return col_iterator{ fData.data() + size(1)*size(2), size(1) };
+        return col_iterator{ fData.data() + size(1)*size(2), static_cast<long long>(size(1)) };
     }
     
     //*************************
@@ -771,49 +771,49 @@ namespace Katydid
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin1() const
     {
-        return std::reverse_iterator<const std::complex<double>* >{ fData.data() + size(1) };
+        return const_reverse_row_iterator{ fData.data() + size(1), -1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin2() const
     {
-        return const_reverse_col_iterator{ fData.data() + size(1)*size(2), -size(1) };
+        return const_reverse_col_iterator{ fData.data() + size(1)*size(2), -static_cast<long long>(size(1)) };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rend1() const
     {
-        return std::reverse_iterator<const std::complex<double>* >{ fData.data() };
+        return const_reverse_row_iterator{ fData.data(), -1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::const_reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rend2() const
     {
-        return const_reverse_col_iterator{ fData.data(), -size(1) };
+        return const_reverse_col_iterator{ fData.data(), -static_cast<long long>(size(1)) };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin1()
     {
-        return std::reverse_iterator< std::complex<double>* >{ fData.data() + size(1) };
+        return reverse_row_iterator{ fData.data() + size(1), -1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rbegin2()
     {
-        return reverse_col_iterator{ fData.data() + size(1)*size(2), -size(1) };
+        return reverse_col_iterator{ fData.data() + size(1)*size(2), -static_cast<long long>(size(1)) };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::reverse_row_iterator KTPhysicalArray< 2, std::complex<double> >::rend1()
     {
-        return std::reverse_iterator< std::complex<double>* >{ fData.data() };
+        return reverse_row_iterator{ fData.data(), -1 };
     }
 
 
     inline KTPhysicalArray< 2, std::complex<double> >::reverse_col_iterator KTPhysicalArray< 2, std::complex<double> >::rend2()
     {
-        return reverse_col_iterator{ fData.data(), -size(1) };
+        return reverse_col_iterator{ fData.data(), -static_cast<long long>(size(1)) };
     }
 
 
