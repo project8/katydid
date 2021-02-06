@@ -15,6 +15,7 @@
 #include <complex>
 #include <sstream>
 #include <stdexcept>
+#include <iterator>
 
 namespace Katydid
 {
@@ -36,6 +37,8 @@ namespace Katydid
         //eigen 3.4 will add proper iterator support
         using iterator = value_type*; //array_type::iterator;
         using const_iterator = const value_type*; //array_type::const_iterator;
+        using reverse_iterator = std::reverse_iterator< value_type *>;
+        using const_reverse_iterator = std::reverse_iterator< const value_type * >;
 
         public:
             KTPhysicalArray();
@@ -81,10 +84,10 @@ namespace Katydid
             iterator begin();
             iterator end();
 
-            /*const_reverse_iterator rbegin() const;
+            const_reverse_iterator rbegin() const;
             const_reverse_iterator rend() const;
             reverse_iterator rbegin();
-            reverse_iterator rend();*/
+            reverse_iterator rend();
 
     };
     
@@ -253,6 +256,10 @@ namespace Katydid
         ostr << rhs.GetData();
         return ostr;
     }
+    
+    //*************************
+    // Iterators
+    //*************************
 
     inline KTPhysicalArray< 1, std::complex<double> >::const_iterator KTPhysicalArray< 1, std::complex<double> >::begin() const
     {
@@ -272,6 +279,27 @@ namespace Katydid
     inline KTPhysicalArray< 1, std::complex<double> >::iterator KTPhysicalArray< 1, std::complex<double> >::end()
     {
         return fData.data() + size();
+    }
+    
+    inline KTPhysicalArray< 1, std::complex<double> >::const_reverse_iterator KTPhysicalArray< 1, std::complex<double> >::rbegin() const
+    {
+        //a reverse iterator points to the first element outside the container
+        return std::reverse_iterator<const std::complex<double>* >(fData.data() + size());
+    }
+
+    inline KTPhysicalArray< 1, std::complex<double> >::const_reverse_iterator KTPhysicalArray< 1, std::complex<double> >::rend() const
+    {
+        return std::reverse_iterator<const std::complex<double>* >(fData.data());
+    }
+
+    inline KTPhysicalArray< 1, std::complex<double> >::reverse_iterator KTPhysicalArray< 1, std::complex<double> >::rbegin()
+    {
+        return std::reverse_iterator< std::complex<double>* >(fData.data() + size());
+    }
+
+    inline KTPhysicalArray< 1, std::complex<double> >::reverse_iterator KTPhysicalArray< 1, std::complex<double> >::rend()
+    {
+        return std::reverse_iterator< std::complex<double>* >(fData.data());
     }
     
     //*************************
@@ -297,33 +325,6 @@ namespace Katydid
     {
         return array.end();
     }
-
-/*
-
-    template< typename value_type >
-    inline typename KTPhysicalArray< 1, value_type >::const_reverse_iterator KTPhysicalArray< 1, value_type >::rbegin() const
-    {
-        return fData + size() - 1;
-    }
-
-    template< typename XDataType >
-    inline typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rend() const
-    {
-        return fData - 1;
-    }
-
-    template< typename XDataType >
-    inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin()
-    {
-        return fData + size() - 1;
-    }
-
-    template< typename XDataType >
-    inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rend()
-    {
-        return fData - 1;
-    }
-*/
 
     //*************************
     // 2-D array implementation
@@ -466,7 +467,8 @@ namespace Katydid
                 };
             };
             
-            struct MinMaxVisitor {
+            struct MinMaxVisitor 
+            {
         
                 unsigned rowMax;
                 unsigned colMax;
@@ -475,7 +477,8 @@ namespace Katydid
                 value_type max;
                 value_type min;
                 
-                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) {
+                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+                {
                     max=value;
                     min=value;
                     rowMax=i;
@@ -484,7 +487,8 @@ namespace Katydid
                     colMin=j;
                 };
                 
-                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) {
+                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+                {
                     if(std::abs(value)>std::abs(max)) 
                     {
                         max=value;
