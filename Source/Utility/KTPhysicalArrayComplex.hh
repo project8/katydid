@@ -664,57 +664,24 @@ namespace Katydid
     inline typename KTPhysicalArray< 2, std::complex<double> >::reverse_iterator2 KTPhysicalArray< 2, std::complex<double> >::rend2()
     {
         return fData.rend2();
-    }
+    } */
 
 
     std::complex<double> KTPhysicalArray< 2, std::complex<double> >::GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const
     {
-        typename KTPhysicalArray< 2, std::complex<double> >::const_iterator1 xBinIt = fData.begin1();
-        typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2 yBinIt = std::max_element(xBinIt.begin(), xBinIt.end());
-        maxXBin = 0;
-        maxYBin = yBinIt.index2();
-        double maxYValue = *yBinIt;
-        double value;
-        for (; xBinIt != fData.end1(); ++xBinIt)
-        {
-            yBinIt = std::max_element(xBinIt.begin(), xBinIt.end());
-            value = *yBinIt;
-            if (value > maxYValue)
-            {
-                maxXBin = xBinIt.index1();
-                maxYBin = yBinIt.index2();
-                maxYValue = value;
-            }
-        }
-        return maxYValue;
+        return fData.maxCoeff(maxXBin, maxYBin);
     }
 
 
     std::complex<double> KTPhysicalArray< 2, std::complex<double> >::GetMinimumBin(unsigned& minXBin, unsigned& minYBin) const
     {
-        typename KTPhysicalArray< 2, std::complex<double> >::const_iterator1 xBinIt = fData.begin1();
-        typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2 yBinIt = std::min_element(xBinIt.begin(), xBinIt.end());
-        minXBin = 0;
-        minYBin = yBinIt.index2();
-        double minYValue = *yBinIt;
-        double value;
-        for (; xBinIt != fData.end1(); ++xBinIt)
-        {
-            yBinIt = std::min_element(xBinIt.begin(), xBinIt.end());
-            value = *yBinIt;
-            if (value < minYValue)
-            {
-                minXBin = xBinIt.index1();
-                minYBin = yBinIt.index2();
-                minYValue = value;
-            }
-        }
-        return minYValue;
+        return fData.minCoeff(minXBin, minYBin);
     }
 
 
     std::pair< std::complex<double>, std::complex<double> > KTPhysicalArray< 2, std::complex<double> >::GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin)
     {
+        /*
         typename KTPhysicalArray< 2, std::complex<double> >::const_iterator1 xBinIt = fData.begin1();
         std::pair< typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2, typename KTPhysicalArray< 2, std::complex<double> >::const_iterator2 > yBinIts = std::minmax_element(xBinIt.begin(), xBinIt.end());
         minXBin = 0;
@@ -742,8 +709,15 @@ namespace Katydid
                 maxYValue = value;
             }
         }
+        return std::make_pair(minYValue, maxYValue);*/
+        
+        //sub optimal solution, requires two passes instead of one
+        //revisit with proper iterators
+        std::complex<double> minYValue = fData.minCoeff(minXBin, minYBin);
+        std::complex<double> maxYValue = fData.minCoeff(maxXBin, maxYBin);
+        
         return std::make_pair(minYValue, maxYValue);
-    }*/
+    }
 
     /// Add two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
 
