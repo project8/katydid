@@ -276,6 +276,30 @@ namespace Katydid
     {
         return fData.data() + size();
     }
+    
+    //*************************
+    // Begin, end free functions for range based for-loop
+    //*************************
+    
+    KTPhysicalArray< 1, std::complex<double> >::iterator begin(KTPhysicalArray< 1, std::complex<double> > & array)
+    {
+        return array.begin();
+    }
+    
+    KTPhysicalArray< 1, std::complex<double> >::iterator end(KTPhysicalArray< 1, std::complex<double> > & array)
+    {
+        return array.end();
+    }
+    
+    KTPhysicalArray< 1, std::complex<double> >::const_iterator begin(const KTPhysicalArray< 1, std::complex<double> > & array)
+    {
+        return array.begin();
+    }
+    
+    KTPhysicalArray< 1, std::complex<double> >::const_iterator end(const KTPhysicalArray< 1, std::complex<double> > & array)
+    {
+        return array.end();
+    }
 
 /*
 
