@@ -56,8 +56,8 @@ namespace Katydid
     {
         //Is that what you had to do in the pre-lambda era?
         //I do not understand how this function pointer is going to be used in the end
-        size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size, &matrix_type::size};
-        SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >(&fData, sizeArray));
+        size_t (KTPhysicalArray< 2, std::complex<double> >::*sizeArray[2])() const = {&KTPhysicalArray< 2, std::complex<double> >::rows, &KTPhysicalArray< 2, std::complex<double> >::cols};
+        SetNBinsFunc(new KTNBinsInArray< 2, KTPhysicalArray< 2, std::complex<double> > >(this, sizeArray));
         //std::cout << "You have created a 2-D physical array" << std::endl;
     }
     
@@ -67,8 +67,8 @@ namespace Katydid
             fLabel()
     {
 
-        size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size, &matrix_type::size};
-        SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >(&fData, sizeArray));
+        size_t (KTPhysicalArray< 2, std::complex<double> >::*sizeArray[2])() const = {&KTPhysicalArray< 2, std::complex<double> >::rows, &KTPhysicalArray< 2, std::complex<double> >::cols};
+        SetNBinsFunc(new KTNBinsInArray< 2, KTPhysicalArray< 2, std::complex<double> > >(this, sizeArray));
         SetRangeMin(1, xRangeMin);
         SetRangeMin(2, yRangeMin);
         SetRangeMax(1, xRangeMax);

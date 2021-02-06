@@ -358,6 +358,9 @@ namespace Katydid
         protected:
             matrix_type fData;
             std::string fLabel;
+            
+            size_t cols() const;
+            size_t rows() const;
 
         public:
             const value_type& operator()(unsigned i, unsigned j) const;
@@ -404,6 +407,16 @@ namespace Katydid
             /// Returns the pair (min value, max value)
          //   std::pair< value_type, value_type > GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin);
     };
+    
+    size_t KTPhysicalArray< 2, std::complex<double> >::cols() const
+    {
+        return static_cast<size_t>(fData.cols());
+    }
+    
+    size_t KTPhysicalArray< 2, std::complex<double> >::rows() const
+    {
+        return static_cast<size_t>(fData.rows());
+    }
 
 
     inline const Eigen::Array< std::complex<double>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor >& KTPhysicalArray< 2, std::complex<double> >::GetData() const
