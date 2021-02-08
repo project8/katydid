@@ -78,7 +78,7 @@ namespace Katydid
             KTPhysicalArray< 1, value_type >& operator*=(const value_type& rhs);
             KTPhysicalArray< 1, value_type >& operator/=(const value_type& rhs);
             
-            friend KTPhysicalArray< 1, value_type > operator%(KTPhysicalArray< 2, value_type >& lhs, KTPhysicalArray< 1, value_type >& rhs);
+            friend KTPhysicalArray< 1, value_type > operator%(const KTPhysicalArray< 2, value_type >& lhs, KTPhysicalArray< 1, value_type >& rhs);
 
         public:
             const_iterator begin() const;
@@ -218,7 +218,7 @@ namespace Katydid
     //*************************
 
     /// Add two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    inline KTPhysicalArray< 1, std::complex<double> > operator+(KTPhysicalArray< 1, std::complex<double> >& lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
+    inline KTPhysicalArray< 1, std::complex<double> > operator+(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
 
@@ -227,7 +227,7 @@ namespace Katydid
     }
 
     /// Subtracts two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    inline KTPhysicalArray< 1, std::complex<double> > operator-(KTPhysicalArray< 1, std::complex<double> >& lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
+    inline KTPhysicalArray< 1, std::complex<double> > operator-(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
 
@@ -236,7 +236,7 @@ namespace Katydid
     }
 
     /// Multiplies two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    inline KTPhysicalArray< 1, std::complex<double> > operator*(KTPhysicalArray< 1, std::complex<double> >& lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
+    inline KTPhysicalArray< 1, std::complex<double> > operator*(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
 
@@ -245,7 +245,7 @@ namespace Katydid
     }
 
     /// Divides two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    inline KTPhysicalArray< 1, std::complex<double> > operator/(KTPhysicalArray< 1, std::complex<double> >& lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
+    inline KTPhysicalArray< 1, std::complex<double> > operator/(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
 
@@ -434,7 +434,8 @@ namespace Katydid
             //matrix multiplication
             KTPhysicalArray< 2, value_type >& operator%=(const KTPhysicalArray< 2, value_type >& rhs);
             
-            friend KTPhysicalArray< 1, value_type > operator%(KTPhysicalArray< 2, value_type >& lhs, KTPhysicalArray< 1, value_type >& rhs);
+            friend KTPhysicalArray< 1, value_type > operator%(KTPhysicalArray< 2, value_type > lhs, const KTPhysicalArray< 1, value_type >& rhs);
+            friend KTPhysicalArray< 1, value_type > operator%(const KTPhysicalArray< 2, value_type >& lhs, KTPhysicalArray< 1, value_type >& rhs);
 
 
             KTPhysicalArray< 2, value_type >& operator+=(const value_type& rhs);
@@ -857,7 +858,7 @@ namespace Katydid
 
     /// Add two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
 
-    KTPhysicalArray< 2, std::complex<double> > operator+(KTPhysicalArray< 2, std::complex<double> >& lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    KTPhysicalArray< 2, std::complex<double> > operator+(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
 
@@ -867,7 +868,7 @@ namespace Katydid
 
     /// Subtracts two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
 
-    KTPhysicalArray< 2, std::complex<double> > operator-(KTPhysicalArray< 2, std::complex<double> >& lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    KTPhysicalArray< 2, std::complex<double> > operator-(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
 
@@ -877,7 +878,7 @@ namespace Katydid
 
     /// Multiplies two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
 
-    KTPhysicalArray< 2, std::complex<double> > operator*(KTPhysicalArray< 2, std::complex<double> >& lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    KTPhysicalArray< 2, std::complex<double> > operator*(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
 
@@ -887,7 +888,7 @@ namespace Katydid
 
     /// Divides two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
 
-    KTPhysicalArray< 2, std::complex<double> > operator/(KTPhysicalArray< 2, std::complex<double> >& lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    KTPhysicalArray< 2, std::complex<double> > operator/(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
     {
         if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
 
@@ -917,7 +918,7 @@ namespace Katydid
         return *this;
     }
     
-    inline KTPhysicalArray< 2, std::complex<double> > operator%(KTPhysicalArray< 2, std::complex<double> >& lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
+    inline KTPhysicalArray< 2, std::complex<double> > operator%(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
     {
 
         lhs %= rhs;
@@ -925,7 +926,7 @@ namespace Katydid
     }
     
     //matrix-vector-multiplication
-    inline KTPhysicalArray< 1, std::complex<double> > operator%(KTPhysicalArray< 2, std::complex<double> >& lhs, KTPhysicalArray< 1, std::complex<double> >& rhs)
+    inline KTPhysicalArray< 1, std::complex<double> > operator%(const KTPhysicalArray< 2, std::complex<double> >& lhs, KTPhysicalArray< 1, std::complex<double> >& rhs)
     {
 
         rhs.fData *= lhs.fData; 
