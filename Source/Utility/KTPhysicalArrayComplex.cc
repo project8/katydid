@@ -23,7 +23,6 @@ namespace Katydid
             fData(),
             fLabel()
     {
-        // please let's remove the function pointer
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(0));
     }
 
@@ -55,7 +54,8 @@ namespace Katydid
             fLabel()
     {
         //Is that what you had to do in the pre-lambda era?
-        //I do not understand how this function pointer is going to be used in the end
+        //please let's work on the use of this function pointer
+        //I also don't like the 'new' keyword either
         size_t (KTPhysicalArray< 2, std::complex<double> >::*sizeArray[2])() const = {&KTPhysicalArray< 2, std::complex<double> >::rows, &KTPhysicalArray< 2, std::complex<double> >::cols};
         SetNBinsFunc(new KTNBinsInArray< 2, KTPhysicalArray< 2, std::complex<double> > >(this, sizeArray));
         //std::cout << "You have created a 2-D physical array" << std::endl;
@@ -87,33 +87,5 @@ namespace Katydid
     KTPhysicalArray< 2, std::complex<double> >::~KTPhysicalArray()
     {
     }
-
-/*
-
-    template< typename value_type >
-    inline typename KTPhysicalArray< 1, value_type >::const_reverse_iterator KTPhysicalArray< 1, value_type >::rbegin() const
-    {
-        return fData + size() - 1;
-    }
-
-    template< typename XDataType >
-    inline typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rend() const
-    {
-        return fData - 1;
-    }
-
-    template< typename XDataType >
-    inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin()
-    {
-        return fData + size() - 1;
-    }
-
-    template< typename XDataType >
-    inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rend()
-    {
-        return fData - 1;
-    }
-*/
-
 
 } /* namespace Katydid */

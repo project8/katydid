@@ -21,6 +21,50 @@
 
 namespace Katydid
 {
+    
+    //utility for the 2D iterators
+    template < typename value_type >
+    class SkipIterator: public boost::iterator_facade< SkipIterator<value_type>, value_type, boost::bidirectional_traversal_tag >
+    {
+        public:
+            
+            SkipIterator():
+                position{ 0 },
+                skip{ 0 }
+            {}
+            
+            explicit SkipIterator(value_type* p, long long nRows): 
+                position{ p },
+                skip{ nRows }
+            {}
+            
+            value_type* begin()
+            {
+                return position;
+            }
+            
+            value_type* end()
+            {
+                return position + skip;
+            }
+        
+        private:
+            friend class boost::iterator_core_access;
+
+            void increment() { position += skip; }
+            void decrement() { position -= skip; }
+
+            bool equal(SkipIterator< value_type > const& other) const
+            {
+                return this->position == other.position &&
+                        this->skip == other.skip;
+            }
+
+            value_type& dereference() const { return *position; }
+    
+            value_type* position;
+            long long skip;
+    };
 
     //*******************************
     // 1D implementation
@@ -35,8 +79,8 @@ namespace Katydid
         using value_type = std::complex<double>;
         using array_type = Eigen::Array< value_type, Eigen::Dynamic, 1, Eigen::ColMajor >;
         
-        //revisit when eigen 3.4 is released
-        //eigen 3.4 will add proper iterator support
+        //Maybe revisit when eigen 3.4 is released
+        //eigen 3.4 will add native iterator support
         using iterator = value_type*; //array_type::iterator;
         using const_iterator = const value_type*; //array_type::const_iterator;
         using reverse_iterator = std::reverse_iterator< value_type *>;
@@ -327,49 +371,6 @@ namespace Katydid
     {
         return array.end();
     }
-    
-    template < typename value_type >
-    class SkipIterator: public boost::iterator_facade< SkipIterator<value_type>, value_type, boost::bidirectional_traversal_tag >
-    {
-        public:
-            
-            SkipIterator():
-                position{ 0 },
-                skip{ 0 }
-            {}
-            
-            explicit SkipIterator(value_type* p, long long nRows): 
-                position{ p },
-                skip{ nRows }
-            {}
-            
-            value_type* begin()
-            {
-                return position;
-            }
-            
-            value_type* end()
-            {
-                return position + skip;
-            }
-        
-        private:
-            friend class boost::iterator_core_access;
-
-            void increment() { position += skip; }
-            void decrement() { position -= skip; }
-
-            bool equal(SkipIterator< value_type > const& other) const
-            {
-                return this->position == other.position &&
-                        this->skip == other.skip;
-            }
-
-            value_type& dereference() const { return *position; }
-    
-            value_type* position;
-            long long skip;
-    };
 
     //*************************
     // 2-D array implementation
@@ -466,94 +467,6 @@ namespace Katydid
             /// Returns the pair (min value, max value)
             std::pair< value_type, value_type > GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin);
             
-        private:
-        
-            struct MaxVisitor 
-            {
-        
-                unsigned row;
-                unsigned col;
-                value_type max;
-                
-                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
-                {
-                    max=value;
-                    row=i;
-                    col=j;
-                };
-                
-                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
-                {
-                    if(std::abs(value)>std::abs(max)) 
-                    {
-                        max=value;
-                        row=i;
-                        col=j;
-                    }
-                };
-            };
-            
-            struct MinVisitor 
-            {
-        
-                unsigned row;
-                unsigned col;
-                value_type min;
-                
-                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
-                {
-                    min=value;
-                    row=i;
-                    col=j;
-                };
-                
-                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
-                {
-                    if(std::abs(value)<std::abs(min)) 
-                    {
-                        min=value;
-                        row=i;
-                        col=j;
-                    }
-                };
-            };
-            
-            struct MinMaxVisitor 
-            {
-        
-                unsigned rowMax;
-                unsigned colMax;
-                unsigned rowMin;
-                unsigned colMin;
-                value_type max;
-                value_type min;
-                
-                void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
-                {
-                    max=value;
-                    min=value;
-                    rowMax=i;
-                    colMax=j;
-                    rowMin=i;
-                    colMin=j;
-                };
-                
-                void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
-                {
-                    if(std::abs(value)>std::abs(max)) 
-                    {
-                        max=value;
-                        rowMax=i;
-                        colMax=j;
-                    }
-                    if(std::abs(value)<std::abs(min))
-                    {
-                        min=value;
-                        rowMin=i;
-                        colMin=j;
-                    }
-                };
-            };
     };
     
     size_t KTPhysicalArray< 2, std::complex<double> >::cols() const
@@ -820,6 +733,32 @@ namespace Katydid
     {
         //return fData.maxCoeff(&maxXBin, &maxYBin); // can be used for real values
         
+        //functor for finding the maximum
+        struct MaxVisitor 
+        {
+    
+            unsigned row;
+            unsigned col;
+            value_type max;
+            
+            void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+            {
+                max=value;
+                row=i;
+                col=j;
+            };
+            
+            void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+            {
+                if(std::abs(value)>std::abs(max)) 
+                {
+                    max=value;
+                    row=i;
+                    col=j;
+                }
+            };
+        };
+        
         MaxVisitor mv;
         fData.visit(mv);
         maxXBin = mv.row;
@@ -833,6 +772,32 @@ namespace Katydid
     {
         //return fData.minCoeff(&minXBin, &minYBin); // can be used for real values
         
+        //functor for finding the minimum
+        struct MinVisitor 
+        {
+    
+            unsigned row;
+            unsigned col;
+            value_type min;
+            
+            void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+            {
+                min=value;
+                row=i;
+                col=j;
+            };
+            
+            void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+            {
+                if(std::abs(value)<std::abs(min)) 
+                {
+                    min=value;
+                    row=i;
+                    col=j;
+                }
+            };
+        };
+        
         MinVisitor mv;
         fData.visit(mv);
         minXBin = mv.row;
@@ -844,6 +809,44 @@ namespace Katydid
 
     std::pair< std::complex<double>, std::complex<double> > KTPhysicalArray< 2, std::complex<double> >::GetMinMaxBin(unsigned& minXBin, unsigned& minYBin, unsigned& maxXBin, unsigned& maxYBin)
     { 
+        //functor for finding minimum and maximum at the same time
+        struct MinMaxVisitor 
+        {
+    
+            unsigned rowMax;
+            unsigned colMax;
+            unsigned rowMin;
+            unsigned colMin;
+            value_type max;
+            value_type min;
+            
+            void init( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+            {
+                max=value;
+                min=value;
+                rowMax=i;
+                colMax=j;
+                rowMin=i;
+                colMin=j;
+            };
+            
+            void operator()( const value_type& value, Eigen::Index i, Eigen::Index j ) 
+            {
+                if(std::abs(value)>std::abs(max)) 
+                {
+                    max=value;
+                    rowMax=i;
+                    colMax=j;
+                }
+                if(std::abs(value)<std::abs(min))
+                {
+                    min=value;
+                    rowMin=i;
+                    colMin=j;
+                }
+            };
+        };
+        
         MinMaxVisitor mv;
         fData.visit(mv);
         minXBin = mv.rowMin;
