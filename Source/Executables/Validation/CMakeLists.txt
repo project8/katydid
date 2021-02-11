@@ -22,6 +22,7 @@ if (Katydid_ENABLE_TESTING)
         TestNanoflann
         TestRandom
         TestVector
+        TestVectorComplex
     )
     
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
