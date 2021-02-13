@@ -81,18 +81,19 @@ if (ROOT_FOUND)
     )
 endif (ROOT_FOUND)
 
-if (EIGEN3_FOUND)
-    set (SPECTRUMANALYSIS_HEADERFILES 
-        ${SPECTRUMANALYSIS_HEADERFILES}   
-        KTBiasedACM.hh
-        KTRQProcessor.hh
-    )
-    set (SPECTRUMANALYSIS_SOURCEFILES
-        ${SPECTRUMANALYSIS_SOURCEFILES}
-        KTRQProcessor.cc
-        KTBiasedACM.cc
-    )
-endif (EIGEN3_FOUND)
+# Disabled due to compile errors
+#if (EIGEN3_FOUND)
+#    set (SPECTRUMANALYSIS_HEADERFILES 
+#        ${SPECTRUMANALYSIS_HEADERFILES}   
+#        KTBiasedACM.hh
+#        KTRQProcessor.hh
+#    )
+#    set (SPECTRUMANALYSIS_SOURCEFILES
+#        ${SPECTRUMANALYSIS_SOURCEFILES}
+#        KTRQProcessor.cc
+#        KTBiasedACM.cc
+#    )
+#endif (EIGEN3_FOUND)
 
 if (Katydid_ENABLE_TUTORIAL)
     set (SPECTRUMANALYSIS_HEADERFILES 
