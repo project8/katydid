@@ -32,7 +32,7 @@ namespace Katydid
     {
         if (node != NULL)
         {
-            fNRings= node->get_value< signed int >("n-rings", fNRings);
+            fNRings= node->get_value< unsigned >("n-rings", fNRings);
         }
         return true;
     }
@@ -40,22 +40,22 @@ namespace Katydid
     bool KTAxialAggregator::SumChannelVoltage(KTFrequencySpectrumDataFFTW& fftwData)
     {
         const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
-        int nTimeBins = freqSpectrum->GetNTimeBins();
+        unsigned nTimeBins = freqSpectrum->GetNTimeBins();
         // Get the number of frequency bins from the first component of fftwData
-        int nFreqBins = freqSpectrum->GetNFrequencyBins();
-        int nTotalComponents = fftwData.GetNComponents(); // Get number of components
+        unsigned nFreqBins = freqSpectrum->GetNFrequencyBins();
+        unsigned nTotalComponents = fftwData.GetNComponents(); // Get number of components
         if(nTotalComponents%fNRings!=0)
         {
             KTERROR(agglog,"The number of rings has to be an integer multiple of total components");
         }
-        int nComponents = nTotalComponents/fNRings;// Get number of components
+        unsigned nComponents = nTotalComponents/fNRings;// Get number of components
 
         KTAxialAggregatedFrequencySpectrumDataFFTW& newAxialSummedFreqData = fftwData.Of< KTAxialAggregatedFrequencySpectrumDataFFTW>().SetNComponents(nComponents);
 
-        for (int iComponent = 0; iComponent< nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent< nComponents; ++iComponent)
         {
             KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
-            for (int iRing = 0; iRing < fNRings; ++iRing)
+            for (unsigned iRing = 0; iRing < fNRings; ++iRing)
             {
                 KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
                 for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
@@ -70,7 +70,7 @@ namespace Katydid
                 //(*newFreqSpectrum)+=*fftwData.GetSpectrumFFTW(iComponent+nComponents*iRing);
                 }
             }// End of loop over all rings
-            newAxialSummedFreqData.SetSpectrum(newFreqSpectrum,iComponent);
+            newAxialSummedFreqData.SetSpectrum(newFreqSpectrum, iComponent);
         }
         KTDEBUG(agglog,"Axial channel summation performed over "<< fNRings<<" rings");
         return true;

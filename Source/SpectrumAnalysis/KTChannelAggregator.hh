@@ -42,14 +42,14 @@ namespace Katydid
      
      Available configuration options:
      - "active-radius": double -- The active radius of the detection volume
-     - "grid-size": signed int -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
-     - "use-grid-text-file": bool, -- Check whether to define the grid based on an input text file 
-     - "grid-text-file": : std::string, -- Text file which has the user-defined grid positions 
+     - "grid-size": unsigned -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
+     - "use-grid-file": bool, -- Check whether to define the grid based on an input text file
+     - "grid-file": : std::string, -- Text file which has the user-defined grid positions 
      - "wavelength": double -- Wavelength of the cyclotron motion
      - "min-freq": double -- The minimum frequency value above which the channel aggregated spectrum is calculated. This particularly helps in enforcing bramforming around the central peak and avoiding side bands
      - "max-freq": double -- The maximum frequency value below which the channel aggregated spectrum is calculated
      - "use-antispiral-phase-shifts": bool, -- A flad to indicate whether to use antispiral phase shifts
-     - "n-rings": signed int -- Number of axial rings
+     - "n-rings": unsigned -- Number of axial rings
  
      Slots:
      - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
@@ -71,7 +71,7 @@ namespace Katydid
 
             // Get the grid size assuming a square grid
             // Set default to 30 currently
-            MEMBERVARIABLE(int, NGrid);
+            MEMBERVARIABLE(unsigned, NGrid);
 
             // PTS:: for 18.6 keV electrons, this somehow needs to come from the data file or config file
             MEMBERVARIABLE(double, Wavelength);
@@ -86,38 +86,38 @@ namespace Katydid
             MEMBERVARIABLE(bool, IsPartialRing);
 
             // If IsPartialRing is true, the total number of channels is the product of the number of channels extracted from the egg file and the PartialRingMultiplicity
-            MEMBERVARIABLE(int, PartialRingMultiplicity)
+            MEMBERVARIABLE(unsigned, PartialRingMultiplicity)
 
             // The text file to be used for the user-defined grid
             MEMBERVARIABLE(std::string, UserDefinedGridFile);
 
-    	    //The minimum frequency value above which the channel aggregated spectrum is calculated
+            //The minimum frequency value above which the channel aggregated spectrum is calculated
             MEMBERVARIABLE(double, SummationMinFreq);
 
-	        //The maximum frequency value below which the channel aggregated spectrum is calculated
+            //The maximum frequency value below which the channel aggregated spectrum is calculated
             MEMBERVARIABLE(double, SummationMaxFreq);
 
             // Number of axial rings/subarrays
-            MEMBERVARIABLE(int, NRings);
+            MEMBERVARIABLE(unsigned, NRings);
 
-	        //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
-	        //If selected this option will make sure that there is a relative phase-shift applied 
-	        MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
+            //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
+            //If selected this option will make sure that there is a relative phase-shift applied
+            MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
         
             virtual bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
             virtual bool SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData);
 
         protected:
 
-	        ///map that stores antispiral phase shifts
-	        std::map<int,double> fAntiSpiralPhaseShifts; 
+            ///map that stores antispiral phase shifts
+            std::map<unsigned,double> fAntiSpiralPhaseShifts;
 
             /// Define the grid based (one per ring)
             /*If fIsUserDefinedGrid it true, the grid is defined based on text file defined by fUserDefinedGridFile. 
              * If fIsUserDefinedGrid is false, defines a square grid with fNGrid*fNGrid points
              * Returns total number of grid points defined
              */
-            int DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData);
+            unsigned DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData);
 
             /// Returns the phase shift based on a given point, angle of the channel and the wavelength
             double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
@@ -128,13 +128,13 @@ namespace Katydid
             /// Get location of the point in the grid based on the given grid number and the size of the grid.
             /* Returns true if the assigment went well, false if there was some mistake
              */
-            bool GetGridLocation(int gridNumber, int gridSize, double &gridLocation);
+            bool GetGridLocation(unsigned gridNumber, unsigned gridSize, double &gridLocation);
 
             /// Apply shift phase to the supplied points based on the phase provided
             bool ApplyPhaseShift(double &realVal, double &imagVal, double phase);
 	    
-	        /// Generate antispiral phase shifts and save in fAntiSpiralPhaseShifts vector to be applied to channels 
-	        bool GenerateAntiSpiralPhaseShifts(int channelCount);
+	          /// Generate antispiral phase shifts and save in fAntiSpiralPhaseShifts vector to be applied to channels
+	          bool GenerateAntiSpiralPhaseShifts(unsigned channelCount);
 
             /// Convert frquency to wavlength
             double ConvertFrequencyToWavelength(double frequency);

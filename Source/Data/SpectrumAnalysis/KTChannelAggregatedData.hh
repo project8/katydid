@@ -35,17 +35,17 @@ namespace Katydid
 
             virtual void SetNGridPoints(unsigned num);
 
-            int GetNGridPoints();
+            unsigned GetNGridPoints();
             
             /*
              Set the X,Y pair corresponding to the grid point number.
              */
-            virtual void SetGridPoint(int component, double gridValueX, double gridValueY, double gridValueZ);
+            virtual void SetGridPoint(unsigned component, double gridValueX, double gridValueY, double gridValueZ);
 
             /*
              Get the X,Y pair corresponding to the grid point number.
              */
-            virtual void GetGridPoint(int component, double &gridLocationX, double &gridLocationY, double &gridValueZ) const;
+            virtual void GetGridPoint(unsigned component, double &gridLocationX, double &gridLocationY, double &gridValueZ) const;
 
             ///Set the number of axial points
             /* 
@@ -54,26 +54,26 @@ namespace Katydid
             virtual void SetNAxialPositions(unsigned num);
 
             ///Get the number of axial points
-            int GetNAxialPositions() const;
+            unsigned GetNAxialPositions() const;
 
             //Set the X,Y pair corresponding to the grid point number.
-            virtual void SetSummedGridMagnitude(int component, double magnitude);
+            virtual void SetSummedGridMagnitude(unsigned component, double magnitude);
 
             //Get the magnitude given the component
-            virtual double GetSummedGridMagnitude(int component) const;
+            virtual double GetSummedGridMagnitude(unsigned component) const;
 
             /// Set the grid number and the value of the optimal grid point
-            virtual void SetOptimizedGridPointValue(int nGridPoint, double value);
+            virtual void SetOptimizedGridPointValue(unsigned nGridPoint, double value);
 
             /*
              Set the element number in the vector of the grid point that corresponds to the optimum summed value.
              */
-            virtual void SetOptimizedGridPoint(int nGridPoint);
+            virtual void SetOptimizedGridPoint(unsigned nGridPoint);
 
             /*
              Get the element number in the vector of the grid point that corresponds to the optimum summed value.
              */
-            virtual int GetOptimizedGridPoint() const;
+            virtual unsigned GetOptimizedGridPoint() const;
 
             /// Get the value of the optimal grid point
             virtual double GetOptimizedGridValue() const;
@@ -82,20 +82,20 @@ namespace Katydid
 
             struct KTGrid
             {
-                    /// The X position of the grid point
-                    double fGridPointX;
+                /// The X position of the grid point
+                double fGridPointX;
 
-                    /// The Y position of the grid point
-                    double fGridPointY;
+                /// The Y position of the grid point
+                double fGridPointY;
 
-                    /// The Z index of the grid point
-                    double fZIndex;
+                /// The Z index of the grid point
+                double fZIndex;
 
-                    /// The Z position of the grid point
-                    double fGridPointZ;
+                /// The Z position of the grid point
+                double fGridPointZ;
 
-                    /// Magnitude at the defined grid location
-                    double fMagnitude;
+                /// Magnitude at the defined grid location
+                double fMagnitude;
             };
             typedef std::vector< KTGrid > SetOfGridPoints;
 
@@ -104,7 +104,7 @@ namespace Katydid
             unsigned fNAxialPositions;
 
             /// The element in the vector corresponding to the optimized grid point
-            int fOptimizedGridPoint;
+            unsigned fOptimizedGridPoint;
 
             /// The optimized value of summed value
             double fOptimizedGridPointValue;
@@ -128,9 +128,9 @@ namespace Katydid
 
             virtual KTAggregatedFrequencySpectrumDataFFTW& SetNComponents(unsigned);
 
-            virtual void SetSummedGridVoltage(int, double);
+            virtual void SetSummedGridVoltage(unsigned, double);
 
-            virtual double GetSummedGridVoltage(int) const;
+            virtual double GetSummedGridVoltage(unsigned) const;
 
             static const std::string sName;
     };
@@ -144,19 +144,19 @@ namespace Katydid
 
             virtual KTAggregatedPowerSpectrumData& SetNComponents(unsigned);
 
-            virtual void SetSummedGridPower(int, double);
+            virtual void SetSummedGridPower(unsigned, double);
 
-            virtual double GetSummedGridPower(int) const;
+            virtual double GetSummedGridPower(unsigned) const;
 
             static const std::string sName;
     };
 
-    inline int KTAggregatedDataCore::GetNGridPoints()
+    inline unsigned KTAggregatedDataCore::GetNGridPoints()
     {
         return fGridPoints.size();
     }
 
-    inline void KTAggregatedDataCore::SetGridPoint(int component, double gridValueX, double gridValueY, double gridValueZ)
+    inline void KTAggregatedDataCore::SetGridPoint(unsigned component, double gridValueX, double gridValueY, double gridValueZ)
     {
         fGridPoints[component].fGridPointX = gridValueX;
         fGridPoints[component].fGridPointY = gridValueY;
@@ -164,7 +164,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTAggregatedDataCore::GetGridPoint(int component, double &gridLocationX, double &gridLocationY, double &gridLocationZ) const
+    inline void KTAggregatedDataCore::GetGridPoint(unsigned component, double &gridLocationX, double &gridLocationY, double &gridLocationZ) const
     {
         gridLocationX = fGridPoints[component].fGridPointX;
         gridLocationY = fGridPoints[component].fGridPointY;
@@ -177,37 +177,37 @@ namespace Katydid
         fNAxialPositions=num;
     }
 
-    inline int KTAggregatedDataCore::GetNAxialPositions() const
+    inline unsigned KTAggregatedDataCore::GetNAxialPositions() const
     {
         return fNAxialPositions;
     }
 
-    inline void KTAggregatedDataCore::SetSummedGridMagnitude(int component, double magnitude)
+    inline void KTAggregatedDataCore::SetSummedGridMagnitude(unsigned component, double magnitude)
     {
         fGridPoints[component].fMagnitude = magnitude;
         return;
     }
 
-    inline double KTAggregatedDataCore::GetSummedGridMagnitude(int component) const
+    inline double KTAggregatedDataCore::GetSummedGridMagnitude(unsigned component) const
     {
         return fGridPoints[component].fMagnitude;
     }
 
-    inline void KTAggregatedDataCore::SetOptimizedGridPoint(int nGridPoint)
+    inline void KTAggregatedDataCore::SetOptimizedGridPoint(unsigned nGridPoint)
     {
         fOptimizedGridPoint = nGridPoint;
         fIsGridOptimized = true;
         return;
     }
 
-    inline void KTAggregatedDataCore::SetOptimizedGridPointValue(int nGridPoint, double value)
+    inline void KTAggregatedDataCore::SetOptimizedGridPointValue(unsigned nGridPoint, double value)
     {
         fOptimizedGridPointValue = value;
         SetOptimizedGridPoint(nGridPoint);
         return;
     }
 
-    inline int KTAggregatedDataCore::GetOptimizedGridPoint() const
+    inline unsigned KTAggregatedDataCore::GetOptimizedGridPoint() const
     {
         return fOptimizedGridPoint;
     }
@@ -222,22 +222,22 @@ namespace Katydid
     //    return isSquareGrid;
     //  }
 
-    inline void KTAggregatedFrequencySpectrumDataFFTW::SetSummedGridVoltage(int component, double magnitude)
+    inline void KTAggregatedFrequencySpectrumDataFFTW::SetSummedGridVoltage(unsigned component, double magnitude)
     {
         KTAggregatedDataCore::SetSummedGridMagnitude(component, magnitude);
     }
 
-    inline double KTAggregatedFrequencySpectrumDataFFTW::GetSummedGridVoltage(int component) const
+    inline double KTAggregatedFrequencySpectrumDataFFTW::GetSummedGridVoltage(unsigned component) const
     {
         return KTAggregatedDataCore::GetSummedGridMagnitude(component);
     }
 
-    inline void KTAggregatedPowerSpectrumData::SetSummedGridPower(int component, double magnitude)
+    inline void KTAggregatedPowerSpectrumData::SetSummedGridPower(unsigned component, double magnitude)
     {
         KTAggregatedDataCore::SetSummedGridMagnitude(component, magnitude);
     }
 
-    inline double KTAggregatedPowerSpectrumData::GetSummedGridPower(int component) const
+    inline double KTAggregatedPowerSpectrumData::GetSummedGridPower(unsigned component) const
     {
         return KTAggregatedDataCore::GetSummedGridMagnitude(component);
     }

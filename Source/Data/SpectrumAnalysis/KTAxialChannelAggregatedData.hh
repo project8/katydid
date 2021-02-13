@@ -38,7 +38,7 @@ namespace Katydid
 
             virtual ~KTAxialAggregatedFrequencySpectrumDataFFTW();
 
-            virtual KTAxialAggregatedFrequencySpectrumDataFFTW& SetNComponents(unsigned);
+            virtual KTAxialAggregatedFrequencySpectrumDataFFTW& SetNComponents(unsigned num);
 
             static const std::string sName;
     };
@@ -50,7 +50,7 @@ namespace Katydid
 
             virtual ~KTAxialAggregatedPowerSpectrumData();
 
-            virtual KTAxialAggregatedPowerSpectrumData& SetNComponents(unsigned);
+            virtual KTAxialAggregatedPowerSpectrumData& SetNComponents(unsigned num);
 
             static const std::string sName;
     };

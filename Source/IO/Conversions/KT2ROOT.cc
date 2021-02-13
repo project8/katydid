@@ -480,14 +480,14 @@ namespace Katydid
 
     std::vector<TGraph2D*> KT2ROOT::CreateGridGraphs(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
     {
-        unsigned int nComponents = aggfs.GetNComponents();
+        unsigned nComponents = aggfs.GetNComponents();
         double fActiveRadius = aggfs.GetActiveRadius();
-        int nZ=aggfs.GetNAxialPositions();
+        unsigned nZ=aggfs.GetNAxialPositions();
         std::vector<TGraph2D*> graphs;
         std::vector<unsigned> pointIndex;
         pointIndex.assign(nZ,0);
 
-        for(int iZ=0;iZ<nZ;iZ++)
+        for (unsigned iZ=0; iZ<nZ; ++iZ)
         {
             graphs.push_back(new TGraph2D());
             graphs.at(iZ)->SetName((name+"_"+std::to_string(iZ)).c_str());
@@ -495,13 +495,13 @@ namespace Katydid
             graphs.at(iZ)->GetYaxis()->SetTitle("Y Axis (m)");
         }
 
-        for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
+        for (unsigned iComponents = 0; iComponents < nComponents; ++iComponents)
         {
             double xPos,yPos,zPos;
-            aggfs.GetGridPoint(iComponents,xPos,yPos,zPos);
-            int zIndex=(int)zPos;
+            aggfs.GetGridPoint(iComponents, xPos, yPos, zPos);
+            unsigned zIndex=(int)zPos;
             if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
-            graphs[zIndex]->SetPoint(pointIndex[zIndex],xPos,yPos,aggfs.GetSummedGridVoltage(iComponents));
+            graphs[zIndex]->SetPoint(pointIndex[zIndex], xPos, yPos, aggfs.GetSummedGridVoltage(iComponents));
             pointIndex[zIndex]+=1;
         }
         return graphs;
@@ -510,14 +510,14 @@ namespace Katydid
     std::vector<TGraph2D*> KT2ROOT::CreateGridGraphs(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
     {
         // Currently only assume a square grid
-        unsigned int nComponents = aggps.GetNComponents();
+        unsigned nComponents = aggps.GetNComponents();
         double fActiveRadius = aggps.GetActiveRadius();
-        int nZ=aggps.GetNAxialPositions();
+        unsigned nZ=aggps.GetNAxialPositions();
         std::vector<TGraph2D*> graphs;
         std::vector<unsigned> pointIndex;
         pointIndex.assign(nZ,0);
 
-        for(int iZ=0;iZ<nZ;iZ++)
+        for (unsigned iZ=0; iZ<nZ; ++iZ)
         {
             graphs.push_back(new TGraph2D());
             graphs.at(iZ)->SetName((name+"_"+std::to_string(iZ)).c_str());
@@ -525,11 +525,11 @@ namespace Katydid
             graphs.at(iZ)->GetYaxis()->SetTitle("Y Axis (m)");
         }
 
-        for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
+        for (unsigned iComponents = 0; iComponents < nComponents; ++iComponents)
         {
             double xPos,yPos,zPos;
-            aggps.GetGridPoint(iComponents,xPos,yPos,zPos);
-            int zIndex=(int)zPos;
+            aggps.GetGridPoint(iComponents, xPos, yPos, zPos);
+            unsigned zIndex=(int)zPos;
             if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
             graphs[zIndex]->SetPoint(pointIndex[zIndex],xPos,yPos,aggps.GetSummedGridPower(iComponents));
             pointIndex[zIndex]+=1;
@@ -555,7 +555,7 @@ namespace Katydid
         unsigned nBins = ps->size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int) nBins, ps->GetRangeMin(), ps->GetRangeMax());
         //double value;
-        for (unsigned int iBin = 0; iBin < nBins; iBin++)
+        for (unsigned iBin = 0; iBin < nBins; iBin++)
         {
             hist->SetBinContent((int) iBin + 1, (*ps)(iBin));
         }

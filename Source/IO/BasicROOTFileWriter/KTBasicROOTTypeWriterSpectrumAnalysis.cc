@@ -877,8 +877,8 @@ namespace Katydid
         conv << "graphAggGridFFTW_" << sliceNumber;
         string graphName;
         conv >> graphName;
-        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
-        for (int i=0;i<aggregatedGridGraphs.size();++i) 
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData, graphName);
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i)
         {
             aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
             aggregatedGridGraphs.at(i)->Write();
@@ -934,8 +934,8 @@ namespace Katydid
         conv << "graphAggGridPower_" << sliceNumber;
         string graphName;
         conv >> graphName;
-        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
-        for (int i=0;i<aggregatedGridGraphs.size();++i) 
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData, graphName);
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i)
         {
             aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
             aggregatedGridGraphs.at(i)->Write();//Redundant
@@ -990,7 +990,7 @@ namespace Katydid
         string graphName;
         conv >> graphName;
         std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
-        for (int i=0;i<aggregatedGridGraphs.size();++i) 
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i)
         {
             aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
             aggregatedGridGraphs.at(i)->Write();//Redundant

@@ -23,9 +23,9 @@ namespace Katydid
         fSummedFrequencyData("agg-fft", this),
         fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
         fAxialSumSlot("ax-agg-fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
-        fActiveRadius(0.0516),
-        fNGrid(30),
-        fWavelength(0.0115),
+        fActiveRadius(0),
+        fNGrid(0),
+        fWavelength(0),
         fIsGridDefined(false),
         fIsUserDefinedGrid(false),
         fIsPartialRing(false),
@@ -46,16 +46,16 @@ namespace Katydid
     {
         if (node != NULL)
         {
-            fNGrid = node->get_value< signed int >("grid-size", fNGrid);
-            fIsUserDefinedGrid = node->get_value< bool >("use-grid-text-file", fIsUserDefinedGrid);
+            fNGrid = node->get_value< unsigned >("grid-size", fNGrid);
+            fIsUserDefinedGrid = node->get_value< bool >("use-grid-file", fIsUserDefinedGrid);
             fIsPartialRing= node->get_value< bool >("partial-ring", fIsPartialRing);
-            fPartialRingMultiplicity= node->get_value< int >("partial-ring-Multiplicity", fPartialRingMultiplicity);
-            fUserDefinedGridFile = node->get_value< >("grid-text-file", fUserDefinedGridFile);
+            fPartialRingMultiplicity= node->get_value< unsigned >("partial-ring-Multiplicity", fPartialRingMultiplicity);
+            fUserDefinedGridFile = node->get_value< >("grid-file", fUserDefinedGridFile);
             fActiveRadius = node->get_value< double >("active-radius", fActiveRadius);
             fWavelength = node->get_value< double >("wavelength", fWavelength);
             fSummationMinFreq= node->get_value< double >("min-freq", fSummationMinFreq);
             fSummationMaxFreq= node->get_value< double >("max-freq", fSummationMaxFreq);
-            fNRings = node->get_value< signed int >("n-rings", fNRings);
+            fNRings = node->get_value< unsigned >("n-rings", fNRings);
             fUseAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fUseAntiSpiralPhaseShifts);
         }
         return true;
@@ -92,19 +92,19 @@ namespace Katydid
         return atan2(yChannel-yPosition,xChannel-xPosition);
     }
 
-    bool KTChannelAggregator::GetGridLocation(int gridNumber, int gridSize, double &gridLocation)
+    bool KTChannelAggregator::GetGridLocation(unsigned gridNumber, unsigned gridSize, double &gridLocation)
     {
         if (gridNumber >= gridSize) return false;
         gridLocation = fActiveRadius * (((2.0 * gridNumber + 1.0) / gridSize) - 1);
         return true;
     }
 
-    bool KTChannelAggregator::GenerateAntiSpiralPhaseShifts(int channelCount)
+    bool KTChannelAggregator::GenerateAntiSpiralPhaseShifts(unsigned channelCount)
     {
-        for(int i=0;i<channelCount;++i)
+        for(unsigned i=0;i<channelCount;++i)
         {
             double phaseShift=0.0;
-            if(fUseAntiSpiralPhaseShifts) 
+            if( fUseAntiSpiralPhaseShifts )
             {
                 phaseShift=i*2*KTMath::Pi()/channelCount;
             }
@@ -117,26 +117,26 @@ namespace Katydid
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
         KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(0);
-        return PerformPhaseSummation(fftwData,newAggFreqData);
+        return PerformPhaseSummation(fftwData, newAggFreqData);
     }
 
     bool KTChannelAggregator::SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData)
     {
         KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(0);
-        return PerformPhaseSummation(fftwData,newAggFreqData);
+        return PerformPhaseSummation(fftwData, newAggFreqData);
     }
 
-    int KTChannelAggregator::DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
+    unsigned KTChannelAggregator::DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
     {
-        int nTotalGridPoints=0;
-        for (int iRing = 0; iRing < fNRings; ++iRing)
+        unsigned nTotalGridPoints=0;
+        for (unsigned iRing = 0; iRing < fNRings; ++iRing)
         {
             if(fIsUserDefinedGrid)
             {
-                if(!ends_with(fUserDefinedGridFile,".txt"))
+                if( !ends_with(fUserDefinedGridFile, ".txt") )
                 {
                     //if(!ends_with(fTextFileName.c_str(),".txt"))
-                    KTDEBUG(agglog,"`grid-text-file` file must end in .txt");
+                    KTDEBUG(agglog,"`grid-file` file must end in .txt");
                     return -1;
                 }
                 double gridLocationX;
@@ -144,7 +144,7 @@ namespace Katydid
                 std::fstream textFile(fUserDefinedGridFile.c_str(),std::ios::in);
                 if (textFile.fail())
                 {
-                    KTDEBUG(agglog,"`grid-text-file` cannot be opened");
+                    KTDEBUG(agglog,"`grid-file` cannot be opened");
                     return -1;
                 }
                 while(!textFile.eof())
@@ -155,22 +155,22 @@ namespace Katydid
                         if (lineContent.find('#')!=std::string::npos) continue;
                         std::string token;
                         std::stringstream ss(lineContent);
-                        int wordCount=0;
+                        unsigned wordCount=0;
                         while (ss >> token)
                         {
-                            if(wordCount==0)gridLocationX=std::stod(token);
-                            else if(wordCount==1)gridLocationY=std::stod(token);
+                            if( wordCount==0 ) gridLocationX = std::stod(token);
+                            else if( wordCount==1 ) gridLocationY = std::stod(token);
                             else
                             {
-                                KTDEBUG(agglog,"`grid-text-file` cannot have more than 2 columns"); 
+                                KTDEBUG(agglog,"`grid-file` cannot have more than 2 columns"); 
                                 return -1;
                             }
                             ++wordCount;
                         }
                         // Check to make sure that the grid point is within the active detector volume, skip otherwise
-                        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
+                        if((pow(gridLocationX, 2) + pow( gridLocationY,2 ) )> pow(fActiveRadius, 2)) continue;
                         newAggFreqData.SetNComponents(nTotalGridPoints+1);
-                        newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,iRing);
+                        newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY, iRing);
                         ++nTotalGridPoints;
                     }
                 }
@@ -178,18 +178,18 @@ namespace Katydid
             else
             {
                 // Loop over the grid points and fill the values
-                for (int iGridX = 0; iGridX < fNGrid; ++iGridX)
+                for (unsigned iGridX = 0; iGridX < fNGrid; ++iGridX)
                 {
                     double gridLocationX = 0;
                     GetGridLocation(iGridX, fNGrid, gridLocationX);
-                    for (int iGridY = 0; iGridY < fNGrid; ++iGridY)
+                    for (unsigned iGridY = 0; iGridY < fNGrid; ++iGridY)
                     {
                         double gridLocationY = 0;
                         GetGridLocation(iGridY, fNGrid, gridLocationY);
                         // Check to make sure that the grid point is within the active detector volume, skip otherwise
-                        if((pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2)) continue;
+                        if( (pow(gridLocationX,2)+pow(gridLocationY,2))>pow(fActiveRadius,2) ) continue;
                         newAggFreqData.SetNComponents(nTotalGridPoints+1);
-                        newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY,iRing);
+                        newAggFreqData.SetGridPoint(nTotalGridPoints, gridLocationX, gridLocationY, iRing);
                         ++nTotalGridPoints;
                     }
                 }
@@ -201,20 +201,20 @@ namespace Katydid
     bool KTChannelAggregator::PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
     {
         const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
-        int nTimeBins = freqSpectrum->GetNTimeBins();
+        unsigned nTimeBins = freqSpectrum->GetNTimeBins();
         // Get the number of frequency bins from the first component of fftwData
-        int nFreqBins = freqSpectrum->GetNFrequencyBins();
-        int nTotalComponents = fftwData.GetNComponents(); // Get number of components
-        if(fIsPartialRing)
+        unsigned nFreqBins = freqSpectrum->GetNFrequencyBins();
+        unsigned nTotalComponents = fftwData.GetNComponents(); // Get number of components
+        if( fIsPartialRing )
         {
-            if(fPartialRingMultiplicity%2!=0 || fPartialRingMultiplicity<=0) return false; // The partial ring case should only work if the multiplicity is even
+            if( fPartialRingMultiplicity%2!=0 || fPartialRingMultiplicity<=0 ) return false; // The partial ring case should only work if the multiplicity is even
             nTotalComponents*=fPartialRingMultiplicity;
         }
-        if(nTotalComponents%fNRings!=0)
+        if( nTotalComponents%fNRings!=0 )
         {
             KTERROR(agglog,"The number of rings has to be an integer multiple of total components");
         }
-        int nComponents = nTotalComponents/fNRings;// Get number of components
+        unsigned nComponents = nTotalComponents/fNRings;// Get number of components
 
         GenerateAntiSpiralPhaseShifts(nComponents);
         double maxValue = 0.0;
@@ -227,23 +227,23 @@ namespace Katydid
         // Set the number of rings present
         newAggFreqData.SetNAxialPositions(fNRings);
 
-        int nTotalGridPoints = DefineGrid(newAggFreqData);
+        unsigned nTotalGridPoints = DefineGrid(newAggFreqData);
         if(nTotalGridPoints<=0) return false;
-        int  gridPointsPerRing=nTotalGridPoints/fNRings;
+        unsigned  gridPointsPerRing=nTotalGridPoints/fNRings;
         // Loop over the grid points and rings and fill the values
         for (unsigned iRing = 0; iRing < fNRings; ++iRing)
         {
             // Loop over all grid points and find the one that gives the highest value
-            for (int iGrid = 0; iGrid < gridPointsPerRing; ++iGrid)
+            for (unsigned iGrid = 0; iGrid < gridPointsPerRing; ++iGrid)
             { // Loop over the grid points
-                int gridPointNumber=iGrid+gridPointsPerRing*iRing;
+                unsigned gridPointNumber=iGrid+gridPointsPerRing*iRing;
                 KTFrequencySpectrumFFTW* newFreqSpectrum = new KTFrequencySpectrumFFTW(nFreqBins, freqSpectrum->GetRangeMin(), freqSpectrum->GetRangeMax());
                 // Empty values in the frequency spectrum, not sure if this is needed but there were some issues when this was not done for the power spectrum
                 NullFreqSpectrum(*newFreqSpectrum);
                 double gridLocationX = 0;
                 double gridLocationY = 0;
                 double gridLocationZ = 0;
-                newAggFreqData.GetGridPoint(gridPointNumber, gridLocationX, gridLocationY,gridLocationZ);
+                newAggFreqData.GetGridPoint(gridPointNumber, gridLocationX, gridLocationY, gridLocationZ);
                 for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
@@ -255,20 +255,20 @@ namespace Katydid
                         phaseShift-=GetAntiSpiralPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
                     }
                     // Get the frequency spectrum for that specific component
-                    if(fIsPartialRing) 
+                    if(fIsPartialRing)
                     { 
-                        int partialNComponents=nComponents/fPartialRingMultiplicity;
+                        unsigned partialNComponents=nComponents/fPartialRingMultiplicity;
                         // Estimate the channel that needs to be used as a copy for the non-existent iComponent in case of partial rings
-                        int partialComponent=((int)(iComponent/partialNComponents)%2)?(partialNComponents-(iComponent%partialNComponents)-1):(iComponent%partialNComponents);
+                        unsigned partialComponent=((int)(iComponent/partialNComponents)%2)?(partialNComponents-(iComponent%partialNComponents)-1):(iComponent%partialNComponents);
                         freqSpectrum = fftwData.GetSpectrumFFTW(partialComponent+iRing*partialNComponents);
                     }
                     else freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
                     double maxVoltage = 0.0;
-                    int maxFrequencyBin = 0;
+                    unsigned maxFrequencyBin = 0;
                     //Loop over the frequency bins
                     for (unsigned iFreqBin = 0; iFreqBin < nFreqBins; ++iFreqBin)
                     {
-                        if(newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq) continue;
+                        if( newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq ) continue;
                         double realVal = freqSpectrum->GetReal(iFreqBin);
                         double imagVal = freqSpectrum->GetImag(iFreqBin);
                         ApplyPhaseShift(realVal, imagVal, phaseShift);

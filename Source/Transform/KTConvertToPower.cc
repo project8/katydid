@@ -119,8 +119,8 @@ namespace Katydid
             spectrum->ConvertToPowerSpectrum();
             psData.SetSpectrum(spectrum, iComponent);
             double gridLocationX, gridLocationY, gridLocationZ;
-            data.GetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
-            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
+            data.GetGridPoint(iComponent, gridLocationX, gridLocationY, gridLocationZ);
+            psData.SetGridPoint(iComponent, gridLocationX, gridLocationY, gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
         return true;
