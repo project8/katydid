@@ -29,16 +29,6 @@ using namespace Katydid;
 
 KTLOGGER(vallog, "TestChannelAggregator");
 
-// Find the location of the grid points for a given grid number
-void GetGridLocation(int gridNumber, int gridSize, double activeRadius, double &gridLocationX, double &gridLocationY)
-{
-    int gridNumberX=(int)(gridNumber/gridSize);
-    int gridNumberY=gridNumber%gridSize;
-    gridLocationX = activeRadius * (((2.0 * gridNumberX + 1.0) / gridSize) - 1);
-    gridLocationY = activeRadius * (((2.0 * gridNumberY + 1.0) / gridSize) - 1);
-    return;
-}
-
 // get shift in the phase based on the channel location and the X and Y positions
 double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle, double activeRadius)
 {
@@ -59,7 +49,7 @@ int main()
     const double maxRange = 200;
     // These values are not realistic but are enough nonetheless
     
-    const int nComponents = 30;// Number of channels used for testing
+    const int nComponents = 60;// Number of channels used for testing
     const int nGrid = 35;// Number of points along one side of the grid
     
     const double activeRadius=0.0516;// Grid radius
@@ -76,8 +66,8 @@ int main()
     KTFrequencySpectrumDataFFTW newFreqData;
     newFreqData.SetNComponents(nComponents);
     
-    double gridLocationX = 0.014;
-    double gridLocationY = -0.017;
+    double gridLocationX = 0.01;
+    double gridLocationY = -0.04;
     for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
     {
         KTFrequencySpectrumFFTW *fftwSpectrum=new KTFrequencySpectrumFFTW(nFreqBins, minRange, maxRange);
@@ -105,21 +95,6 @@ int main()
     channelAggregator->SumChannelVoltageWithPhase(newFreqData);
     // Optimize the summed voltages
     aggregatedChannelOptimizer->FindOptimumSum(newFreqData.Of<KTAggregatedFrequencySpectrumDataFFTW >());
-    
-    // Get the point and value that correspomnds to the optimal summation of the voltages
-    int optimizedGridPoint=(newFreqData.Of<KTAggregatedFrequencySpectrumDataFFTW >()).GetOptimizedGridPoint();
-    double optimizedGridValue=(newFreqData.Of<KTAggregatedFrequencySpectrumDataFFTW >()).GetOptimizedGridValue();
-    double optimizedGridLocationX;
-    double optimizedGridLocationY;
-    // Get the physical positon of the reconstructed point
-    GetGridLocation(optimizedGridPoint,nGrid,activeRadius ,optimizedGridLocationX,optimizedGridLocationY);
-
-    KTINFO(vallog, "Testing the KTChannelAggregator and KTAggregatedChannelOptimizer processors for "
-           << nComponents << " channels and a square grid of size "<< nGrid*nGrid<<"\n"
-           "Assume the main lobe at a frequency value midway between the bins\n"
-           "Input (X,Y)= ("<<gridLocationX <<","<<gridLocationY <<", Output (X,Y)= ("<<optimizedGridLocationX <<"), "<<optimizedGridLocationY <<")\n"
-           "(deltaX, deltaY)= ("<<optimizedGridLocationX-gridLocationX <<","<<optimizedGridLocationY-gridLocationY <<"),precision of grid in (X,Y)= ("<<activeRadius/nGrid <<","<< activeRadius/nGrid <<")\n");
-    KTINFO(vallog, "Optimized aggregated volatge = " << optimizedGridValue/nComponents<<" per channel, ideally has to be close to unity\n");
     delete channelAggregator;
     return 0;
     
