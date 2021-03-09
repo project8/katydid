@@ -18,6 +18,18 @@ RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
     echo 'export PATH=$KATYDID_BUILD_PREFIX/bin:$PATH' >> setup.sh &&\
     echo 'export LD_LIBRARY_PATH=$KATYDID_BUILD_PREFIX/lib:$LD_LIBRARY_PATH' >> setup.sh &&\
     /bin/true
+    
+#just temporary here
+RUN mkdir -p /tmp_install
+RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
+    cd /tmp_install &&\
+    wget https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz &&\
+    tar -xzf eigen-3.3.9.tar.gz &&\
+    cd eigen-3.3.9 &&\
+    mkdir build &&\
+    cd build &&\
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. &&\
+    make install
 
 ########################
 FROM katydid_common as katydid_done

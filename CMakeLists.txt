@@ -4,6 +4,7 @@
 # Minimum cmake verison 3.1 required for the variable CMAKE_CXX_STANDARD
 cmake_minimum_required (VERSION 3.1)
 
+
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
 project (Katydid VERSION 2.18.0)
@@ -39,7 +40,7 @@ option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
 option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
 option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
-option (Katydid_USE_EIGEN "Flag to optionally use eigen" OFF)
+option (Katydid_USE_EIGEN "Flag to optionally use eigen" ON)
 option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
 
 set_option( Scarab_BUILD_PARAM TRUE )

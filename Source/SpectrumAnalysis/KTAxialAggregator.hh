@@ -51,11 +51,10 @@ namespace Katydid
             bool Configure(const scarab::param_node* node);
 
             // Number of axial rings/subarrays
-            MEMBERVARIABLE(int, NRings);
+            MEMBERVARIABLE(unsigned, NRings);
             
             virtual bool SumChannelVoltage(KTFrequencySpectrumDataFFTW& fftwData);
-
-        protected:
+      
             //***************
             // Signals
             //***************

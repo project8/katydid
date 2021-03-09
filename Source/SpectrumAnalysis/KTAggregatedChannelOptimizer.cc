@@ -47,7 +47,7 @@ namespace Katydid
         {
             double gridLocationX,gridLocationY,gridLocationZ;
             freqSpectrum=aggData.GetSpectrumFFTW(iGridPoint);
-            aggData.GetGridPoint(iGridPoint,gridLocationX,gridLocationY,gridLocationZ);
+            aggData.GetGridPoint(iGridPoint, gridLocationX, gridLocationY, gridLocationZ);
             double maxVoltageFreq=aggData.GetSummedGridVoltage(iGridPoint);
             
             if(maxVoltageFreq>maxVoltage)

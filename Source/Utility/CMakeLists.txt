@@ -20,6 +20,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTMaskedArray.hh
     KTMath.hh
     KTPhysicalArray.hh
+    KTPhysicalArrayComplex.hh
     KTRandom.hh
     KTSmooth.hh
     KTSpline.hh
@@ -43,6 +44,7 @@ set (UTILITY_SOURCEFILES
     KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
+    KTPhysicalArrayComplex.cc
     # ../../Examples/KTProcessorTemplate.cc
 )
 
