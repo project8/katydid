@@ -123,6 +123,7 @@ namespace Katydid
             psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
+        psData.SetOptimizedGridPointValue(data.GetOptimizedGridPoint(),data.GetOptimizedGridValue());
         return true;
     }
     
@@ -143,6 +144,7 @@ namespace Katydid
             psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
+        psData.SetOptimizedGridPointValue(data.GetOptimizedGridPoint(),data.GetOptimizedGridValue());
         return true;
     }
 
