@@ -58,20 +58,15 @@ namespace Katydid
             MEMBERVARIABLE(double, NoiseTemperature);
 
             // Others
-            MEMBERVARIABLE(bool, CalculateMinBin);
-            MEMBERVARIABLE(bool, CalculateMaxBin);
             MEMBERVARIABLE(unsigned, MinBin);
             MEMBERVARIABLE(unsigned, MaxBin);
             MEMBERVARIABLE(double, FreqBinWidth);
             MEMBERVARIABLE(double, TimeBinWidth);
-            MEMBERVARIABLE(double, MinFrequency);
-            MEMBERVARIABLE(double, MaxFrequency);
             MEMBERVARIABLE(double, P0);
             MEMBERVARIABLE(double, P1);
 
             MEMBERVARIABLE(double, NBins);
             MEMBERVARIABLE(double, NStates);
-            MEMBERVARIABLE(double, NWindow);
 
             MEMBERVARIABLE(unsigned, KScatter);
             MEMBERVARIABLE(unsigned, TauTrack);
@@ -90,11 +85,14 @@ namespace Katydid
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
             bool BacktrackBestPath();
-            std::vector<double> GetEmissionVector(std::vector<unsigned> highPowerBins);
+            std::vector<double> GetEmissionVector(std::vector<unsigned> highPowerStates);
             std::pair<unsigned, double> FindBestState(std::vector<unsigned> checkStates, unsigned iState, unsigned iTimeSlice);
             bool MostProbablePreviousState(unsigned iTimeSlice, unsigned iState, bool highPower, double log_B);
+            const double truncated_log(const double &aDouble) const;
+            std::vector<double> truncated_log(std::vector<double> aVector) const;
+            std::vector<std::vector<double>> truncated_log(std::vector<std::vector<double>> aMatrix) const;
             bool InitializeTransitionMatrix();
-            std::vector< std::vector<double>> GetScatteringMatrix(double pTrackToTrack, double pNewTrack, unsigned fKScatter);
+            const unsigned BinToStateID(const unsigned &binID);
 
             //***************
             // Signals
