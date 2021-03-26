@@ -117,8 +117,12 @@ namespace Katydid
 
         for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            highPowerStates.push_back(BinToStateID(pIt->first)) ;
-            KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
+            if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
+            {
+                highPowerStates.push_back(BinToStateID(pIt->first));
+
+                KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
+            }
         }
 
         if(!std::is_sorted(highPowerStates.begin(), highPowerStates.end()))
@@ -188,6 +192,12 @@ namespace Katydid
 
     bool KTViterbi::MostProbablePreviousState(unsigned iTimeSlice, unsigned iState, bool highPower, double log_B)
     {
+        if(iTimeSlice == 2)
+        {
+            KTWARN(vittylog, "State: "<<iState<<" Time Slice: "<<iTimeSlice);
+            KTWARN(vittylog, fT1[0].size());
+        }
+
         std::vector<unsigned> checkStates;
         if(!iState)
         {
@@ -199,12 +209,15 @@ namespace Katydid
         }
         else if(highPower)
         {
-            unsigned kChecks = fmin(3 * fKScatter, iState - 1);
-            checkStates.resize(kChecks + 1);
-            std::iota(checkStates.begin(), checkStates.end(), iState - kChecks);
+            checkStates.push_back(0);
+            const unsigned kChecks = 2 * fKScatter;
+            const unsigned minState = 1;
+            const unsigned k0 = std::max(iState - kChecks, minState);
+            for(unsigned k = k0; k <= iState; ++k) checkStates.push_back(k);
+
             std::pair<unsigned, double> bestState = FindBestState(checkStates, iState, iTimeSlice);
             fT2[iTimeSlice][iState] = bestState.first;
-            fT1[iTimeSlice][iState] = bestState.second;
+            fT1[iTimeSlice][iState] = bestState.second + log_B;
         }
         else
         {
@@ -212,6 +225,7 @@ namespace Katydid
             fT2[iTimeSlice][iState] = iState;
             fT1[iTimeSlice][iState] = markov_prob;
         }
+
         
         return true;
     }
