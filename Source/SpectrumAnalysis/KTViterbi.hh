@@ -64,14 +64,14 @@ namespace Katydid
             MEMBERVARIABLE(double, TimeBinWidth);
             MEMBERVARIABLE(double, P0);
             MEMBERVARIABLE(double, P1);
+            MEMBERVARIABLE(double, TauTrack);
+            MEMBERVARIABLE(double, TauEvent);
+            MEMBERVARIABLE(double, EventRate);
 
             MEMBERVARIABLE(double, NBins);
             MEMBERVARIABLE(double, NStates);
 
             MEMBERVARIABLE(unsigned, KScatter);
-            MEMBERVARIABLE(unsigned, TauTrack);
-            MEMBERVARIABLE(unsigned, TauEvent);
-            MEMBERVARIABLE(unsigned, EventRate);
 
             std::vector< std::vector<double> > fT1;
             std::vector< std::vector<double> > fT2;

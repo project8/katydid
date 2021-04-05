@@ -56,6 +56,7 @@ namespace Katydid
         SetNBins( fMaxBin - fMinBin + 1 );
         SetNStates( fNBins + 1 );
 
+
         return true;
     }
 
@@ -72,8 +73,11 @@ namespace Katydid
 
         unsigned nComponents = 1;
 
+        fTimeBinWidth = 1./ (double) slHeader.GetSampleRate();
         fFreqBinWidth = (double) slHeader.GetSampleRate() / (double) slHeader.GetRawSliceSize();
         KTDEBUG(vittylog, "Frequency bin width " << fFreqBinWidth);
+        KTDEBUG(vittylog, "Time bin width " << fTimeBinWidth);
+
         vector<double> vZeros(fNStates, 0);
 
         if(fT1.empty())
@@ -102,8 +106,6 @@ namespace Katydid
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  points = discrimPoints.GetSetOfPoints(iComponent);
 
-            KTWARN( vittylog, "Collected "<<points.size()<<" points");
-
             // Loop over the high power points
             this->LoopOverHighPowerPoints(points, acqID, iComponent);
 
@@ -120,10 +122,11 @@ namespace Katydid
             if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
             {
                 highPowerStates.push_back(BinToStateID(pIt->first));
-
                 KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
             }
         }
+
+        KTWARN( vittylog, "Collected "<<highPowerStates.size()<<" points");
 
         if(!std::is_sorted(highPowerStates.begin(), highPowerStates.end()))
         {  
@@ -150,6 +153,8 @@ namespace Katydid
         auto it = std::set_difference(nStates.begin(), nStates.end(), highPowerStates.begin(), highPowerStates.end(), lowPowerStates.begin());
         lowPowerStates.resize(it-lowPowerStates.begin());
 
+        //KTWARN(vittylog, lowPowerStates.size()<<" "<<highPowerStates.size()<<" Total size: "<<lowPowerStates.size() + highPowerStates.size());
+
         for(auto itState = lowPowerStates.begin(); itState!=lowPowerStates.end(); ++itState)
         {
             MostProbablePreviousState(iTimeSlice, *itState, false, log_B[*itState]);
@@ -162,7 +167,7 @@ namespace Katydid
     vector<double> KTViterbi::GetEmissionVector(vector<unsigned> highPowerStates)
     {
         unsigned nHPStates = highPowerStates.size();
-        double normalization = nHPStates * log(fP0) +  (fNBins - nHPStates) * log(fP1);
+        double normalization = nHPStates * log(fP0) +  (fNBins - nHPStates) * log(1. - fP0);
         double emission_H0 = normalization + log(1. - fP1) - log(1. - fP0);
         double emission_H1 = normalization + log(fP1) - log(fP0);
 
@@ -173,9 +178,8 @@ namespace Katydid
         for(auto it=highPowerStates.begin();it!=highPowerStates.end();++it)
             emissionVector[*it] = emission_H1;
 
-        return truncated_log(emissionVector);
+        return emissionVector;
     }
-
 
 
     std::pair<unsigned, double> KTViterbi::FindBestState(vector<unsigned> checkStates, unsigned iState, unsigned iTimeSlice)
@@ -192,12 +196,6 @@ namespace Katydid
 
     bool KTViterbi::MostProbablePreviousState(unsigned iTimeSlice, unsigned iState, bool highPower, double log_B)
     {
-        if(iTimeSlice == 2)
-        {
-            KTWARN(vittylog, "State: "<<iState<<" Time Slice: "<<iTimeSlice);
-            KTWARN(vittylog, fT1[0].size());
-        }
-
         std::vector<unsigned> checkStates;
         if(!iState)
         {
@@ -243,6 +241,12 @@ namespace Katydid
         for(unsigned iTimeSlice=nWindow-1; iTimeSlice > 0; --iTimeSlice)
             xBestPath[iTimeSlice-1] = fT2[iTimeSlice] [xBestPath[iTimeSlice]]; 
 
+        for(unsigned i=0;i<xBestPath.size();++i)
+        {
+            if(xBestPath[i] !=0)
+                KTWARN(vittylog, i<<" "<<xBestPath[i]);
+        }
+
         return true;
     }
 
@@ -252,9 +256,11 @@ namespace Katydid
         //Initialize transition matrix to all zeros: nStates x nStates
         vector<vector<double>> transitionMatrix(fNStates, vector<double>(fNStates, 0));
 
-        double pCreation = fEventRate * fTimeBinWidth  / fNBins;
-        double pAnnihilation = 1. - exp(- fTimeBinWidth / fTauEvent);
-        double pTrackToTrack = exp(-fTimeBinWidth / fTauTrack);
+        const int nBinsDefault = 4096;
+
+        double pCreation = fEventRate * fTimeBinWidth * nBinsDefault / fNBins;
+        double pAnnihilation = 1. - exp(- 1. / (fTauEvent * fFreqBinWidth));
+        double pTrackToTrack = exp( - 1./ (fTauTrack * fFreqBinWidth));
         double pNewTrack = 1. - pAnnihilation - pTrackToTrack;
 
         transitionMatrix[0][0] = 1. - fNBins * pCreation;
@@ -270,20 +276,24 @@ namespace Katydid
             transitionMatrix[iBin][iBin] = pTrackToTrack;
         }
 
-        for(unsigned k=1; k<fKScatter; ++k)
+        for(unsigned k=1; k<=fKScatter; ++k)
         {
             for(unsigned iBin =1; iBin<fNStates-fKScatter; ++iBin)
             {
-                transitionMatrix[iBin+k][iBin] = pNewTrack / fKScatter;
+                transitionMatrix[iBin][iBin+k] = pNewTrack / fKScatter;
             }
         }
 
         //Normalize transition matrix so sum of probabilities equals 1 
         //Optimized for Uniform scattering dist. Generalize/ separate out?
         for(unsigned xBin = 1; xBin < fKScatter+1; ++ xBin)
-            transitionMatrix[xBin][0] += xBin * pNewTrack / fKScatter;
+            transitionMatrix[fNBins - fKScatter +  xBin][0] += xBin * pNewTrack / fKScatter;
 
         flog_A = truncated_log(transitionMatrix);
+
+        //for(int i=0;i<flog_A.size();++i)
+        //    KTWARN(vittylog, flog_A[i][0]<<" "<<flog_A[i][1]<<" "<<flog_A[i][2]<<" "<<flog_A[i][3]<<" "<<flog_A[i][4]<<" "<<flog_A[i][5]<<" "<<flog_A[i][6]<<" "<<flog_A[i][7]<<" "<<flog_A[i][8]<<" "<<flog_A[i][9]<<" "<<flog_A[i][10]<<" "<<flog_A[i][11]);
+
         return true;
     }
 
@@ -315,8 +325,10 @@ namespace Katydid
 
     void KTViterbi::AcquisitionIsOver()
     {
-        //BacktrackBestPath();
-        KTINFO(vittylog, "Got egg-done signal. Pls work.");
+        KTWARN(vittylog, "Backtracking!!!");
+        BacktrackBestPath();
+
+        KTWARN(vittylog, "Got egg-done signal. Pls work.");
     }
 
 } /* namespace Katydid */
