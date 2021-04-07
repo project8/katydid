@@ -187,11 +187,12 @@ namespace Katydid
         vector<double> markovProbs;
         for(unsigned i=0; i<checkStates.size();++i)
         {
-            markovProbs.push_back( fT1[iTimeSlice-1][checkStates[i]] + flog_A[checkStates[i]][iState] );
+            unsigned check = checkStates[i];
+            markovProbs.push_back( fT1[iTimeSlice-1][check] + flog_A[check][iState] );
         }
         auto maxPointer = std::max_element(markovProbs.begin(), markovProbs.end());
         unsigned maxInd = maxPointer - markovProbs.begin();
-        return std::pair<unsigned, double>(maxInd,*maxPointer);
+        return std::pair<unsigned, double>(checkStates[maxInd],*maxPointer);
     }
 
     bool KTViterbi::MostProbablePreviousState(unsigned iTimeSlice, unsigned iState, bool highPower, double log_B)
@@ -243,7 +244,7 @@ namespace Katydid
 
         for(unsigned i=0;i<xBestPath.size();++i)
         {
-            if(xBestPath[i] !=0)
+            if(xBestPath[i])
                 KTWARN(vittylog, i<<" "<<xBestPath[i]);
         }
 
