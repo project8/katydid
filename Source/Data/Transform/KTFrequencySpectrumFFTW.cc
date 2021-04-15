@@ -24,7 +24,7 @@ namespace Katydid
     KTLOGGER(fslog, "KTFrequencySpectrumFFTW");
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
-            KTPhysicalArray< 1, fftw_complex >(),
+            KTPhysicalArray< 1, std::complex<double> >(),
             KTFrequencySpectrum(),
             fIsArrayOrderFlipped(false),
             fIsSizeEven(true),
@@ -38,7 +38,7 @@ namespace Katydid
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, double rangeMin, double rangeMax, bool arrayOrderIsFlipped) :
-            KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
+            KTPhysicalArray< 1, std::complex<double> >(nBins, rangeMin, rangeMax),
             KTFrequencySpectrum(),
             fIsArrayOrderFlipped(arrayOrderIsFlipped),
             fIsSizeEven(nBins%2 == 0),
@@ -64,14 +64,11 @@ namespace Katydid
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin, double rangeMax, bool arrayOrderIsFlipped) :
             KTFrequencySpectrumFFTW(nBins, rangeMin, rangeMax, arrayOrderIsFlipped)
     {
-        for (unsigned index = 0; index < nBins; ++index)
-        {
-            std::copy(value.begin(), value.end(), fData[index]);
-        }
+        std::copy(value.begin(), value.end(), this->begin());
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
-            KTPhysicalArray< 1, fftw_complex >(orig),
+            KTPhysicalArray< 1, std::complex<double> >(orig),
             KTFrequencySpectrum(),
             fIsArrayOrderFlipped(orig.fIsArrayOrderFlipped),
             fIsSizeEven(orig.fIsSizeEven),
@@ -88,18 +85,20 @@ namespace Katydid
     {
     }
 
-    KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
-    {
-        KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
-        fIsArrayOrderFlipped = rhs.fIsArrayOrderFlipped;
-        fIsSizeEven = rhs.fIsSizeEven;
-        fLeftOfCenterOffset = rhs.fLeftOfCenterOffset;
-        fCenterBin = rhs.fCenterBin;
-        fConstBinAccess = rhs.fConstBinAccess;
-        fBinAccess = rhs.fBinAccess;
-        fNTimeBins = rhs.fNTimeBins;
-        return *this;
-    }
+    //Is the copy assignment operator necessary? I think the default one will do the right thing
+    
+    //~ KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
+    //~ {
+        //~ KTPhysicalArray< 1, std::complex<double> >::operator=(rhs);
+        //~ fIsArrayOrderFlipped = rhs.fIsArrayOrderFlipped;
+        //~ fIsSizeEven = rhs.fIsSizeEven;
+        //~ fLeftOfCenterOffset = rhs.fLeftOfCenterOffset;
+        //~ fCenterBin = rhs.fCenterBin;
+        //~ fConstBinAccess = rhs.fConstBinAccess;
+        //~ fBinAccess = rhs.fBinAccess;
+        //~ fNTimeBins = rhs.fNTimeBins;
+        //~ return *this;
+    //~ }
 
     const KTAxisProperties< 1 >& KTFrequencySpectrumFFTW::GetAxis() const
     {
@@ -113,14 +112,9 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::CConjugate()
     {
-        unsigned nBins = size();
-#pragma omp parallel for
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            // order doesn't matter, so use fData[] to access values
-            fData[iBin][1] = -fData[iBin][1];
-        }
-        return *this;
+
+        fData = conj(fData);
+        
     }
 
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::AnalyticAssociate()
@@ -132,35 +126,21 @@ namespace Katydid
         // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
         unsigned nBins = size();
         unsigned nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
-#pragma omp parallel for
-        for (unsigned arrayPos=1; arrayPos<nyquistPos; arrayPos++)
-        {
-            fData[arrayPos][0] = fData[arrayPos][0] * 2.;
-            fData[arrayPos][1] = fData[arrayPos][1] * 2.;
-        }
-#pragma omp parallel for
-        for (unsigned arrayPos=nyquistPos; arrayPos<nBins; arrayPos++)
-        {
-            fData[arrayPos][0] = 0.;
-            fData[arrayPos][1] = 0.;
-        }
+        
+        fData.segment(1,nyquistPos-1) *= 2.0 ;
+        fData.tail(nBins-nyquistPos) = std::complex<double> {0.0};
+
         return *this;
     }
 
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::Scale(double scale)
     {
-        unsigned nBins = size();
-#pragma omp parallel for
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            // order doesn't matter, so use fData[] to access values
-            fData[iBin][0] = scale * fData[iBin][0];
-            fData[iBin][1] = scale * fData[iBin][1];
-        }
+        
+        fData *= scale;
         return *this;
     }
 
-
+    // todo -> Replace KTFrequencySpectrumPolar 
     KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrumPolar() const
     {
         unsigned nBins = size();
@@ -169,7 +149,7 @@ namespace Katydid
 #pragma omp parallel for
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-           (*newFS)(iBin).set_rect((*this)(iBin)[0], (*this)(iBin)[1]);
+           (*newFS)(iBin).set_rect((*this)(iBin).real(), (*this)(iBin).imag());
         }
         return newFS;
     }
@@ -192,7 +172,10 @@ namespace Katydid
         }
 
         KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, minFreq, maxFreq);
+        
+        // to replace after Eigen replaces all KTPhysicalArrays
         for (unsigned iBin = 0; iBin < nBins; ++iBin) (*newPS)(iBin) = 0.;
+       // newPS->GetData().setZero(); //probably unnecessary, Eigen array should be zero-initialized
 
         int dcBin = FindBin(0.);
         // default case: dcBin >= 0 && dcBin < size()
@@ -214,22 +197,32 @@ namespace Katydid
 
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 
+        // to replace after Eigen replaces all KTPhysicalArrays
+        //int nPosBins = lastPosFreqBin - firstPosFreqBin;
+        //int nNegBins = lastNegFreqBin - firstNegFreqBin;
+        //
+        //newPS->GetData().segment(firstPosFreqBin, nPosBins) = 
+        //            fData.segment(firstPosFreqBin, nPosBins).abs2() * scaling;
+        //newPS->GetData().segment(firstNegFreqBin, nNegBins) = 
+        //            fData.segment(firstNegFreqBin, nNegBins).abs2() * scaling;
+                    
+        // to replace after Eigen replaces all KTPhysicalArrays            
         double valueImag, valueReal;
 #pragma omp parallel for private(valueReal, valueImag)
         for (unsigned iBin = firstPosFreqBin; iBin < lastPosFreqBin; ++iBin)
         {
-            valueReal = (*this)(iBin)[0];
-            valueImag = (*this)(iBin)[1];
+            valueReal = (*this)(iBin).real();
+            valueImag = (*this)(iBin).imag();
             (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
         }
 #pragma omp parallel for private(valueReal, valueImag)
         for (unsigned iBin = firstNegFreqBin; iBin < lastNegFreqBin; ++iBin)
         {
-            valueReal = (*this)(iBin)[0];
-            valueImag = (*this)(iBin)[1];
+            valueReal = (*this)(iBin).real();
+            valueImag = (*this)(iBin).imag();
             (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
         }
-
+                    
         return newPS;
     }
 
