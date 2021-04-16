@@ -16,6 +16,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <iterator>
+#include <type_traits>
 
 #include <boost/iterator/iterator_facade.hpp>
 
@@ -141,11 +142,51 @@ namespace Katydid
     // Free function operators
     //*************************
     
-    KTPhysicalArray< 1, std::complex<double> > operator+(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs);
-    KTPhysicalArray< 1, std::complex<double> > operator-(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs);
-    KTPhysicalArray< 1, std::complex<double> > operator*(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs);
-    KTPhysicalArray< 1, std::complex<double> > operator/(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs);
     std::ostream& operator<< (std::ostream& ostr, const KTPhysicalArray< 1, std::complex<double> >& rhs);
+    
+    // this template enables usability of the arithmetic operators with all derived classes
+    template<typename T>
+    using IsKTPhysicalArray1D = typename std::enable_if<std::is_base_of<KTPhysicalArray< 1, std::complex<double> >, T>::value, T>::type;
+    
+    /// Add two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+    template < typename T> 
+    IsKTPhysicalArray1D<T> operator+(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();//KTPhysicalArray< 1, std::complex<double> >();
+
+        lhs.KTPhysicalArray<1, std::complex<double> >::operator+=(rhs);
+        return lhs;
+    }
+    
+    /// Subtracts two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+    template < typename T> 
+    IsKTPhysicalArray1D<T> operator-(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<1, std::complex<double> >::operator-=(rhs);
+        return lhs;
+    }
+
+    /// Multiplies two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+    template < typename T> 
+    IsKTPhysicalArray1D<T> operator*(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<1, std::complex<double> >::operator*=(rhs);
+        return lhs;
+    }
+
+    /// Divides two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+    template < typename T> 
+    IsKTPhysicalArray1D<T> operator/(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<1, std::complex<double> >::operator/=(rhs);
+        return lhs;
+    }
     
     //*************************
     // 2-D array implementation
@@ -248,12 +289,53 @@ namespace Katydid
     // Free function operators 2D
     //*************************
     
-    KTPhysicalArray< 2, std::complex<double> > operator+(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs);
-    KTPhysicalArray< 2, std::complex<double> > operator-(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs);
-    KTPhysicalArray< 2, std::complex<double> > operator*(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs);
-    KTPhysicalArray< 2, std::complex<double> > operator/(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs);
     std::ostream& operator<< (std::ostream& ostr, const KTPhysicalArray< 2, std::complex<double> >& rhs);
     
+    template<typename T>
+    using IsKTPhysicalArray2D = typename std::enable_if<std::is_base_of<KTPhysicalArray< 2, std::complex<double> >, T>::value, T>::type;
+    
+    /// Add two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+
+    template < typename T> 
+    IsKTPhysicalArray2D<T> operator+(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<2, std::complex<double> >::operator+=(rhs);
+        return lhs;
+    }
+
+    /// Subtracts two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+
+    template < typename T> 
+    IsKTPhysicalArray2D<T> operator-(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<2, std::complex<double> >::operator-=(rhs);
+        return lhs;
+    }
+
+    /// Multiplies two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+
+    template < typename T> 
+    IsKTPhysicalArray2D<T> operator*(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<2, std::complex<double> >::operator*=(rhs);
+        return lhs;
+    }
+
+    /// Divides two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
+    template < typename T> 
+    IsKTPhysicalArray2D<T> operator/(T lhs, const T& rhs)
+    {
+        if (! lhs.IsCompatibleWith(rhs)) return T();
+
+        lhs.KTPhysicalArray<2, std::complex<double> >::operator/=(rhs);
+        return lhs;
+    }
 
     //*************************
     // Free function operators for matrix and vector operations

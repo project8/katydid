@@ -165,42 +165,6 @@ namespace Katydid
     // Operator implementations
     //*************************
 
-    /// Add two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    KTPhysicalArray< 1, std::complex<double> > operator+(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
-
-        lhs += rhs;
-        return lhs;
-    }
-
-    /// Subtracts two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    KTPhysicalArray< 1, std::complex<double> > operator-(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
-
-        lhs -= rhs;
-        return lhs;
-    }
-
-    /// Multiplies two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    KTPhysicalArray< 1, std::complex<double> > operator*(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
-
-        lhs *= rhs;
-        return lhs;
-    }
-
-    /// Divides two 1-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-    KTPhysicalArray< 1, std::complex<double> > operator/(KTPhysicalArray< 1, std::complex<double> > lhs, const KTPhysicalArray< 1, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 1, std::complex<double> >();
-
-        lhs /= rhs;
-        return lhs;
-    }
-
     std::ostream& operator<< (std::ostream& ostr, const KTPhysicalArray< 1, std::complex<double> >& rhs)
     {
         ostr << rhs.GetData();
@@ -713,46 +677,6 @@ namespace Katydid
     //*************************
     // Operators
     //*************************
-    
-    /// Add two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-
-    KTPhysicalArray< 2, std::complex<double> > operator+(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
-
-        lhs += rhs;
-        return lhs;
-    }
-
-    /// Subtracts two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-
-    KTPhysicalArray< 2, std::complex<double> > operator-(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
-
-        lhs -= rhs;
-        return lhs;
-    }
-
-    /// Multiplies two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-
-    KTPhysicalArray< 2, std::complex<double> > operator*(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
-
-        lhs *= rhs;
-        return lhs;
-    }
-
-    /// Divides two 2-D KTPhysicalArrays; requires lhs.size() == rhs.size(); axis range set to that of lhs.
-
-    KTPhysicalArray< 2, std::complex<double> > operator/(KTPhysicalArray< 2, std::complex<double> > lhs, const KTPhysicalArray< 2, std::complex<double> >& rhs)
-    {
-        if (! lhs.IsCompatibleWith(rhs)) return KTPhysicalArray< 2, std::complex<double> >();
-
-        lhs /= rhs;
-        return lhs;
-    }
 
     std::ostream& operator<< (std::ostream& ostr, const KTPhysicalArray< 2, std::complex<double> >& rhs)
     {
