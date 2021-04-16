@@ -83,7 +83,7 @@ namespace Katydid
             if (fs == NULL) continue;
             for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
             {
-                hist->SetBinContent(iBinX, iBinY, sqrt((*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]));
+                hist->SetBinContent(iBinX, iBinY, std::abs((*fs)(iBinY-1)));
             }
         }
 
@@ -110,7 +110,7 @@ namespace Katydid
             if (fs == NULL) continue;
             for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
             {
-                hist->SetBinContent(iBinX, iBinY, atan2((*fs)(iBinY-1)[1], (*fs)(iBinY-1)[0]));
+                hist->SetBinContent(iBinX, iBinY, std::arg((*fs)(iBinY-1)));
             }
         }
 
@@ -138,7 +138,7 @@ namespace Katydid
             if (fs == NULL) continue;
             for (int iBinY=1; iBinY<=hist->GetNbinsY(); ++iBinY)
             {
-                value = (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1];
+                value = std::norm((*fs)(iBinY-1));
                 hist->SetBinContent(iBinX, iBinY, value);
             }
         }
