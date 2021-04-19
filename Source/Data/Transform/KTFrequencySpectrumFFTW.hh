@@ -179,6 +179,9 @@ namespace Katydid
         //~ (*const_cast< fftw_complex* >(fPointCache))[0] = real;
         //~ (*const_cast< fftw_complex* >(fPointCache))[1] = imag;
         
+        //having the point cache for this really is not important
+        // for >=O2 the assembly code should be exactly the same
+        // can check it in https://godbolt.org/
         (*this)(bin) = std::complex<double>(real, imag);
         return;
     }
