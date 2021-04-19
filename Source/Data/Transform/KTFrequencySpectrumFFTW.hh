@@ -60,6 +60,7 @@ namespace Katydid
 
             virtual double GetAbs(unsigned bin) const;
             virtual double GetArg(unsigned bin) const;
+            virtual double GetNorm(unsigned bin) const;
 
             virtual void SetPolar(unsigned bin, double abs, double arg);
 
@@ -187,6 +188,13 @@ namespace Katydid
         //fPointCache = &(*this)(bin);
         //return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
         return std::abs((*this)(bin));
+    }
+    
+    inline double KTFrequencySpectrumFFTW::GetNorm(unsigned bin) const
+    {
+        //fPointCache = &(*this)(bin);
+        //return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
+        return std::norm((*this)(bin));
     }
 
     inline double KTFrequencySpectrumFFTW::GetArg(unsigned bin) const
