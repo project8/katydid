@@ -473,7 +473,7 @@ namespace Katydid
     void KTForwardFFTW::DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
     {
         std::copy(tsIn->begin(), tsIn->end(), fRInputArray);
-        fftw_execute_dft_r2c(fForwardPlan, fRInputArray, fsOut->GetData());
+        fftw_execute_dft_r2c(fForwardPlan, fRInputArray, reinterpret_cast<fftw_complex*>(fsOut->GetData().data()));
         (*fsOut) *= sqrt(2. / (double)fTimeSize);
         return;
     }
@@ -510,7 +510,7 @@ namespace Katydid
             fCInputArray[iBin][0] = tsIn->GetData()[iBin];
             fCInputArray[iBin][1] = 0;
         }
-        fftw_execute_dft(fForwardPlan, fCInputArray, fsOut->GetData());
+        fftw_execute_dft(fForwardPlan, fCInputArray, reinterpret_cast<fftw_complex*>(fsOut->GetData().data()));
         (*fsOut) *= sqrt(1. / (double)fTimeSize);
         return;
     }
@@ -542,7 +542,7 @@ namespace Katydid
 
     void KTForwardFFTW::DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const
     {
-        fftw_execute_dft(fForwardPlan, tsIn->GetData(), fsOut->GetData());
+        fftw_execute_dft(fForwardPlan, tsIn->GetData(), reinterpret_cast<fftw_complex*>(fsOut->GetData().data()));
         (*fsOut) *= sqrt(1. / (double)  fTimeSize);
         return;
     }

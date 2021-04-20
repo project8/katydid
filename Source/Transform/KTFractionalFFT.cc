@@ -184,19 +184,26 @@ namespace Katydid
             fs->SetNTimeBins( slice.GetSliceSize() );
 
             // Second chirp transform
-            for( unsigned iBin = 0; iBin < fs->GetNFrequencyBins(); ++iBin )
-            {
-                // Obtain norm and phase from components
-                norm = std::hypot( (*fs)(iBin)[0], (*fs)(iBin)[1] );
-                phase = atan2( (*fs)(iBin)[1], (*fs)(iBin)[0] );
+            
+            //~ for( unsigned iBin = 0; iBin < fs->GetNFrequencyBins(); ++iBin )
+            //~ {
+                //~ // Obtain norm and phase from components
+                //~ norm = std::hypot( (*fs)(iBin)[0], (*fs)(iBin)[1] );
+                //~ phase = atan2( (*fs)(iBin)[1], (*fs)(iBin)[0] );
 
-                // Shift phase
-                phase -= q2 * (double)iBin * (double)iBin;
+                //~ // Shift phase
+                //~ phase -= q2 * (double)iBin * (double)iBin;
 
-                // Assign components from norm and new phase
-                (*fs)(iBin)[0] = norm * cos( phase );
-                (*fs)(iBin)[1] = norm * sin( phase );
-            }
+                //~ // Assign components from norm and new phase
+                //~ (*fs)(iBin)[0] = norm * cos( phase );
+                //~ (*fs)(iBin)[1] = norm * sin( phase );
+            //~ }
+            
+            // Shift phase
+            auto bins = Eigen::ArrayXd::LinSpaced(fs->GetNFrequencyBins(), 0, 
+                                                    fs->GetNFrequencyBins()-1);
+
+            fs->GetData() *= exp(-std::complex<double>{0.0, 1.0}*q2*bins*bins);
 
             // Reverse FFT
             KTTimeSeriesFFTW* newTS = fReverseFFT.TransformToComplex( fs );
@@ -218,8 +225,7 @@ namespace Katydid
                 // Assign components from norm and new phase
                 (*newTS)(iBin)[0] = norm * cos( phase );
                 (*newTS)(iBin)[1] = norm * sin( phase );
-                (*newFS)(iBin)[0] = norm * cos( phase );
-                (*newFS)(iBin)[1] = norm * sin( phase );
+                (*newFS)(iBin) = std::polar(norm, phase); 
             }
 
             newTSData.SetTimeSeries( newTS, iComponent );  // newTS now owned by newTSData
