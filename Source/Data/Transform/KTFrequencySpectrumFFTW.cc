@@ -72,25 +72,26 @@ namespace Katydid
         //std::copy(value.begin(), value.end(), this->begin());
     }
 
-    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
-            KTPhysicalArray< 1, std::complex<double> >(orig),
-            KTFrequencySpectrum(),
-            fIsArrayOrderFlipped(orig.fIsArrayOrderFlipped),
-            fIsSizeEven(orig.fIsSizeEven),
-            fLeftOfCenterOffset(orig.fLeftOfCenterOffset),
-            fCenterBin(orig.fCenterBin),
-            fConstBinAccess(orig.fConstBinAccess),
-            fBinAccess(orig.fBinAccess),
-            fNTimeBins(orig.fNTimeBins),
-            fPointCache()
-    {
-    }
+    //copy constructor, destructor and copy assignment operator 
+    //shouldn't be necessary. I think the default ones will do the right thing
+    
+    //~ KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
+            //~ KTPhysicalArray< 1, std::complex<double> >(orig),
+            //~ KTFrequencySpectrum(),
+            //~ fIsArrayOrderFlipped(orig.fIsArrayOrderFlipped),
+            //~ fIsSizeEven(orig.fIsSizeEven),
+            //~ fLeftOfCenterOffset(orig.fLeftOfCenterOffset),
+            //~ fCenterBin(orig.fCenterBin),
+            //~ fConstBinAccess(orig.fConstBinAccess),
+            //~ fBinAccess(orig.fBinAccess),
+            //~ fNTimeBins(orig.fNTimeBins),
+            //~ fPointCache()
+    //~ {
+    //~ }
 
-    KTFrequencySpectrumFFTW::~KTFrequencySpectrumFFTW()
-    {
-    }
-
-    //Is the copy assignment operator necessary? I think the default one will do the right thing
+    //~ KTFrequencySpectrumFFTW::~KTFrequencySpectrumFFTW()
+    //~ {
+    //~ }
     
     //~ KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
     //~ {
