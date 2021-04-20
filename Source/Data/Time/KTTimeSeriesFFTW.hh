@@ -24,10 +24,12 @@ namespace Katydid
             KTTimeSeriesFFTW();
             KTTimeSeriesFFTW(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTTimeSeriesFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin=0., double rangeMax=1.);
-            KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig);
-            virtual ~KTTimeSeriesFFTW();
+            
+            //rule of zero
+            //KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig);
+            virtual ~KTTimeSeriesFFTW() = default;
 
-            KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
+            //KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
 
             virtual void Scale(double scale);
 
