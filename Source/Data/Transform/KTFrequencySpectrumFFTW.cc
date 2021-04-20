@@ -61,10 +61,15 @@ namespace Katydid
         //KTINFO(fslog, "neg freq offset: " << fLeftOfCenterOffset);
     }
 
+    // I have doubts about this function
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin, double rangeMax, bool arrayOrderIsFlipped) :
             KTFrequencySpectrumFFTW(nBins, rangeMin, rangeMax, arrayOrderIsFlipped)
     {
-        std::copy(value.begin(), value.end(), this->begin());
+        for (unsigned index = 0; index < nBins; ++index)
+        {
+            std::copy(value.begin(), value.end(), fData[index]);
+        }
+        //std::copy(value.begin(), value.end(), this->begin());
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
