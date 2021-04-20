@@ -440,11 +440,15 @@ namespace Katydid
             KTFrequencySpectrumVariance* varSpect = devData.GetSpectrum(iComponent);
             for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
-                (*avSpect)(iBin)[0] = (*avSpect)(iBin)[0] * remainingFrac + (*newSpect)(iBin)[0] * fAveragingFrac;
-                (*avSpect)(iBin)[1] = (*avSpect)(iBin)[1] * remainingFrac + (*newSpect)(iBin)[1] * fAveragingFrac;
-
-                (*varSpect)(iBin) = (*varSpect)(iBin) * remainingFrac + ((*newSpect)(iBin)[0] * (*newSpect)(iBin)[0] + (*newSpect)(iBin)[1] * (*newSpect)(iBin)[1]) * fAveragingFrac;
+               // (*avSpect)(iBin)[0] = (*avSpect)(iBin)[0] * remainingFrac + (*newSpect)(iBin)[0] * fAveragingFrac;
+               // (*avSpect)(iBin)[1] = (*avSpect)(iBin)[1] * remainingFrac + (*newSpect)(iBin)[1] * fAveragingFrac;
+                
+                (*varSpect)(iBin) = (*varSpect)(iBin) * remainingFrac 
+                                    + newSpect->GetNorm(iBin) * fAveragingFrac;
             }
+            
+            (*avSpect) = avSpect->Scale(remainingFrac) + newSpect->Scale(fAveragingFrac); 
+            
         }
 
         return true;
@@ -587,7 +591,7 @@ namespace Katydid
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin)[0] * (*avSpect)(iBin)[0] - (*avSpect)(iBin)[1] * (*avSpect)(iBin)[1];
+                (*varSpect)(iBin) = (*varSpect)(iBin) - avSpect->GetNorm(iBin);
             }
         }
         return true;
@@ -650,7 +654,7 @@ namespace Katydid
             unsigned nBins = varSpect->GetNFrequencyBins();
             for (unsigned iBin = 0; iBin < nBins; ++iBin)
             {
-                (*varSpect)(iBin) = (*varSpect)(iBin) - (*avSpect)(iBin)[0] * (*avSpect)(iBin)[0] - (*avSpect)(iBin)[1] * (*avSpect)(iBin)[1];
+                (*varSpect)(iBin) = (*varSpect)(iBin) - avSpect->GetNorm(iBin);
             }
         }
         return true;

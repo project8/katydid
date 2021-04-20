@@ -118,12 +118,12 @@ int main()
         for (unsigned iSlice = 0; iSlice < slicesPerAcq; ++iSlice)
         {
             KTDEBUG(testlog, "New slice");
-            (*spectrum)(peakPos)[0] = 10.;
+            spectrum->SetRect(peakPos, 10., spectrum->GetImag(peakPos));
 
             striper.AddData(header, spectrumData);
 
             // update data for the next slice
-            (*spectrum)(peakPos)[0] = 0.;
+            spectrum->SetRect(peakPos, 0.0, spectrum->GetImag(peakPos));
             peakPos++;
             if (peakPos == nFreqBins) peakPos = 0;
 

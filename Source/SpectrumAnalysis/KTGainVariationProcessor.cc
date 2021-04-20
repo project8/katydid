@@ -462,7 +462,8 @@ namespace Katydid
                 double mean = 0.;
                 for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; ++iBin)
                 {
-                    mean += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                    //mean += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                    mean += spectrum->GetAbs(iBin);
                 }
                 mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;

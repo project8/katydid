@@ -223,7 +223,7 @@ namespace Katydid
 #pragma omp parallel for reduction(+:mean)
                 for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
                 {
-                    magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                    magnitude[iBin] = spectrum->GetAbs(iBin); //sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                     mean += magnitude[iBin];
                     variance += magnitude[iBin] * magnitude[iBin];
                 }
@@ -472,7 +472,7 @@ namespace Katydid
         neighborhoodAmplitude = 0;
         for (unsigned jBin = iBin-fNeighborhoodRadius; jBin<= iBin+fNeighborhoodRadius; ++jBin)
         {
-            neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
+            neighborhoodAmplitude += spectrum->GetAbs(jBin); //sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
         }
     }
     void KTSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)

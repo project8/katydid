@@ -110,12 +110,12 @@ namespace Katydid
         return true;
     }
 
+    // Why this function? The copy constructor of KTFrequencySpectrumFFTW should be responsible for this
     void KTSpectrogramStriper::CopySpectrum(const KTFrequencySpectrumFFTW* source, KTFrequencySpectrumFFTW* dest, unsigned arraySize)
     {
         for (unsigned iBin = 0; iBin < arraySize; ++iBin)
         {
-            (*dest)(iBin)[0] = (*source)(iBin)[0];
-            (*dest)(iBin)[1] = (*source)(iBin)[1];
+            dest->SetRect(iBin, source->GetReal(iBin), source->GetImag(iBin));
         }
     }
 

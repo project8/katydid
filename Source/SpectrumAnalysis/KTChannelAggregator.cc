@@ -274,8 +274,7 @@ namespace Katydid
                         ApplyPhaseShift(realVal, imagVal, phaseShift);
                         double summedRealVal = realVal + newFreqSpectrum->GetReal(iFreqBin);
                         double summedImagVal = imagVal + newFreqSpectrum->GetImag(iFreqBin);
-                        (*newFreqSpectrum)(iFreqBin)[0] = summedRealVal;
-                        (*newFreqSpectrum)(iFreqBin)[1] = summedImagVal;
+                        (*newFreqSpectrum)(iFreqBin) = std::complex<double>{ summedRealVal, summedImagVal };
                     } // End of loop over freq bins
                 } // End of loop over all comps
                 newFreqSpectrum->SetNTimeBins(nTimeBins);

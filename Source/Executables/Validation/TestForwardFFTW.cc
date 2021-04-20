@@ -95,7 +95,7 @@ int main()
 
     for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
     {
-        value = (*frequencySpectrum)(iBin)[0]*(*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1]*(*frequencySpectrum)(iBin)[1];
+        value = frequencySpectrum->GetNorm(iBin);
         if (value > maxValue)
         {
             maxValue = value;
@@ -140,7 +140,7 @@ int main()
     double fsSum = 0.; // units: volts^2
     for (unsigned iBin=0; iBin<nFreqBins; iBin++)
     {
-        fsSum += (*frequencySpectrum)(iBin)[0] * (*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1] * (*frequencySpectrum)(iBin)[1];
+        fsSum += frequencySpectrum->GetNorm(iBin);
     }
 
     KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
@@ -169,7 +169,7 @@ int main()
 
     for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
     {
-        value = (*frequencySpectrum2)(iBin)[0]*(*frequencySpectrum2)(iBin)[0] + (*frequencySpectrum2)(iBin)[1]*(*frequencySpectrum2)(iBin)[1];
+        value = frequencySpectrum2->GetNorm(iBin);
         if (value > maxValue)
         {
             maxValue = value;
@@ -214,7 +214,7 @@ int main()
     fsSum = 0.; // units: volts^2
     for (unsigned iBin=0; iBin<nFreqBins; iBin++)
     {
-        fsSum += (*frequencySpectrum2)(iBin)[0] * (*frequencySpectrum2)(iBin)[0] + (*frequencySpectrum2)(iBin)[1] * (*frequencySpectrum2)(iBin)[1];
+        fsSum += frequencySpectrum2->GetNorm(iBin);
     }
 
     KTINFO(vallog, "sum(freqSpectrum2[i]^2) = " << fsSum << " V^2");

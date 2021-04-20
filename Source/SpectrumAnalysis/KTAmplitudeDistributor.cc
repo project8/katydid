@@ -331,7 +331,7 @@ namespace Katydid
 
         for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
-            fBuffer[fNSlicesProcessed][component][iBin] = sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]);
+            fBuffer[fNSlicesProcessed][component][iBin] = spectrum->GetAbs(iBin);
         }
         fNBuffered++;
         KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
@@ -342,7 +342,7 @@ namespace Katydid
     {
         for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
-            fDistributions->AddToDist(iBin, sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]), component);
+            fDistributions->AddToDist(iBin, spectrum->GetAbs(iBin), component);
         }
         return true;
     }

@@ -284,14 +284,16 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=0; iBin < fMinBin; ++iBin)
             {
-                (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0];
-                (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1];
+                newSpectrum->SetRect(iBin, 
+                                    frequencySpectrum->GetReal(iBin),
+                                    frequencySpectrum->GetImag(iBin));
             }
 #pragma omp for private(iBin)
             for (iBin=fMaxBin+1; iBin < nSpectrumBins; ++iBin)
             {
-                (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0];
-                (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1];
+                newSpectrum->SetRect(iBin,
+                                     frequencySpectrum->GetReal(iBin),
+                                     frequencySpectrum->GetImag(iBin));
             }
 
             // Then scale the bins within the scaling range
@@ -299,10 +301,9 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                value.set_rect((*frequencySpectrum)(iBin)[0], (*frequencySpectrum)(iBin)[1]);
+                value.set_rect(frequencySpectrum->GetReal(iBin), frequencySpectrum->GetImag(iBin));
                 value.set_polar(normalizedMean + (value.abs() - (*splineImp)(iBin - fMinBin)) * sqrt(normalizedVariance / (*varSplineImp)(iBin - fMinBin)), value.arg());
-                (*newSpectrum)(iBin)[0] = real(value);
-                (*newSpectrum)(iBin)[1] = imag(value);
+                newSpectrum->SetRect(iBin, real(value), imag(value));
             }
         }
 

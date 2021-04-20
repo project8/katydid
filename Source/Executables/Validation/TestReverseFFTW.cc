@@ -51,8 +51,7 @@ int main()
     // Fill with a sinusoid
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
-        (*fsFFTW)(iBin)[0] = cos(fsFFTW->GetBinCenter(iBin) * mult);
-        (*fsFFTW)(iBin)[1] = 0.0;
+        fsFFTW->SetRect( iBin, cos(fsFFTW->GetBinCenter(iBin) * mult), 0.0);
     }
 
     // Create and prepare the FFT
@@ -122,7 +121,7 @@ int main()
     double fsSum = 0.; // units: volts^2
     for (unsigned iBin=0; iBin<nTimeBins; iBin++)
     {
-        fsSum += (*fsFFTW)(iBin)[0] * (*fsFFTW)(iBin)[0] + (*fsFFTW)(iBin)[1] * (*fsFFTW)(iBin)[1];
+        fsSum += fsFFTW->GetNorm(iBin);
     }
 
     KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
