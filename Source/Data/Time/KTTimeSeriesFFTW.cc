@@ -84,7 +84,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Time Series", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-            hist->SetBinContent((int)iBin+1, (*this)(iBin)[0]);
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).real());
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -99,7 +99,7 @@ namespace Katydid
         double value;
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-            value = (*this)(iBin)[0];
+            value = (*this)(iBin).real();
             //value *= value;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
@@ -110,7 +110,7 @@ namespace Katydid
         {
             //value = (*this)(iBin)[0];
             //hist->Fill(value*value);
-            hist->Fill((*this)(iBin)[0]);
+            hist->Fill((*this)(iBin).real());
         }
         hist->SetXTitle("Voltage (V)");
         return hist;
