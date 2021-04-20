@@ -67,7 +67,7 @@ namespace Katydid
     {
         for (unsigned index = 0; index < nBins; ++index)
         {
-            std::copy(value.begin(), value.end(), fData[index]);
+            std::copy(value.begin(), value.end(), &fData[index]);
         }
         //std::copy(value.begin(), value.end(), this->begin());
     }

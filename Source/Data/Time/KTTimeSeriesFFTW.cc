@@ -42,7 +42,7 @@ namespace Katydid
         }
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            std::copy(value.begin(), value.end(), fData[iBin]);
+            std::copy(value.begin(), value.end(), &fData[iBin]);
         }
         
     }
