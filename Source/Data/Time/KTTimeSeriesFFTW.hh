@@ -8,7 +8,7 @@
 #ifndef KTTIMESERIESFFTW_HH_
 #define KTTIMESERIESFFTW_HH_
 
-#include "KTPhysicalArrayFFTW.hh"
+#include "KTPhysicalArrayComplex.hh"
 #include "KTTimeSeries.hh"
 
 #include <initializer_list>
@@ -18,7 +18,7 @@ namespace Katydid
     
 
 
-    class KTTimeSeriesFFTW : public KTTimeSeries, public KTPhysicalArray< 1, fftw_complex >
+    class KTTimeSeriesFFTW : public KTTimeSeries, public KTPhysicalArray< 1, std::complex<double> >
     {
         public:
             KTTimeSeriesFFTW();
@@ -49,7 +49,7 @@ namespace Katydid
 
     inline void KTTimeSeriesFFTW::Scale(double scale)
     {
-        this->KTPhysicalArray< 1, fftw_complex >::operator*=(scale);
+        this->KTPhysicalArray< 1, std::complex<double> >::operator*=(scale);
         return;
     }
 
@@ -65,14 +65,13 @@ namespace Katydid
 
     inline void KTTimeSeriesFFTW::SetValue(unsigned bin, double value)
     {
-        (*this)(bin)[0] = value;
-        (*this)(bin)[1] = 0.;
+        (*this)(bin) = std::complex<double> {value, 0.};
         return;
     }
 
     inline double KTTimeSeriesFFTW::GetValue(unsigned bin) const
     {
-        return (*this)(bin)[0];
+        return (*this)(bin).real();
     }
 
 } /* namespace Katydid */

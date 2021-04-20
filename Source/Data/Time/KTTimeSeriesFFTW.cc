@@ -23,13 +23,13 @@ namespace Katydid
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW() :
             KTTimeSeries(),
-            KTPhysicalArray< 1, fftw_complex >()
+            KTPhysicalArray< 1, std::complex<double> >()
     {
     }
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(size_t nBins, double rangeMin, double rangeMax) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
+            KTPhysicalArray< 1, std::complex<double> >(nBins, rangeMin, rangeMax)
     {
     }
 
@@ -44,11 +44,12 @@ namespace Katydid
         {
             std::copy(value.begin(), value.end(), fData[iBin]);
         }
+        
     }
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, fftw_complex >(orig)
+            KTPhysicalArray< 1, std::complex<double> >(orig)
     {
     }
 
@@ -58,7 +59,7 @@ namespace Katydid
 
     KTTimeSeriesFFTW& KTTimeSeriesFFTW::operator=(const KTTimeSeriesFFTW& rhs)
     {
-        KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
+        KTPhysicalArray< 1, std::complex<double> >::operator=(rhs);
         return *this;
     }
 
