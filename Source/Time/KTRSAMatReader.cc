@@ -490,8 +490,9 @@ namespace Katydid
             float* dataImag = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
             for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
             {
-                (*newSliceComplex)(iBin)[0] = double(dataReal[iBin + fSamplesRead]);
-                (*newSliceComplex)(iBin)[1] = double(dataImag[iBin + fSamplesRead]);
+                newSliceComplex->SetRect(iBin, 
+                                        double(dataReal[iBin + fSamplesRead]),
+                                        double(dataImag[iBin + fSamplesRead]));
             }
         }
         else if (fDataPrecision == 2)
@@ -500,8 +501,9 @@ namespace Katydid
             double* dataImag = (double*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
             for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
             {
-                (*newSliceComplex)(iBin)[0] = dataReal[iBin + fSamplesRead];
-                (*newSliceComplex)(iBin)[1] = dataImag[iBin + fSamplesRead];
+                newSliceComplex->SetRect(iBin, 
+                                        dataReal[iBin + fSamplesRead],
+                                        dataImag[iBin + fSamplesRead]);
             }
         }
         else

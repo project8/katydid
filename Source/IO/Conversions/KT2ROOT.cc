@@ -185,7 +185,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, ::sqrt((*ts)(iBin)[0] * (*ts)(iBin)[0] + (*ts)(iBin)[1] * (*ts)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, ts->GetAbs(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -198,7 +198,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Real)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, (*ts)(iBin)[0]);
+            hist->SetBinContent((int) iBin + 1, ts->GetReal(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -211,7 +211,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Imag)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, (*ts)(iBin)[1]);
+            hist->SetBinContent((int) iBin + 1, ts->GetImag(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");

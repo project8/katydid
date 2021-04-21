@@ -249,11 +249,13 @@ namespace Katydid
         {
             KTTimeSeriesFFTW* newTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesFFTW* avTS = static_cast< KTTimeSeriesFFTW* >(accData.GetTimeSeries(iComponent));
-            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
-            {
-                (*avTS)(iBin)[0] = (*avTS)(iBin)[0] * remainingFrac + (*newTS)(iBin)[0] * fAveragingFrac;
-                (*avTS)(iBin)[1] = (*avTS)(iBin)[1] * remainingFrac + (*newTS)(iBin)[1] * fAveragingFrac;
-            }
+            //~ for (unsigned iBin = 0; iBin < arraySize; ++iBin)
+            //~ {
+                //~ (*avTS)(iBin)[0] = (*avTS)(iBin)[0] * remainingFrac + (*newTS)(iBin)[0] * fAveragingFrac;
+                //~ (*avTS)(iBin)[1] = (*avTS)(iBin)[1] * remainingFrac + (*newTS)(iBin)[1] * fAveragingFrac;
+            //~ }
+            
+            avTS->GetData() = avTS->GetData()*remainingFrac + newTS->GetData()*fAveragingFrac; 
         }
 
         return true;
