@@ -542,7 +542,13 @@ namespace Katydid
 
     void KTForwardFFTW::DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const
     {
-        fftw_execute_dft(fForwardPlan, tsIn->GetData(), reinterpret_cast<fftw_complex*>(fsOut->GetData().data()));
+        fftw_complex *dataIn = 
+                        const_cast<fftw_complex*>(
+                                        reinterpret_cast<const fftw_complex*>(
+                                                    tsIn->GetData().data()));
+        fftw_complex *dataOut = reinterpret_cast<fftw_complex*>(
+                                                    fsOut->GetData().data());
+        fftw_execute_dft(fForwardPlan, dataIn, dataOut);
         (*fsOut) *= sqrt(1. / (double)  fTimeSize);
         return;
     }
