@@ -112,7 +112,7 @@ int main()
     double tsSum = 0.; // units: volts^2
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
-        tsSum += timeSeries->GetAbs(iBin);
+        tsSum += timeSeries->GetNorm(iBin);
     }
 
     KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
