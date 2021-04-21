@@ -41,6 +41,7 @@ namespace Katydid
 
             virtual double GetAbs(unsigned bin) const;
             virtual double GetArg(unsigned bin) const;
+            virtual double GetNorm(unsigned bin) const;
 
             virtual void SetPolar(unsigned bin, double abs, double arg);
 
@@ -92,6 +93,12 @@ namespace Katydid
     inline double KTFrequencySpectrumPolar::GetArg(unsigned bin) const
     {
         return (*this)(bin).arg();
+    }
+    
+    inline double KTFrequencySpectrumPolar::GetNorm(unsigned bin) const
+    {
+        double abs = (*this)(bin).abs();
+        return abs*abs;
     }
 
     inline void KTFrequencySpectrumPolar::SetPolar(unsigned bin, double abs, double arg)
