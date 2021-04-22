@@ -76,7 +76,7 @@ int main()
 
     for (unsigned iBin = 0; iBin < nTimeBins; iBin++)
     {
-        value = timeSeries->GetAbs(iBin);
+        value = timeSeries->GetNorm(iBin);
         if (value > maxValue)
         {
             maxValue = value;

@@ -421,7 +421,7 @@ namespace Katydid
 
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, scaling * fs->GetAbs(iBin));
+            hist->SetBinContent((int) iBin + 1, scaling * fs->GetNorm(iBin));
         }
 
         hist->SetXTitle("Frequency (Hz)");
@@ -463,7 +463,7 @@ namespace Katydid
         // skip the DC bin; start at iBin = 1
         for (unsigned iBin = 1; iBin < nBins; ++iBin)
         {
-            value = fs->GetAbs(iBin) * scaling;
+            value = fs->GetNorm(iBin) * scaling;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -471,7 +471,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag * 0.95, tMaxMag * 1.05);
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            value = fs->GetAbs(iBin);
+            value = fs->GetNorm(iBin);
             hist->Fill(value * scaling);
         }
         hist->SetXTitle("Power (W)");
