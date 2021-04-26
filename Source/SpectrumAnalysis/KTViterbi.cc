@@ -30,6 +30,8 @@ namespace Katydid
 
     KTViterbi::KTViterbi(const std::string& name) :
                     KTProcessor(name),
+                    fDiscrim1DSignal("disc-1d", this),
+                    fClusterDoneSignal("clustering-done", this),
                     fHeaderSlot("header", this, &KTViterbi::InitializeWithHeader),
                     fDiscrimSlot("disc-1d", this, &KTViterbi::CollectDiscrimPointsFromSlice),
                     fDoneSlot("done", this, &KTViterbi::AcquisitionIsOver, &fClusterDoneSignal)
@@ -229,7 +231,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTViterbi::BacktrackBestPath()
+    vector< std::pair<unsigned, unsigned> > KTViterbi::BacktrackBestPath()
     {
         unsigned nWindow = fT1.size();
         vector<unsigned> xBestPath(nWindow);
@@ -242,13 +244,18 @@ namespace Katydid
         for(unsigned iTimeSlice=nWindow-1; iTimeSlice > 0; --iTimeSlice)
             xBestPath[iTimeSlice-1] = fT2[iTimeSlice] [xBestPath[iTimeSlice]]; 
 
+        vector< std::pair<unsigned, unsigned> > tSignalBins;
+
         for(unsigned i=0;i<xBestPath.size();++i)
         {
             if(xBestPath[i])
+            {
+                tSignalBins.push_back(std::pair<unsigned, unsigned>(i,xBestPath[i]));
                 KTWARN(vittylog, i<<" "<<xBestPath[i]);
+            }
         }
 
-        return true;
+        return tSignalBins;
     }
 
 
@@ -323,11 +330,23 @@ namespace Katydid
         return aMatrix;
     }
 
-
     void KTViterbi::AcquisitionIsOver()
     {
         KTWARN(vittylog, "Backtracking!!!");
-        BacktrackBestPath();
+        auto tSignalBins = BacktrackBestPath();
+        const unsigned component=0;
+
+        Nymph::KTDataPtr data( new Nymph::KTData() );
+        KTDiscriminatedPoints1DData& newCand = data->Of< KTDiscriminatedPoints1DData >();
+
+        for(auto it=tSignalBins.begin(); it!=tSignalBins.end(); ++it)
+        {
+            unsigned iTimeBin = it->first;
+            unsigned iFreqBin = it->second;
+            newCand.AddPoint(iFreqBin, KTDiscriminatedPoints1DData::Point(iTimeBin, iFreqBin, 0, 0, 0, 0), component);
+        }
+
+        fDiscrim1DSignal(data);
 
         KTWARN(vittylog, "Got egg-done signal. Pls work.");
     }

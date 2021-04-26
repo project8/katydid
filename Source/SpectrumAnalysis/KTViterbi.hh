@@ -84,7 +84,7 @@ namespace Katydid
 
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
-            bool BacktrackBestPath();
+            std::vector< std::pair<unsigned, unsigned> > BacktrackBestPath();
             std::vector<double> GetEmissionVector(std::vector<unsigned> highPowerStates);
             std::pair<unsigned, double> FindBestState(std::vector<unsigned> checkStates, unsigned iState, unsigned iTimeSlice);
             bool MostProbablePreviousState(unsigned iTimeSlice, unsigned iState, bool highPower, double log_B);
@@ -100,6 +100,7 @@ namespace Katydid
 
         private:
             Nymph::KTSignalData fLineSignal;
+            Nymph::KTSignalData fDiscrim1DSignal;
             Nymph::KTSignalOneArg< void > fClusterDoneSignal;
 
             void AcquisitionIsOver();
