@@ -446,7 +446,7 @@ namespace Katydid
             auto tmpImag = spectrum.GetImag(iBin);
             spectrum.SetRect(iBin, spectrum.GetReal(nBins - iBin - 1), 
                                 -1. * spectrum.GetImag(nBins - iBin - 1));
-            spectrum.SetRect(nBins - iBin -1, tmpReal, tmpImag);
+            spectrum.SetRect(nBins - iBin -1, tmpReal, -1. * tmpImag);
         }
 
         return;
