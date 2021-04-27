@@ -47,24 +47,6 @@ namespace Katydid
         
     }
     
-    // rule of zero, the default ones should do the job
-
-    //~ KTTimeSeriesFFTW::KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig) :
-            //~ KTTimeSeries(),
-            //~ KTPhysicalArray< 1, std::complex<double> >(orig)
-    //~ {
-    //~ }
-
-    //~ KTTimeSeriesFFTW::~KTTimeSeriesFFTW()
-    //~ {
-    //~ }
-
-    //~ KTTimeSeriesFFTW& KTTimeSeriesFFTW::operator=(const KTTimeSeriesFFTW& rhs)
-    //~ {
-        //~ KTPhysicalArray< 1, std::complex<double> >::operator=(rhs);
-        //~ return *this;
-    //~ }
-
     void KTTimeSeriesFFTW::Print(unsigned startPrint, unsigned nToPrint) const
     {
         stringstream printStream;

@@ -150,7 +150,7 @@ namespace Katydid
             double peakValue = 0.;
             for (unsigned iBin=firstBin; iBin <= lastBin; iBin++)
             {
-                value = freqSpec->GetAbs(iBin); // sqrt((*freqSpec)(iBin)[0] * (*freqSpec)(iBin)[0] + (*freqSpec)(iBin)[1] * (*freqSpec)(iBin)[1]);
+                value = freqSpec->GetAbs(iBin);
                 weightedMean += freqSpec->GetBinCenter(iBin) * value;
                 integral += value;
                 if (value > peakValue) peakValue = value;

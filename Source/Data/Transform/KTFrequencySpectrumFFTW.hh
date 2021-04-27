@@ -26,8 +26,7 @@ namespace Katydid
             KTFrequencySpectrumFFTW();
             KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
             KTFrequencySpectrumFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
-            //see comment in cc file
-            //KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
+
             virtual ~KTFrequencySpectrumFFTW() = default;
 
         public:
@@ -86,9 +85,6 @@ namespace Katydid
 
         public:
             // normal KTFrequencySpectrumPolar functions
-
-            //see comment in cc file
-            //virtual KTFrequencySpectrumFFTW& operator=(const KTFrequencySpectrumFFTW& rhs);
 
             /// In-place calculation of the complex conjugate
             virtual KTFrequencySpectrumFFTW& CConjugate();
@@ -176,44 +172,27 @@ namespace Katydid
 
     inline void KTFrequencySpectrumFFTW::SetRect(unsigned bin, double real, double imag)
     {
-        //~ fPointCache = &(*this)(bin);
-        //~ (*const_cast< fftw_complex* >(fPointCache))[0] = real;
-        //~ (*const_cast< fftw_complex* >(fPointCache))[1] = imag;
-        
-        //having the point cache for this really is not important
-        // for >=O2 the assembly code should be exactly the same
-        // can check it in https://godbolt.org/
         (*this)(bin) = std::complex<double>(real, imag);
         return;
     }
 
     inline double KTFrequencySpectrumFFTW::GetAbs(unsigned bin) const
     {
-        //fPointCache = &(*this)(bin);
-        //return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
         return std::abs((*this)(bin));
     }
     
     inline double KTFrequencySpectrumFFTW::GetNorm(unsigned bin) const
     {
-        //fPointCache = &(*this)(bin);
-        //return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
         return std::norm((*this)(bin));
     }
 
     inline double KTFrequencySpectrumFFTW::GetArg(unsigned bin) const
     {
-        //fPointCache = &(*this)(bin);
-        //return atan2((*fPointCache)[1], (*fPointCache)[0]);
         return std::arg((*this)(bin));
     }
 
     inline void KTFrequencySpectrumFFTW::SetPolar(unsigned bin, double abs, double arg)
     {
-        //~ fPointCache = &(*this)(bin);
-        //~ (*const_cast< fftw_complex* >(fPointCache))[0] = abs * cos(arg);
-        //~ (*const_cast< fftw_complex* >(fPointCache))[1] = abs * sin(arg);
-        
         (*this)(bin) = std::polar(abs, arg);
         return;
     }

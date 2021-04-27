@@ -72,40 +72,6 @@ namespace Katydid
         //std::copy(value.begin(), value.end(), this->begin());
     }
 
-    //copy constructor, destructor and copy assignment operator 
-    //shouldn't be necessary. I think the default ones will do the right thing
-    
-    //~ KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
-            //~ KTPhysicalArray< 1, std::complex<double> >(orig),
-            //~ KTFrequencySpectrum(),
-            //~ fIsArrayOrderFlipped(orig.fIsArrayOrderFlipped),
-            //~ fIsSizeEven(orig.fIsSizeEven),
-            //~ fLeftOfCenterOffset(orig.fLeftOfCenterOffset),
-            //~ fCenterBin(orig.fCenterBin),
-            //~ fConstBinAccess(orig.fConstBinAccess),
-            //~ fBinAccess(orig.fBinAccess),
-            //~ fNTimeBins(orig.fNTimeBins),
-            //~ fPointCache()
-    //~ {
-    //~ }
-
-    //~ KTFrequencySpectrumFFTW::~KTFrequencySpectrumFFTW()
-    //~ {
-    //~ }
-    
-    //~ KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
-    //~ {
-        //~ KTPhysicalArray< 1, std::complex<double> >::operator=(rhs);
-        //~ fIsArrayOrderFlipped = rhs.fIsArrayOrderFlipped;
-        //~ fIsSizeEven = rhs.fIsSizeEven;
-        //~ fLeftOfCenterOffset = rhs.fLeftOfCenterOffset;
-        //~ fCenterBin = rhs.fCenterBin;
-        //~ fConstBinAccess = rhs.fConstBinAccess;
-        //~ fBinAccess = rhs.fBinAccess;
-        //~ fNTimeBins = rhs.fNTimeBins;
-        //~ return *this;
-    //~ }
-
     const KTAxisProperties< 1 >& KTFrequencySpectrumFFTW::GetAxis() const
     {
         return *this;
