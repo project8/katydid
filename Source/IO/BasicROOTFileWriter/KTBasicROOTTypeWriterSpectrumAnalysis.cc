@@ -906,8 +906,6 @@ namespace Katydid
 
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
-            std::cout<< "::iChannel << <<optimizedGridIndex"<<std::endl;
-            std::cout<< iChannel << " : "<<optimizedGridIndex<<std::endl;
             if(iChannel!=optimizedGridIndex) continue;
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
@@ -966,8 +964,6 @@ namespace Katydid
 
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
-            std::cout<< "::iChannel << <<optimizedGridIndex"<<std::endl;
-            std::cout<< iChannel << " : "<<optimizedGridIndex<<std::endl;
             if(iChannel!=optimizedGridIndex) continue;
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
