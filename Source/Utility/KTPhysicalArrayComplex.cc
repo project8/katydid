@@ -278,11 +278,6 @@ namespace Katydid
     {
         fData.fill(value);
     }
-
-
-    KTPhysicalArray< 2, std::complex<double> >::~KTPhysicalArray()
-    {
-    }
     
     size_t KTPhysicalArray< 2, std::complex<double> >::cols() const
     {

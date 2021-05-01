@@ -94,10 +94,10 @@ namespace Katydid
 
             virtual ~KTPhysicalArray() = default;
             KTPhysicalArray( KTPhysicalArray< 1, value_type> &&) = default;
-            KTPhysicalArray& operator=( KTPhysicalArray< 1, value_type> &&) = default;
+            KTPhysicalArray<1, value_type>& operator=( KTPhysicalArray< 1, value_type> &&) = default;
 
             KTPhysicalArray( const KTPhysicalArray< 1, value_type>& ) = default;
-            KTPhysicalArray operator=( const KTPhysicalArray< 1, value_type>& ) = default;
+            KTPhysicalArray<1, value_type>& operator=( const KTPhysicalArray< 1, value_type>& ) = default;
 
         public:
             const array_type& GetData() const;
@@ -228,10 +228,10 @@ namespace Katydid
             virtual ~KTPhysicalArray() = default;
 
             KTPhysicalArray( KTPhysicalArray< 2, value_type> &&) = default;
-            KTPhysicalArray& operator=( KTPhysicalArray< 2, value_type> &&) = default;
+            KTPhysicalArray<2, value_type>& operator=( KTPhysicalArray< 2, value_type> &&) = default;
 
             KTPhysicalArray( const KTPhysicalArray< 2, value_type>& ) = default;
-            KTPhysicalArray operator=( const KTPhysicalArray< 2, value_type>& ) = default;
+            KTPhysicalArray<2, value_type>& operator=( const KTPhysicalArray< 2, value_type>& ) = default;
 
         public:
             const matrix_type& GetData() const;
