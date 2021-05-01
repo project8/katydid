@@ -39,8 +39,6 @@ namespace Katydid
         fData.fill(value);
     }
 
-    KTPhysicalArray< 1, value_type >::~KTPhysicalArray()
-    {}
     
     const Eigen::Array< std::complex<double>, Eigen::Dynamic, 1, Eigen::ColMajor >& KTPhysicalArray< 1, std::complex<double> >::GetData() const
     {

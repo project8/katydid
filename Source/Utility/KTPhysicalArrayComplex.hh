@@ -92,7 +92,12 @@ namespace Katydid
             explicit KTPhysicalArray(size_t nBins, double rangeMin=0., double rangeMax=1.);
             explicit KTPhysicalArray(value_type value, size_t nBins, double rangeMin=0., double rangeMax=1.);
 
-            virtual ~KTPhysicalArray();
+            virtual ~KTPhysicalArray() = default;
+            KTPhysicalArray( KTPhysicalArray< 1, value_type> &&) = default;
+            KTPhysicalArray& operator=( KTPhysicalArray< 1, value_type> &&) = default;
+
+            KTPhysicalArray( const KTPhysicalArray< 1, value_type>& ) = default;
+            KTPhysicalArray operator=( const KTPhysicalArray< 1, value_type>& ) = default;
 
         public:
             const array_type& GetData() const;
@@ -220,7 +225,13 @@ namespace Katydid
             KTPhysicalArray();
             KTPhysicalArray(size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax);
             KTPhysicalArray(value_type value, size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax);
-            virtual ~KTPhysicalArray();
+            virtual ~KTPhysicalArray() = default;
+
+            KTPhysicalArray( KTPhysicalArray< 2, value_type> &&) = default;
+            KTPhysicalArray& operator=( KTPhysicalArray< 2, value_type> &&) = default;
+
+            KTPhysicalArray( const KTPhysicalArray< 2, value_type>& ) = default;
+            KTPhysicalArray operator=( const KTPhysicalArray< 2, value_type>& ) = default;
 
         public:
             const matrix_type& GetData() const;
