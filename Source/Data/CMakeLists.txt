@@ -23,7 +23,7 @@ set (DATA_HEADERFILES
     SpectrumAnalysis/KTTimeSeriesDistData.hh
     SpectrumAnalysis/KTWV2DData.hh
     SpectrumAnalysis/KTWignerVilleData.hh
-    SpectrumAnalysis/KTMultiChannelInnerProductData.hh
+   # SpectrumAnalysis/KTMultiChannelInnerProductData.hh
     EventAnalysis/KTClassifierResultsData.hh
     EventAnalysis/KTFrequencyCandidate.hh
     EventAnalysis/KTFrequencyCandidateData.hh
@@ -69,6 +69,7 @@ set (DATA_HEADERFILES
     Transform/KTTimeFrequency.hh
     Transform/KTTimeFrequencyDataPolar.hh
     Transform/KTTimeFrequencyPolar.hh
+    Transform/KTAggregatedTSMatrixData.hh
 )
 
 set (DATA_SOURCEFILES
@@ -90,7 +91,7 @@ set (DATA_SOURCEFILES
     SpectrumAnalysis/KTTimeSeriesDistData.cc
     SpectrumAnalysis/KTWV2DData.cc
     SpectrumAnalysis/KTWignerVilleData.cc
-    SpectrumAnalysis/KTMultiChannelInnerProductData.cc
+  #  SpectrumAnalysis/KTMultiChannelInnerProductData.cc
     EventAnalysis/KTClassifierResultsData.cc
     EventAnalysis/KTFrequencyCandidate.cc
     EventAnalysis/KTFrequencyCandidateData.cc
@@ -136,6 +137,7 @@ set (DATA_SOURCEFILES
     Transform/KTTimeFrequency.cc
     Transform/KTTimeFrequencyDataPolar.cc
     Transform/KTTimeFrequencyPolar.cc
+    Transform/KTAggregatedTSMatrixData.cc
 )
 
 if (NOT FFTW_FOUND)
