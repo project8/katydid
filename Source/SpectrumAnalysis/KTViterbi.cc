@@ -96,7 +96,7 @@ namespace Katydid
         {
             uint64_t acqID = slHeader.GetAcquisitionID(iComponent);
 
-            KTWARN(vittylog, "Found Slice! Adding column of length "<< fNStates << " to Viterbi matrices!");
+            //KTWARN(vittylog, "Found Slice! Adding column of length "<< fNStates << " to Viterbi matrices!");
 
             fT1.push_back(vZeros);
             fT2.push_back(vZeros);
@@ -124,11 +124,11 @@ namespace Katydid
             if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
             {
                 highPowerStates.push_back(BinToStateID(pIt->first));
-                KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
+                //KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
             }
         }
 
-        KTWARN( vittylog, "Collected "<<highPowerStates.size()<<" points");
+        //KTWARN( vittylog, "Collected "<<highPowerStates.size()<<" points");
 
         if(!std::is_sorted(highPowerStates.begin(), highPowerStates.end()))
         {  
@@ -139,7 +139,7 @@ namespace Katydid
         vector<double> log_B = GetEmissionVector(highPowerStates);
         unsigned iTimeSlice = fT1.size() - 1;
         
-        KTWARN(vittylog, "Looping over discriminated points in time Slice: "<<iTimeSlice);
+        //KTWARN(vittylog, "Looping over discriminated points in time Slice: "<<iTimeSlice);
 
         MostProbablePreviousState(iTimeSlice, 0, true, log_B[0]);
 
@@ -299,9 +299,6 @@ namespace Katydid
 
         flog_A = truncated_log(transitionMatrix);
 
-        //for(int i=0;i<flog_A.size();++i)
-        //    KTWARN(vittylog, flog_A[i][0]<<" "<<flog_A[i][1]<<" "<<flog_A[i][2]<<" "<<flog_A[i][3]<<" "<<flog_A[i][4]<<" "<<flog_A[i][5]<<" "<<flog_A[i][6]<<" "<<flog_A[i][7]<<" "<<flog_A[i][8]<<" "<<flog_A[i][9]<<" "<<flog_A[i][10]<<" "<<flog_A[i][11]);
-
         return true;
     }
 
@@ -339,11 +336,16 @@ namespace Katydid
         Nymph::KTDataPtr data( new Nymph::KTData() );
         KTDiscriminatedPoints1DData& newCand = data->Of< KTDiscriminatedPoints1DData >();
 
+        KTWARN(vittylog, "Total size: " <<tSignalBins.size());
+
+        unsigned kTot = 0;
+
         for(auto it=tSignalBins.begin(); it!=tSignalBins.end(); ++it)
         {
             unsigned iTimeBin = it->first;
             unsigned iFreqBin = it->second;
-            newCand.AddPoint(iFreqBin, KTDiscriminatedPoints1DData::Point(iTimeBin, iFreqBin, 0, 0, 0, 0), component);
+            newCand.AddPoint(kTot, KTDiscriminatedPoints1DData::Point(iTimeBin, iFreqBin, 0, 0, 0, 0), component);
+            ++kTot;
         }
 
         fDiscrim1DSignal(data);
