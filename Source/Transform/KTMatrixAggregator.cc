@@ -52,6 +52,12 @@ namespace Katydid
     	fBufferMat.conservativeResize(Eigen::NoChange_t{}, fSignalCount);
     }
 
+    void KTMatrixAggregator::PrintBuffer()
+    {
+    	KTDEBUG(magglog, "Buffer matrix has size (" << fBufferMat.rows() << "," << fBufferMat.cols() << ")");
+    	KTDEBUG(magglog, "\n"<< fBufferMat);
+    }
+
     bool KTMatrixAggregator::AddCol(KTTimeSeriesData& tsData)
     {
     	const KTTimeSeriesFFTW* ts = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(0));
@@ -61,9 +67,12 @@ namespace Katydid
         unsigned nTimebins = ts->GetNTimeBins();
         unsigned rows = nComponents * nTimebins;
         
+        KTDEBUG(magglog, "Buffer matrix has size (" << fBufferMat.rows() << "," << fBufferMat.cols() << ")");
         if(fBufferMat.rows()== 0)
         {
+        	KTDEBUG(magglog, "Resizing to (" << rows << "," << fMaxCols << ")" );
             fBufferMat.resize(rows, fMaxCols);
+            KTDEBUG(magglog, "Resizing successful");
         }
         
         if(fBufferMat.rows() != rows)
@@ -83,8 +92,7 @@ namespace Katydid
             }
             
             fBufferMat.block(nTimebins*iComponent, fSignalCount, nTimebins, 1) = ts->GetData();
-            KTDEBUG(magglog, "Added TS " << iComponent << " to the matrix.");
-            
+            KTDEBUG(magglog, "Added data successfully");
         }
 
 
@@ -111,6 +119,7 @@ namespace Katydid
         bool emitSignal = false;
 		if (fSignalCount == fMaxCols)
 		{
+			KTDEBUG(magglog, "Matrix full");
 			fSignalCount = 0;
 			KTINFO(magglog, "Completed the matrix.");
 			emitSignal = true;
@@ -118,7 +127,7 @@ namespace Katydid
 
 		if (data->GetLastData())
 		{
-			KTDEBUG(magglog, "Emitting last-data signal");
+			KTDEBUG(magglog, "Reached last data");
 			//shrink the matrix to current signal count if end of data is reached
 
 			ShrinkMatrix();
@@ -129,9 +138,11 @@ namespace Katydid
 		if(emitSignal) {
 			KTAggregatedTSMatrixData& aggMatrix = data->Of< KTAggregatedTSMatrixData >();
 			 //adjust labels and KTAxis things?
+			KTDEBUG(magglog, "Emitting the signal");
 			aggMatrix.GetData() = std::move(fBufferMat);
 			fMatrixSignal(data);
-			fBufferMat = Eigen::ArrayXcd();
+			KTDEBUG(magglog, "Reset buffer matrix");
+			fBufferMat = Eigen::ArrayXXcd();
 
 		}
 

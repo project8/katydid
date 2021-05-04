@@ -64,12 +64,15 @@ namespace Katydid
 
             MEMBERVARIABLE(int, MaxCols);
 
+            void PrintBuffer();
+
+            void SlotFunction(Nymph::KTDataPtr data);
+
         private:
             bool AddCol(KTTimeSeriesData& tsData);
-            void SlotFunction(Nymph::KTDataPtr data);
             void ShrinkMatrix();
 
-            Eigen::ArrayXcd fBufferMat;
+            Eigen::ArrayXXcd fBufferMat;
             unsigned fNRows;
 
             unsigned fSignalCount;
