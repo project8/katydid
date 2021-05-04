@@ -42,10 +42,11 @@ int main()
     Nymph::KTDataPtr data = boost::make_shared<Nymph::KTData>();
     for (int i=0; i<nCols; ++i)
     {
-    	KTDEBUG("Make tsData");
-    	KTDEBUG("Has: " << data->Has<KTTimeSeriesData>());
+    	if(i==nCols-1)
+    	{
+    		data->SetLastData(true);
+    	}
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
-        KTDEBUG("Make tsData success");
         tsData.SetNComponents(nChannels);
     	for (int j=0; j<nChannels; ++j)
     	{
@@ -58,10 +59,11 @@ int main()
     			ts->SetRect(k, i+j+2*k, i-j+k);
     		}
     		KTDEBUG("TS: " << *ts);
-    		tsData.SetTimeSeries(ts, i);
+    		tsData.SetTimeSeries(ts, j);
     	}
     	KTDEBUG("Call the slot function");
         tAgg.SlotFunction(data);
+        tAgg.PrintBuffer();
     }
 
     // Check Results

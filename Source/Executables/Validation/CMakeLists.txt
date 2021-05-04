@@ -88,7 +88,7 @@ if (Katydid_ENABLE_TESTING)
         TestSpectrumDiscriminator
         TestTrackProcessing
         TestWindowFunction
-        
+        TestMatrixAggregator
     )
     
     pbuilder_executables( PROGRAMS LIB_DEPENDENCIES )
