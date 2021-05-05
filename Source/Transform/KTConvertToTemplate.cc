@@ -57,14 +57,15 @@ namespace Katydid
         KTAggregatedTemplateMatrixData& newData = fData.Of< KTAggregatedTemplateMatrixData >();
 
         KTDEBUG(ctemplatelog, "Calculating energy");
-        auto energy = sqrt((fData.GetData()*conj(fData.GetData())).colwise().sum());
+        auto energy = fData.GetData().abs2().colwise().sum();
 
-        auto normalization = sqrt(2)/(energy*fNoiseStd);
+        auto normalization = sqrt(2)/(sqrt(energy)*fNoiseStd);
 
         KTDEBUG(ctemplatelog, "Calculating normalized matrix");
         auto normalized = fData.GetData().rowwise()*normalization;
 
         KTDEBUG(ctemplatelog, "Store transposed matrix in newData");
+        // Eigen does not calculate anything before this assignment
         newData.GetData() = normalized.transpose();
 
         KTDEBUG(ctemplatelog, "Template matrix has shape ("
