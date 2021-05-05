@@ -36,6 +36,7 @@ namespace Katydid
     	double R = 50.0;
     	// Johnson-Nyquist noise
     	fNoiseStd = sqrt(4*kb*R*fNoiseTemperature*fBandwidth);
+    	KTDEBUG(ctemplatelog, "Noise standard deviation is: " << fNoiseStd);
     }
 
     bool KTConvertToTemplate::Configure(const scarab::param_node* node)
@@ -55,11 +56,20 @@ namespace Katydid
 
         KTAggregatedTemplateMatrixData& newData = fData.Of< KTAggregatedTemplateMatrixData >();
 
+        KTDEBUG(ctemplatelog, "Calculating energy");
         auto energy = sqrt((fData.GetData()*conj(fData.GetData())).colwise().sum());
 
-        auto normalized = fData.GetData()*sqrt(2)/(energy*fNoiseStd);
+        auto normalization = sqrt(2)/(energy*fNoiseStd);
 
+        KTDEBUG(ctemplatelog, "Calculating normalized matrix");
+        auto normalized = fData.GetData().rowwise()*normalization;
+
+        KTDEBUG(ctemplatelog, "Store transposed matrix in newData");
         newData.GetData() = normalized.transpose();
+
+        KTDEBUG(ctemplatelog, "Template matrix has shape ("
+        						<< newData.GetData().rows()
+        						<< "," << newData.GetData().cols() << ")" );
 
         return true;
     }

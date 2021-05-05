@@ -70,6 +70,7 @@ namespace Katydid
 
             MEMBERVARIABLE(double, NoiseTemperature);
             MEMBERVARIABLE(double, Bandwidth);
+            MEMBERVARIABLE(double, NoiseStd);
 
 
         public:
@@ -77,7 +78,6 @@ namespace Katydid
 
         private:
 
-            double fNoiseStd;
             void CalcNoiseStd();
 
             //***************
