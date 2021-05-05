@@ -70,6 +70,7 @@ set (DATA_HEADERFILES
     Transform/KTTimeFrequencyDataPolar.hh
     Transform/KTTimeFrequencyPolar.hh
     Transform/KTAggregatedTSMatrixData.hh
+    Transform/KTAggregatedTemplateMatrixData.hh
 )
 
 set (DATA_SOURCEFILES
@@ -138,6 +139,7 @@ set (DATA_SOURCEFILES
     Transform/KTTimeFrequencyDataPolar.cc
     Transform/KTTimeFrequencyPolar.cc
     Transform/KTAggregatedTSMatrixData.cc
+    Transform/KTAggregatedTemplateMatrixData.cc
 )
 
 if (NOT FFTW_FOUND)
