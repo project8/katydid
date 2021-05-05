@@ -1,22 +1,24 @@
 /*
- * TestMatrixAggregator.cc
+ * TestMatchedFilter.cc
  *
  *  Created on: May 4, 2021
  *      Author: F. Thomas
  *
- *  Tests performance of KTMatrixAggregator
+ *  Tests KTMatrixAggregator, KTConvertToTemplate
  *
- *  Usage: > TestMatrixAggregator
+ *  Usage: > TestMatchedFilter
  */
 #include <memory>
 #include <boost/make_shared.hpp>
 
 #include "KTMatrixAggregator.hh"
+#include "KTConvertToTemplate.hh"
 
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
 #include "KTAggregatedTSMatrixData.hh"
+#include "KTAggregatedTemplateMatrixData.hh"
 
 #include "KTLogger.hh"
 
@@ -27,15 +29,20 @@ KTLOGGER(testlog, "TestMatrixAggregator");
 
 int main()
 {
-    // Create and setup processor
+    // Create and setup processors
     KTMatrixAggregator tAgg {};
+    KTConvertToTemplate tConvert {};
     
     unsigned maxCols = 3;
     unsigned nCols = 5;
     unsigned nChannels = 3;
     unsigned nTimeBins = 4;
 
+    double noiseStd = sqrt(2.0);
+
     tAgg.SetMaxCols(maxCols);
+
+    tConvert.SetNoiseStd(noiseStd);
 
     // Test processing of KTTimeSeriesData
 
@@ -50,7 +57,7 @@ int main()
         tsData.SetNComponents(nChannels);
     	for (int j=0; j<nChannels; ++j)
     	{
-    		KTDEBUG("Add a Channel");
+    		KTDEBUG(testlog, "Add a Channel");
     		//who will manage this memory after tsData has it?
     		//modern way would just move it
         	KTTimeSeriesFFTW *ts = new KTTimeSeriesFFTW(nTimeBins);
@@ -58,10 +65,10 @@ int main()
     		{
     			ts->SetRect(k, i+j+2*k, i-j+k);
     		}
-    		KTDEBUG("TS: " << *ts);
+    		KTDEBUG(testlog, "TS: " << *ts);
     		tsData.SetTimeSeries(ts, j);
     	}
-    	KTDEBUG("Call the slot function");
+    	KTDEBUG(testlog, "Call the slot function");
         tAgg.SlotFunction(data);
         tAgg.PrintBuffer();
     }
@@ -69,7 +76,18 @@ int main()
     // Check Results
     KTAggregatedTSMatrixData& dataMatrix = data->Of< KTAggregatedTSMatrixData >();
     
-    KTDEBUG("Aggregated: " << dataMatrix);
+    KTDEBUG(testlog, "Aggregated: " << dataMatrix);
+
+    // Test conversion to template
+    tConvert.Convert(dataMatrix);
+
+    KTAggregatedTemplateMatrixData& templateMatrix = data->Of< KTAggregatedTemplateMatrixData >();
+
+    KTDEBUG(testlog, "Template Matrix: " << templateMatrix);
+
+    KTDEBUG(testlog, "Norm" << sqrt((dataMatrix.GetData()*conj(dataMatrix.GetData())).colwise().sum()));
+
+    KTDEBUG(testlog, " Product: " << (templateMatrix.GetData().transpose()*conj(dataMatrix.GetData())).colwise().sum());
 
     return 0;
 }
