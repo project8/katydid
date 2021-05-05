@@ -17,7 +17,8 @@ namespace Katydid
     class KTAggregatedTSMatrixData: public KTPhysicalArray<2, std::complex<double>>, public Nymph::KTExtensibleData< KTAggregatedTSMatrixData >
     {
         public:
-            KTAggregatedTSMatrixData() = default;
+
+           /* KTAggregatedTSMatrixData() = default;
 
             virtual ~KTAggregatedTSMatrixData() = default;
             KTAggregatedTSMatrixData (KTAggregatedTSMatrixData &&) = default;
@@ -25,6 +26,7 @@ namespace Katydid
 
             KTAggregatedTSMatrixData& operator=( const KTAggregatedTSMatrixData &) = default;
             KTAggregatedTSMatrixData& operator=( KTAggregatedTSMatrixData && ) = default;
+			*/
 
             static const std::string sName;
 

@@ -58,7 +58,6 @@ namespace Katydid
     {
         public:
             KTMatrixAggregator(const std::string& name = "matrix-aggregator");
-            virtual ~KTMatrixAggregator() = default;
 
             bool Configure(const scarab::param_node* node);
 
