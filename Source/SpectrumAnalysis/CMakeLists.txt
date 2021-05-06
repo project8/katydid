@@ -24,6 +24,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTSpectrogramStriper.hh
     KTSwitchFFTWPolar.hh
     KTVariableSpectrumDiscriminator.hh
+    KTInnerProductOptimizer.hh
     #KTMultiChannelInnerProduct.hh
     #KTAutoCorrMatrix.hh
 )
@@ -51,6 +52,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTSpectrogramStriper.cc
     KTSwitchFFTWPolar.cc
     KTVariableSpectrumDiscriminator.cc
+    KTInnerProductOptimizer.cc
     #KTMultiChannelInnerProduct.cc
     #KTAutoCorrMatrix.cc
 )
