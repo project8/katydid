@@ -25,6 +25,8 @@ namespace Katydid
     KTConvertToTemplate::KTConvertToTemplate(const std::string& name) :
             KTProcessor(name),
             fNoiseTemperature(0.),
+			fBandwidth(0.),
+			fNoiseStd(0.),
             fTSSignal("template-matrix", this),
             fTSSlot("ts-matrix", this, &KTConvertToTemplate::Convert, &fTSSignal)
     {
@@ -57,7 +59,7 @@ namespace Katydid
         KTAggregatedTemplateMatrixData& newData = fData.Of< KTAggregatedTemplateMatrixData >();
 
         KTDEBUG(ctemplatelog, "Calculating energy");
-        auto energy = fData.GetData().abs2().colwise().sum();
+        auto energy = (fData.GetData()*conj(fData.GetData())).colwise().sum();
 
         auto normalization = sqrt(2)/(sqrt(energy)*fNoiseStd);
 
