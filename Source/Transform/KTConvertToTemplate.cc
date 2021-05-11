@@ -68,7 +68,7 @@ namespace Katydid
 
         KTDEBUG(ctemplatelog, "Store transposed matrix in newData");
         // Eigen does not calculate anything before this assignment
-        newData.GetData() = normalized.transpose();
+        newData.GetData() = conj(normalized.transpose());
 
         KTDEBUG(ctemplatelog, "Template matrix has shape ("
         						<< newData.GetData().rows()
