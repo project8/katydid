@@ -41,6 +41,7 @@ namespace Katydid
 
     bool KTInnerProductOptimizer::FindOptimum(KTInnerProductData& fData)
     {
+
     	KTInnerProductOptimizerData& fOpt = fData.Of<KTInnerProductOptimizerData>();
 
     	auto snr = fData.GetData().abs().eval();
@@ -48,6 +49,7 @@ namespace Katydid
         fOpt.fMaxInds.resize(snr.cols());
         fOpt.fMaxVals.resize(snr.cols());
 
+        KTPROG(ipolog, "Finding best matches");
         for(int i=0;i<snr.cols();++i)
             fOpt.fMaxVals(i) = snr.col(i).maxCoeff( &fOpt.fMaxInds(i) );
 

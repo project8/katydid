@@ -92,7 +92,7 @@ namespace Katydid
             }
             
             fBufferMat.block(nTimebins*iComponent, fSignalCount, nTimebins, 1) = ts->GetData();
-            KTDEBUG(magglog, "Added data successfully");
+            KTDEBUG(magglog, "Added component " << iComponent << " successfully");
         }
 
 
@@ -116,12 +116,13 @@ namespace Katydid
         }
         // Increase signal counter
         fSignalCount++;
+        KTDEBUG(magglog, "Signal count is " << fSignalCount);
         bool emitSignal = false;
 		if (fSignalCount == fMaxCols)
 		{
 			KTDEBUG(magglog, "Matrix full");
 			fSignalCount = 0;
-			KTINFO(magglog, "Completed the matrix.");
+
 			emitSignal = true;
 		}
 
@@ -131,14 +132,15 @@ namespace Katydid
 			//shrink the matrix to current signal count if end of data is reached
 
 			ShrinkMatrix();
-			KTINFO(magglog, "Completed the matrix.");
 			emitSignal = true;
 		}
 
 		if(emitSignal) {
+			KTPROG(magglog, "Completed the matrix.");
 			KTAggregatedTSMatrixData& aggMatrix = data->Of< KTAggregatedTSMatrixData >();
 			 //adjust labels and KTAxis things?
 			KTDEBUG(magglog, "Emitting the signal");
+			KTDEBUG(magglog, "Final matrix has size (" << fBufferMat.rows() << "," << fBufferMat.cols() << ")");
 			aggMatrix.GetData() = std::move(fBufferMat);
 			fMatrixSignal(data);
 			KTDEBUG(magglog, "Reset buffer matrix");

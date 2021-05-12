@@ -50,7 +50,7 @@ namespace Katydid
     {
     	KTInnerProductData& newData = fData.Of< KTInnerProductData >();
 
-    	KTDEBUG(iprodlog, "Run inner product");
+    	KTPROG(iprodlog, "Running inner product");
     	newData.GetData() = fTemplateMatrix.matrix() * fData.GetData().matrix();
 
     	return true;
