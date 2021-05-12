@@ -4,6 +4,10 @@
 # Minimum cmake verison 3.1 required for the variable CMAKE_CXX_STANDARD
 cmake_minimum_required (VERSION 3.1)
 
+#probably shouldn't go here like that but I don't know where it has to go
+#feel free to fix it
+add_compile_options(-march=native -mfma)
+
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
