@@ -243,11 +243,11 @@ namespace Katydid
         protected:
             matrix_type fData;
             std::string fLabel;
+
+        public:
             
             size_t cols() const;
             size_t rows() const;
-
-        public:
             const value_type& operator()(unsigned i, unsigned j) const;
             value_type& operator()(unsigned i, unsigned j);
 
