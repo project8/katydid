@@ -61,7 +61,7 @@ namespace Katydid
         KTDEBUG(ctemplatelog, "Calculating energy");
         auto energy = (fData.GetData()*conj(fData.GetData())).colwise().sum();
 
-        auto normalization = sqrt(2)/(sqrt(energy)*fNoiseStd);
+        auto normalization = (energy == 0).select(0,sqrt(2)/(sqrt(energy)*fNoiseStd));
 
         KTDEBUG(ctemplatelog, "Calculating normalized matrix");
         auto normalized = fData.GetData().rowwise()*normalization;
