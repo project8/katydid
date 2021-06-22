@@ -72,6 +72,10 @@ namespace Katydid
             MEMBERVARIABLE(double, NStates);
 
             MEMBERVARIABLE(unsigned, KScatter);
+            MEMBERVARIABLE(bool, UseBinary);
+
+            MEMBERVARIABLE(double, Amplitude);
+            MEMBERVARIABLE(double, Sigma);
 
             std::vector< std::vector<double> > fT1;
             std::vector< std::vector<double> > fT2;
@@ -85,7 +89,9 @@ namespace Katydid
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discrimPoints);
             bool CollectDiscrimPointsFromSlice(KTSliceHeader& slHeader, KTPowerSpectrumData& spectrum, KTDiscriminatedPoints1DData& discrimPoints);
             std::vector< std::pair<unsigned, unsigned> > BacktrackBestPath();
+            std::vector<double> logLike(std::vector<double> aDataVector, std::vector<unsigned> highPowerStates, bool aSignalHypothesis);
             std::vector<double> GetEmissionVector(std::vector<unsigned> highPowerStates);
+            std::vector<double> GetEmissionVector(std::vector<unsigned> highPowerStates, std::vector<double> anAmplitudes);
             std::pair<unsigned, double> FindBestState(std::vector<unsigned> checkStates, unsigned iState, unsigned iTimeSlice);
             bool MostProbablePreviousState(unsigned iTimeSlice, unsigned iState, bool highPower, double log_B);
             const double truncated_log(const double &aDouble) const;

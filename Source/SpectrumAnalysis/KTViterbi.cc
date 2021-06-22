@@ -15,6 +15,7 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTGainVariationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
+#include <boost/math/special_functions/bessel.hpp> 
 
 #include <numeric>
 #include <cmath>
@@ -54,6 +55,9 @@ namespace Katydid
         SetTauEvent(node->get_value("tau-event", GetTauEvent()));
         SetEventRate(node->get_value("event-rate", GetEventRate()));
         SetKScatter(node->get_value("k-scatter", GetKScatter()));
+        SetUseBinary(node->get_value("use-binary", GetUseBinary()));
+        SetSigma(node->get_value("sigma", GetSigma()));
+        SetAmplitude(node->get_value("amplitude", GetAmplitude()));
 
         SetNBins( fMaxBin - fMinBin + 1 );
         SetNStates( fNBins + 1 );
@@ -103,7 +107,7 @@ namespace Katydid
 
             double newTimeInAcq = slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength();
             double newTimeInRunC = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
-            KTDEBUG(vittylog, "new_TimeInAcq is " << newTimeInAcq);
+            //KTWARN(vittylog, "new_TimeInAcq is " << newTimeInAcq);
             KTDEBUG(vittylog, "new_TimeInRunC is " << newTimeInRunC);
 
             const KTDiscriminatedPoints1DData::SetOfPoints&  points = discrimPoints.GetSetOfPoints(iComponent);
@@ -118,25 +122,45 @@ namespace Katydid
     bool KTViterbi::LoopOverHighPowerPoints(KTDiscriminatedPoints1DData::SetOfPoints points, uint64_t acqID, unsigned component)
     {
         std::vector<unsigned> highPowerStates;
+        std::vector<double> tAmplitudes;
 
         for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
             {
                 highPowerStates.push_back(BinToStateID(pIt->first));
+                tAmplitudes.push_back(pIt->second.fOrdinate);
                 //KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
+
+                if(pIt->second.fMean != fAmplitude)
+                {
+                    fSigma = sqrt(pIt->second.fVariance);
+                    fAmplitude = pIt->second.fMean;
+                    KTWARN(vittylog, pIt->second.fMean<< ", var = "<<pIt->second.fVariance);
+                }
             }
         }
 
+        //KTWARN(vittylog,"sizes: "<<highPowerStates.size()<<" "<<tAmplitudes.size());
+
         //KTWARN( vittylog, "Collected "<<highPowerStates.size()<<" points");
 
-        if(!std::is_sorted(highPowerStates.begin(), highPowerStates.end()))
-        {  
-            KTWARN(vittylog, "Sorting discriminated points by bin number. Why aren't they sorted already?");
-            std::sort(highPowerStates.begin(), highPowerStates.end());
+        //if(!std::is_sorted(highPowerStates.begin(), highPowerStates.end())) (Probably should uncomment: resort both states + amplitudes. Never has been an issue)
+        //{  
+        //    KTWARN(vittylog, "Sorting discriminated points by bin number. Why aren't they sorted already?");
+        //    std::sort(highPowerStates.begin(), highPowerStates.end());
+        //}
+
+        vector<double> log_B;
+        if(fUseBinary)
+        {
+            log_B = GetEmissionVector(highPowerStates);
+        }
+        else
+        {
+            log_B = GetEmissionVector(highPowerStates, tAmplitudes);
         }
 
-        vector<double> log_B = GetEmissionVector(highPowerStates);
         unsigned iTimeSlice = fT1.size() - 1;
         
         //KTWARN(vittylog, "Looping over discriminated points in time Slice: "<<iTimeSlice);
@@ -166,15 +190,51 @@ namespace Katydid
     }
 
 
+    vector<double> KTViterbi::logLike(vector<double> aDataVector, vector<unsigned> highPowerStates, bool aSignalHypothesis)
+    {
+        //double initVal = aSignalHypothesis ? log(1. - fP1) : log(1. - fP0);
+        vector<double> logLikelihood(fNBins, 0);
+
+        for(unsigned i=0;i<highPowerStates.size();++i)
+        {
+            unsigned stateIndex = highPowerStates[i];
+            logLikelihood[stateIndex] = -(pow(aDataVector[i],2) + aSignalHypothesis * pow(fAmplitude,2)) / (2. * pow(fSigma,2));
+            //KTWARN(vittylog, stateIndex<<" "<< aDataVector[i]);
+            //KTWARN(vittylog, i<<" "<< aDataVector[i] <<" "<< fAmplitude <<" "<< aSignalHypothesis << " "<< pow(fSigma,2));
+            logLikelihood[stateIndex] += log(boost::math::cyl_bessel_i(0,aDataVector[i] * fAmplitude * aSignalHypothesis / pow(fSigma,2)));
+            logLikelihood[stateIndex] += log( aDataVector[i] / pow(fSigma,2));
+        }
+        return logLikelihood;
+    }
+
+    vector<double> KTViterbi::GetEmissionVector(vector<unsigned> highPowerStates, vector<double> anAmplitudes)
+    {
+        unsigned nHPStates = highPowerStates.size();
+
+        vector<double> H0 = logLike(anAmplitudes, highPowerStates, 0);
+        vector<double> H1 = logLike(anAmplitudes, highPowerStates, 1);
+
+        double normalization = std::accumulate(H0.begin(), H0.end(),0);
+        double emission_H0 = normalization + log(1. - fP1) - log(1. - fP0);
+
+        vector<double> emissionVector(fNStates, emission_H0);
+        emissionVector[0] = normalization;
+
+        for(auto it=highPowerStates.begin();it!=highPowerStates.end();++it)
+            emissionVector[*it] = normalization + H1[*it] - H0[*it];
+
+        return emissionVector;
+    }
+
     vector<double> KTViterbi::GetEmissionVector(vector<unsigned> highPowerStates)
     {
         unsigned nHPStates = highPowerStates.size();
+
         double normalization = nHPStates * log(fP0) +  (fNBins - nHPStates) * log(1. - fP0);
         double emission_H0 = normalization + log(1. - fP1) - log(1. - fP0);
         double emission_H1 = normalization + log(fP1) - log(fP0);
 
         vector<double> emissionVector(fNStates, emission_H0);
-
         emissionVector[0] = normalization;
 
         for(auto it=highPowerStates.begin();it!=highPowerStates.end();++it)
