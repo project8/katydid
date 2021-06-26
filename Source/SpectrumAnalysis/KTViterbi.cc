@@ -129,14 +129,18 @@ namespace Katydid
             if ( pIt->first >= fMinBin and pIt->first <= fMaxBin )
             {
                 highPowerStates.push_back(BinToStateID(pIt->first));
-                tAmplitudes.push_back(pIt->second.fOrdinate);
+                tAmplitudes.push_back(sqrt(pIt->second.fOrdinate));
                 //KTWARN(vittylog, "discriminated point: bin = " <<pIt->first<< ", frequency = "<<pIt->second.fAbscissa<< ", amplitude = "<<pIt->second.fOrdinate);
+                
+                double tNewSigmaRayleigh = sqrt(sqrt(pIt->second.fVariance)/2.);
 
-                if(pIt->second.fMean != fAmplitude)
+                if(fSigma != tNewSigmaRayleigh)
                 {
-                    fSigma = sqrt(pIt->second.fVariance);
-                    fAmplitude = pIt->second.fMean;
+                    fSigma = tNewSigmaRayleigh;
+                    fAmplitude = 4. * fSigma;
+
                     KTWARN(vittylog, pIt->second.fMean<< ", var = "<<pIt->second.fVariance);
+                    //KTWARN(vittylog, pIt->second.fMean<< ", "<< fAmplitude);
                 }
             }
         }
@@ -192,15 +196,13 @@ namespace Katydid
 
     vector<double> KTViterbi::logLike(vector<double> aDataVector, vector<unsigned> highPowerStates, bool aSignalHypothesis)
     {
-        //double initVal = aSignalHypothesis ? log(1. - fP1) : log(1. - fP0);
-        vector<double> logLikelihood(fNBins, 0);
+        double initValue = aSignalHypothesis ? log(1. - fP1) : log(1. - fP0);
+        vector<double> logLikelihood(fNBins, initValue);
 
         for(unsigned i=0;i<highPowerStates.size();++i)
         {
             unsigned stateIndex = highPowerStates[i];
             logLikelihood[stateIndex] = -(pow(aDataVector[i],2) + aSignalHypothesis * pow(fAmplitude,2)) / (2. * pow(fSigma,2));
-            //KTWARN(vittylog, stateIndex<<" "<< aDataVector[i]);
-            //KTWARN(vittylog, i<<" "<< aDataVector[i] <<" "<< fAmplitude <<" "<< aSignalHypothesis << " "<< pow(fSigma,2));
             logLikelihood[stateIndex] += log(boost::math::cyl_bessel_i(0,aDataVector[i] * fAmplitude * aSignalHypothesis / pow(fSigma,2)));
             logLikelihood[stateIndex] += log( aDataVector[i] / pow(fSigma,2));
         }
