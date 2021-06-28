@@ -120,6 +120,7 @@ jobs:
           tag-sha: false
           tag-semver: |
             {{raw}}
+        run: echo ${{ steps.docker_meta.outputs.tags }}
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
