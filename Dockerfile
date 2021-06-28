@@ -13,6 +13,8 @@ ARG KATYDID_TAG=beta
 ENV KATYDID_TAG=${KATYDID_TAG}
 ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
 
+SHELL ["/bin/bash", "-c"]
+
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
     chmod -R 777 $KATYDID_BUILD_PREFIX/.. &&\
     cd $KATYDID_BUILD_PREFIX &&\
@@ -66,7 +68,7 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
           -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
           -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
           -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-    make -j3 install &&\
+    make -j4 install &&\
     /bin/true
 
 ########################
