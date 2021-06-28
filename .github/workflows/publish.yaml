@@ -120,7 +120,6 @@ jobs:
           tag-sha: false
           tag-semver: |
             {{raw}}
-        run: echo ${{ steps.docker_meta.outputs.tags }}
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -132,7 +131,9 @@ jobs:
           buildkitd-flags: --debug
           
       - name: List platforms
-        run: echo ${{ steps.setup_buildx.outputs.platforms }}
+        run: | 
+            echo Platforms: ${{ steps.setup_buildx.outputs.platforms }}
+            echo Docker: ${{ steps.docker_meta.outputs.tags }}
         
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
