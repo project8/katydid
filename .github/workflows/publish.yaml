@@ -158,5 +158,4 @@ jobs:
             KATYDID_TAG=${{ env.RELEASE_VERSION }}
             build_type=${{needs.init.outputs.build_type}}
             build_tests_exe=${{needs.init.outputs.build_tests}}
-          #tags: ${{ steps.docker_meta.outputs.tags }}
-          tags: project8/katydid:feature-github-actions
+          tags: ${{ steps.docker_meta.outputs.tags }}
