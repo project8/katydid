@@ -161,4 +161,4 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           
       - name: Push to Docker Hub
-        run: docker push ${{ env.IMAGE }}:${{ env.GIT_SHA }}
+        run: docker push project8/katydid:feature-github-actions #${{ env.IMAGE }}:${{ env.GIT_SHA }}
