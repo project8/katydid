@@ -32,12 +32,13 @@ jobs:
         run: |
           echo ${{github.base_ref}}
           echo ${{github.ref}}
-          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
-            echo "::set-output name=build_type::RELEASE"
-            echo "::set-output name=build_tests::FALSE"
-          else
+          if [[ "${{github.base_ref}}" == "develop" || "${{github.ref}}" == "refs/heads/develop" ]]; then
             echo "::set-output name=build_type::DEBUG"
             echo "::set-output name=build_tests::TRUE"
+            echo Debug build
+          else
+            echo "::set-output name=build_type::RELEASE"
+            echo "::set-output name=build_tests::FALSE"
           fi
 
   #~ test_docker:
