@@ -56,20 +56,20 @@ COPY .git /tmp_source/.git
 COPY CI /$KATYDID_BUILD_PREFIX/CI
 
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
-#RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
-#    cd /tmp_source &&\
-#    mkdir build &&\
-#    cd build &&\
-#    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-#          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-#          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
-#          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-#    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-#          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-#          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
-#          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-#    make -j4 install &&\
-#    /bin/true
+RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
+    cd /tmp_source &&\
+    mkdir build &&\
+    cd build &&\
+    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
+          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
+          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
+    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
+          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
+          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
+    make -j4 install &&\
+    /bin/true
 
 ########################
 FROM katydid_common
