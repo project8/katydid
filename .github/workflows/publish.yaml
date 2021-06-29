@@ -145,12 +145,12 @@ jobs:
             echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
             echo Version: ${{ env.RELEASE_VERSION }}
         
-      - name: build docker image
+      - name: Push to Docker Hub
         id: build_push
         uses: docker/build-push-action@v2
         with:
           context: .
-          load: true
+          push: true
           build-args: |
             IMG_USER=project8
             IMG_REPO=p8compute_dependencies
@@ -159,6 +159,3 @@ jobs:
             build_type=${{needs.init.outputs.build_type}}
             build_tests_exe=${{needs.init.outputs.build_tests}}
           tags: ${{ steps.docker_meta.outputs.tags }}
-          
-      - name: Push to Docker Hub
-        run: docker push project8/katydid:feature-github-actions #${{ env.IMAGE }}:${{ env.GIT_SHA }}
