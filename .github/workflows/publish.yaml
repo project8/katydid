@@ -62,12 +62,12 @@ jobs:
 
       - name: Set env
         run: |
-          if [[ "${{matrix.build_type}}" == "DEBUG"]]; then
+          if [[ "${{matrix.build_type}}" == "DEBUG" ]]; then
             echo "build_tests=TRUE" >> $GITHUB_ENV
           else
             echo "build_tests=FALSE" >> $GITHUB_ENV
           fi
-          if [[ "${{matrix.compiler}}" == "gcc"]]; then
+          if [[ "${{matrix.compiler}}" == "gcc" ]]; then
             echo "CXX_VAL=g++" >> $GITHUB_ENV
           else
             echo "CXX_VAL=clang++" >> $GITHUB_ENV
