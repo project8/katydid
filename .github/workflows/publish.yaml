@@ -51,7 +51,8 @@ jobs:
     strategy:
       matrix:
         build_type: [DEBUG, RELEASE]
-        compiler: [gcc, clang]
+        #compiler: [gcc, clang]
+        compiler: gcc
       fail-fast: false
         
     steps:
