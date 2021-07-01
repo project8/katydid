@@ -154,7 +154,7 @@ jobs:
   doc:
     name: Build documentation
     runs-on: ubuntu-latest
-    needs: [init, test_linux]
+    needs: [init]
     steps:
     
       - name: Check out the repo
@@ -162,6 +162,9 @@ jobs:
         with:
           submodules: recursive
           
+      - name: Unshallow clone
+        run: git fetch --prune --unshallow
+      
       - name: Install dependencies
         run: |
           sudo apt-get update
