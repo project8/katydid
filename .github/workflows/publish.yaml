@@ -46,7 +46,7 @@ jobs:
             echo "::set-output name=build_tests::FALSE"
           fi
           
-      - name: 
+      - name: Set Luna version
         id: setversion
         run: |
           git clone https://github.com/project8/luna_base.git
