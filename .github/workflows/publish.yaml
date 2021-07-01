@@ -52,7 +52,7 @@ jobs:
       matrix:
         build_type: [DEBUG, RELEASE]
         #compiler: [gcc, clang]
-        compiler: gcc
+        compiler: [gcc]
       fail-fast: false
         
     steps:
