@@ -1,4 +1,8 @@
-FROM project8/p8compute_dependencies:v0.9.0 as katydid_common
+ARG IMG_USER=project8
+ARG IMG_REPO=p8compute_dependencies
+ARG IMG_TAG=v1.0.0
+
+FROM ${IMG_USER}/${IMG_REPO}:${IMG_TAG} as katydid_common
 
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
