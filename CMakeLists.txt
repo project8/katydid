@@ -4,6 +4,10 @@
 # Minimum cmake verison 3.1 required for the variable CMAKE_CXX_STANDARD
 cmake_minimum_required (VERSION 3.1)
 
+#probably shouldn't go here like that but I don't know where it has to go
+#feel free to fix it
+add_compile_options(-march=native -mfma)
+
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
@@ -209,7 +213,8 @@ else (DLIB_FOUND)
 endif (DLIB_FOUND)
 
 # OpenMP
-#find_package (OpenMP)
+find_package (OpenMP)
+
 if (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
