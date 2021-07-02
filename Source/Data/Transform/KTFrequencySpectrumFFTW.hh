@@ -10,7 +10,7 @@
 #define KTFREQUENCYSPECTRUMFFTW_HH_
 
 #include "KTFrequencySpectrum.hh"
-#include "KTPhysicalArrayFFTW.hh"
+#include "KTPhysicalArrayComplex.hh"
 
 #include <cmath>
 #include <string>
@@ -20,14 +20,14 @@ namespace Katydid
     
     class KTFrequencySpectrumPolar;
 
-    class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >, public KTFrequencySpectrum
+    class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, std::complex<double> >, public KTFrequencySpectrum
     {
         public:
             KTFrequencySpectrumFFTW();
             KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
             KTFrequencySpectrumFFTW(std::initializer_list<double> value, size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
-            KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
-            virtual ~KTFrequencySpectrumFFTW();
+
+            virtual ~KTFrequencySpectrumFFTW() = default;
 
         public:
             bool GetIsArrayOrderFlipped() const;
@@ -50,8 +50,8 @@ namespace Katydid
 
             // replace some of the KTPhysicalArray interface
 
-            const fftw_complex& operator()(unsigned i) const;
-            fftw_complex& operator()(unsigned i);
+            const std::complex<double>& operator()(unsigned i) const;
+            std::complex<double>& operator()(unsigned i);
 
             virtual double GetReal(unsigned bin) const;
             virtual double GetImag(unsigned bin) const;
@@ -60,6 +60,7 @@ namespace Katydid
 
             virtual double GetAbs(unsigned bin) const;
             virtual double GetArg(unsigned bin) const;
+            virtual double GetNorm(unsigned bin) const;
 
             virtual void SetPolar(unsigned bin, double abs, double arg);
 
@@ -70,22 +71,20 @@ namespace Katydid
             virtual void SetNTimeBins(unsigned bins);
 
         private:
-            typedef const fftw_complex& (KTFrequencySpectrumFFTW::*ConstOrderedBinAccessFunc)(unsigned) const;
-            typedef fftw_complex& (KTFrequencySpectrumFFTW::*OrderedBinAccessFunc)(unsigned);
+            typedef const std::complex<double>& (KTFrequencySpectrumFFTW::*ConstOrderedBinAccessFunc)(unsigned) const;
+            typedef std::complex<double>& (KTFrequencySpectrumFFTW::*OrderedBinAccessFunc)(unsigned);
 
             ConstOrderedBinAccessFunc fConstBinAccess;
             OrderedBinAccessFunc fBinAccess;
 
-            const fftw_complex& ReorderedBinAccess(unsigned i) const;
-            fftw_complex& ReorderedBinAccess(unsigned i);
+            const std::complex<double>& ReorderedBinAccess(unsigned i) const;
+            std::complex<double>& ReorderedBinAccess(unsigned i);
 
-            const fftw_complex& AsIsBinAccess(unsigned i) const;
-            fftw_complex& AsIsBinAccess(unsigned i);
+            const std::complex<double>& AsIsBinAccess(unsigned i) const;
+            std::complex<double>& AsIsBinAccess(unsigned i);
 
         public:
             // normal KTFrequencySpectrumPolar functions
-
-            virtual KTFrequencySpectrumFFTW& operator=(const KTFrequencySpectrumFFTW& rhs);
 
             /// In-place calculation of the complex conjugate
             virtual KTFrequencySpectrumFFTW& CConjugate();
@@ -103,7 +102,7 @@ namespace Katydid
             unsigned fNTimeBins;
 
         protected:
-            mutable const fftw_complex* fPointCache;
+            mutable const std::complex<double>* fPointCache;
     };
 
     inline bool KTFrequencySpectrumFFTW::GetIsArrayOrderFlipped() const
@@ -131,71 +130,70 @@ namespace Katydid
         return GetDataLabel();
     }
 
-    inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const
+    inline const std::complex<double>& KTFrequencySpectrumFFTW::operator()(unsigned i) const
     {
         return (this->*fConstBinAccess)(i);
     }
 
-    inline fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i)
+    inline std::complex<double>& KTFrequencySpectrumFFTW::operator()(unsigned i)
     {
         return (this->*fBinAccess)(i);
     }
 
-    inline const fftw_complex& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i) const
+    inline const std::complex<double>& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i) const
     {
         return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
     }
 
-    inline fftw_complex& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i)
+    inline std::complex<double>& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i)
     {
         return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
     }
 
-    inline const fftw_complex& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i) const
+    inline const std::complex<double>& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i) const
     {
         return fData[i];
     }
 
-    inline fftw_complex& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i)
+    inline std::complex<double>& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i)
     {
         return fData[i];
     }
 
     inline double KTFrequencySpectrumFFTW::GetReal(unsigned bin) const
     {
-        return (*this)(bin)[0];
+        return (*this)(bin).real();
     }
 
     inline double KTFrequencySpectrumFFTW::GetImag(unsigned bin) const
     {
-        return (*this)(bin)[1];
+        return (*this)(bin).imag();
     }
 
     inline void KTFrequencySpectrumFFTW::SetRect(unsigned bin, double real, double imag)
     {
-        fPointCache = &(*this)(bin);
-        (*const_cast< fftw_complex* >(fPointCache))[0] = real;
-        (*const_cast< fftw_complex* >(fPointCache))[1] = imag;
+        (*this)(bin) = std::complex<double>(real, imag);
         return;
     }
 
     inline double KTFrequencySpectrumFFTW::GetAbs(unsigned bin) const
     {
-        fPointCache = &(*this)(bin);
-        return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
+        return std::abs((*this)(bin));
+    }
+    
+    inline double KTFrequencySpectrumFFTW::GetNorm(unsigned bin) const
+    {
+        return std::norm((*this)(bin));
     }
 
     inline double KTFrequencySpectrumFFTW::GetArg(unsigned bin) const
     {
-        fPointCache = &(*this)(bin);
-        return atan2((*fPointCache)[1], (*fPointCache)[0]);
+        return std::arg((*this)(bin));
     }
 
     inline void KTFrequencySpectrumFFTW::SetPolar(unsigned bin, double abs, double arg)
     {
-        fPointCache = &(*this)(bin);
-        (*const_cast< fftw_complex* >(fPointCache))[0] = abs * cos(arg);
-        (*const_cast< fftw_complex* >(fPointCache))[1] = abs * sin(arg);
+        (*this)(bin) = std::polar(abs, arg);
         return;
     }
 

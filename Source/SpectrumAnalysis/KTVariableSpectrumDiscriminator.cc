@@ -536,7 +536,7 @@ namespace Katydid
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
-                double value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                double value = spectrum->GetAbs(iBin);
                 double threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 double mean = (*splineImp)(iBin - fMinBin);
                 double variance = (*varSplineImp)(iBin - fMinBin);
@@ -572,7 +572,7 @@ namespace Katydid
                 double mean = (*splineImp)(iBin - fMinBin);
                 double variance = (*varSplineImp)(iBin - fMinBin);
                 double threshold = mean + fSigmaThreshold * sqrt( variance );
-                double value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                double value = spectrum->GetAbs(iBin);
                 if (value >= threshold)
                 {
                     double neighborhoodAmplitude = 0.;
@@ -714,7 +714,7 @@ namespace Katydid
         neighborhoodAmplitude = 0;
         for (unsigned jBin = iBin-fNeighborhoodRadius; jBin <= iBin+fNeighborhoodRadius; ++jBin)
         {
-            neighborhoodAmplitude += sqrt((*spectrum)(jBin)[0] * (*spectrum)(jBin)[0] + (*spectrum)(jBin)[1] * (*spectrum)(jBin)[1]);
+            neighborhoodAmplitude += spectrum->GetAbs(jBin);
         }
     }
     void KTVariableSpectrumDiscriminator::SumAdjacentBinAmplitude(const KTFrequencySpectrumPolar* spectrum, double& neighborhoodAmplitude, const unsigned& iBin)

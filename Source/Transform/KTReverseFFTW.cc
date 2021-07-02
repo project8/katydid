@@ -278,7 +278,12 @@ namespace Katydid
 
     void KTReverseFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesReal* tsOut) const
     {
-        fftw_execute_dft_c2r(fReversePlan, fsIn->GetData(), fROutputArray);
+        fftw_complex *data = 
+                        const_cast<fftw_complex*>(
+                                        reinterpret_cast<const fftw_complex*>(
+                                                    fsIn->GetData().data()));
+        
+        fftw_execute_dft_c2r(fReversePlan, data, fROutputArray);
         std::copy(fROutputArray, fROutputArray+fTimeSize, tsOut->begin());
         (*tsOut) *= sqrt(1. / double(fTimeSize));
         return;
@@ -360,7 +365,15 @@ namespace Katydid
 
     void KTReverseFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const
     {
-        fftw_execute_dft(fReversePlan, fsIn->GetData(), tsOut->GetData());
+        
+        fftw_complex *dataIn = 
+                        const_cast<fftw_complex*>(
+                                        reinterpret_cast<const fftw_complex*>(
+                                                    fsIn->GetData().data()));
+                                                    
+        fftw_complex *dataOut = reinterpret_cast<fftw_complex*>(
+                                                    tsOut->GetData().data());
+        fftw_execute_dft(fReversePlan, dataIn, dataOut);
         (*tsOut) *= sqrt(1. / double(fTimeSize));
         return;
     }

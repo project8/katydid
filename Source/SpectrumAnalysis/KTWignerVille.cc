@@ -237,8 +237,10 @@ namespace Katydid
             t1_imag = data1It->imag();
             t2_real = data2It->real();
             t2_imag = data2It->imag();
-            (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
-            (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+
+            fInputArray->SetRect(fftBin, 
+                                    t1_real * t2_real + t1_imag * t2_imag,
+                                    t1_imag * t2_real - t1_real * t2_imag);
             //KTWARN(wvlog, "  " << fftBin << " -- " << t1_real << "  " << t1_imag << " -- " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
             ++data1It;
         }

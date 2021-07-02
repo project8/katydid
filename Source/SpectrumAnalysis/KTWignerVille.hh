@@ -348,7 +348,7 @@ namespace Katydid
                 unsigned tsSize = ts->size();
                 for (unsigned iBin = 0; iBin < tsSize; ++iBin)
                 {
-                    fBuffer[iComponent].push_back(std::complex< double >((*ts)(iBin)[0], (*ts)(iBin)[1]));
+                    fBuffer[iComponent].push_back((*ts)(iBin));
                 }
                 // we should only need to advance the start iterator if the start of this window
                 // didn't fit in the last slice during the previous iteration

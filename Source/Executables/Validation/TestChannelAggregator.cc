@@ -79,13 +79,11 @@ int main()
             //Arbitrarily chose the middle bin for the signal frequency
             if(iFreqBin==(int)(nFreqBins/2))
             {
-                (*fftwSpectrum)(iFreqBin)[0]= cos(phaseShift);
-                (*fftwSpectrum)(iFreqBin)[1]= -sin(phaseShift);
+                fftwSpectrum->SetRect(iFreqBin, cos(phaseShift), -sin(phaseShift));
             }
             // Since non-signal frequencies are irrelavant, manually setthing them to 0
             else{
-                (*fftwSpectrum)(iFreqBin)[0]= 0.0;
-                (*fftwSpectrum)(iFreqBin)[1]= 0.0;
+                fftwSpectrum->SetRect(iFreqBin, 0.0, 0.0);
             }
         }
         newFreqData.SetSpectrum(fftwSpectrum, iComponent);

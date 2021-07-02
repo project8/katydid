@@ -23,13 +23,13 @@ namespace Katydid
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW() :
             KTTimeSeries(),
-            KTPhysicalArray< 1, fftw_complex >()
+            KTPhysicalArray< 1, std::complex<double> >()
     {
     }
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(size_t nBins, double rangeMin, double rangeMax) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
+            KTPhysicalArray< 1, std::complex<double> >(nBins, rangeMin, rangeMax)
     {
     }
 
@@ -42,26 +42,11 @@ namespace Katydid
         }
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            std::copy(value.begin(), value.end(), fData[iBin]);
+            std::copy(value.begin(), value.end(), &fData[iBin]);
         }
+        
     }
-
-    KTTimeSeriesFFTW::KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig) :
-            KTTimeSeries(),
-            KTPhysicalArray< 1, fftw_complex >(orig)
-    {
-    }
-
-    KTTimeSeriesFFTW::~KTTimeSeriesFFTW()
-    {
-    }
-
-    KTTimeSeriesFFTW& KTTimeSeriesFFTW::operator=(const KTTimeSeriesFFTW& rhs)
-    {
-        KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
-        return *this;
-    }
-
+    
     void KTTimeSeriesFFTW::Print(unsigned startPrint, unsigned nToPrint) const
     {
         stringstream printStream;
@@ -81,7 +66,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Time Series", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-            hist->SetBinContent((int)iBin+1, (*this)(iBin)[0]);
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).real());
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -96,7 +81,7 @@ namespace Katydid
         double value;
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-            value = (*this)(iBin)[0];
+            value = (*this)(iBin).real();
             //value *= value;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
@@ -107,7 +92,7 @@ namespace Katydid
         {
             //value = (*this)(iBin)[0];
             //hist->Fill(value*value);
-            hist->Fill((*this)(iBin)[0]);
+            hist->Fill((*this)(iBin).real());
         }
         hist->SetXTitle("Voltage (V)");
         return hist;

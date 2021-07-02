@@ -185,8 +185,7 @@ namespace Katydid
         for (unsigned iBin=0; iBin < nBins; ++iBin)
         {
             weight = fWindowFunction->GetWeight(iBin);
-            (*ts)(iBin)[0] = (*ts)(iBin)[0] * weight;
-            (*ts)(iBin)[1] = (*ts)(iBin)[1] * weight;
+            ts->SetRect(iBin, ts->GetReal(iBin)*weight, ts->GetImag(iBin)*weight);
         }
 
         return true;
