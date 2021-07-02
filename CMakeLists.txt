@@ -95,6 +95,13 @@ add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
+# eigen
+find_package (Eigen3 REQUIRED)
+if (EIGEN3_FOUND)
+   message (STATUS "Eigen found.")
+   include_directories (${EIGEN3_INCLUDE_DIR})
+endif (EIGEN3_FOUND)
+
 ## TODO Lots of convention questions... BHL
 # python stuff is all here, maybe should not be?
 if (Katydid_USE_PYTHON)
@@ -184,17 +191,6 @@ if (MAGICK++_FOUND)
     include_directories (${MAGICK_INCLUDE_DIR} ${MAGICK++_INCLUDE_DIR})
     pbuilder_add_ext_libraries (${MAGICK_LIBRARIES} ${MAGICK++_LIBRARIES})
 endif (MAGICK++_FOUND)
-
-# eigen
-if (Katydid_USE_EIGEN)
-    find_package (Eigen3)
-else (Katydid_USE_EIGEN)
-    set (EIGEN3_FOUND FALSE)
-endif (Katydid_USE_EIGEN)
-if (EIGEN3_FOUND)
-   message (STATUS "Eigen found.")
-   include_directories (${EIGEN3_INCLUDE_DIR})
-endif (EIGEN3_FOUND)
 
 # dlib
 if (Katydid_USE_DLIB)
