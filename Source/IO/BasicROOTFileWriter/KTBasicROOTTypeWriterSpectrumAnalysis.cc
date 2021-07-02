@@ -843,8 +843,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        unsigned optimizedGridIndex=sumData.GetOptimizedGridPoint();
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue;
             KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
             if (spectrum != NULL)
             {
@@ -899,9 +902,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        unsigned optimizedGridIndex=sumData.GetOptimizedGridPoint();
 
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue;
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
@@ -935,7 +940,7 @@ namespace Katydid
         string graphName;
         conv >> graphName;
         std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData, graphName);
-        for (unsigned i=0;i<aggregatedGridGraphs.size();++i)
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i) 
         {
             aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
             aggregatedGridGraphs.at(i)->Write();//Redundant
@@ -955,9 +960,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        unsigned optimizedGridIndex=sumData.GetOptimizedGridPoint();
 
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue;
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
