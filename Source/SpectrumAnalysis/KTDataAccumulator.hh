@@ -146,7 +146,7 @@ namespace Katydid
                 AccumulatorType() : Accumulator(), fDataType(fData->Of<XDataType>()) {}
                 virtual ~AccumulatorType() {}
 
-                virtual bool Finalize() {}
+                virtual bool Finalize();
             };
 
             typedef std::map< const std::type_info*, Accumulator* > AccumulatorMap;
