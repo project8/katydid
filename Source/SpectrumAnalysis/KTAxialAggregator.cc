@@ -64,8 +64,7 @@ namespace Katydid
                     double imagVal = freqSpectrum->GetImag(iFreqBin);
                     double summedRealVal = realVal + newFreqSpectrum->GetReal(iFreqBin);
                     double summedImagVal = imagVal + newFreqSpectrum->GetImag(iFreqBin);
-                    (*newFreqSpectrum)(iFreqBin)[0] = summedRealVal;
-                    (*newFreqSpectrum)(iFreqBin)[1] = summedImagVal;
+                    newFreqSpectrum->SetRect(iFreqBin, summedRealVal, summedImagVal);
                 // This doesn't seem to work
                 //(*newFreqSpectrum)+=*fftwData.GetSpectrumFFTW(iComponent+nComponents*iRing);
                 }

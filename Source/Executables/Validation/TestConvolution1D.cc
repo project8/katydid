@@ -43,15 +43,13 @@ int main()
 		if( powerSpect->GetBinCenter( iBin ) >= pulseStart && powerSpect->GetBinCenter( iBin ) <= pulseEnd )
 		{
 			(*powerSpect)(iBin) = 1.0;
-			(*fftwSpect)(iBin)[0] = 1.0;
-			(*fftwSpect)(iBin)[1] = 0.0;
+            fftwSpect->SetRect(iBin, 1.0, 0.0);
 			polarSpect->SetRect( iBin, 1.0, 0.0 );
 		}
 		else
 		{
 			(*powerSpect)(iBin) = 0.0;
-			(*fftwSpect)(iBin)[0] = 0.0;
-			(*fftwSpect)(iBin)[1] = 0.0;
+            fftwSpect->SetRect( iBin, 0.0, 0.0);
 			polarSpect->SetRect( iBin, 0.0, 0.0 );
 		}
 

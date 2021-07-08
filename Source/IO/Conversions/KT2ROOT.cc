@@ -185,7 +185,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, ::sqrt((*ts)(iBin)[0] * (*ts)(iBin)[0] + (*ts)(iBin)[1] * (*ts)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, ts->GetAbs(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -198,7 +198,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Real)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, (*ts)(iBin)[0]);
+            hist->SetBinContent((int) iBin + 1, ts->GetReal(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -211,7 +211,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Imag)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, (*ts)(iBin)[1]);
+            hist->SetBinContent((int) iBin + 1, ts->GetImag(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -392,7 +392,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int) nBins, fs->GetRangeMin(), fs->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, std::sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, fs->GetAbs(iBin));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Voltage (V)");
@@ -405,7 +405,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int) nBins, fs->GetRangeMin(), fs->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, std::atan2((*fs)(iBin)[1], (*fs)(iBin)[0]));
+            hist->SetBinContent((int) iBin + 1, fs->GetArg(iBin));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Phase");
@@ -421,7 +421,7 @@ namespace Katydid
 
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, scaling * ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, scaling * fs->GetNorm(iBin));
         }
 
         hist->SetXTitle("Frequency (Hz)");
@@ -438,7 +438,7 @@ namespace Katydid
         // skip the DC bin; start at iBin = 1
         for (unsigned iBin = 1; iBin < nBins; ++iBin)
         {
-            value = std::sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]);
+            value = fs->GetAbs(iBin);
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -446,7 +446,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag * 0.95, tMaxMag * 1.05);
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            value = sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]);
+            value = fs->GetAbs(iBin);
             hist->Fill(value);
         }
         hist->SetXTitle("Voltage (V)");
@@ -463,7 +463,7 @@ namespace Katydid
         // skip the DC bin; start at iBin = 1
         for (unsigned iBin = 1; iBin < nBins; ++iBin)
         {
-            value = ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]) * scaling;
+            value = fs->GetNorm(iBin) * scaling;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -471,7 +471,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag * 0.95, tMaxMag * 1.05);
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            value = (*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1];
+            value = fs->GetNorm(iBin);
             hist->Fill(value * scaling);
         }
         hist->SetXTitle("Power (W)");

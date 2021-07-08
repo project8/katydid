@@ -137,7 +137,7 @@ int main()
         KTFrequencySpectrumFFTW* spectrum = spectra(iX);
         for (unsigned iY=0; iY<nBinsY; iY++)
         {
-            value = sqrt((*spectrum)(iY)[0] * (*spectrum)(iY)[0] + (*spectrum)(iY)[1] * (*spectrum)(iY)[1]);
+            value = spectrum->GetAbs(iY);
             histOut->SetBinContent(iX+1, iY+1, value);
         }
     }

@@ -115,13 +115,11 @@ int main()
     {
 #ifdef ROOT_FOUND
         (*spectrum)(iBin).set_polar(rand.Gaus(meanValue, noiseSigma), 0.);
-        (*spectrumFFTW)(iBin)[0] = rand.Gaus(meanValue, noiseSigma);
-        (*spectrumFFTW)(iBin)[1] = 0.;
+        spectrumFFTW->SetRect(iBin, rand.Gaus(meanValue, noiseSigma), 0.);
         (*powerSpectrum)(iBin) = rand.Gaus(meanValue, noiseSigma);
 #else
         (*spectrum)(iBin).set_polar(meanValue, 0.);
-        (*spectrumFFTW)(iBin)[0] = meanValue;
-        (*spectrumFFTW)(iBin)[1] = 0.;
+        spectrumFFTW->SetRect(iBin, meanValue, 0.);
         (*powerSpectrum)(iBin) = meanValue;
 #endif
     }
@@ -137,8 +135,9 @@ int main()
         double multiplier = meanPeakMult;
 #endif
         (*spectrum)(iBin).set_polar((*spectrum)(iBin).abs() * multiplier, 0.);
-        (*spectrumFFTW)(iBin)[0] =(*spectrumFFTW)(iBin)[0] * multiplier;
-        (*spectrumFFTW)(iBin)[1] =(*spectrumFFTW)(iBin)[1] * multiplier;
+        spectrumFFTW->SetRect(iBin, 
+                                spectrumFFTW->GetReal(iBin)*multiplier,
+                                spectrumFFTW->GetImag(iBin)*multiplier);
         (*powerSpectrum)(iBin) = (*powerSpectrum)(iBin) * multiplier;
         //KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());
         //KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << std::sqrt((*spectrumFFTW)(iBin)[0] * (*spectrumFFTW)(iBin)[0] + (*spectrumFFTW)(iBin)[1] * (*spectrumFFTW)(iBin)[1]));

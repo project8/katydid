@@ -38,7 +38,6 @@ set (DATA_HEADERFILES
     EventAnalysis/KTWaterfallCandidateData.hh
     Time/KTDigitizerTestData.hh
     Time/KTEggHeader.hh
-    Time/KTPhysicalArrayFFTW.hh
     Time/KTProcSummary.hh
     Time/KTRawTimeSeries.hh
     Time/KTRawTimeSeriesData.hh
@@ -104,7 +103,6 @@ set (DATA_SOURCEFILES
     EventAnalysis/KTWaterfallCandidateData.cc
     Time/KTDigitizerTestData.cc
     Time/KTEggHeader.cc
-    Time/KTPhysicalArrayFFTW.cc
     Time/KTProcSummary.cc
     Time/KTRawTimeSeries.cc
     Time/KTRawTimeSeriesData.cc

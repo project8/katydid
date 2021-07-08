@@ -79,11 +79,12 @@ Tips on Installing the Dependencies
 MacOS: Homebrew_ is a convenient package manager. Before using it for the installation, make sure that the version available on brew is compatible with what is listed in the dependency list above. CMake_, Boost_, Hdf5_, Protobuf_, and Root_ are all available through brew via the instructions in these links.
 
 .. _Homebrew: https://brew.sh/
-.. _CMake: http://brewformulas.org/Cmake
-.. _Boost: http://brewformulas.org/Boost
-.. _Hdf5: http://brewformulas.org/Hdf5
-.. _Protobuf: http://brewformulas.org/Protobuf
-.. _Root: http://brewformulas.org/root
+.. _CMake: http://formulae.brew.sh/formula/cmake
+.. _Boost: https://formulae.brew.sh/formula/boost
+.. _Eigen: https://formulae.brew.sh/formula/eigen
+.. _Hdf5: http://formulae.brew.sh/formula/hdf5
+.. _Protobuf: http://formulae.brew.sh/formula/protobuf
+.. _Root: http://formulae.brew.sh/formula/root
 
 
 Installation
