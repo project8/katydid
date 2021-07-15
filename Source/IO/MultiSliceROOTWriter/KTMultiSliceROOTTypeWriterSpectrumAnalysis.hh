@@ -36,6 +36,8 @@ namespace Katydid
         public:
 
             void AddCorrelationData(Nymph::KTDataPtr);
+      
+            void WriteMFScores(Nymph::KTDataPtr);
 
         private:
             std::vector< TH1D* > fCorrHists;

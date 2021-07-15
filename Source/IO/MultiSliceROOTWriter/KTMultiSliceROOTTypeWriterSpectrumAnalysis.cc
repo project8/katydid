@@ -12,9 +12,12 @@
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTSliceHeader.hh"
+#include "KTInnerProductData.hh"
+#include "KTInnerProductOptimizerData.hh"
 
 #include "TCanvas.h"
 #include "TH1.h"
+#include "TGraph2D.h"
 #include "TStyle.h"
 
 #include <sstream>
@@ -99,6 +102,7 @@ namespace Katydid
     void KTMultiSliceROOTTypeWriterSpectrumAnalysis::RegisterSlots()
     {
         fWriter->RegisterSlot("corr", this, &KTMultiSliceROOTTypeWriterSpectrumAnalysis::AddCorrelationData);
+        fWriter->RegisterSlot("mf-score", this, &KTMultiSliceROOTTypeWriterSpectrumAnalysis::WriteMFScores);
         return;
     }
 
@@ -141,5 +145,27 @@ namespace Katydid
         }
         return;
     }
+
+      void KTMultiSliceROOTTypeWriterSpectrumAnalysis::WriteMFScores(Nymph::KTDataPtr data)
+      {
+          if (! data) return;
+          KTInnerProductData& ipData = data->Of<KTInnerProductData>();
+          
+          if (! fWriter->OpenAndVerifyFile()) return;
+
+          stringstream conv;
+          conv << "graphMFScores";
+          string graphName;
+          conv >> graphName;
+          std::vector<TGraph2D*> MFScoreGraphs = KT2ROOT::CreateMFScoresGraph(ipData,graphName);
+          for (unsigned i=0;i<MFScoreGraphs.size();++i)
+          {
+              MFScoreGraphs.at(i)->SetDirectory(fWriter->GetFile());
+              MFScoreGraphs.at(i)->Write();
+          }
+
+          KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
+          return;
+      }
 
 } /* namespace Katydid */

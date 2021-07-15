@@ -4,6 +4,7 @@
 *.so
 *.a
 *.dylib
+*.fftw3
 
 #mac
 .DS_Store
@@ -11,6 +12,9 @@
 #from Eclipse
 .project
 .cproject
+
+#from vscode
+.vscode
 
 #from cmake
 CMakeCache.txt
@@ -29,3 +33,7 @@ install_manifest.txt
 
 # from emacs
 *~
+
+#from Doxygen
+html
+latex

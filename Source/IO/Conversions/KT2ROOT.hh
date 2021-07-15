@@ -49,6 +49,8 @@ namespace Katydid
     class KTDiscriminatedPoint;
     class KTAggregatedFrequencySpectrumDataFFTW;
     class KTAggregatedPowerSpectrumData;
+    class KTInnerProductData;
+    class KTInnerProductOptimizerData;
 
     class TDiscriminatedPoint;
     class TSparseWaterfallCandidateData;
@@ -182,6 +184,12 @@ namespace Katydid
 
             static void LoadSequentialLineData(const KTSequentialLineData& seqData, TSequentialLineData& rootSEQData);
             // static void UnloadSequentialLineData(KTSequentialLineData& seqData, const TSequentialLineData& rootSEQData);
+      
+            //*********************************
+            // Matched filter output
+            //*********************************
+
+            static std::vector<TGraph2D*> CreateMFScoresGraph(const KTInnerProductData& fData,const std::string& name);
 
     };
 

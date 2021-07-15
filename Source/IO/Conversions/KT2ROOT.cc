@@ -27,6 +27,8 @@
 #include "KTSequentialLineData.hh"
 #include "KTChannelAggregatedData.hh"
 #include "KTMath.hh"
+#include "KTInnerProductData.hh"
+#include "KTInnerProductOptimizerData.hh"
 
 #include "CClassifierResultsData.hh"
 #include "CMTEWithClassifierResultsData.hh"
@@ -989,5 +991,26 @@ namespace Katydid
 // TODO
 // return;
 // }
+
+    std::vector<TGraph2D*>  KT2ROOT::CreateMFScoresGraph(const KTInnerProductData& fData,const std::string& name)
+    {
+        auto snr = fData.GetData().abs().eval();
+        std::vector<TGraph2D*> graphs;
+        
+        for(int i=0;i<snr.rows();++i)
+        {
+            graphs.push_back(new TGraph2D());
+            graphs.at(i)->SetName((name+"_"+std::to_string(i)).c_str());
+            graphs.at(i)->GetXaxis()->SetTitle("Pitch angle (m)");
+            graphs.at(i)->GetYaxis()->SetTitle("Radius (m)");
+            // Also why are there 12 timeslices when there are only 4 in locust simulation ?
+            for(int j=0;j<snr.cols();++j)
+            {
+                // Here is where the radius and pitch angle from the json file has to be extracted
+                graphs.at(i)->SetPoint(j,j,j,snr(i,j));
+            }
+        }
+        return graphs;
+    }
 
 } /* namespace Katydid */
