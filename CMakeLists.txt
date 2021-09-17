@@ -15,8 +15,6 @@ include( PackageBuilder )
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/cmake )
 include( Nymph )
 
-include( PythonPackage )
-
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
@@ -33,14 +31,14 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
 option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
 option (Katydid_USE_MONARCH "Flag to optionally use Monarch" ON)
-option (Katydid_USE_PYTHON "Flag to optionally build python bindings" OFF)
+#option (Katydid_USE_PYTHON "Flag to optionally build python bindings" OFF) # this is an old python integration that was never completed and won't be used
 option (Katydid_USE_MATLAB "Flag to optionally use MatIO libraries, needed to read MAT files" ON)
 option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
 option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
 option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
-option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF)
-option (Katydid_USE_EIGEN "Flag to optionally use eigen" ON)
+#option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF) # mantis is no longer used
+#option (Katydid_USE_EIGEN "Flag to optionally use eigen" ON) # eigen is now required
 option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
 
 set_option( Scarab_BUILD_PARAM TRUE )
@@ -56,63 +54,29 @@ set_option( Cicada_ENABLE_EXECUTABLES FALSE )
 # Dependencies
 ##############
 
-# Nymph
-pbuilder_add_submodule( Nymph Nymph )
-nymph_process_options()
-add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
-
-# Cicada
-if (Katydid_USE_ROOT)
-    pbuilder_add_submodule( Cicada Cicada )
-endif (Katydid_USE_ROOT)
-
-# Mantis
-if (Katydid_USE_MANTIS)
-    set (Mantis_PREFIX "" CACHE PATH "Mantis install prefix")
-    if (NOT IS_DIRECTORY ${Mantis_PREFIX})
-        message (FATAL_ERROR "Please specify the Mantis prefix directory as \"Mantis_PREFIX\" (<${Mantis_PREFIX}> is not a valid directory)")
-    endif (NOT IS_DIRECTORY ${Mantis_PREFIX})
-    list (APPEND Mantis_LIBRARY_DIRS ${Mantis_PREFIX}/lib)
-    list (APPEND Mantis_INCLUDE_DIRS ${Mantis_PREFIX}/include)
-    list (APPEND Mantis_LIBRARIES MantisClient MantisServer MantisProto boost_atomic)
-    include_directories (${Mantis_INCLUDE_DIRS})
-    link_directories (${Mantis_LIBRARY_DIRS})
-    pbuilder_add_ext_libraries (${Mantis_LIBRARIES})
-    add_definitions (-DUSE_MANTIS)
-    set (Mantis_FOUND TRUE)
-endif (Katydid_USE_MANTIS)
+set( PUBLIC_EXT_LIBS )
+set( PRIVATE_EXT_LIBS )
 
 # Boost (1.46 required for filesystem version 3)
 list (APPEND Boost_COMPONENTS date_time filesystem program_options system thread)
-# python optional
-if (Katydid_USE_PYTHON)
-    list(APPEND Boost_COMPONENTS python)
-endif (Katydid_USE_PYTHON)
-#find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
 find_package (Boost 1.46.0 REQUIRED COMPONENTS ${Boost_COMPONENTS})
 # make sure dynamic linking is assumed for all boost libraries
 add_definitions (-DBOOST_ALL_DYN_LINK)
-include_directories (${Boost_INCLUDE_DIRS})
-pbuilder_add_ext_libraries (${Boost_LIBRARIES})
+list( APPEND PUBLIC_EXT_LIBS Boost::filesystem Boost::program_options )
 
 # eigen
 # versions earlier than 3.3 may work; the exact minimum version is not known for sure.
 find_package (Eigen3 3.3 REQUIRED)
 if (EIGEN3_FOUND)
    message (STATUS "Eigen found.")
-   include_directories (${EIGEN3_INCLUDE_DIR})
+   list( APPEND PUBLIC_EXT_LIBS Eigen3::Eigen )
 endif (EIGEN3_FOUND)
 
-## TODO Lots of convention questions... BHL
-# python stuff is all here, maybe should not be?
-if (Katydid_USE_PYTHON)
-    python_package_find_python( 2.7 )
-    SET( Nymph_ENABLE_PYTHON ON CACHE BOOL "" FORCE)
-else (Katydid_USE_PYTHON)
-    set( Nymph_ENABLE_PYTHON OFF CACHE BOOL "" FORCE)
-endif (Katydid_USE_PYTHON)
-
 # FFTW
+# TODO: FFTW doesn't provide a cmake config when installed with apt
+#       It does when installed with homebrew
+#       in the config: `FFTW3_LIBRARIES`, `FFTW3_LIBRARY_DIRS`, and `FFTW3_INCLUDE_DIRS` are defined.  Library is `fftw3`
+#       No target is defined
 if (Katydid_USE_FFTW)
     find_package(FFTW REQUIRED)
 else (Katydid_USE_FFTW)
@@ -137,6 +101,7 @@ endif (FFTW_FOUND)
 include_directories (${FFTW_INCLUDE_DIR})
 
 # HDF5
+# TODO: no HDF5 cmake config file is provided when HDF5 is installed with either apt or homebrew
 if (Katydid_USE_HDF5)
     find_package (HDF5 COMPONENTS CXX)
 else (Katydid_USE_HDF5)
@@ -152,6 +117,7 @@ else (HDF5_FOUND)
 endif (HDF5_FOUND)
 
 # ROOT
+# TODO: doesn't provide a config script in apt or brew
 if (Katydid_USE_ROOT)
     find_package (ROOT 6.00 COMPONENTS Gui Spectrum TMVA)
 else (Katydid_USE_ROOT)
@@ -168,6 +134,7 @@ endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDE_DIR})
 
 # Matlab
+# TODO: doesn't provide a config script in apt or brew
 if (Katydid_USE_MATLAB)
     find_package(MatIO)
 endif (Katydid_USE_MATLAB)
@@ -183,6 +150,7 @@ else (MATIO_FOUND)
 endif (MATIO_FOUND)
 
 # GraphicsMagic & Magick++
+# TODO: doesn't provide a config script in apt or brew
 if (Katydid_USE_MAGICKPP)
     find_package(GraphicsMagick REQUIRED)
 endif (Katydid_USE_MAGICKPP)
@@ -194,6 +162,7 @@ if (MAGICK++_FOUND)
 endif (MAGICK++_FOUND)
 
 # dlib
+# TODO: doesn't provide a config script in apt or brew
 if (Katydid_USE_DLIB)
     find_package(DLIB)
 endif (Katydid_USE_DLIB)
@@ -219,23 +188,34 @@ else (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
 # External packages distributed with Katydid
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
+# TODO: move these to a CMakeLists.txt in the External directory
+add_library(nanoflann INTERFACE IMPORTED)
+set_target_properties(nanoflann PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/External/nanoflann"
+)
 
-#######
-# Build
-#######
+add_library(RapidXML INTERFACE IMPORTED)
+set_target_properties(RapidXML PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/External/RapidXML"
+)
 
-if (Katydid_ENABLE_TESTING)
-    enable_testing ()
-endif (Katydid_ENABLE_TESTING)
+list( APPEND PRIVATE_EXT_LIBS nanoflann RapidXML )
 
-if (Katydid_ENABLE_TUTORIAL)
-    include_directories (${PROJECT_SOURCE_DIR}/Examples/Tutorial)
-    add_definitions (-DENABLE_TUTORIAL)
-else (Katydid_ENABLE_TUTORIAL)
-    remove_definitions (-DENABLE_TUTORIAL)
-endif (Katydid_ENABLE_TUTORIAL)
+###################
+# Prepare for build
+###################
+
+pbuilder_prepare_project()
+
+
+############
+# Submodules
+############
+
+# Nymph
+pbuilder_add_submodule( Nymph Nymph )
+nymph_process_options()
+add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
 
 # Monarch
 if (Katydid_USE_MONARCH)
@@ -261,6 +241,28 @@ else (Katydid_USE_MONARCH)
     remove_definitions (-DUSE_MONARCH2)
     remove_definitions (-DUSE_MONARCH3)
 endif (Katydid_USE_MONARCH)
+
+# Cicada
+if (Katydid_USE_ROOT)
+    pbuilder_add_submodule( Cicada Cicada )
+endif (Katydid_USE_ROOT)
+
+
+
+#######
+# Build
+#######
+
+if (Katydid_ENABLE_TESTING)
+    enable_testing ()
+endif (Katydid_ENABLE_TESTING)
+
+if (Katydid_ENABLE_TUTORIAL)
+    include_directories (${PROJECT_SOURCE_DIR}/Examples/Tutorial)
+    add_definitions (-DENABLE_TUTORIAL)
+else (Katydid_ENABLE_TUTORIAL)
+    remove_definitions (-DENABLE_TUTORIAL)
+endif (Katydid_ENABLE_TUTORIAL)
 
 # Subdirectories
 include_directories (BEFORE 
