@@ -46,7 +46,6 @@ COPY KatydidConfig.hh.in /tmp_source/KatydidConfig.hh.in
 COPY libkatydid.rootmap /tmp_source/libkatydid.rootmap
 COPY this_katydid.sh.in /tmp_source/this_katydid.sh.in
 COPY .git /tmp_source/.git
-COPY CI /$KATYDID_BUILD_PREFIX/CI
 
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
 RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
