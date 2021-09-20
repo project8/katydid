@@ -176,37 +176,6 @@ jobs:
             build_tests_exe=${{needs.init.outputs.build_tests}}
           tags: ${{ steps.docker_meta.outputs.tags }}
 
-  doc:
-    name: Build documentation
-    if: |
-        (github.event_name == 'push' && contains(github.ref, 'refs/tags/') ) 
-        || github.event_name == 'release' 
-    runs-on: ubuntu-latest
-    #needs: [init, test_linux]
-    steps:
-    
-      - name: Check out the repo
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
-            tree \
-            doxygen \
-            python3-sphinx \
-            graphviz
-          pip install sphinxcontrib-blockdiag
-          pip install sphinxcontrib-contentui
-      
-      - name: Build docs
-        run: |
-          cd Documentation
-          sphinx-build -M html . build --color
-
   notify-packages:
   
     if: |
