@@ -85,6 +85,7 @@ namespace Katydid
     KTEggHeader::KTEggHeader() :
             KTExtensibleData< KTEggHeader >(),
             fFilename(),
+            fMetadataFilename(),
             fAcquisitionMode(1),
             fRunDuration(0),
             fAcquisitionRate(0),
@@ -99,6 +100,7 @@ namespace Katydid
 
     KTEggHeader::KTEggHeader(const KTEggHeader& orig) :
             fFilename(orig.fFilename),
+            fMetadataFilename(orig.fMetadataFilename),
             fAcquisitionMode(orig.fAcquisitionMode),
             fRunDuration(orig.fRunDuration),
             fAcquisitionRate(orig.fAcquisitionRate),
@@ -122,6 +124,7 @@ namespace Katydid
     KTEggHeader& KTEggHeader::operator=(const KTEggHeader& rhs)
     {
         fFilename = rhs.fFilename;
+        fMetadataFilename = rhs.fMetadataFilename;
         fAcquisitionMode = rhs.fAcquisitionMode;
         fRunDuration = rhs.fRunDuration;
         fAcquisitionRate = rhs.fAcquisitionRate;
@@ -182,6 +185,7 @@ namespace Katydid
     {
         out << "File header:\n"
                 << "\tFilename: " << header.GetFilename() << '\n'
+                << "\tMetadata Filename: " << header.GetMetadataFilename() << '\n'
                 << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " ms\n"

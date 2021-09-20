@@ -96,11 +96,11 @@ namespace Katydid
         {
             KTWARN(eggreadlog, "RSAMAT reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
         }
-        KTINFO(eggreadlog, "Opening mat file <" << filenames[0] << ">");
-        fMatFilePtr = Mat_Open(filenames[0].c_str(), MAT_ACC_RDONLY);
+        KTINFO(eggreadlog, "Opening mat file <" << filenames[0].first << ">");
+        fMatFilePtr = Mat_Open(filenames[0].first.c_str(), MAT_ACC_RDONLY);
         if (fMatFilePtr == NULL)
         {
-            KTERROR(eggreadlog, "Unable to open mat file: " << filenames[0]);
+            KTERROR(eggreadlog, "Unable to open mat file: " << filenames[0].first);
             return Nymph::KTDataPtr();
         }
 
@@ -268,7 +268,8 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
-        fHeader.SetFilename(filenames[0].native());
+        fHeader.SetFilename(filenames[0].first.native());
+        fHeader.SetMetadataFilename(filenames[0].second.native());
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");

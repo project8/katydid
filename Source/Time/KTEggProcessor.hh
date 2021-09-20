@@ -96,7 +96,6 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, ProgressReportInterval);
 
             MEMBERVARIABLEREF(KTEggReader::path_vec, Filenames);
-            MEMBERVARIABLEREF(KTEggReader::path_vec, MetadataFilenames);
             MEMBERVARIABLEREF(std::string, EggReaderType);
 
             MEMBERVARIABLE(unsigned, SliceSize);

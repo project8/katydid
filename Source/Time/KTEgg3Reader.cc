@@ -97,10 +97,10 @@ namespace Katydid
         fCurrentFileIt = fFilenames.begin();
 
         // open the file
-        KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0] << ">");
+        KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0].first << ">");
         try
         {
-            fMonarch = Monarch3::OpenForReading(fFilenames[0].native());
+            fMonarch = Monarch3::OpenForReading(fFilenames[0].first.native());
         }
         catch (M3Exception& e)
         {
@@ -151,6 +151,7 @@ namespace Katydid
         fM3StreamHeader = &(fMonarch->GetHeader()->GetStreamHeaders()[streamNum]);
 
         CopyHeader(fMonarch->GetHeader());
+        fHeader.SetMetadataFilename(fFilenames[0].second.native());
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
@@ -562,10 +563,10 @@ namespace Katydid
         }
 
         // open the next file
-        KTINFO(eggreadlog, "Opening next egg file <" << *fCurrentFileIt << ">");
+        KTINFO(eggreadlog, "Opening next egg file <" << fCurrentFileIt->first << ">");
         try
         {
-            fMonarch = Monarch3::OpenForReading(fCurrentFileIt->native());
+            fMonarch = Monarch3::OpenForReading(fCurrentFileIt->first.native());
         }
         catch (M3Exception& e)
         {
