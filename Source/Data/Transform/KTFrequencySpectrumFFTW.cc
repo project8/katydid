@@ -86,7 +86,7 @@ namespace Katydid
     {
 
         fData = conj(fData);
-        
+        return *this;
     }
 
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::AnalyticAssociate()

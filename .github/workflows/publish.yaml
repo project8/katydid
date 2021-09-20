@@ -1,0 +1,197 @@
+
+name: Publish
+
+on:
+
+  push:
+    branches: [ main, develop]
+    tags: ['v*.*.*']
+    
+  pull_request:
+  
+  release:
+    types: [published]
+
+  workflow_dispatch:
+  
+  repository_dispatch:
+    types: [release-event]
+
+jobs:
+
+  init:
+    runs-on: ubuntu-latest
+    outputs:
+      build_type: ${{ steps.setvars.outputs.build_type }}
+      build_tests: ${{ steps.setvars.outputs.build_tests }}
+      luna_version: ${{ steps.setversion.outputs.luna_version }}
+
+    steps:
+      - name: Cancel previous workflow
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Set variables
+        id: setvars
+        #Only build the tests in a debug build, tests currently don't build in release mode
+        run: |
+          echo ${{github.base_ref}}
+          echo ${{github.ref}}
+          if [[ "${{github.base_ref}}" == "develop" || "${{github.ref}}" == "refs/heads/develop" ]]; then
+            echo "::set-output name=build_type::DEBUG"
+            echo "::set-output name=build_tests::TRUE"
+            echo Debug build
+          else
+            echo "::set-output name=build_type::RELEASE"
+            echo "::set-output name=build_tests::FALSE"
+          fi
+          
+      - name: Set Luna version
+        id: setversion
+        run: |
+          git clone https://github.com/project8/luna_base.git
+          cd luna_base
+          echo "::set-output name=luna_version::$(git describe --abbrev=0 --tags)"
+
+  test_linux:
+    runs-on: ubuntu-latest
+    needs: [init]
+    
+    strategy:
+      matrix:
+        build_type: [DEBUG, RELEASE]
+        compiler: [gcc]
+      fail-fast: false
+        
+    steps:
+      - name: Checkout the repo 
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Set env
+        run: |
+          if [[ "${{matrix.build_type}}" == "DEBUG" ]]; then
+            echo "build_tests=TRUE" >> $GITHUB_ENV
+          else
+            echo "build_tests=FALSE" >> $GITHUB_ENV
+          fi
+          if [[ "${{matrix.compiler}}" == "gcc" ]]; then
+            echo "CXX_VAL=g++" >> $GITHUB_ENV
+          else
+            echo "CXX_VAL=clang++" >> $GITHUB_ENV
+          fi
+          
+      - name: Print config
+        run: |
+            echo Build type: ${{ matrix.build_type }}
+            echo Build tests: ${{ env.build_tests }}
+            echo Compiler: ${{ matrix.compiler }} ${{ env.CXX_VAL }} 
+            echo Luna version: ${{ needs.init.outputs.luna_version }}
+          
+      - name: Build with docker
+        run: |
+          cd ${{github.workspace}}
+          docker build \
+            --build-arg IMG_USER=project8 \
+            --build-arg IMG_REPO=p8compute_dependencies \
+            --build-arg IMG_TAG=${{ needs.init.outputs.luna_version }} \
+            --build-arg KATYDID_TAG=test \
+            --build-arg build_type=${{matrix.build_type}} \
+            --build-arg build_tests_exe=${{env.build_tests}} \
+            --build-arg CC_VAL=${{matrix.compiler}} \
+            --build-arg CXX_VAL=${{env.CXX_VAL}} \
+            --tag project8/katydid:test \
+            .
+            
+      #- name: Run tests 
+      # TODO - At the moment not all tests give useful outputs or even terminate
+
+  publish:
+    if: |
+        (github.event_name == 'push' && contains(github.ref, 'refs/tags/') ) 
+        || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        || (github.event_name == 'push' && github.ref == 'refs/heads/develop')
+        || github.event_name == 'release' 
+        || github.event_name == 'workflow_dispatch'
+        || github.event_name == 'repository_dispatch'
+
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    needs: [init, test_linux]
+    steps:
+    
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v3
+        with:
+          images: project8/katydid
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        
+      - name: Set up Docker Buildx
+        id: setup_buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: --debug
+          
+      - name: List platforms
+        run: | 
+            echo Platforms: ${{ steps.setup_buildx.outputs.platforms }}
+        
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          
+      - name: Set env
+        run: | 
+            echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+            
+      - name: Print config
+        run: |
+            echo Release version: ${{ env.RELEASE_VERSION }}
+            echo Luna version: ${{ needs.init.outputs.luna_version }}
+        
+      - name: Push to Docker Hub
+        id: build_push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          build-args: |
+            IMG_USER=project8
+            IMG_REPO=p8compute_dependencies
+            IMG_TAG=${{ needs.init.outputs.luna_version }}
+            KATYDID_TAG=${{ env.RELEASE_VERSION }}
+            build_type=${{needs.init.outputs.build_type}}
+            build_tests_exe=${{needs.init.outputs.build_tests}}
+          tags: ${{ steps.docker_meta.outputs.tags }}
+
+  notify-packages:
+  
+    if: |
+        (github.event_name == 'push' && contains(github.ref, 'refs/tags/') ) 
+        || github.event_name == 'release' 
+        || github.event_name == 'workflow_dispatch'
+        || github.event_name == 'repository_dispatch'
+    name: Trigger new docker P8Compute image
+    runs-on: ubuntu-latest
+    needs: [publish]
+
+    steps:
+    
+      - name: Repository dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: project8/luna
+          event-type: release-event
