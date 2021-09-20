@@ -25,6 +25,7 @@ namespace Katydid
 {
     static Nymph::KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
     static Nymph::KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
+    static Nymph::KTCommandLineOption< string > sMetadataCLO("Egg Processor", "Metadata filename to open", "metadata-file", 'm');
     static Nymph::KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
 
     KTLOGGER(egglog, "KTEggProcessor");
@@ -36,6 +37,7 @@ namespace Katydid
             fNSlices(0),
             fProgressReportInterval(1),
             fFilenames(),
+            fMetadataFilenames(),
             fEggReaderType("none"),
             fSliceSize(1024),
             fStride(1024),
@@ -84,6 +86,13 @@ namespace Katydid
                 fFilenames.clear();
                 fFilenames.push_back( std::move(scarab::expand_path(node->get_value( "filename" ))) );
                 KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+
+                fMetadataFilenames.clear();
+                if (node->has("metadata"))
+                {
+                    fMetadataFilenames.push_back( std::move(scarab::expand_path(node->get_value( "metadata" ))) );
+                    KTINFO(egglog, "Added metadata file to egg processor: <" << fMetadataFilenames.back() << ">" );
+                }
             }
             else if (node->has("filenames"))
             {
@@ -94,6 +103,17 @@ namespace Katydid
                 {
                     fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)->as_value().as_string())) );
                     KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+                }
+
+                fMetadataFilenames.clear();
+                if (node->has("metadata"))
+                {
+                    const scarab::param_array* t_metadata = node->array_at("metadata");
+                    for(scarab::param_array::const_iterator t_md_file_it = t_metadata->begin(); t_md_file_it != t_metadata->end(); ++t_md_file_it)
+                    {
+                        fMetadataFilenames.push_back( std::move(scarab::expand_path((*t_md_file_it)->as_value().as_string())) );
+                        KTINFO(egglog, "Added metadata file to egg processor: <" << fMetadataFilenames.back() << ">");
+                    }
                 }
             }
 
@@ -125,10 +145,27 @@ namespace Katydid
         SetNSlices(fCLHandler->GetCommandLineValue< int >("n-slices", fNSlices));
         if (fCLHandler->IsCommandLineOptSet("egg-file"))
         {
-            KTDEBUG(egglog, "Adding single file to egg processor from the CL");
+            KTDEBUG(egglog, "Adding single egg file to egg processor from the CL");
             fFilenames.clear();
             fFilenames.push_back( std::move(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("egg-file"))));
-            KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+            KTINFO(egglog, "Added egg file to egg processor: <" << fFilenames.back() << ">");
+        }
+        if (fCLHandler->IsCommandLineOptSet("metadata-file"))
+        {
+            KTDEBUG(egglog, "Adding single metadata file to egg processor from the CL");
+            fMetadataFilenames.clear();
+            fMetadataFilenames.push_back( std::move(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("metadata-file"))));
+            KTINFO(egglog, "Added metadata file to egg processor: <" << fMetadataFilenames.back() << ">");
+        }
+
+        // Check that the size of the metadata filenames matches the egg filenames if there are metadata filenames
+        if (! fMetadataFilenames.empty())
+        {
+            if (fMetadataFilenames.size() != fFilenames.size())
+            {
+                KTERROR(egglog, "Number of egg files (" << fFilenames.size() << ") does not match the number of metadata files (" << fMetadataFilenames.size() << ")");
+                return false;
+            }
         }
 
         return true;
