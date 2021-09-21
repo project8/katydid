@@ -84,6 +84,7 @@ namespace Katydid
         SetStride(eggProc.GetStride());
         SetStartTime(eggProc.GetStartTime());
         SetStartRecord(eggProc.GetStartRecord());
+        SetRequireMetadata(eggProc.GetRequireMetadata());
         return true;
     }
 

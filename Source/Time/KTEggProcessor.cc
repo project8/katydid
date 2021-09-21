@@ -38,6 +38,7 @@ namespace Katydid
             fProgressReportInterval(1),
             fFilenames(),
             fEggReaderType("none"),
+            fRequireMetadata(false),
             fSliceSize(1024),
             fStride(1024),
             fStartTime(0.),
@@ -115,6 +116,8 @@ namespace Katydid
                             "\tmetadata: <" << fFilenames.back().second << ">");
                 }
             }
+
+            fRequireMetadata = node->get_value< bool >("require-metadata", fRequireMetadata);
 
             // specify the length of the time series
             fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);

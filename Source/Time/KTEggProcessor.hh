@@ -42,6 +42,7 @@ namespace Katydid
      - "filename": string -- Egg filename to use (will take priority over \"filenames\")
      - "filenames": array of strings -- Egg filenames to use (\"filename\" will take priority over this)
      - "metadata": string or array of strings -- Metadata filenames to use (if present, number of files must match the number of egg files specified)
+     - "require-metadata": bool -- Flag to determine whether metadata is required or not (default)
      - "egg-reader": string -- Egg reader to use.
         Options: "egg3", "egg2", "egg1", "rsamat"
         - "egg3" - Uses the monarch3 library to read Egg files
@@ -97,6 +98,7 @@ namespace Katydid
 
             MEMBERVARIABLEREF(KTEggReader::path_vec, Filenames);
             MEMBERVARIABLEREF(std::string, EggReaderType);
+            MEMBERVARIABLE(bool, RequireMetadata);
 
             MEMBERVARIABLE(unsigned, SliceSize);
             MEMBERVARIABLE(unsigned, Stride);
