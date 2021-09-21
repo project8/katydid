@@ -7,6 +7,7 @@
 
 #include "KTEgg3Reader.hh"
 
+#include "KTArbitraryMetadata.hh"
 #include "KTEggHeader.hh"
 #include "KTEggProcessor.hh"
 #include "KTLogger.hh"
@@ -20,6 +21,8 @@
 #include "M3DataInterface.hh"
 #include "M3Exception.hh"
 
+#include "param.hh"
+#include "param_codec.hh"
 #include "scarab_version.hh"
 
 using namespace monarch3;
@@ -40,6 +43,7 @@ namespace Katydid
             fStride(0),
             fStartTime(0.),
             fStartRecord(0),
+            fRequireMetadata(false),
             //fHatchNextSlicePtr(NULL),
             fFilenames(),
             fCurrentFileIt(),
@@ -50,12 +54,12 @@ namespace Katydid
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fMasterSliceHeader(),
             fReadState(),
-            fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFromMonarch),
-            fT0Offset(0),
-            fAcqTimeInRun(0),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(0),
             fBinWidth(0.),
+            fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFromMonarch),
+            fT0Offset(0),
+            fAcqTimeInRun(0),
             fSliceNumber(0),
             fRecordsProcessed(0)
     {
@@ -152,6 +156,7 @@ namespace Katydid
 
         CopyHeader(fMonarch->GetHeader());
         fHeader.SetMetadataFilename(fFilenames[0].second.native());
+        AddMetadata();
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
@@ -685,6 +690,32 @@ namespace Katydid
         }
 
         // set the TS data type size based on channel 0 (by Katydid's channel counting)
+        return;
+    }
+
+    void KTEgg3Reader::AddMetadata()
+    {
+        if (fHeader.GetMetadataFilename().empty())
+        {
+            fHeader.Of< KTArbitraryMetadata >().SetMetadata(nullptr);
+            return;
+        }
+
+        scarab::param_translator translator;
+        scarab::param* metadata = translator.read_file(fHeader.GetMetadataFilename());
+        if (metadata == nullptr)
+        {
+            KTWARN(eggreadlog, "Metadata file was not present or could not be converted to a param object");
+        }
+#ifndef NDEBUG
+        if (metadata != nullptr)
+        {
+            KTDEBUG(eggreadlog, "Adding metadata from <" << fHeader.GetMetadataFilename() << ">");
+            KTDEBUG(eggreadlog, *metadata);
+        }
+#endif
+        fHeader.Of< KTArbitraryMetadata >().SetMetadata(metadata);
+
         return;
     }
 

@@ -13,7 +13,7 @@ namespace Katydid
 
     KTArbitraryMetadata::KTArbitraryMetadata() :
             KTExtensibleData< KTArbitraryMetadata >(),
-            fMetadata( new scarab::param() )
+            fMetadata(nullptr)
     {
     }
 
