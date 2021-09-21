@@ -7,6 +7,7 @@
 
 #include "KTTerminalTypeWriterTime.hh"
 
+#include "KTArbitraryMetadata.hh"
 #include "KTDigitizerTestData.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
@@ -43,6 +44,7 @@ namespace Katydid
     void KTTerminalTypeWriterTime::RegisterSlots()
     {
         fWriter->RegisterSlot("header", this, &KTTerminalTypeWriterTime::WriteEggHeader);
+        fWriter->RegisterSlot("metadata", this, &KTTerminalTypeWriterTime::WriteArbitraryMetadata);
         fWriter->RegisterSlot("ts", this, &KTTerminalTypeWriterTime::WriteTimeSeriesData);
         fWriter->RegisterSlot("dig-test", this, &KTTerminalTypeWriterTime::WriteDigitizerTestData);
         fWriter->RegisterSlot("summary", this, &KTTerminalTypeWriterTime::WriteProcSummary);
@@ -60,6 +62,22 @@ namespace Katydid
 
         KTPROG(termlog, "Egg header:\n" << data->Of< KTEggHeader >());
 
+        return;
+    }
+
+
+    void KTTerminalTypeWriterTime::WriteArbitraryMetadata(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        scarab::param* metadata = data->Of< KTArbitraryMetadata >().GetMetadata();
+        if (metadata == nullptr)
+        {
+            KTPROG(termlog, "Metadata is empty");
+            return;
+        }
+
+        KTPROG(termlog, "Arbitrary Metadata:\n" << *metadata);
         return;
     }
 
