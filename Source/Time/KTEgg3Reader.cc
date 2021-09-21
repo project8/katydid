@@ -158,6 +158,13 @@ namespace Katydid
         CopyHeader(fMonarch->GetHeader());
         fHeader.SetMetadataFilename(fFilenames[0].second.native());
         AddMetadata();
+        if (fRequireMetadata && ! MetadataIsPresent())
+        {
+            KTERROR(eggreadlog, "Metadata is required but not present");
+            delete fMonarch;
+            fMonarch = nullptr;
+            return Nymph::KTDataPtr();
+        }
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
@@ -718,6 +725,12 @@ namespace Katydid
         fHeader.Of< KTArbitraryMetadata >().SetMetadata(metadata);
 
         return;
+    }
+
+    bool KTEgg3Reader::MetadataIsPresent() const
+    {
+        if (! fHeader.Has< KTArbitraryMetadata >() ) return false;
+        return fHeader.Of< KTArbitraryMetadata >().GetMetadata() != nullptr;
     }
 
 

@@ -92,6 +92,8 @@ namespace Katydid
 
             /// Transfer metadata from the metadata file listed in the header to a new KTArbitraryMetadata object
             void AddMetadata();
+            /// Returns true if (1) a KTArbitraryMetadata is attached to fHeader, and if the metadata param object is non-nullptr
+            bool MetadataIsPresent() const;
 
             bool LoadNextFile();
 
