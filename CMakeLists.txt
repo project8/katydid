@@ -37,7 +37,6 @@ option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
 option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
 option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
-#option (Katydid_USE_MANTIS "Flag to optionally use Mantis (external dependency)" OFF) # mantis is no longer used
 #option (Katydid_USE_EIGEN "Flag to optionally use eigen" ON) # eigen is now required
 option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
 

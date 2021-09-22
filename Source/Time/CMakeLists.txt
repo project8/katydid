@@ -50,21 +50,6 @@ if (Katydid_USE_MONARCH)
     #KTEggWriter.cc
 endif (Katydid_USE_MONARCH)
 
-if (Katydid_USE_MANTIS)
-    set (TIME_HEADERFILES
-        ${TIME_HEADERFILES}
-        KTMantis.hh
-        KTMantisClientWriting.hh
-        KTMantisWriterToTS.hh
-    )
-    set (TIME_SOURCEFILES
-        ${TIME_SOURCEFILES}
-        KTMantis.cc
-        KTMantisClientWriting.cc
-        KTMantisWriterToTS.cc
-    )
-endif (Katydid_USE_MANTIS)
-
 if (Katydid_USE_MATLAB)
     set (TIME_HEADERFILES
         ${TIME_HEADERFILES}
