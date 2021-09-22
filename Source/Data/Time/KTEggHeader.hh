@@ -64,6 +64,7 @@ namespace Katydid
             KTEggHeader& operator=(const KTEggHeader& rhs);
 
             MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLEREF(std::string, MetadataFilename);
             MEMBERVARIABLE(unsigned, AcquisitionMode);
             MEMBERVARIABLE(unsigned, RunDuration);  /// in ms
             MEMBERVARIABLE(double, AcquisitionRate); /// in Hz

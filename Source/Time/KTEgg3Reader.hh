@@ -68,23 +68,11 @@ namespace Katydid
             virtual ~KTEgg3Reader();
 
         public:
-            unsigned GetSliceSize() const;
-            void SetSliceSize(unsigned size);
-
-            unsigned GetStride() const;
-            void SetStride(unsigned stride);
-
-            double GetStartTime() const;
-            void SetStartTime(double time);
-
-            unsigned GetStartRecord() const;
-            void SetStartRecord(unsigned rec);
-
-        protected:
-            unsigned fSliceSize;
-            unsigned fStride;
-            double fStartTime;
-            unsigned fStartRecord;
+            MEMBERVARIABLE(unsigned, SliceSize);
+            MEMBERVARIABLE(unsigned, Stride);
+            MEMBERVARIABLE(double, StartTime);
+            MEMBERVARIABLE(unsigned, StartRecord);
+            MEMBERVARIABLE(bool, RequireMetadata);
 
         public:
             bool Configure(const KTEggProcessor& eggProc);
@@ -101,6 +89,11 @@ namespace Katydid
         private:
             /// Copy header information from the M3Header object
             void CopyHeader(const monarch3::M3Header* monarchHeader);
+
+            /// Transfer metadata from the metadata file listed in the header to a new KTArbitraryMetadata object
+            void AddMetadata();
+            /// Returns true if (1) a KTArbitraryMetadata is attached to fHeader, and if the metadata param object is non-nullptr
+            bool MetadataIsPresent() const;
 
             bool LoadNextFile();
 
@@ -123,13 +116,13 @@ namespace Katydid
             MonarchReadState fReadState;
 
         public:
-            double GetSampleRateUnitsInHz() const;
+            MEMBERVARIABLE_NOSET(double, SampleRateUnitsInHz);
+            MEMBERVARIABLE_NOSET(unsigned, RecordSize);
+            MEMBERVARIABLE_NOSET(double, BinWidth);
 
+        public:
             double GetFullVoltageScale() const;
             unsigned GetNADCLevels() const;
-
-            unsigned GetRecordSize() const;
-            double GetBinWidth() const;
 
             /// Returns the time since the run started in seconds
             double GetTimeInRun() const;
@@ -154,11 +147,6 @@ namespace Katydid
             mutable monarch3::TimeType fT0Offset; /// Time of the first record
             mutable double fAcqTimeInRun; /// Time-in-run of the current acquisition
 
-            double fSampleRateUnitsInHz;
-
-            unsigned fRecordSize;
-            double fBinWidth;
-
             uint64_t fSliceNumber;
 
             uint64_t fRecordsProcessed;
@@ -167,65 +155,6 @@ namespace Katydid
 
     uint32_t ConvertMonarch3DataFormat( uint32_t m3DataFormat );
 
-
-
-    inline unsigned KTEgg3Reader::GetSliceSize() const
-    {
-        return fSliceSize;
-    }
-
-    inline void KTEgg3Reader::SetSliceSize(unsigned size)
-    {
-        fSliceSize = size;
-        return;
-    }
-
-    inline unsigned KTEgg3Reader::GetStride() const
-    {
-        return fStride;
-    }
-
-    inline void KTEgg3Reader::SetStride(unsigned stride)
-    {
-        fStride = stride;
-        return;
-    }
-
-    inline double KTEgg3Reader::GetStartTime() const
-    {
-        return fStartTime;
-    }
-
-    inline void KTEgg3Reader::SetStartTime(double time)
-    {
-        fStartTime = time;
-        return;
-    }
-
-    inline unsigned KTEgg3Reader::GetStartRecord() const
-    {
-        return fStartRecord;
-    }
-
-    inline void KTEgg3Reader::SetStartRecord(unsigned rec)
-    {
-        fStartRecord = rec;
-        return;
-    }
-
-    inline double KTEgg3Reader::GetSampleRateUnitsInHz() const
-    {
-        return fSampleRateUnitsInHz;
-    }
-
-    inline unsigned KTEgg3Reader::GetRecordSize() const
-    {
-        return fRecordSize;
-    }
-    inline double KTEgg3Reader::GetBinWidth() const
-    {
-        return fBinWidth;
-    }
 
     inline double KTEgg3Reader::GetTimeInRun() const
     {
