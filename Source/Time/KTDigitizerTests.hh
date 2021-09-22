@@ -73,7 +73,7 @@ namespace Katydid
             KTDigitizerTests(const std::string& name = "digitizer-tests");
             virtual ~KTDigitizerTests();
 
-            bool Configure(const scarab::param_node* node);
+            bool Configure(const scarab::param_node& node);
 
             unsigned GetNDigitizerBits() const;
             unsigned GetNDigitizerLevels() const;

@@ -65,7 +65,7 @@ namespace Katydid
             KTDAC(const std::string& name = "dac");
             virtual ~KTDAC();
 
-            bool Configure(const scarab::param_node* node);
+            bool Configure(const scarab::param_node& node);
 
             unsigned GetNChannels() const;
             void SetNChannels(unsigned num);

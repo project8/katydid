@@ -37,22 +37,20 @@ namespace Katydid
     {
     }
 
-    bool KTDAC::Configure(const scarab::param_node* node)
+    bool KTDAC::Configure(const scarab::param_node& node)
     {
-        if (node == NULL) return false;
-
-        if (node->has("channels"))
+        if (node.has("channels"))
         {
-            const scarab::param_array* channelsArray = node->array_at("channels");
+            const scarab::param_array& channelsArray = node["channels"].as_array();
             SetNChannels(channelsArray->size());
             for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)
             {
-                fChannelDACs[iChannel].Configure(&(*channelsArray)[iChannel].as_node());
+                fChannelDACs[iChannel].Configure(channelsArray[iChannel].as_node());
             }
         }
         else
         {
-            SetNChannels(node->get_value("n-channels", 1U));
+            SetNChannels(node.get_value("n-channels", 1U));
             KTSingleChannelDAC masterCopy;
             masterCopy.Configure(node);
             for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)

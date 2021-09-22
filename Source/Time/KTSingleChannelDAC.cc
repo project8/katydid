@@ -64,11 +64,9 @@ namespace Katydid
     {
     }
 
-    bool KTSingleChannelDAC::Configure(const scarab::param_node* node)
+    bool KTSingleChannelDAC::Configure(const scarab::param_node& node)
     {
-        if (node == NULL) return false;
-
-        if (node->has("dac-gain") && node->get_value< double >("dac-gain") >= 0.)
+        if (node.has("dac-gain") && node.get_value< double >("dac-gain") >= 0.)
         {
             SetInputParameters(
                     node->get_value< unsigned >("data-type-size", fDataTypeSize),
@@ -88,7 +86,7 @@ namespace Katydid
                     node->get_value< unsigned >("bit-alignment", fBitAlignment));
         }
 
-        string timeSeriesTypeString = node->get_value("time-series-type", "real");
+        string timeSeriesTypeString = node.get_value("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
@@ -97,9 +95,9 @@ namespace Katydid
             return false;
         }
 
-        if (node->has("n-bits-emulated"))
+        if (node.has("n-bits-emulated"))
         {
-            SetEmulatedNBits(node->get_value< unsigned >("n-bits-emulated", fEmulatedNBits));
+            SetEmulatedNBits(node.get_value("n-bits-emulated", fEmulatedNBits));
         }
 
         return true;

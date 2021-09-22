@@ -53,7 +53,7 @@ namespace Katydid
             KTSingleChannelDAC(const KTSingleChannelDAC& orig);
             virtual ~KTSingleChannelDAC();
 
-            bool Configure(const scarab::param_node* node);
+            bool Configure(const scarab::param_node& node);
             bool Configure(const KTSingleChannelDAC& master);
 
             /// Set input parameters with the DAC gain calculated from the number of bits and the voltage range

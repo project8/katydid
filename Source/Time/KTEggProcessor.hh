@@ -87,7 +87,7 @@ namespace Katydid
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
-            bool Configure(const scarab::param_node* node);
+            bool Configure(const scarab::param_node& node);
 
             MEMBERVARIABLE(unsigned, NSlices);
             MEMBERVARIABLE(unsigned, ProgressReportInterval);

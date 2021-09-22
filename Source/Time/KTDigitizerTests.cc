@@ -56,21 +56,19 @@ namespace Katydid
     {
     }
 
-    bool KTDigitizerTests::Configure(const scarab::param_node* node)
+    bool KTDigitizerTests::Configure(const scarab::param_node& node)
     {
-        if (node == NULL) return false;
+        fNDigitizerBits = node.get_value("n-digitizer-bits", fNDigitizerBits);
 
-        fNDigitizerBits = node->get_value< unsigned >("n-digitizer-bits", fNDigitizerBits);
+        SetTestBitOccupancy(node.get_value("test-bit-occupancy", fTestBitOccupancy));
 
-        SetTestBitOccupancy(node->get_value< bool >("test-bit-occupancy", fTestBitOccupancy));
+        SetTestClipping(node.get_value("test-clipping", fTestClipping));
 
-        SetTestClipping(node->get_value< bool >("test-clipping", fTestClipping));
-
-        SetTestLinearity(node->get_value< bool >("test-linearity", fTestLinearity));
+        SetTestLinearity(node.get_value("test-linearity", fTestLinearity));
 
 	if (node->has("disable-component"))
 	  {
-	    fDisableComponents.push_back(node->get_value< unsigned >("disable-component"));
+	    fDisableComponents.push_back(node.get_value< unsigned >("disable-component"));
 	    KTWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
 	    KTWARN(dtlog, fDisableComponents[0]);
 	  }

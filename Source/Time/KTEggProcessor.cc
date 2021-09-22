@@ -56,14 +56,11 @@ namespace Katydid
         delete fDAC;
     }
 
-    bool KTEggProcessor::Configure(const scarab::param_node* node)
+    bool KTEggProcessor::Configure(const scarab::param_node& node)
     {
         // First determine the egg reader type
         // config file setting
-        if (node != NULL)
-        {
-            SetEggReaderType( node->get_value("egg-reader", GetEggReaderType()) );
-        }
+        SetEggReaderType( node.get_value("egg-reader", GetEggReaderType()) );
         // command line setting (overrides config file, if used)
         if (fCLHandler->IsCommandLineOptSet("use-egg1-reader"))
         {
@@ -73,37 +70,35 @@ namespace Katydid
         // Other settings
 
         // Config-file settings
-        if (node != NULL)
-        {
-            SetNSlices(node->get_value< unsigned >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->get_value< unsigned >("progress-report-interval", fProgressReportInterval));
+            SetNSlices(node.get_value("number-of-slices", fNSlices));
+            SetProgressReportInterval(node.get_value("progress-report-interval", fProgressReportInterval));
 
-            if (node->has("filename"))
+            if (node.has("filename"))
             {
                 KTDEBUG(egglog, "Adding single file to egg processor");
                 fFilenames.clear();
-                fFilenames.push_back( std::move(scarab::expand_path(node->get_value( "filename" ))) );
+                fFilenames.push_back( std::move(scarab::expand_path(node.get_value( "filename" ))) );
                 KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
             }
-            else if (node->has("filenames"))
+            else if (node.has("filenames"))
             {
                 KTDEBUG(egglog, "Adding multiple files to egg processor");
                 fFilenames.clear();
-                const scarab::param_array* t_filenames = node->array_at("filenames");
-                for(scarab::param_array::const_iterator t_file_it = t_filenames->begin(); t_file_it != t_filenames->end(); ++t_file_it)
+                const scarab::param_array& t_filenames = node["filenames"].as_array;
+                for(scarab::param_array::const_iterator t_file_it = t_filenames.begin(); t_file_it != t_filenames.end(); ++t_file_it)
                 {
-                    fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)->as_value().as_string())) );
+                    fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)().as_string())) );
                     KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
                 }
             }
 
             // specify the length of the time series
-            fSliceSize = node->get_value< unsigned >("slice-size", fSliceSize);
+            fSliceSize = node.get_value("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->get_value< unsigned >("stride", fSliceSize);
+            fStride = node.get_value("stride", fSliceSize);
             // specify the time in the run to start
-            fStartTime = node->get_value< double >("start-time", fStartTime);
-            fStartRecord = node->get_value< unsigned >("start-record", fStartRecord);
+            fStartTime = node.get_value("start-time", fStartTime);
+            fStartRecord = node.get_value("start-record", fStartRecord);
 
             if (fSliceSize == 0)
             {
@@ -111,18 +106,16 @@ namespace Katydid
                 return false;
             }
 
-            const scarab::param_node* dacNode = node->node_at("dac");
-            if (dacNode != NULL)
+            if (node.has("dac"))
             {
-                fDAC->Configure(dacNode);
+                fDAC->Configure(node["dac"].as_node());
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->get_value< bool >("normalize-voltages", fNormalizeVoltages));
-        }
+            SetNormalizeVoltages(node.get_value("normalize-voltages", fNormalizeVoltages));
 
         // Command-line settings
-        SetNSlices(fCLHandler->GetCommandLineValue< int >("n-slices", fNSlices));
+        SetNSlices(fCLHandler->GetCommandLineValue("n-slices", fNSlices));
         if (fCLHandler->IsCommandLineOptSet("egg-file"))
         {
             KTDEBUG(egglog, "Adding single file to egg processor from the CL");

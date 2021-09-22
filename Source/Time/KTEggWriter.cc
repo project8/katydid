@@ -54,15 +54,13 @@ namespace Katydid
         delete fMonarch;
     }
 
-    bool KTEggWriter::Configure(const scarab::param_node* node)
+    bool KTEggWriter::Configure(const scarab::param_node& node)
     {
-        if (node == NULL) return false;
+        SetFilename(node.get_value("output-file", fFilename));
 
-        SetFilename(node->get_value("output-file", fFilename));
-
-        if (node->has("format-mode"))
+        if (node.has("format-mode"))
         {
-            string modeStr(node->get_value("format-mode"));
+            string modeStr(node.get_value("format-mode"));
             if (modeStr == "separate")
             {
                 SetFormatMode(sFormatMultiSeparate);
@@ -78,7 +76,7 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->get_value<double>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node.get_value("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }
