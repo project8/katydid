@@ -1,0 +1,97 @@
+processor-toolbox:
+
+    processors:
+    
+        - type: egg-processor
+          name: egg1
+        - type: matrix-aggregator
+          name: matrix1
+        - type: template-converter
+          name: to-template
+
+        - type: egg-processor
+          name: egg2
+        - type: matrix-aggregator
+          name: matrix2
+
+        - type: inner-product
+          name: prod
+        - type: inner-product-optimizer
+          name: optimize
+
+    connections:
+
+        # First egg processing
+        - signal: "egg1:ts"
+          slot: "matrix1:ts-fftw"
+
+        - signal: "matrix1:matrix"
+          slot: "to-template:ts-matrix"
+          
+        - signal: "to-template:template-matrix"
+          slot: "prod:template-matrix"
+
+        # Second egg processing
+        - signal: "egg2:ts"
+          slot: "matrix2:ts-fftw"
+          
+        - signal: "matrix2:matrix"
+          slot: "prod:data-matrix"
+          
+        - signal: "prod:snr-matrix"
+          slot: "optimize:snr-matrix"
+
+
+    run-queue:
+        - egg1
+        - egg2
+
+
+egg1:
+    filenames: ["locust_mc_Seed395_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed390_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed395_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed390_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed395_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg"]
+    egg-reader: egg3
+    slice-size: 8192
+
+egg2:
+    filenames: ["locust_mc_Seed395_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed390_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed395_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed390_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed395_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg",
+               "locust_mc_Seed385_LO25.8781G_Radius0.100_Pos0.009.egg"]
+    egg-reader: egg3
+    slice-size: 8192
+
+matrix1:
+    max-cols: 400
+
+matrix2:
+    max-cols: 400
+
+to-template:
+
+    T: 10
+    bandwidth: 200.0e6
