@@ -27,6 +27,7 @@ namespace Katydid
 
         public:
             void WriteEggHeader(Nymph::KTDataPtr data);
+            void WriteArbitraryMetadata(Nymph::KTDataPtr data);
 
             void WriteTimeSeriesData(Nymph::KTDataPtr data);
             void WriteDigitizerTestData(Nymph::KTDataPtr data);
