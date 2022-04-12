@@ -14,6 +14,7 @@ set (TRANSFORM_NODICT_HEADERFILES
     KTSincWindow.hh
     KTWindower.hh
     KTWindowFunction.hh
+    KTChirpFFT.hh
 )
 
 if (FFTW_FOUND)
@@ -37,6 +38,7 @@ set (TRANSFORM_SOURCEFILES
     KTSincWindow.cc
     KTWindower.cc
     KTWindowFunction.cc
+    KTChirpFFT.cc
 )
 
 if (FFTW_FOUND)

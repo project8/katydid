@@ -52,13 +52,19 @@ set (DATA_HEADERFILES
     #Evaluation/KTMCTruthEvents.hh
     Transform/KTConvolvedSpectrumData.hh
     Transform/KTFrequencyDomainArray.hh
+    Transform/KTChirpDomainArray.hh
     Transform/KTFrequencySpectrum.hh
+    Transform/KTChirpSpace.hh
     Transform/KTFrequencySpectrumDataFFTW.hh
+    Transform/KTChirpSpaceDataFFT.hh
     Transform/KTFrequencySpectrumDataPolar.hh
     Transform/KTFrequencySpectrumFFTW.hh
+    Transform/KTChirpSpaceFFT.hh
     Transform/KTFrequencySpectrumPolar.hh
     Transform/KTFrequencySpectrumVariance.hh
     Transform/KTFrequencySpectrumVarianceData.hh
+    Transform/KTChirpSpaceVariance.hh
+    Transform/KTChirpSpaceVarianceData.hh
     Transform/KTPowerSpectrum.hh
     Transform/KTPowerSpectrumData.hh
     Transform/KTPowerSpectrumUncertaintyData.hh
@@ -118,13 +124,19 @@ set (DATA_SOURCEFILES
     #Evaluation/KTMCTruthEvents.cc
     Transform/KTConvolvedSpectrumData.cc
     Transform/KTFrequencyDomainArray.cc
+    Transform/KTChirpDomainArray.cc
     Transform/KTFrequencySpectrum.cc
+    Transform/KTChirpSpace.cc
     Transform/KTFrequencySpectrumDataFFTW.cc
+    Transform/KTChirpSpaceDataFFT.cc
     Transform/KTFrequencySpectrumDataPolar.cc
     Transform/KTFrequencySpectrumFFTW.cc
+    Transform/KTChirpSpaceFFT.cc
     Transform/KTFrequencySpectrumPolar.cc
     Transform/KTFrequencySpectrumVariance.cc
     Transform/KTFrequencySpectrumVarianceData.cc
+    Transform/KTChirpSpaceVariance.cc
+    Transform/KTChirpSpaceVarianceData.cc
     Transform/KTMultiFSDataFFTW.cc
     Transform/KTMultiFSDataPolar.cc
     Transform/KTMultiPSData.cc
