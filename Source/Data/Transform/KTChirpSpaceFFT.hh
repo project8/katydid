@@ -202,22 +202,22 @@ namespace Katydid
 */
     inline unsigned KTChirpSpaceFFT::GetNSlopeBins() const
     {
-        return size(0);
+        return size(1);
     }
 
     inline double KTChirpSpaceFFT::GetSlopeBinWidth() const
     {
-        return GetBinWidth(0);
+        return GetBinWidth(1);
     }
 
     inline unsigned KTChirpSpaceFFT::GetNInterceptBins() const
     {
-        return size(1);
+        return size(2);
     }
 
     inline double KTChirpSpaceFFT::GetInterceptBinWidth() const
     {
-        return GetBinWidth(1);
+        return GetBinWidth(2);
     }
 
     inline unsigned KTChirpSpaceFFT::GetNTimeBins() const

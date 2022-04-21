@@ -157,8 +157,11 @@ namespace Katydid
             KTChirpSpaceFFT* Transform(const KTTimeSeriesReal* ts) const;
             /// Forward FFT - Real Time Series - No size or bin width checks
             KTChirpSpaceFFT*  FastTransform(const KTTimeSeriesReal* ts) const;
+	    /// Forward Chirp Transform
+	    KTChirpSpaceFFT*  ChirpTransform(const KTTimeSeriesReal* ts) const;
             /// Forward FFT - Real Time Series - Output must exist - No size or bin width checks
             void DoTransform(const KTTimeSeriesReal* tsIn, KTChirpSpaceFFT* fsOut) const;
+	
 
             /// Forward FFT - Real Time Data as Complex
             bool TransformRealDataAsComplex(KTTimeSeriesData& tsData);
@@ -177,8 +180,12 @@ namespace Katydid
             KTChirpSpaceFFT* Transform(const KTTimeSeriesFFTW* ts) const;
             /// Forward FFT - Complex Time Series - No size or bin width checks
             KTChirpSpaceFFT*  FastTransform(const KTTimeSeriesFFTW* ts) const;
+            /// Forward Chirp - Complex Time Series - No size or bin width checks
+            KTChirpSpaceFFT*  ChirpTransform(const KTTimeSeriesFFTW* ts) const;
             /// Forward FFT - Complex Time Series - Output must exist - No size or bin width checks
             void DoTransform(const KTTimeSeriesFFTW* tsIn, KTChirpSpaceFFT* fsOut) const;
+
+	    void DoChirpTransform(const KTTimeSeriesFFTW* tsIn, KTChirpSpaceFFT* fsOut) const;
 
         private:
             // binning cache

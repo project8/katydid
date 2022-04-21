@@ -65,7 +65,9 @@ namespace Katydid
         fWriter->RegisterSlot("fs-polar-var", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataPolar);
         fWriter->RegisterSlot("fs-fftw-var", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrum);
+	KTDEBUG(publog, "registering psd slot");
         fWriter->RegisterSlot("psd", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectralDensity);
+	KTDEBUG(publog, "psd slot registered");
         fWriter->RegisterSlot("ps-dist", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrumDistribution);
         fWriter->RegisterSlot("psd-dist", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectralDensityDistribution);
         fWriter->RegisterSlot("ps-var", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrumVarianceData);
@@ -467,6 +469,7 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterTransform::WritePowerSpectralDensity(Nymph::KTDataPtr data)
     {
+	printf("\n\nENTERED WritePowerSpectralDensity\n\n");
         if (! data) return;
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
@@ -492,6 +495,7 @@ namespace Katydid
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
+	printf("\n\nCOMPLETED WritePowerSpectralDensity\n\n");
         return;
     }
 

@@ -103,17 +103,20 @@ namespace Katydid
         unsigned nBins = size(0);
         unsigned nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
         
+	printf("NBins and nyquistPos: %d %d\n", nBins, nyquistPos);
+
         //fData.segment(1,nyquistPos-1) *= 2.0 ;
 	for(int i=0; i<nyquistPos; i++)
 	{
 		fData(i,0) *= 2.0 ;
 	}
+	printf("(i,0) fData values doubled\n");
         //fData.tail(nBins-nyquistPos) = std::complex<double> {0.0};
 	for(int i=0; i<nBins-nyquistPos; i++)
 	{
 		fData(nBins-i-1,0) = std::complex<double> {0.0};
 	}
-
+	printf("non-nyquist values zeroed\n");
         return *this;
     }
 
@@ -147,17 +150,32 @@ namespace Katydid
         // If the frequency range crosses DC, the power spectrum range will run from DC to the maximum absolute frequency
         // In this case negative-frequency bins are added to positive-frequency bins.
 
-        double maxFreq = std::max(fabs(GetRangeMin(0)), fabs(GetRangeMax(0)));
-        double minFreq = -0.5 * GetBinWidth(0);
-        unsigned nBins = (maxFreq - minFreq) / GetBinWidth(0);
+	printf("Entered CreatePowerSpectrum\n");
+
+        double maxFreq = std::max(fabs(GetRangeMin(1)), fabs(GetRangeMax(1)));
+//        double maxFreq = std::max(fabs(GetRangeMin(0)), fabs(GetRangeMax(0)));
+	printf("RangeMin(0), RangeMin(1), RangeMax(0), RangeMax(1): %g, %g, %g, %g\n", GetRangeMin(0), GetRangeMin(1), GetRangeMax(0), GetRangeMax(1));
+	printf("maxFreq: %g\n", maxFreq);
+        double minFreq = -0.5 * GetBinWidth(1);
+	printf("minFreq: %g\n", minFreq);
+	printf("binWidths 0 and 1: %g %g\n", GetBinWidth(0), GetBinWidth(1));
+        unsigned nBins = (maxFreq - minFreq) / GetBinWidth(1);
+//        unsigned nBins = (maxFreq - minFreq) / GetBinWidth(0);
+	printf("nBins: %d\n", nBins);
         if (GetRangeMax(0) < 0. || GetRangeMin(0) > 0.)
+        {
+            minFreq = std::min(fabs(GetRangeMin(1)), fabs(GetRangeMax(1)));
+            nBins = size(1);
+        }
+/*        if (GetRangeMax(0) < 0. || GetRangeMin(0) > 0.)
         {
             minFreq = std::min(fabs(GetRangeMin(0)), fabs(GetRangeMax(0)));
             nBins = size(0);
         }
-
+*/
+	printf("PS Check 1\n");
         KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, minFreq, maxFreq);
-        
+        printf("PS Check 2\n");
         // to replace after Eigen replaces all KTPhysicalArrays
         for (unsigned iBin = 0; iBin < nBins; ++iBin) (*newPS)(iBin) = 0.;
        // newPS->GetData().setZero(); //probably unnecessary, Eigen array should be zero-initialized
@@ -165,11 +183,21 @@ namespace Katydid
         int dcBin = FindBin(0,0.);
         // default case: dcBin >= 0 && dcBin < size(0)
         int firstPosFreqBin = dcBin;
-        int lastPosFreqBin = size(0);
+        int lastPosFreqBin = size(1);
+//        int lastPosFreqBin = size(0);
         int firstNegFreqBin = 0;
         int lastNegFreqBin = dcBin;
-        if (dcBin >= (int)size(0))
+        if (dcBin >= (int)size(1))
         {
+            firstPosFreqBin = size(1); // lastPosFreqBin = size(0);
+            lastNegFreqBin = size(1); // firstNEgFreqBin = 0
+        }
+        else if (dcBin < 0)
+        {
+            firstPosFreqBin = 0; // lastPosFreqBin = size(0);
+            firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
+        }
+/*        {
             firstPosFreqBin = size(0); // lastPosFreqBin = size(0);
             lastNegFreqBin = size(0); // firstNEgFreqBin = 0
         }
@@ -178,8 +206,9 @@ namespace Katydid
             firstPosFreqBin = 0; // lastPosFreqBin = size(0);
             firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
         }
+*/
         //KTWARN( fslog, "firstPosFreqBin = " << firstPosFreqBin << "; lastPosFreqBin = " << lastPosFreqBin << "; firstNegFreqBin = " << firstNegFreqBin << "; lastNegFreqBin = " << lastNegFreqBin);
-
+        printf("PS Check 3\n");
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 
         // to replace after Eigen replaces all KTPhysicalArrays
@@ -200,6 +229,7 @@ namespace Katydid
             valueImag = (*this)(iBin,0).imag();
             (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
         }
+	printf("PS Check 4\n");
 #pragma omp parallel for private(valueReal, valueImag)
         for (unsigned iBin = firstNegFreqBin; iBin < lastNegFreqBin; ++iBin)
         {
@@ -208,6 +238,7 @@ namespace Katydid
             (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
         }
                     
+	printf("Leaving CreatePowerSpectrum\n");
         return newPS;
     }
 

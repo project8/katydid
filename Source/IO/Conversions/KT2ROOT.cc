@@ -422,6 +422,7 @@ namespace Katydid
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
             hist->SetBinContent((int) iBin + 1, scaling * fs->GetNorm(iBin));
+	    printf("bin, Norm: %d, %g\n", iBin, fs->GetNorm(iBin) );
         }
 
         hist->SetXTitle("Frequency (Hz)");

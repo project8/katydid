@@ -64,6 +64,7 @@ namespace Katydid
 
     bool KTChirpFFT::Configure(const scarab::param_node* node)
     {
+	printf("\nConfiguring KTChirpFFT\n\n");
         // Config-file settings
         if (node != NULL)
         {
@@ -112,21 +113,25 @@ namespace Katydid
 
     bool KTChirpFFT::InitializeForRealTDD(unsigned timeSize)
     {
+	printf("Initialize Real\n");
         return InitializeFFT(kR2C, timeSize);
     }
 
     bool KTChirpFFT::InitializeForRealAsComplexTDD(unsigned timeSize)
     {
+	printf("Initialize Real As Complex\n");
         return InitializeFFT(kRasC2C, timeSize);
     }
 
     bool KTChirpFFT::InitializeForComplexTDD(unsigned timeSize)
     {
+	printf("Initialize Complex\n");
         return InitializeFFT(kC2C, timeSize);
     }
 
     bool KTChirpFFT::InitializeFFT(KTChirpFFT::State intendedState, unsigned timeSize)
     {
+	printf("Initialize FFT\n");
         if (intendedState == kNone)
         {
             KTERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
@@ -178,6 +183,7 @@ namespace Katydid
             KTDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
             // Add FFTW_PRESERVE_INPUT so that the input array content is not destroyed during the FFT
             fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
+	    std::cout << "FFTW_FORWARD: " << FFTW_FORWARD << std::endl;
             // deleting arrays to save space
             FreeArrays();
         }
@@ -235,10 +241,12 @@ namespace Katydid
         {
             return InitializeFFT(fState, header.GetChannelHeader(0)->GetSliceSize());
         }
+	printf("Completed InitializeWithHeader\n");
     }
 
     bool KTChirpFFT::TransformRealData(KTTimeSeriesData& tsData)
     {
+	KTDEBUG(fftwlog, "Entering TransformRealData: ");
         if (fState != kR2C)
         {
             KTERROR(fftwlog, "Cannot do transform of real data in state <" << fState << ">");
@@ -344,6 +352,7 @@ namespace Katydid
 
     bool KTChirpFFT::TransformComplexData(KTTimeSeriesData& tsData)
     {
+	printf("Begin TransformComplexData\n");
         if (fState != kC2C)
         {
             KTERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
@@ -363,11 +372,13 @@ namespace Katydid
             return false;
         }
 
+
         UpdateBinningCache(tsData.GetTimeSeries(0)->GetTimeBinWidth());
 
         unsigned nComponents = tsData.GetNComponents();
 
         KTChirpSpaceDataFFT& newData = tsData.Of< KTChirpSpaceDataFFT >().SetNComponents(nComponents,nComponents);
+
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -378,14 +389,18 @@ namespace Katydid
                 return false;
             }
 
-            KTChirpSpaceFFT* nextResult = FastTransform(nextInput);
+
+            KTChirpSpaceFFT* nextResult = ChirpTransform(nextInput);
+
+		printf("ChirpTransform Computed\n");
 
             if (nextResult == NULL)
             {
                 KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size(0) << "; range: " << nextResult->GetRangeMin(0) << " - " << nextResult->GetRangeMax(0));
+	    printf("Test output\n");
+            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size(1) << "; range: " << nextResult->GetRangeMin(0) << " - " << nextResult->GetRangeMax(0));
             newData.SetSpectrum(nextResult, iComponent);
         }
 
@@ -462,11 +477,36 @@ namespace Katydid
 
     KTChirpSpaceFFT* KTChirpFFT::FastTransform(const KTTimeSeriesReal* ts) const
     {
+	printf("FastTransform Entered\n");
         KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize, fFreqMinCache, fFreqMaxCache, fFrequencySize, fFreqMinCache, fFreqMaxCache, false);
+
+	printf("newFS initialized\n");
 
         DoTransform(ts, newFS);
 
+	printf("DoTransform run\n");
+
         newFS->SetNTimeBins(fTimeSize);
+
+	printf("SetNTimBins done\n");
+
+        return newFS;
+    }
+
+    KTChirpSpaceFFT* KTChirpFFT::ChirpTransform(const KTTimeSeriesReal* ts) const
+    {
+        printf("ChirpTransform Entered\n");
+        KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize, fFreqMinCache, fFreqMaxCache, fFrequencySize, fFreqMinCache, fFreqMaxCache, false);
+
+        printf("newFS initialized\n");
+
+        DoTransform(ts, newFS);
+
+        printf("DoTransform run\n");
+
+        newFS->SetNTimeBins(fTimeSize);
+
+        printf("SetNTimBins done\n");
 
         return newFS;
     }
@@ -526,7 +566,7 @@ namespace Katydid
         }
 
         UpdateBinningCache(ts->GetTimeBinWidth());
-
+	printf(" \n\n CHECK 1 \n\n ");
         return FastTransform(ts);
     }
 
@@ -535,6 +575,17 @@ namespace Katydid
         KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize, fFreqMinCache, fFreqMaxCache,fFrequencySize, fFreqMinCache, fFreqMaxCache, true);
 
         DoTransform(ts, newFS);
+
+        newFS->SetNTimeBins(fTimeSize);
+
+        return newFS;
+    }
+
+    KTChirpSpaceFFT* KTChirpFFT::ChirpTransform(const KTTimeSeriesFFTW* ts) const
+    {
+        KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize, fFreqMinCache, fFreqMaxCache,fFrequencySize, fFreqMinCache, fFreqMaxCache, true);
+
+        DoChirpTransform(ts, newFS);
 
         newFS->SetNTimeBins(fTimeSize);
 
@@ -551,6 +602,69 @@ namespace Katydid
                                                     fsOut->GetData().data());
         fftw_execute_dft(fForwardPlan, dataIn, dataOut);
         (*fsOut) *= sqrt(1. / (double)  fTimeSize);
+        return;
+    }
+
+    void KTChirpFFT::DoChirpTransform(const KTTimeSeriesFFTW* tsIn, KTChirpSpaceFFT* fsOut) const
+    {
+	printf("Entering DoChirpTransform\n");
+	/*
+        fftw_complex *dataIn =
+                        const_cast<fftw_complex*>(
+                                        reinterpret_cast<const fftw_complex*>(
+                                                    tsIn->GetData().data()));
+        fftw_complex *dataOut = reinterpret_cast<fftw_complex*>(
+                                                    fsOut->GetData().data());
+        fftw_execute_dft(fForwardPlan, dataIn, dataOut);
+        (*fsOut) *= sqrt(1. / (double)  fTimeSize);
+*/
+
+	printf("Entering new code\n");
+	int NSlopeBins = fsOut->GetNSlopeBins();
+	int NInterceptBins = fsOut->GetNInterceptBins();
+
+	std::vector<double> envelope(fTimeSize, 1.0);
+	double sigma = (tsIn->GetRangeMax() - tsIn->GetRangeMin()) / 5.0;
+	double c_const = sqrt(2.0)*sigma;
+	double PI = 3.14159265;
+	double L2_norm = 0.;
+	double t_init = tsIn->GetRangeMin();
+	double Delta_t = tsIn->GetTimeBinWidth();
+	double mean_t = 0.5*(tsIn->GetRangeMax() + tsIn->GetRangeMin());
+
+	double b_init = -12207.0;
+	double Delta_b = 24414.1;
+	double a_init = -5.;
+	double Delta_a = fabs(2*a_init) / (1.0 * NSlopeBins);
+
+	printf("Initialized constants\n");
+
+	std::vector< std::complex<double> > transformed_ts(NInterceptBins, 0.);
+		double a = 0;
+		for(int b_i = 0; b_i<NInterceptBins; b_i++)
+		{
+			double b = (b_init + b_i*Delta_b);	
+			L2_norm = 0;
+			std::complex<double> C(0,0);
+			std::complex<double> I(0,1);
+			for(int i=0; i<fTimeSize; i++)
+			{
+				double t = t_init + Delta_t*(i);
+                		envelope[i] = 1.0/(sqrt( (sqrt(PI) * c_const ) )) * exp(-0.5 * (t-mean_t)/c_const * (t-mean_t)/c_const );
+				L2_norm += envelope[i]*envelope[i]*Delta_t;
+
+				std::complex<double> X(tsIn->GetReal(i), tsIn->GetImag(i));
+				C += X * std::exp(-2.*PI*I*(1.*(b_i+NInterceptBins/2)*i)/(1.*fTimeSize)) * envelope[i]; //NBins/2 term undoes biasing effect of DFT
+				//printf("index, t, real, imag, L2: %d / %d, %g, %g, %g, %g\n", i, fTimeSize, t, tsIn->GetReal(i), tsIn->GetImag(i), L2_norm );
+			}
+			C *= sqrt(1./ (1.0*fTimeSize));
+			//transformed_ts[b_i] = {C.real(), C.imag()};
+			fsOut->SetRect(b_i,0,C.real(), C.imag());
+			//printf("index, b, real, fftw_real, imag, fftw_imag, mag, fftw_mag: %d, %g, %g, %g, %g, %g, %g, %g\n", b_i, b, transformed_ts[b_i].real(), fsOut->GetReal(b_i,0), transformed_ts[b_i].imag(), fsOut->GetImag(b_i,0), std::abs(transformed_ts[b_i]), fsOut->GetAbs(b_i,0));
+		}
+		//printf("max value (%g) at b=%g, fftw: (%g) at b=%g\n", max, max_b, fftw_max, fftw_max_b);
+
+
         return;
     }
 
