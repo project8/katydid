@@ -36,6 +36,7 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumVariance;
     class KTPowerSpectrum;
+    class KTChirpSpaceFFT;
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -118,6 +119,8 @@ namespace Katydid
 
             static TH1D* CreatePowerHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrum");
             static TH1D* CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrumPower");
+
+	    static TH2D* CreateChirpHistogram(const KTChirpSpaceFFT* cs, const std::string& name = "hChirpSpace");
 
             static TH2D* CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName = "hHoughData");
             static std::vector<TGraph2D*> CreateGridGraphs(const KTAggregatedPowerSpectrumData& fs, const std::string& name = "gPowerSpectrumGrid");

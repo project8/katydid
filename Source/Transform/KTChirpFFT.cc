@@ -183,7 +183,6 @@ namespace Katydid
             KTDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
             // Add FFTW_PRESERVE_INPUT so that the input array content is not destroyed during the FFT
             fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
-	    std::cout << "FFTW_FORWARD: " << FFTW_FORWARD << std::endl;
             // deleting arrays to save space
             FreeArrays();
         }
@@ -378,7 +377,7 @@ namespace Katydid
         unsigned nComponents = tsData.GetNComponents();
 
         KTChirpSpaceDataFFT& newData = tsData.Of< KTChirpSpaceDataFFT >().SetNComponents(nComponents,nComponents);
-
+	printf("TEST NCOMPONENTS: %d\n", nComponents);
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -399,10 +398,11 @@ namespace Katydid
                 KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-	    printf("Test output\n");
             KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size(1) << "; range: " << nextResult->GetRangeMin(0) << " - " << nextResult->GetRangeMax(0));
             newData.SetSpectrum(nextResult, iComponent);
         }
+
+	printf("newData values: 0 (%g), 1 (%g)\n", newData.GetSpectrumFFTW(0)->GetAbs(0,0), newData.GetSpectrumFFTW(0)->GetAbs(1,0));
 
         KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
 
@@ -583,7 +583,10 @@ namespace Katydid
 
     KTChirpSpaceFFT* KTChirpFFT::ChirpTransform(const KTTimeSeriesFFTW* ts) const
     {
-        KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize, fFreqMinCache, fFreqMaxCache,fFrequencySize, fFreqMinCache, fFreqMaxCache, true);
+	printf("ChirpTransform Check1\n");
+        KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize/128, -10., 10., fFrequencySize, fFreqMinCache, fFreqMaxCache, false);
+	printf("ChirpTransform Check2\n");
+//        KTChirpSpaceFFT* newFS = new KTChirpSpaceFFT(fFrequencySize, fFreqMinCache, fFreqMaxCache,fFrequencySize, fFreqMinCache, fFreqMaxCache, true);
 
         DoChirpTransform(ts, newFS);
 
@@ -621,6 +624,8 @@ namespace Katydid
 
 	printf("Entering new code\n");
 	int NSlopeBins = fsOut->GetNSlopeBins();
+//	NSlopeBins = 82;
+//	NSlopeBins = 5;
 	int NInterceptBins = fsOut->GetNInterceptBins();
 
 	std::vector<double> envelope(fTimeSize, 1.0);
@@ -632,21 +637,26 @@ namespace Katydid
 	double Delta_t = tsIn->GetTimeBinWidth();
 	double mean_t = 0.5*(tsIn->GetRangeMax() + tsIn->GetRangeMin());
 
-	double b_init = -12207.0;
-	double Delta_b = 24414.1;
-	double a_init = -5.;
-	double Delta_a = fabs(2*a_init) / (1.0 * NSlopeBins);
+        double b_init = fsOut->GetRangeMin(2);
+        double Delta_b = (fsOut->GetRangeMax(2) - fsOut->GetRangeMin(2)) / (1.0 * NInterceptBins);
+//	double b_init = -12207.0;
+//	double Delta_b = 24414.1;
+	double a_init = fsOut->GetRangeMin(1);
+	double Delta_a = (fsOut->GetRangeMax(1) - fsOut->GetRangeMin(1)) / (1.0 * NSlopeBins);
 
 	printf("Initialized constants\n");
 
 	std::vector< std::complex<double> > transformed_ts(NInterceptBins, 0.);
-		double a = 0;
+	for(int a_i = 0; a_i<NSlopeBins; a_i++)
+	{
+		double a = (a_init + a_i*Delta_a);
 		for(int b_i = 0; b_i<NInterceptBins; b_i++)
 		{
 			double b = (b_init + b_i*Delta_b);	
 			L2_norm = 0;
 			std::complex<double> C(0,0);
 			std::complex<double> I(0,1);
+		//	printf("Entering time loop for (a, b) = (%g, %g)\n", a, b);
 			for(int i=0; i<fTimeSize; i++)
 			{
 				double t = t_init + Delta_t*(i);
@@ -654,17 +664,20 @@ namespace Katydid
 				L2_norm += envelope[i]*envelope[i]*Delta_t;
 
 				std::complex<double> X(tsIn->GetReal(i), tsIn->GetImag(i));
-				C += X * std::exp(-2.*PI*I*(1.*(b_i+NInterceptBins/2)*i)/(1.*fTimeSize)) * envelope[i]; //NBins/2 term undoes biasing effect of DFT
+				C += X * std::exp(-2.*PI*I*((a*i/(1.*fTimeSize)+1.*(b_i+NInterceptBins/2))*i)/(1.*fTimeSize)) * envelope[i]; //NBins/2 term undoes biasing effect of DFT
 				//printf("index, t, real, imag, L2: %d / %d, %g, %g, %g, %g\n", i, fTimeSize, t, tsIn->GetReal(i), tsIn->GetImag(i), L2_norm );
 			}
+		//	printf("time loop ended\n");
 			C *= sqrt(1./ (1.0*fTimeSize));
 			//transformed_ts[b_i] = {C.real(), C.imag()};
-			fsOut->SetRect(b_i,0,C.real(), C.imag());
+		//	printf("C scaled, about to SetRect\n");
+			fsOut->SetRect(a_i,b_i,C.real(), C.imag());
+		//	printf("C SetRect complete\n");
 			//printf("index, b, real, fftw_real, imag, fftw_imag, mag, fftw_mag: %d, %g, %g, %g, %g, %g, %g, %g\n", b_i, b, transformed_ts[b_i].real(), fsOut->GetReal(b_i,0), transformed_ts[b_i].imag(), fsOut->GetImag(b_i,0), std::abs(transformed_ts[b_i]), fsOut->GetAbs(b_i,0));
 		}
 		//printf("max value (%g) at b=%g, fftw: (%g) at b=%g\n", max, max_b, fftw_max, fftw_max_b);
-
-
+	}
+	printf("DoChirpTransform completed\n");
         return;
     }
 

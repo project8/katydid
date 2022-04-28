@@ -114,7 +114,7 @@ namespace Katydid
 
     inline void KTChirpSpaceDataFFTCore::SetSpectrum(KTChirpSpaceFFT* record, unsigned SlopeComponent, unsigned InterceptComponent)
     {
-        if (SlopeComponent >= fSpectra.size()) SetNComponents(SlopeComponent+1, InterceptComponent+1);
+        if (InterceptComponent >= fSpectra.size()) SetNComponents(SlopeComponent+1, InterceptComponent+1);
         else delete fSpectra[SlopeComponent, InterceptComponent];
         fSpectra[SlopeComponent, InterceptComponent] = record;
         return;

@@ -17,6 +17,7 @@
 #include "KTPowerFitData.hh"
 #include "KTFrequencySpectrumVariance.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTChirpSpaceDataFFT.hh"
 #include "KTProcessedMPTData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTRawTimeSeries.hh"
@@ -562,6 +563,27 @@ namespace Katydid
         }
         hist->SetXTitle(ps->GetAxisLabel().c_str());
         hist->SetYTitle(ps->GetDataLabel().c_str());
+        return hist;
+    }
+
+    TH2D* KT2ROOT::CreateChirpHistogram(const KTChirpSpaceFFT* cs, const std::string& name)
+    {
+        unsigned nSlopeBins = cs->GetNSlopeBins();
+	unsigned nInterceptBins = cs->GetNInterceptBins();       
+
+	printf("Range mins and maxs: %g, %g, %g, %g\n", cs->GetRangeMin(1), cs->GetRangeMax(1), cs->GetRangeMin(2), cs->GetRangeMax(2));
+
+        TH2D* hist = new TH2D(name.c_str(), "Chirp Space", (int) nSlopeBins, cs->GetRangeMin(1), cs->GetRangeMax(1),  (int) nInterceptBins, cs->GetRangeMin(2), cs->GetRangeMax(2) );
+        //double value;
+        for (unsigned iBin = 0; iBin < nSlopeBins; iBin++)
+        {
+	    for (unsigned jBin = 0; jBin < nInterceptBins; jBin++)
+	    {	
+            	hist->SetBinContent((int) iBin + 1, (int) jBin + 1, cs->GetAbs(iBin,jBin));
+	    }
+        }
+        hist->SetXTitle("Slope");
+        hist->SetYTitle("Intercept");
         return hist;
     }
 

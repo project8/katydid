@@ -13,6 +13,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTChirpSpaceDataFFT.hh"
 #include "KTSliceHeader.hh"
 #include "KTMultiFSDataPolar.hh"
 #include "KTMultiFSDataFFTW.hh"
@@ -65,9 +66,8 @@ namespace Katydid
         fWriter->RegisterSlot("fs-polar-var", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataPolar);
         fWriter->RegisterSlot("fs-fftw-var", this, &KTBasicROOTTypeWriterTransform::WriteFrequencySpectrumVarianceDataFFTW);
         fWriter->RegisterSlot("ps", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrum);
-	KTDEBUG(publog, "registering psd slot");
         fWriter->RegisterSlot("psd", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectralDensity);
-	KTDEBUG(publog, "psd slot registered");
+        fWriter->RegisterSlot("chirp-space", this, &KTBasicROOTTypeWriterTransform::WriteChirpSpace);
         fWriter->RegisterSlot("ps-dist", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrumDistribution);
         fWriter->RegisterSlot("psd-dist", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectralDensityDistribution);
         fWriter->RegisterSlot("ps-var", this, &KTBasicROOTTypeWriterTransform::WritePowerSpectrumVarianceData);
@@ -482,6 +482,7 @@ namespace Katydid
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
             KTPowerSpectrum* spectrum = fsData.GetSpectrum(iChannel);
+	    printf("spectrum values 0 (%g), 1 (%g)\n", (*spectrum)(0), (*spectrum)(1));
             if (spectrum != NULL)
             {
                 spectrum->ConvertToPowerSpectralDensity();
@@ -496,6 +497,38 @@ namespace Katydid
             }
         }
 	printf("\n\nCOMPLETED WritePowerSpectralDensity\n\n");
+        return;
+    }
+
+    void KTBasicROOTTypeWriterTransform::WriteChirpSpace(Nymph::KTDataPtr data)
+    {
+        printf("\n\nENTERED WriteChirpSpace\n\n");
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTChirpSpaceDataFFT& fsData = data->Of<KTChirpSpaceDataFFT>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTChirpSpaceFFT* spectrum = fsData.GetSpectrumFFTW(iChannel);
+            printf("CHIRP spectrum values 0 (%g), 1 (%g)\n", (*spectrum).GetAbs(0,0), (*spectrum).GetAbs(1,0));
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histCHIRP_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH2D* ChirpSpace = KT2ROOT::CreateChirpHistogram(spectrum, histName);
+                ChirpSpace->SetDirectory(fWriter->GetFile());
+                ChirpSpace->Write();
+                KTDEBUG(publog, "TH2D <" << histName << "> written to ROOT file");
+            }
+        }
+        printf("\n\nCOMPLETED WriteChirpSpace\n\n");
         return;
     }
 

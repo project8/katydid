@@ -114,21 +114,16 @@ namespace Katydid
     {
         printf("Entering ToPowerSpectralDensity (ChirpSpaceDataFFT)\n");
         unsigned nComponents = data.GetNComponents();
-	printf("ToPowerSpectralDensity Check A\n");
         KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >().SetNComponents(nComponents);
-	printf("ToPowerSpectralDensity Check B\n");
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
-	    printf("For loop check B.1, %d / %d\n", iComponent+1, nComponents);
 	    //KTPowerSpectrum* TestSpectrum = data.GetSpectrum(iComponent,1);
-	    //printf("For loop check B.1.1, %d / %d\n", iComponent+1, nComponents);
-	    printf("Spectrum Time Bins: %d\n", data.GetSpectrum(0,0)->GetNTimeBins());
+	    printf("Spectrum values pre-CreatePowerSpectrum: 0 (%g), 1 (%g)\n", (data.GetSpectrum(iComponent,0))->GetAbs(0,0),(data.GetSpectrum(iComponent,0))->GetAbs(1,0));
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent,0)->CreatePowerSpectrum();
-	    printf("For loop check B.2, %d / %d\n", iComponent+1, nComponents);
+	    printf("Spectrum values pre conversion: 0 (%g), 1 (%g)\n", (*spectrum)(0), (*spectrum)(1) );
             spectrum->ConvertToPowerSpectralDensity();
-	    printf("For loop check B.3, %d / %d\n", iComponent+1, nComponents);
+	    printf("Spectrum values post conversion: 0 (%g), 1 (%g)\n", (*spectrum)(0), (*spectrum)(1) );
             psData.SetSpectrum(spectrum, iComponent);
-	    printf("For loop check B.4, %d / %d\n", iComponent+1, nComponents);
         }
 	printf("Exiting ToPowerSpectralDensity (ChirpSpaceDataFFT)\n");
         return true;

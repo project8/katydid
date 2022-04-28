@@ -56,6 +56,7 @@ namespace Katydid
             //********************
             void WritePowerSpectrum(Nymph::KTDataPtr data);
             void WritePowerSpectralDensity(Nymph::KTDataPtr data);
+	    void WriteChirpSpace(Nymph::KTDataPtr data);
 
             void WritePowerSpectrumDistribution(Nymph::KTDataPtr data);
             void WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data);
