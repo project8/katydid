@@ -11,6 +11,7 @@
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
 #include "KTChirpSpaceDataFFT.hh"
+#include "KTCooleyTukey.hh" 
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeriesData.hh"
@@ -611,18 +612,7 @@ namespace Katydid
     void KTChirpFFT::DoChirpTransform(const KTTimeSeriesFFTW* tsIn, KTChirpSpaceFFT* fsOut) const
     {
 	printf("Entering DoChirpTransform\n");
-	/*
-        fftw_complex *dataIn =
-                        const_cast<fftw_complex*>(
-                                        reinterpret_cast<const fftw_complex*>(
-                                                    tsIn->GetData().data()));
-        fftw_complex *dataOut = reinterpret_cast<fftw_complex*>(
-                                                    fsOut->GetData().data());
-        fftw_execute_dft(fForwardPlan, dataIn, dataOut);
-        (*fsOut) *= sqrt(1. / (double)  fTimeSize);
-*/
 
-	printf("Entering new code\n");
 	int NSlopeBins = fsOut->GetNSlopeBins();
 //	NSlopeBins = 82;
 //	NSlopeBins = 5;
@@ -639,10 +629,13 @@ namespace Katydid
 
         double b_init = fsOut->GetRangeMin(2);
         double Delta_b = (fsOut->GetRangeMax(2) - fsOut->GetRangeMin(2)) / (1.0 * NInterceptBins);
-//	double b_init = -12207.0;
-//	double Delta_b = 24414.1;
 	double a_init = fsOut->GetRangeMin(1);
 	double Delta_a = (fsOut->GetRangeMax(1) - fsOut->GetRangeMin(1)) / (1.0 * NSlopeBins);
+
+	std::complex<double> I(0,1);
+        std::complex<double> C_0(0,0);
+	bool CT_FFT = true; //flag to use if using the Cooley-Tukey FFT Algorithm, otherwise brute force DFT is used
+
 
 	printf("Initialized constants\n");
 
@@ -650,13 +643,37 @@ namespace Katydid
 	for(int a_i = 0; a_i<NSlopeBins; a_i++)
 	{
 		double a = (a_init + a_i*Delta_a);
+	
+
+		printf("a = %g\n", a);	
+		if(CT_FFT)
+		{
+	
+			KTChirpSpaceFFT* CT_C = new KTChirpSpaceFFT(1, 0., 1., NInterceptBins, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false); //Object to hold transformed ChirpSpace for given "a" value
+			//Add Call to Cooley-Tukey Algorithm Here
+	
+			KTCooleyTukey CT;
+			if(! CT.Configure(tsIn, CT_C))
+			{
+				KTERROR(fftwlog, "Cannot Configure CooleyTukey Algorithm" );
+				break;	
+			}
+			printf("Starting CT_FFT\n");
+			CT.CT_FFT(tsIn, fsOut, a);
+
+
+			for(int CT_b_i = 0; CT_b_i<NInterceptBins; CT_b_i++)
+			{
+				fsOut->SetRect(a_i, CT_b_i, CT_C->GetReal(0,CT_b_i), CT_C->GetImag(0,CT_b_i));
+			}
+			continue;
+		}
+
 		for(int b_i = 0; b_i<NInterceptBins; b_i++)
 		{
 			double b = (b_init + b_i*Delta_b);	
 			L2_norm = 0;
 			std::complex<double> C(0,0);
-			std::complex<double> I(0,1);
-		//	printf("Entering time loop for (a, b) = (%g, %g)\n", a, b);
 			for(int i=0; i<fTimeSize; i++)
 			{
 				double t = t_init + Delta_t*(i);
@@ -667,12 +684,9 @@ namespace Katydid
 				C += X * std::exp(-2.*PI*I*((a*i/(1.*fTimeSize)+1.*(b_i+NInterceptBins/2))*i)/(1.*fTimeSize)) * envelope[i]; //NBins/2 term undoes biasing effect of DFT
 				//printf("index, t, real, imag, L2: %d / %d, %g, %g, %g, %g\n", i, fTimeSize, t, tsIn->GetReal(i), tsIn->GetImag(i), L2_norm );
 			}
-		//	printf("time loop ended\n");
 			C *= sqrt(1./ (1.0*fTimeSize));
 			//transformed_ts[b_i] = {C.real(), C.imag()};
-		//	printf("C scaled, about to SetRect\n");
 			fsOut->SetRect(a_i,b_i,C.real(), C.imag());
-		//	printf("C SetRect complete\n");
 			//printf("index, b, real, fftw_real, imag, fftw_imag, mag, fftw_mag: %d, %g, %g, %g, %g, %g, %g, %g\n", b_i, b, transformed_ts[b_i].real(), fsOut->GetReal(b_i,0), transformed_ts[b_i].imag(), fsOut->GetImag(b_i,0), std::abs(transformed_ts[b_i]), fsOut->GetAbs(b_i,0));
 		}
 		//printf("max value (%g) at b=%g, fftw: (%g) at b=%g\n", max, max_b, fftw_max, fftw_max_b);
