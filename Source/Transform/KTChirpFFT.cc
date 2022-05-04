@@ -24,6 +24,11 @@
 using std::string;
 using std::vector;
 
+#include <chrono>
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::seconds;
+using std::chrono::system_clock;
 
 namespace Katydid
 {
@@ -634,19 +639,34 @@ namespace Katydid
 
 	std::complex<double> I(0,1);
         std::complex<double> C_0(0,0);
-	bool CT_FFT = true; //flag to use if using the Cooley-Tukey FFT Algorithm, otherwise brute force DFT is used
+	bool USE_CT_FFT = true; //flag to use if using the Cooley-Tukey FFT Algorithm, otherwise brute force DFT is used
+
+	for(int i=0; i<fTimeSize; i++)
+        {
+                double t = t_init + Delta_t*(i);
+        	envelope[i] = 1.0/(sqrt( (sqrt(PI) * c_const ) )) * exp(-0.5 * (t-mean_t)/c_const * (t-mean_t)/c_const );
+	//	printf("TimeSeriesCheck1: %g\n", tsIn->GetReal(i));
+	//	tsIn->SetRect(i,tsIn->GetReal(i)*envelope[i], tsIn->GetImag(i)*envelope[i]);
+	//	printf("TimeSeriesCheck2: %g\n", tsIn->GetReal(i));
+	}
 
 
 	printf("Initialized constants\n");
 
 	std::vector< std::complex<double> > transformed_ts(NInterceptBins, 0.);
+	auto start_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+	auto temp_time = start_time;
 	for(int a_i = 0; a_i<NSlopeBins; a_i++)
 	{
 		double a = (a_init + a_i*Delta_a);
 	
 
-		printf("a = %g\n", a);	
-		if(CT_FFT)
+		printf("a = %g\n", a);
+		auto current_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+		auto DeltaT = current_time - temp_time;
+		std::cout << "DeltaT: " << DeltaT << std::endl;
+		temp_time = current_time;	
+		if(USE_CT_FFT)
 		{
 	
 			KTChirpSpaceFFT* CT_C = new KTChirpSpaceFFT(1, 0., 1., NInterceptBins, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false); //Object to hold transformed ChirpSpace for given "a" value
@@ -658,16 +678,19 @@ namespace Katydid
 				KTERROR(fftwlog, "Cannot Configure CooleyTukey Algorithm" );
 				break;	
 			}
-			printf("Starting CT_FFT\n");
-			CT.CT_FFT(tsIn, fsOut, a);
-
+//                        CT.CT_FFT(tsIn, fsOut, a);
+			CT.CT_FFT(tsIn, CT_C, a);
 
 			for(int CT_b_i = 0; CT_b_i<NInterceptBins; CT_b_i++)
 			{
+				if(CT_b_i == NInterceptBins/2) printf("components from CT_C: %g, %g\n", CT_C->GetReal(0,CT_b_i), CT_C->GetImag(0,CT_b_i)); 
 				fsOut->SetRect(a_i, CT_b_i, CT_C->GetReal(0,CT_b_i), CT_C->GetImag(0,CT_b_i));
 			}
+			delete CT_C;
 			continue;
 		}
+
+		else{
 
 		for(int b_i = 0; b_i<NInterceptBins; b_i++)
 		{
@@ -689,6 +712,9 @@ namespace Katydid
 			fsOut->SetRect(a_i,b_i,C.real(), C.imag());
 			//printf("index, b, real, fftw_real, imag, fftw_imag, mag, fftw_mag: %d, %g, %g, %g, %g, %g, %g, %g\n", b_i, b, transformed_ts[b_i].real(), fsOut->GetReal(b_i,0), transformed_ts[b_i].imag(), fsOut->GetImag(b_i,0), std::abs(transformed_ts[b_i]), fsOut->GetAbs(b_i,0));
 		}
+
+		}
+
 		//printf("max value (%g) at b=%g, fftw: (%g) at b=%g\n", max, max_b, fftw_max, fftw_max_b);
 	}
 	printf("DoChirpTransform completed\n");

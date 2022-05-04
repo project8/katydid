@@ -28,6 +28,7 @@ namespace Katydid
             KTCooleyTukey();
 
             virtual ~KTCooleyTukey() = default;
+
 	    unsigned nTimeBins;
 	    unsigned nSlopeBins;
 	    unsigned nInterceptBins;
