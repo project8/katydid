@@ -33,6 +33,8 @@ namespace Katydid
 	    unsigned nSlopeBins;
 	    unsigned nInterceptBins;
 
+	    int Ncalculations = 0;
+
 	    bool Configure(const KTTimeSeriesFFTW* tsIn, KTChirpSpaceFFT* fsOut);
 
 	    void UnzipEvenTimeSeries(const KTTimeSeriesFFTW* tsIn, KTTimeSeriesFFTW* tsOutEven, KTTimeSeriesFFTW* tsOutOdd);

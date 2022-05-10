@@ -30,6 +30,7 @@ using std::chrono::milliseconds;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 
+
 namespace Katydid
 {
     KTLOGGER(fftwlog, "KTChirpFFT");
@@ -620,13 +621,12 @@ namespace Katydid
 
 	int NSlopeBins = fsOut->GetNSlopeBins();
 //	NSlopeBins = 82;
-//	NSlopeBins = 5;
+//	NSlopeBins = 2;
 	int NInterceptBins = fsOut->GetNInterceptBins();
 
-	std::vector<double> envelope(fTimeSize, 1.0);
 	double sigma = (tsIn->GetRangeMax() - tsIn->GetRangeMin()) / 5.0;
 	double c_const = sqrt(2.0)*sigma;
-	double PI = 3.14159265;
+	double PI = atan(1)*4.;
 	double L2_norm = 0.;
 	double t_init = tsIn->GetRangeMin();
 	double Delta_t = tsIn->GetTimeBinWidth();
@@ -641,6 +641,8 @@ namespace Katydid
         std::complex<double> C_0(0,0);
 	bool USE_CT_FFT = true; //flag to use if using the Cooley-Tukey FFT Algorithm, otherwise brute force DFT is used
 
+
+        std::vector<double> envelope(fTimeSize, 1.0);
 	for(int i=0; i<fTimeSize; i++)
         {
                 double t = t_init + Delta_t*(i);
@@ -666,11 +668,11 @@ namespace Katydid
 		auto DeltaT = current_time - temp_time;
 		std::cout << "DeltaT: " << DeltaT << std::endl;
 		temp_time = current_time;	
+		std::vector<double> evenVector(fTimeSize/2,0.);
 		if(USE_CT_FFT)
 		{
 	
 			KTChirpSpaceFFT* CT_C = new KTChirpSpaceFFT(1, 0., 1., NInterceptBins, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false); //Object to hold transformed ChirpSpace for given "a" value
-			//Add Call to Cooley-Tukey Algorithm Here
 	
 			KTCooleyTukey CT;
 			if(! CT.Configure(tsIn, CT_C))
@@ -678,44 +680,68 @@ namespace Katydid
 				KTERROR(fftwlog, "Cannot Configure CooleyTukey Algorithm" );
 				break;	
 			}
-//                        CT.CT_FFT(tsIn, fsOut, a);
 			CT.CT_FFT(tsIn, CT_C, a);
 
-			for(int CT_b_i = 0; CT_b_i<NInterceptBins; CT_b_i++)
+			printf("Times a term was calculated: %d\n", CT.Ncalculations);
+
+			for(int CT_b_i = 0; CT_b_i<NInterceptBins/2; CT_b_i++)
 			{
-				if(CT_b_i == NInterceptBins/2) printf("components from CT_C: %g, %g\n", CT_C->GetReal(0,CT_b_i), CT_C->GetImag(0,CT_b_i)); 
-				fsOut->SetRect(a_i, CT_b_i, CT_C->GetReal(0,CT_b_i), CT_C->GetImag(0,CT_b_i));
+                                fsOut->SetRect(a_i, CT_b_i, CT_C->GetReal(0,CT_b_i+NInterceptBins/2)*sqrt(1./ (1.0*fTimeSize)), CT_C->GetImag(0,CT_b_i+NInterceptBins/2)*sqrt(1./ (1.0*fTimeSize))); //NBins/2 term undoes biasing effect of DFT
+                                fsOut->SetRect(a_i, CT_b_i+NInterceptBins/2, CT_C->GetReal(0,CT_b_i)*sqrt(1./ (1.0*fTimeSize)), CT_C->GetImag(0,CT_b_i)*sqrt(1./ (1.0*fTimeSize))); //NBins/2 term undoes biasing effect of DFT
+                                if(CT_b_i == 0) printf("components from CT_C: %g, %g\n", fsOut->GetReal(a_i,NInterceptBins/2), fsOut->GetImag(a_i,NInterceptBins/2));               
+
 			}
 			delete CT_C;
-			continue;
+		//	continue;
 		}
 
-		else{
+//
 
+		else{
+		printf("--------CHECK-------: %d  \n", NInterceptBins);
+
+		std::complex<double> Ceven, Codd;
 		for(int b_i = 0; b_i<NInterceptBins; b_i++)
 		{
+			Ceven = {0,0};
+			Codd = {0,0};
 			double b = (b_init + b_i*Delta_b);	
+			double Cumulative_Even_Real = 0;
 			L2_norm = 0;
 			std::complex<double> C(0,0);
 			for(int i=0; i<fTimeSize; i++)
 			{
 				double t = t_init + Delta_t*(i);
                 		envelope[i] = 1.0/(sqrt( (sqrt(PI) * c_const ) )) * exp(-0.5 * (t-mean_t)/c_const * (t-mean_t)/c_const );
+				envelope[i] = 1.;
 				L2_norm += envelope[i]*envelope[i]*Delta_t;
 
 				std::complex<double> X(tsIn->GetReal(i), tsIn->GetImag(i));
-				C += X * std::exp(-2.*PI*I*((a*i/(1.*fTimeSize)+1.*(b_i+NInterceptBins/2))*i)/(1.*fTimeSize)) * envelope[i]; //NBins/2 term undoes biasing effect of DFT
-				//printf("index, t, real, imag, L2: %d / %d, %g, %g, %g, %g\n", i, fTimeSize, t, tsIn->GetReal(i), tsIn->GetImag(i), L2_norm );
+                                C += X * std::exp(-2.*PI*I*((a*(1.*i)+1.*(b_i))*i)/(1.*fTimeSize)) * envelope[i]; //NBins/2 term undoes biasing effect of DFT
+				if(b_i<4){
+					if(i%2 == 0) Ceven += X * std::exp(-2.*PI*I*((a*i+1.*(b_i))*i)/(1.*fTimeSize)) * envelope[i];
+					if(i%2 == 1) Codd  += X * std::exp(-2.*PI*I*((a*i+1.*(b_i))*(1.*i))/(1.*fTimeSize)) * envelope[i];
+				}
+				if((i%2 == 0) and (b_i==2)){ 
+					Cumulative_Even_Real += (X * std::exp(-2.*PI*I*((a*(1.*i)+1.*(b_i))*(1.*i))/(1.*fTimeSize)) * envelope[i]).real();
+//					if((i%100 == 0) or (i<10)) printf("Cumulative Real: %d, %g\n", i, Cumulative_Even_Real);
+				}
+					
 			}
 			C *= sqrt(1./ (1.0*fTimeSize));
-			//transformed_ts[b_i] = {C.real(), C.imag()};
-			fsOut->SetRect(a_i,b_i,C.real(), C.imag());
-			//printf("index, b, real, fftw_real, imag, fftw_imag, mag, fftw_mag: %d, %g, %g, %g, %g, %g, %g, %g\n", b_i, b, transformed_ts[b_i].real(), fsOut->GetReal(b_i,0), transformed_ts[b_i].imag(), fsOut->GetImag(b_i,0), std::abs(transformed_ts[b_i]), fsOut->GetAbs(b_i,0));
+
+			if(b_i<4) printf("total even and odd components: %d, even: (%g, %g), odd: (%g, %g)\n", b_i, Ceven.real(), Ceven.imag(), Codd.real(), Codd.imag());
+
+//			fsOut->SetRect(a_i,b_i,C.real(), C.imag());
+			if(b_i<NInterceptBins/2) fsOut->SetRect(a_i,b_i+NInterceptBins/2,C.real(), C.imag());
+			else fsOut->SetRect(a_i,b_i-NInterceptBins/2,C.real(), C.imag());
 		}
 
-		}
+		printf("components from direct FT: %g, %g\n", fsOut->GetReal(a_i,NInterceptBins/2), fsOut->GetImag(a_i,NInterceptBins/2));
 
-		//printf("max value (%g) at b=%g, fftw: (%g) at b=%g\n", max, max_b, fftw_max, fftw_max_b);
+	}
+
+//
 	}
 	printf("DoChirpTransform completed\n");
         return;
