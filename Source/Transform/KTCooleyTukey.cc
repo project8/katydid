@@ -38,14 +38,12 @@ namespace Katydid
                 KTTimeSeriesFFTW* tsIn_odd= new KTTimeSeriesFFTW( tsIn->GetNTimeBins()/2, tsIn->GetRangeMin(), tsIn->GetRangeMax());
 
 
-//                KTChirpSpaceFFT fsOut_even( 1, 0., 1., nInterceptBins/2, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false);
-//                KTChirpSpaceFFT fsOut_odd( 1, 0., 1., nInterceptBins/2, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false);
-                KTChirpSpaceFFT* fsOut_even = new KTChirpSpaceFFT( 1, 0., 1., nInterceptBins/2, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false);
-                KTChirpSpaceFFT* fsOut_odd = new KTChirpSpaceFFT( 1, 0., 1., nInterceptBins/2, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false);
+                KTChirpSpaceFFT* fsOut_even = new KTChirpSpaceFFT( 1, 0., 1., tsIn->GetNTimeBins()/2, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false);
+                KTChirpSpaceFFT* fsOut_odd = new KTChirpSpaceFFT( 1, 0., 1., tsIn->GetNTimeBins()/2, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false);
 
 
-//	if(fIsInterceptEven and (tsIn->GetNTimeBins() != 2))
-	if(false)
+//        if(fIsInterceptEven and (tsIn->GetNTimeBins() != 2))
+        if(fIsInterceptEven and (tsIn->GetNTimeBins() >= 64))
 	{
 		
 
@@ -67,9 +65,9 @@ namespace Katydid
 
 	else
 	{
-		if(  nTimeBins!=2 ) 
+		if(  tsIn->GetNTimeBins()!=2 ) 
 		{
-			KTDEBUG(fslog, "Must use Time Series with N = power of 2 for this algorithm, will likely end in error otherwise");
+//			KTDEBUG(fslog, "Must use Time Series with N = power of 2 for this algorithm, will likely end in error otherwise");
 		}
 
 		UnzipEvenTimeSeries(tsIn,tsIn_even,tsIn_odd);
@@ -83,8 +81,6 @@ namespace Katydid
 //                fsOut->SetRect(0,0,tsIn->GetReal(0),tsIn->GetImag(0));
 
 		ZipResult(fsOut_even,fsOut_odd,fsOut, alpha);
-		//fsOut->SetRect(0,0,fsOut_even->GetReal(0,0),fsOut_even->GetImag(0,0));
-		//fsOut->SetRect(0,1,fsOut_odd->GetReal(0,0),fsOut_odd->GetImag(0,0));	
 		delete fsOut_even;
 		delete fsOut_odd;
 	}
@@ -111,6 +107,10 @@ namespace Katydid
     {
 	unsigned N = tsIn->GetNTimeBins();
 
+
+        std::vector<double> envelope(N, 1.0);
+
+	if(N == 8192){
         double sigma = (tsIn->GetRangeMax() - tsIn->GetRangeMin()) / 5.0;
         double c_const = sqrt(2.0)*sigma;
         double PI = atan(1)*4.;
@@ -118,12 +118,12 @@ namespace Katydid
         double Delta_t = tsIn->GetTimeBinWidth();
         double mean_t = 0.5*(tsIn->GetRangeMax() + tsIn->GetRangeMin());
 
-        std::vector<double> envelope(N, 1.0);
         for(int i=0; i<N; i++)
         {
                 double t = t_init + Delta_t*(i);
                 envelope[i] = 1.0/(sqrt( (sqrt(PI) * c_const ) )) * exp(-0.5 * (t-mean_t)/c_const * (t-mean_t)/c_const );
         }
+	}
 
 	for(int i=0; i<N/2; i++)
     	{
@@ -145,14 +145,14 @@ namespace Katydid
 		for( int b_i=0; b_i<N; b_i++) //indexing over intercept bins
 		{
 
-			C[b_i] += (t * std::exp(-2.*PI*I*((2.*i)*alpha/8192. + 1.*b_i)*(1.*i)/(1.*N)));
+			C[b_i] += (t * std::exp(-2.*PI*I*((2.*i)*alpha/(2.*N) + 1.*b_i)*(1.*i)/(1.*N)));
+			Ncalculations++;
 		}
 	}
 	for( int b_i=0; b_i<N; b_i++)
 	{
 		fsOut->SetRect(0,b_i,C[b_i].real(), C[b_i].imag());
 	}
-	Ncalculations++;
     }
 
     void KTCooleyTukey::CT_Odd_transform(const KTTimeSeriesFFTW* tsIn,  KTChirpSpaceFFT* fsOut, double alpha)
@@ -168,7 +168,8 @@ namespace Katydid
                 for( int b_i=0; b_i<N; b_i++) //indexing over intercept bins
                 {
 
-			C[b_i] += t*exp(-2.*PI*I*((2.*i+2.)*alpha/8192.  + 1.*b_i)*(1.*i)/(1.*N));
+			C[b_i] += t*exp(-2.*PI*I*((2.*i+2.)*alpha/(2.*N)  + 1.*b_i)*(1.*i)/(1.*N));
+			Ncalculations++;
                 }
 
         }
@@ -176,17 +177,17 @@ namespace Katydid
         {
                 fsOut->SetRect(0,b_i,C[b_i].real(), C[b_i].imag());
         }
-	Ncalculations++;
     }
 
     void KTCooleyTukey::ZipResult(const KTChirpSpaceFFT* fsOut_even, const KTChirpSpaceFFT* fsOut_odd, KTChirpSpaceFFT* fsOut, double alpha)
     {
 	unsigned N = fsOut->GetNInterceptBins();
+//	printf("Zipping %d-long elements\n", N/2);
 	std::complex<double> I(0,1);
-	double PI = 3.14159;
+	double PI = atan(1)*4.;
 	std::complex<double> EvenComp(0.,0.);
 	std::complex<double> OddComp(0.,0.);
-	std::complex<double> Twiddle = exp(-2.*PI*I/(1.* N)*(alpha)); 
+	std::complex<double> Twiddle = exp(-2.*PI*I/(1.* N)*(alpha/(1.*N))); 
 	for(int b_i=0; b_i<N/2; b_i++)
 	{
 		EvenComp = {fsOut_even->GetReal(0,b_i), fsOut_even->GetImag(0,b_i)};
@@ -195,7 +196,8 @@ namespace Katydid
 
 		fsOut->SetRect(0, b_i, (EvenComp + Twiddle*exp(-2.*PI*I/(1. * N)*(1. * b_i))*OddComp).real() , (EvenComp + Twiddle*exp(-2.*PI*I/(1. * N)*(1. * b_i))*OddComp).imag());
 		fsOut->SetRect(0, b_i+N/2, (EvenComp - Twiddle*exp(-2.*PI*I/(1. * N)*(1. * b_i))*OddComp).real() , (EvenComp - Twiddle*exp(-2.*PI*I/(1. * N)*(1. * b_i))*OddComp).imag());
-		Ncalculations += 2;
+		Ncalculations+=2;
+		
 	}
     }
 

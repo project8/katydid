@@ -673,7 +673,6 @@ namespace Katydid
 		{
 	
 			KTChirpSpaceFFT* CT_C = new KTChirpSpaceFFT(1, 0., 1., NInterceptBins, fsOut->GetRangeMin(2), fsOut->GetRangeMax(2), false); //Object to hold transformed ChirpSpace for given "a" value
-	
 			KTCooleyTukey CT;
 			if(! CT.Configure(tsIn, CT_C))
 			{
@@ -692,12 +691,10 @@ namespace Katydid
 
 			}
 			delete CT_C;
-		//	continue;
+			continue;
 		}
 
-//
 
-		else{
 		printf("--------CHECK-------: %d  \n", NInterceptBins);
 
 		std::complex<double> Ceven, Codd;
@@ -739,7 +736,6 @@ namespace Katydid
 
 		printf("components from direct FT: %g, %g\n", fsOut->GetReal(a_i,NInterceptBins/2), fsOut->GetImag(a_i,NInterceptBins/2));
 
-	}
 
 //
 	}
