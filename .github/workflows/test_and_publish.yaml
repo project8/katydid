@@ -50,7 +50,11 @@ jobs:
             type=semver,pattern={{raw}}
             type=ref,event=branch
             type=ref,event=pr
-          
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - uses: little-core-labs/get-git-tag@v3
+        id: tag_name
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         
@@ -70,8 +74,6 @@ jobs:
       - name: Build
         id: build
         uses: docker/build-push-action@v3
-        env:
-          KATYDID_TAG: ${GITHUB_REF#refs/*/}
         with:
           context: .
           file: ${{ matrix.build }}/Dockerfile
@@ -82,10 +84,10 @@ jobs:
           push: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
           build-args: |
             img_repo=ghcr.io/project8/luna_base
-            img_tag=v1.3.0-alpha.1
+            img_tag=v1.3.0-alpha.1-dev
             img_repo=ghcr.io/project8/luna_base
             img_tag=v1.3.0-alpha.1${{ matrix.tag-suffix }}
-            katydid_tag=${{ env.KATYDID_TAG }}
+            katydid_tag=${{ steps.tag_name.outputs.tag }}
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
           tags: ${{ steps.docker_meta.outputs.tags }}
