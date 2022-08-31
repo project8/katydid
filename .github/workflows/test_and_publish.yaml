@@ -53,8 +53,11 @@ jobs:
             type=ref,event=pr
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
-      - uses: little-core-labs/get-git-tag@v3.0.2
+      - name: Get previous tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
         id: tag_name
+        with:
+          fallback: beta
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -78,10 +81,6 @@ jobs:
         with:
           context: .
           file: ${{ matrix.build }}/Dockerfile
-          # We want to publish the following:
-          #  1. Prod and Dev builds of pushes of each tag
-          #  2. Dev build of pushes to develop
-          #  3. "latest" == (1)
           push: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
           build-args: |
             img_repo=ghcr.io/project8/luna_base
