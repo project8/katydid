@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix:
         build: [Dev, Prod]
+        fail-fast: [false]
         include:
           - build: Dev
             tag-suffix: '-dev'
