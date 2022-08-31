@@ -85,8 +85,8 @@ jobs:
           build-args: |
             img_repo=ghcr.io/project8/luna_base
             img_tag=v1.3.0-alpha.1-dev
-            img_repo=ghcr.io/project8/luna_base
-            img_tag=v1.3.0-alpha.1${{ matrix.tag-suffix }}
+            final_img_repo=ghcr.io/project8/luna_base
+            final_img_tag=v1.3.0-alpha.1${{ matrix.tag-suffix }}
             katydid_tag=${{ steps.tag_name.outputs.tag }}
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
