@@ -94,6 +94,10 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           platforms: linux/amd64
 
+      - name: Test
+        run: |
+          docker run ${{ steps.build.outputs.imageid }} echo "hello world"
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
