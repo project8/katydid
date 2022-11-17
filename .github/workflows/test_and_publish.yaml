@@ -93,6 +93,7 @@ jobs:
             build_tests_exe=${{ matrix.build-tests }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           platforms: linux/amd64
+          load: true
 
       - name: Test
         run: |
