@@ -40,7 +40,7 @@ RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
 ########################
 FROM katydid_base AS katydid_build
 
-RUN echo 'KATYDID BUILD WOULD GO HERE!"
+RUN echo "KATYDID BUILD WOULD GO HERE!"
 
 ########################
 FROM katydid_final_base
