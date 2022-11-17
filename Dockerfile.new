@@ -1,8 +1,8 @@
 ARG final_img_repo=ghcr.io/project8/luna_base
-ARG final_img_tag=v1.3.0-alpha.1
+ARG final_img_tag=v1.3.0
 
 ARG img_repo=ghcr.io/project8/luna_base
-ARG img_tag=v1.3.0-alpha.1
+ARG img_tag=v1.3.0-dev
 
 ########################
 FROM ${final_img_repo}:${final_img_tag} AS katydid_final_base

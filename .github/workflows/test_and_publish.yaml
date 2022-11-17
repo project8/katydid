@@ -10,6 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  LUNA_BASE_VER: v1.3.0
 
 jobs:
 
@@ -84,11 +85,16 @@ jobs:
           push: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
           build-args: |
             img_repo=ghcr.io/project8/luna_base
-            img_tag=v1.3.0-alpha.1-dev
+            img_tag=${{ env.LUNA_BASE_VER }}-dev
             final_img_repo=ghcr.io/project8/luna_base
-            final_img_tag=v1.3.0-alpha.1${{ matrix.tag-suffix }}
+            final_img_tag=${{ env.LUNA_BASE_VER }}${{ matrix.tag-suffix }}
             katydid_tag=${{ steps.tag_name.outputs.tag }}
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           platforms: linux/amd64
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+          
