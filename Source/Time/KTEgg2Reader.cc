@@ -103,10 +103,10 @@ namespace Katydid
         {
             KTWARN(eggreadlog, "Egg2 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
         }
-        KTINFO(eggreadlog, "Opening egg file <" << filenames[0] << ">");
+        KTINFO(eggreadlog, "Opening egg file <" << filenames[0].first << ">");
         try
         {
-            fMonarch = Monarch2::OpenForReading(filenames[0].native());
+            fMonarch = Monarch2::OpenForReading(filenames[0].first.native());
         }
         catch (M2Exception& e)
         {
@@ -130,6 +130,7 @@ namespace Katydid
             return Nymph::KTDataPtr();
         }
         CopyHeaderInformation(fMonarch->GetHeader());
+        fHeader.SetMetadataFilename(filenames[0].second.native())
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 

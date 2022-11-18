@@ -1,16 +1,30 @@
-ARG IMG_USER=project8
-ARG IMG_REPO=p8compute_dependencies
-ARG IMG_TAG=v1.0.0
+ARG final_img_repo=ghcr.io/project8/luna_base
+ARG final_img_tag=v1.3.0
 
-FROM ${IMG_USER}/${IMG_REPO}:${IMG_TAG} as katydid_common
+ARG img_repo=ghcr.io/project8/luna_base
+ARG img_tag=v1.3.0-dev
+
+########################
+FROM ${final_img_repo}:${final_img_tag} AS katydid_final_base
+
+########################
+FROM ${img_repo}:${img_tag} AS katydid_base
 
 ARG build_type=Release
 ENV KATYDID_BUILD_TYPE=$build_type
 ARG build_tests_exe=FALSE
 ENV KATYDID_BUILD_TESTS_EXE=$build_tests_exe
 
-ENV KATYDID_TAG=v2.18.0
-ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
+ARG katydid_tag=beta
+ENV KATYDID_TAG=${katydid_tag}
+ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/${KATYDID_TAG}
+
+ARG CC_VAL=gcc
+ENV CC=${CC_VAL}
+ARG CXX_VAL=g++
+ENV CXX=${CXX_VAL}
+
+SHELL ["/bin/bash", "-c"]
 
 RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
     chmod -R 777 $KATYDID_BUILD_PREFIX/.. &&\
@@ -24,7 +38,7 @@ RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
     /bin/true
 
 ########################
-FROM katydid_common as katydid_done
+FROM katydid_base AS katydid_build
 
 COPY Cicada /tmp_source/Cicada
 COPY cmake /tmp_source/cmake
@@ -38,7 +52,6 @@ COPY KatydidConfig.hh.in /tmp_source/KatydidConfig.hh.in
 COPY libkatydid.rootmap /tmp_source/libkatydid.rootmap
 COPY this_katydid.sh.in /tmp_source/this_katydid.sh.in
 COPY .git /tmp_source/.git
-COPY CI /$KATYDID_BUILD_PREFIX/CI
 
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
 RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
@@ -49,14 +62,11 @@ RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
           -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
           -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
           -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
-          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-    make -j3 install &&\
+    cmake .. &&\
+    make -j4 install &&\
     /bin/true
 
 ########################
-FROM katydid_common
+FROM katydid_final_base
 
-COPY --from=katydid_done $KATYDID_BUILD_PREFIX $KATYDID_BUILD_PREFIX
+COPY --from=katydid_build $KATYDID_BUILD_PREFIX $KATYDID_BUILD_PREFIX

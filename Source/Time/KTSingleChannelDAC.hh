@@ -206,8 +206,7 @@ namespace Katydid
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
         for (unsigned bin = 0; bin < nBins; ++bin)
         {
-            (*newTS)(bin)[0] = Convert(ts(2 * bin));
-            (*newTS)(bin)[1] = Convert(ts(2 * bin + 1));
+            newTS->SetRect(bin, Convert(ts(2 * bin)), Convert(ts(2 * bin + 1)));
         }
         return newTS;
     }
@@ -276,8 +275,9 @@ namespace Katydid
                 avgValueImag += Convert(ts(2 * bin + 1));
                 ++bin;
             }
-            (*newTS)(oversampledBin)[0] = avgValueReal * fOversamplingScaleFactor;
-            (*newTS)(oversampledBin)[1] = avgValueImag * fOversamplingScaleFactor;
+            newTS->SetRect(oversampledBin, 
+                            avgValueReal * fOversamplingScaleFactor,
+                            avgValueImag * fOversamplingScaleFactor);
         }
 #ifndef NDEBUG
         if (bin != ts.size() / 2)

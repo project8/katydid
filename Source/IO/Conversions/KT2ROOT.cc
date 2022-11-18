@@ -37,6 +37,7 @@
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph2D.h"
 
 #include <cfloat>
 #include "stdint.h"
@@ -184,7 +185,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, ::sqrt((*ts)(iBin)[0] * (*ts)(iBin)[0] + (*ts)(iBin)[1] * (*ts)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, ts->GetAbs(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -197,7 +198,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Real)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, (*ts)(iBin)[0]);
+            hist->SetBinContent((int) iBin + 1, ts->GetReal(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -210,7 +211,7 @@ namespace Katydid
         TH1D* hist = new TH1D(histName.c_str(), "Time Series (Imag)", (int) nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, (*ts)(iBin)[1]);
+            hist->SetBinContent((int) iBin + 1, ts->GetImag(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -391,7 +392,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int) nBins, fs->GetRangeMin(), fs->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, std::sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, fs->GetAbs(iBin));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Voltage (V)");
@@ -404,7 +405,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int) nBins, fs->GetRangeMin(), fs->GetRangeMax());
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, std::atan2((*fs)(iBin)[1], (*fs)(iBin)[0]));
+            hist->SetBinContent((int) iBin + 1, fs->GetArg(iBin));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Phase");
@@ -420,7 +421,7 @@ namespace Katydid
 
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            hist->SetBinContent((int) iBin + 1, scaling * ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
+            hist->SetBinContent((int) iBin + 1, scaling * fs->GetNorm(iBin));
         }
 
         hist->SetXTitle("Frequency (Hz)");
@@ -437,7 +438,7 @@ namespace Katydid
         // skip the DC bin; start at iBin = 1
         for (unsigned iBin = 1; iBin < nBins; ++iBin)
         {
-            value = std::sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]);
+            value = fs->GetAbs(iBin);
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -445,7 +446,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag * 0.95, tMaxMag * 1.05);
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            value = sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]);
+            value = fs->GetAbs(iBin);
             hist->Fill(value);
         }
         hist->SetXTitle("Voltage (V)");
@@ -462,7 +463,7 @@ namespace Katydid
         // skip the DC bin; start at iBin = 1
         for (unsigned iBin = 1; iBin < nBins; ++iBin)
         {
-            value = ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]) * scaling;
+            value = fs->GetNorm(iBin) * scaling;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -470,51 +471,70 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag * 0.95, tMaxMag * 1.05);
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            value = (*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1];
+            value = fs->GetNorm(iBin);
             hist->Fill(value * scaling);
         }
         hist->SetXTitle("Power (W)");
         return hist;
     }
 
-    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
+    std::vector<TGraph2D*> KT2ROOT::CreateGridGraphs(const KTAggregatedFrequencySpectrumDataFFTW& aggfs, const std::string& name)
     {
-        // Currently only assume a square grid
-        unsigned int nComponents = aggfs.GetNComponents();
-        int nGridPoints = 0;
-        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
-        nGridPoints = std::sqrt(nComponents);
+        unsigned nComponents = aggfs.GetNComponents();
         double fActiveRadius = aggfs.GetActiveRadius();
-        TH2D* hist = new TH2D(name.c_str(), "Frequency Spectrum Grid", nGridPoints, -fActiveRadius, fActiveRadius, nGridPoints, -fActiveRadius, fActiveRadius);
-        for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
+        unsigned nZ=aggfs.GetNAxialPositions();
+        std::vector<TGraph2D*> graphs;
+        std::vector<unsigned> pointIndex;
+        pointIndex.assign(nZ,0);
+
+        for (unsigned iZ=0; iZ<nZ; ++iZ)
         {
-            int xBin = iComponents / nGridPoints;
-            int yBin = iComponents % nGridPoints;
-            hist->SetBinContent(xBin + 1, yBin + 1, aggfs.GetSummedGridVoltage(iComponents));
+            graphs.push_back(new TGraph2D());
+            graphs.at(iZ)->SetName((name+"_"+std::to_string(iZ)).c_str());
+            graphs.at(iZ)->GetXaxis()->SetTitle("X Axis (m)");
+            graphs.at(iZ)->GetYaxis()->SetTitle("Y Axis (m)");
         }
-        hist->SetXTitle("X Axis (m)");
-        hist->SetYTitle("Y Axis (m)");
-        return hist;
+
+        for (unsigned iComponents = 0; iComponents < nComponents; ++iComponents)
+        {
+            double xPos,yPos,zPos;
+            aggfs.GetGridPoint(iComponents, xPos, yPos, zPos);
+            unsigned zIndex=(int)zPos;
+            if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
+            graphs[zIndex]->SetPoint(pointIndex[zIndex], xPos, yPos, aggfs.GetSummedGridVoltage(iComponents));
+            pointIndex[zIndex]+=1;
+        }
+        return graphs;
     }
 
-    TH2D* KT2ROOT::CreateGridHistogram(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
+    std::vector<TGraph2D*> KT2ROOT::CreateGridGraphs(const KTAggregatedPowerSpectrumData& aggps, const std::string& name)
     {
         // Currently only assume a square grid
-        unsigned int nComponents = aggps.GetNComponents();
-        int nGridPoints = 0;
-        //      if(fs.GetIsSquareGrid()) nGridPoints=std::sqrt(4.0*nComponents/KTMath::Pi());
-        nGridPoints = std::sqrt(nComponents);
+        unsigned nComponents = aggps.GetNComponents();
         double fActiveRadius = aggps.GetActiveRadius();
-        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum Grid", nGridPoints, -fActiveRadius, fActiveRadius, nGridPoints, -fActiveRadius, fActiveRadius);
-        for (unsigned int iComponents = 0; iComponents < nComponents; ++iComponents)
+        unsigned nZ=aggps.GetNAxialPositions();
+        std::vector<TGraph2D*> graphs;
+        std::vector<unsigned> pointIndex;
+        pointIndex.assign(nZ,0);
+
+        for (unsigned iZ=0; iZ<nZ; ++iZ)
         {
-            int xBin = iComponents / nGridPoints;
-            int yBin = iComponents % nGridPoints;
-            hist->SetBinContent(xBin + 1, yBin + 1, aggps.GetSummedGridPower(iComponents));
+            graphs.push_back(new TGraph2D());
+            graphs.at(iZ)->SetName((name+"_"+std::to_string(iZ)).c_str());
+            graphs.at(iZ)->GetXaxis()->SetTitle("X Axis (m)");
+            graphs.at(iZ)->GetYaxis()->SetTitle("Y Axis (m)");
         }
-        hist->SetXTitle("X Axis (m)");
-        hist->SetYTitle("Y Axis (m)");
-        return hist;
+
+        for (unsigned iComponents = 0; iComponents < nComponents; ++iComponents)
+        {
+            double xPos,yPos,zPos;
+            aggps.GetGridPoint(iComponents, xPos, yPos, zPos);
+            unsigned zIndex=(int)zPos;
+            if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
+            graphs[zIndex]->SetPoint(pointIndex[zIndex],xPos,yPos,aggps.GetSummedGridPower(iComponents));
+            pointIndex[zIndex]+=1;
+        }
+        return graphs;
     }
 
     TH1D* KT2ROOT::CreateHistogram(const KTFrequencySpectrumVariance* fs, const std::string& name)
@@ -535,7 +555,7 @@ namespace Katydid
         unsigned nBins = ps->size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int) nBins, ps->GetRangeMin(), ps->GetRangeMax());
         //double value;
-        for (unsigned int iBin = 0; iBin < nBins; iBin++)
+        for (unsigned iBin = 0; iBin < nBins; iBin++)
         {
             hist->SetBinContent((int) iBin + 1, (*ps)(iBin));
         }

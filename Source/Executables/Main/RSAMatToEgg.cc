@@ -26,6 +26,8 @@
 #include <string>
 #include <unistd.h>
 
+#include <fftw3.h>
+
 
 using namespace std;
 using namespace Katydid;
@@ -182,7 +184,10 @@ int main(int argc, char** argv)
             // side note: if the time series array type were guaranteed to be contiguous in memory, this could be replaced with a memcpy
             for (unsigned iBin = 0; iBin < recSize; ++iBin)
             {
-                writer.set_at((*timeSeries)(iBin), iBin);
+                fftw_complex val;
+                val[0] = timeSeries->GetReal(iBin);
+                val[1] = timeSeries->GetImag(iBin);
+                writer.set_at(val, iBin);
             }
 
             stream->WriteRecord(firstRec);

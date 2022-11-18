@@ -5,6 +5,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTAggregatedChannelOptimizer.hh
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
+    KTAxialAggregator.hh
     KTChannelAggregator.hh
     KTConsensusThresholding.hh
     KTConvolution.hh
@@ -30,6 +31,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTAggregatedChannelOptimizer.cc
     KTAmplitudeCounter.cc
     KTAmplitudeDistributor.cc
+    KTAxialAggregator.cc
     KTChannelAggregator.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc
@@ -79,18 +81,19 @@ if (ROOT_FOUND)
     )
 endif (ROOT_FOUND)
 
-if (EIGEN3_FOUND)
-    set (SPECTRUMANALYSIS_HEADERFILES 
-        ${SPECTRUMANALYSIS_HEADERFILES}   
-        KTBiasedACM.hh
-        KTRQProcessor.hh
-    )
-    set (SPECTRUMANALYSIS_SOURCEFILES
-        ${SPECTRUMANALYSIS_SOURCEFILES}
-        KTRQProcessor.cc
-        KTBiasedACM.cc
-    )
-endif (EIGEN3_FOUND)
+# Disabled due to compile errors
+#if (EIGEN3_FOUND)
+#    set (SPECTRUMANALYSIS_HEADERFILES 
+#        ${SPECTRUMANALYSIS_HEADERFILES}   
+#        KTBiasedACM.hh
+#        KTRQProcessor.hh
+#    )
+#    set (SPECTRUMANALYSIS_SOURCEFILES
+#        ${SPECTRUMANALYSIS_SOURCEFILES}
+#        KTRQProcessor.cc
+#        KTBiasedACM.cc
+#    )
+#endif (EIGEN3_FOUND)
 
 if (Katydid_ENABLE_TUTORIAL)
     set (SPECTRUMANALYSIS_HEADERFILES 

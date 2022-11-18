@@ -24,6 +24,7 @@
 #include "KTWignerVilleData.hh"
 #include "KTWV2DData.hh"
 #include "KTChannelAggregatedData.hh"
+#include "KTAxialChannelAggregatedData.hh"
 
 #ifdef ENABLE_TUTORIAL
 #include "KTLowPassFilteredData.hh"
@@ -31,8 +32,10 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph2D.h"
 
 #include <sstream>
+#include <vector>
 
 
 
@@ -78,6 +81,8 @@ namespace Katydid
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteWV2DData);
         fWriter->RegisterSlot("kd-tree-ss", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteKDTreeSparseSpectrogram);
+        fWriter->RegisterSlot("ax-agg-fs-fftw-phase", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumDataFFTWPhase);
+        fWriter->RegisterSlot("ax-agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumFFTWData);
         fWriter->RegisterSlot("agg-fs-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumFFTWData);
         fWriter->RegisterSlot("agg-grid-fftw", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteAggregatedFrequencySpectrumGrid);
         fWriter->RegisterSlot("agg-ps", this, &KTBasicROOTTypeWriterSpectrumAnalysis::WriteChannelAggregatedPowerSpectrumData);
@@ -764,6 +769,67 @@ namespace Katydid
     }
 
     //************************
+    // Axial Channel Aggregated Data
+    //************************
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTAxialAggregatedFrequencySpectrumDataFFTW& sumData = data->Of<KTAxialAggregatedFrequencySpectrumDataFFTW>();
+        unsigned nComponents = sumData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histAxAggPhaseFFTW_" << sliceNumber<<"_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* axialAggregatedFrequencySpectrum = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
+                axialAggregatedFrequencySpectrum->SetDirectory(fWriter->GetFile());
+
+                axialAggregatedFrequencySpectrum->Write(); //Redundant
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterSpectrumAnalysis::WriteAxialAggregatedFrequencySpectrumFFTWData(Nymph::KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTAxialAggregatedFrequencySpectrumDataFFTW& sumData = data->Of<KTAxialAggregatedFrequencySpectrumDataFFTW>();
+        unsigned nComponents = sumData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histAxAggFFTW_" << sliceNumber<<"_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* axialAggregatedFrequencySpectrum = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
+                axialAggregatedFrequencySpectrum->SetDirectory(fWriter->GetFile());
+
+                axialAggregatedFrequencySpectrum->Write(); //Redundant
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    //************************
     // Channel Aggregated Data
     //************************
 
@@ -777,8 +843,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        unsigned optimizedGridIndex=sumData.GetOptimizedGridPoint();
+
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue;
             KTFrequencySpectrumFFTW* spectrum = sumData.GetSpectrumFFTW(iChannel);
             if (spectrum != NULL)
             {
@@ -808,14 +877,17 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridFFTW_" << sliceNumber;
-        string histName;
-        conv >> histName;
-        TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        conv << "graphAggGridFFTW_" << sliceNumber;
+        string graphName;
+        conv >> graphName;
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData, graphName);
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i)
+        {
+            aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
+            aggregatedGridGraphs.at(i)->Write();
+        }
 
-        aggregatedGridHistogram->Write(); //Redundant
-        KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;
     }
 
@@ -830,9 +902,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        unsigned optimizedGridIndex=sumData.GetOptimizedGridPoint();
 
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue;
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
@@ -862,14 +936,17 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridPower_" << sliceNumber;
-        string histName;
-        conv >> histName;
-        TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        conv << "graphAggGridPower_" << sliceNumber;
+        string graphName;
+        conv >> graphName;
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData, graphName);
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i) 
+        {
+            aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
+            aggregatedGridGraphs.at(i)->Write();//Redundant
+        }
 
-        aggregatedGridHistogram->Write(); //Redundant
-        KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;
     }
 
@@ -883,9 +960,11 @@ namespace Katydid
         unsigned nComponents = sumData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
+        unsigned optimizedGridIndex=sumData.GetOptimizedGridPoint();
 
         for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
+            if(iChannel!=optimizedGridIndex) continue;
             KTPowerSpectrum* spectrum = sumData.GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
@@ -914,14 +993,17 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         stringstream conv;
-        conv << "histAggGridPSD_" << sliceNumber;
-        string histName;
-        conv >> histName;
-        TH2D* aggregatedGridHistogram = KT2ROOT::CreateGridHistogram(sumData, histName);
-        aggregatedGridHistogram->SetDirectory(fWriter->GetFile());
+        conv << "graphAggGridPSD_" << sliceNumber;
+        string graphName;
+        conv >> graphName;
+        std::vector<TGraph2D*> aggregatedGridGraphs = KT2ROOT::CreateGridGraphs(sumData,graphName);
+        for (unsigned i=0;i<aggregatedGridGraphs.size();++i)
+        {
+            aggregatedGridGraphs.at(i)->SetDirectory(fWriter->GetFile());
+            aggregatedGridGraphs.at(i)->Write();//Redundant
+        }
 
-        aggregatedGridHistogram->Write(); //Redundant
-        KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        KTDEBUG(publog, "Graph <" << graphName << "> written to ROOT file");
         return;
     }
 

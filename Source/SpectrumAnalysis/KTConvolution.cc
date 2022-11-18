@@ -439,16 +439,14 @@ namespace Katydid
 
     void KTConvolution1D::ConjugateAndReverse( KTFrequencySpectrumFFTW& spectrum )
     {
-        fftw_complex temp;
         int nBins = spectrum.GetNFrequencyBins();
         for( int iBin = 0; iBin < (nBins+1)/2; ++iBin )
         {
-            temp[0] = spectrum(iBin)[0];
-            temp[1] = spectrum(iBin)[1];
-            spectrum(iBin)[0] = spectrum(nBins - iBin - 1)[0];
-            spectrum(iBin)[1] = -1. * spectrum(nBins - iBin - 1)[1];
-            spectrum(nBins - iBin - 1)[0] = temp[0];
-            spectrum(nBins - iBin - 1)[1] = -1. * temp[1];
+            auto tmpReal = spectrum.GetReal(iBin);
+            auto tmpImag = spectrum.GetImag(iBin);
+            spectrum.SetRect(iBin, spectrum.GetReal(nBins - iBin - 1), 
+                                -1. * spectrum.GetImag(nBins - iBin - 1));
+            spectrum.SetRect(nBins - iBin -1, tmpReal, -1. * tmpImag);
         }
 
         return;
@@ -487,8 +485,8 @@ namespace Katydid
         }
         else
         {
-            fInputArrayComplex[nBin][0] = (*initialSpectrum)(position)[0];
-            fInputArrayComplex[nBin][1] = (*initialSpectrum)(position)[1];
+            fInputArrayComplex[nBin][0] = initialSpectrum->GetReal(position);
+            fInputArrayComplex[nBin][1] = initialSpectrum->GetImag(position);
         }
 
         return;
@@ -519,8 +517,10 @@ namespace Katydid
 
     void KTConvolution1D::SetOutputArray( int position, int nBin, KTFrequencySpectrumFFTW& transformedFSFFTW, double norm )
     {
-        transformedFSFFTW(position)[0] = fOutputArrayComplex[nBin][0] / (double)norm;
-        transformedFSFFTW(position)[1] = fOutputArrayComplex[nBin][1] / (double)norm;
+        
+        transformedFSFFTW.SetRect(position, 
+                                fOutputArrayComplex[nBin][0] / (double)norm, 
+                                fOutputArrayComplex[nBin][1] / (double)norm);
 
         return;
     }

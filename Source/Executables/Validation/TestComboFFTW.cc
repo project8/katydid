@@ -50,8 +50,7 @@ int main()
     // The units are volts.
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
-        (*timeSeries)(iBin)[0] = cos(timeSeries->GetBinCenter(iBin) * mult);
-        (*timeSeries)(iBin)[1] = 0.0;
+        timeSeries->SetRect(iBin, cos(timeSeries->GetBinCenter(iBin) * mult), 0.0);
     }
 
     // Create and prepare the FFTs

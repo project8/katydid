@@ -1,0 +1,8 @@
+# Template for grid point file
+# Points have to be space separated 
+# X (m) Y(m)
+0 0 
+-0.025 -0.025
+0.025 -0.025
+-0.025 0.025
+0.025 0.025

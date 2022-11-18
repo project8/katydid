@@ -32,6 +32,7 @@ namespace Katydid
 
             virtual double GetAbs(unsigned bin) const = 0;
             virtual double GetArg(unsigned bin) const = 0;
+            virtual double GetNorm(unsigned bin) const = 0;
 
             virtual void SetPolar(unsigned bin, double abs, double arg) = 0;
 

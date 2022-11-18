@@ -112,16 +112,18 @@ namespace Katydid
         KTAggregatedPowerSpectrumData& psData = data.Of< KTAggregatedPowerSpectrumData >().SetNComponents(nComponents);
         double activeRadius=data.GetActiveRadius();
         psData.SetActiveRadius(activeRadius);
+        psData.SetNAxialPositions(data.GetNAxialPositions());
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
             spectrum->ConvertToPowerSpectrum();
             psData.SetSpectrum(spectrum, iComponent);
-            double gridLocationX, gridLocationY;
-            data.GetGridPoint(iComponent,gridLocationX,gridLocationY);
-            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY);
+            double gridLocationX, gridLocationY, gridLocationZ;
+            data.GetGridPoint(iComponent, gridLocationX, gridLocationY, gridLocationZ);
+            psData.SetGridPoint(iComponent, gridLocationX, gridLocationY, gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
+        psData.SetOptimizedGridPointValue(data.GetOptimizedGridPoint(),data.GetOptimizedGridValue());
         return true;
     }
     
@@ -131,16 +133,18 @@ namespace Katydid
         KTAggregatedPowerSpectrumData& psData = data.Of< KTAggregatedPowerSpectrumData >().SetNComponents(nComponents);
         double activeRadius=data.GetActiveRadius();
         psData.SetActiveRadius(activeRadius);
+        psData.SetNAxialPositions(data.GetNAxialPositions());
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent)->CreatePowerSpectrum();
             spectrum->ConvertToPowerSpectralDensity();
             psData.SetSpectrum(spectrum, iComponent);
-            double gridLocationX, gridLocationY;
-            data.GetGridPoint(iComponent,gridLocationX,gridLocationY);
-            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY);
+            double gridLocationX, gridLocationY,gridLocationZ;
+            data.GetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
+            psData.SetGridPoint(iComponent,gridLocationX,gridLocationY,gridLocationZ);
             psData.SetSummedGridPower(iComponent,*(std::max_element(spectrum->begin(), spectrum->end())));
         }
+        psData.SetOptimizedGridPointValue(data.GetOptimizedGridPoint(),data.GetOptimizedGridValue());
         return true;
     }
 
