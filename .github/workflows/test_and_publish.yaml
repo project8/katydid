@@ -98,7 +98,7 @@ jobs:
       - name: Test
         run: |
           echo "Image ID: ${{ steps.build.outputs.imageid }}"
-          docker run ${{ steps.build.outputs.imageid }} bash -c 'source $KATYDID_BUILD_PREFIX/setup.sh; Katydid'
+          docker run ${{ steps.build.outputs.imageid }} bash -c env; source $KATYDID_BUILD_PREFIX/setup.sh; Katydid
 
       - name: Release
         uses: softprops/action-gh-release@v1
