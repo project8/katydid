@@ -95,11 +95,6 @@ jobs:
           platforms: linux/amd64
           load: true
 
-      - name: Test
-        run: |
-          echo "Image ID: ${{ steps.build.outputs.imageid }}"
-          docker run ${{ steps.build.outputs.imageid }} bash -c env; source $KATYDID_BUILD_PREFIX/setup.sh; Katydid
-
       - name: Release
         uses: softprops/action-gh-release@v1
         if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
