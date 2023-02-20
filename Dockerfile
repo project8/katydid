@@ -13,9 +13,10 @@ ARG katydid_subdir=katydid
 ARG katydid_tag=beta
 ARG nproc=4
 
-ENV KATYDID_PREFIX=${P8_ROOT}/${katydid_subdir}/${katydid_tag}
+ARG katydid_prefix=${P8_ROOT}/${katydid_subdir}/${katydid_tag}
+ENV KATYDID_PREFIX=$katydid_prefix
 
-RUN source ${P8_ROOT}/common/current/setup.sh &&\
+RUN source ${COMMON_PREFIX}/setup.sh &&\
     mkdir -p $KATYDID_PREFIX &&\
     chmod -R 777 $KATYDID_PREFIX/.. &&\
     cd $KATYDID_PREFIX &&\
@@ -55,5 +56,8 @@ RUN source $KATYDID_PREFIX/setup.sh &&\
 
 ########################
 FROM ${final_img_repo}:${final_img_tag}
+
+ARG katydid_prefix
+ENV KATYDID_PREFIX=$katydid_prefix
 
 COPY --from=build $KATYDID_PREFIX $KATYDID_PREFIX
