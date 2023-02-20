@@ -9,8 +9,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  BUILD_IMG_REPO: project8/luna_base
-  BUILD_IMG_TAG: v1.3.3-dev
+  BASE_IMG_REPO: project8/luna_base
+  BASE_IMG_TAG: v1.3.3-dev
   FINAL_BASE_IMG_REPO: project8/luna_base
   FINAL_BASE_IMG_TAG: v1.3.3
   NARG: 2
@@ -88,8 +88,8 @@ jobs:
           push: false
           load: true
           build-args: |
-            build_img_repo=${{ env.REGISTRY }}/${{ env.BUILD_IMG_REPO }}
-            build_img_tag=${{ env.BUILD_IMG_TAG }}
+            build_img_repo=${{ env.REGISTRY }}/${{ env.BASE_IMG_REPO }}
+            build_img_tag=${{ env.BASE_IMG_TAG }}
             final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
             final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
             katydid_tag=${{ steps.tag_name.outputs.tag }}
@@ -130,31 +130,6 @@ jobs:
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
             narg=${{ env.NARG }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          platforms: linux/amd64
-
-
-
-
-
-
-
-
-      - name: Build
-        id: build
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: Dockerfile
-          push: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
-          build-args: |
-            img_repo=ghcr.io/project8/luna_base
-            img_tag=${{ env.LUNA_BASE_VER }}-dev
-            final_img_repo=ghcr.io/project8/luna_base
-            final_img_tag=${{ env.LUNA_BASE_VER }}${{ matrix.tag-suffix }}
-            katydid_tag=${{ steps.tag_name.outputs.tag }}
-            build_type=${{ matrix.build-type }}
-            build_tests_exe=${{ matrix.build-tests }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           platforms: linux/amd64
 
