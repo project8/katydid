@@ -27,7 +27,8 @@ pbuilder_prepare_project()
 # Options
 #########
 
-set_option( USE_CPP11 TRUE )
+# require C++17
+set_option( USE_CPP17 TRUE )
 
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
