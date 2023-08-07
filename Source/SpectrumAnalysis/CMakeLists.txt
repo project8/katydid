@@ -8,7 +8,6 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTAxialAggregator.hh
     KTChannelAggregator.hh
     KTConsensusThresholding.hh
-    KTConvolution.hh
     KTCorrelator.hh
     KTCreateKDTree.hh
     KTDataAccumulator.hh
@@ -35,7 +34,6 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTChannelAggregator.cc
     KTConsensusThresholding.cc
     KTCorrelator.cc
-    KTConvolution.cc
     KTCreateKDTree.cc
     KTDataAccumulator.cc
     KTDBSCANNoiseFiltering.cc
