@@ -57,7 +57,6 @@ RUN source $KATYDID_PREFIX/setup.sh &&\
 ########################
 FROM ${final_img_repo}:${final_img_tag}
 
-ARG katydid_prefix
-ENV KATYDID_PREFIX=$katydid_prefix
+COPY --from=build $P8_ROOT $P8_ROOT
 
-COPY --from=build $KATYDID_PREFIX $KATYDID_PREFIX
+CMD source ${P8_ROOT}/katydid/current/setup.sh && /bin/bash
