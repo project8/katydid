@@ -80,41 +80,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
-#      - name: Build to Test
-#        id: build-to-test
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: .
-#          file: Dockerfile
-#          push: false
-#          load: true
-#          build-args: |
-#            build_img_repo=${{ env.REGISTRY }}/${{ env.BASE_IMG_REPO }}
-#            build_img_tag=${{ env.BASE_IMG_TAG }}
-#            final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
-#            final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
-#            katydid_tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
-#            build_type=${{ matrix.build-type }}
-#            build_tests_exe=${{ matrix.build-tests }}
-#            narg=${{ env.NARG }}
-#          tags: test${{ matrix.tag-suffix }}
-#          platforms: linux/amd64
-
-#      - name: Run Tests
-
-        # Alternate lines from pls testing:
-#        if: ${{ matrix.build-tests == true }}
-#        run: echo '#!/bin/bash' > job.sh && echo source /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/setup.sh >> job.sh && echo /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/bin/RunTests >> job.sh && chmod +x job.sh && docker run -v /home/runner/work/locust_mc/locust_mc:/tmp ${{ steps.build-to-test.outputs.imageid }} /tmp/job.sh
-        # End alternate lines from pls testing.
-        
-        # Disabled for now because tests aren't installed
-#        if: false
-#        if: ${{ matrix.build-tests == true }}
-#        run: docker run ${{ steps.build-to-test.outputs.imageid }} "source /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/setup.sh; /tmp_loc_source/build/Source/Applications/Testing/RunTests"
-
-
-      - name: Build
-        id: build
+      - name: Build to Test
+        id: build-to-test
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -130,13 +97,42 @@ jobs:
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
             narg=${{ env.NARG }}
+          tags: test${{ matrix.tag-suffix }}
+          platforms: linux/amd64
+
+#      - name: Run Tests
+
+        # Alternate lines from pls testing:
+#        if: ${{ matrix.build-tests == true }}
+#        run: echo '#!/bin/bash' > job.sh && echo source /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/setup.sh >> job.sh && echo /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/bin/RunTests >> job.sh && chmod +x job.sh && docker run -v /home/runner/work/locust_mc/locust_mc:/tmp ${{ steps.build-to-test.outputs.imageid }} /tmp/job.sh
+        # End alternate lines from pls testing.
+        
+        # Disabled for now because tests aren't installed
+#        if: false
+#        if: ${{ matrix.build-tests == true }}
+#        run: docker run ${{ steps.build-to-test.outputs.imageid }} "source /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/setup.sh; /tmp_loc_source/build/Source/Applications/Testing/RunTests"
+
+
+      - name: Build to Push
+        id: build-to-push
+        if: ${{ env.DO_DOCKER_PUSH }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          load: false
+          build-args: |
+            build_img_repo=${{ env.REGISTRY }}/${{ env.BASE_IMG_REPO }}
+            build_img_tag=${{ env.BASE_IMG_TAG }}
+            final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
+            final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
+            katydid_tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
+            build_type=${{ matrix.build-type }}
+            build_tests_exe=${{ matrix.build-tests }}
+            narg=${{ env.NARG }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           platforms: linux/amd64,linux/arm64
-
-      - name: Push images
-        if: ${{ env.DO_DOCKER_PUSH }}
-        run: |
-          docker push -a ${{ env.REGISTRY }}/${{ github.repository }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
