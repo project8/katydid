@@ -7,7 +7,7 @@ cmake_minimum_required (VERSION 3.6)
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.18.0)
+project (Katydid VERSION 2.20.0)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
