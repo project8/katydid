@@ -159,47 +159,47 @@ namespace Katydid
                 unsigned occPerRow = (unsigned)KTMath::Nint((double)maxValue / (double)histRows);
                 for (int row = (int)histRows-1; row >= 0; --row)
                 {
-                    sprintf(buffer, "%s", prefixSpc.c_str());
+                    snprintf(buffer, prefixSpc.size(), "%s", prefixSpc.c_str());
                     for (int bit = (int)nBits-1; bit >= 0; --bit)
                     {
                         int printOffset = (int)nBits - 1 - bit;
                         if (digData.GetBitHistogram()->operator()(bit) > (unsigned)row * occPerRow)
                         {
-                            sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%s", filledBin.c_str());
+                            snprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, filledBin.size(), "%s", filledBin.c_str());
                         }
                         else
                         {
-                            sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%s", emptyBin.c_str());
+                            snprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, emptyBin.size(), "%s", emptyBin.c_str());
                         }
                         if (bit != 0)
                         {
-                            sprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, "%s", betweenBins.c_str());
+                            snprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, betweenBins.size(), "%s", betweenBins.c_str());
                         }
                     }
                     toTermBitOcc << buffer << '\n';
                 }
                 // bit occupancy line
-                sprintf(buffer, "%s", prefixOcc.c_str());
+                snprintf(buffer, prefixOcc.size(), "%s", prefixOcc.c_str());
                 for (int bit = (int)nBits-1; bit >= 0; --bit)
                 {
                     int printOffset = (int)nBits - 1 - bit;
-                    sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%*u", binWidth, digData.GetBitHistogram()->operator()(bit));
+                    snprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, binWidth, "%*u", binWidth, digData.GetBitHistogram()->operator()(bit));
                     if (bit != 0)
                     {
-                        sprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, "%s", betweenBins.c_str());
+                        snprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, betweenBins.size(), "%s", betweenBins.c_str());
                     }
                 }
                 toTermBitOcc << buffer << '\n';
 
                 // bit number line
-                sprintf(buffer, "%s", prefixBit.c_str());
+                snprintf(buffer, prefixBit.size(), "%s", prefixBit.c_str());
                 for (int bit = (int)nBits-1; bit >= 0; --bit)
                 {
                     int printOffset = (int)nBits - 1 - bit;
-                    sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%*u", binWidth, bit);
+                    snprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, binWidth, "%*u", binWidth, bit);
                     if (bit != 0)
                     {
-                        sprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, "%s", betweenBins.c_str());
+                        snprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, betweenBins.size(), "%s", betweenBins.c_str());
                     }
                 }
                 toTermBitOcc << buffer;

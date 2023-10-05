@@ -43,6 +43,23 @@ Fixes:
 Log
 ---
 
+Version: 2.20.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release Date: October 5, 2023
+'''''''''''''''''''''''''''''''
+
+New Features:
+''''''''''''''
+
+* Integration with new Docker setup
+
+Fixes:
+'''''''''''''
+
+* KTConvolution set to not build without FFTW
+
+
 Version: 2.18.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
