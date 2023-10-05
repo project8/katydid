@@ -116,7 +116,6 @@ jobs:
 
       - name: Build
         id: build
-        if: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
         uses: docker/build-push-action@v5
         with:
           context: .
