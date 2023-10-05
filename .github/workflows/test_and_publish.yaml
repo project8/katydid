@@ -14,6 +14,7 @@ env:
   FINAL_BASE_IMG_REPO: project8/luna_base
   FINAL_BASE_IMG_TAG: v1.3.3
   NARG: 2
+  DO_DOCKER_PUSH: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
 jobs:
 
   docker-build-and-publish:
@@ -56,11 +57,11 @@ jobs:
             type=ref,event=pr
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
-      - name: Get previous tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        id: tag_name
-        with:
-          fallback: beta
+#      - name: Get previous tag
+#        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+#        id: tag_name
+#        with:
+#          fallback: beta
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -70,6 +71,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           buildkitd-flags: --debug
+          driver: docker
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -79,25 +81,25 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Build to Test
-        id: build-to-test
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          push: false
-          load: true
-          build-args: |
-            build_img_repo=${{ env.REGISTRY }}/${{ env.BASE_IMG_REPO }}
-            build_img_tag=${{ env.BASE_IMG_TAG }}
-            final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
-            final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
-            katydid_tag=${{ steps.tag_name.outputs.tag }}
-            build_type=${{ matrix.build-type }}
-            build_tests_exe=${{ matrix.build-tests }}
-            narg=${{ env.NARG }}
-          tags: test${{ matrix.tag-suffix }}
-          platforms: linux/amd64
+#      - name: Build to Test
+#        id: build-to-test
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: .
+#          file: Dockerfile
+#          push: false
+#          load: true
+#          build-args: |
+#            build_img_repo=${{ env.REGISTRY }}/${{ env.BASE_IMG_REPO }}
+#            build_img_tag=${{ env.BASE_IMG_TAG }}
+#            final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
+#            final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
+#            katydid_tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
+#            build_type=${{ matrix.build-type }}
+#            build_tests_exe=${{ matrix.build-tests }}
+#            narg=${{ env.NARG }}
+#          tags: test${{ matrix.tag-suffix }}
+#          platforms: linux/amd64
 
 #      - name: Run Tests
 
@@ -112,26 +114,29 @@ jobs:
 #        run: docker run ${{ steps.build-to-test.outputs.imageid }} "source /usr/local/p8/locust/${{ steps.tag_name.outputs.tag }}/setup.sh; /tmp_loc_source/build/Source/Applications/Testing/RunTests"
 
 
-      - name: Build to Push
-        id: build-to-push
+      - name: Build
+        id: build
         if: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
-          push: true
-          load: false
           build-args: |
             build_img_repo=${{ env.REGISTRY }}/${{ env.BASE_IMG_REPO }}
             build_img_tag=${{ env.BASE_IMG_TAG }}
             final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
             final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
-            katydid_tag=${{ steps.tag_name.outputs.tag }}
+            katydid_tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
             narg=${{ env.NARG }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           platforms: linux/amd64,linux/arm64
+
+      - name: Push images
+        if: ${{ env.DO_DOCKER_PUSH }}
+        run: |
+          docker push -a ${{ env.REGISTRY }}/${{ github.repository }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
