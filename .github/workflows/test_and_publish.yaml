@@ -14,7 +14,6 @@ env:
   FINAL_BASE_IMG_REPO: project8/luna_base
   FINAL_BASE_IMG_TAG: v1.3.3
   NARG: 2
-  DO_DOCKER_PUSH: ${{ github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' ) }}
 jobs:
 
   docker-build-and-publish:
@@ -115,7 +114,7 @@ jobs:
 
       - name: Build to Push
         id: build-to-push
-        if: ${{ env.DO_DOCKER_PUSH }}
+        if: github.event_name == 'push' && ( contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' )
         uses: docker/build-push-action@v5
         with:
           context: .
