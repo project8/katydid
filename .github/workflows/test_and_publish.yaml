@@ -131,7 +131,8 @@ jobs:
             build_tests_exe=${{ matrix.build-tests }}
             narg=${{ env.NARG }}
           tags: ${{ steps.docker_meta.outputs.tags }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+#          platforms: linux/amd64,linux/arm64
 
       - name: Release
         uses: softprops/action-gh-release@v1
