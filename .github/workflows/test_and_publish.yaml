@@ -56,11 +56,11 @@ jobs:
             type=ref,event=pr
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
-#      - name: Get previous tag
-#        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-#        id: tag_name
-#        with:
-#          fallback: beta
+      - name: Get previous tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        id: tag_name
+        with:
+          fallback: beta
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -92,7 +92,7 @@ jobs:
             build_img_tag=${{ env.BASE_IMG_TAG }}
             final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
             final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
-            katydid_tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
+            katydid_tag=${{ steps.tag_name.outputs.tag }}
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
             narg=${{ env.NARG }}
@@ -126,7 +126,7 @@ jobs:
             build_img_tag=${{ env.BASE_IMG_TAG }}
             final_img_repo=${{ env.REGISTRY }}/${{ env.FINAL_BASE_IMG_REPO }}
             final_img_tag=${{ env.FINAL_BASE_IMG_TAG }}${{ matrix.tag-suffix }}
-            katydid_tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
+            katydid_tag=${{ steps.tag_name.outputs.tag }}
             build_type=${{ matrix.build-type }}
             build_tests_exe=${{ matrix.build-tests }}
             narg=${{ env.NARG }}
