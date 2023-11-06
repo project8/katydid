@@ -39,8 +39,6 @@ namespace Katydid
         fData.fill(value);
     }
 
-    KTPhysicalArray< 1, value_type >::~KTPhysicalArray()
-    {}
     
     const Eigen::Array< std::complex<double>, Eigen::Dynamic, 1, Eigen::ColMajor >& KTPhysicalArray< 1, std::complex<double> >::GetData() const
     {
@@ -279,11 +277,6 @@ namespace Katydid
             KTPhysicalArray(xNBins, xRangeMin, xRangeMax, yNBins, yRangeMin, yRangeMax)
     {
         fData.fill(value);
-    }
-
-
-    KTPhysicalArray< 2, std::complex<double> >::~KTPhysicalArray()
-    {
     }
     
     size_t KTPhysicalArray< 2, std::complex<double> >::cols() const

@@ -492,6 +492,7 @@ namespace Katydid
                             return Nymph::KTDataPtr();
                         }
                         inNewFile = true;
+                        fReadState.fStatus = MonarchReadState::kContinueReading;
                     }
                     ++fRecordsProcessed;
                     fReadState.fCurrentRecord = fM3Stream->GetAcqFirstRecordId() + fM3Stream->GetRecordCountInAcq();

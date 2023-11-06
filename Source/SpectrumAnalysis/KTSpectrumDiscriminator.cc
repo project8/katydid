@@ -251,7 +251,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double value = magnitude[iBin];
@@ -438,7 +438,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
 
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double value = (*spectrum)(iBin);

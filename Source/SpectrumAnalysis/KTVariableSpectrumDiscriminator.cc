@@ -429,7 +429,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double value = (*spectrum)(iBin).abs();
@@ -462,7 +462,7 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double mean = (*splineImp)(iBin - fMinBin);
@@ -533,7 +533,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double value = spectrum->GetAbs(iBin);
@@ -566,7 +566,7 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double mean = (*splineImp)(iBin - fMinBin);
@@ -636,7 +636,7 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double value = (*spectrum)(iBin);
@@ -669,7 +669,7 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-#pragma omp parallel for private(value)
+#pragma omp parallel for
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 double mean = (*splineImp)(iBin - fMinBin);
