@@ -1,13 +1,13 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-# Minimum cmake verison 3.1 required for the variable CMAKE_CXX_STANDARD
-cmake_minimum_required (VERSION 3.1)
+# Minimum cmake verison 3.6 required for CMake 3.27 and higher (3.5 and below is deprecated)
+cmake_minimum_required (VERSION 3.6)
 
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
-project (Katydid VERSION 2.18.0)
+project (Katydid VERSION 2.20.0)
 
 list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
 include( PackageBuilder )
@@ -25,7 +25,8 @@ pbuilder_prepare_project()
 # Options
 #########
 
-set_option( USE_CPP11 TRUE )
+# require C++17
+set_option( USE_CPP17 TRUE )
 
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)

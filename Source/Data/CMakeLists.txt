@@ -36,6 +36,7 @@ set (DATA_HEADERFILES
     EventAnalysis/KTSparseWaterfallCandidateData.hh
     EventAnalysis/KTSpectrumCollectionData.hh
     EventAnalysis/KTWaterfallCandidateData.hh
+    Time/KTArbitraryMetadata.hh
     Time/KTDigitizerTestData.hh
     Time/KTEggHeader.hh
     Time/KTProcSummary.hh
@@ -101,6 +102,7 @@ set (DATA_SOURCEFILES
     EventAnalysis/KTSparseWaterfallCandidateData.cc
     EventAnalysis/KTSpectrumCollectionData.cc
     EventAnalysis/KTWaterfallCandidateData.cc
+    Time/KTArbitraryMetadata.cc
     Time/KTDigitizerTestData.cc
     Time/KTEggHeader.cc
     Time/KTProcSummary.cc

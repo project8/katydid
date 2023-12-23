@@ -1,42 +1,32 @@
-ARG IMG_USER=project8
-ARG IMG_REPO=p8compute_dependencies
-ARG IMG_TAG=v1.0.0
+ARG final_img_repo=ghcr.io/project8/luna_base
+ARG final_img_tag=v1.3.4
 
-FROM ${IMG_USER}/${IMG_REPO}:${IMG_TAG} as katydid_common
-
-ARG build_type=Release
-ENV KATYDID_BUILD_TYPE=$build_type
-ARG build_tests_exe=FALSE
-ENV KATYDID_BUILD_TESTS_EXE=$build_tests_exe
-
-ENV KATYDID_TAG=v2.18.0
-ENV KATYDID_BUILD_PREFIX=/usr/local/p8/katydid/$KATYDID_TAG
-
-RUN mkdir -p $KATYDID_BUILD_PREFIX &&\
-    chmod -R 777 $KATYDID_BUILD_PREFIX/.. &&\
-    cd $KATYDID_BUILD_PREFIX &&\
-    echo "source ${COMMON_BUILD_PREFIX}/setup.sh" > setup.sh &&\
-    echo "export KATYDID_TAG=${KATYDID_TAG}" >> setup.sh &&\
-    echo "export KATYDID_BUILD_PREFIX=${KATYDID_BUILD_PREFIX}" >> setup.sh &&\
-    echo 'ln -sfT $KATYDID_BUILD_PREFIX $KATYDID_BUILD_PREFIX/../current' >> setup.sh &&\
-    echo 'export PATH=$KATYDID_BUILD_PREFIX/bin:$PATH' >> setup.sh &&\
-    echo 'export LD_LIBRARY_PATH=$KATYDID_BUILD_PREFIX/lib:$LD_LIBRARY_PATH' >> setup.sh &&\
-    /bin/true
-    
-#just temporary here
-RUN mkdir -p /tmp_install
-RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
-    cd /tmp_install &&\
-    wget https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz &&\
-    tar -xzf eigen-3.3.9.tar.gz &&\
-    cd eigen-3.3.9 &&\
-    mkdir build &&\
-    cd build &&\
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. &&\
-    make install
+ARG build_img_repo=ghcr.io/project8/luna_base
+ARG build_img_tag=v1.3.4-dev
 
 ########################
-FROM katydid_common as katydid_done
+FROM ${build_img_repo}:${build_img_tag} AS build
+
+ARG build_type=Release
+ARG build_tests_exe=FALSE
+ARG katydid_subdir=katydid
+ARG katydid_tag=beta
+ARG nproc=4
+
+ARG katydid_prefix=${P8_ROOT}/${katydid_subdir}/${katydid_tag}
+ENV KATYDID_PREFIX=$katydid_prefix
+
+RUN source ${COMMON_PREFIX}/setup.sh &&\
+    mkdir -p $KATYDID_PREFIX &&\
+    chmod -R 777 $KATYDID_PREFIX/.. &&\
+    cd $KATYDID_PREFIX &&\
+    echo "source ${COMMON_PREFIX}/setup.sh" > setup.sh &&\
+    echo "export KATYDID_TAG=${KATYDID_TAG}" >> setup.sh &&\
+    echo "export KATYDID_PREFIX=${KATYDID_PREFIX}" >> setup.sh &&\
+    echo 'ln -sfT $KATYDID_PREFIX $KATYDID_PREFIX/../current' >> setup.sh &&\
+    echo 'export PATH=$KATYDID_PREFIX/bin:$PATH' >> setup.sh &&\
+    echo 'export LD_LIBRARY_PATH=$KATYDID_PREFIX/lib:$LD_LIBRARY_PATH' >> setup.sh &&\
+    /bin/true
 
 COPY Cicada /tmp_source/Cicada
 COPY cmake /tmp_source/cmake
@@ -50,25 +40,23 @@ COPY KatydidConfig.hh.in /tmp_source/KatydidConfig.hh.in
 COPY libkatydid.rootmap /tmp_source/libkatydid.rootmap
 COPY this_katydid.sh.in /tmp_source/this_katydid.sh.in
 COPY .git /tmp_source/.git
-COPY CI /$KATYDID_BUILD_PREFIX/CI
 
 # repeat the cmake command to get the change of install prefix to set correctly (a package_builder known issue)
-RUN source $KATYDID_BUILD_PREFIX/setup.sh &&\
+RUN source $KATYDID_PREFIX/setup.sh &&\
     cd /tmp_source &&\
     mkdir build &&\
     cd build &&\
-    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
+    cmake .. &&\
+    cmake -D CMAKE_BUILD_TYPE=$build_type \
+          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_PREFIX \
+          -D Katydid_ENABLE_TESTING:BOOL=$build_tests_exe \
           -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-    cmake -D CMAKE_BUILD_TYPE=$KATYDID_BUILD_TYPE \
-          -D CMAKE_INSTALL_PREFIX:PATH=$KATYDID_BUILD_PREFIX \
-          -D Katydid_ENABLE_TESTING:BOOL=$KATYDID_BUILD_TESTS_EXE \
-          -D CMAKE_SKIP_RPATH:BOOL=True .. &&\
-    make -j3 install &&\
+    make -j$nproc install &&\
     /bin/true
 
 ########################
-FROM katydid_common
+FROM ${final_img_repo}:${final_img_tag}
 
-COPY --from=katydid_done $KATYDID_BUILD_PREFIX $KATYDID_BUILD_PREFIX
+COPY --from=build $P8_ROOT $P8_ROOT
+
+CMD source ${P8_ROOT}/katydid/current/setup.sh && /bin/bash

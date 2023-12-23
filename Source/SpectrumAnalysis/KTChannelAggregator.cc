@@ -11,6 +11,8 @@
 #include <boost/algorithm/string.hpp>
 using namespace boost::algorithm;
 
+#include <fstream>
+
 namespace Katydid
 {
     KTLOGGER(agglog, "KTChannelAggregator");

@@ -67,12 +67,12 @@ namespace Katydid
         {
             KTWARN(eggreadlog, "Egg1 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
         }
-        KTINFO(eggreadlog, "Opening egg file <" << filenames[0] << ">")
-        fEggStream.open(filenames[0].c_str(), ifstream::in|ifstream::binary);
+        KTINFO(eggreadlog, "Opening egg file <" << filenames[0].first << ">")
+        fEggStream.open(filenames[0].first.c_str(), ifstream::in|ifstream::binary);
 
         if (! fEggStream.is_open())
         {
-            KTERROR(eggreadlog, "Egg filestream did not open (file: " << filenames[0] << ")");
+            KTERROR(eggreadlog, "Egg filestream did not open (file: " << filenames[0].first << ")");
             return Nymph::KTDataPtr();
         }
 
@@ -223,7 +223,8 @@ namespace Katydid
 
         Nymph::KTDataPtr eggHeaderPtr(new Nymph::KTData());
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
-        eggHeader.SetFilename(filenames[0].native());
+        eggHeader.SetFilename(filenames[0].first.native());
+        eggHeader.SetMetadataFilename(filenames[0].second.native());
         eggHeader.SetAcquisitionMode(1);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * 1000); // conversion from s to ms
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);

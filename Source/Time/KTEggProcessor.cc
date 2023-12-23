@@ -25,6 +25,7 @@ namespace Katydid
 {
     static Nymph::KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
     static Nymph::KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
+    static Nymph::KTCommandLineOption< string > sMetadataCLO("Egg Processor", "Metadata filename to open", "metadata-file", 'm');
     static Nymph::KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
 
     KTLOGGER(egglog, "KTEggProcessor");
@@ -37,6 +38,7 @@ namespace Katydid
             fProgressReportInterval(1),
             fFilenames(),
             fEggReaderType("none"),
+            fRequireMetadata(false),
             fSliceSize(1024),
             fStride(1024),
             fStartTime(0.),
@@ -77,20 +79,40 @@ namespace Katydid
             {
                 KTDEBUG(egglog, "Adding single file to egg processor");
                 fFilenames.clear();
-                fFilenames.push_back( std::move(scarab::expand_path(node.get_value( "filename" ))) );
-                KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+                scarab::path metadataFilename(scarab::expand_path(node.get_value("metadata", "")));
+                if (! metadataFilename.empty()) KTINFO(egglog, "Added metadata file to egg processor: <" << metadataFilename << ">" );
+                fFilenames.push_back( std::make_pair(scarab::expand_path(node["filename"]().as_string()), metadataFilename) );
+                KTINFO(egglog, "Added file to egg processor:\n" <<
+                        "\tegg: <" << fFilenames.back().first << ">\n" <<
+                        "\tmetadata: <" << fFilenames.back().second << ">");
             }
             else if (node.has("filenames"))
             {
                 KTDEBUG(egglog, "Adding multiple files to egg processor");
                 fFilenames.clear();
-                const scarab::param_array& t_filenames = node["filenames"].as_array;
-                for(scarab::param_array::const_iterator t_file_it = t_filenames.begin(); t_file_it != t_filenames.end(); ++t_file_it)
+                const scarab::param_array& tFilenames = node["filenames"].as_array();
+                const scarab::param_array* tMetadataPtrs = nullptr;
+                if (node.has("metadata") && node["metadata"].is_array())
                 {
-                    fFilenames.push_back( std::move(scarab::expand_path((*t_file_it)().as_string())) );
-                    KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+                    tMetadataPtrs = &node["metadata"].as_array();
+                }
+                if (tMetadataPtrs != nullptr && tMetadataPtrs->size() != tFilenames.size())
+                {
+                    KTERROR(egglog, "Number of egg files (" << tFilenames.size() << ") and metadata files (" << tMetadataPtrs->size() << ") were not the same");
+                    return false;
+                }
+                scarab::path metadataFilename;
+                for (unsigned iFile = 0; iFile < tFilenames.size(); ++iFile)
+                {
+                    if (tMetadataPtrs != nullptr) metadataFilename = scarab::expand_path((*tMetadataPtrs)[iFile].as_value().as_string());
+                    fFilenames.push_back( std::make_pair(scarab::expand_path(tFilenames[iFile].as_value().as_string()), metadataFilename) );
+                    KTINFO(egglog, "Added file to egg processor:\n" <<
+                            "\tegg: <" << fFilenames.back().first << ">\n" <<
+                            "\tmetadata: <" << fFilenames.back().second << ">");
                 }
             }
+
+            fRequireMetadata = node.get_value("require-metadata", fRequireMetadata);
 
             // specify the length of the time series
             fSliceSize = node.get_value("slice-size", fSliceSize);
@@ -118,10 +140,21 @@ namespace Katydid
         SetNSlices(fCLHandler->GetCommandLineValue("n-slices", fNSlices));
         if (fCLHandler->IsCommandLineOptSet("egg-file"))
         {
-            KTDEBUG(egglog, "Adding single file to egg processor from the CL");
+            KTDEBUG(egglog, "Specifying single egg file to egg processor from the CL");
             fFilenames.clear();
-            fFilenames.push_back( std::move(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("egg-file"))));
-            KTINFO(egglog, "Added file to egg processor: <" << fFilenames.back() << ">");
+            fFilenames.push_back( std::make_pair(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("egg-file")), scarab::path()) );
+            KTINFO(egglog, "Added egg file to egg processor: <" << fFilenames.back().first << ">");
+        }
+        if (fCLHandler->IsCommandLineOptSet("metadata-file"))
+        {
+            if (fFilenames.size() != 1)
+            {
+                KTERROR(egglog, "Can only specify metadata file if there's already a single egg file specified" );
+                return false;
+            }
+            KTDEBUG(egglog, "Specifying single metadata file to egg processor from the CL");
+            fFilenames.back().second = scarab::expand_path(fCLHandler->GetCommandLineValue< string >("metadata-file"));
+            KTINFO(egglog, "Added metadata file to egg processor: <" << fFilenames.back().second << ">");
         }
 
         return true;

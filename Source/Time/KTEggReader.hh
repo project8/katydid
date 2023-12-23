@@ -23,7 +23,8 @@ namespace Katydid
     class KTEggReader
     {
         public:
-            typedef std::vector< scarab::path > path_vec;
+            typedef std::pair< scarab::path, scarab::path > path_pair;
+            typedef std::vector< path_pair > path_vec;
 
         public:
             KTEggReader();
@@ -32,7 +33,7 @@ namespace Katydid
         public:
             virtual bool Configure(const KTEggProcessor& eggProc) = 0;
 
-            Nymph::KTDataPtr BreakAnEgg(const std::string& filename);
+            Nymph::KTDataPtr BreakAnEgg(const std::string& eggFilename, const std::string& metadataFilename = "");
             virtual Nymph::KTDataPtr BreakEgg(const path_vec&) = 0;
             virtual Nymph::KTDataPtr HatchNextSlice() = 0;
             virtual bool CloseEgg() = 0;
@@ -43,10 +44,10 @@ namespace Katydid
 
     };
 
-    inline Nymph::KTDataPtr KTEggReader::BreakAnEgg(const std::string& filename)
+    inline Nymph::KTDataPtr KTEggReader::BreakAnEgg(const std::string& eggFilename, const std::string& metadataFilename)
     {
         path_vec filenameVec;
-        filenameVec.emplace_back(filename);
+        filenameVec.emplace_back(std::make_pair(eggFilename, metadataFilename));
         return BreakEgg(filenameVec);
     }
 
