@@ -3,7 +3,7 @@
 
 namespace Katydid {
 
-    KTLOGGER(asciilog, "KTBasicAsciiWriter");
+    LOGGER(asciilog, "KTBasicAsciiWriter");
 
     KT_REGISTER_WRITER(KTBasicASCIIWriter, "basic-ascii-writer");
 
@@ -26,7 +26,7 @@ namespace Katydid {
         if (n != NULL) {
             fOutputFilename = n->get_value< std::string >("output-file",fOutputFilename);
             if( this->OpenFile() == false ) {
-                KTWARN(asciilog, "ASCII writer couldn't open output file - no data will be written!");
+                LWARN(asciilog, "ASCII writer couldn't open output file - no data will be written!");
             }
         }
 
@@ -38,7 +38,7 @@ namespace Katydid {
         if( fOutputStream->is_open() == false ) {
             delete fOutputStream;
             fOutputStream = NULL;
-            KTERROR(asciilog, "Output file " << fOutputFilename << " could not be opened!");
+            LERROR(asciilog, "Output file " << fOutputFilename << " could not be opened!");
             return false;
         }
         return true;
@@ -74,7 +74,7 @@ namespace Katydid {
     //     }
     //   }
     //   else {
-    //     KTWARN(asciilog, "no file open, no data written!");
+    //     LWARN(asciilog, "no file open, no data written!");
     //   }
     // }
 

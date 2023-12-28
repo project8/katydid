@@ -7,7 +7,7 @@
 
 #include "KT2ROOT.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -30,7 +30,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    LOGGER(publog, "katydid.output");
 
 
     static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayTransform > sBRTWFFTRegistrar;

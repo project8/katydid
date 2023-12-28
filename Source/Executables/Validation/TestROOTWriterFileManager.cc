@@ -10,7 +10,7 @@
 
 #include "KTROOTWriterFileManager.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "TFile.h"
 #include "TH1.h"
@@ -18,7 +18,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestROOTWriterFileManager");
+LOGGER(testlog, "TestROOTWriterFileManager");
 
 
 int main()
@@ -33,7 +33,7 @@ int main()
     TFile* file1 = rwfm->OpenFile(nullptr, "file1.root", "RECREATE");
     if (file1 == nullptr)
     {
-        KTERROR(testlog, "Unable to create file1.root");
+        LERROR(testlog, "Unable to create file1.root");
     }
     else
     {
@@ -43,7 +43,7 @@ int main()
 
         if (! rwfm->FinishFile(nullptr, "file1.root"))
         {
-            KTERROR(testlog, "Unable to finish the file for test 1");
+            LERROR(testlog, "Unable to finish the file for test 1");
         }
     }
 
@@ -57,7 +57,7 @@ int main()
     TFile* file2p1 = rwfm->OpenFile(nullptr, "file2.root", "RECREATE");
     if (file2p1 == nullptr)
     {
-        KTERROR(testlog, "Unable to create file2.root, take 1");
+        LERROR(testlog, "Unable to create file2.root, take 1");
     }
     else
     {
@@ -67,7 +67,7 @@ int main()
 
         if (! rwfm->FinishFile(nullptr, "file2.root"))
         {
-            KTERROR(testlog, "Unable to finish the file for test 2, take 1");
+            LERROR(testlog, "Unable to finish the file for test 2, take 1");
         }
         else
         {
@@ -75,7 +75,7 @@ int main()
             TFile* file2p2 = rwfm->OpenFile(nullptr, "file2.root", "UPDATE");
             if (file2p2 == nullptr)
             {
-                KTERROR(testlog, "Unable to create file2.root, take 2");
+                LERROR(testlog, "Unable to create file2.root, take 2");
             }
             else
             {
@@ -85,7 +85,7 @@ int main()
 
                 if (! rwfm->FinishFile(nullptr, "file2.root"))
                 {
-                    KTERROR(testlog, "Unable to finish the file for test 2, take 2");
+                    LERROR(testlog, "Unable to finish the file for test 2, take 2");
                 }
             }
         }
@@ -102,7 +102,7 @@ int main()
     TFile* file3p1 = rwfm->OpenFile(0x0, "file3.root", "RECREATE");
     if (file3p1 == nullptr)
     {
-        KTERROR(testlog, "Unable to create file3.root, take 1");
+        LERROR(testlog, "Unable to create file3.root, take 1");
     }
     else
     {
@@ -113,7 +113,7 @@ int main()
         TFile* file3p2 = rwfm->OpenFile((Nymph::KTWriter*)0x1, "file3.root", "RECREATE");
         if (file3p2 == nullptr)
         {
-            KTERROR(testlog, "Unable to create file3.root, take 2");
+            LERROR(testlog, "Unable to create file3.root, take 2");
         }
         else
         {
@@ -123,12 +123,12 @@ int main()
 
             if (! rwfm->FinishFile(nullptr, "file3.root"))
             {
-                KTERROR(testlog, "Unable to finish the file for test 3, take 1");
+                LERROR(testlog, "Unable to finish the file for test 3, take 1");
             }
 
             if (! rwfm->FinishFile((Nymph::KTWriter*)0x1, "file3.root"))
             {
-                KTERROR(testlog, "Unable to finish the file for test 3, take 2");
+                LERROR(testlog, "Unable to finish the file for test 3, take 2");
             }
         }
     }

@@ -7,7 +7,7 @@
  *  Usage: > ./TestSmoothing
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSmooth.hh"
 
 #ifdef ROOT_FOUND
@@ -18,12 +18,12 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestSmoothing");
+LOGGER(testlog, "TestSmoothing");
 
 int main()
 {
 #ifndef ROOT_FOUND
-    KTWARN(testlog, "Testing will proceed, but since you don't have ROOT enabled, you won't see any output");
+    LWARN(testlog, "Testing will proceed, but since you don't have ROOT enabled, you won't see any output");
 #endif
 
     unsigned nBins = 10;
@@ -36,7 +36,7 @@ int main()
     //**************
     // 2-D smoothing
     //**************
-    KTINFO(testlog, "Testing 2D smoothing");
+    LINFO(testlog, "Testing 2D smoothing");
 
     KTPhysicalArray< 2, double > array2D(nBins, 0., 1., nBins, 0., 1.);
     for (unsigned iBin = 0; iBin < nBins; ++iBin)
@@ -55,7 +55,7 @@ int main()
 
     if (! KTSmooth::Smooth(&array2D))
     {
-        KTERROR(testlog, "2D smoothing failed");
+        LERROR(testlog, "2D smoothing failed");
     }
 
 #ifdef ROOT_FOUND
@@ -73,7 +73,7 @@ int main()
     outFile.Close();
 #endif
 
-    KTINFO(testlog, "Smoothing test complete");
+    LINFO(testlog, "Smoothing test complete");
 
     return 0;
 }

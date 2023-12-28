@@ -18,7 +18,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTSpectrogramWriter");
+    LOGGER(publog, "KTROOTSpectrogramWriter");
 
 
     KT_REGISTER_WRITER(KTROOTSpectrogramWriter, "root-spectrogram-writer");
@@ -62,7 +62,7 @@ namespace Katydid
                 else if (modeStr == "sequential") SetMode(kSequential);
                 else
                 {
-                    KTERROR(publog, "Invalid mode: <" << modeStr << ">");
+                    LERROR(publog, "Invalid mode: <" << modeStr << ">");
                     return false;
                 }
             }
@@ -82,7 +82,7 @@ namespace Katydid
 
             if (fMode == kSequential && fNTimeBins == 0)
             {
-                KTERROR(publog, "Invalid configuration: you must specify a non-zero number of bins if using sequential mode");
+                LERROR(publog, "Invalid configuration: you must specify a non-zero number of bins if using sequential mode");
                 return false;
             }
         }
@@ -120,7 +120,7 @@ namespace Katydid
         {
             fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
-            KTERROR(publog, "Output file <" << fFilename << "> did not open!");
+            LERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;
         }
         fFile->cd();
@@ -129,7 +129,7 @@ namespace Katydid
 
     void KTROOTSpectrogramWriter::WriteFile()
     {
-        KTDEBUG("In write-file slot")
+        LDEBUG("In write-file slot")
         for (TypeWriterMap::iterator thisTypeWriter = fTypeWriters.begin(); thisTypeWriter != fTypeWriters.end(); ++thisTypeWriter)
         {
             thisTypeWriter->second->OutputSpectrograms();
@@ -164,18 +164,18 @@ namespace Katydid
     int KTROOTSpectrogramTypeWriter::UpdateSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double timeInRun, double sliceLength, bool isNewAcq, DataTypeBundle& dataBundle)
     {
         // if fCurrentTimeBin is already negative, it stays that way.  No more histogram writing will take place.
-        KTDEBUG(publog, "in UpdateSpectrograms");
+        LDEBUG(publog, "in UpdateSpectrograms");
         if (dataBundle.fCurrentTimeBin < 0) return dataBundle.fCurrentTimeBin;
 
         KTROOTSpectrogramWriter::Mode mode = fWriter->GetMode();
 
-        KTDEBUG(publog, "checking new acq");
+        LDEBUG(publog, "checking new acq");
         if (isNewAcq && dataBundle.fSpectrograms.size() != 0)
         {
             dataBundle.fHistCount += 1;
             if (! fWriter->OpenAndVerifyFile())
             {
-                KTWARN(publog, "File could not be opened; unable to write spectrograms.  Setting time bin to -1 to prevent further spectrogram creation.");
+                LWARN(publog, "File could not be opened; unable to write spectrograms.  Setting time bin to -1 to prevent further spectrogram creation.");
                 dataBundle.fCurrentTimeBin = -1;
                 return dataBundle.fCurrentTimeBin;
             }
@@ -195,17 +195,17 @@ namespace Katydid
             }
         }
 
-        KTDEBUG(publog, "checking if we need to increase spectrogram vec size");
+        LDEBUG(publog, "checking if we need to increase spectrogram vec size");
         // resize the dataBundle vector if necessary and initialize the new spectrogram pointers
         if (dataBundle.fSpectrograms.size() < nComponents)
         {
-            KTDEBUG(publog, "yep, we need to increase the size: " << dataBundle.fSpectrograms.size() << " < " << nComponents );
+            LDEBUG(publog, "yep, we need to increase the size: " << dataBundle.fSpectrograms.size() << " < " << nComponents );
             // Yes, we do need to resize the vector of histograms
             // Get number of components and resize the vector of histograms
             unsigned currentSize = dataBundle.fSpectrograms.size();
             if (currentSize == 0)
             {
-                KTDEBUG(publog, "this is the first time through");
+                LDEBUG(publog, "this is the first time through");
                 // this is the first time creating histograms
                 dataBundle.fCurrentTimeBin = 0;
 
@@ -229,7 +229,7 @@ namespace Katydid
                 }
 
                 dataBundle.fTimeAxisMax = dataBundle.fTimeAxisMin + sliceLength * (double)dataBundle.fNTimeBins;
-                KTDEBUG(publog, dataBundle.fNTimeBins << "  " << dataBundle.fTimeAxisMin << "  " << dataBundle.fTimeAxisMax);
+                LDEBUG(publog, dataBundle.fNTimeBins << "  " << dataBundle.fTimeAxisMin << "  " << dataBundle.fTimeAxisMax);
 
             } // end if currentSize == 0
 
@@ -255,8 +255,8 @@ namespace Katydid
                 stringstream conv;
                 conv << "_" << dataBundle.fHistCount << "_" << iComponent;
                 string histName = dataBundle.fHistNameBase + conv.str();
-                KTINFO(publog, "Creating histogram called <" << histName << ">");
-                KTDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << dataBundle.fNTimeBins << ", " << dataBundle.fTimeAxisMin << ", " << dataBundle.fTimeAxisMax << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
+                LINFO(publog, "Creating histogram called <" << histName << ">");
+                LDEBUG(publog, "Creating new spectrogram histogram for component " << iComponent << ": " << histName << ", " << dataBundle.fNTimeBins << ", " << dataBundle.fTimeAxisMin << ", " << dataBundle.fTimeAxisMax << ", " << nFreqBins << ", " << startFreq << ", " << endFreq);
                 sdIt->fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", dataBundle.fNTimeBins, dataBundle.fTimeAxisMin, dataBundle.fTimeAxisMax, nFreqBins, startFreq, endFreq );
                 sdIt->fSpectrogram->SetXTitle("Time (s)");
                 sdIt->fSpectrogram->SetYTitle(axis.GetAxisLabel().c_str());
@@ -265,28 +265,28 @@ namespace Katydid
 
         } // end if had to resize vector of histograms
 
-        KTDEBUG(publog, "checking current time bin");
+        LDEBUG(publog, "checking current time bin");
         dataBundle.fCurrentTimeBin += 1;
         if (dataBundle.fCurrentTimeBin > dataBundle.fNTimeBins)
         {
             dataBundle.fHistCount += 1;
-            KTDEBUG(publog, "Bin count has triggered output of a spectrogram set; hist count is " << dataBundle.fHistCount);
+            LDEBUG(publog, "Bin count has triggered output of a spectrogram set; hist count is " << dataBundle.fHistCount);
             if (! fWriter->OpenAndVerifyFile())
             {
-                KTWARN(publog, "File could not be opened; unable to write spectrograms.  Setting time bin to -1 to prevent further spectrogram creation.");
+                LWARN(publog, "File could not be opened; unable to write spectrograms.  Setting time bin to -1 to prevent further spectrogram creation.");
                 dataBundle.fCurrentTimeBin = -1;
             }
             else
             {
                 if (mode == KTROOTSpectrogramWriter::kSingle)
                 {
-                    KTINFO(publog, "writing in single mode");
+                    LINFO(publog, "writing in single mode");
                     OutputASpectrogramSet(dataBundle, false);
                     dataBundle.fCurrentTimeBin = -1; // writing to the spectrogram is finished, so returning -1 will prevent further histogram filling
                 }
                 else // mode == KTROOTSpectrogramWriter::kSequential
                 {
-                    KTINFO(publog, "writing in sequential mode");
+                    LINFO(publog, "writing in sequential mode");
                     OutputASpectrogramSet(dataBundle, true);
                     dataBundle.fCurrentTimeBin = 1;
                 }
@@ -299,11 +299,11 @@ namespace Katydid
     void KTROOTSpectrogramTypeWriter::OutputASpectrogramSet(DataTypeBundle& dataBundle, bool cloneSpectrograms)
     {
         // this function does not check the root file; it's assumed to be opened and verified already
-        KTDEBUG(publog, "Outputting a spectrogram set; cloning? " << cloneSpectrograms);
+        LDEBUG(publog, "Outputting a spectrogram set; cloning? " << cloneSpectrograms);
         for (auto spectIt = dataBundle.fSpectrograms.begin(); spectIt != dataBundle.fSpectrograms.end(); ++spectIt)
         {
             TH2D* spectrogram = spectIt->fSpectrogram;
-            KTINFO(publog, "Writing histogram <" << spectrogram->GetName() << ">");
+            LINFO(publog, "Writing histogram <" << spectrogram->GetName() << ">");
             if (cloneSpectrograms)
             {
                 spectIt->fSpectrogram = new TH2D();

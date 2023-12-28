@@ -7,7 +7,7 @@
 
 #include "KTSidebandCorrection.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTSliceHeader.hh"
 #include "KTProcessedTrackData.hh"
@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTSidebandCorrection");
+    LOGGER(evlog, "KTSidebandCorrection");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTSidebandCorrection, "sideband-correction");
@@ -53,12 +53,12 @@ namespace Katydid
         double sep = std::abs( signalIntercept - sidebandIntercept );
         double magnetron = fitData.GetFFT_peak( 0 );
 
-        KTINFO(avlog_hh, "Found an axial frequency of " << sep << " Hz");
-        KTINFO(avlog_hh, "Found a magnetron frequency of " << magnetron << " Hz");
+        LINFO(avlog_hh, "Found an axial frequency of " << sep << " Hz");
+        LINFO(avlog_hh, "Found a magnetron frequency of " << magnetron << " Hz");
 
-        KTINFO(avlog_hh, "Old starting frequency: " << startFreq);
+        LINFO(avlog_hh, "Old starting frequency: " << startFreq);
         startFreq = sqrt( startFreq * startFreq + sep * sep + magnetron * magnetron );
-        KTINFO(avlog_hh, "New starting frequency: " << startFreq);
+        LINFO(avlog_hh, "New starting frequency: " << startFreq);
         trackData.SetStartFrequency( startFreq - GetMixingOffset() );
 
         endFreq = sqrt( endFreq * endFreq + sep * sep + magnetron * magnetron );
@@ -75,7 +75,7 @@ namespace Katydid
         double f = 24.2e9 + header.GetMinimumFrequency();
         SetMixingOffset( f );
 
-        KTINFO(avlog_hh, "Set mixing offset to " << GetMixingOffset());
+        LINFO(avlog_hh, "Set mixing offset to " << GetMixingOffset());
 
         return true;
     }

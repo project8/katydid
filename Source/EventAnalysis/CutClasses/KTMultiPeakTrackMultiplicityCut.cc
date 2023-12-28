@@ -8,11 +8,11 @@
 #include "KTMultiPeakTrackMultiplicityCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTMultiPeakTrackMultiplicityCut");
+    LOGGER(exlog, "KTMultiPeakTrackMultiplicityCut");
 
     const std::string KTMultiPeakTrackMultiplicityCut::Result::sName = "mpt-multiplicity-cut";
 

@@ -19,7 +19,7 @@
 #include "KTChannelAggregator.hh"
 #include "KTAggregatedChannelOptimizer.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 #include <cmath>
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestChannelAggregator");
+LOGGER(vallog, "TestChannelAggregator");
 
 // get shift in the phase based on the channel location and the X and Y positions
 double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle, double activeRadius)

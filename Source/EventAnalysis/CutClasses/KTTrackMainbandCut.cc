@@ -8,11 +8,11 @@
 #include "KTTrackMainbandCut.hh"
 #include "KTProcessedTrackData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTTrackMainbandCut");
+    LOGGER(exlog, "KTTrackMainbandCut");
 
     const std::string KTTrackMainbandCut::Result::sName = "track-mainband-cut";
 

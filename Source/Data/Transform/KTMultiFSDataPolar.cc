@@ -7,13 +7,13 @@
 
 #include "KTMultiFSDataPolar.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(datalog, "KTMultiFSDataPolar");
+    LOGGER(datalog, "KTMultiFSDataPolar");
 
     KTMultiFSDataPolarCore::KTMultiFSDataPolarCore() :
             fSpectra()
@@ -38,12 +38,12 @@ namespace Katydid
     {
         if (component >= fSpectra.size())
         {
-            KTDEBUG(datalog, "Attempting to set spectrum in data which doesn't have component " << component << "; growing the data");
+            LDEBUG(datalog, "Attempting to set spectrum in data which doesn't have component " << component << "; growing the data");
             SetNComponents(component+1);
         }
         if (fSpectra[component] == NULL)
         {
-            KTDEBUG(datalog, "Pointer to spectra is NULL; adding new spectra with " << iSpect + 1 << "bins");
+            LDEBUG(datalog, "Pointer to spectra is NULL; adding new spectra with " << iSpect + 1 << "bins");
             fSpectra[component] = new KTMultiFSPolar(iSpect+1, 0., 1.);
         }
         (*fSpectra[component])(iSpect) = spectrum;
@@ -72,8 +72,8 @@ namespace Katydid
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
                 (*fSpectra[component])(0)->size(), (*fSpectra[component])(0)->GetRangeMin(), (*fSpectra[component])(0)->GetRangeMax());
 
-        KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        LINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        LINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)
         {
@@ -98,8 +98,8 @@ namespace Katydid
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
                 (*fSpectra[component])(0)->size(), (*fSpectra[component])(0)->GetRangeMin(), (*fSpectra[component])(0)->GetRangeMax());
 
-        KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        LINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        LINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)
         {
@@ -124,8 +124,8 @@ namespace Katydid
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
                 (*fSpectra[component])(0)->size(), (*fSpectra[component])(0)->GetRangeMin(), (*fSpectra[component])(0)->GetRangeMax());
 
-        KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        LINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        LINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         double value;
         for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); ++iBinX)

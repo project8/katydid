@@ -8,14 +8,14 @@
 #include "KTMergeKDTree.hh"
 
 #include "KTKDTreeData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::string;
 
 
 namespace Katydid
 {
-    KTLOGGER(mkdlog, "KTMergeKDTree");
+    LOGGER(mkdlog, "KTMergeKDTree");
 
     KT_REGISTER_PROCESSOR(KTMergeKDTree, "merge-kd-tree");
 
@@ -92,7 +92,7 @@ namespace Katydid
     {
         if (! fHaveNewData) return true;
 
-        KTINFO(mkdlog, "Creating merged k-d tree");
+        LINFO(mkdlog, "Creating merged k-d tree");
 
         unsigned nComponents = fMergedTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
@@ -123,7 +123,7 @@ namespace Katydid
     {
         if (! FinishTree())
         {
-            KTERROR(mkdlog, "An error occurred while finishing the merged k-d tree");
+            LERROR(mkdlog, "An error occurred while finishing the merged k-d tree");
             return;
         }
         ClearTree();

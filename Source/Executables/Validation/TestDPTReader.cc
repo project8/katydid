@@ -11,7 +11,7 @@
 
 
 #include "KTDPTReader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPowerSpectrumData.hh"
 
 #include <algorithm>
@@ -21,7 +21,7 @@
 using namespace Katydid;
 
 
-KTLOGGER(testlog, "TestDPTReader");
+LOGGER(testlog, "TestDPTReader");
 
 
 int main(int argc, char** argv)
@@ -29,30 +29,30 @@ int main(int argc, char** argv)
 
     if (argc < 2)
     {
-        KTERROR(testlog, "Please provide a filename\nUsage: bin/TestDPTReader filename.dpt");
+        LERROR(testlog, "Please provide a filename\nUsage: bin/TestDPTReader filename.dpt");
         return 0;
     }
     std::string filename(argv[1]);
 
-    KTINFO(testlog, "Testing DPT reader with file <" << filename << ">");
+    LINFO(testlog, "Testing DPT reader with file <" << filename << ">");
 
     KTDPTReader reader;
     reader.SetFilename(filename);
 
-    KTINFO(testlog, "Reading the file");
+    LINFO(testlog, "Reading the file");
     Nymph::KTData data;
     if (! reader.ReadFile(data))
     {
-        KTERROR(testlog, "Something went wrong while reading the file");
+        LERROR(testlog, "Something went wrong while reading the file");
         return -1;
     }
 
-    KTINFO(testlog, "Reading is complete");
+    LINFO(testlog, "Reading is complete");
 
     KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >();
     if (psData.GetNComponents() != 1)
     {
-        KTERROR(testlog, "PS data does not have 1 component: " << psData.GetNComponents());
+        LERROR(testlog, "PS data does not have 1 component: " << psData.GetNComponents());
         return -1;
     }
 
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
         binStr << "\t\tBin " << iBin << "; value = " << (*spectrum)(iBin) << "\n";
     }
 
-    KTINFO(testlog, "Power spectrum extracted from the DPT file:\n"
+    LINFO(testlog, "Power spectrum extracted from the DPT file:\n"
            << "\tNumber of bins: " << spectrum->size() << '\n'
            << "\tMin frequency: " << spectrum->GetRangeMin() << " Hz\n"
            << "\tMax frequency: " << spectrum->GetRangeMax() << " Hz\n"

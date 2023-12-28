@@ -10,18 +10,18 @@
  */
 
 #include "KTKatydidApp.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTRunNymph.hh"
 
 #include <memory>
 
-KTLOGGER( katydidlog, "Katydid" );
+LOGGER( katydidlog, "Katydid" );
 
 
 int main( int argc, char** argv )
 {
     KTPROG( katydidlog, "Welcome to Katydid!" );
-    KTDEBUG( katydidlog,
+    LDEBUG( katydidlog,
             "\n" <<
             "                                                                            ,=  \n" <<
             "                                                                           =    \n" <<
@@ -57,7 +57,7 @@ int main( int argc, char** argv )
     }
     catch( std::exception& e )
     {
-        KTERROR( katydidlog, "Exception caught:\n" << e.what() );
+        LERROR( katydidlog, "Exception caught:\n" << e.what() );
         return -1;
     }
 

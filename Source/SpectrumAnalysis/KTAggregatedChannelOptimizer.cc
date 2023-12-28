@@ -7,11 +7,11 @@
 
 #include "KTAggregatedChannelOptimizer.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(aggoptlog, "KTAggregatedChannelOptimizer");
+    LOGGER(aggoptlog, "KTAggregatedChannelOptimizer");
     
     // Register the processor
     KT_REGISTER_PROCESSOR(KTAggregatedChannelOptimizer, "aggregated-channel-optimizer");
@@ -61,7 +61,7 @@ namespace Katydid
         aggData.SetOptimizedGridPointValue(maxGridPoint,maxVoltage);
         double x,y,z;
         aggData.GetGridPoint(maxGridPoint,x,y,z);
-        KTDEBUG(aggoptlog,"Optimized grid point found at ("<<x<<","<<y<<","<<z<< ") with the maximum voltage of "<<maxVoltage);
+        LDEBUG(aggoptlog,"Optimized grid point found at ("<<x<<","<<y<<","<<z<< ") with the maximum voltage of "<<maxVoltage);
         return true;
     }
 }

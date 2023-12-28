@@ -13,13 +13,13 @@
 #include "KTEggHeader.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 
 namespace Katydid
 {
     
-    KTLOGGER(avlog_hh, "KTSidebandCorrection.hh");
+    LOGGER(avlog_hh, "KTSidebandCorrection.hh");
 
     class KTLinearFitResult;
     class KTProcessedTrackData;
@@ -95,19 +95,19 @@ namespace Katydid
         // Check to ensure that the required data types are present
         if (! data->Has< KTLinearFitResult >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTLinearFitResult >!");
+            LERROR(avlog_hh, "Data not found with type < KTLinearFitResult >!");
             return;
         }
         if (! data->Has< KTProcessedTrackData >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
+            LERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
             return;
         }
 
         // Call function
         if( !CorrectTrack( data->Of< KTLinearFitResult >(), data->Of< KTProcessedTrackData >() ) )
         {
-            KTERROR(avlog_hh, "Something went wrong while analyzing linear fit data!");
+            LERROR(avlog_hh, "Something went wrong while analyzing linear fit data!");
             return;
         }
 
@@ -123,13 +123,13 @@ namespace Katydid
         // Check to ensure that the required data types are present
         if (! data->Has< KTEggHeader >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTEggHeader >!");
+            LERROR(avlog_hh, "Data not found with type < KTEggHeader >!");
             return;
         }
 
         if( !AssignFrequencyOffset( data->Of< KTEggHeader >() ) )
         {
-            KTERROR(avlog_hh, "Something went wrong finding the mixing offset!");
+            LERROR(avlog_hh, "Something went wrong finding the mixing offset!");
             return;
         }
     }

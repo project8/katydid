@@ -11,7 +11,7 @@
 #include "KTDigitizerTestData.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTProcSummary.hh"
 #include "KTSliceHeader.hh"

@@ -8,11 +8,11 @@
 #include "KTTrackMVACut.hh"
 #include "KTProcessedTrackData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTTrackMVACut");
+    LOGGER(exlog, "KTTrackMVACut");
 
     const std::string KTTrackMVACut::Result::sName = "track-mva-cut";
 

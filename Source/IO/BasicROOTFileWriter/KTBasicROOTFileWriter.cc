@@ -18,7 +18,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTBasicROOTFileWriter");
+    LOGGER(publog, "KTBasicROOTFileWriter");
 
 
     KT_REGISTER_WRITER(KTBasicROOTFileWriter, "basic-root-writer");
@@ -82,7 +82,7 @@ namespace Katydid
         {
             fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
-            KTERROR(publog, "Output file <" << fFilename << "> did not open!");
+            LERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;
         }
         fFile->cd();

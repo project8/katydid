@@ -8,7 +8,7 @@
 #include "KTConsensusThresholding.hh"
 #include "KTDBSCANTrackClustering.hh"
 #include "KTKDTreeData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
@@ -24,7 +24,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBSCANTrackClustering");
+LOGGER(testlog, "TestDBSCANTrackClustering");
 
 int main()
 {
@@ -198,7 +198,7 @@ int main()
     KTKDTreeData::Point point;
     for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
     {
-        KTDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
+        LDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
         point.fCoords[0] = (*tIt)/timeScale;
         point.fCoords[1] = (*fIt)/freqScale;
         point.fAmplitude = *aIt;
@@ -213,9 +213,9 @@ int main()
     ct.SetMembershipRadius(0.5);
     ct.SetMinNumberVotes(6);
 
-    KTINFO(testlog, "Number of points before CT: " << kdTreeData.GetSetOfPoints().size());
+    LINFO(testlog, "Number of points before CT: " << kdTreeData.GetSetOfPoints().size());
     ct.ConsensusVote(kdTreeData);
-    KTINFO(testlog, "Number of points after CT: " << kdTreeData.GetSetOfPoints().size());
+    LINFO(testlog, "Number of points after CT: " << kdTreeData.GetSetOfPoints().size());
 
 
     KTDBSCANTrackClustering clustering;
@@ -226,7 +226,7 @@ int main()
 
     const std::set< Nymph::KTDataPtr >& candidates = clustering.GetCandidates();
 
-    KTINFO(testlog, "Candidates found: " << candidates.size())
+    LINFO(testlog, "Candidates found: " << candidates.size())
 
 #ifdef ROOT_FOUND
     TFile file("consensusthresholding_test.root", "recreate");
@@ -270,7 +270,7 @@ int main()
 
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
-        KTINFO(testlog, "Candidate " << iCand);
+        LINFO(testlog, "Candidate " << iCand);
         KTSparseWaterfallCandidateData& swcData = (*cIt)->Of< KTSparseWaterfallCandidateData >();
         const Points& candPoints = swcData.GetPoints();
 

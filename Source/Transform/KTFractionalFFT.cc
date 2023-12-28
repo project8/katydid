@@ -7,7 +7,7 @@
 
 #include "KTFractionalFFT.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTFractionalFFT");
+    LOGGER(evlog, "KTFractionalFFT");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTFractionalFFT, "fractional-fft");
@@ -72,13 +72,13 @@ namespace Katydid
 
         if (! fForwardFFT.InitializeForComplexTDD())
         {
-            KTERROR(evlog, "Error while initializing the forward FFT");
+            LERROR(evlog, "Error while initializing the forward FFT");
             return false;
         }
 
         if (! fReverseFFT.InitializeForComplexTDD())
         {
-            KTERROR(evlog, "Error while initializing the reverse FFT");
+            LERROR(evlog, "Error while initializing the reverse FFT");
             return false;
         }
 
@@ -88,14 +88,14 @@ namespace Katydid
 
     bool KTFractionalFFT::ProcessTimeSeriesChirpOnly( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTSliceHeader& slice )
     {
-        KTDEBUG(evlog, "Receiving time series for fractional FFT");
+        LDEBUG(evlog, "Receiving time series for fractional FFT");
 
         double binOffset = slice.GetTimeInAcq() / (double)slice.GetBinWidth();
         double chirpRate = fSlope * KTMath::Pi() * slice.GetBinWidth() * slice.GetBinWidth();
 
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
-            KTDEBUG(evlog, "Processing component: " << iComponent);
+            LDEBUG(evlog, "Processing component: " << iComponent);
 
             // Initialize vars
             //KTTimeSeriesFFTW* tsDup = new KTTimeSeriesFFTW( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
@@ -104,7 +104,7 @@ namespace Katydid
             KTTimeSeriesFFTW* ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
             if( ts == nullptr )
             {
-                KTWARN(evlog, "Couldn't find time series object. Continuing to next component");
+                LWARN(evlog, "Couldn't find time series object. Continuing to next component");
                 continue;
             }
             
@@ -141,7 +141,7 @@ namespace Katydid
     // This function should be split in smaller pieces!
     bool KTFractionalFFT::ProcessTimeSeries( KTTimeSeriesData& tsData, KTTimeSeriesData& newTSData, KTFrequencySpectrumDataFFTW& newFSData, KTSliceHeader& slice )
     {
-        KTDEBUG(evlog, "Receiving time series for fractional FFT");
+        LDEBUG(evlog, "Receiving time series for fractional FFT");
 
         // Intermediate data objects that need to be initialized here
         KTTimeSeriesFFTW tsDup( slice.GetSliceSize(), 0.0, slice.GetSliceLength() );
@@ -149,7 +149,7 @@ namespace Katydid
         if( fCalculateAlpha )
         {
             fAlpha = atan2( fSlope * slice.GetBinWidth() * slice.GetBinWidth(), 1.0 );
-            KTINFO(evlog, "Calculated alpha = " << fAlpha);
+            LINFO(evlog, "Calculated alpha = " << fAlpha);
         }
 
         // Chirp rates calculated from the rotation angle fAlpha according to the Garcia algorithm
@@ -158,13 +158,13 @@ namespace Katydid
         
         for( unsigned iComponent = 0; iComponent < tsData.GetNComponents(); ++iComponent )
         {
-            KTDEBUG(evlog, "Processing component: " << iComponent);  
+            LDEBUG(evlog, "Processing component: " << iComponent);  
 
             // get TS from data object and make the new TS; remains owned by tsData
             KTTimeSeriesFFTW* ts = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries( iComponent ));
             if( ts == nullptr )
             {
-                KTWARN(evlog, "Couldn't find time series object. Continuing to next component");
+                LWARN(evlog, "Couldn't find time series object. Continuing to next component");
                 continue;
             }
             
@@ -263,19 +263,19 @@ namespace Katydid
     {
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(evlog, "Data not found with type < KTTimeSeriesData >!");
+            LERROR(evlog, "Data not found with type < KTTimeSeriesData >!");
             return;
         }
 
         if (! data->Has< KTSliceHeader >())
         {
-            KTERROR(evlog, "Data not found with type < KTSliceHeader >!");
+            LERROR(evlog, "Data not found with type < KTSliceHeader >!");
             return;
         }
 
         if( ! Initialize( data->Of< KTSliceHeader >().GetSliceSize() ) )
         {
-            KTERROR(evlog, "Something went wrong initializing the FFTs!");
+            LERROR(evlog, "Something went wrong initializing the FFTs!");
             return;
         }
 
@@ -287,10 +287,10 @@ namespace Katydid
 
         if( ! ProcessTimeSeriesChirpOnly( data->Of< KTTimeSeriesData >(), newData->Of< KTTimeSeriesData >(), newSlc ) )
         {
-            KTERROR(evlog, "Something went wrong with the chirp transform");
+            LERROR(evlog, "Something went wrong with the chirp transform");
         }
 
-        KTDEBUG(evlog, "Emitting signal");
+        LDEBUG(evlog, "Emitting signal");
         fTSSignal( newData );
     }
 
@@ -298,19 +298,19 @@ namespace Katydid
     {
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(evlog, "Data not found with type < KTTimeSeriesData >!");
+            LERROR(evlog, "Data not found with type < KTTimeSeriesData >!");
             return;
         }
 
         if (! data->Has< KTSliceHeader >())
         {
-            KTERROR(evlog, "Data not found with type < KTSliceHeader >!");
+            LERROR(evlog, "Data not found with type < KTSliceHeader >!");
             return;
         }
 
         if( ! Initialize( data->Of< KTSliceHeader >().GetSliceSize() ) )
         {
-            KTERROR(evlog, "Something went wrong initializing the FFTs!");
+            LERROR(evlog, "Something went wrong initializing the FFTs!");
             return;
         }
 
@@ -322,10 +322,10 @@ namespace Katydid
 
         if( ! ProcessTimeSeries( data->Of< KTTimeSeriesData >(), newData->Of< KTTimeSeriesData >(), newData->Of< KTFrequencySpectrumDataFFTW >(), newSlc ) )
         {
-            KTERROR(evlog, "Something went wrong with the chirp transform");
+            LERROR(evlog, "Something went wrong with the chirp transform");
         }
 
-        KTDEBUG(evlog, "Emitting signal");
+        LDEBUG(evlog, "Emitting signal");
         fTSFSSignal( newData );
     }
 
@@ -334,7 +334,7 @@ namespace Katydid
         SetSlope( trackData.GetSlope() );
         fCalculateAlpha = true;
 
-        KTINFO(evlog, "Set chirp slope: " << GetSlope());
+        LINFO(evlog, "Set chirp slope: " << GetSlope());
 
         return true;
     }

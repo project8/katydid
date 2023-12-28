@@ -16,7 +16,7 @@
 #include "KTPowerSpectrumData.hh"
 #include "KTSliceHeader.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
@@ -31,7 +31,7 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
 
-    KTLOGGER(sslog_h, "KTSpectrogramStriper");
+    LOGGER(sslog_h, "KTSpectrogramStriper");
 
     /*!
      @class KTSpectrogramStriper
@@ -195,7 +195,7 @@ namespace Katydid
     KTSpectrogramStriper::TypedStripeAccumulator< XDataType >& KTSpectrogramStriper::GetOrCreateAccumulator()
     {
         const std::type_info* typeInfo = &typeid(XDataType);
-        KTDEBUG(sslog_h, "Getting or creating <" << typeInfo->name() << ">");
+        LDEBUG(sslog_h, "Getting or creating <" << typeInfo->name() << ">");
         if (typeInfo != fLastTypeInfo)
         {
             fLastAccumulatorPtr = &fDataMap[typeInfo];
@@ -211,7 +211,7 @@ namespace Katydid
 
         if (stripeData.GetNComponents() == 0) // this is the first time through this function
         {
-            KTDEBUG(sslog_h, "This is the first time through CoreAddData for this data type");
+            LDEBUG(sslog_h, "This is the first time through CoreAddData for this data type");
             stripeDataStruct.fSliceHeader.CopySliceHeaderOnly(header);
             stripeData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -229,7 +229,7 @@ namespace Katydid
         }
         else if (header.GetIsNewAcquisition()) // this starts a new acquisition, so it should start a new stripe, ignoring the overlap
         {
-            KTDEBUG(sslog_h, "This is a new acquisition; will emit signal if there's a partially-filled stripe");
+            LDEBUG(sslog_h, "This is a new acquisition; will emit signal if there's a partially-filled stripe");
 
             // emit signal for the current stripe if there is an existing partially-filled stripe
             if (stripeDataStruct.fNextBin != fStripeOverlap || (stripeDataStruct.fFirstAccumulation && stripeDataStruct.fNextBin == fStripeOverlap)) fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
@@ -253,7 +253,7 @@ namespace Katydid
         else if (stripeDataStruct.fNextBin == fStripeOverlap  && ! stripeDataStruct.fFirstAccumulation) // this isn't the first time through, but we have a fresh stripe, so we perform the swap to keep the overlap region
         {
             stripeDataStruct.fSliceHeader.CopySliceHeaderOnly(header);
-            KTDEBUG(sslog_h, "Performing swap for overlap region");
+            LDEBUG(sslog_h, "Performing swap for overlap region");
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 typename XMultiSpectrumDataCore::multi_spectrum_type* spectra = stripeData.GetSpectra(iComponent);
@@ -268,14 +268,14 @@ namespace Katydid
 
         if (nComponents != stripeData.GetNComponents())
         {
-            KTERROR(sslog_h, "Numbers of components in the average and in the new data do not match");
+            LERROR(sslog_h, "Numbers of components in the average and in the new data do not match");
             return false;
         }
 
         unsigned arraySize = GetSpectrum(data, 0)->size();
         if (arraySize != (*stripeData.GetSpectra(0))(stripeDataStruct.fNextBin)->size())
         {
-            KTERROR(sslog_h, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(sslog_h, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
@@ -288,7 +288,7 @@ namespace Katydid
         if (stripeDataStruct.fNextBin == fStripeSize)
         {
             // emit the signal for this stripe
-            KTDEBUG(sslog_h, "Finished a stripe; emitting signal");
+            LDEBUG(sslog_h, "Finished a stripe; emitting signal");
             fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
             stripeDataStruct.fNextBin = fStripeOverlap;
             stripeDataStruct.fFirstAccumulation = false;

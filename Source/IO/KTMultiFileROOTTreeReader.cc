@@ -9,7 +9,7 @@
 
 #include "KTAmplitudeDistribution.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "TAxis.h"
 #include "TFile.h"
 #include "TH1D.h"
@@ -26,7 +26,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(inlog, "KTMultiFileROOTTreeReader");
+    LOGGER(inlog, "KTMultiFileROOTTreeReader");
 
     KT_REGISTER_READER(KTMultiFileROOTTreeReader, "mf-root-tree-reader");
     KT_REGISTER_PROCESSOR(KTMultiFileROOTTreeReader, "mf-root-tree-reader");
@@ -58,7 +58,7 @@ namespace Katydid
             for (scarab::param_array::const_iterator ifIt = inputFileArray->begin(); ifIt != inputFileArray->end(); ++ifIt)
             {
                 AddFilename((*ifIt)->as_value().as_string());
-                KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+                LDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
             }
         }
 
@@ -68,7 +68,7 @@ namespace Katydid
             for (scarab::param_array::const_iterator dtIt = dataTypeArray->begin(); dtIt != dataTypeArray->end(); ++dtIt)
             {
                 AddDataType((*dtIt)->as_array().get_value(0), (*dtIt)->as_array().get_value(1));
-                KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
+                LDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
             }
         }
 
@@ -83,7 +83,7 @@ namespace Katydid
         }
         else
         {
-            KTERROR(inlog, "Invalid run-data-type: " << type);
+            LERROR(inlog, "Invalid run-data-type: " << type);
             return false;
         }
 
@@ -95,11 +95,11 @@ namespace Katydid
         TFile* newFile = TFile::Open(filename.c_str(), "read");
         if (! newFile->IsOpen())
         {
-            KTERROR(inlog, "Input file did not open: <" << filename << ">");
+            LERROR(inlog, "Input file did not open: <" << filename << ">");
             return NULL;
         }
 
-        KTINFO(inlog, "Input file open: <" << filename << ">");
+        LINFO(inlog, "Input file open: <" << filename << ">");
 
         return newFile;
     }
@@ -116,25 +116,25 @@ namespace Katydid
             TFile* file = OpenFile(*fFileIter);
             if (file == NULL)
             {
-                KTERROR(inlog, "A problem occurred while trying to open file <" << *fFileIter << ">");
+                LERROR(inlog, "A problem occurred while trying to open file <" << *fFileIter << ">");
                 return false;
             }
 
             Nymph::KTDataPtr newData(new Nymph::KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
-                KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+                LDEBUG(inlog, "Appending data of type " << dtIt->fName);
 
                 TTree* tree = ExtractTree(file, dtIt->fTreeName);
                 if (tree == NULL)
                 {
-                    KTERROR(inlog, "Tree <" << dtIt->fTreeName << "> was not extracted from file <" << *fFileIter << ">");
+                    LERROR(inlog, "Tree <" << dtIt->fTreeName << "> was not extracted from file <" << *fFileIter << ">");
                     return false;
                 }
 
                 if (! (this->*(dtIt->fAppendFcn))(tree, *(newData.get())))
                 {
-                    KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from tree <" << dtIt->fTreeName << "> from file <" << *fFileIter << ">");
+                    LERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from tree <" << dtIt->fTreeName << "> from file <" << *fFileIter << ">");
                     return false;
                 }
                 (*(dtIt->fSignal))(newData);
@@ -150,31 +150,31 @@ namespace Katydid
     {
         if (fFileIter == fFilenames.end())
         {
-            KTERROR(inlog, "File iterator has already reached the end of the filenames");
+            LERROR(inlog, "File iterator has already reached the end of the filenames");
             return false;
         }
 
         TFile* file = OpenFile(*fFileIter);
         if (file == NULL)
         {
-            KTERROR(inlog, "A problem occurred while trying to open file <" << *fFileIter << ">");
+            LERROR(inlog, "A problem occurred while trying to open file <" << *fFileIter << ">");
             return false;
         }
 
         for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
         {
-            KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+            LDEBUG(inlog, "Appending data of type " << dtIt->fName);
 
             TTree* tree = ExtractTree(file, dtIt->fTreeName);
             if (tree == NULL)
             {
-                KTERROR(inlog, "Tree <" << dtIt->fTreeName << "> was not extracted from file <" << *fFileIter << ">");
+                LERROR(inlog, "Tree <" << dtIt->fTreeName << "> was not extracted from file <" << *fFileIter << ">");
                 return false;
             }
 
             if (! (this->*(dtIt->fAppendFcn))(tree, data))
             {
-                KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from tree <" << dtIt->fTreeName << "> from file <" << *fFileIter << ">");
+                LERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from tree <" << dtIt->fTreeName << "> from file <" << *fFileIter << ">");
                 return false;
             }
         }
@@ -211,7 +211,7 @@ namespace Katydid
         tree->SetBranchAddress("FreqBin", &ampDistData.fFreqBin);
         tree->SetBranchAddress("Distribution", &ampDistData.fDistribution);
 
-        KTDEBUG(inlog, "Initializing new set of amplitude distributions, with " << nComponents << " components and " << nFreqBins << "frequency bins");
+        LDEBUG(inlog, "Initializing new set of amplitude distributions, with " << nComponents << " components and " << nFreqBins << "frequency bins");
         KTAmplitudeDistribution& ampDist = appendToData.Of< KTAmplitudeDistribution >();
         ampDist.InitializeNull(nComponents, nFreqBins);
 
@@ -230,7 +230,7 @@ namespace Katydid
         }
 
 
-        KTDEBUG(inlog, "some success message!");
+        LDEBUG(inlog, "some success message!");
 
         return true;
     }

@@ -22,7 +22,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(dtlog, "KTDigitizerTests");
+    LOGGER(dtlog, "KTDigitizerTests");
 
     KT_REGISTER_PROCESSOR(KTDigitizerTests, "digitizer-tests");
 
@@ -69,8 +69,8 @@ namespace Katydid
 	if (node->has("disable-component"))
 	  {
 	    fDisableComponents.push_back(node.get_value< unsigned >("disable-component"));
-	    KTWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
-	    KTWARN(dtlog, fDisableComponents[0]);
+	    LWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
+	    LWARN(dtlog, fDisableComponents[0]);
 	  }
 
         return true;
@@ -79,23 +79,23 @@ namespace Katydid
     bool KTDigitizerTests::RunTests(KTRawTimeSeriesData& data)
     {
         unsigned nComponents = data.GetNComponents();
-        KTWARN(dtlog, "Size of fRawTestFuncs = " << fRawTestFuncs.size());
+        LWARN(dtlog, "Size of fRawTestFuncs = " << fRawTestFuncs.size());
         KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
 	  bool skipComponent = false;
 	  for (vector<unsigned>::const_iterator dcIt = fDisableComponents.begin(); dcIt != fDisableComponents.end(); ++dcIt)
 	    {
-	      KTWARN(dtlog, "checking " << *dcIt);
+	      LWARN(dtlog, "checking " << *dcIt);
 	      if (*dcIt == component)
 		{
-		  KTWARN(dtlog, "skipping " << component );
+		  LWARN(dtlog, "skipping " << component );
 		  skipComponent = true;
 		  break;
 		}
 	    }
 	  if (skipComponent) continue;
-	  KTWARN(dtlog, "analyzing " << component);
+	  LWARN(dtlog, "analyzing " << component);
 
             const KTRawTimeSeries* ts = static_cast< const KTRawTimeSeries* >(data.GetTimeSeries(component));
             for (TestFuncs::const_iterator func_it = fRawTestFuncs.begin(); func_it != fRawTestFuncs.end(); ++func_it)
@@ -108,7 +108,7 @@ namespace Katydid
 
     bool KTDigitizerTests::BitOccupancyTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
     {
-        KTDEBUG(dtlog, "Running Bit Occupancy test");
+        LDEBUG(dtlog, "Running Bit Occupancy test");
         testData.SetBitOccupancyFlag(true);
         size_t nBins = ts->size();
         for (size_t iBin = 0; iBin < nBins; ++iBin)
@@ -120,7 +120,7 @@ namespace Katydid
 
     bool KTDigitizerTests::ClippingTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
     {
-        KTDEBUG(dtlog, "Running Clipping test");
+        LDEBUG(dtlog, "Running Clipping test");
         testData.SetClippingFlag(true);
         size_t nBins = ts->size();
         unsigned nClipTop = 0, nClipBottom = 0;
@@ -209,7 +209,7 @@ namespace Katydid
 
     bool KTDigitizerTests::LinearityTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
     {
-        KTDEBUG(dtlog, "Running Linearity test");
+        LDEBUG(dtlog, "Running Linearity test");
         testData.SetLinearityFlag(true);
         size_t nBins = ts->size();
         int localMax = -1;
@@ -242,7 +242,7 @@ namespace Katydid
 	  {
 	    if ((*ts)(iBin) == localMax)	  
 	      {
-		//KTDEBUG(dtlog, iBin)
+		//LDEBUG(dtlog, iBin)
 		if (lastMax < iBin-20)
 		  {
 		    localMaxStarts.push_back(iBin);
@@ -260,7 +260,7 @@ namespace Katydid
 		lastMin = iBin;
 	      }  
 	  }
-	KTDEBUG(dtlog, "Max:"<<localMax<<", Min:"<<localMin);
+	LDEBUG(dtlog, "Max:"<<localMax<<", Min:"<<localMin);
 	///////////////////////////
 	/////////UPSLOPES//////////
 	///////////////////////////
@@ -290,11 +290,11 @@ namespace Katydid
 	   }
 	else
 	   {
-	     KTERROR(dtlog, "There is a shifting error.")
+	     LERROR(dtlog, "There is a shifting error.")
 	   }
 	  if (localMinEnds.size() != localMaxStarts.size())
 	    {
-	      KTERROR(dtlog, "Number of max and mins not equal.");
+	      LERROR(dtlog, "Number of max and mins not equal.");
 	      testData.SetLinearityData(0,0,0,0,0,0, component);
 	      return true;
 	    }
@@ -385,7 +385,7 @@ namespace Katydid
             }
           else
             {
-              KTERROR(dtlog, "There is a shifting error.")
+              LERROR(dtlog, "There is a shifting error.")
             }
           //Linear Regression
 	  double fitStartD = localMaxEnds[0]; 
@@ -397,10 +397,10 @@ namespace Katydid
 	  double avgLinRegSlopeD = 0;
 	  double avgLinRegInterceptD = 0;
  	  std::vector<double> linRegInterceptsD;
-	  KTDEBUG(dtlog, "localMaxEnds.size()= "<<localMaxEnds.size()<<", localMinStarts.size()="<<localMinStarts.size());
+	  LDEBUG(dtlog, "localMaxEnds.size()= "<<localMaxEnds.size()<<", localMinStarts.size()="<<localMinStarts.size());
 	  if (localMaxEnds.size() != localMinStarts.size())
 	    {
-	      KTERROR(dtlog, "Number of max and mins not equal.");
+	      LERROR(dtlog, "Number of max and mins not equal.");
 	      testData.SetLinearityData(0,0,0,0,0,0, component);
 	      return true;
 	    }

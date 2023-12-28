@@ -7,7 +7,7 @@
 
 #include "KTHammingWindow.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "param.hh"
 
@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "KTHammingWindow");
+    LOGGER(windowlog, "KTHammingWindow");
 
     KT_REGISTER_WINDOWFUNCTION(KTHammingWindow, "hamming");
 
@@ -32,7 +32,7 @@ namespace Katydid
 
     bool KTHammingWindow::ConfigureWFSubclass(const scarab::param_node*)
     {
-        KTDEBUG(windowlog, "Hamming WF configured");
+        LDEBUG(windowlog, "Hamming WF configured");
         return true;
     }
 

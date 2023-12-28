@@ -7,7 +7,7 @@
 
 #include "KTSpectrogramCollector.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTSpectrumCollectionData.hh"
 #include "KTProcessedTrackData.hh"
@@ -23,7 +23,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTSpectrogramCollector");
+    LOGGER(evlog, "KTSpectrogramCollector");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTSpectrogramCollector, "spectrogram-collector");
@@ -103,8 +103,8 @@ namespace Katydid
         newWaterfall->SetStartTime( trackData.GetStartTimeInRunC() - fLeadTime );
         newWaterfall->SetEndTime( trackData.GetEndTimeInRunC() + fTrailTime );
 
-        KTINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
-        KTINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
+        LINFO(evlog, "Set start time: " << newWaterfall->GetStartTime());
+        LINFO(evlog, "Set end time: " << newWaterfall->GetEndTime());
 
         // Configure PSCollectionData frequency bounds
         if( GetUseTrackFreqs() )
@@ -126,23 +126,23 @@ namespace Katydid
 
         if( newWaterfall->GetMinFreq() > newWaterfall->GetMaxFreq() )
         {
-            KTWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
+            LWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
             return false;
         }
 
         // Add to fWaterfallSets
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
-        KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
-        KTINFO(evlog, "Track length: " << trackData.GetEndTimeInRunC() - trackData.GetStartTimeInRunC());
-        KTINFO(evlog, "Track slope: " << trackData.GetSlope());
+        LINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+        LINFO(evlog, "Track length: " << trackData.GetEndTimeInRunC() - trackData.GetStartTimeInRunC());
+        LINFO(evlog, "Track slope: " << trackData.GetSlope());
 
         return true;
     }
 
     bool KTSpectrogramCollector::AddMPTrack( KTMultiPeakTrackData& mpTrackData, unsigned component )
     {
-        KTDEBUG(evlog, "Adding MP Track");
+        LDEBUG(evlog, "Adding MP Track");
         // Create new Nymph::KTDataPtr and its contents
         Nymph::KTDataPtr ptr( new Nymph::KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
@@ -208,7 +208,7 @@ namespace Katydid
         newTrack->SetIntercept( midStartFrequency - overallStartTime * (midEndFrequency - midStartFrequency)/(overallEndTime - overallStartTime) );
         newTrack->SetSlope( averageSlope );
 
-        KTINFO(evlog, "Finished searching track set. MPT = " << mpt);
+        LINFO(evlog, "Finished searching track set. MPT = " << mpt);
 
         // Configure PSCollectionData timestamps
         newWaterfall->SetStartTime( overallStartTime - fLeadTime );
@@ -234,29 +234,29 @@ namespace Katydid
 
         if( newWaterfall->GetMinFreq() > newWaterfall->GetMaxFreq() )
         {
-            KTWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
+            LWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
             return false;
         }
 
         // Also make sure none of them are still -1
         if( overallStartTime < 0 || overallEndTime < 0 || minStartFrequency < 0 || minEndFrequency < 0 || maxStartFrequency < 0 || maxEndFrequency < 0 )
         {
-            KTWARN(evlog, "Could not establish overall time and frequency bounds from multi-peak event! Will not collect this track");
+            LWARN(evlog, "Could not establish overall time and frequency bounds from multi-peak event! Will not collect this track");
             return false;
         }
 
         // Add to fWaterfallSets
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
 
-        KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
-        KTINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
+        LINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+        LINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
 
         return true;   
     }
 
     bool KTSpectrogramCollector::AddMPEvent( KTMultiTrackEventData& mpEventData, unsigned component )
     {
-        KTDEBUG(evlog, "Adding MP Event");
+        LDEBUG(evlog, "Adding MP Event");
         // Create new Nymph::KTDataPtr and its contents
         Nymph::KTDataPtr ptr( new Nymph::KTData() );
         KTProcessedTrackData* newTrack = &ptr->Of< KTProcessedTrackData >();
@@ -280,7 +280,7 @@ namespace Katydid
 
         if( ! GetFullEvent() )
         {
-            KTINFO(evlog, "Searching for tracks with fEventSequenceID==0");
+            LINFO(evlog, "Searching for tracks with fEventSequenceID==0");
 
             // If we are collecting only the first group in the event, we must loop through and find those tracks
             TrackSet allTracks = mpEventData.GetTracksSet();
@@ -291,7 +291,7 @@ namespace Katydid
                 // Skip tracks with fEventSequenceID != 0
                 if( aTrack.GetEventSequenceID() != 0 )
                 {
-                    KTDEBUG(evlog, "Event sequence ID = " << aTrack.GetEventSequenceID() << "; skipping this track");
+                    LDEBUG(evlog, "Event sequence ID = " << aTrack.GetEventSequenceID() << "; skipping this track");
                     continue;
                 }
 
@@ -335,7 +335,7 @@ namespace Katydid
             newTrack->SetIntercept( averageIntercept );
             newTrack->SetSlope( averageSlope );
 
-            KTINFO(evlog, "Finished searching track set. MPT = " << mpt);
+            LINFO(evlog, "Finished searching track set. MPT = " << mpt);
         }
         else
         {
@@ -371,14 +371,14 @@ namespace Katydid
 
         if( newWaterfall->GetMinFreq() > newWaterfall->GetMaxFreq() )
         {
-            KTWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
+            LWARN(evlog, "Spectrogram frequency bounds are not compatible! Will not collect this track");
             return false;
         }
 
         // Also make sure none of them are still -1
         if( overallStartTime < 0 || overallEndTime < 0 || overallStartFrequency < 0 || overallEndFrequency < 0 )
         {
-            KTWARN(evlog, "Could not establish overall time and frequency bounds from multi-peak event! Will not collect this track");
+            LWARN(evlog, "Could not establish overall time and frequency bounds from multi-peak event! Will not collect this track");
             return false;
         }
 
@@ -387,28 +387,28 @@ namespace Katydid
         fWaterfallSets[component].insert( std::make_pair( ptr, newWaterfall ) );
         fNSpectrograms +=1;
 
-        KTINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
-        KTINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
+        LINFO(evlog, "Added track to component " << component << ". Now listening to a total of " << fWaterfallSets[component].size() << " tracks");
+        LINFO(evlog, "Track length: " << overallEndTime - overallStartTime);
 
         return true;
     }
 
     bool KTSpectrogramCollector::ConsiderSpectrum( KTPowerSpectrum& ps, KTSliceHeader& slice, unsigned component, bool forceEmit )
     {
-        KTDEBUG(evlog, "Now cross-checking slice timestamp with known tracks");
+        LDEBUG(evlog, "Now cross-checking slice timestamp with known tracks");
         // Iterate through each track which has been added
         for( auto it = fWaterfallSets[component].begin(); it != fWaterfallSets[component].end(); ++it )
         {
             if( it->second->GetDeltaT() < 0. )
             {
-                KTDEBUG(evlog, "This is the first time considering this collection");
+                LDEBUG(evlog, "This is the first time considering this collection");
                 // then this is the first time this collection has been encountered, 
                 // and we need to adjust its start and end times according to the slice length and time-in-run
                 double deltaLeadTime = fLeadTime - KTMath::Nint(fLeadTime / slice.GetSliceLength()) * slice.GetSliceLength();
                 double deltaTrailTime = KTMath::Nint(fTrailTime / slice.GetSliceLength()) * slice.GetSliceLength() - fTrailTime;
-                //KTWARN(evlog, fLeadTime << "  " << fLeadTime / slice.GetSliceLength() << "  " << KTMath::Nint(fLeadTime / slice.GetSliceLength()) << "  " << KTMath::Nint(fLeadTime / slice.GetSliceLength()) * slice.GetSliceLength() << "  " << fLeadTime - KTMath::Nint(fLeadTime / slice.GetSliceLength()) * slice.GetSliceLength() << "  " << deltaLeadTime);
-                KTDEBUG(evlog, "Adjusting lead time by " << deltaLeadTime << " s");
-                KTDEBUG(evlog, "Adjusting trail time by " << deltaTrailTime << " s");
+                //LWARN(evlog, fLeadTime << "  " << fLeadTime / slice.GetSliceLength() << "  " << KTMath::Nint(fLeadTime / slice.GetSliceLength()) << "  " << KTMath::Nint(fLeadTime / slice.GetSliceLength()) * slice.GetSliceLength() << "  " << fLeadTime - KTMath::Nint(fLeadTime / slice.GetSliceLength()) * slice.GetSliceLength() << "  " << deltaLeadTime);
+                LDEBUG(evlog, "Adjusting lead time by " << deltaLeadTime << " s");
+                LDEBUG(evlog, "Adjusting trail time by " << deltaTrailTime << " s");
 
                 it->second->SetStartTime( it->second->GetStartTime() + deltaLeadTime );
                 it->second->SetEndTime( it->second->GetEndTime() + deltaTrailTime );
@@ -417,13 +417,13 @@ namespace Katydid
             }
 
             double timeInRunC = slice.GetTimeInRun() + 0.5 * slice.GetSliceLength();
-            KTDEBUG(evlog, "slice's time in run-c: " << timeInRunC << ";  compared to track [" << it->second->GetStartTime() << ", " << it->second->GetEndTime() << "]");
+            LDEBUG(evlog, "slice's time in run-c: " << timeInRunC << ";  compared to track [" << it->second->GetStartTime() << ", " << it->second->GetEndTime() << "]");
             // If the slice time coincides with the track time window, add the spectrum
             // The forceEmit flag overrides this; essentially guarantees the spectrum will be interpreted as outside the track window
             // Overlap is defined by the slice end-time being greater than the collection start-time and the slice start-time being less than the collection end-time
             if( ! forceEmit && timeInRunC >= it->second->GetStartTime() && timeInRunC <= it->second->GetEndTime() )
             {
-                KTINFO(evlog, "Adding spectrum. Time in run = " << slice.GetTimeInRun());
+                LINFO(evlog, "Adding spectrum. Time in run = " << slice.GetTimeInRun());
                 it->second->AddSpectrum( timeInRunC, ps, component );
                 it->second->SetFilling( true );
             }
@@ -436,19 +436,19 @@ namespace Katydid
                     it->second->SetFilling( false );
 
                     // Emit signal
-                    KTINFO(evlog, "Finished a track; emitting signal");
+                    LINFO(evlog, "Finished a track; emitting signal");
 
-                    KTDEBUG(evlog, "Old collection start time: " << it->second->GetStartTime());
-                    KTDEBUG(evlog, "Old collection end time: " << it->second->GetEndTime());
+                    LDEBUG(evlog, "Old collection start time: " << it->second->GetStartTime());
+                    LDEBUG(evlog, "Old collection end time: " << it->second->GetEndTime());
 
-                    KTDEBUG(evlog, "Slice acquisition time:" << slice.GetTimeInAcq());
+                    LDEBUG(evlog, "Slice acquisition time:" << slice.GetTimeInAcq());
 
                     // Convert start and end times from run to acquistion
                     it->second->SetStartTime( it->second->GetStartTime() - it->second->GetEndTime() + fPrevSliceTimeInAcq );
                     it->second->SetEndTime( fPrevSliceTimeInAcq );
 
-                    KTINFO(evlog, "New collection start time (in acquisition): " << it->second->GetStartTime());
-                    KTINFO(evlog, "New collection end time (in acquisition): " << it->second->GetEndTime());
+                    LINFO(evlog, "New collection start time (in acquisition): " << it->second->GetStartTime());
+                    LINFO(evlog, "New collection end time (in acquisition): " << it->second->GetEndTime());
 
                     FinishSC( it->first, component );
                 }
@@ -462,8 +462,8 @@ namespace Katydid
         SetPrevSliceTimeInRun( slice.GetTimeInRun() );
         SetPrevSliceTimeInAcq( slice.GetTimeInAcq() );
 
-        KTDEBUG(evlog, "Set previous slice time in run to " << fPrevSliceTimeInRun);
-        KTDEBUG(evlog, "Set previous slice time in acq to " << fPrevSliceTimeInAcq);
+        LDEBUG(evlog, "Set previous slice time in run to " << fPrevSliceTimeInRun);
+        LDEBUG(evlog, "Set previous slice time in acq to " << fPrevSliceTimeInAcq);
 
         return true;
     }
@@ -483,7 +483,7 @@ namespace Katydid
         // Add track
         if( !AddTrack( data, iComponent ) )
         {
-            KTERROR(evlog, "Spectrogram collector could not add track! (component " << iComponent << ")" );
+            LERROR(evlog, "Spectrogram collector could not add track! (component " << iComponent << ")" );
         }
 
         return true;
@@ -504,7 +504,7 @@ namespace Katydid
         // Add track
         if( !AddMPTrack( data, iComponent ) )
         {
-            KTERROR(evlog, "Spectrogram collector could not add multi-peak event! (component " << iComponent << ")" );
+            LERROR(evlog, "Spectrogram collector could not add multi-peak event! (component " << iComponent << ")" );
         }
 
         return true;
@@ -525,7 +525,7 @@ namespace Katydid
         // Add track
         if( !AddMPEvent( data, iComponent ) )
         {
-            KTERROR(evlog, "Spectrogram collector could not add multi-peak event! (component " << iComponent << ")" );
+            LERROR(evlog, "Spectrogram collector could not add multi-peak event! (component " << iComponent << ")" );
         }
 
         return true;
@@ -533,21 +533,21 @@ namespace Katydid
     
     bool KTSpectrogramCollector::ReceiveSpectrum( KTPowerSpectrumData& data, KTSliceHeader& sliceData, bool forceEmit )
     {
-        KTDEBUG(evlog, "Receiving Spectrum");
+        LDEBUG(evlog, "Receiving Spectrum");
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
-            KTDEBUG(evlog, "Minimum bin set to " << fMinBin);
+            LDEBUG(evlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
-            KTDEBUG(evlog, "Maximum bin set to " << fMaxBin);
+            LDEBUG(evlog, "Maximum bin set to " << fMaxBin);
         }
 
         if( fWaterfallSets.empty() )
         {
-            KTWARN(evlog, "I have no tracks to receive a spectrum! Did you remember to send me processed tracks first? Continuing anyway...");
+            LWARN(evlog, "I have no tracks to receive a spectrum! Did you remember to send me processed tracks first? Continuing anyway...");
             return true;
         }
 
@@ -555,7 +555,7 @@ namespace Katydid
 
         if( nComponents > fWaterfallSets.size() )
         {
-            KTINFO(evlog, "Receiving spectrum with " << nComponents << " components but limiting to " << fWaterfallSets.size() << " from list of tracks");
+            LINFO(evlog, "Receiving spectrum with " << nComponents << " components but limiting to " << fWaterfallSets.size() << " from list of tracks");
             nComponents = fWaterfallSets.size();
         }
 
@@ -563,11 +563,11 @@ namespace Katydid
         {
             if (! ConsiderSpectrum(*data.GetSpectrum(iComponent), sliceData, iComponent, forceEmit))
             {
-                KTERROR(evlog, "Spectrogram collector could not receive spectrum! (component " << iComponent << ")");
+                LERROR(evlog, "Spectrogram collector could not receive spectrum! (component " << iComponent << ")");
                 return false;
             }
         }
-        KTINFO(evlog, "Spectrum finished processing. Awaiting next spectrum");
+        LINFO(evlog, "Spectrum finished processing. Awaiting next spectrum");
 
         return true;
     }

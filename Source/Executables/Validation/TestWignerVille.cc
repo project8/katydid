@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
@@ -30,7 +30,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestWignerVille");
+LOGGER(testlog, "TestWignerVille");
 
 int main()
 {
@@ -80,14 +80,14 @@ int main()
     vector< KTWignerVilleData* > allOutput(nWindows);
     KTPhysicalArray< 1, KTFrequencySpectrumFFTW* > spectra(nWindows, 0., 1.);
 
-    KTINFO(testlog, nWindows << " will be used");
+    LINFO(testlog, nWindows << " will be used");
 
     KTSliceHeader header;
 
     unsigned iWindow = 0;
     for (unsigned windowStart = 0; windowStart < wvSize * nWindows; windowStart += wvSize)
     {
-        KTINFO(testlog, "window: " << iWindow);
+        LINFO(testlog, "window: " << iWindow);
         //KTBasicTimeSeriesData windowData(2);
         KTTimeSeriesReal* windowTS1 = new KTTimeSeriesReal(wvSize, ts1->GetBinLowEdge(windowStart), ts1->GetBinLowEdge(windowStart) + ts1->GetBinWidth() * (double)wvSize);
         KTTimeSeriesReal* windowTS2 = new KTTimeSeriesReal(wvSize, ts2->GetBinLowEdge(windowStart), ts2->GetBinLowEdge(windowStart) + ts2->GetBinWidth() * (double)wvSize);
@@ -114,7 +114,7 @@ int main()
 
         if (! wvTransform.TransformData(aaData, header))
         {
-            KTERROR(testlog, "Something went wrong while computing the Wigner-Ville transform");
+            LERROR(testlog, "Something went wrong while computing the Wigner-Ville transform");
         }
         KTWignerVilleData& output = aaData.Of< KTWignerVilleData >();
 

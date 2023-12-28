@@ -10,7 +10,7 @@
 
 #include "KTDBSCAN.hh"
 #include "KTDistanceMatrix.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TCanvas.h"
@@ -21,7 +21,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBSCAN");
+LOGGER(testlog, "TestDBSCAN");
 
 int main()
 {
@@ -72,13 +72,13 @@ int main()
         //std::cout << std::endl;
     }
 
-    KTINFO(testlog, "Calculating distances");
+    LINFO(testlog, "Calculating distances");
 
     KTSymmetricDistanceMatrix< double > distMat;
     distMat.ComputeDistances< Euclidean< Point > >(ps);
 
 
-    KTINFO(testlog, "Performing clustering");
+    LINFO(testlog, "Performing clustering");
 
     // init: sim threshold, minPts
     typedef KTDBSCAN< KTSymmetricDistanceMatrix< double > > DBSCAN;
@@ -86,7 +86,7 @@ int main()
     DBSCAN::DBSResults results;
     clustering.DoClustering(distMat, results);
 
-    //KTINFO(testlog, results);
+    //LINFO(testlog, results);
 
 #ifdef ROOT_FOUND
     if (dims == 2)

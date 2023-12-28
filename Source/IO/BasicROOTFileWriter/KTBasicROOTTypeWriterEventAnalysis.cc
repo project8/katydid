@@ -8,7 +8,7 @@
 #include "KTBasicROOTTypeWriterEventAnalysis.hh"
 
 //#include "KT2ROOT.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -29,7 +29,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTBasicROOTTypeWriterEventAnalysis");
+    LOGGER(publog, "KTBasicROOTTypeWriterEventAnalysis");
 
 
     static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEventAnalysis > sBRTWCandidatesRegistrar;
@@ -71,7 +71,7 @@ namespace Katydid
         TLine* trackLine = new TLine(ptData.GetStartTimeInRunC(), ptData.GetStartFrequency(), ptData.GetEndTimeInRunC(), ptData.GetEndFrequency());
         trackLine->SetLineColor(2);
         trackLine->SetLineWidth(1);
-        KTDEBUG(publog, "Line created: (" << trackLine->GetX1() << ", " << trackLine->GetY1() << "), --> (" << trackLine->GetX2() << ", " << trackLine->GetY2() << ")");
+        LDEBUG(publog, "Line created: (" << trackLine->GetX1() << ", " << trackLine->GetY1() << "), --> (" << trackLine->GetX2() << ", " << trackLine->GetY2() << ")");
 
         fTrackList->Add(trackLine);
 
@@ -92,14 +92,14 @@ namespace Katydid
 
         static unsigned iCandidate = 0;
 
-        KTINFO(publog, "Drawing track for candidate " << iCandidate);
+        LINFO(publog, "Drawing track for candidate " << iCandidate);
 
         KTSparseWaterfallCandidateData& swfcData = data->Of< KTSparseWaterfallCandidateData >();
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         if (ptData.GetIsCut())
         {
-            KTINFO(publog, "Track was cut");
+            LINFO(publog, "Track was cut");
             ++iCandidate;
             return;
         }
@@ -123,7 +123,7 @@ namespace Katydid
         for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             grPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency);
-            KTDEBUG(publog, "Point " << iPoint << ": (" << pIt->fTimeInRunC << ", " << pIt->fFrequency << ")");
+            LDEBUG(publog, "Point " << iPoint << ": (" << pIt->fTimeInRunC << ", " << pIt->fFrequency << ")");
             ++iPoint;
         }
         grPoints->Draw("ap");
@@ -135,11 +135,11 @@ namespace Katydid
         trackLine->SetLineColor(1);
         trackLine->SetLineWidth(1);
         trackLine->Draw();
-        KTDEBUG(publog, "Line drawn: (" << trackLine->GetX1() << ", " << trackLine->GetY1() << "), --> (" << trackLine->GetX2() << ", " << trackLine->GetY2() << ")");
+        LDEBUG(publog, "Line drawn: (" << trackLine->GetX1() << ", " << trackLine->GetY1() << "), --> (" << trackLine->GetX2() << ", " << trackLine->GetY2() << ")");
 
         trackCanv->Write();
 
-        KTDEBUG(publog, "Track drawing complete");
+        LDEBUG(publog, "Track drawing complete");
 
         ++iCandidate;
         return;

@@ -15,14 +15,14 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::string;
 
 
 namespace Katydid
 {
-    KTLOGGER(fcilog, "TestFrequencyCandidateIdentifier");
+    LOGGER(fcilog, "TestFrequencyCandidateIdentifier");
 
     KT_REGISTER_PROCESSOR(KTFrequencyCandidateIdentifier, "frequency-candidate-identifier");
 
@@ -89,7 +89,7 @@ namespace Katydid
 
             if (firstBin >= freqSpec->size() || lastBin >= freqSpec->size())
             {
-                KTWARN(fcilog, "First bin and/or last bin it outside the range of the given frequency spectrum:\n" <<
+                LWARN(fcilog, "First bin and/or last bin it outside the range of the given frequency spectrum:\n" <<
                         "\tFirst bin: " << firstBin << '\n' <<
                         "\tLast bin: " << lastBin << '\n' <<
                         "\tFS size: " << freqSpec->size());
@@ -134,7 +134,7 @@ namespace Katydid
 
             if (firstBin >= freqSpec->size() || lastBin >= freqSpec->size())
             {
-                KTWARN(fcilog, "First bin and/or last bin it outside the range of the given frequency spectrum:\n" <<
+                LWARN(fcilog, "First bin and/or last bin it outside the range of the given frequency spectrum:\n" <<
                         "\tFirst bin: " << firstBin << '\n' <<
                         "\tLast bin: " << lastBin << '\n' <<
                         "\tFS size: " << freqSpec->size());
@@ -172,7 +172,7 @@ namespace Katydid
     {
         if (clusterData.GetBinWidth() != fsData.GetSpectrumPolar(0)->GetBinWidth())
         {
-            KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
+            LWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
                     "\tCluster data: " << clusterData.GetBinWidth() << '\n' <<
                     "\tFrequency spectrum: " << fsData.GetSpectrumPolar(0)->GetBinWidth());
         }
@@ -198,7 +198,7 @@ namespace Katydid
     {
         if (clusterData.GetBinWidth() != fsData.GetSpectrumFFTW(0)->GetBinWidth())
         {
-            KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
+            LWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
                     "\tCluster data: " << clusterData.GetBinWidth() << '\n' <<
                     "\tFrequency spectrum: " << fsData.GetSpectrumFFTW(0)->GetBinWidth());
         }

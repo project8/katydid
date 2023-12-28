@@ -30,7 +30,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(gvlog, "KTGainVariationProcessor");
+    LOGGER(gvlog, "KTGainVariationProcessor");
 
     KT_REGISTER_PROCESSOR(KTGainVariationProcessor, "gain-variation");
 
@@ -109,7 +109,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for polar frequency spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for polar frequency spectrum!");
             return false;
         }
         
@@ -122,13 +122,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for polar frequency spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for polar frequency spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for polar frequency spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for polar frequency spectrum variance!" );
             return false;
         }
 
@@ -141,7 +141,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for FFTW frequency spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for FFTW frequency spectrum!");
             return false;
         }
 
@@ -154,13 +154,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for FFTW frequency spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for FFTW frequency spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for FFTW frequency spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for FFTW frequency spectrum variance!" );
             return false;
         }
 
@@ -173,7 +173,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for correlation spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for correlation spectrum!");
             return false;
         }
 
@@ -186,13 +186,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for correlation spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for correlation spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for correlation spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for correlation spectrum variance!" );
             return false;
         }
 
@@ -205,7 +205,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for power spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for power spectrum!");
             return false;
         }
 
@@ -218,13 +218,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for power spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for power spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for power spectrum variance!" );
             return false;
         }
 
@@ -237,7 +237,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for convolved polar frequency spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for convolved polar frequency spectrum!");
             return false;
         }
 
@@ -250,13 +250,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for convolved polar frequency spectrum variance!" );
             return false;
         }
 
@@ -269,7 +269,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for convolved FFTW frequency spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for convolved FFTW frequency spectrum!");
             return false;
         }
 
@@ -282,13 +282,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for convolved FFTW frequency spectrum variance!" );
             return false;
         }
 
@@ -301,7 +301,7 @@ namespace Katydid
         newVarData.SetNComponents(data.GetNComponents());
         if (! CoreVarianceCalc(data, newVarData))
         {
-            KTERROR(gvlog, "Something went wrong in calculating the variance for convolved power spectrum!");
+            LERROR(gvlog, "Something went wrong in calculating the variance for convolved power spectrum!");
             return false;
         }
 
@@ -314,13 +314,13 @@ namespace Katydid
 
         if( ! CoreGainVarCalc( data, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum!" );
             return false;
         }
 
         if( ! CoreGainVarCalc( varData, newData ) )
         {
-            KTERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum variance!" );
+            LERROR( gvlog, "Something went wrong calculating gain variation for convolved power spectrum variance!" );
             return false;
         }
 
@@ -345,12 +345,12 @@ namespace Katydid
         {
             fMaxFrequency = data.GetSpectrumPolar(0)->GetBinCenter(fMaxBin);
         }
-        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumPolar(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumPolar(0)->GetRangeMax());
+        LDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumPolar(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumPolar(0)->GetRangeMax());
 
         unsigned nTotalBins = fMaxBin - fMinBin + 1;
         unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        LDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         unsigned nComponents = data.GetNComponents();
 
@@ -381,7 +381,7 @@ namespace Katydid
                 mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;
 
-                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
+                LDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
             if (fNormalize)
@@ -407,7 +407,7 @@ namespace Katydid
 
             newData.SetSpline(spline, iComponent);
         }
-        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
+        LINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
@@ -431,12 +431,12 @@ namespace Katydid
         {
             fMaxFrequency = data.GetSpectrumFFTW(0)->GetBinCenter(fMaxBin);
         }
-        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumFFTW(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumFFTW(0)->GetRangeMax());
+        LDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumFFTW(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumFFTW(0)->GetRangeMax());
 
         unsigned nTotalBins = fMaxBin - fMinBin + 1;
         unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTDEBUG(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        LDEBUG(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         unsigned nComponents = data.GetNComponents();
 
@@ -467,7 +467,7 @@ namespace Katydid
                 mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;
 
-                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
+                LDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
             // Normalize the fit points to 1
@@ -493,7 +493,7 @@ namespace Katydid
 
             newData.SetSpline(spline, iComponent);
         }
-        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
+        LINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
@@ -516,12 +516,12 @@ namespace Katydid
         {
             fMaxFrequency = data.GetSpectrum(0)->GetBinCenter(fMaxBin);
         }
-        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrum(0)->GetRangeMin() << "; input range min: " << data.GetSpectrum(0)->GetRangeMax());
+        LDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrum(0)->GetRangeMin() << "; input range min: " << data.GetSpectrum(0)->GetRangeMax());
 
         unsigned nTotalBins = fMaxBin - fMinBin + 1;
         unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        LDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         unsigned nComponents = data.GetNComponents();
 
@@ -552,7 +552,7 @@ namespace Katydid
                 mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;
 
-                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
+                LDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
             if (fNormalize)
@@ -578,7 +578,7 @@ namespace Katydid
 
             newData.SetSpline(spline, iComponent);
         }
-        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
+        LINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
@@ -601,12 +601,12 @@ namespace Katydid
         {
             fMaxFrequency = data.GetSpectrum(0)->GetBinCenter(fMaxBin);
         }
-        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrum(0)->GetRangeMin() << "; input range min: " << data.GetSpectrum(0)->GetRangeMax());
+        LDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrum(0)->GetRangeMin() << "; input range min: " << data.GetSpectrum(0)->GetRangeMax());
 
         unsigned nTotalBins = fMaxBin - fMinBin + 1;
         unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        LDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         unsigned nComponents = data.GetNComponents();
 
@@ -637,7 +637,7 @@ namespace Katydid
                 mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;
 
-                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
+                LDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
             if (fNormalize)
@@ -663,7 +663,7 @@ namespace Katydid
 
             newData.SetVarianceSpline(spline, iComponent);
         }
-        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
+        LINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
@@ -673,7 +673,7 @@ namespace Katydid
 /*
     bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataPolarCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
-        KTDEBUG(gvlog, "Doing local variance calculation");
+        LDEBUG(gvlog, "Doing local variance calculation");
 
         unsigned nComponents = data.GetNComponents();
 
@@ -746,7 +746,7 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CoreVarianceCalc(KTFrequencySpectrumDataFFTWCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
-        KTDEBUG(gvlog, "Doing local variance calculation");
+        LDEBUG(gvlog, "Doing local variance calculation");
 
         unsigned nComponents = data.GetNComponents();
 
@@ -819,7 +819,7 @@ namespace Katydid
 
     bool KTGainVariationProcessor::CoreVarianceCalc(KTPowerSpectrumDataCore& data, KTFrequencySpectrumVarianceDataCore& newVarData)
     {
-        KTDEBUG(gvlog, "Doing local variance calculation");
+        LDEBUG(gvlog, "Doing local variance calculation");
 
         unsigned nComponents = data.GetNComponents();
 

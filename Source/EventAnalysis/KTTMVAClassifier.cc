@@ -7,7 +7,7 @@
 
 #include "KTTMVAClassifier.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTPowerFitData.hh"
 #include "KTProcessedTrackData.hh"
@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTTMVAClassifier");
+    LOGGER(evlog, "KTTMVAClassifier");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTTMVAClassifier, "tmva-classifier");
@@ -80,19 +80,19 @@ namespace Katydid
 
             try
             {
-                KTDEBUG(avlog_hh, "Algorithm = " << fAlgorithm);
-                KTDEBUG(avlog_hh, "MVA File = " << fMVAFile);
+                LDEBUG(avlog_hh, "Algorithm = " << fAlgorithm);
+                LDEBUG(avlog_hh, "MVA File = " << fMVAFile);
 
                 fReader->BookMVA( fAlgorithm, fMVAFile );
             }
             catch(...)
             {
-                KTERROR(avlog_hh, "Invalid reader configuration; please make sure the algorithm is correct and the file exists. Aborting");
+                LERROR(avlog_hh, "Invalid reader configuration; please make sure the algorithm is correct and the file exists. Aborting");
                 return false;
             }
         }
 
-        KTINFO(avlog_hh, "Successfully set up TMVA reader");
+        LINFO(avlog_hh, "Successfully set up TMVA reader");
 
         // Assign variables
         fAverage = powerFitData.GetAverage();
@@ -107,28 +107,28 @@ namespace Katydid
         fRMSAwayFromCentral = powerFitData.GetRMSAwayFromCentral();
 
         double mvaValue = fReader->EvaluateMVA( fAlgorithm );
-        KTDEBUG(avlog_hh, "Evaluated MVA classifier = " << mvaValue);
+        LDEBUG(avlog_hh, "Evaluated MVA classifier = " << mvaValue);
 
         // Classify
-        KTINFO(evlog, "Classifying track with MVA classifier = " << mvaValue);
+        LINFO(evlog, "Classifying track with MVA classifier = " << mvaValue);
         trackData.SetMVAClassifier( mvaValue );
 
         if( mvaValue >= GetMVACut() )
         {
-            KTDEBUG(evlog, "Classifying track as a signal peak");
+            LDEBUG(evlog, "Classifying track as a signal peak");
             trackData.SetMainband( true );
         }
         else
         {
-            KTDEBUG(evlog, "Classifying track as a sideband peak");
+            LDEBUG(evlog, "Classifying track as a sideband peak");
             trackData.SetMainband( false );
         }
 
         if( mvaValue <= -999 )
         {
-            KTWARN(evlog, "Classifier value is -999; something probably went wrong computing it");
+            LWARN(evlog, "Classifier value is -999; something probably went wrong computing it");
         }
-        KTINFO(avlog_hh, "Classification finished!");
+        LINFO(avlog_hh, "Classification finished!");
     
         return true;
     }

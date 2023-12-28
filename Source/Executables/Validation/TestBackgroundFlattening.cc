@@ -13,7 +13,7 @@
 #include "KTGainNormalization.hh"
 #include "KTGainVariationProcessor.hh"
 #include "KTGainVariationData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTRandom.hh"
 #include "KTSpectrumDiscriminator.hh"
@@ -27,7 +27,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestBackgroundFlattening");
+LOGGER(testlog, "TestBackgroundFlattening");
 
 int main()
 {
@@ -47,7 +47,7 @@ int main()
     engine->SetSeed(20398);
     KTRNGGaussian<> rand;
 
-    KTINFO(testlog, "Initializing data accumulator");
+    LINFO(testlog, "Initializing data accumulator");
 
     KTDataAccumulator acc;
     acc.SetAccumulatorSize( nSpectra );
@@ -56,14 +56,14 @@ int main()
     //std::vector< KTFrequencySpectrumDataPolar > data;
 
     // Fill in the noise
-    KTINFO(testlog, "Creating the baseline and noise");
+    LINFO(testlog, "Creating the baseline and noise");
     
     double meanValue = 0.;
     double noiseSigma = 0.;
     double value = 0.0;
     for( unsigned iSpectrum = 0; iSpectrum < nSpectra; iSpectrum++ )
     {
-        KTDEBUG(testlog, "iSpectrum: " << iSpectrum);
+        LDEBUG(testlog, "iSpectrum: " << iSpectrum);
         
         KTFrequencySpectrumDataPolar newData;
         KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar( nBins, minFreq, maxFreq );
@@ -83,11 +83,11 @@ int main()
         newData.SetNComponents( 1 );
         newData.SetSpectrum( newFS, 0 );
 
-        KTDEBUG(testlog, "Adding data to accumulator");
+        LDEBUG(testlog, "Adding data to accumulator");
         acc.AddData( newData );
     }
 
-    KTINFO(testlog, "Grabbing results from accumulator");
+    LINFO(testlog, "Grabbing results from accumulator");
 
     KTDataAccumulator::Accumulator& accResults = acc.GetAccumulatorNonConst< KTFrequencySpectrumDataPolar >();
     accResults.Finalize();
@@ -97,10 +97,10 @@ int main()
 /*
     for( unsigned iBin = 0; iBin < 20; iBin++ )
     {
-        KTDEBUG(testlog, (*(accVarData.GetSpectrum(0)))(iBin));
+        LDEBUG(testlog, (*(accVarData.GetSpectrum(0)))(iBin));
     }
 */
-    KTINFO(testlog, "Initializing gain variation");
+    LINFO(testlog, "Initializing gain variation");
 
     KTGainVariationProcessor gvProc;
     gvProc.SetMinFrequency( minFreq );
@@ -108,21 +108,21 @@ int main()
     gvProc.SetNFitPoints( 10 );
     gvProc.SetNormalize( false );
 
-    KTINFO(testlog, "Calculating gain variation");
+    LINFO(testlog, "Calculating gain variation");
 
     gvProc.CalculateGainVariation( accData, accVarData );
 
-    KTINFO(testlog, "Grabbing results from gain variation");
+    LINFO(testlog, "Grabbing results from gain variation");
 
     KTGainVariationData& gvData = accData.Of< KTGainVariationData >();
 
-    KTINFO(testlog, "Initializing gain normalization");
+    LINFO(testlog, "Initializing gain normalization");
 
     KTGainNormalization gainNorm;
     gainNorm.SetMinFrequency( minFreq );
     gainNorm.SetMaxFrequency( maxFreq );
 
-    KTINFO(testlog, "Initializing discriminator");
+    LINFO(testlog, "Initializing discriminator");
 
     KTSpectrumDiscriminator discrim;
     discrim.SetMinBin( 0 );
@@ -132,7 +132,7 @@ int main()
     vector<double> xPoints;
     vector<double> yPoints;
 
-    KTINFO(testlog, "Performing discrimination");
+    LINFO(testlog, "Performing discrimination");
 
     KTFrequencySpectrumPolar* firstFS = nullptr;
     KTFrequencySpectrumPolar* firstNormFS = nullptr;
@@ -164,11 +164,11 @@ int main()
         {
             //for (unsigned iBin = 0; iBin<20; ++iBin)
             //{
-            //    KTWARN(testlog, (*newFS)(iBin) << "  " << (*(normData.GetSpectrumPolar(0)))(iBin) );
+            //    LWARN(testlog, (*newFS)(iBin) << "  " << (*(normData.GetSpectrumPolar(0)))(iBin) );
             //}
             firstFS = new KTFrequencySpectrumPolar(*newFS);
             firstNormFS = new KTFrequencySpectrumPolar(*(normData.GetSpectrumPolar(0)));
-            //KTWARN(testlog, firstFS << "  " << firstNormFS);
+            //LWARN(testlog, firstFS << "  " << firstNormFS);
         }
 
         discrim.Discriminate( normData );
@@ -181,21 +181,21 @@ int main()
     }
 
     unsigned nDiscPoints = xPoints.size();
-    KTINFO(testlog, "Discriminator threshold is at " << discrim.GetSigmaThreshold() << " sigma");
-    KTINFO(testlog, "Total number of points tested: " << nSpectra * nBins);
-    KTINFO(testlog, "Points above threshold: " << nDiscPoints << " (" << (double)nDiscPoints/ (double)(nSpectra * nBins) * 100. << "%)");
+    LINFO(testlog, "Discriminator threshold is at " << discrim.GetSigmaThreshold() << " sigma");
+    LINFO(testlog, "Total number of points tested: " << nSpectra * nBins);
+    LINFO(testlog, "Points above threshold: " << nDiscPoints << " (" << (double)nDiscPoints/ (double)(nSpectra * nBins) * 100. << "%)");
 
 #ifdef ROOT_FOUND
-    KTINFO(testlog, "Writing to ROOT file");
+    LINFO(testlog, "Writing to ROOT file");
 
-    KTDEBUG(testlog, "Creating TFile");
+    LDEBUG(testlog, "Creating TFile");
     TFile* file = new TFile("background_flattening_test.root", "recreate");
 
-    KTDEBUG(testlog, "Getting spectra");
+    LDEBUG(testlog, "Getting spectra");
     KTFrequencySpectrumPolar* meanSpectrum = accData.GetSpectrumPolar(0);
     KTFrequencySpectrumVariance* varianceSpectrum = accVarData.GetSpectrum(0);
 
-    KTDEBUG(testlog, "Creating histograms");
+    LDEBUG(testlog, "Creating histograms");
     TH1D* histFreqSpec = KT2ROOT::CreateMagnitudeHistogram(meanSpectrum, "hMeanSpectrum");
     histFreqSpec->SetDirectory( file );
     histFreqSpec->SetLineColor(kMagenta+2);
@@ -212,7 +212,7 @@ int main()
     histLastNormFS->SetDirectory( file );
     histLastNormFS->SetLineColor(kGreen+2);
     
-    KTDEBUG( testlog, "Converting discriminated points to TGraph");
+    LDEBUG( testlog, "Converting discriminated points to TGraph");
     TGraph* plot = new TGraph( xPoints.size(), xPoints.data(), yPoints.data() );
 
     TH1I* histDiscPointDist = new TH1I("hDiscPointDist", "Discriminated Points", 100, minFreq, maxFreq);
@@ -221,10 +221,10 @@ int main()
         histDiscPointDist->Fill(value);
     }
 
-    KTDEBUG(testlog, "Appending TGraph to TFile");
+    LDEBUG(testlog, "Appending TGraph to TFile");
     //file->Append( plot );
 
-    KTDEBUG(testlog, "Writing objects");
+    LDEBUG(testlog, "Writing objects");
     histFreqSpec->Write();
     histFreqVarSpec->Write();
     histLastFS->Write();
@@ -232,7 +232,7 @@ int main()
     plot->Write( "thresholded_points" );
     histDiscPointDist->Write();
     
-    KTDEBUG(testlog, "Closing file");
+    LDEBUG(testlog, "Closing file");
     file->Close();
 #endif
 

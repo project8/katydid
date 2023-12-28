@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTWindowFunction.hh"
 
 #include "KTBlackmanHarrisWindow.hh"
@@ -22,7 +22,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "TestWindowFunction");
+LOGGER(vallog, "TestWindowFunction");
 
 int main()
 {

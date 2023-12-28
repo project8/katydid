@@ -8,7 +8,7 @@
 #include "KT2ROOT.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -28,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTMultiSliceROOTTypeWriterTransform");
+    LOGGER(publog, "KTMultiSliceROOTTypeWriterTransform");
 
     static Nymph::KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterTransform > sMERTWFRegistrar;
 
@@ -77,7 +77,7 @@ namespace Katydid
             fFSHists[iChannel]->Draw();
 
             cPrint->Print(fileName.c_str(), fWriter->GetGraphicsFileType().c_str());
-            KTINFO(publog, "Printed file " << fileName);
+            LINFO(publog, "Printed file " << fileName);
             delete cPrint;
 
             // Writing to ROOT file
@@ -98,7 +98,7 @@ namespace Katydid
             fFSHists[iChannel]->Draw();
 
             cPrint->Print(fileName.c_str(), fWriter->GetGraphicsFileType().c_str());
-            KTINFO(publog, "Printed file " << fileName);
+            LINFO(publog, "Printed file " << fileName);
             delete cPrint;
 
             fFSFFTWHists[iChannel]->SetDirectory(fWriter->GetFile());

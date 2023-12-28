@@ -10,7 +10,7 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTKDTreeData.hh"
 #include "KTHoughData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
@@ -30,7 +30,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTTreeTypeWriterSpectrumAnalysis");
+    LOGGER(publog, "KTROOTTreeTypeWriterSpectrumAnalysis");
 
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterSpectrumAnalysis > sRTTWCRegistrar;
 
@@ -85,7 +85,7 @@ namespace Katydid
         {
             if (! SetupDiscriminatedPoints1DTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the discriminated points 1D tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the discriminated points 1D tree! Nothing was written.");
                 return;
             }
         }
@@ -121,7 +121,7 @@ namespace Katydid
 
             if( fDiscPoints1DTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fDiscPoints1DTree );
 
                 fDiscPoints1DTree->SetBranchAddress("Slice", &fDiscPoints1DData.fSlice);
@@ -142,7 +142,7 @@ namespace Katydid
         fDiscPoints1DTree = new TTree("discPoints1D", "Discriminated Points 1D");
         if (fDiscPoints1DTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fDiscPoints1DTree);
@@ -196,7 +196,7 @@ namespace Katydid
         {
             if (! SetupKDTreeTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the k-d tree tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the k-d tree tree! Nothing was written.");
                 return;
             }
         }
@@ -223,7 +223,7 @@ namespace Katydid
                     fKDTreePointData.fBinInSlice = it->fBinInSlice;
                     KTKDTreeData::TreeIndex::Neighbors neighbors = index->NearestNeighborsByNumber(pid, 2);
                     fKDTreePointData.fNNDistance = neighbors.dist(1);
-                    //KTWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
+                    //LWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
                     //       << '\t' << neighbors[0] << ": " << points[neighbors[0]].fCoords[0] << ", " << points[neighbors[0]].fCoords[1] << '\n'
                     //       << '\t' << neighbors[1] << ": " << points[neighbors[1]].fCoords[0] << ", " << points[neighbors[1]].fCoords[1]);
                     KTKDTreeData::TreeIndex::Neighbors neighbors2 = index->NearestNeighborsByRadius(pid, 1.);
@@ -261,7 +261,7 @@ namespace Katydid
 
             if( fKDTreeTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fKDTreeTree );
 
                 fKDTreeTree->SetBranchAddress("Slice", &fKDTreePointData.fSlice);
@@ -287,7 +287,7 @@ namespace Katydid
         fKDTreeTree = new TTree("kdTree", "K-D Tree");
         if (fKDTreeTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fKDTreeTree);
@@ -328,7 +328,7 @@ namespace Katydid
         {
             if (! SetupAmplitudeDistributionTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the amplitude distribution tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the amplitude distribution tree! Nothing was written.");
                 return;
             }
         }
@@ -365,7 +365,7 @@ namespace Katydid
 
             if( fAmpDistTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fAmpDistTree );
 
                 fAmpDistTree->SetBranchAddress("Component", &fAmpDistData.fComponent);
@@ -379,7 +379,7 @@ namespace Katydid
         fAmpDistTree = new TTree("freqCand", "Frequency Analysis");
         if (fAmpDistTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fAmpDistTree);
@@ -398,7 +398,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterSpectrumAnalysis::WriteHoughData(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to hough data root tree");
+        LDEBUG(publog, "Attempting to write to hough data root tree");
         KTHoughData& htData = data->Of< KTHoughData >();
         //KTSliceHeader& header = data->Of< KTSliceHeader >();
 
@@ -408,7 +408,7 @@ namespace Katydid
         {
             if (! SetupHoughTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the Hough tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the Hough tree! Nothing was written.");
                 return;
             }
         }
@@ -420,8 +420,8 @@ namespace Katydid
             fHoughData.fTransform->SetTitle("Hough Space");
             fHoughData.fTransform->SetXTitle("Angle");
             fHoughData.fTransform->SetYTitle("Radius");
-            KTINFO(publog, "Angle axis: " << fHoughData.fTransform->GetNbinsX() << " bins; range: " << fHoughData.fTransform->GetXaxis()->GetXmin() << " - " << fHoughData.fTransform->GetXaxis()->GetXmax());
-            KTINFO(publog, "Radius axis: " << fHoughData.fTransform->GetNbinsY() << " bins; range: " << fHoughData.fTransform->GetYaxis()->GetXmin() << " - " << fHoughData.fTransform->GetYaxis()->GetXmax());
+            LINFO(publog, "Angle axis: " << fHoughData.fTransform->GetNbinsX() << " bins; range: " << fHoughData.fTransform->GetXaxis()->GetXmin() << " - " << fHoughData.fTransform->GetXaxis()->GetXmax());
+            LINFO(publog, "Radius axis: " << fHoughData.fTransform->GetNbinsY() << " bins; range: " << fHoughData.fTransform->GetYaxis()->GetXmin() << " - " << fHoughData.fTransform->GetYaxis()->GetXmax());
 
             fHoughData.fXOffset = htData.GetXOffset(fHoughData.fComponent);
             fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
@@ -442,7 +442,7 @@ namespace Katydid
 
             if( fHoughTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fHoughTree );
 
                 fHoughTree->SetBranchAddress("Component", &fHoughData.fComponent);
@@ -459,7 +459,7 @@ namespace Katydid
         fHoughTree = new TTree("hough", "Hough Transform");
         if (fHoughTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fHoughTree);
@@ -480,7 +480,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedPSDData(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write psd data root tree");
+        LDEBUG(publog, "Attempting to write psd data root tree");
         KTPowerSpectrumData& psData = data->Of< KTPowerSpectrumData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -489,7 +489,7 @@ namespace Katydid
         {
             if (! SetupFlattenedPSDTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the psd tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the psd tree! Nothing was written.");
                 return;
             }
         }
@@ -513,7 +513,7 @@ namespace Katydid
 
             if( fFlattenedPSDTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fFlattenedPSDTree );
 
                 fFlattenedPSDTree->SetBranchAddress( "Power", &fPowerValue );
@@ -525,7 +525,7 @@ namespace Katydid
         fFlattenedPSDTree = new TTree("flattenedPSD", "Flattened Spectrum");
         if (fFlattenedPSDTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fFlattenedPSDTree);
@@ -538,7 +538,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterSpectrumAnalysis::WriteFlattenedLabelMask(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write psd data root tree");
+        LDEBUG(publog, "Attempting to write psd data root tree");
         KTPowerSpectrumData& psData = data->Of< KTPowerSpectrumData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -547,7 +547,7 @@ namespace Katydid
         {
             if (! SetupFlattenedLabelMaskTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the psd tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the psd tree! Nothing was written.");
                 return;
             }
         }
@@ -558,7 +558,7 @@ namespace Katydid
         {
             if( (*spectrum)(iFreqBin) > 1.0e-17 )
             {
-                KTDEBUG( publog, "Nonzero power = " << (*spectrum)(iFreqBin) );
+                LDEBUG( publog, "Nonzero power = " << (*spectrum)(iFreqBin) );
                 fLabel = 1;
             }
             else
@@ -580,7 +580,7 @@ namespace Katydid
 
             if( fFlattenedLabelMaskTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fFlattenedLabelMaskTree );
 
                 fFlattenedLabelMaskTree->SetBranchAddress( "Label", &fLabel );
@@ -592,7 +592,7 @@ namespace Katydid
         fFlattenedLabelMaskTree = new TTree("flattenedPSDLabels", "Flattened Spectrum Labels");
         if (fFlattenedLabelMaskTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fFlattenedLabelMaskTree);

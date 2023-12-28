@@ -7,7 +7,7 @@
 
 #include "KTMultiPeakEventBuilder.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 #include <list>
@@ -22,7 +22,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(tclog, "KTMultiPeakEventBuilder");
+    LOGGER(tclog, "KTMultiPeakEventBuilder");
 
     KT_REGISTER_PROCESSOR(KTMultiPeakEventBuilder, "multi-peak-event-builder");
 
@@ -60,14 +60,14 @@ namespace Katydid
     {
         if (mpt.GetAcquisitionID() != fCurrentAcquisitionID)
         {
-            KTINFO(tclog, "Incoming MPT has a new acquisition ID (new: " << mpt.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
+            LINFO(tclog, "Incoming MPT has a new acquisition ID (new: " << mpt.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
             if (! DoClustering())
             {
-                KTERROR(tclog, "An error occurred while running the event clustering");
+                LERROR(tclog, "An error occurred while running the event clustering");
                 return false;
             }
             fCurrentAcquisitionID = mpt.GetAcquisitionID();
-            KTDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
+            LDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
         }
 
         // verify that we have the right number of components
@@ -76,7 +76,7 @@ namespace Katydid
             SetNComponents(mpt.GetComponent() + 1);
         }
 
-        KTDEBUG(tclog, "Taking MPT: (" << mpt.GetMeanStartTimeInRunC() << ", " << mpt.GetMeanEndTimeInRunC() << ")");
+        LDEBUG(tclog, "Taking MPT: (" << mpt.GetMeanStartTimeInRunC() << ", " << mpt.GetMeanEndTimeInRunC() << ")");
 
         // copy the full track data
         MultiPeakTrackRef mptr = mpt.GetMPTrack();
@@ -89,7 +89,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the event clustering");
+            LERROR(tclog, "An error occurred while running the event clustering");
         }
         return;
     }
@@ -104,11 +104,11 @@ namespace Katydid
 
         if (! FindEvents())
         {
-            KTERROR(tclog, "An error occurred while identifying events");
+            LERROR(tclog, "An error occurred while identifying events");
             return false;
         }
 
-        KTDEBUG(tclog, "Event building complete");
+        LDEBUG(tclog, "Event building complete");
         fEventsDoneSignal();
 
         fCandidates.clear();
@@ -121,7 +121,7 @@ namespace Katydid
 
     bool KTMultiPeakEventBuilder::FindEvents()
     {
-        KTINFO(tclog, "Combining multi-peak tracks into events");
+        LINFO(tclog, "Combining multi-peak tracks into events");
 
         // we're unpacking all components into a unified set of events, so this goes outside the loop
         typedef std::set< double > TrackEndsType;
@@ -130,10 +130,10 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fMPTracks.size(); ++iComponent)
         { // loop over components
-            KTDEBUG(tclog, "Doing component: (" << iComponent + 1 << "/" << fMPTracks.size() << ")");
+            LDEBUG(tclog, "Doing component: (" << iComponent + 1 << "/" << fMPTracks.size() << ")");
             if (fMPTracks[iComponent].empty())
             { // if the component has no tracks, skip it
-                KTDEBUG(tclog, "No MPTs to cluster");
+                LDEBUG(tclog, "No MPTs to cluster");
                 continue;
             }
             std::set< MultiPeakTrackRef, MTRComp >::iterator trackIt = fMPTracks[iComponent].begin();
@@ -141,16 +141,16 @@ namespace Katydid
             int countMPTracks = 0;
             while (trackIt != fMPTracks[iComponent].end())
             { // loop over new Multi-Peak Tracks
-                KTDEBUG(tclog, "placing MPTrack (" << ++countMPTracks << "/" << fMPTracks[iComponent].size() << ")");
+                LDEBUG(tclog, "placing MPTrack (" << ++countMPTracks << "/" << fMPTracks[iComponent].size() << ")");
                 int trackAssigned = -1; // keep track of which event the track when into
 
                 for (std::vector< ActiveEventType >::iterator eventIt=activeEvents.begin(); eventIt != activeEvents.end();)
                 { // loop over active events and add this track to one
-                    KTDEBUG(tclog, "checking active event (" << eventIt - activeEvents.begin() + 1 << "/" << activeEvents.size() << ")");
+                    LDEBUG(tclog, "checking active event (" << eventIt - activeEvents.begin() + 1 << "/" << activeEvents.size() << ")");
                     bool incrementEventIt = true;
                     if ( trackIt->fMeanStartTimeInRunC - fJumpTimeTolerance > *(eventIt->second.rbegin()) )
                     { // if the event's last end is earlier than this track's start, the event is done
-                        KTDEBUG(tclog, "event no longer active");
+                        LDEBUG(tclog, "event no longer active");
                         eventIt->first->Of< KTMultiTrackEventData >().ProcessTracks();
                         fCandidates.insert(eventIt->first);
                         eventIt = activeEvents.erase(eventIt);
@@ -166,7 +166,7 @@ namespace Katydid
                             // tolerance; we could make this more specific (i.e. allow only gap OR
                             // overlap, or have different tolerances for each) if the need arises
 
-                            KTDEBUG(tclog, "track matched this active event");
+                            LDEBUG(tclog, "track matched this active event");
                             if (trackAssigned == -1)
                             { // If this track hasn't been added to any event, add to this one
                                 trackAssigned = eventIt - activeEvents.begin();
@@ -192,7 +192,7 @@ namespace Katydid
                                 /*for (TrackSetCIt eventTrackIt=thisEvent.GetTracksBegin(); eventTrackIt != thisEvent.GetTracksEnd(); eventTrackIt++)
                                 {
                                     firstEvent.AddTracks(eventTrackIt);//thisEvent.GetTrack(iLine));
-                                    KTERROR("don't know how to deal with EventSequenceID here!!!")
+                                    LERROR("don't know how to deal with EventSequenceID here!!!")
                                 }*/
                                 firstEvent.ProcessTracks();
                                 for (TrackEndsType::const_iterator endpointIt=eventIt->second.begin(); endpointIt != eventIt->second.end(); ++endpointIt)
@@ -213,7 +213,7 @@ namespace Katydid
                 } // for loop over active events
                 if (trackAssigned == -1)
                 { // if no event matched then create one
-                    KTDEBUG(tclog, "track not matched, creating new event");
+                    LDEBUG(tclog, "track not matched, creating new event");
                     ++fDataCount;
                     Nymph::KTDataPtr data(new Nymph::KTData());
                     ActiveEventType new_event(data, TrackEndsType());
@@ -233,7 +233,7 @@ namespace Katydid
                 }
                 else
                 {
-                    KTDEBUG(tclog, "track assigned to event " << trackAssigned);
+                    LDEBUG(tclog, "track assigned to event " << trackAssigned);
                 }
                 ++trackIt;
             } // while loop over tracks
@@ -260,7 +260,7 @@ namespace Katydid
             int totalMPT = mpEventData.GetTotalEventSequences(); // total number of MPT structures
             int currentMPT = 0;
 
-            KTDEBUG(tclog, "Total event sequences = " << totalMPT);
+            LDEBUG(tclog, "Total event sequences = " << totalMPT);
 
             std::vector< KTMultiPeakTrackData > allMPTracks; // vector to hold MPTs
 
@@ -268,7 +268,7 @@ namespace Katydid
             KTMultiPeakTrackData blankMPT;
             for( int i = 0; i < totalMPT; ++i )
             {
-                KTDEBUG(tclog, "Initializing MPTrack #" << i);
+                LDEBUG(tclog, "Initializing MPTrack #" << i);
                 allMPTracks.push_back( blankMPT );
             }
 
@@ -276,7 +276,7 @@ namespace Katydid
             for( TrackSetCIt it = allTracks.begin(); it != allTracks.end(); ++it )
             {
                 currentMPT = it->fProcTrack.GetEventSequenceID();
-                KTDEBUG(tclog, "Current event sequence = " << currentMPT);
+                LDEBUG(tclog, "Current event sequence = " << currentMPT);
                 // Fill the appropriate MPT
                 allMPTracks[currentMPT].AddToMPTrack( it );
                 allMPTracks[currentMPT].SetComponent( mpEventData.GetComponent() );
@@ -285,10 +285,10 @@ namespace Katydid
 
                 // Set the event sequence ID
                 allMPTracks[currentMPT].SetEventSequenceID( currentMPT );
-                KTDEBUG(tclog, "MPT now has multiplicity " << allMPTracks[currentMPT].GetMultiplicity());
+                LDEBUG(tclog, "MPT now has multiplicity " << allMPTracks[currentMPT].GetMultiplicity());
             }
 
-            KTINFO(tclog, "Emitting MPT signals");
+            LINFO(tclog, "Emitting MPT signals");
 
             // Construct data pointers and emit MPT signals
             for( int iMPT = 0; iMPT < totalMPT; ++iMPT )
@@ -297,8 +297,8 @@ namespace Katydid
                 KTMultiPeakTrackData& newMPT = mptData->Of< KTMultiPeakTrackData >();
                 newMPT = allMPTracks[iMPT];
 
-                KTDEBUG(tclog, "Emitting MPT signal with multiplicity " << newMPT.GetMultiplicity());
-                KTDEBUG(tclog, "Original MPT had multiplicity " << allMPTracks[iMPT].GetMultiplicity());
+                LDEBUG(tclog, "Emitting MPT signal with multiplicity " << newMPT.GetMultiplicity());
+                LDEBUG(tclog, "Original MPT had multiplicity " << allMPTracks[iMPT].GetMultiplicity());
 
                 fMPTSignal( mptData );
             }

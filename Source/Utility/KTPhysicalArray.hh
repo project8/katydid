@@ -26,7 +26,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(utillog_physarr, "KTPhysicalArray");
+    LOGGER(utillog_physarr, "KTPhysicalArray");
 
     //*******************************
     // general, dummy, implementation
@@ -84,7 +84,7 @@ namespace Katydid
             fData(1)
     {
         SetNBinsFunc(new KTNBinsInArray< NDims, array_type >(this, &array_type::size));
-        KTWARN(utillog_physarr, NDims << "-dimensional arrays are not supported.\n"
+        LWARN(utillog_physarr, NDims << "-dimensional arrays are not supported.\n"
                 "This is an instance of a dummy object.");
     }
 
@@ -94,7 +94,7 @@ namespace Katydid
             fData(1)
     {
         SetNBinsFunc(new KTNBinsInArray< NDims, array_type >(this, &array_type::size));
-        KTWARN(utillog_physarr, NDims << "-dimensional arrays are not supported.\n"
+        LWARN(utillog_physarr, NDims << "-dimensional arrays are not supported.\n"
                "This is an instance of a dummy object.");
     }
 
@@ -350,7 +350,7 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds: " << i << " >= " << size();
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
@@ -365,7 +365,7 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds: " << i << " >= " << size();
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
@@ -646,7 +646,7 @@ namespace Katydid
         SetRangeMin(2, yRangeMin);
         SetRangeMax(1, xRangeMax);
         SetRangeMax(2, yRangeMax);
-        //KTDEBUG(utillog_physarr, "created matrix with (" << fData.size1() << ", " << fData.size2() << ")");
+        //LDEBUG(utillog_physarr, "created matrix with (" << fData.size1() << ", " << fData.size2() << ")");
     }
 
     template< typename XDataType >
@@ -714,14 +714,14 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 1: " << i << " >= " << size(1);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
         if (j >= size(2))
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 2: " << j << " >= " << size(2);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
@@ -736,14 +736,14 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 1: " << i << " >= " << size(1);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
          }
         if (j >= size(2))
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 2: " << j << " >= " << size(2);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif

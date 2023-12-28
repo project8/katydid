@@ -12,7 +12,7 @@
 #include "KTForwardFFTW.hh"
 #include "KTReverseFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeriesFFTW.hh"
 
 #ifdef ROOT_FOUND
@@ -26,7 +26,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestComboFFTW");
+LOGGER(vallog, "TestComboFFTW");
 
 int main()
 {
@@ -38,7 +38,7 @@ int main()
 
     const double mult = 30.;
 
-    KTINFO(vallog, "Testing the forward and reverse FFTs\n" <<
+    LINFO(vallog, "Testing the forward and reverse FFTs\n" <<
            "\tTime series characteristics:\n" <<
            "\tSize: " << nBins << " bins\n" <<
            "\tRange: " << startTime << " to " << endTime << " s\n" <<
@@ -66,19 +66,19 @@ int main()
 
     if (! forwardFFT.InitializeForComplexTDD())
     {
-        KTERROR(vallog, "Error while initializing the forward FFT");
+        LERROR(vallog, "Error while initializing the forward FFT");
         exit(-1);
     }
 
     if (! reverseFFT.InitializeForComplexTDD())
     {
-        KTERROR(vallog, "Error while initializing the reverse FFT");
+        LERROR(vallog, "Error while initializing the reverse FFT");
         exit(-1);
     }
 
     // Perform the FFTs
 
-    KTINFO(vallog, "Performing FFT");
+    LINFO(vallog, "Performing FFT");
 
     KTFrequencySpectrumFFTW* frequencySpectrum = forwardFFT.Transform(timeSeries);
     KTTimeSeriesFFTW* newTimeSeries = reverseFFT.TransformToComplex( frequencySpectrum );

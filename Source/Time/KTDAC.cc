@@ -12,13 +12,13 @@
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(egglog, "KTDAC");
+    LOGGER(egglog, "KTDAC");
 
     KT_REGISTER_PROCESSOR(KTDAC, "dac");
 
@@ -68,7 +68,7 @@ namespace Katydid
         {
             if (! scDACIt->Initialize())
             {
-                KTERROR(egglog, "Failed to initialize single-channel DAC for channel " << scDACIt - fChannelDACs.begin());
+                LERROR(egglog, "Failed to initialize single-channel DAC for channel " << scDACIt - fChannelDACs.begin());
                 return false;
             }
         }
@@ -89,7 +89,7 @@ namespace Katydid
         {
             if (! fChannelDACs[component].InitializeWithHeader(header.GetChannelHeader(component)))
             {
-                KTERROR(egglog, "Failed to initialize single-channel DAC for channel " << component);
+                LERROR(egglog, "Failed to initialize single-channel DAC for channel " << component);
                 return false;
             }
         }
@@ -125,7 +125,7 @@ namespace Katydid
             {
                 header.SetSliceSize(fChannelDACs[component].GetOversamplingBins());
             }
-            KTDEBUG(egglog, "Doing DAC for component " << component);
+            LDEBUG(egglog, "Doing DAC for component " << component);
             KTTimeSeries* newTS = fChannelDACs[component].ConvertTimeSeries(rawData.GetTimeSeries(component));
             newData.SetTimeSeries(newTS, component);
         }

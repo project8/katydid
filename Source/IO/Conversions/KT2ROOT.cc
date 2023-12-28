@@ -7,7 +7,7 @@
 
 #include "KT2ROOT.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTClassifierResultsData.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -51,7 +51,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(dblog, "KT2ROOT");
+    LOGGER(dblog, "KT2ROOT");
 
     KT2ROOT::KT2ROOT()
     {
@@ -81,7 +81,7 @@ namespace Katydid
         }
         else
         {
-            KTERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
+            LERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
         }
         //**** DEBUG ****//
         /*
@@ -91,8 +91,8 @@ namespace Katydid
          tsstream << (*ts)(i) << "  ";
          histstream << hist->GetBinContent((int)i+1) << "  ";
          }
-         KTWARN( dblog, "ts: " << tsstream.str() );
-         KTWARN( dblog, "hist: " << histstream.str() );
+         LWARN( dblog, "ts: " << tsstream.str() );
+         LWARN( dblog, "hist: " << histstream.str() );
          */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
@@ -121,7 +121,7 @@ namespace Katydid
         }
         else
         {
-            KTERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
+            LERROR(dblog, "Invalid parameter for complexSampleIndex: <" << complexSampleIndex << ">; must be -1, 0, or 1");
         }
         //**** DEBUG ****//
         /*
@@ -131,8 +131,8 @@ namespace Katydid
          tsstream << (*ts)(i) << "  ";
          histstream << hist->GetBinContent((int)i+1) << "  ";
          }
-         KTWARN( dblog, "ts: " << tsstream.str() );
-         KTWARN( dblog, "hist: " << histstream.str() );
+         LWARN( dblog, "ts: " << tsstream.str() );
+         LWARN( dblog, "hist: " << histstream.str() );
          */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
@@ -260,8 +260,8 @@ namespace Katydid
             tsstream << (*ts)(i) << "  ";
             histstream << hist->GetBinContent((int) i + 1) << "  ";
         }
-        KTWARN(dblog, "ts: " << tsstream.str());
-        KTWARN(dblog, "hist: " << histstream.str());
+        LWARN(dblog, "ts: " << tsstream.str());
+        LWARN(dblog, "hist: " << histstream.str());
         /**/
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");
@@ -500,7 +500,7 @@ namespace Katydid
             double xPos,yPos,zPos;
             aggfs.GetGridPoint(iComponents, xPos, yPos, zPos);
             unsigned zIndex=(int)zPos;
-            if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
+            if(zIndex>nZ) LERROR(dblog, "The z index cannot be more than " << nZ-1);
             graphs[zIndex]->SetPoint(pointIndex[zIndex], xPos, yPos, aggfs.GetSummedGridVoltage(iComponents));
             pointIndex[zIndex]+=1;
         }
@@ -530,7 +530,7 @@ namespace Katydid
             double xPos,yPos,zPos;
             aggps.GetGridPoint(iComponents, xPos, yPos, zPos);
             unsigned zIndex=(int)zPos;
-            if(zIndex>nZ) KTERROR(dblog, "The z index cannot be more than " << nZ-1);
+            if(zIndex>nZ) LERROR(dblog, "The z index cannot be more than " << nZ-1);
             graphs[zIndex]->SetPoint(pointIndex[zIndex],xPos,yPos,aggps.GetSummedGridPower(iComponents));
             pointIndex[zIndex]+=1;
         }

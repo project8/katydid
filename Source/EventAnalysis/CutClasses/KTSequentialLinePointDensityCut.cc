@@ -8,11 +8,11 @@
 #include "KTSequentialLinePointDensityCut.hh"
 #include "KTSequentialLineData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(sqlcutlog, "KTSequentialLinePointDensityCut");
+    LOGGER(sqlcutlog, "KTSequentialLinePointDensityCut");
 
     const std::string KTSequentialLinePointDensityCut::Result::sName = "seq-line-density-cut";
 

@@ -7,11 +7,11 @@
 
 #include "KTAmplitudeDistribution.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(datalog, "KTAmplitudeDistribution");
+    LOGGER(datalog, "KTAmplitudeDistribution");
 
     const std::string KTAmplitudeDistribution::sName("amplitude-distribution");
 
@@ -31,12 +31,12 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
         {
-            KTERROR(datalog, "Data does not contain component " << component);
+            LERROR(datalog, "Data does not contain component " << component);
             return;
         }
         if (freqBin > fDistributions[component].size() || fDistributions[component][freqBin] == NULL)
         {
-            KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
+            LERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
             return;
         }
 #endif
@@ -49,17 +49,17 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
         {
-            KTERROR(datalog, "Data does not contain component " << component);
+            LERROR(datalog, "Data does not contain component " << component);
             return;
         }
         if (freqBin > fDistributions[component].size() || fDistributions[component][freqBin] == NULL)
         {
-            KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
+            LERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
             return;
         }
         if (iDistBin > fDistributions[component][freqBin]->size())
         {
-            KTERROR(datalog, "Data does not contain dist bin " << iDistBin);
+            LERROR(datalog, "Data does not contain dist bin " << iDistBin);
             return;
         }
 #endif
@@ -72,12 +72,12 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
         {
-            KTERROR(datalog, "Data does not contain component " << component);
+            LERROR(datalog, "Data does not contain component " << component);
             return;
         }
         if (freqBin > fDistributions[component].size() || fDistributions[component][freqBin] == NULL)
         {
-            KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
+            LERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
             return;
         }
 #endif
@@ -89,15 +89,15 @@ namespace Katydid
     {
         if (component > fDistributions.size())
         {
-            KTERROR(datalog, "Data does not contain component " << component);
+            LERROR(datalog, "Data does not contain component " << component);
             return false;
         }
         if (freqBin > fDistributions[component].size())
         {
-            KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component);
+            LERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component);
             return false;
         }
-        KTDEBUG(datalog, "Initializing distribution for component " << component << ", frequency bin " << freqBin << ", (" << distNBins << ", " << distMin << ", " << distMax << ")");
+        LDEBUG(datalog, "Initializing distribution for component " << component << ", frequency bin " << freqBin << ", (" << distNBins << ", " << distMin << ", " << distMax << ")");
         delete fDistributions[component][freqBin];
         fDistributions[component][freqBin] = new Distribution(distNBins, distMin, distMax);
         return true;

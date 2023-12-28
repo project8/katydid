@@ -17,7 +17,7 @@
 #include "KTFrequencySpectrumVariance.hh"
 #include "KTGainVariationData.hh"
 #include "KTGainVariationProcessor.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 #include "KTRandom.hh"
@@ -27,7 +27,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestGainVariationProcessor");
+LOGGER(testlog, "TestGainVariationProcessor");
 
 int main()
 {
@@ -48,7 +48,7 @@ int main()
     engine->SetSeed(20398);
     KTRNGGaussian<> rand( meanValue, noiseSigma );
 
-    KTINFO(testlog, "Setting up input data");
+    LINFO(testlog, "Setting up input data");
 
     KTPowerSpectrumData psDataOnly;
     KTPowerSpectrum* psOnlyPS = new KTPowerSpectrum( nBins, minFreq, maxFreq );
@@ -78,7 +78,7 @@ int main()
     varData.SetNComponents( 1 );
     varData.SetSpectrum( psAndVarVar, 0 );
 
-    KTINFO(testlog, "Initializing gain variation");
+    LINFO(testlog, "Initializing gain variation");
 
     KTGainVariationProcessor gvProc;
     gvProc.SetMinFrequency( minFreq );
@@ -88,17 +88,17 @@ int main()
     gvProc.SetVarianceCalcNBins(100);
 
     // This call has been removed because the GV functions without variance do not currently work correctly and have been temporarily removed
-    //KTINFO(testlog, "Processing gain variation -- PS only");
+    //LINFO(testlog, "Processing gain variation -- PS only");
     //gvProc.CalculateGainVariation(psDataOnly);
 
-    KTINFO(testlog, "Processing gain variation -- PS & variance");
+    LINFO(testlog, "Processing gain variation -- PS & variance");
     gvProc.CalculateGainVariation(psData, varData);
 
     //KTGainVariationData& psOnlyGVData = psDataOnly.Of< KTGainVariationData >();
     KTGainVariationData& psAndVarGVData = psData.Of< KTGainVariationData >();
 
 #ifdef ROOT_FOUND
-    KTINFO(testlog, "Writing histograms to a ROOT file");
+    LINFO(testlog, "Writing histograms to a ROOT file");
 
     TFile* file = new TFile("gain_var_proc_test.root", "recreate");
 

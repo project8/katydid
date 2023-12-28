@@ -9,7 +9,7 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTEggHeader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -20,7 +20,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(kdlog, "KTCreateKDTree");
+    LOGGER(kdlog, "KTCreateKDTree");
 
     KT_REGISTER_PROCESSOR(KTCreateKDTree, "create-kd-tree");
 
@@ -77,7 +77,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(kdlog, "Unknown distance method requested: " << distMethod);
+                LERROR(kdlog, "Unknown distance method requested: " << distMethod);
             }
         }
 
@@ -94,26 +94,26 @@ namespace Katydid
         KTChannelHeader* chanHeader = header.GetChannelHeader(0);
         SetTimeRadius(chanHeader->GetRawSliceSize() / header.GetAcquisitionRate());
         SetFreqRadius(1. / GetTimeRadius());
-        KTDEBUG(kdlog, "Reconfiguring with header: time radius = " << GetTimeRadius() << "; freq radius = " << GetFreqRadius());
+        LDEBUG(kdlog, "Reconfiguring with header: time radius = " << GetTimeRadius() << "; freq radius = " << GetFreqRadius());
         return true;
     }
 
     bool KTCreateKDTree::AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
 
-        KTDEBUG(kdlog, "Is this a new acquisition? fHaveNewData=" << fHaveNewData << " and GetIsNewAcquisition=" << slHeader.GetIsNewAcquisition());
+        LDEBUG(kdlog, "Is this a new acquisition? fHaveNewData=" << fHaveNewData << " and GetIsNewAcquisition=" << slHeader.GetIsNewAcquisition());
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
-            KTDEBUG(kdlog, "New Acquisition - Run clustering on previous acquistion, clear out old points from tree");
+            LDEBUG(kdlog, "New Acquisition - Run clustering on previous acquistion, clear out old points from tree");
             if (! MakeTree(false))
             {
-                KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
+                LERROR(kdlog, "An error occurred while clustering from the previous acquisition");
                 return false;
             }
             if (! ClearTree(false))
             {
-                KTERROR(kdlog, "An error occurred while clearing the tree");
+                LERROR(kdlog, "An error occurred while clearing the tree");
                 return false;
             }
         }
@@ -149,17 +149,17 @@ namespace Katydid
                 newPoint.fNeighborhoodAmplitude = pIt->second.fNeighborhoodAmplitude;
                 fTreeData.AddPoint(newPoint, iComponent);
             }
-            KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points (Slice Number: " << newPoint.fSliceNumber << ")");
+            LDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points (Slice Number: " << newPoint.fSliceNumber << ")");
         }
 
         ++fSliceInWindowCount;
-        KTDEBUG(kdlog, "Slice-count-in-window is now " << fSliceInWindowCount << " (window size = " << fWindowSize << "; window overlap = " << fWindowOverlap << ")");
+        LDEBUG(kdlog, "Slice-count-in-window is now " << fSliceInWindowCount << " (window size = " << fWindowSize << "; window overlap = " << fWindowOverlap << ")");
         // if fSliceInWindowCount == fWindowSize, then we need to move the window before taking the next slice
         if (fWindowSize != 0 && fSliceInWindowCount == fWindowSize)
         {
             if (! MakeTree(true) || ! ClearTree(true, slHeader.GetSliceNumber() - fWindowOverlap + 1))
             {
-                KTERROR(kdlog, "An error occurred while clustering or clearing the tree");
+                LERROR(kdlog, "An error occurred while clustering or clearing the tree");
                 return false;
             }
             fSliceInWindowCount = 0;
@@ -204,7 +204,7 @@ namespace Katydid
             newPoint.fNeighborhoodAmplitude = pIt->fNeighborhoodAmplitude;
             fTreeData.AddPoint(newPoint, component);
         }
-        KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");
+        LDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");
 
         fHaveNewData = true;
         return true;
@@ -214,13 +214,13 @@ namespace Katydid
     {
         if (! fHaveNewData) return true;
 
-        KTINFO(kdlog, "Creating k-d tree; last slice is " << fTreeData.GetLastSlice());
-        KTDEBUG(kdlog, "Tree will continue: " << willContinue);
+        LINFO(kdlog, "Creating k-d tree; last slice is " << fTreeData.GetLastSlice());
+        LDEBUG(kdlog, "Tree will continue: " << willContinue);
 
         fTreeData.SetDataWillContinue(willContinue);
         fTreeData.SetXScaling(fTimeRadius);
         fTreeData.SetYScaling(fFreqRadius);
-        KTINFO(kdlog, "Scalings for k-d tree points: (" << fTimeRadius << ", " << fFreqRadius << ")");
+        LINFO(kdlog, "Scalings for k-d tree points: (" << fTimeRadius << ", " << fFreqRadius << ")");
 
         unsigned nComponents = fTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
@@ -240,13 +240,13 @@ namespace Katydid
 
     bool KTCreateKDTree::ClearTree(bool willContinue, uint64_t firstSliceKept)
     {
-        KTDEBUG(kdlog, "ClearTree");
+        LDEBUG(kdlog, "ClearTree");
         if (! fHaveNewData) return true;
 
         // firstSliceKept is only used if willContinue == true
         if (willContinue)
         {
-            KTDEBUG(kdlog, "ClearTree(true)");
+            LDEBUG(kdlog, "ClearTree(true)");
 
             // clear data up to the
             unsigned nComponents = fTreeData.GetNComponents();
@@ -265,7 +265,7 @@ namespace Katydid
         }
         else
         {
-            KTDEBUG(kdlog, "ClearTree(false)");
+            LDEBUG(kdlog, "ClearTree(false)");
             // clear all data from the tree, but leave the memory intact
             unsigned nComponents = fTreeData.GetNComponents();
             for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
@@ -282,12 +282,12 @@ namespace Katydid
     {
         if (! MakeTree(false))
         {
-            KTERROR(kdlog, "An error occurred while making the k-d tree");
+            LERROR(kdlog, "An error occurred while making the k-d tree");
             return;
         }
         if (! ClearTree(false))
         {
-            KTERROR(kdlog, "An error occurred while clearing the tree");
+            LERROR(kdlog, "An error occurred while clearing the tree");
         }
         return;
     }

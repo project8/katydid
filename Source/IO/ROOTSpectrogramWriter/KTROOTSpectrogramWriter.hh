@@ -17,7 +17,7 @@
 #include "KTSliceHeader.hh"
 
 #include "KTData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
@@ -28,7 +28,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(publog_rsw, "KTROOTSpectrogramWriter");
+    LOGGER(publog_rsw, "KTROOTSpectrogramWriter");
 
     class KTFrequencyDomainArrayData;
     class KTROOTSpectrogramWriter;
@@ -169,7 +169,7 @@ namespace Katydid
     template< class XDataType >
     void KTROOTSpectrogramTypeWriter::AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle)
     {
-        KTDEBUG(publog_rsw, "Adding frequency-spectrum-type data");
+        LDEBUG(publog_rsw, "Adding frequency-spectrum-type data");
         KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
         double timeInRun = sliceHeader.GetTimeInRun();
         double sliceLength = sliceHeader.GetSliceLength();
@@ -185,16 +185,16 @@ namespace Katydid
             unsigned nComponents = fsData.GetNComponents();
 
             int iSpectTimeBin = KTROOTSpectrogramTypeWriter::UpdateSpectrograms(fsData, nComponents, timeInRun, sliceLength, isNewAcq, dataBundle);
-            KTDEBUG(publog_rsw, "Spectrogram time bin to write to is <" << iSpectTimeBin << ">");
+            LDEBUG(publog_rsw, "Spectrogram time bin to write to is <" << iSpectTimeBin << ">");
             if (iSpectTimeBin <= 0) return; // do this check here instead of down in the component loop to save time
 
             // add this slice's data to the spectrogram
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
-                KTWARN(publog_rsw, "Working on component " << iComponent);
+                LWARN(publog_rsw, "Working on component " << iComponent);
                 const KTFrequencySpectrum* spectrum = fsData.GetSpectrum(iComponent);
                 TH2D* spectrogram = dataBundle.fSpectrograms[iComponent].fSpectrogram;
-                KTWARN(publog_rsw, "pointers: " << spectrum << "  " << spectrogram);
+                LWARN(publog_rsw, "pointers: " << spectrum << "  " << spectrogram);
                 unsigned iSpectFreqBin = 0;
                 if (iSpectTimeBin > spectrogram->GetNbinsX()) continue;
                 //std::cout << "spectrum size: " << spectrum->GetNFrequencyBins() << std::endl;
@@ -214,7 +214,7 @@ namespace Katydid
     template< class XDataType >
     void KTROOTSpectrogramTypeWriter::AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle)
     {
-        KTDEBUG(publog_rsw, "Adding power-spectrum-type data");
+        LDEBUG(publog_rsw, "Adding power-spectrum-type data");
         KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
         double timeInRun = sliceHeader.GetTimeInRun();
         double sliceLength = sliceHeader.GetSliceLength();
@@ -254,7 +254,7 @@ namespace Katydid
     template< class XDataType >
     void KTROOTSpectrogramTypeWriter::AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, DataTypeBundle& dataBundle)
     {
-        KTDEBUG(publog_rsw, "Adding power-spectral-density-type data");
+        LDEBUG(publog_rsw, "Adding power-spectral-density-type data");
         KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
         double timeInRun = sliceHeader.GetTimeInRun();
         double sliceLength = sliceHeader.GetSliceLength();

@@ -8,11 +8,11 @@
 #include "KTTrackFreqCut.hh"
 #include "KTProcessedTrackData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTTrackFreqCut");
+    LOGGER(exlog, "KTTrackFreqCut");
 
     const std::string KTTrackFreqCut::Result::sName = "track-frequency-cut";
 

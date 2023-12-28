@@ -13,7 +13,7 @@
 
 #include "KT2ROOT.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
@@ -29,7 +29,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "KTWindowFunction");
+    LOGGER(fftlog, "KTWindowFunction");
 
     KTWindowFunction::KTWindowFunction(const string& name) :
             KTConfigurable(name),

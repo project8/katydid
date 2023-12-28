@@ -86,11 +86,11 @@ namespace Katydid
             {
                 if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
-                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->to_string());
+                    LERROR(wvlog, "Invalid pair: " << (*pairIt)->to_string());
                     return false;
                 }
                 UIntPair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< unsigned >(1));
-                KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
+                LINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
                 this->AddPair(pair);
             }
         }
@@ -106,7 +106,7 @@ namespace Katydid
     {
         if (fPairs.empty())
         {
-            KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
+            LWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
             return false;
         }
         unsigned nPairs = fPairs.size();
@@ -227,7 +227,7 @@ namespace Katydid
         double t2_real;
         double t2_imag;
 
-        //KTERROR(wvlog, "iWindow = " << iWindow);
+        //LERROR(wvlog, "iWindow = " << iWindow);
 
         for (unsigned fftBin = 0; fftBin < fWindowSize; fftBin++)
         {
@@ -241,7 +241,7 @@ namespace Katydid
             fInputArray->SetRect(fftBin, 
                                     t1_real * t2_real + t1_imag * t2_imag,
                                     t1_imag * t2_real - t1_real * t2_imag);
-            //KTWARN(wvlog, "  " << fftBin << " -- " << t1_real << "  " << t1_imag << " -- " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
+            //LWARN(wvlog, "  " << fftBin << " -- " << t1_real << "  " << t1_imag << " -- " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
             ++data1It;
         }
 
@@ -266,7 +266,7 @@ namespace Katydid
             fInputArray = new KTTimeSeriesFFTW({0., 0.}, size,
                     data1->GetRangeMin(),
                     data1->GetRangeMax() + 0.5 * data1->GetBinWidth());
-            KTWARN(wvlog, "Setting the input array size to " << size);
+            LWARN(wvlog, "Setting the input array size to " << size);
         }
         else
         {
@@ -275,7 +275,7 @@ namespace Katydid
         */
         //fInputArray->SetRange(0., (double)fftSize * data1->GetBinWidth());
 
-        //KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
+        //LERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
 
         // Now calculate the lagged ACF at all possible lags.
         //register double t1_real;
@@ -294,7 +294,7 @@ namespace Katydid
             t2_imag = (*data1)(rightStartPointer - fftBin)[1];
             (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
             (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
-            KTWARN(wvlog, "  " << binsToFill << "  " << fLeftStartPointer << "  " << rightStartPointer << "  " << fftBin << " -- " << fLeftStartPointer + fftBin << "  " << (*data1)(fLeftStartPointer + fftBin)[0] << "  " << (*data1)(fLeftStartPointer + fftBin)[1] << " -- " << rightStartPointer - fftBin << "  " << (*data2)(rightStartPointer - fftBin)[0] << "  " << (*data2)(rightStartPointer - fftBin)[1] << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
+            LWARN(wvlog, "  " << binsToFill << "  " << fLeftStartPointer << "  " << rightStartPointer << "  " << fftBin << " -- " << fLeftStartPointer + fftBin << "  " << (*data1)(fLeftStartPointer + fftBin)[0] << "  " << (*data1)(fLeftStartPointer + fftBin)[1] << " -- " << rightStartPointer - fftBin << "  " << (*data2)(rightStartPointer - fftBin)[0] << "  " << (*data2)(rightStartPointer - fftBin)[1] << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
         }
         for (unsigned fftBin = binsToFill; fftBin < fftSize; fftBin++)
         {
@@ -305,7 +305,7 @@ namespace Katydid
 /*
         register unsigned time = offset;
         register int taumax = std::min(std::min((int)time, (int)sliceSize - (int)time -1), (int)fftSize/2-1);
-        KTERROR(wvlog, "time = " << time << "  taumax = " << taumax);
+        LERROR(wvlog, "time = " << time << "  taumax = " << taumax);
 
         unsigned fftBin = 0;
         for (int tau = -taumax; tau <= taumax; tau++)
@@ -316,7 +316,7 @@ namespace Katydid
             t2_imag = (*data2)(time - tau)[1];
             (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
             (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
-            KTWARN(wvlog, "  " << time << "  " << taumax << "  " << tau << "  " << fftBin << " -- " << time + tau << "  " << (*data1)(time+tau)[0] << "  " << (*data1)(time+tau)[1] << " -- " << time - tau << "  " << (*data2)(time-tau)[0] << "  " << (*data2)(time-tau)[1]);
+            LWARN(wvlog, "  " << time << "  " << taumax << "  " << tau << "  " << fftBin << " -- " << time + tau << "  " << (*data1)(time+tau)[0] << "  " << (*data1)(time+tau)[1] << " -- " << time - tau << "  " << (*data2)(time-tau)[0] << "  " << (*data2)(time-tau)[1]);
             fftBin++;
         }
         for (; fftBin < fftSize; fftBin++)
@@ -333,7 +333,7 @@ namespace Katydid
         ///{
         ///    (*fInputArray)(inArrBin)[0] = 0.;
         ///    (*fInputArray)(inArrBin)[1] = 0.;
-        ///    KTINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
+        ///    LINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
         ///}
         ///for (unsigned inArrBin = start; inArrBin <= end; inArrBin++)
         ///{
@@ -348,8 +348,8 @@ namespace Katydid
 
             ///(*fInputArray)(inArrBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
             ///(*fInputArray)(inArrBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
-            ///KTWARN(wvlog, "  " << inArrBin << " -- " << inArrBin << "  " << (*data1)(inArrBin)[0] << "  " << (*data1)(inArrBin)[1] << " -- " << offset - inArrBin << "  " << (*data2)(inArrBin)[0] << "  " << (*data2)(inArrBin)[1]);
-            //KTWARN(wvlog, "  " << inArrBin << " -- " << tau_minus << "  " << offset + tau_minus << " = " << t1_real << "  " << t1_imag << " -- " << tau_plus << "  " << offset + tau_plus << " = " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(inArrBin)[0] << "  " << (*fInputArray)(inArrBin)[1]);
+            ///LWARN(wvlog, "  " << inArrBin << " -- " << inArrBin << "  " << (*data1)(inArrBin)[0] << "  " << (*data1)(inArrBin)[1] << " -- " << offset - inArrBin << "  " << (*data2)(inArrBin)[0] << "  " << (*data2)(inArrBin)[1]);
+            //LWARN(wvlog, "  " << inArrBin << " -- " << tau_minus << "  " << offset + tau_minus << " = " << t1_real << "  " << t1_imag << " -- " << tau_plus << "  " << offset + tau_plus << " = " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(inArrBin)[0] << "  " << (*fInputArray)(inArrBin)[1]);
 
             //tau_minus++;
             //tau_plus--;
@@ -358,7 +358,7 @@ namespace Katydid
         ///{
         ///    (*fInputArray)(inArrBin)[0] = 0.;
         ///    (*fInputArray)(inArrBin)[1] = 0.;
-        ///    KTINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
+        ///    LINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
         ///}
     }
 
@@ -369,13 +369,13 @@ namespace Katydid
         // Check to ensure that the required data type is present
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(wvlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
+            LERROR(wvlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
         if (! data->Has< KTSliceHeader >())
         {
-            KTERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
+            LERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
             return;
         }
 
@@ -384,7 +384,7 @@ namespace Katydid
         // Call the function
         if (! TransformData(data->Of< KTTimeSeriesData >(), data->Of< KTSliceHeader >()))
         {
-            KTERROR(wvlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
+            LERROR(wvlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
@@ -400,13 +400,13 @@ namespace Katydid
         // Check to ensure that the required data type is present
         if (! data->Has< KTAnalyticAssociateData >())
         {
-            KTERROR(wvlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
+            LERROR(wvlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
         if (! data->Has< KTSliceHeader >())
         {
-            KTERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
+            LERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
             return;
         }
 
@@ -415,7 +415,7 @@ namespace Katydid
         // Call the function
         if (! TransformData(data->Of< KTAnalyticAssociateData >(), data->Of< KTSliceHeader >()))
         {
-            KTERROR(wvlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
+            LERROR(wvlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 

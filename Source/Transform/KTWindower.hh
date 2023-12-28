@@ -11,7 +11,7 @@
 
 #include "KTProcessor.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSlot.hh"
 
 #include <string>

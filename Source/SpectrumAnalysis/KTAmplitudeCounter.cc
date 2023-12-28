@@ -16,7 +16,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER(avlog, "KTAmplitudeCounter");
+    LOGGER(avlog, "KTAmplitudeCounter");
 
     KT_REGISTER_PROCESSOR(KTAmplitudeCounter, "amp-counter");
 

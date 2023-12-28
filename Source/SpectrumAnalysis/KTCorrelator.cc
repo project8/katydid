@@ -21,7 +21,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(corrlog, "KTCorrelator");
+    LOGGER(corrlog, "KTCorrelator");
 
     KT_REGISTER_PROCESSOR(KTCorrelator, "correlator");
 
@@ -49,11 +49,11 @@ namespace Katydid
             {
                 if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
-                    KTERROR(corrlog, "Invalid pair: " << (*pairIt)->to_string());
+                    LERROR(corrlog, "Invalid pair: " << (*pairIt)->to_string());
                     return false;
                 }
                 UIntPair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< unsigned >(1));
-                KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
+                LINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
                 this->AddPair(pair);
             }
         }
@@ -95,7 +95,7 @@ namespace Katydid
             KTFrequencySpectrumPolar* result = DoCorrelation(data.GetSpectrumPolar(firstChannel), data.GetSpectrumPolar(secondChannel));
             if (result == NULL)
             {
-                KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
+                LWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
             }
             else
             {
@@ -105,7 +105,7 @@ namespace Katydid
             iPair++;
         }
 
-        KTINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
+        LINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return true;
     }
 
@@ -119,7 +119,7 @@ namespace Katydid
             KTFrequencySpectrumPolar* result = DoCorrelation(data.GetSpectrumFFTW(firstChannel), data.GetSpectrumFFTW(secondChannel));
             if (result == NULL)
             {
-                KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
+                LWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
             }
             else
             {
@@ -129,7 +129,7 @@ namespace Katydid
             iPair++;
         }
 
-        KTINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
+        LINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return true;
 
     }

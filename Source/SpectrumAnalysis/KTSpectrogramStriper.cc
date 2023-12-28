@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(sslog, "KTSpectrogramStriper");
+    LOGGER(sslog, "KTSpectrogramStriper");
 
     KT_REGISTER_PROCESSOR(KTSpectrogramStriper, "spectrogram-striper");
 
@@ -59,7 +59,7 @@ namespace Katydid
 
     void KTSpectrogramStriper::CalculateSwaps()
     {
-        KTDEBUG(sslog, "Calculating swaps");
+        LDEBUG(sslog, "Calculating swaps");
         fSwaps.clear();
 
         unsigned nSwaps = fStripeSize;
@@ -73,7 +73,7 @@ namespace Katydid
             unsigned source = destination + swapDist;
             if (source >= fStripeSize ) source -= fStripeSize;
             fSwaps[iSwap] = std::pair< unsigned, unsigned >(source, destination);
-            KTDEBUG(sslog, "Swap pair: " << source << " --> " << destination);
+            LDEBUG(sslog, "Swap pair: " << source << " --> " << destination);
             destination = source;
         }
     }
@@ -101,10 +101,10 @@ namespace Katydid
 
     bool KTSpectrogramStriper::OutputStripes()
     {
-        KTINFO(sslog, "Outputting all histograms");
+        LINFO(sslog, "Outputting all histograms");
         for (AccumulatorMapIt accIt = fDataMap.begin(); accIt != fDataMap.end(); ++accIt)
         {
-            KTDEBUG(sslog, "Checking <" << accIt->first->name() << "> for final outputting");
+            LDEBUG(sslog, "Checking <" << accIt->first->name() << "> for final outputting");
             if (accIt->second.fNextBin != fStripeOverlap) fStripeFSFFTWSignal(accIt->second.fDataPtr);
         }
         return true;

@@ -5,12 +5,12 @@
  *      Author: nsoblath
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTRandom.hh"
 
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestRandom");
+LOGGER(vallog, "TestRandom");
 
 int main()
 {
@@ -23,7 +23,7 @@ int main()
 
     for (unsigned i = 0; i < nLoops; i++)
     {
-        KTINFO(vallog, "loop " << i << ":  " << dist());
+        LINFO(vallog, "loop " << i << ":  " << dist());
     }
 
     // test that the other distribution types compile

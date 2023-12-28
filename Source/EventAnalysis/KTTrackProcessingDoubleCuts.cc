@@ -9,7 +9,7 @@
 #include "KTTrackProcessingDoubleCuts.hh"
 
 #include "KTHoughData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTProcessedTrackData.hh"
 #include "KTSmooth.hh"
@@ -27,7 +27,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(tlog, "KTTrackProcessingDoubleCuts");
+    LOGGER(tlog, "KTTrackProcessingDoubleCuts");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTTrackProcessingDoubleCuts, "track-proc-dc");
@@ -73,7 +73,7 @@ namespace Katydid
         // The & is important!!
         KTProcessedTrackData& procTrack = tlcData.template Of< KTProcessedTrackData >();
 
-        KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+        LDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
         return KTTrackProcessingDoubleCuts::DoDoubleCutsAlgorithm(points, htData, trackID, &procTrack);
     }
 
@@ -85,7 +85,7 @@ namespace Katydid
         // NOTE: smoothes the actual data, not a copy
         if (! KTSmooth::Smooth(houghTransform))
         {
-            KTERROR(tlog, "Error while smoothing Hough Transform");
+            LERROR(tlog, "Error while smoothing Hough Transform");
             return false;
         }
 
@@ -111,7 +111,7 @@ namespace Katydid
         double htSlope = -1.0 * (htCosAngle * yScale) / (htSinAngle * xScale);
         double htIntercept = (htRadius / htSinAngle) * yScale + yOffset - htSlope * xOffset; // this is r/sin(angle), rescaled, plus extra from the xOffset
 
-        KTDEBUG(tlog, "Hough Transform track processing results:\n"
+        LDEBUG(tlog, "Hough Transform track processing results:\n"
             << "\tmaxBinX: " << maxBinX << "\t maxBinY: " << maxBinY << "\t angle: " << htAngle << "\t radius: " << htRadius << '\n'
             << "\ta=cos(angle): " << htCosAngle << "\t b=sin(angle): " << htSinAngle << '\n'
             << "\txScale: " << xScale << "\t yScale: " << yScale << '\n'
@@ -161,7 +161,7 @@ namespace Katydid
                 pointsCuts.push_back(1);
             }
         } // loop over points
-        KTDEBUG(tlog, "Points removed with cut 1: " << nPointsCut1);
+        LDEBUG(tlog, "Points removed with cut 1: " << nPointsCut1);
 
         // Refine the line with a least-squares line calculation
         double xMean = sumX / (double)nPointsUsed;
@@ -170,7 +170,7 @@ namespace Katydid
         double lsInterceptScaled = yMean - lsSlopeScaled * xMean;
         double lsSlope = lsSlopeScaled * yScale / xScale;
         double lsIntercept = lsInterceptScaled * yScale + yOffset - lsSlope * xOffset;
-        KTDEBUG(tlog, "Least-squares fit result\n"
+        LDEBUG(tlog, "Least-squares fit result\n"
             << "\tSlope: " << lsSlope << " Hz/s\n"
             << "\tIntercept: " << lsIntercept << " Hz");
 
@@ -208,7 +208,7 @@ namespace Katydid
                 pointsCuts[iPoint] = 2;
             }
         }
-        KTDEBUG(tlog, "Points removed with cut 2: " << nPointsCut2);
+        LDEBUG(tlog, "Points removed with cut 2: " << nPointsCut2);
 
         // Remove points and sum amplitudes
         Points::iterator pItMaster = points.begin();
@@ -248,7 +248,7 @@ namespace Katydid
                 points.erase(pItCache);
             }
         }
-        KTDEBUG(tlog, "Points present after cuts: " << points.size());
+        LDEBUG(tlog, "Points present after cuts: " << points.size());
 
         // Add the new data
         procTrack->SetComponent(trackID.fComponent);

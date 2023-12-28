@@ -14,7 +14,7 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEgg1Reader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 
 #ifdef USE_MONARCH2
@@ -33,7 +33,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(eggscan, "EggScanner");
+LOGGER(eggscan, "EggScanner");
 
 static Nymph::KTCommandLineOption< bool > sUseEgg1("Egg Scanner", "Use the Egg1 reader", "egg1", '1');
 static Nymph::KTCommandLineOption< bool > sUseEgg2("Egg Scanner", "Use the Egg2 reader", "egg2", '2');
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
     if (! clOpts->IsCommandLineOptSet("egg-file"))
     {
-        KTERROR(eggscan, "No filename supplied; please specify with -e [filename]");
+        LERROR(eggscan, "No filename supplied; please specify with -e [filename]");
         return 0;
     }
     string filename(clOpts->GetCommandLineValue< string >("egg-file"));
@@ -64,37 +64,37 @@ int main(int argc, char** argv)
     KTEggReader* reader;
     if (clOpts->IsCommandLineOptSet("egg1"))
     {
-        KTINFO(eggscan, "Using egg1 reader");
+        LINFO(eggscan, "Using egg1 reader");
         KTEgg1Reader* reader2011 = new KTEgg1Reader();
         reader = reader2011;
     }
     else if (clOpts->IsCommandLineOptSet("egg2"))
     {
 #ifdef USE_MONARCH2
-        KTINFO(eggscan, "Using egg2 reader");
+        LINFO(eggscan, "Using egg2 reader");
         KTEgg2Reader* readerMonarch = new KTEgg2Reader();
         readerMonarch->SetSliceSize(sliceSize);
         reader = readerMonarch;
 #else
-        KTERROR(eggscan, "Can only use Egg2 reader if Monarch2 is enabled");
+        LERROR(eggscan, "Can only use Egg2 reader if Monarch2 is enabled");
         return 0;
 #endif
     }
     else if (clOpts->IsCommandLineOptSet("egg3"))
     {
 #ifdef USE_MONARCH3
-        KTINFO(eggscan, "Using egg3 reader");
+        LINFO(eggscan, "Using egg3 reader");
         KTEgg3Reader* readerMonarch = new KTEgg3Reader();
         readerMonarch->SetSliceSize(sliceSize);
         reader = readerMonarch;
 #else
-        KTERROR(eggscan, "Can only use Egg3 reader if Monarch3 is enabled");
+        LERROR(eggscan, "Can only use Egg3 reader if Monarch3 is enabled");
         return 0;
 #endif
     }
     else
     {
-        KTERROR(eggscan, "Please specify the egg reader type");
+        LERROR(eggscan, "Please specify the egg reader type");
         return 0;
     }
 
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     Nymph::KTDataPtr headerPtr = reader->BreakAnEgg(filename);
     if (! headerPtr)
     {
-        KTERROR(eggscan, "Egg file was not opened and no header was received");
+        LERROR(eggscan, "Egg file was not opened and no header was received");
         return -1;
     }
 
@@ -143,7 +143,7 @@ int main(int argc, char** argv)
         unsigned iSlice = 0;
         while (true)
         {
-            KTINFO(eggscan, "Hatching slice " << iSlice);
+            LINFO(eggscan, "Hatching slice " << iSlice);
 
             // Hatch the slice
             Nymph::KTDataPtr data = reader->HatchNextSlice();

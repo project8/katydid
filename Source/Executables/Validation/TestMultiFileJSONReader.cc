@@ -7,18 +7,18 @@
 
 #include "KTMultiFileJSONReader.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "TestMultiFileJSONReader");
+LOGGER(vallog, "TestMultiFileJSONReader");
 
 int main(int argc, char** argv)
 {
     if (argc != 3)
     {
-        KTINFO(vallog, "Usage:\n" <<
+        LINFO(vallog, "Usage:\n" <<
                 "\tTestJSONReader [filename] [file type]");
         return -1;
     }
@@ -35,12 +35,12 @@ int main(int argc, char** argv)
     {
         if (! reader.Append(*(parsedData.get())))
         {
-            KTERROR(vallog, "Something went wrong while reading the mc truth file");
+            LERROR(vallog, "Something went wrong while reading the mc truth file");
         }
     }
     else
     {
-        KTERROR(vallog, "This program isn't setup to test files of type <" << fileType << ">");
+        LERROR(vallog, "This program isn't setup to test files of type <" << fileType << ">");
     }
 
     return 0;

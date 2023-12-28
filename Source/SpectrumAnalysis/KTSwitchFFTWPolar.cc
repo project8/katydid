@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(swlog, "KTSwitchFFTWPolar");
+    LOGGER(swlog, "KTSwitchFFTWPolar");
 
     KT_REGISTER_PROCESSOR(KTSwitchFFTWPolar, "switch-fftw-polar");
 
@@ -55,18 +55,18 @@ namespace Katydid
             KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar();
             if (newSpectrum == NULL)
             {
-                KTERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
+                LERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
                 continue;
             }
             else
             {
                 KTFrequencySpectrumFFTW* oldSpectrum = fsData.GetSpectrumFFTW(iComponent);
-                KTDEBUG(swlog, "fftw array: " << oldSpectrum->size() << " bins; range: " << oldSpectrum->GetRangeMin() << " - " << oldSpectrum->GetRangeMax());
-                KTDEBUG(swlog, "polar array: " << newSpectrum->size() << " bins; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+                LDEBUG(swlog, "fftw array: " << oldSpectrum->size() << " bins; range: " << oldSpectrum->GetRangeMin() << " - " << oldSpectrum->GetRangeMax());
+                LDEBUG(swlog, "polar array: " << newSpectrum->size() << " bins; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTINFO(swlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
+        LINFO(swlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }
@@ -82,18 +82,18 @@ namespace Katydid
             KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar();
             if (newSpectrum == NULL)
             {
-                KTERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
+                LERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
                 continue;
             }
             else
             {
                 KTFrequencySpectrumFFTW* oldSpectrum = fsData.GetSpectrumFFTW(iComponent);
-                KTDEBUG(swlog, "fftw array: " << oldSpectrum->size() << " bins; range: " << oldSpectrum->GetRangeMin() << " - " << oldSpectrum->GetRangeMax());
-                KTDEBUG(swlog, "polar array: " << newSpectrum->size() << " bins; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+                LDEBUG(swlog, "fftw array: " << oldSpectrum->size() << " bins; range: " << oldSpectrum->GetRangeMin() << " - " << oldSpectrum->GetRangeMax());
+                LDEBUG(swlog, "polar array: " << newSpectrum->size() << " bins; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTINFO(swlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
+        LINFO(swlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }
@@ -109,18 +109,18 @@ namespace Katydid
             KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar();
             if (newSpectrum == NULL)
             {
-                KTERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
+                LERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
                 continue;
             }
             else
             {
                 KTFrequencySpectrumFFTW* oldSpectrum = fsData.GetSpectrumFFTW(iComponent);
-                KTDEBUG(swlog, "fftw array: " << oldSpectrum->size() << " bins; range: " << oldSpectrum->GetRangeMin() << " - " << oldSpectrum->GetRangeMax());
-                KTDEBUG(swlog, "polar array: " << newSpectrum->size() << " bins; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+                LDEBUG(swlog, "fftw array: " << oldSpectrum->size() << " bins; range: " << oldSpectrum->GetRangeMin() << " - " << oldSpectrum->GetRangeMax());
+                LDEBUG(swlog, "polar array: " << newSpectrum->size() << " bins; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTINFO(swlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
+        LINFO(swlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }

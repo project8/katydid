@@ -12,13 +12,13 @@
 #include "KTData.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 
 namespace Katydid
 {
     
-    KTLOGGER(avlog_hh, "KTDataCutter.hh");
+    LOGGER(avlog_hh, "KTDataCutter.hh");
 
     class KTLinearFitResult;
     class KTProcessedTrackData;
@@ -342,19 +342,19 @@ namespace Katydid
         // Check to ensure that the required data types are present
         if (! data->Has< KTLinearFitResult >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTLinearFitResult >!");
+            LERROR(avlog_hh, "Data not found with type < KTLinearFitResult >!");
             return;
         }
 
         // Call function
         if( !CutLinearFitResult( data->Of< KTLinearFitResult >() ) )
         {
-            KTINFO(avlog_hh, "Linear fit failed cut; suppressing signal");
+            LINFO(avlog_hh, "Linear fit failed cut; suppressing signal");
             return;
         }
 
         // Emit signal
-        KTINFO(avlog_hh, "Linear fit passed cut; emitting signal");
+        LINFO(avlog_hh, "Linear fit passed cut; emitting signal");
         fLinearFitSignal( data );
     
         return;
@@ -366,19 +366,19 @@ namespace Katydid
         // Check to ensure that the required data types are present
         if (! data->Has< KTProcessedTrackData >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
+            LERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
             return;
         }
 
         // Call function
         if( !CutProcessedTrack( data->Of< KTProcessedTrackData >() ) )
         {
-            KTINFO(avlog_hh, "Processed track failed cut; suppressing signal");
+            LINFO(avlog_hh, "Processed track failed cut; suppressing signal");
             return;
         }
 
         // Emit signal
-        KTINFO(avlog_hh, "Processed track passed cut; emitting signal");
+        LINFO(avlog_hh, "Processed track passed cut; emitting signal");
         fTrackSignal( data );
     
         return;

@@ -8,11 +8,11 @@
 #include "KTEventFirstTrackSNRCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(ecsnrlog, "KTEventFirstTrackSNRCut");
+    LOGGER(ecsnrlog, "KTEventFirstTrackSNRCut");
 
     const std::string KTEventFirstTrackSNRCut::Result::sName = "event-first-track-snr-cut";
 
@@ -50,7 +50,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecsnrlog, "Invalid string for fWideOrNarrow");
+                LERROR(ecsnrlog, "Invalid string for fWideOrNarrow");
                 return false;
             }
         }
@@ -66,7 +66,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecsnrlog, "Invalid string for fTimeOrBinAverage");
+                LERROR(ecsnrlog, "Invalid string for fTimeOrBinAverage");
                 return false;
             }
         }

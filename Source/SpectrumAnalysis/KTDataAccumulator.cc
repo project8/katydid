@@ -12,7 +12,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(avlog, "KTDataAccumulator");
+    LOGGER(avlog, "KTDataAccumulator");
 
     KT_REGISTER_PROCESSOR(KTDataAccumulator, "data-accumulator");
 
@@ -164,7 +164,7 @@ namespace Katydid
         {
             remainingFrac -= fAveragingFrac;
         }
-        //KTDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
+        //LDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
 
         unsigned nComponents = data.GetNComponents();
 
@@ -183,14 +183,14 @@ namespace Katydid
 
         if (nComponents != accData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
 
         unsigned arraySize = data.GetTimeSeries(0)->GetNTimeBins();
         if (arraySize != accData.GetTimeSeries(0)->GetNTimeBins())
         {
-            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
@@ -200,9 +200,9 @@ namespace Katydid
             KTTimeSeriesReal* avTS = static_cast< KTTimeSeriesReal* >(accData.GetTimeSeries(iComponent));
             for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
-                //KTDEBUG(avlog, (*avTS)(iBin) << "  " << (*newTS)(iBin) << "  " << remainingFrac << "  " << fAveragingFrac);
+                //LDEBUG(avlog, (*avTS)(iBin) << "  " << (*newTS)(iBin) << "  " << remainingFrac << "  " << fAveragingFrac);
                 (*avTS)(iBin) = (*avTS)(iBin) * remainingFrac + (*newTS)(iBin) * fAveragingFrac;
-                //KTDEBUG(avlog, (*avTS)(iBin));
+                //LDEBUG(avlog, (*avTS)(iBin));
             }
         }
 
@@ -234,14 +234,14 @@ namespace Katydid
 
         if (nComponents != accData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
 
         unsigned arraySize = data.GetTimeSeries(0)->GetNTimeBins();
         if (arraySize != accData.GetTimeSeries(0)->GetNTimeBins())
         {
-            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
@@ -287,13 +287,13 @@ namespace Katydid
 
         if (nComponents != accData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
         unsigned arraySize = data.GetTimeSeriesDist(0)->size();
         if (arraySize != accData.GetTimeSeriesDist(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
@@ -344,24 +344,24 @@ namespace Katydid
 
         if (nComponents != accData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
         if (nComponents != devData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the variance and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the variance and in the new data do not match");
             return false;
         }
 
         unsigned arraySize = data.GetSpectrumPolar(0)->size();
         if (arraySize != accData.GetSpectrumPolar(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
         if (arraySize != devData.GetSpectrum(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
             return false;
         }
 
@@ -414,24 +414,24 @@ namespace Katydid
 
         if (nComponents != accData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
         if (nComponents != devData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the variance and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the variance and in the new data do not match");
             return false;
         }
 
         unsigned arraySize = data.GetSpectrumFFTW(0)->size();
         if (arraySize != accData.GetSpectrumFFTW(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
         if (arraySize != devData.GetSpectrum(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
             return false;
         }
 
@@ -463,7 +463,7 @@ namespace Katydid
         {
             remainingFrac -= fAveragingFrac;
         }
-        KTDEBUG(avlog, "Accumulating a power spectrum; remainingFrac = " << remainingFrac << "   fAveragingFrac = " << fAveragingFrac);
+        LDEBUG(avlog, "Accumulating a power spectrum; remainingFrac = " << remainingFrac << "   fAveragingFrac = " << fAveragingFrac);
 
         unsigned nComponents = data.GetNComponents();
 
@@ -491,24 +491,24 @@ namespace Katydid
 
         if (nComponents != accData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
         if (nComponents != devData.GetNComponents())
         {
-            KTERROR(avlog, "Numbers of components in the variance and in the new data do not match");
+            LERROR(avlog, "Numbers of components in the variance and in the new data do not match");
             return false;
         }
 
         unsigned arraySize = data.GetSpectrum(0)->size();
         if (arraySize != accData.GetSpectrum(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
         if (arraySize != devData.GetSpectrum(0)->size())
         {
-            KTERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
+            LERROR(avlog, "Sizes of arrays in the variance and in the new data do not match");
             return false;
         }
 
@@ -534,7 +534,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTTimeSeriesData >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling time series by " << scale);
+        LDEBUG(avlog, "Scaling time series by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -547,7 +547,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTTimeSeriesDistData >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling time series dist by " << scale);
+        LDEBUG(avlog, "Scaling time series dist by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -560,7 +560,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTFrequencySpectrumDataPolar >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling freq spect polar by " << scale);
+        LDEBUG(avlog, "Scaling freq spect polar by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -581,7 +581,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTFrequencySpectrumDataFFTW >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling freq spect fftw by " << scale);
+        LDEBUG(avlog, "Scaling freq spect fftw by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -602,7 +602,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTPowerSpectrumData >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling power spect by " << scale);
+        LDEBUG(avlog, "Scaling power spect by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -623,7 +623,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTConvolvedFrequencySpectrumDataPolar >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling conv freq spect polar by " << scale);
+        LDEBUG(avlog, "Scaling conv freq spect polar by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -644,7 +644,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTConvolvedFrequencySpectrumDataFFTW >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling conv freq spect fftw by " << scale);
+        LDEBUG(avlog, "Scaling conv freq spect fftw by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -665,7 +665,7 @@ namespace Katydid
     bool KTDataAccumulator::AccumulatorType< KTConvolvedPowerSpectrumData >::Finalize()
     {
         double scale = fAccumulatorSize == 0 ? 1. / (double)(fSliceHeader.GetSliceNumber()) : 1.;
-        KTDEBUG(avlog, "Scaling conv power spect by " << scale);
+        LDEBUG(avlog, "Scaling conv power spect by " << scale);
         unsigned nComponents = fDataType.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {

@@ -7,10 +7,10 @@
 
 #include "KTSpline.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPhysicalArray.hh"
 
-KTLOGGER(splinelog, "KTSpline");
+LOGGER(splinelog, "KTSpline");
 
 namespace Katydid
 {
@@ -69,17 +69,17 @@ namespace Katydid
         std::shared_ptr< Implementation > imp = GetFromCache(nBins, xMin, xMax);
         if (imp != NULL) return imp;
 
-        KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
+        LDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
         imp = std::make_shared< Implementation >(nBins, xMin, xMax);
         double mean = 0.;
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
             (*imp)(iBin) = Evaluate(imp->GetBinCenter(iBin));
             mean += (*imp)(iBin);
-            //KTWARN(splinelog, (*imp)(iBin) << "  " << mean);
+            //LWARN(splinelog, (*imp)(iBin) << "  " << mean);
         }
         imp->SetMean(mean / (double)nBins);
-        KTDEBUG(splinelog, "Calculated implementation mean: " << imp->GetMean());
+        LDEBUG(splinelog, "Calculated implementation mean: " << imp->GetMean());
         AddToCache(imp);
         return imp;
     }
@@ -91,14 +91,14 @@ namespace Katydid
             fXMin(0.),
             fXMax(0.)
     {
-        KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
+        LERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
     }
 
     KTSpline::KTSpline(double* xVals, double* yVals, unsigned nVals) :
             fXMin(xVals[0]),
             fXMax(xVals[nVals-1])
     {
-        KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
+        LERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
     }
 
     KTSpline::KTSpline(const KTSpline& orig) :

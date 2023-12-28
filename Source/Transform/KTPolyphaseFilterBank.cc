@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "param.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
@@ -22,7 +22,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(pfblog, "KTPolyphaseFilterBank");
+    LOGGER(pfblog, "KTPolyphaseFilterBank");
 
     KT_REGISTER_PROCESSOR(KTPolyphaseFilterBank, "polyphase-filter-bank");
 
@@ -65,7 +65,7 @@ namespace Katydid
     {
         if (dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(0)) == NULL)
         {
-            KTERROR(pfblog, "Data does not contain real-type time series.");
+            LERROR(pfblog, "Data does not contain real-type time series.");
             return false;
         }
 
@@ -74,7 +74,7 @@ namespace Katydid
         {
             return true;
         }
-        KTERROR(pfblog, "New data object was not created correctly (real)");
+        LERROR(pfblog, "New data object was not created correctly (real)");
         return false;
     }
 
@@ -82,7 +82,7 @@ namespace Katydid
     {
         if (dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(0)) == NULL)
         {
-            KTERROR(pfblog, "Data does not contain fftw-type time series.");
+            LERROR(pfblog, "Data does not contain fftw-type time series.");
             return false;
         }
 
@@ -91,7 +91,7 @@ namespace Katydid
         {
             return true;
         }
-        KTERROR(pfblog, "New data object was not created correctly (fftw)");
+        LERROR(pfblog, "New data object was not created correctly (fftw)");
         return false;
     }
 
@@ -105,10 +105,10 @@ namespace Katydid
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
         if (! TransferHeaderInformation(oldSliceHeader, sliceHeader))
         {
-            KTERROR(pfblog, "Header information was not transferred");
+            LERROR(pfblog, "Header information was not transferred");
             return Nymph::KTDataPtr();
         }
-        KTDEBUG(pfblog, "Filled out slice header:\n"
+        LDEBUG(pfblog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
                 << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
                 << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
@@ -125,7 +125,7 @@ namespace Katydid
             KTTimeSeries* newTS = ApplyPFB(static_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent)));
             if (newTS == NULL)
             {
-                KTERROR(pfblog, "Time series for component " << iComponent << " was not created!");
+                LERROR(pfblog, "Time series for component " << iComponent << " was not created!");
                 return Nymph::KTDataPtr();
             }
             tsData.SetTimeSeries(newTS, iComponent);

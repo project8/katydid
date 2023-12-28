@@ -6,7 +6,7 @@
  */
 
 #include "KTDataAccumulator.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -18,7 +18,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "TestDataAccumulator");
+LOGGER(vallog, "TestDataAccumulator");
 
 int main()
 {
@@ -31,7 +31,7 @@ int main()
 
     for (unsigned iAcc = 0; iAcc < nToAccumulate; ++iAcc)
     {
-        KTINFO(vallog, "Iteration: " << iAcc);
+        LINFO(vallog, "Iteration: " << iAcc);
 
         KTTimeSeriesData newData;
         KTTimeSeriesReal* newTS = new KTTimeSeriesReal(0., nBins, 0., nBins + 1);
@@ -43,7 +43,7 @@ int main()
 
     for (unsigned iAcc = 0; iAcc < nToAccumulate; ++iAcc)
     {
-        KTINFO(vallog, "Iteration: " << nToAccumulate + iAcc);
+        LINFO(vallog, "Iteration: " << nToAccumulate + iAcc);
 
         KTTimeSeriesData newData;
         KTTimeSeriesReal* newTS = new KTTimeSeriesReal(0., nBins, 0., nBins + 1);
@@ -54,7 +54,7 @@ int main()
     }
 
     const KTDataAccumulator::Accumulator& tsAcc = accumulator.GetAccumulator< KTTimeSeriesData >();
-    KTINFO(vallog, "The TS accumulator has added " << tsAcc.GetSliceNumber() << " time series");
+    LINFO(vallog, "The TS accumulator has added " << tsAcc.GetSliceNumber() << " time series");
 
 #ifdef ROOT_FOUND
     TFile* output = new TFile("test_data_accumulator.root", "recreate");

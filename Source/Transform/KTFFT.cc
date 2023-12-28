@@ -7,7 +7,7 @@
 
 #include "KTFFT.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef FFTW_FOUND
 #include <fftw3.h>
@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "KTFFT");
+    LOGGER(fftlog, "KTFFT");
 
     KTFFT::KTFFT()
     {
@@ -49,7 +49,7 @@ namespace Katydid
         {
             fftw_init_threads();
             fftw_plan_with_nthreads(FFTW_NTHREADS);
-            KTDEBUG(fftlog, "Configuring FFTW to use up to " << FFTW_NTHREADS << " threads.");
+            LDEBUG(fftlog, "Configuring FFTW to use up to " << FFTW_NTHREADS << " threads.");
             sMultithreadedIsInitialized = true;
         }
 #endif

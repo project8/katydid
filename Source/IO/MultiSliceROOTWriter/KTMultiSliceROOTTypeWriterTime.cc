@@ -7,7 +7,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -26,7 +26,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTMultiSliceROOTTypeWriterTime");
+    LOGGER(publog, "KTMultiSliceROOTTypeWriterTime");
 
     static Nymph::KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterTime > sMERTWERegistrar;
 
@@ -74,7 +74,7 @@ namespace Katydid
             fTSHists[iComponent]->Draw();
 
             cPrint->Print(fileName.c_str(), fWriter->GetGraphicsFileType().c_str());
-            KTINFO(publog, "Printed file " << fileName);
+            LINFO(publog, "Printed file " << fileName);
             delete cPrint;
 
             // Writing to ROOT file

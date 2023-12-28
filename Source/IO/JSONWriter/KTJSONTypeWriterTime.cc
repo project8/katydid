@@ -8,13 +8,13 @@
 #include "KTEggHeader.hh"
 #include "KTJSONTypeWriterTime.hh"
 #include "KTTIFactory.hh"
-//#include "KTLogger.hh"
+//#include "logger.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "KTJSONTypeWriterTime");
+    //LOGGER(publog, "KTJSONTypeWriterTime");
 
     static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterTime > sJSONTWERegistrar;
 

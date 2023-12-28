@@ -7,7 +7,7 @@
 
 #include "KTProcessedMPTData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {

@@ -11,7 +11,7 @@
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
@@ -25,7 +25,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(fftwlog, "KTForwardFFTW");
+    LOGGER(fftwlog, "KTForwardFFTW");
 
     KT_REGISTER_PROCESSOR(KTForwardFFTW, "forward-fftw");
 
@@ -81,7 +81,7 @@ namespace Katydid
                 else if (intendedState == "rasc2c") fState = kRasC2C;
                 else
                 {
-                    KTERROR(fftwlog, "Invalid transform state requested: <" << intendedState << ">");
+                    LERROR(fftwlog, "Invalid transform state requested: <" << intendedState << ">");
                     return false;
                 }
             }
@@ -89,7 +89,7 @@ namespace Katydid
             {
                 if (node->has("transform-complex-as-iq"))
                 {
-                    KTWARN(fftwlog, "Transform-complex-as-iq was requested, but the transform-state was not specified; the former setting will be ignored");
+                    LWARN(fftwlog, "Transform-complex-as-iq was requested, but the transform-state was not specified; the former setting will be ignored");
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace Katydid
         {
             if (! Nymph::KTCacheDirectory::get_instance()->Configure())
             {
-                KTWARN(fftwlog, "Unable to use wisdom because cache directory is not ready.");
+                LWARN(fftwlog, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;
             }
         }
@@ -128,7 +128,7 @@ namespace Katydid
     {
         if (intendedState == kNone)
         {
-            KTERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
+            LERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
             return false;
         }
 
@@ -139,23 +139,23 @@ namespace Katydid
         SetTimeSizeForState(timeSize, intendedState);
 
         // fTransformFlag is guaranteed to be valid in the Set method.
-        KTDEBUG(fftwlog, "Transform flag: " << fTransformFlag);
+        LDEBUG(fftwlog, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
         if (! AllocateArrays(intendedState))
         {
-            KTERROR(fftwlog, "Unable to allocate arrays");
+            LERROR(fftwlog, "Unable to allocate arrays");
             return false;
         }
 
         if (fUseWisdom)
         {
-            KTDEBUG(fftwlog, "Reading wisdom from file <" << fWisdomFilename << ">");
+            LDEBUG(fftwlog, "Reading wisdom from file <" << fWisdomFilename << ">");
             if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
             {
-                KTWARN(fftwlog, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
+                LWARN(fftwlog, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
             }
         }
 
@@ -163,18 +163,18 @@ namespace Katydid
 
         if (intendedState == kR2C)
         {
-            KTDEBUG(fftwlog, "Creating R2C plan: " << fTimeSize << " time bins; forward FFT");
+            LDEBUG(fftwlog, "Creating R2C plan: " << fTimeSize << " time bins; forward FFT");
             // No FFTW_PRESERVE_INPUT, since the input array contents are replaced for each FFT
             fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fRInputArray, fOutputArray, transformFlag);
             // deleting arrays to save space
             // input array is required; output array is not needed
-            KTDEBUG(fftwlog, "Freeing output array");
+            LDEBUG(fftwlog, "Freeing output array");
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
         else if (intendedState == kC2C)
         {
-            KTDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
+            LDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
             // Add FFTW_PRESERVE_INPUT so that the input array content is not destroyed during the FFT
             fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
             // deleting arrays to save space
@@ -182,12 +182,12 @@ namespace Katydid
         }
         else // intendedState == kRasC2C
         {
-            KTDEBUG(fftwlog, "Creating RasC2C plan: " << fTimeSize << " time bins; forward FFT");
+            LDEBUG(fftwlog, "Creating RasC2C plan: " << fTimeSize << " time bins; forward FFT");
             // No FFTW_PRESERVE_INPUT, since the input array contents are replaced for each FFT
             fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
             // deleting arrays to save space
             // input array not required for C2C, but is for kRasC2C; output array not needed in either case
-            KTDEBUG(fftwlog, "Freeing output array");
+            LDEBUG(fftwlog, "Freeing output array");
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
@@ -199,15 +199,15 @@ namespace Katydid
             {
                 if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
                 {
-                    KTWARN(fftwlog, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
+                    LWARN(fftwlog, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
                 }
             }
-            KTDEBUG(fftwlog, "FFTW plan created; Initialization complete.");
+            LDEBUG(fftwlog, "FFTW plan created; Initialization complete.");
         }
         else
         {
             fIsInitialized = false;
-            KTERROR(fftwlog, "Unable to create the forward FFT plan! FFT is not initialized.");;
+            LERROR(fftwlog, "Unable to create the forward FFT plan! FFT is not initialized.");;
             return false;
         }
 
@@ -240,7 +240,7 @@ namespace Katydid
     {
         if (fState != kR2C)
         {
-            KTERROR(fftwlog, "Cannot do transform of real data in state <" << fState << ">");
+            LERROR(fftwlog, "Cannot do transform of real data in state <" << fState << ">");
             return false;
         }
 
@@ -252,7 +252,7 @@ namespace Katydid
 
         if (! fIsInitialized)
         {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+            LERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
                     << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
@@ -269,7 +269,7 @@ namespace Katydid
             const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
+                LERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
                 return false;
             }
 
@@ -277,14 +277,14 @@ namespace Katydid
 
             if (nextResult == NULL)
             {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
+                LERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " -> " << nextResult->GetRangeMax() << "; TimeBinWidth=" << timeBinWidth);
+            LDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " -> " << nextResult->GetRangeMax() << "; TimeBinWidth=" << timeBinWidth);
             newData.SetSpectrum(nextResult, iComponent);
         }
 
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
+        LINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
 
         return true;
     }
@@ -293,7 +293,7 @@ namespace Katydid
     {
         if (fState != kRasC2C)
         {
-            KTERROR(fftwlog, "Cannot do transform of real-as-complex data in state <" << fState << ">");
+            LERROR(fftwlog, "Cannot do transform of real-as-complex data in state <" << fState << ">");
             return false;
         }
 
@@ -305,7 +305,7 @@ namespace Katydid
 
         if (! fIsInitialized)
         {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+            LERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
                     << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
@@ -321,7 +321,7 @@ namespace Katydid
             const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
+                LERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
                 return false;
             }
 
@@ -329,14 +329,14 @@ namespace Katydid
 
             if (nextResult == NULL)
             {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
+                LERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            LDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
             newData.SetSpectrum(nextResult, iComponent);
         }
 
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
+        LINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
 
         return true;
     }
@@ -345,7 +345,7 @@ namespace Katydid
     {
         if (fState != kC2C)
         {
-            KTERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
+            LERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
             return false;
         }
 
@@ -357,7 +357,7 @@ namespace Katydid
 
         if (! fIsInitialized)
         {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+            LERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
                     << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
@@ -373,7 +373,7 @@ namespace Katydid
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                LERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
                 return false;
             }
 
@@ -381,14 +381,14 @@ namespace Katydid
 
             if (nextResult == NULL)
             {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
+                LERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            LDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
             newData.SetSpectrum(nextResult, iComponent);
         }
 
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
+        LINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
 
         return true;
     }
@@ -397,7 +397,7 @@ namespace Katydid
     {
         if (fState != kC2C)
         {
-            KTERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
+            LERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
             return false;
         }
 
@@ -409,7 +409,7 @@ namespace Katydid
 
         if (! fIsInitialized)
         {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+            LERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
             return false;
         }
@@ -425,7 +425,7 @@ namespace Katydid
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                LERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
                 return false;
             }
 
@@ -433,14 +433,14 @@ namespace Katydid
 
             if (nextResult == NULL)
             {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
+                LERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            LDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
             newData.SetSpectrum(nextResult, iComponent);
         }
 
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
+        LINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
 
         return true;
     }
@@ -449,7 +449,7 @@ namespace Katydid
     {
         if (ts->size() != fTimeSize)
         {
-            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+            LWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
                     << "   Bin expected: " << fTimeSize << ";   Bins in data: " << ts->size());
             return NULL;
         }
@@ -482,7 +482,7 @@ namespace Katydid
     {
         if (ts->size() != fTimeSize)
         {
-            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+            LWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
                     << "   Bin expected: " << fTimeSize << ";   Bins in data: " << ts->size());
             return NULL;
         }
@@ -519,7 +519,7 @@ namespace Katydid
     {
         if (ts->size() != fTimeSize)
         {
-            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+            LWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
                     << "   Bin expected: " << fTimeSize << ";   Bins in data: " << ts->size());
             return NULL;
         }
@@ -572,9 +572,9 @@ namespace Katydid
         }
         else
         {
-            KTDEBUG(fftwlog, "Time size set while in state <" << fState << ">; frequency size not changed");
+            LDEBUG(fftwlog, "Time size set while in state <" << fState << ">; frequency size not changed");
         }
-        KTDEBUG(fftwlog, "Time size set to " << fTimeSize << "; frequency size set to " << fFrequencySize);
+        LDEBUG(fftwlog, "Time size set to " << fTimeSize << "; frequency size set to " << fFrequencySize);
 
         // clear things for good measure
         FreeArrays();
@@ -587,7 +587,7 @@ namespace Katydid
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
-            KTWARN(fftwlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            LWARN(fftwlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
 
@@ -616,7 +616,7 @@ namespace Katydid
         if (intendedState == kNone) intendedState = fState;
         if (intendedState == kNone)
         {
-            KTERROR(fftwlog, "Cannot allocate arrays for state <" << intendedState << ">");
+            LERROR(fftwlog, "Cannot allocate arrays for state <" << intendedState << ">");
             return false;
         }
 
@@ -624,7 +624,7 @@ namespace Katydid
         {
             if (fRInputArray == NULL)
             {
-                KTDEBUG(fftwlog, "Allocating real input array");
+                LDEBUG(fftwlog, "Allocating real input array");
                 fRInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
             }
         }
@@ -632,13 +632,13 @@ namespace Katydid
         {
             if (fCInputArray == NULL)
             {
-                KTDEBUG(fftwlog, "Allocating complex input array");
+                LDEBUG(fftwlog, "Allocating complex input array");
                 fCInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
             }
         }
         if (fOutputArray == NULL)
         {
-            KTDEBUG(fftwlog, "Allocating output array");
+            LDEBUG(fftwlog, "Allocating output array");
             fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
         }
 
@@ -649,19 +649,19 @@ namespace Katydid
     {
         if (fRInputArray != NULL)
         {
-            KTDEBUG(fftwlog, "Freeing real input array");
+            LDEBUG(fftwlog, "Freeing real input array");
             fftw_free(fRInputArray);
             fRInputArray = NULL;
         }
         if (fCInputArray != NULL)
         {
-            KTDEBUG(fftwlog, "Freeing complex input array");
+            LDEBUG(fftwlog, "Freeing complex input array");
             fftw_free(fCInputArray);
             fCInputArray = NULL;
         }
         if (fOutputArray != NULL)
         {
-            KTDEBUG(fftwlog, "Freeing output array");
+            LDEBUG(fftwlog, "Freeing output array");
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }

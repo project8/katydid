@@ -7,7 +7,7 @@
 
 #include "KTSincWindow.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 #include <cmath>
@@ -16,7 +16,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "KTSincWindow");
+    LOGGER(windowlog, "KTSincWindow");
 
     KT_REGISTER_WINDOWFUNCTION(KTSincWindow, "sinc")
 
@@ -31,7 +31,7 @@ namespace Katydid
 
     bool KTSincWindow::ConfigureWFSubclass(const scarab::param_node*)
     {
-        KTDEBUG(windowlog, "Sinc WF configured");
+        LDEBUG(windowlog, "Sinc WF configured");
         return true;
     }
 

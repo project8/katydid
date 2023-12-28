@@ -9,7 +9,7 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMultiSliceClustering.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeFrequencyPolar.hh"
@@ -25,7 +25,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "TestMultiSliceClustering")
+LOGGER(vallog, "TestMultiSliceClustering")
 
 int main()
 {
@@ -107,8 +107,8 @@ int main()
     allPoints.push_back(freqPoints);
     // total number of "truth" clusters: 7
 
-    KTINFO(vallog, "Discriminated points have been simulated.");
-    KTINFO(vallog, "There should be 7 clusters");
+    LINFO(vallog, "Discriminated points have been simulated.");
+    LINFO(vallog, "There should be 7 clusters");
 
     KTMultiSliceClustering clustering;
     clustering.SetFrequencyBinWidth(freqBW);
@@ -117,11 +117,11 @@ int main()
 
     KTMultiSliceClustering::DataList allNewData;
 
-    KTINFO(vallog, "Commencing with the clustering process");
+    LINFO(vallog, "Commencing with the clustering process");
     uint64_t iSlice = 0;
     for (vector< KTDiscriminatedPoints1DData::SetOfPoints >::const_iterator setIt = allPoints.begin(); setIt != allPoints.end(); setIt++)
     {
-        KTINFO(vallog, "Creating time bin " << iSlice);
+        LINFO(vallog, "Creating time bin " << iSlice);
         // Setup this time bin's input data
         KTSliceHeader header(masterHeader);
         header.SetSliceNumber(iSlice);
@@ -136,15 +136,15 @@ int main()
 
         for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pointIt = setIt->begin(); pointIt != setIt->end(); pointIt++)
         {
-            KTDEBUG(vallog, "    adding point at " << pointIt->first);
+            LDEBUG(vallog, "    adding point at " << pointIt->first);
             dpDataIn.AddPoint(pointIt->first, Point(pointIt->second.fAbscissa, 1.0, 1.0), 0);
             (*freqSpec)(pointIt->first).set_polar(pointIt->second.fAbscissa, 0.);
         }
-        KTINFO(vallog, "Time bin created");
+        LINFO(vallog, "Time bin created");
 
-        KTINFO(vallog, "Adding points to clusters");
+        LINFO(vallog, "Adding points to clusters");
         KTMultiSliceClustering::DataList* newData = clustering.FindClusters(dpDataIn, fsDataIn, header);
-        KTINFO(vallog, "New data produced: " << newData->size());
+        LINFO(vallog, "New data produced: " << newData->size());
 
         allNewData.splice(allNewData.end(), *newData);
         delete newData;
@@ -152,9 +152,9 @@ int main()
         iSlice++;
     }
 
-    KTINFO(vallog, "Cleaning up remaining active clusters");
+    LINFO(vallog, "Cleaning up remaining active clusters");
     KTMultiSliceClustering::DataList* newData = clustering.CompleteAllClusters();
-    KTINFO(vallog, "New data produced: " << newData->size());
+    LINFO(vallog, "New data produced: " << newData->size());
 
     allNewData.splice(allNewData.end(), *newData);
     delete newData;
@@ -163,7 +163,7 @@ int main()
 #ifdef ROOT_FOUND
     string rootFilename("waterfall_test.root");
 
-    KTINFO(vallog, "Printing waterfall plots to " << rootFilename);
+    LINFO(vallog, "Printing waterfall plots to " << rootFilename);
 
     TFile file(rootFilename.c_str(), "recreate");
 
@@ -175,7 +175,7 @@ int main()
         string histName(conv.str());
         if (! (*it)->Has< KTWaterfallCandidateData >())
         {
-            KTERROR(vallog, "Waterfall candidate data is not present!");
+            LERROR(vallog, "Waterfall candidate data is not present!");
             iCandidate++;
             continue;
         }
@@ -189,7 +189,7 @@ int main()
     file.Close();
 #endif
 
-    KTINFO(vallog, "Test complete; " << allNewData.size() << " new data objects were created.");
+    LINFO(vallog, "Test complete; " << allNewData.size() << " new data objects were created.");
 
     return 0;
 }

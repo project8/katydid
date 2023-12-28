@@ -8,7 +8,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTHoughTransform.hh"
 #include "KTMath.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPhysicalArray.hh"
 
 
@@ -21,7 +21,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestHoughTransform");
+LOGGER(testlog, "TestHoughTransform");
 
 int main()
 {

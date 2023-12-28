@@ -19,7 +19,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(aalog, "KTAnalyticAssociator");
+    LOGGER(aalog, "KTAnalyticAssociator");
 
     KT_REGISTER_PROCESSOR(KTAnalyticAssociator, "analytic-associator");
 
@@ -75,7 +75,7 @@ namespace Katydid
             fForwardFFT.InitializeForRealAsComplexTDD();
             if (! fForwardFFT.GetIsInitialized())
             {
-                KTERROR(aalog, "Unable to initialize forward FFT.");
+                LERROR(aalog, "Unable to initialize forward FFT.");
                 return false;
             }
         }
@@ -84,7 +84,7 @@ namespace Katydid
             fReverseFFT.InitializeForComplexTDD();
             if (! fReverseFFT.GetIsInitialized())
             {
-                KTERROR(aalog, "Unable to initialize reverse FFT.");
+                LERROR(aalog, "Unable to initialize reverse FFT.");
                 return false;
             }
         }
@@ -115,7 +115,7 @@ namespace Katydid
             const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(aalog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal. Other types of time series data are not yet supported.");
+                LERROR(aalog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal. Other types of time series data are not yet supported.");
                 return false;
             }
 
@@ -133,13 +133,13 @@ namespace Katydid
 
             if (newTS == NULL)
             {
-                KTERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
+                LERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
                 return false;
             }
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
-        KTINFO(aalog, "Analytic associate calculation (from TS) complete for " << nComponents << " components");
+        LINFO(aalog, "Analytic associate calculation (from TS) complete for " << nComponents << " components");
 
         return true;
     }
@@ -165,13 +165,13 @@ namespace Katydid
 
             if (newTS == NULL)
             {
-                KTERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
+                LERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
                 return false;
             }
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
-        KTINFO(aalog, "Analytic associate calculation (from FS) complete for " << nComponents << " components");
+        LINFO(aalog, "Analytic associate calculation (from FS) complete for " << nComponents << " components");
 
         return true;
     }
@@ -197,13 +197,13 @@ namespace Katydid
 
             if (newTS == NULL)
             {
-                KTERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
+                LERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
                 return false;
             }
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
-        KTINFO(aalog, "Analytic associate calculation (from normalized FS) complete for " << nComponents << " components");
+        LINFO(aalog, "Analytic associate calculation (from normalized FS) complete for " << nComponents << " components");
 
         return true;
     }
@@ -215,7 +215,7 @@ namespace Katydid
         KTFrequencySpectrumFFTW* freqSpec = fForwardFFT.TransformAsComplex(inputTS);
         if (freqSpec == NULL)
         {
-            KTERROR(aalog, "Something went wrong with the forward FFT on the time series.");
+            LERROR(aalog, "Something went wrong with the forward FFT on the time series.");
             return NULL;
         }
 
@@ -231,7 +231,7 @@ namespace Katydid
 
         if (outputTS == NULL)
         {
-            KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
+            LERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
         }
 
         return outputTS;
@@ -248,7 +248,7 @@ namespace Katydid
         KTTimeSeriesFFTW* outputTS = fReverseFFT.TransformToComplex(&aaFS);
         if (outputTS == NULL)
         {
-            KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
+            LERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
         }
 
         return outputTS;

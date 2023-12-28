@@ -8,11 +8,11 @@
 #include "KTSequentialLineSNRCut.hh"
 #include "KTSequentialLineData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(sqlcutlog, "KTSequentialLineSNRCut");
+    LOGGER(sqlcutlog, "KTSequentialLineSNRCut");
 
     const std::string KTSequentialLineSNRCut::Result::sName = "seq-line-snr-cut";
 
@@ -47,7 +47,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(sqlcutlog, "Invalid string for fWideOrNarrow");
+                LERROR(sqlcutlog, "Invalid string for fWideOrNarrow");
                 return false;
             }
         }
@@ -63,7 +63,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(sqlcutlog, "Invalid string for fTimeOrBinAverage");
+                LERROR(sqlcutlog, "Invalid string for fTimeOrBinAverage");
                 return false;
             }
         }

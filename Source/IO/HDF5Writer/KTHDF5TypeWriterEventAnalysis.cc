@@ -6,7 +6,7 @@
  */
 
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
 #include "KTProcessedTrackData.hh"
@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTHDF5TypeWriterEventAnalysis");
+    LOGGER(publog, "KTHDF5TypeWriterEventAnalysis");
 
     static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterEventAnalysis> sH5CNDrg;
     KTHDF5TypeWriterEventAnalysis::KTHDF5TypeWriterEventAnalysis() :
@@ -117,20 +117,20 @@ namespace Katydid
     /*
     void KTHDF5TypeWriterEventAnalysis::WriteFrequencyCandidates(Nymph::KTDataPtr data)
     {
-        KTDEBUG("NOT IMPLEMENTED");
+        LDEBUG("NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data)
     {
-        KTDEBUG("NOT IMPLEMENTED");
+        LDEBUG("NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     {
-        KTDEBUG("NOT IMPLEMENTED");
+        LDEBUG("NOT IMPLEMENTED");
     }
     */
     void KTHDF5TypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Processing Tracks");
+        LDEBUG(publog, "Processing Tracks");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         PTData track;
@@ -162,12 +162,12 @@ namespace Katydid
 
         (fPTDataBuffer).push_back(track);
 
-        KTDEBUG("Done.");
+        LDEBUG("Done.");
         return;
     }
     void KTHDF5TypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Processing MTE");
+        LDEBUG(publog, "Processing MTE");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         // Write the event information
@@ -201,7 +201,7 @@ namespace Katydid
         fMTEDataBuffer.push_back(event);
 
         // Write the tracks that make up this event
-        KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
+        LDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         PTData track;
         for (TrackSetIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); ++MTETrackIt)
         {
@@ -231,11 +231,11 @@ namespace Katydid
             track.InterceptSigma = MTETrackIt->fProcTrack.GetInterceptSigma();
             track.TotalPowerSigma = MTETrackIt->fProcTrack.GetTotalPowerSigma();
             fMTETracksDataBuffer.push_back(track);
-            KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
+            LDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }
 
 
-        KTDEBUG("Done.");
+        LDEBUG("Done.");
         return;
     }
 
@@ -243,11 +243,11 @@ namespace Katydid
     {
         if (fMTEDataBuffer.empty())
         {
-            KTDEBUG("MTE buffer is empty; no multi-track events written");
+            LDEBUG("MTE buffer is empty; no multi-track events written");
             return;
         }
 
-        KTDEBUG("Writing MTE buffer.");
+        LDEBUG("Writing MTE buffer.");
         // Now create the dataspace we need
         hsize_t* dims_cands = new hsize_t(fMTEDataBuffer.size());
         hsize_t* dims_tracks = new hsize_t(fMTETracksDataBuffer.size());
@@ -287,11 +287,11 @@ namespace Katydid
     {
         if (fPTDataBuffer.empty())
         {
-            KTDEBUG("PT buffer is empty; no tracks written");
+            LDEBUG("PT buffer is empty; no tracks written");
             return;
         }
 
-        KTDEBUG("Writing PT buffer.");
+        LDEBUG("Writing PT buffer.");
         // Now create the dataspace we need
         hsize_t* dims = new hsize_t(fPTDataBuffer.size());
         H5::DataSpace dspace(1, dims);
@@ -313,7 +313,7 @@ namespace Katydid
 
     void KTHDF5TypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data) 
     {
-        KTDEBUG(publog, "Processing Power Fit Data");
+        LDEBUG(publog, "Processing Power Fit Data");
         KTPowerFitData& pfData = data->Of< KTPowerFitData >();
 
         PFData powerFit;
@@ -333,13 +333,13 @@ namespace Katydid
 
         (this->fPFDataBuffer).push_back(powerFit);
 
-        KTDEBUG(publog, "Done.");
+        LDEBUG(publog, "Done.");
         return;
     }
 
     void KTHDF5TypeWriterEventAnalysis::WritePFBuffer() 
     {
-        KTDEBUG(publog, "Writing PF Data Buffer");
+        LDEBUG(publog, "Writing PF Data Buffer");
 
         hsize_t* dims = new hsize_t(this->fPFDataBuffer.size());
         H5::DataSpace dspace(1, dims);
@@ -359,7 +359,7 @@ namespace Katydid
 
     void KTHDF5TypeWriterEventAnalysis::WriteRPTrackEventData(Nymph::KTDataPtr data) 
     {
-        KTDEBUG(publog, "Processing RP-Track Event");
+        LDEBUG(publog, "Processing RP-Track Event");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         // Write the event information
@@ -393,7 +393,7 @@ namespace Katydid
         fMTEDataBuffer.push_back(event);
 
         // Write the tracks that make up this event
-        KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
+        LDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         RPTData track;
         for (std::set< AllTrackData , TrackTimeComp >::iterator RPTrackIt = mteData.GetTracksBegin(); RPTrackIt != mteData.GetTracksEnd(); ++RPTrackIt)
         {
@@ -439,11 +439,11 @@ namespace Katydid
             track.CentralPowerFraction = RPTrackIt->fData->Of< KTPowerFitData >().GetCentralPowerFraction();
 
             fMTERPTracksDataBuffer.push_back(track);
-            KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
+            LDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }
 
 
-        KTDEBUG("Done.");
+        LDEBUG("Done.");
         return;
     }
 
@@ -451,11 +451,11 @@ namespace Katydid
     {
         if (fMTEDataBuffer.empty())
         {
-            KTDEBUG("MTE buffer is empty; no multi-track events written");
+            LDEBUG("MTE buffer is empty; no multi-track events written");
             return;
         }
 
-        KTDEBUG("Writing MTE buffer.");
+        LDEBUG("Writing MTE buffer.");
         // Now create the dataspace we need
         hsize_t* dims_cands = new hsize_t(fMTEDataBuffer.size());
         hsize_t* dims_tracks = new hsize_t(fMTERPTracksDataBuffer.size());
@@ -493,7 +493,7 @@ namespace Katydid
 
     void KTHDF5TypeWriterEventAnalysis::WriteCRPTrackEventData(Nymph::KTDataPtr data) 
     {
-        KTDEBUG(publog, "Processing Classified-Track Event");
+        LDEBUG(publog, "Processing Classified-Track Event");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         // Write the event information
@@ -527,7 +527,7 @@ namespace Katydid
         fMTEDataBuffer.push_back(event);
 
         // Write the tracks that make up this event
-        KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
+        LDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
         CRPTData track;
         for (std::set< AllTrackData , TrackTimeComp >::iterator CRPTrackIt = mteData.GetTracksBegin(); CRPTrackIt != mteData.GetTracksEnd(); ++CRPTrackIt)
         {   
@@ -575,11 +575,11 @@ namespace Katydid
             track.SideBand = CRPTrackIt->fData->Of< KTClassifierResultsData >().GetSideBand();            
 
             fMTECRPTracksDataBuffer.push_back(track);
-            KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
+            LDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
         }
 
 
-        KTDEBUG("Done.");
+        LDEBUG("Done.");
         return;
     }
 
@@ -587,11 +587,11 @@ namespace Katydid
     {
         if (fMTEDataBuffer.empty())
         {
-            KTDEBUG("MTE buffer is empty; no multi-track events written");
+            LDEBUG("MTE buffer is empty; no multi-track events written");
             return;
         }
 
-        KTDEBUG("Writing MTE buffer.");
+        LDEBUG("Writing MTE buffer.");
         // Now create the dataspace we need
         hsize_t* dims_cands = new hsize_t(fMTEDataBuffer.size());
         hsize_t* dims_tracks = new hsize_t(fMTECRPTracksDataBuffer.size());

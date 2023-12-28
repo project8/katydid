@@ -19,7 +19,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTTreeWriter");
+    LOGGER(publog, "KTROOTTreeWriter");
 
 
     KT_REGISTER_WRITER(KTROOTTreeWriter, "root-tree-writer");
@@ -64,14 +64,14 @@ namespace Katydid
     {
         if (fFile == NULL)
         {
-            KTINFO(publog, "Opening ROOT file <" << fFilename << "> with file flag <" << fFileFlag << ">");
+            LINFO(publog, "Opening ROOT file <" << fFilename << "> with file flag <" << fFileFlag << ">");
             fFile = fFileManager->OpenFile(this, fFilename.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
         {
             fFileManager->DiscardFile(this, fFilename);
             fFile = NULL;
-            KTERROR(publog, "Output file <" << fFilename << "> did not open!");
+            LERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;
         }
         fFile->cd();
@@ -97,16 +97,16 @@ namespace Katydid
     {
         if (fFile == NULL || ! fFile->IsOpen())
         {
-            KTWARN(publog, "Attempt made to write trees, but the file is not open");
+            LWARN(publog, "Attempt made to write trees, but the file is not open");
             return;
         }
-        KTINFO(publog, "Writing trees");
+        LINFO(publog, "Writing trees");
         fFile->cd();
         for (set< TTree* >::iterator it = fTrees.begin(); it != fTrees.end(); it++)
         {
             if (*it != NULL)
             {
-                KTINFO(publog, "Tree <" << (*it)->GetName() << "> has " << (*it)->GetEntries() << " entries");
+                LINFO(publog, "Tree <" << (*it)->GetName() << "> has " << (*it)->GetEntries() << " entries");
                 (*it)->Write();
             }
         }
@@ -118,7 +118,7 @@ namespace Katydid
 
         fTrees.clear();
 
-        KTINFO(publog, "Trees written to file <" << fFile->GetName() << ">; closing file");
+        LINFO(publog, "Trees written to file <" << fFile->GetName() << ">; closing file");
         return;
     }
 

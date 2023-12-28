@@ -10,7 +10,7 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTKDTreeData.hh"
 #include "KTHoughData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
 
@@ -20,7 +20,7 @@
 
 namespace Katydid {
 
-	KTLOGGER(publog, "KTHDF5TypeWriterSpectrumAnalysis");
+	LOGGER(publog, "KTHDF5TypeWriterSpectrumAnalysis");
 	static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterSpectrumAnalysis> sH5TWALYSrg;
 
 	KTHDF5TypeWriterSpectrumAnalysis::KTHDF5TypeWriterSpectrumAnalysis() :
@@ -81,11 +81,11 @@ namespace Katydid {
 	{
 	    if (fDiscPointBuffer.empty())
 	    {
-	        KTDEBUG("DiscPoints buffer is empty; nothing written to the file");
+	        LDEBUG("DiscPoints buffer is empty; nothing written to the file");
 	        return;
 	    }
 
-		KTDEBUG("Writing DiscPoints buffer");
+		LDEBUG("Writing DiscPoints buffer");
 
 		//Create the necessary dataspace
 		hsize_t* dims = new hsize_t(fDiscPointBuffer.size());

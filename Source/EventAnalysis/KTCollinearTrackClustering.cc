@@ -7,13 +7,13 @@
 
 #include "KTCollinearTrackClustering.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <vector>
 
 namespace Katydid
 {
-    KTLOGGER(tclog, "KTCollinearTrackClustering");
+    LOGGER(tclog, "KTCollinearTrackClustering");
 
     KT_REGISTER_PROCESSOR(KTCollinearTrackClustering, "collinear-track-clustering");
 
@@ -62,7 +62,7 @@ namespace Katydid
             SetNComponents(track.GetComponent() + 1);
         }
 
-        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
+        LDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         // copy the full track data
 
@@ -80,7 +80,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the collinear track clustering");
+            LERROR(tclog, "An error occurred while running the collinear track clustering");
         }
         return;
     }
@@ -94,11 +94,11 @@ namespace Katydid
     {
         if (! FindCollinearTracks())
         {
-            KTERROR(tclog, "An error occurred while identifying collinear tracks");
+            LERROR(tclog, "An error occurred while identifying collinear tracks");
             return false;
         }
 
-        KTDEBUG(tclog, "Track building complete");
+        LDEBUG(tclog, "Track building complete");
         fDoneSignal();
 
         return true;
@@ -106,13 +106,13 @@ namespace Katydid
 
     bool KTCollinearTrackClustering::FindCollinearTracks()
     {
-        KTINFO(tclog, "Finding collinear tracks");
+        LINFO(tclog, "Finding collinear tracks");
 
         // loop over components
         unsigned component = 0;
         for (std::vector< TrackSet >::const_iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
         {
-            KTDEBUG(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
+            LDEBUG(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
             
             fSlopes.clear();
             fIntercepts.clear();
@@ -120,7 +120,7 @@ namespace Katydid
             fStartTimes.clear();
             fGroupingStatuses.clear();
 
-            KTDEBUG(tclog, "Filling vectors with slope and intercept");
+            LDEBUG(tclog, "Filling vectors with slope and intercept");
             for( TrackSetCIt trackIt = compIt->begin(); trackIt != compIt->end(); ++trackIt )
             {
                 fSlopes.push_back( trackIt->fProcTrack.GetSlope() );
@@ -141,23 +141,23 @@ namespace Katydid
                     FindCluster();
                 }
 
-                KTINFO(tclog, "New cluster has size " << fCluster.size());
+                LINFO(tclog, "New cluster has size " << fCluster.size());
 
-                KTDEBUG(tclog, "Setting up new KTProcessedTrackData");
+                LDEBUG(tclog, "Setting up new KTProcessedTrackData");
 
                 // Set up new data object
                 Nymph::KTDataPtr data( new Nymph::KTData() );
                 KTProcessedTrackData& newTrack = data->Of< KTProcessedTrackData >();
                 newTrack.SetComponent( component );
 
-                KTDEBUG(tclog, "Initalized new track");
+                LDEBUG(tclog, "Initalized new track");
 
                 TrackSetCIt trackIt = compIt->begin();
 
                 // Loop through tracks in the cluster
                 for( int i = 0; i < fCluster.size(); ++i )
                 {
-                    KTDEBUG(tclog, "Advancing to position " << fCluster[i] );
+                    LDEBUG(tclog, "Advancing to position " << fCluster[i] );
                     // Get this track from the iterator
 
                     if( i == 0 )
@@ -188,22 +188,22 @@ namespace Katydid
                         newTrack.SetEndFrequency( trackIt->fProcTrack.GetEndFrequency() );
                     }
 
-                    KTDEBUG(tclog, "Assigned time and frequency");
+                    LDEBUG(tclog, "Assigned time and frequency");
 
                     // Set tracks in this cluster to GROUPED
                     // They will no longer be considered for future clusters
 
                     fGroupingStatuses[fCluster[i]] = fGROUPED;
 
-                    KTDEBUG(tclog, "Assigned GROUPED status");
+                    LDEBUG(tclog, "Assigned GROUPED status");
                 }
 
                 // Process & emit new track
 
-                KTINFO(tclog, "Set clustered tracks to GROUPED. Now processing new track");
+                LINFO(tclog, "Set clustered tracks to GROUPED. Now processing new track");
                 ProcessNewTrack( newTrack );
 
-                KTDEBUG(tclog, "Emitting track signal");
+                LDEBUG(tclog, "Emitting track signal");
                 fTrackSignal( data );
 
                 // If there are remaining UNGROUPED tracks, the while loop will repeat
@@ -214,7 +214,7 @@ namespace Katydid
             ++component;
         } // for loop over components
 
-        KTINFO(tclog, "Collinear track clustering finished. Emitting done signal");
+        LINFO(tclog, "Collinear track clustering finished. Emitting done signal");
         fDoneSignal();
 
         return true;
@@ -222,7 +222,7 @@ namespace Katydid
 
     void KTCollinearTrackClustering::FindCluster()
     {
-        KTDEBUG(tclog, "Beginning cluster determination");
+        LDEBUG(tclog, "Beginning cluster determination");
         
         // Initialize variables for variance and mean
         double avgQ = 0.;
@@ -280,19 +280,19 @@ namespace Katydid
         varQ /= (double)nUngrouped;
         varF /= (double)nUngrouped;
 
-        KTDEBUG(tclog, "Slope variance = " << varQ);
-        KTDEBUG(tclog, "Frequency variance = " << varF);
+        LDEBUG(tclog, "Slope variance = " << varQ);
+        LDEBUG(tclog, "Frequency variance = " << varF);
 
         // Weighted total variance
         totalVariance = varQ / (double)(fSlopeRadius * fSlopeRadius) + varF / (double)(fFrequencyRadius * fFrequencyRadius);
 
-        KTINFO(tclog, "Computed total weighted variance = " << totalVariance);
+        LINFO(tclog, "Computed total weighted variance = " << totalVariance);
 
         // Variance ~ N, so the threshold should as well
         if( totalVariance <= nUngrouped )
         {
             // Variance is small enough to consider these tracks collinear
-            KTDEBUG(tclog, "Found a cluster! Trying to reinstate REMOVED tracks");
+            LDEBUG(tclog, "Found a cluster! Trying to reinstate REMOVED tracks");
 
             fClusterFlag = true;
             bestDelta = 1.0e9;
@@ -319,7 +319,7 @@ namespace Katydid
 
             if( fWorstTrack == -1 )
             {
-                KTDEBUG(tclog, "Didn't find any REMOVED tracks. Terminating cluster search");
+                LDEBUG(tclog, "Didn't find any REMOVED tracks. Terminating cluster search");
 
                 // Reset all REMOVED tracks to UNGROUPED. They will be considered for future clusters
                 for( int i = 0; i < nTracks; ++i )
@@ -334,13 +334,13 @@ namespace Katydid
             }
             else
             {
-                KTDEBUG(tclog, "Best track index = " << fWorstTrack);
-                KTDEBUG(tclog, "Best delta = " << bestDelta);
+                LDEBUG(tclog, "Best track index = " << fWorstTrack);
+                LDEBUG(tclog, "Best delta = " << bestDelta);
 
                 // Reinstate this track
                 fGroupingStatuses[fWorstTrack] = fUNGROUPED;
 
-                KTDEBUG(tclog, "Added best track, with intercept " << fIntercepts[fWorstTrack] << ". Recursively continuing the cluster search");
+                LDEBUG(tclog, "Added best track, with intercept " << fIntercepts[fWorstTrack] << ". Recursively continuing the cluster search");
                 fTerminateFlag = false;
             }
         }
@@ -349,7 +349,7 @@ namespace Katydid
             if( ! fClusterFlag )
             {
                 // Variance is too big
-                KTDEBUG(tclog, "Tracks not yet clustered. Finding worst track");
+                LDEBUG(tclog, "Tracks not yet clustered. Finding worst track");
 
                 fWorstTrack = -1;
 
@@ -373,8 +373,8 @@ namespace Katydid
                     }
                 }
 
-                KTDEBUG(tclog, "Worst track index = " << fWorstTrack);
-                KTDEBUG(tclog, "Best delta = " << bestDelta);
+                LDEBUG(tclog, "Worst track index = " << fWorstTrack);
+                LDEBUG(tclog, "Best delta = " << bestDelta);
 
                 // Set this one's status to REMOVED.
                 fGroupingStatuses[fWorstTrack] = fREMOVED;
@@ -382,12 +382,12 @@ namespace Katydid
                 // Now we will recursively repeat this calculation. The track which has just been set to REMOVED will now be skipped
                 // Note that if there is only 1 track which is ungrouped, the variances will be zero and necessarily below the threshold
 
-                KTDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[fWorstTrack] << ". Recursively continuing the cluster search");
+                LDEBUG(tclog, "Removed worst track, with intercept " << fIntercepts[fWorstTrack] << ". Recursively continuing the cluster search");
                 fTerminateFlag = false;
             }
             else
             {
-                KTDEBUG(tclog, "Variance exceeded limit; removing most recent track and terminating cluster search");
+                LDEBUG(tclog, "Variance exceeded limit; removing most recent track and terminating cluster search");
 
                 fGroupingStatuses[fWorstTrack] = fREMOVED;
                 
@@ -395,7 +395,7 @@ namespace Katydid
                 {
                     if( *it == fWorstTrack )
                     {
-                        KTDEBUG(tclog, "Found worst track. Removing it now");
+                        LDEBUG(tclog, "Found worst track. Removing it now");
                         fCluster.erase( it );
 
                         --it;
@@ -428,7 +428,7 @@ namespace Katydid
 
     int KTCollinearTrackClustering::GetNUngrouped()
     {
-        KTDEBUG(tclog, "Determining number of ungrouped tracks");
+        LDEBUG(tclog, "Determining number of ungrouped tracks");
 
         int nUngrouped = 0;
         for( int i = 0; i < fSlopes.size(); ++i )
@@ -439,7 +439,7 @@ namespace Katydid
             }
         }
 
-        KTDEBUG(tclog, "Tracks ungrouped: " << nUngrouped);
+        LDEBUG(tclog, "Tracks ungrouped: " << nUngrouped);
 
         return nUngrouped;
     }

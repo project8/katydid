@@ -7,7 +7,7 @@
 
 #include "KTDataCutter.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTSliceHeader.hh"
 #include "KTProcessedTrackData.hh"
@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTDataCutter");
+    LOGGER(evlog, "KTDataCutter");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTDataCutter, "data-cutter");

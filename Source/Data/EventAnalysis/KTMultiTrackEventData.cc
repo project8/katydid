@@ -7,14 +7,14 @@
 
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <algorithm>
 #include <cmath>
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTMultiTrackEventData")
+    LOGGER(evlog, "KTMultiTrackEventData")
 
     const std::string KTMultiTrackEventData::sName("multi-track-event");
 
@@ -239,7 +239,7 @@ namespace Katydid
 
     void KTMultiTrackEventData::ProcessTracks()
     {
-        KTDEBUG(evlog, "Processing tracks");
+        LDEBUG(evlog, "Processing tracks");
 
         TrackSetCIt trackIt = fTracks.begin();
 
@@ -277,7 +277,7 @@ namespace Katydid
 
         for (++trackIt; trackIt != fTracks.end(); ++trackIt)
         {
-            KTDEBUG(evlog, "Track " << trackIt->fProcTrack.GetTrackID());
+            LDEBUG(evlog, "Track " << trackIt->fProcTrack.GetTrackID());
 
             if (trackIt->fProcTrack.GetStartTimeInRunC() < fStartTimeInRunC)
             {
@@ -286,7 +286,7 @@ namespace Katydid
                 fStartTimeInRunCSigma = trackIt->fProcTrack.GetStartTimeInRunCSigma();
                 fStartFrequency = trackIt->fProcTrack.GetStartFrequency();
                 fStartFrequencySigma = trackIt->fProcTrack.GetStartFrequencySigma();
-                KTDEBUG(evlog, "Start time (freq) is now " << fStartTimeInRunC << "(" << fStartFrequency << ")");
+                LDEBUG(evlog, "Start time (freq) is now " << fStartTimeInRunC << "(" << fStartFrequency << ")");
                 fFirstTrackID = trackIt->fProcTrack.GetTrackID();
                 fFirstTrackTimeLength = trackIt->fProcTrack.GetTimeLength();
                 fFirstTrackFrequencyWidth = trackIt->fProcTrack.GetFrequencyWidth();
@@ -308,21 +308,21 @@ namespace Katydid
                 fEndTimeInRunCSigma = trackIt->fProcTrack.GetEndTimeInRunCSigma();
                 fEndFrequency = trackIt->fProcTrack.GetEndFrequency();
                 fEndFrequencySigma = trackIt->fProcTrack.GetEndFrequencySigma();
-                KTDEBUG(evlog, "End time (freq) is now " << fEndTimeInRunC << "(" << fEndFrequency << ")");
+                LDEBUG(evlog, "End time (freq) is now " << fEndTimeInRunC << "(" << fEndFrequency << ")");
             }
 
             double minFreq = std::min(trackIt->fProcTrack.GetStartFrequency(), trackIt->fProcTrack.GetEndFrequency());
             if (minFreq < fMinimumFrequency)
             {
                 fMinimumFrequency = minFreq;
-                KTDEBUG(evlog, "Minimum frequency is now " << fMinimumFrequency);
+                LDEBUG(evlog, "Minimum frequency is now " << fMinimumFrequency);
             }
 
             double maxFreq = std::max(trackIt->fProcTrack.GetStartFrequency(), trackIt->fProcTrack.GetEndFrequency());
             if (maxFreq > fMaximumFrequency)
             {
                 fMaximumFrequency = maxFreq;
-                KTDEBUG(evlog, "Maximum frequency is now " << fMaximumFrequency);
+                LDEBUG(evlog, "Maximum frequency is now " << fMaximumFrequency);
             }
         }
 

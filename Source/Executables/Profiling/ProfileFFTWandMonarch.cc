@@ -7,7 +7,7 @@
 
 #include "KTData.hh"
 #include "KTEggHeader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTThroughputProfiler.hh"
 
 #include "M2Monarch.hh"
@@ -21,13 +21,13 @@ using namespace std;
 using namespace Katydid;
 using namespace monarch2;
 
-KTLOGGER(proflog, "ProfileFFTWandMonarch");
+LOGGER(proflog, "ProfileFFTWandMonarch");
 
 int main(const int argc, const char** argv)
 {
     if (argc < 2)
     {
-        KTWARN(proflog, "Usage:\n" <<
+        LWARN(proflog, "Usage:\n" <<
                 "\tProfileFFTWandMonarch <input egg file> <# of slices to read>");
         return -1;
     }
@@ -41,7 +41,7 @@ int main(const int argc, const char** argv)
     }
     catch (M2Exception& e)
     {
-        KTERROR(proflog, "could not read header: " << e.what());
+        LERROR(proflog, "could not read header: " << e.what());
         return -1;
     }
 
@@ -55,7 +55,7 @@ int main(const int argc, const char** argv)
     tEggHeader.SetRunDuration(tReadHeader->GetRunDuration());
     tEggHeader.SetAcquisitionRate(tReadHeader->GetAcquisitionRate() * 1.e6);
 
-    KTDEBUG(proflog, "Parsed header:\n"
+    LDEBUG(proflog, "Parsed header:\n"
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
          << "\tAcquisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
@@ -66,24 +66,24 @@ int main(const int argc, const char** argv)
 
     unsigned tSize = tEggHeader.GetChannelHeader(0)->GetRecordSize();
 
-    KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
+    LINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
     // Dummy data pointer
     Nymph::KTDataPtr dataPtr(new Nymph::KTData());
 
     // Create FFT
-    KTINFO(proflog, "Setting up the FFT");
+    LINFO(proflog, "Setting up the FFT");
     fftw_complex* tInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * tSize);
     fftw_complex* tOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * tSize);
     fftw_plan tPlan = fftw_plan_dft_1d(tSize, tInputArray, tOutputArray, FFTW_FORWARD, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT);
 
-    KTINFO(proflog, "FFT setup complete");
+    LINFO(proflog, "FFT setup complete");
 
     // Create the profiler
     KTThroughputProfiler profiler;
 
     // Start the timer!
-    KTINFO(proflog, "Starting profiling");
+    LINFO(proflog, "Starting profiling");
     profiler.Start();
 
     const M2RecordBytes* tRecord1 = tReadTest->GetRecordSeparateOne();
@@ -93,10 +93,10 @@ int main(const int argc, const char** argv)
 
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
-        KTINFO(proflog, "Slice " << iSlice);
+        LINFO(proflog, "Slice " << iSlice);
         if (tReadTest->ReadRecord() == false)
         {
-            KTERROR(proflog, "Problem reading records at slice " << iSlice);
+            LERROR(proflog, "Problem reading records at slice " << iSlice);
             break;
         }
 

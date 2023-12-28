@@ -10,12 +10,12 @@
 #include "KTDBSCAN.hh"
 #include "KTException.hh"
 #include "KTKDTreeData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 namespace Katydid
 {
-    KTLOGGER(dnflog, "KTDBSCANNoiseFiltering");
+    LOGGER(dnflog, "KTDBSCANNoiseFiltering");
 
     KT_REGISTER_PROCESSOR(KTDBSCANNoiseFiltering, "dbscan-noise-filtering");
 
@@ -54,14 +54,14 @@ namespace Katydid
         {
             for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
             {
-                KTDEBUG(dnflog, "Clustering component " << iComponent);
+                LDEBUG(dnflog, "Clustering component " << iComponent);
 
                 DoFiltering(data.GetTreeIndex(iComponent), data.GetSetOfPoints(iComponent));
             } // loop over components
         }
         catch(Nymph::KTException& e)
         {
-            KTERROR(dnflog, "Error running DBSCAN filtering: " << e.what());
+            LERROR(dnflog, "Error running DBSCAN filtering: " << e.what());
             return false;
         }
 
@@ -73,16 +73,16 @@ namespace Katydid
         DBSCAN_KDTree dbscan;
         dbscan.SetRadius(fRadius);
         dbscan.SetMinPoints(fMinPoints);
-        KTINFO(dnflog, "DBSCAN configured");
+        LINFO(dnflog, "DBSCAN configured");
 
         // do the clustering!
-        KTINFO(dnflog, "Starting DBSCAN");
+        LINFO(dnflog, "Starting DBSCAN");
         DBSCAN_KDTree::DBSResults results;
         if (! dbscan.DoClustering(*treeIndex, results))
         {
             throw Nymph::KTException() << "An error occurred while clustering";
         }
-        KTDEBUG(dnflog, "DBSCAN finished");
+        LDEBUG(dnflog, "DBSCAN finished");
 
         if (points.size() != results.fNoise.size() )
         {

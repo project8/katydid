@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "KTDCOffsetGenerator");
+    LOGGER(genlog, "KTDCOffsetGenerator");
 
     KT_REGISTER_PROCESSOR(KTDCOffsetGenerator, "dc-offset-generator");
 
@@ -42,7 +42,7 @@ namespace Katydid
             {
                 if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
                 {
-                    KTERROR(genlog, "Invalid pair: " << (*pairIt)->ToString());
+                    LERROR(genlog, "Invalid pair: " << (*pairIt)->ToString());
                     return false;
                 }
                 UIntDoublePair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< double >(1));
@@ -67,7 +67,7 @@ namespace Katydid
 
             if (timeSeries == NULL)
             {
-                KTERROR(genlog, "Time series " << iComponent << " was not present");
+                LERROR(genlog, "Time series " << iComponent << " was not present");
                 continue;
             }
 

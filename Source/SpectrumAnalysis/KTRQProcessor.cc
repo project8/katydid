@@ -39,7 +39,7 @@ namespace Katydid {
 	fDataMap = new DataMapType(NULL, fChunkSize);
       }
       else {
-	KTWARN(nrq_log, "Config requested for RQProc (chunk size) but already configured...");
+	LWARN(nrq_log, "Config requested for RQProc (chunk size) but already configured...");
       }
 
       // grab the noise and candidate data names.
@@ -47,7 +47,7 @@ namespace Katydid {
       this->SetCandidateDataName(node->get_value<std::string>("candidate-data-name", fCandidateName));
     }
     else {
-      KTWARN(nrq_log, "NULL config node passed to Configure!");
+      LWARN(nrq_log, "NULL config node passed to Configure!");
       result = false;
     }
 
@@ -112,7 +112,7 @@ namespace Katydid {
       new (this->fDataMap) DataMapType(rawPtr, this->fChunkSize);
         
       // Update noise estimate with current noise sample.
-      KTINFO(nrq_log,"using noise to update NACM estimate...");
+      LINFO(nrq_log,"using noise to update NACM estimate...");
 
       // Grab a tick to calculate elapsed time.
       std::clock_t t0 = clock();
@@ -140,14 +140,14 @@ namespace Katydid {
       // all done, check elapsed time.
       std::clock_t tf = clock();
       double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-      KTINFO(nrq_log, "Noise data processed in " << elapsed << " seconds.");
+      LINFO(nrq_log, "Noise data processed in " << elapsed << " seconds.");
 
       // Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
       // appropriate.
       if(true) {
 	this->SetNACMConverged(true);
-	KTINFO(nrq_log,"NACM has converged.");
-	KTWARN(nrq_log,"DON'T BELIEVE CONVERGE MSG, TEMPORARY CONVERGENCE CRITERION USED.");
+	LINFO(nrq_log,"NACM has converged.");
+	LWARN(nrq_log,"DON'T BELIEVE CONVERGE MSG, TEMPORARY CONVERGENCE CRITERION USED.");
       }
     }
     
@@ -214,10 +214,10 @@ namespace Katydid {
       // all done, check elapsed time.
       std::clock_t tf = clock();
       double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-      KTINFO(nrq_log, "Candidate record processed by NRQ processor in " << elapsed << " seconds.");
+      LINFO(nrq_log, "Candidate record processed by NRQ processor in " << elapsed << " seconds.");
     }
     else {
-    KTWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
+    LWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
     }
 
     return true;

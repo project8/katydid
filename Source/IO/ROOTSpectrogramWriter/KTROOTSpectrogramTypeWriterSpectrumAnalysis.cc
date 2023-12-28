@@ -36,7 +36,7 @@ namespace Katydid
     {
         if (!fWriter->OpenAndVerifyFile()) return;
 
-        KTDEBUG("calling output each spectrogram set")
+        LDEBUG("calling output each spectrogram set")
         // OutputASpectrogramSet takes the spectrograms in the corresponding bundle and writes them to the root file.
         //        OutputASpectrogramSet(fFSPolarBundle, false);
         //        OutputASpectrogramSet(fFSFFTWBundle, false);

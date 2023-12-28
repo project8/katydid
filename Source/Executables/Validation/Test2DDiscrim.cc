@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessedTrackData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTVariableSpectrumDiscriminator.hh"
 #include "KTGainVariationData.hh"
 #include "KTSpline.hh"
@@ -33,7 +33,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestSpectrogramCollector");
+LOGGER(testlog, "TestSpectrogramCollector");
 
 // Method to determine whether a line intersects a bin with finite size
 // The line extends over a finite segment from (x1,y1) to (x2,y2)
@@ -113,7 +113,7 @@ int main()
     gv.SetSpline( sp );
 
     // Create new power spectra to send to the discriminator
-    KTINFO(testlog, "Creating the power spectra");
+    LINFO(testlog, "Creating the power spectra");
 
     double bkgd;
     for( double t = 0; t < t_bin * 100; t += t_bin )
@@ -151,7 +151,7 @@ int main()
         
         // Send a log message just the first time
         if( t == 0 )
-            KTINFO(testlog, "Finished filling first spectrum. 99 to go");
+            LINFO(testlog, "Finished filling first spectrum. 99 to go");
 
         // Convert to Power Spectrum
         ps = fftw->CreatePowerSpectrum();
@@ -166,7 +166,7 @@ int main()
 
         // Log
         if( t == 0 )
-            KTINFO(testlog, "Finished processing first spectrum. 99 to go");
+            LINFO(testlog, "Finished processing first spectrum. 99 to go");
     }
 
     // Now we create and configure the spectrogram collector
@@ -177,22 +177,22 @@ int main()
     spec.SetTrailTime( 50e-6 );
 
     // Add tracks to listen
-    KTINFO(testlog, "Adding track to the spectrogram collector");
+    LINFO(testlog, "Adding track to the spectrogram collector");
     if( !spec.ReceiveTrack( tr1 ) )
-        KTERROR(testlog, "Something went wrong adding the track");
+        LERROR(testlog, "Something went wrong adding the track");
 
     // Add spectra
-    KTINFO(testlog, "Adding spectra to the spectrogram collector");
+    LINFO(testlog, "Adding spectra to the spectrogram collector");
     for( int i = 0; i < 100; i++ )
     {
         if( !spec.ReceiveSpectrum( *psArray[i], *sArray[i] ) )
-            KTERROR(testlog, "Something went wrong adding spectrum" << i);
+            LERROR(testlog, "Something went wrong adding spectrum" << i);
     }
 
     // The result is a KTPSCollectionData
     KTPSCollectionData* psColl = spec.WaterfallSets()[0].begin()->second;
     
-    KTINFO(testlog, "Retrieved spectrogram. Delta T = " << psColl->GetDeltaT());
+    LINFO(testlog, "Retrieved spectrogram. Delta T = " << psColl->GetDeltaT());
 
     // Now we create and configure the discriminator
     KTVariableSpectrumDiscriminator discrim;
@@ -200,13 +200,13 @@ int main()
     discrim.SetMinFrequency( 55e6 );
     discrim.SetMaxFrequency( 145e6 );
 
-    KTINFO(testlog, "Discriminating points");
+    LINFO(testlog, "Discriminating points");
 
     // Discriminate the spectrogram collection
     if( !discrim.Discriminate( *psColl, gv ) )
-        KTERROR(testlog, "Something went wrong discriminating points");
+        LERROR(testlog, "Something went wrong discriminating points");
 
-    KTINFO(testlog, "Finished discriminating");
+    LINFO(testlog, "Finished discriminating");
 
     // The result is a set of 2D points
     KTDiscriminatedPoints2DData& result = psColl->Of< KTDiscriminatedPoints2DData >();
@@ -227,7 +227,7 @@ int main()
     double* xArray = &xx[0];
     double* yArray = &yy[0];
 
-    KTINFO(testlog, "Writing to file");
+    LINFO(testlog, "Writing to file");
 
     // Write to file
 #ifdef ROOT_FOUND
@@ -239,7 +239,7 @@ int main()
     file->Close();
 #endif
 
-    KTINFO(testlog, "File written successfully. Exiting");
+    LINFO(testlog, "File written successfully. Exiting");
 
     return 0;
 }

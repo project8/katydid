@@ -6,7 +6,7 @@
  */
 
 #include "KTDBSCANEventClustering.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTProcessedTrackData.hh"
@@ -20,7 +20,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(tclog, "katydid.fft");
+    LOGGER(tclog, "katydid.fft");
 
     KT_REGISTER_PROCESSOR(KTDBSCANEventClustering, "dbscan-event-clustering");
 
@@ -63,7 +63,7 @@ namespace Katydid
             const scarab::param_array* radii = node->array_at("radii");
             if (radii->size() != fNDimensions / fNPointsPerTrack)
             {
-                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
+                LERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
                 return false;
             }
             fRadii(0) = radii->get_value< double >(0);
@@ -87,7 +87,7 @@ namespace Katydid
         // copy the full track data
         fCompTracks[track.GetComponent()].push_back(track);
 
-        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency());
+        LDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency());
 
         return true;
     }
@@ -105,7 +105,7 @@ namespace Katydid
         newPoint(1) = frequency;
         fCompPoints[component].push_back(newPoint);
 
-        KTDEBUG(tclog, "Point " << fCompPoints[component].size()-1 << " is now " << fCompPoints[component].back());
+        LDEBUG(tclog, "Point " << fCompPoints[component].size()-1 << " is now " << fCompPoints[component].back());
 
         return true;
     }
@@ -115,7 +115,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the event clustering");
+            LERROR(tclog, "An error occurred while running the event clustering");
         }
         return;
     }
@@ -133,11 +133,11 @@ namespace Katydid
 
         dbScan.SetRadius(1.);
         dbScan.SetMinPoints(fMinPoints);
-        KTINFO(tclog, "DBSCAN configured");
+        LINFO(tclog, "DBSCAN configured");
 
         for (unsigned iComponent = 0; iComponent < fCompTracks.size(); ++iComponent)
         {
-            KTDEBUG(tclog, "Clustering component " << iComponent);
+            LDEBUG(tclog, "Clustering component " << iComponent);
 
             if (fCompTracks[iComponent].empty() )
                 continue;
@@ -153,7 +153,7 @@ namespace Katydid
             Points normPoints(fCompTracks[iComponent].size());
             Point newPoint(fNDimensions);
             // normalize points
-            KTDEBUG(tclog, "Scale: " << scale);
+            LDEBUG(tclog, "Scale: " << scale);
             unsigned iPoint = 0;
             for (vector< KTProcessedTrackData >::const_iterator pIt = fCompTracks[iComponent].begin(); pIt != fCompTracks[iComponent].end(); ++pIt)
             {
@@ -171,7 +171,7 @@ namespace Katydid
                 std::stringstream ptStr;
                 ptStr << "Point -- before: (" << pIt->GetStartTimeInRunC() << ", " << pIt->GetStartFrequency() << ", " << pIt->GetEndTimeInRunC() << ", " << pIt->GetEndFrequency() << ")";
 #endif
-                KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
+                LDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
                 normPoints[iPoint++] = newPoint;
             }
 
@@ -179,26 +179,26 @@ namespace Katydid
             distMat.ComputeDistances< TrackDistance< Point > >(normPoints);
 
             // do the clustering!
-            KTINFO(tclog, "Starting DBSCAN");
+            LINFO(tclog, "Starting DBSCAN");
             KTDBSCAN< DistanceMatrix >::DBSResults results;
             if (! dbScan.DoClustering(distMat, results))
             {
-                KTERROR(tclog, "An error occurred while clustering");
+                LERROR(tclog, "An error occurred while clustering");
                 return false;
             }
-            KTDEBUG(tclog, "DBSCAN finished");
+            LDEBUG(tclog, "DBSCAN finished");
 
             // loop over the clusters found, and create data objects for them
-            KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidate events");
+            LDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidate events");
             for (vector< KTDBSCAN< DistanceMatrix >::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
                 {
-                    KTWARN(tclog, "Empty cluster");
+                    LWARN(tclog, "Empty cluster");
                     continue;
                 }
 
-                KTDEBUG(tclog, "Creating event " << fDataCount << "; includes " << clustIt->size() << " tracks");
+                LDEBUG(tclog, "Creating event " << fDataCount << "; includes " << clustIt->size() << " tracks");
 
                 ++fDataCount;
 
@@ -224,7 +224,7 @@ namespace Katydid
 
         } // loop over components
 
-        KTDEBUG(tclog, "Clustering complete");
+        LDEBUG(tclog, "Clustering complete");
         fClusterDoneSignal();
 
         return true;

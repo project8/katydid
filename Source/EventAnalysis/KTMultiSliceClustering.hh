@@ -16,7 +16,7 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTSignal.hh"
 #include "KTWignerVilleData.hh"
@@ -28,7 +28,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(sclog, "KTMultiSliceClustering");
+    LOGGER(sclog, "KTMultiSliceClustering");
 
     //class KTCorrelationData;
     class KTFrequencySpectrum;
@@ -430,12 +430,12 @@ namespace Katydid
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {
-            KTWARN(sclog, "No discriminated-points data was present");
+            LWARN(sclog, "No discriminated-points data was present");
             return;
         }
         if (! data->Has< XDataType >())
         {
-            KTWARN(sclog, "No frequency spectrum (polar) data was present");
+            LWARN(sclog, "No frequency spectrum (polar) data was present");
             return;
         }
         // signal for any continued use of the input data
@@ -444,7 +444,7 @@ namespace Katydid
 
         if (data->GetLastData())
         {
-            KTINFO(sclog, "Last input data processed; Cleaning up remaining active clusters");
+            LINFO(sclog, "Last input data processed; Cleaning up remaining active clusters");
             KTMultiSliceClustering::DataList* lastData = CompleteAllClusters();
             clusteredData->splice(clusteredData->end(), *lastData);
             delete lastData;

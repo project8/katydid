@@ -7,7 +7,7 @@
 
 #include "KTTerminalTypeWriterEventAnalysis.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 

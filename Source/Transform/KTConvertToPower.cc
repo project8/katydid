@@ -12,7 +12,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTChannelAggregatedData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
@@ -21,7 +21,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER(pslog, "katydid.fft");
+    LOGGER(pslog, "katydid.fft");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTConvertToPower, "convert-to-power");

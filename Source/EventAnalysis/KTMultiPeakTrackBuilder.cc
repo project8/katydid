@@ -7,7 +7,7 @@
 
 #include "KTMultiPeakTrackBuilder.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTMultiTrackEventData.hh"
 
@@ -25,7 +25,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(tclog, "KTMultiPeakTrackBuilder");
+    LOGGER(tclog, "KTMultiPeakTrackBuilder");
 
     KT_REGISTER_PROCESSOR(KTMultiPeakTrackBuilder, "multi-peak-track-builder");
 
@@ -61,7 +61,7 @@ namespace Katydid
     {
         if (! data->Has< KTProcessedTrackData >())
         {
-            KTERROR(tclog, "Data not found with type < KTProcessedTrackData >!");
+            LERROR(tclog, "Data not found with type < KTProcessedTrackData >!");
             return;
         }
 
@@ -69,14 +69,14 @@ namespace Katydid
 
         if (track.GetAcquisitionID() != fCurrentAcquisitionID)
         {
-            KTINFO(tclog, "Incoming track has a new acquisition ID (new: " << track.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
+            LINFO(tclog, "Incoming track has a new acquisition ID (new: " << track.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");
             if (! DoClustering())
             {
-                KTERROR(tclog, "An error occurred while running the event clustering");
+                LERROR(tclog, "An error occurred while running the event clustering");
                 return;
             }
             fCurrentAcquisitionID = track.GetAcquisitionID();
-            KTDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
+            LDEBUG(tclog, "New acquisition ID: " << fCurrentAcquisitionID);
         }
 
         // ignore the track if it's been cut
@@ -88,13 +88,13 @@ namespace Katydid
             SetNComponents(track.GetComponent() + 1);
         }
 
-        KTDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
+        LDEBUG(tclog, "Taking track: (" << track.GetStartTimeInRunC() << ", " << track.GetStartFrequency() << ", " << track.GetEndTimeInRunC() << ", " << track.GetEndFrequency() << ")");
 
         // copy the full track data
         AllTrackData trackObject( data, track );
         fCompTracks[track.GetComponent()].insert(trackObject);
 
-        KTINFO(tclog, "Successfully took track. Total tracks stored: " << fCompTracks.size());
+        LINFO(tclog, "Successfully took track. Total tracks stored: " << fCompTracks.size());
 
         return;
     }
@@ -103,7 +103,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the multi-peak track clustering");
+            LERROR(tclog, "An error occurred while running the multi-peak track clustering");
         }
         return;
     }
@@ -117,11 +117,11 @@ namespace Katydid
     {
         if (! FindMultiPeakTracks())
         {
-            KTERROR(tclog, "An error occurred while identifying multi-peak tracks");
+            LERROR(tclog, "An error occurred while identifying multi-peak tracks");
             return false;
         }
 
-        KTDEBUG(tclog, "MPT building complete");
+        LDEBUG(tclog, "MPT building complete");
         fDoneSignal();
 
         fMPTracks.clear();
@@ -135,20 +135,20 @@ namespace Katydid
 
     bool KTMultiPeakTrackBuilder::FindMultiPeakTracks()
     {
-        KTINFO(tclog, "Collecting lines into multi-peak tracks");
+        LINFO(tclog, "Collecting lines into multi-peak tracks");
 
         // loop over components
         unsigned component = 0;
         for (vector< TrackSet >::const_iterator compIt = fCompTracks.begin(); compIt != fCompTracks.end(); ++compIt)
         {
-            KTDEBUG(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
+            LDEBUG(tclog, "Doing component: " << compIt - fCompTracks.begin() + 1 << "/" << fCompTracks.size());
             fMPTracks[component].clear();
 
             // loop over individual tracks
             TrackSetCIt trackIt = compIt->begin();
             if (trackIt == compIt->end())
             {
-                KTDEBUG(tclog, "No tracks to see here, moving right along");
+                LDEBUG(tclog, "No tracks to see here, moving right along");
                 continue;
             }
 
@@ -157,24 +157,24 @@ namespace Katydid
             int trackCount = 0;
             while (trackIt != compIt->end())
             {
-                KTDEBUG(tclog, "considering track (" << ++trackCount << "/" << compIt->size() << ")");
+                LDEBUG(tclog, "considering track (" << ++trackCount << "/" << compIt->size() << ")");
                 // loop over active track refs
                 list< MultiPeakTrackRef >::iterator mptrIt = activeTrackRefs.begin();
                 bool trackHasBeenAdded = false; // this will allow us to check all of the track refs for whether they're still active, even after adding the track to a ref
                 int activeTrackCount = 0;
                 while (mptrIt != activeTrackRefs.end())
                 {
-                    KTDEBUG(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
+                    LDEBUG(tclog, "checking active track (" << ++activeTrackCount << "/" << activeTrackRefs.size() << ")" );
                     double deltaStartT = trackIt->fProcTrack.GetStartTimeInRunC() - mptrIt->fMeanStartTimeInRunC;
 
                     // check to see if this track ref should no longer be active
                     if (deltaStartT > fSidebandTimeTolerance)
                     {
-                        KTDEBUG(tclog, "this track ref should no longer be active");
+                        LDEBUG(tclog, "this track ref should no longer be active");
                         // there's no way this track, or any following it in the set, will match in time
                         fMPTracks[component].insert(*mptrIt);
                         mptrIt = activeTrackRefs.erase(mptrIt); // this results in mptrIt being one element past the one that was erased
-                        KTDEBUG(tclog, "there are now " << fMPTracks[component].size() << " completed MPTracks");
+                        LDEBUG(tclog, "there are now " << fMPTracks[component].size() << " completed MPTracks");
                     }
                     else
                     {

@@ -12,7 +12,7 @@
 #include "KTLinearFitResult.hh"
 #include "KTPowerFitData.hh"
 #include "KTSpectrumCollectionData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
@@ -41,7 +41,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTLinearDensityProbeFit");
+    LOGGER(evlog, "KTLinearDensityProbeFit");
 
     KT_REGISTER_PROCESSOR(KTLinearDensityProbeFit, "linear-density-fit");
 
@@ -117,12 +117,12 @@ namespace Katydid
     {
         if (fDoDensityMaximization && ! DensityMaximization(data, pts, fullSpectrogram))
         {
-            KTERROR(evlog, "Something went wrong performing the density maximization algorithm!");
+            LERROR(evlog, "Something went wrong performing the density maximization algorithm!");
             return false;
         }
         if (fDoProjectionAnalysis && ! ProjectionAnalysis(data, pts, fullSpectrogram))
         {
-            KTERROR(evlog, "Something went wrong performing the projection analysis algorithm!");
+            LERROR(evlog, "Something went wrong performing the projection analysis algorithm!");
             return false;
         }
 
@@ -229,12 +229,12 @@ namespace Katydid
         double intercept1 = newData.GetIntercept( 0 );
         double intercept2 = newData.GetIntercept( 1 );
 
-        KTDEBUG(evlog, "Signal candidate intercept = " << intercept2 );
-        KTDEBUG(evlog, "Sideband candidate intercept = " << intercept1 );
+        LDEBUG(evlog, "Signal candidate intercept = " << intercept2 );
+        LDEBUG(evlog, "Sideband candidate intercept = " << intercept1 );
 
         if( intercept1 == 0 || intercept2 == 0 )
         {
-            KTERROR(evlog, "Failed to find a suitable intercept. Perhaps there is a problem with fMin/MaxFrequency or the timestamps of your tracks. Aborting.");
+            LERROR(evlog, "Failed to find a suitable intercept. Perhaps there is a problem with fMin/MaxFrequency or the timestamps of your tracks. Aborting.");
             return false;
         }
 
@@ -245,7 +245,7 @@ namespace Katydid
         newData.SetStartingFrequency( data.GetStartFrequency() - data.GetIntercept() + intercept1, 0 );
         newData.SetStartingFrequency( data.GetStartFrequency() - data.GetIntercept() + intercept2, 1 );
 
-        KTINFO(evlog, "Found best-fit intercepts. Continuing with fourier analysis of sideband candidate");
+        LINFO(evlog, "Found best-fit intercepts. Continuing with fourier analysis of sideband candidate");
 
         // This procedure follows from Noah's analysis of the weighted and unweighted projections
         // Details here: https://basecamp.com/1780990/projects/338746/messages/46624702
@@ -269,7 +269,7 @@ namespace Katydid
         int xBinStart = floor( (data.GetStartTimeInAcq() - ps_xmin) / ps_dx ) + 1;
         int xBinEnd   = floor( (data.GetStartTimeInAcq() + data.GetTimeLength() - ps_xmin) / ps_dx ) + 1;
         int xWindow = xBinEnd - xBinStart + 1;
-        KTDEBUG(evlog, "Set xBin range to " << xBinStart << ", " << xBinEnd);
+        LDEBUG(evlog, "Set xBin range to " << xBinStart << ", " << xBinEnd);
 
         int yBinStart = 0; // Will be set during the projection calculations
         //  yBinEnd will not be necessary
@@ -284,7 +284,7 @@ namespace Katydid
         double delta_f = 0.; // used in weighted projection calculated
         int iSpectrum = 0;
 
-        KTDEBUG(evlog, "Computing unweighted projection");
+        LDEBUG(evlog, "Computing unweighted projection");
 
         KTSpline* spline = fGVData.GetSpline(trackComponent);
 
@@ -309,7 +309,7 @@ namespace Katydid
             ++iSpectrum;
         }
 
-        KTDEBUG(evlog, "Computing weighted projection");
+        LDEBUG(evlog, "Computing weighted projection");
 
         // Weighted projection
         double cumulative = 0.;
@@ -378,7 +378,7 @@ namespace Katydid
             }
         }
 
-        KTINFO(evlog, "Successfully obtained power modulation. Maximum fourier peak at frequency " << newData.GetFFT_peak( 0 ) << " with SNR " << newData.GetFFT_SNR( 0 ));
+        LINFO(evlog, "Successfully obtained power modulation. Maximum fourier peak at frequency " << newData.GetFFT_peak( 0 ) << " with SNR " << newData.GetFFT_SNR( 0 ));
 
         return true;
     }
@@ -409,13 +409,13 @@ namespace Katydid
 
             // Add point to the KTPowerFitData
             newData.AddPoint( alpha, KTPowerFitData::Point( alpha, density, pts.GetSetOfPoints(0).begin()->second.fThreshold) );
-            KTDEBUG(evlog, "Added point of intercept " << alpha << " and density " << density);
+            LDEBUG(evlog, "Added point of intercept " << alpha << " and density " << density);
 
             // Increment alpha
             alpha += fStepSize;
         }
 
-        KTINFO(evlog, "Sucessfully gathered points for peak finding analysis");
+        LINFO(evlog, "Sucessfully gathered points for peak finding analysis");
 
         // Create histogram from the sweep results
         TH1D* fitPoints = KT2ROOT::CreateMagnitudeHistogram( &newData, "hPowerMag" );
@@ -427,7 +427,7 @@ namespace Katydid
         TSpectrum* spectrum = new TSpectrum( 10 ); // Maximum number of peaks = 10
         int nfound = spectrum->Search( fitPoints, fTolerance, "", fThreshold );
 
-        KTINFO(evlog, "Found " << nfound << " candidate peaks to fit");
+        LINFO(evlog, "Found " << nfound << " candidate peaks to fit");
 
         // Estimate background using TSpectrum::Background
         TH1 *hb = spectrum->Background( fitPoints, 20, "same" );
@@ -455,16 +455,16 @@ namespace Katydid
             int bin = fitPoints->GetXaxis()->FindBin( xp );
             double yp = fitPoints->GetBinContent( bin );
 
-            KTINFO(evlog, "Looking at peak (" << xp << ", " << yp << ")");
+            LINFO(evlog, "Looking at peak (" << xp << ", " << yp << ")");
 
             // If the y-position is less than twice the background level (SNR < 2), we will discard it
             if( yp < 2 * fline->Eval( xp ) )
             {
-                KTDEBUG(evlog, "Discarding peak");
+                LDEBUG(evlog, "Discarding peak");
                 continue;
             }
 
-            KTDEBUG(evlog, "Keeping peak");
+            LDEBUG(evlog, "Keeping peak");
 
             // If it is kept, add the info to par
             par[3*fNPeaks + 2] = yp;
@@ -475,8 +475,8 @@ namespace Katydid
             ++fNPeaks;
         }
 
-        KTINFO(evlog, "Found " << fNPeaks << " useful peaks to fit");
-        KTINFO(evlog, "Now fitting: Be patient...");
+        LINFO(evlog, "Found " << fNPeaks << " useful peaks to fit");
+        LINFO(evlog, "Now fitting: Be patient...");
 
         // Next we set up a TF1 to fit the power projection
         // Recall SumOfGaussians is a sum of npeaks Gaussians
@@ -510,7 +510,7 @@ namespace Katydid
         // Perform fit
         TFitResultPtr fitStatus = fitPoints->Fit( "fit", "S" );
 
-        KTINFO(evlog, "Fit completed!");
+        LINFO(evlog, "Fit completed!");
 
         // Finally we put all of the fit information into the KTPowerFitData object
         // Vectors will hold the parameters and associated errors
@@ -539,7 +539,7 @@ namespace Katydid
 
         // We will also store the validity of the fit
         bool valid = fitStatus->IsValid();
-        KTINFO(evlog, "Fit validity = " << valid);
+        LINFO(evlog, "Fit validity = " << valid);
 
         // Fill newData variables
         newData.SetNorm( norms );
@@ -573,14 +573,14 @@ namespace Katydid
         newData.SetKurtosis( fitPoints->GetKurtosis() );
 
         // Calculate classifiers
-        KTINFO(evlog, "Calculating classifiers for KTPowerFitData");
+        LINFO(evlog, "Calculating classifiers for KTPowerFitData");
 
         // First find the most central peak
         int cpIndex;
         double cpLocation;
         for( int peak = 0; peak < fNPeaks; ++peak )
         {
-            KTDEBUG(evlog, "Peak " << peak << " has location " << xpeaks[peak] - meanCorrection);
+            LDEBUG(evlog, "Peak " << peak << " has location " << xpeaks[peak] - meanCorrection);
             if( peak == 0 || std::abs( xpeaks[peak] - meanCorrection ) < std::abs( cpLocation ) )
             {
                 cpIndex = peak;
@@ -588,7 +588,7 @@ namespace Katydid
             }
         }
 
-        KTINFO(evlog, "Central peak has index " << cpIndex << " and location " << cpLocation);
+        LINFO(evlog, "Central peak has index " << cpIndex << " and location " << cpLocation);
 
         // Set central peak fit parameters
         newData.SetNormCentral( fit->GetParameter(3*cpIndex + 2) );
@@ -608,12 +608,12 @@ namespace Katydid
             if( it->second.fAbscissa - meanCorrection >= newData.GetMeanCentral()*1e6 - 3 * newData.GetSigmaCentral()*1e6 && it->second.fAbscissa - meanCorrection <= newData.GetMeanCentral()*1e6 + 3 * newData.GetSigmaCentral()*1e6 )
             {
                 centralPoints.push_back( it->second.fOrdinate );
-                KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to centralPoints vector");
+                LDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to centralPoints vector");
             }
             else
             {
                 nonCentralPoints.push_back( it->second.fOrdinate );
-                KTDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to nonCentralPoints vector");
+                LDEBUG(evlog, "Added point at " << it->second.fAbscissa - meanCorrection << " to nonCentralPoints vector");
             }
             ++iBin;
         }
@@ -630,7 +630,7 @@ namespace Katydid
         centralMean *= cpNorm;
         centralRMS = TMath::Power( centralRMS * cpNorm  - centralMean*centralMean, 0.5 );
 
-        KTINFO(evlog, "Calculated central mean = " << centralMean << " and RMS = " << centralRMS);
+        LINFO(evlog, "Calculated central mean = " << centralMean << " and RMS = " << centralRMS);
 
         // Calculate non-central mean and RMS
         double nonCentralMean = 0.0;
@@ -644,7 +644,7 @@ namespace Katydid
         nonCentralMean *= ncpNorm;
         nonCentralRMS = TMath::Power( nonCentralRMS * ncpNorm - nonCentralMean*nonCentralMean, 0.5 );
 
-        KTINFO(evlog, "Calculated non-central mean = " << nonCentralMean << " and RMS = " << nonCentralRMS);
+        LINFO(evlog, "Calculated non-central mean = " << nonCentralMean << " and RMS = " << nonCentralRMS);
 
         // Fill data
         newData.SetRMSAwayFromCentral( nonCentralRMS );
@@ -656,7 +656,7 @@ namespace Katydid
         // Lastly we copy the track ID to newData
         newData.SetTrackID( data.GetTrackID() );
 
-        KTINFO(evlog, "Finished classifier calculations. Power fit data is done!");
+        LINFO(evlog, "Finished classifier calculations. Power fit data is done!");
 
         return true;
     }
@@ -665,7 +665,7 @@ namespace Katydid
     {
         double alpha = fMinFrequency;
         
-        KTINFO(evlog, "Performing density probe test with fProbeWidth = " << fProbeWidth << " and fStepSize = " << fStepSize);
+        LINFO(evlog, "Performing density probe test with fProbeWidth = " << fProbeWidth << " and fStepSize = " << fStepSize);
 
         double bestAlpha = FindIntercept( pts, fStepSize, newData.GetSlope( component ), fProbeWidth );
         newData.SetIntercept( bestAlpha, component );
@@ -679,24 +679,24 @@ namespace Katydid
         // Check to ensure that the required data types are present
         if (! data->Has< KTProcessedTrackData >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
+            LERROR(avlog_hh, "Data not found with type < KTProcessedTrackData >!");
             return;
         }
         if (! data->Has< KTDiscriminatedPoints2DData >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTDiscriminatedPoints2DData >!");
+            LERROR(avlog_hh, "Data not found with type < KTDiscriminatedPoints2DData >!");
             return;
         }
         if (! data->Has< KTPSCollectionData >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTPSCollectionData >!");
+            LERROR(avlog_hh, "Data not found with type < KTPSCollectionData >!");
             return;
         }
 
         // Call the function
         if( !ChooseAlgorithm( data->Of< KTProcessedTrackData >(), data->Of< KTDiscriminatedPoints2DData >(), data->Of< KTPSCollectionData >() ) )
         {
-            KTERROR(avlog_hh, "Density probe analysis failed.");
+            LERROR(avlog_hh, "Density probe analysis failed.");
             return;
         }
 

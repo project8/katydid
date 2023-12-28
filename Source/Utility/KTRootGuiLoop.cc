@@ -7,13 +7,13 @@
 
 #include "KTRootGuiLoop.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "TSystem.h"
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTRootGuiLoop")
+    LOGGER(evlog, "KTRootGuiLoop")
 
     KTRootGuiLoop::KTRootGuiLoop() :
 #ifndef __CINT__
@@ -36,11 +36,11 @@ namespace Katydid
         if (fStatus >= kStopped || fStatus == kRunning) return;
 
         fStatus = kRunning;
-        KTDEBUG(evlog, "Starting event loop");
+        LDEBUG(evlog, "Starting event loop");
         while (fStatus == kRunning)
         //for (unsigned count = 0; count < 100 && fStatus == kRunning; ++count)
         {
-            //KTDEBUG(evlog, "count is " << count);
+            //LDEBUG(evlog, "count is " << count);
             usleep(fSleepTime);
             gSystem->ProcessEvents();
         }
@@ -52,14 +52,14 @@ namespace Katydid
     {
         if (fStatus != kRunning) return;
         fStatus = kPaused;
-        KTDEBUG(evlog, "Pausing event loop");
+        LDEBUG(evlog, "Pausing event loop");
     }
 
     void KTRootGuiLoop::Stop()
     {
         if (! IsActive()) return;
         fStatus = kStopped;
-        KTDEBUG(evlog, "Stopping event loop");
+        LDEBUG(evlog, "Stopping event loop");
         return;
     }
 /*
@@ -67,14 +67,14 @@ namespace Katydid
     {
         if (! IsActive()) return;
         fStatus = kComplete;
-        KTDEBUG(evlog, "loop complete");
+        LDEBUG(evlog, "loop complete");
         return;
     }
 */
     void KTRootGuiLoop::Reset()
     {
         fStatus = kPreRun;
-        KTDEBUG(evlog, "loop reset");
+        LDEBUG(evlog, "loop reset");
         return;
     }
 

@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "KTWindower");
+    LOGGER(windowlog, "KTWindower");
 
     KT_REGISTER_PROCESSOR(KTWindower, "windower");
 
@@ -63,7 +63,7 @@ namespace Katydid
         KTWindowFunction* tempWF = scarab::factory< KTWindowFunction >::get_instance()->create(windowType);
         if (tempWF == NULL)
         {
-            KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");
+            LERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");
             return false;
         }
         SetWindowFunction(tempWF);
@@ -82,10 +82,10 @@ namespace Katydid
     {
         if (! InitializeWindow(1. / header.GetAcquisitionRate(), header.GetChannelHeader(0)->GetSliceSize()))
         {
-            KTERROR(windowlog, "Something went wrong while initializing the window function!");
+            LERROR(windowlog, "Something went wrong while initializing the window function!");
             return false;
         }
-        KTDEBUG(windowlog, "Window function initialized with header");
+        LDEBUG(windowlog, "Window function initialized with header");
         return true;
     }
 
@@ -103,7 +103,7 @@ namespace Katydid
             KTTimeSeriesReal* nextInput = dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(windowlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                LERROR(windowlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
                 return false;
             }
 
@@ -111,12 +111,12 @@ namespace Katydid
 
             if (! result)
             {
-                KTERROR(windowlog, "Component <" << iComponent << "> did not get windowed correctly.");
+                LERROR(windowlog, "Component <" << iComponent << "> did not get windowed correctly.");
                 return false;
             }
         }
 
-        KTINFO(windowlog, "Windowing complete");
+        LINFO(windowlog, "Windowing complete");
 
         return true;
     }
@@ -135,7 +135,7 @@ namespace Katydid
             KTTimeSeriesFFTW* nextInput = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(windowlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                LERROR(windowlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
                 return false;
             }
 
@@ -143,12 +143,12 @@ namespace Katydid
 
             if (! result)
             {
-                KTERROR(windowlog, "Component <" << iComponent << "> did not get windowed correctly.");
+                LERROR(windowlog, "Component <" << iComponent << "> did not get windowed correctly.");
                 return false;
             }
         }
 
-        KTINFO(windowlog, "Windowing complete");
+        LINFO(windowlog, "Windowing complete");
 
         return true;
     }
@@ -158,7 +158,7 @@ namespace Katydid
         unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
-            KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
+            LWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
                     << "   Bin expected: " << fWindowFunction->GetSize() << ";   Bins in data: " << nBins);
             return false;
         }
@@ -176,7 +176,7 @@ namespace Katydid
         unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
-            KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
+            LWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
                     << "   Bin expected: " << fWindowFunction->GetSize() << ";   Bins in data: " << nBins);
             return false;
         }

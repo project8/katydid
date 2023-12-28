@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTData.hh"
 #include "KT2ROOT.hh"
 
@@ -29,7 +29,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestSpectrogramCollector");
+LOGGER(testlog, "TestSpectrogramCollector");
 
 
 unsigned nTimeBins = 1000;
@@ -139,11 +139,11 @@ int main()
     trackArray[4].SetEndFrequency( 106e6 );
 
     // Create power spectra to send to the spectrogram collector
-    KTINFO(testlog, "Creating Power Spectra");
+    LINFO(testlog, "Creating Power Spectra");
 
     for( unsigned tBin = 0; tBin < nTimeBins; ++tBin )
     {
-        KTDEBUG(testlog, "Creating spectrum " << tBin);
+        LDEBUG(testlog, "Creating spectrum " << tBin);
         // Create new frequency spectrum
         KTFrequencySpectrumPolar* fftw = new KTFrequencySpectrumPolar( nFreqBins, freqMin, freqMax );
 
@@ -176,20 +176,20 @@ int main()
         // Send a log message just the first time
         if( tBin == 0 )
         {
-            KTINFO(testlog, "Finished filling first spectrum. " << nTimeBins-1 << " to go");
+            LINFO(testlog, "Finished filling first spectrum. " << nTimeBins-1 << " to go");
         }
 
-        KTDEBUG(testlog, "Adding spectrum to ps array");
+        LDEBUG(testlog, "Adding spectrum to ps array");
         // Initialize KTPowerSpectrumData object and slice header
         psArray[tBin].SetNComponents( 1 );
 
-        KTDEBUG(testlog, "Creating power spectrum");
+        LDEBUG(testlog, "Creating power spectrum");
         // Configure psData and s
         KTPowerSpectrum* ps = fftw->CreatePowerSpectrum();
         ps->ConvertToPowerSpectrum();
         psArray[tBin].SetSpectrum( ps, 0 );
         
-        KTDEBUG(testlog, "Creating slice header");
+        LDEBUG(testlog, "Creating slice header");
         sArray[tBin].SetTimeInRun( (double)tBin*timeBinWidth );
         sArray[tBin].SetTimeInAcq( (double)tBin*timeBinWidth );
         sArray[tBin].SetSliceLength( timeBinWidth );
@@ -197,7 +197,7 @@ int main()
         // Log
         if( tBin == 0 )
         {
-            KTINFO(testlog, "Finished processing first spectrum. " << nTimeBins-1 << " to go");
+            LINFO(testlog, "Finished processing first spectrum. " << nTimeBins-1 << " to go");
         }
     }
 
@@ -209,39 +209,39 @@ int main()
     spec.SetTrailTime( 20e-6 );
 
     // Add tracks to listen
-    KTINFO(testlog, "Adding tracks to the spectrogram collector");
+    LINFO(testlog, "Adding tracks to the spectrogram collector");
     for( int i = 0; i < 5; i++ )
     {
-        KTDEBUG(testlog, "Adding track " << i);
+        LDEBUG(testlog, "Adding track " << i);
         if( ! spec.ReceiveTrack( trackArray[i] ) )
         {
-            KTERROR(testlog, "Something went wrong adding track" << i);
+            LERROR(testlog, "Something went wrong adding track" << i);
         }
     }
 
     // Add spectra
-    KTINFO(testlog, "Adding spectra to the spectrogram collector");
+    LINFO(testlog, "Adding spectra to the spectrogram collector");
     for( int i = 0; i < nTimeBins; i++ )
     {
-        KTDEBUG(testlog, "Adding spectrum " << i);
+        LDEBUG(testlog, "Adding spectrum " << i);
         if( ! spec.ReceiveSpectrum( psArray[i], sArray[i] ) )
         {
-            KTERROR(testlog, "Something went wrong adding spectrum" << i);
+            LERROR(testlog, "Something went wrong adding spectrum" << i);
         }
     }
 
-    KTINFO(testlog, "Finished receiving spectra. Begin retrieving produced spectrograms");
+    LINFO(testlog, "Finished receiving spectra. Begin retrieving produced spectrograms");
 
     // The result is a KTPSCollectionData for each track
     const KTSpectrogramCollector::WaterfallSet& spectrograms = spec.WaterfallSets()[0];
 
     if( spectrograms.size() == 0 )
     {
-        KTERROR(testlog, "No spectrograms were produced!");
+        LERROR(testlog, "No spectrograms were produced!");
     }
     else
     {
-        KTINFO(testlog, "Produced " << spectrograms.size() << " spectrograms");
+        LINFO(testlog, "Produced " << spectrograms.size() << " spectrograms");
     }
 
     // Fill a TH2D for each spectrogram and write to a file
@@ -251,11 +251,11 @@ int main()
     unsigned iSpect = 0;
     for (auto spectIter = spectrograms.begin(); spectIter != spectrograms.end(); ++spectIter)
     {
-        KTINFO(testlog, "Writing spectrogram " << iSpect);
-        //KTWARN(testlog, spectIter->second->GetSpectra()->size() );
+        LINFO(testlog, "Writing spectrogram " << iSpect);
+        //LWARN(testlog, spectIter->second->GetSpectra()->size() );
         TH2D* hist = spectIter->second->CreatePowerHistogram(0);
         if (hist) hist->Write(TString::Format("track-%i", iSpect));
-        else KTERROR(testlog, "Empty histogram");
+        else LERROR(testlog, "Empty histogram");
         ++iSpect;
     }
 
@@ -264,6 +264,6 @@ int main()
     delete file;
 #endif
 
-    KTINFO(testlog, "Finished; exiting script");
+    LINFO(testlog, "Finished; exiting script");
     return 0;
 }

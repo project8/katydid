@@ -13,7 +13,7 @@
 
 #include "KTForwardFFTW.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
@@ -30,7 +30,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(wvlog, "KTWignerVille");
+    LOGGER(wvlog, "KTWignerVille");
 
     class KTAnalyticAssociateData;
     class KTEggHeader;
@@ -280,13 +280,13 @@ namespace Katydid
     {
             //if (fPairs.empty())
             //{
-            //    KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
+            //    LWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
             //    return false;
             //}
 
             if (fOutputSHData == NULL || fOutputWVData == NULL)
             {
-                KTERROR(wvlog, "Output data has not been initialized properly");
+                LERROR(wvlog, "Output data has not been initialized properly");
                 return false;
             }
 
@@ -295,7 +295,7 @@ namespace Katydid
             unsigned nComponents = data.GetNComponents();
             if (nComponents != fBuffer.size())
             {
-                KTERROR(wvlog, "Number of components mismatched between the buffer (" << fBuffer.size() << ") and the data (" << nComponents << ")");
+                LERROR(wvlog, "Number of components mismatched between the buffer (" << fBuffer.size() << ") and the data (" << nComponents << ")");
                 return false;
             }
 
@@ -307,7 +307,7 @@ namespace Katydid
                 timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iTS));
                 if (timeSeries[iTS] == NULL)
                 {
-                    KTERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
+                    LERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
                     return false;
                 }
             }
@@ -319,7 +319,7 @@ namespace Katydid
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 preCopyBufferSize[iComponent] = fBuffer[iComponent].size();
-                KTDEBUG(wvlog, "Pre-copy buffer " << iComponent << " size: " << preCopyBufferSize[iComponent]);
+                LDEBUG(wvlog, "Pre-copy buffer " << iComponent << " size: " << preCopyBufferSize[iComponent]);
             }
 
             // copy the arriving header into fSecondHeader
@@ -367,7 +367,7 @@ namespace Katydid
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 fSliceBreak[iComponent] = fBuffer[iComponent].begin() + preCopyBufferSize[iComponent];
-                KTDEBUG(wvlog, "Slice break " << iComponent << " offset: " << fSliceBreak[iComponent] - fBuffer[iComponent].begin());
+                LDEBUG(wvlog, "Slice break " << iComponent << " offset: " << fSliceBreak[iComponent] - fBuffer[iComponent].begin());
             }
 
             // This is declared outside of the buffer loop so that after the loop we know which slice the last window started in
@@ -377,14 +377,14 @@ namespace Katydid
             bool exitBufferLoop = false;
             while (! exitBufferLoop)
             {
-                KTDEBUG(wvlog, "Slice sample offset: " << fSliceSampleOffset);
+                LDEBUG(wvlog, "Slice sample offset: " << fSliceSampleOffset);
 
                 fOutputWVData->Clear();
 
                 for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     endOfCurrentWindow[iComponent] = windowStartIterator[iComponent] + (fWindowSize - 1);
-                    KTDEBUG(wvlog, "End of current window " << iComponent << " offset: " << endOfCurrentWindow[iComponent] - fBuffer[iComponent].begin());
+                    LDEBUG(wvlog, "End of current window " << iComponent << " offset: " << endOfCurrentWindow[iComponent] - fBuffer[iComponent].begin());
                 }
 
                 // a few things need to be done depending on if the window starts in the first slice or the second slice
@@ -438,7 +438,7 @@ namespace Katydid
                     Buffer::iterator startWindowFC = windowStartIterator[firstChannel];
                     Buffer::iterator startWindowSC = windowStartIterator[secondChannel];
 
-                    KTDEBUG(wvlog, "Data remaining in buffer before transform -- ch " << firstChannel << ": " << fBuffer[firstChannel].end() - startWindowFC << "    ch " << secondChannel << ": " << fBuffer[secondChannel].end() - startWindowSC);
+                    LDEBUG(wvlog, "Data remaining in buffer before transform -- ch " << firstChannel << ": " << fBuffer[firstChannel].end() - startWindowFC << "    ch " << secondChannel << ": " << fBuffer[secondChannel].end() - startWindowSC);
                     CalculateACF(startWindowFC, startWindowSC, fWindowCounter);
                     //fOutputWVData->SetSpectrum(fFFT->Transform(fInputArray), iWindowInLoop, iPair);
                     if (fWindowAverageCounter == 0)
@@ -470,7 +470,7 @@ namespace Katydid
                     // window ALWAYS ends in the second slice
                     fOutputSHData->SetEndRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(endOfCurrentWindow[0] - fSliceBreak[0]));
 
-                    KTDEBUG(wvlog, "Signaling output data;\n" << *fOutputSHData);
+                    LDEBUG(wvlog, "Signaling output data;\n" << *fOutputSHData);
 
                     // Call the signal on the output data
                     fWVSignal(fOutputData);
@@ -545,7 +545,7 @@ namespace Katydid
                     fBuffer[iComponent].pop_front();
                 }
 
-                KTDEBUG(wvlog, "Data removed from circular buffer (ch. " << iComponent << "); samples remaining: " << fBuffer[iComponent].end() - fBuffer[iComponent].begin());
+                LDEBUG(wvlog, "Data removed from circular buffer (ch. " << iComponent << "); samples remaining: " << fBuffer[iComponent].end() - fBuffer[iComponent].begin());
             }
 
             // copy second header data into first header
@@ -582,7 +582,7 @@ namespace Katydid
                     CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], 0);
                     newData.SetSpectrum(fFFT->Transform(fInputArray), fLeftStartPointer, iPair);
                 }
-                KTDEBUG(wvlog, "Left start pointer now at " << fLeftStartPointer);
+                LDEBUG(wvlog, "Left start pointer now at " << fLeftStartPointer);
 
                 //for(unsigned offset = 0; offset < nOffsets; offset++)
                 //{
@@ -596,7 +596,7 @@ namespace Katydid
 
                 iPair++;
             }
-            KTINFO(wvlog, "Completed WV transform of " << iPair << " pairs");
+            LINFO(wvlog, "Completed WV transform of " << iPair << " pairs");
              */
 
             return true;

@@ -15,7 +15,7 @@
 #include "KT2ROOT.hh"
 #include "KTForwardFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -30,7 +30,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestForwardFFTW");
+LOGGER(vallog, "TestForwardFFTW");
 
 int main()
 {
@@ -42,7 +42,7 @@ int main()
 
     const double mult = 30.;
 
-    KTINFO(vallog, "Testing the 1D real-to-complex and real-as-complex-to-complex FFTs\n" <<
+    LINFO(vallog, "Testing the 1D real-to-complex and real-as-complex-to-complex FFTs\n" <<
            "\tTime series characteristics:\n" <<
            "\tSize: " << nBins << " bins\n" <<
            "\tRange: " << startTime << " to " << endTime << " s\n" <<
@@ -57,7 +57,7 @@ int main()
     {
         (*timeSeries)(iBin) = sin(timeSeries->GetBinCenter(iBin) * mult);
         (*timeSeries2)(iBin) = sin(timeSeries2->GetBinCenter(iBin) * mult);
-        //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
+        //LDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
     }
 
     // Create and prepare the FFT
@@ -66,7 +66,7 @@ int main()
     r2cFFT.SetTransformFlag("ESTIMATE");
     if (! r2cFFT.InitializeForRealTDD())
     {
-        KTERROR(vallog, "Error while initializing the R2C FFT");
+        LERROR(vallog, "Error while initializing the R2C FFT");
         exit(-1);
     }
 
@@ -75,12 +75,12 @@ int main()
     rasc2cFFT.SetTransformFlag("ESTIMATE");
     if (! rasc2cFFT.InitializeForRealAsComplexTDD())
     {
-        KTERROR(vallog, "Error while initializing the RasC2C FFT");
+        LERROR(vallog, "Error while initializing the RasC2C FFT");
         exit(-1);
     }
 
     // Perform the FFT and get the results
-    KTINFO(vallog, "Performing FFT");
+    LINFO(vallog, "Performing FFT");
     KTFrequencySpectrumFFTW* frequencySpectrum = r2cFFT.Transform(timeSeries);
     KTFrequencySpectrumFFTW* frequencySpectrum2 = rasc2cFFT.TransformAsComplex(timeSeries2);
     //size_t nFreqBins2 = frequencySpectrum2->size();
@@ -103,7 +103,7 @@ int main()
         }
     }
 
-    KTINFO(vallog, "R2C FFT complete\n" <<
+    LINFO(vallog, "R2C FFT complete\n" <<
            "\tFrequency spectrum characteristics:\n" <<
            "\tSize: " << nFreqBins << " bins\n" <<
            "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n" <<
@@ -123,7 +123,7 @@ int main()
 #endif
 
     // Use Parseval's theorem to check the normalization of the FFT
-    KTINFO(vallog, "Using Parceval's theorem to check the normalization of the R2C transform.\n"
+    LINFO(vallog, "Using Parceval's theorem to check the normalization of the R2C transform.\n"
            "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (double)nBins);
     // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
 
@@ -134,7 +134,7 @@ int main()
         tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
 
-    KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
+    LINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
     double fsSum = 0.; // units: volts^2
@@ -143,20 +143,20 @@ int main()
         fsSum += frequencySpectrum->GetNorm(iBin);
     }
 
-    KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
+    LINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
 
     double fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
     double threshold = 1.e-4;
     if (fractionalDiff > threshold)
     {
-        KTWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
+        LWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
                 "\ttsSum - fsSum = " << tsSum - fsSum << "\n"
                 "\ttsSum / fsSum = " << tsSum / fsSum << "\n"
                 "\t|diff|/avg    = " << fractionalDiff);
     }
     else
     {
-        KTINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
+        LINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
                 "\t|diff|/avg = " << fractionalDiff);
     }
 
@@ -177,7 +177,7 @@ int main()
         }
     }
 
-    KTINFO(vallog, "FFT complete\n" <<
+    LINFO(vallog, "FFT complete\n" <<
            "\tFrequency spectrum characteristics:\n" <<
            "\tSize: " << nFreqBins << " bins\n" <<
            "\tRange: " << frequencySpectrum2->GetRangeMin() << " to " << frequencySpectrum2->GetRangeMax() << " Hz\n" <<
@@ -197,7 +197,7 @@ int main()
 #endif
 
     // Use Parseval's theorem to check the normalization of the FFT
-    KTINFO(vallog, "Using Parceval's theorem to check the normalization of the RasC2C transform.\n"
+    LINFO(vallog, "Using Parceval's theorem to check the normalization of the RasC2C transform.\n"
            "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (double)nBins);
     // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
 
@@ -208,7 +208,7 @@ int main()
         tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
 
-    KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
+    LINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
     fsSum = 0.; // units: volts^2
@@ -217,20 +217,20 @@ int main()
         fsSum += frequencySpectrum2->GetNorm(iBin);
     }
 
-    KTINFO(vallog, "sum(freqSpectrum2[i]^2) = " << fsSum << " V^2");
+    LINFO(vallog, "sum(freqSpectrum2[i]^2) = " << fsSum << " V^2");
 
     fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
     threshold = 1.e-4;
     if (fractionalDiff > threshold)
     {
-        KTWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
+        LWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
                 "\ttsSum - fsSum = " << tsSum - fsSum << "\n"
                 "\ttsSum / fsSum = " << tsSum / fsSum << "\n"
                 "\t|diff|/avg    = " << fractionalDiff);
     }
     else
     {
-        KTINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
+        LINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
                 "\t|diff|/avg = " << fractionalDiff);
     }
 

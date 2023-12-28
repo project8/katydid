@@ -12,7 +12,7 @@
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLinearFitResult.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTClassifierResultsData.hh"
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
@@ -47,7 +47,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTTreeTypeWriterEventAnalysis");
+    LOGGER(publog, "KTROOTTreeTypeWriterEventAnalysis");
 
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEventAnalysis > sRTTWCRegistrar;
 
@@ -120,7 +120,7 @@ namespace Katydid
         {
             if (! SetupFrequencyCandidateTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
                 return;
             }
         }
@@ -156,7 +156,7 @@ namespace Katydid
 
             if( fFreqCandidateTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fFreqCandidateTree );
 
                 fFreqCandidateTree->SetBranchAddress("Component", &fFreqCandidateData.fComponent);
@@ -176,7 +176,7 @@ namespace Katydid
         fFreqCandidateTree = new TTree("freqCand", "Frequency Candidates");
         if (fFreqCandidateTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fFreqCandidateTree);
@@ -204,12 +204,12 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteWaterfallCandidate(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to waterfall candidate root tree");
+        LDEBUG(publog, "Attempting to write to waterfall candidate root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile())
         {
-            KTDEBUG(publog, "unable to verify file");
+            LDEBUG(publog, "unable to verify file");
             return;
         }
 
@@ -217,10 +217,10 @@ namespace Katydid
         {
             if (! SetupWaterfallCandidateTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the waterfall candidate tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the waterfall candidate tree! Nothing was written.");
                 return;
             } else {
-                KTDEBUG(publog, "waterfall candidate tree created");
+                LDEBUG(publog, "waterfall candidate tree created");
             }
         }
 
@@ -238,12 +238,12 @@ namespace Katydid
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
         fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
         fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
-        KTDEBUG(publog, "Candidate info:\n"
+        LDEBUG(publog, "Candidate info:\n"
                 << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
                 << "\tFreq axis: " << fWaterfallCandidateData.fCandidate->GetNbinsY() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetBinWidth(1) << " Hz;  range: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmax() << " Hz");
 
         fWaterfallCandidateTree->Fill();
-        KTDEBUG("filled");
+        LDEBUG("filled");
 
         return;
     }
@@ -256,7 +256,7 @@ namespace Katydid
 
             if( fWaterfallCandidateTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fWaterfallCandidateTree );
 
                 fWaterfallCandidateTree->SetBranchAddress("Component", &fWaterfallCandidateData.fComponent);
@@ -278,7 +278,7 @@ namespace Katydid
         fWaterfallCandidateTree = new TTree("wfCand", "Waterfall Candidates");
         if (fWaterfallCandidateTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fWaterfallCandidateTree);
@@ -304,7 +304,7 @@ namespace Katydid
 
     // void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     // {
-    //     KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
+    //     LDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
     //     KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
 
     //     if (! fWriter->OpenAndVerifyFile()) return;
@@ -313,7 +313,7 @@ namespace Katydid
     //     {
     //         if (! SetupSparseWaterfallCandidateTree())
     //         {
-    //             KTERROR(publog, "Something went wrong while setting up the sparse waterfall candidate tree! Nothing was written.");
+    //             LERROR(publog, "Something went wrong while setting up the sparse waterfall candidate tree! Nothing was written.");
     //             return;
     //         }
     //     }
@@ -331,11 +331,11 @@ namespace Katydid
     //     fSparseWaterfallCandidateData.fFrequencyWidth = swcData.GetFrequencyWidth();
 
     //     const KTDiscriminatedPoints& points = swcData.GetPoints();
-    //     // KTDEBUG(publog, "# points in sparse waterfall candidate " << points.size());
+    //     // LDEBUG(publog, "# points in sparse waterfall candidate " << points.size());
 
     //     if (points.size() == 0)
     //     {
-    //         KTWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
+    //         LWARN(publog, "No points in sparse waterfall candidate; nothing written to ROOT file");
     //         return;
     //     }
 
@@ -343,10 +343,10 @@ namespace Katydid
     //     unsigned iPoint = 0;
     //     for (KTDiscriminatedPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
     //     {
-    //         KTDEBUG(publog, "In loop " << iPoint);
+    //         LDEBUG(publog, "In loop " << iPoint);
     //         // TDiscriminatedPoint* point = (TDiscriminatedPoint*) fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
     //         // TDiscriminatedPoint* point = (TDiscriminatedPoint*)fSparseWaterfallCandidateData.fPoints->ConstructedAt(iPoint);
-    //         KTDEBUG(publog, "Past constructon " << iPoint);
+    //         LDEBUG(publog, "Past constructon " << iPoint);
     //         // point->fTimeInRunC = pIt->fTimeInRunC;
     //         // point->fFrequency = pIt->fFrequency;
     //         // point->fAmplitude = pIt->fAmplitude;
@@ -367,7 +367,7 @@ namespace Katydid
     //         ++iPoint;
     //     }
     //     // fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
-    //     // KTDEBUG(publog, "Candidate info:\n"
+    //     // LDEBUG(publog, "Candidate info:\n"
     //             // << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
     //     //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
     //     //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
@@ -386,7 +386,7 @@ namespace Katydid
 
     //         if( fSparseWaterfallCandidateTree != NULL )
     //         {
-    //             KTINFO( publog, "Tree already exists; will add to it" );
+    //             LINFO( publog, "Tree already exists; will add to it" );
     //             fWriter->AddTree( fSparseWaterfallCandidateTree );
 
     //             fSparseWaterfallCandidateTree->SetBranchAddress("Component", &fSparseWaterfallCandidateData.fComponent);
@@ -408,7 +408,7 @@ namespace Katydid
     //     fSparseWaterfallCandidateTree = new TTree("swfCand", "Sparse Waterfall Candidates");
     //     if (fSparseWaterfallCandidateTree == NULL)
     //     {
-    //         KTERROR(publog, "Tree was not created!");
+    //         LERROR(publog, "Tree was not created!");
     //         return false;
     //     }
     //     fWriter->AddTree(fSparseWaterfallCandidateTree);
@@ -431,7 +431,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
+        LDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
         KTSparseWaterfallCandidateData& swfData = data->Of< KTSparseWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -440,17 +440,17 @@ namespace Katydid
         {
             if (! SetupSparseWaterfallCandidateTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the sparse waterfall candidate tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the sparse waterfall candidate tree! Nothing was written.");
                 return;
             }
         }
 
         KT2ROOT::LoadSparseWaterfallCandidateData(swfData, *fSparseWaterfallCandidateDataPtr);
-        KTDEBUG(publog, "Before filling");
-        KTDEBUG(publog, fSparseWaterfallCandidateDataPtr->GetComponent());
+        LDEBUG(publog, "Before filling");
+        LDEBUG(publog, fSparseWaterfallCandidateDataPtr->GetComponent());
 
         fSparseWaterfallCandidateTree->Fill();
-        KTDEBUG(publog, "After filling");
+        LDEBUG(publog, "After filling");
 
         return;
     }
@@ -463,7 +463,7 @@ namespace Katydid
 
             if( fSparseWaterfallCandidateTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fSparseWaterfallCandidateTree );
 
                 fSparseWaterfallCandidateTree->SetBranchAddress(fSparseWaterfallCandidateDataPtr->GetBranchName().c_str(), &fSparseWaterfallCandidateDataPtr);
@@ -475,7 +475,7 @@ namespace Katydid
         fSparseWaterfallCandidateTree = new TTree("sparseWaterfall", "Sparse Waterfall Candidate");
         if (fSparseWaterfallCandidateTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fSparseWaterfallCandidateTree);
@@ -494,7 +494,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to processed track root tree");
+        LDEBUG(publog, "Attempting to write to processed track root tree");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -504,13 +504,13 @@ namespace Katydid
         {
             if (! SetupProcessedTrackTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the processed track tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the processed track tree! Nothing was written.");
                 return;
             }
         }
         else
         {
-            KTINFO(publog, "Tree already exists!");
+            LINFO(publog, "Tree already exists!");
             fWriter->AddTree( fProcessedTrackTree );
 
             fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
@@ -531,7 +531,7 @@ namespace Katydid
 
             if( fProcessedTrackTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedTrackTree );
 
                 fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
@@ -543,7 +543,7 @@ namespace Katydid
         fProcessedTrackTree = new TTree("procTracks", "Processed Tracks");
         if (fProcessedTrackTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fProcessedTrackTree);
@@ -562,7 +562,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteSequentialLine(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to sequential line root tree");
+        LDEBUG(publog, "Attempting to write to sequential line root tree");
         KTSequentialLineData& ptData = data->Of< KTSequentialLineData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -572,13 +572,13 @@ namespace Katydid
         {
             if (! SetupSequentialLineTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the sequential line tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the sequential line tree! Nothing was written.");
                 return;
             }
         }
         else
         {
-            KTINFO(publog, "Tree already exists!");
+            LINFO(publog, "Tree already exists!");
             fWriter->AddTree( fSequentialLineTree );
 
             fSequentialLineTree->SetBranchAddress(fSequentialLineDataPtr->GetBranchName().c_str(), &fSequentialLineDataPtr);
@@ -599,7 +599,7 @@ namespace Katydid
 
             if( fSequentialLineTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fSequentialLineTree );
 
                 fSequentialLineTree->SetBranchAddress(fSequentialLineDataPtr->GetBranchName().c_str(), &fSequentialLineDataPtr);
@@ -611,7 +611,7 @@ namespace Katydid
         fSequentialLineTree = new TTree("seqLines", "Sequential lines");
         if (fSequentialLineTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fSequentialLineTree);
@@ -627,7 +627,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to processed multi-peak track root tree");
+        LDEBUG(publog, "Attempting to write to processed multi-peak track root tree");
         KTProcessedMPTData& pMPTData = data->Of< KTProcessedMPTData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -637,7 +637,7 @@ namespace Katydid
         {
             if (! SetupProcessedMPTTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the processed multi-peak track tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the processed multi-peak track tree! Nothing was written.");
                 return;
             }
         }
@@ -657,7 +657,7 @@ namespace Katydid
 
             if( fProcessedMPTTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fProcessedMPTTree );
 
                 fProcessedMPTTree->SetBranchAddress(fProcessedMPTDataPtr->GetBranchName().c_str(), &fProcessedMPTDataPtr);
@@ -669,7 +669,7 @@ namespace Katydid
         fProcessedMPTTree = new TTree("procMPTs", "Processed Multi-Peak Tracks");
         if (fProcessedMPTTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fProcessedMPTTree);
@@ -687,7 +687,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to multi-peak track root tree");
+        LDEBUG(publog, "Attempting to write to multi-peak track root tree");
         KTMultiPeakTrackData& mptData = data->Of< KTMultiPeakTrackData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -696,7 +696,7 @@ namespace Katydid
         {
             if (! SetupMultiPeakTrackTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the multi-peak track tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the multi-peak track tree! Nothing was written.");
                 return;
             }
         }
@@ -732,7 +732,7 @@ namespace Katydid
 
             if (fMultiPeakTrackTree != NULL)
             {
-                KTINFO(publog, "Tree already exists; will add to it");
+                LINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fMultiPeakTrackTree );
 
                 fMultiPeakTrackTree->SetBranchAddress( "Component", &fMultiPeakTrackData.fComponent );
@@ -752,7 +752,7 @@ namespace Katydid
         fMultiPeakTrackTree = new TTree("mp-track", "Multi-Peak Track");
         if( fMultiPeakTrackTree == NULL )
         {
-            KTERROR( publog, "Tree was not created!" );
+            LERROR( publog, "Tree was not created!" );
             return false;
         }
         fWriter->AddTree( fMultiPeakTrackTree );
@@ -776,7 +776,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to multi-track event root tree");
+        LDEBUG(publog, "Attempting to write to multi-track event root tree");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -785,7 +785,7 @@ namespace Katydid
         {
             if (! SetupMultiTrackEventTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the multi-track event tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the multi-track event tree! Nothing was written.");
                 return;
             }
         }
@@ -805,7 +805,7 @@ namespace Katydid
 
             if( fMultiTrackEventTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMultiTrackEventTree );
 
                 fMultiTrackEventTree->SetBranchAddress(fMultiTrackEventDataPtr->GetBranchName().c_str(), &fMultiTrackEventDataPtr);
@@ -817,7 +817,7 @@ namespace Katydid
         fMultiTrackEventTree = new TTree("multiTrackEvents", "Multi-Track Events");
         if (fMultiTrackEventTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fMultiTrackEventTree);
@@ -835,7 +835,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteMTEWithClassifierResults(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to classified event root tree");
+        LDEBUG(publog, "Attempting to write to classified event root tree");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -844,7 +844,7 @@ namespace Katydid
         {
             if (! SetupMTEWithClassifierResultsTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the classified event tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the classified event tree! Nothing was written.");
                 return;
             }
         }
@@ -865,7 +865,7 @@ namespace Katydid
 
             if( fMTEWithClassifierResultsTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMTEWithClassifierResultsTree );
 
                 fMTEWithClassifierResultsTree->SetBranchAddress(fMTEWithClassifierResultsDataPtr->GetBranchName().c_str(), &fMTEWithClassifierResultsDataPtr);
@@ -877,7 +877,7 @@ namespace Katydid
         fMTEWithClassifierResultsTree = new TTree("MTEWithClassifierResults", "Multi-Track Events with Classifier Results");
         if (fMTEWithClassifierResultsTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fMTEWithClassifierResultsTree);
@@ -895,7 +895,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WriteLinearFitResultData(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to linear fit result root tree");
+        LDEBUG(publog, "Attempting to write to linear fit result root tree");
         KTLinearFitResult& lfData = data->Of< KTLinearFitResult >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -904,7 +904,7 @@ namespace Katydid
         {
             if (! SetupLinearFitResultTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the Linear Fit tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the Linear Fit tree! Nothing was written.");
                 return;
             }
         }
@@ -940,7 +940,7 @@ namespace Katydid
 
             if (fLinearFitResultTree != NULL)
             {
-                KTINFO(publog, "Tree already exists; will add to it");
+                LINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fLinearFitResultTree );
 
                 fLinearFitResultTree->SetBranchAddress( "FitNumber", &fLineFitData.fFitNumber );
@@ -966,7 +966,7 @@ namespace Katydid
         fLinearFitResultTree = new TTree("line", "Linear Fit Result");
         if( fLinearFitResultTree == NULL )
         {
-            KTERROR( publog, "Tree was not created!" );
+            LERROR( publog, "Tree was not created!" );
             return false;
         }
         fWriter->AddTree( fLinearFitResultTree );
@@ -996,7 +996,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEventAnalysis::WritePowerFitData(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "Attempting to write to power fit data root tree");
+        LDEBUG(publog, "Attempting to write to power fit data root tree");
         KTPowerFitData& pfData = data->Of< KTPowerFitData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -1005,7 +1005,7 @@ namespace Katydid
         {
             if (! SetupPowerFitDataTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the Power Fit Data tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the Power Fit Data tree! Nothing was written.");
                 return;
             }
         }
@@ -1043,7 +1043,7 @@ namespace Katydid
 
         if (points.size() == 0)
         {
-            KTWARN(publog, "No points in power fit data; nothing written to ROOT file");
+            LWARN(publog, "No points in power fit data; nothing written to ROOT file");
             return;
         }
 
@@ -1069,7 +1069,7 @@ namespace Katydid
 
             if (fPowerFitDataTree != NULL)
             {
-                KTINFO(publog, "Tree already exists; will add to it");
+                LINFO(publog, "Tree already exists; will add to it");
                 fWriter->AddTree( fPowerFitDataTree );
 
                 fPowerFitData.fNorm.push_back(0.);
@@ -1120,7 +1120,7 @@ namespace Katydid
         fPowerFitDataTree = new TTree("power-fit", "Power Fit Data");
         if( fPowerFitDataTree == NULL )
         {
-            KTERROR( publog, "Tree was not created!" );
+            LERROR( publog, "Tree was not created!" );
             return false;
         }
         fWriter->AddTree( fPowerFitDataTree );

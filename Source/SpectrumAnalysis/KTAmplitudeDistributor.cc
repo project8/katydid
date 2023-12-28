@@ -22,7 +22,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(adlog, "KTAmplitudeDistributor");
+    LOGGER(adlog, "KTAmplitudeDistributor");
 
     KT_REGISTER_PROCESSOR(KTAmplitudeDistributor, "amplitude-distributor");
 
@@ -133,14 +133,14 @@ namespace Katydid
             // Set the TakeValues function pointers
             fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToBuffer;
             fTakeValuesFFTW = &KTAmplitudeDistributor::TakeValuesToBuffer;
-            KTDEBUG(adlog, "Function pointers set to take values to buffer");
+            LDEBUG(adlog, "Function pointers set to take values to buffer");
         }
         else
         {
             // Set the TakeValues function pointers
             fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToDistributions;
             fTakeValuesFFTW = &KTAmplitudeDistributor::TakeValuesToDistributions;
-            KTDEBUG(adlog, "Function pointers set to take values to distributions");
+            LDEBUG(adlog, "Function pointers set to take values to distributions");
         }
 
         fDistributionData.reset(new Nymph::KTData());
@@ -191,19 +191,19 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
-            KTDEBUG(adlog, "Minimum bin set to " << fMinBin);
+            LDEBUG(adlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
-            KTDEBUG(adlog, "Maximum bin set to " << fMaxBin);
+            LDEBUG(adlog, "Maximum bin set to " << fMaxBin);
         }
 
         if (! fDistributions)
         {
             if (! Initialize(data.GetNComponents(), data.GetSpectrumFFTW(0)->GetNBins()))
             {
-                KTERROR(adlog, "Something went wrong while initializing the processor");
+                LERROR(adlog, "Something went wrong while initializing the processor");
                 return false;
             }
         }
@@ -214,20 +214,20 @@ namespace Katydid
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
             if (spectrum == NULL)
             {
-                KTERROR(adlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
+                LERROR(adlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
                 return false;
             }
 
             if (! (this->*fTakeValuesFFTW)(spectrum, iComponent))
             {
-                KTERROR(adlog, "Something went wrong while taking values (FFTW)");
+                LERROR(adlog, "Something went wrong while taking values (FFTW)");
                 return false;
             }
         }
 
         fNSlicesProcessed++;
 
-        KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
+        LINFO(adlog, "Completed addition of values for " << nComponents << " components");
 
         return true;
     }
@@ -237,19 +237,19 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
-            KTDEBUG(adlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << ")");
+            LDEBUG(adlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << ")");
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
-            KTDEBUG(adlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
+            LDEBUG(adlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
         if (! fDistributions)
         {
             if (! Initialize(data.GetNComponents(), data.GetSpectrumPolar(0)->GetNBins()))
             {
-                KTERROR(adlog, "Something went wrong while initializing the processor");
+                LERROR(adlog, "Something went wrong while initializing the processor");
                 return false;
             }
         }
@@ -260,13 +260,13 @@ namespace Katydid
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
             if (spectrum == NULL)
             {
-                KTERROR(adlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
+                LERROR(adlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
                 return false;
             }
 
             if (! (this->*fTakeValuesPolar)(spectrum, iComponent))
             {
-                KTERROR(adlog, "Something went wrong while taking values (polar)");
+                LERROR(adlog, "Something went wrong while taking values (polar)");
                 return false;
             }
 
@@ -274,7 +274,7 @@ namespace Katydid
 
         fNSlicesProcessed++;
 
-        KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
+        LINFO(adlog, "Completed addition of values for " << nComponents << " components");
 
         return true;
     }
@@ -283,14 +283,14 @@ namespace Katydid
     {
         if (fNSlicesProcessed == fBufferSize)
         {
-            KTINFO(adlog, "Switching to direct-to-distribution setup");
-            KTDEBUG(adlog, "Creating distributions from buffer");
+            LINFO(adlog, "Switching to direct-to-distribution setup");
+            LDEBUG(adlog, "Creating distributions from buffer");
             if (! CreateDistributionsFromBuffer())
             {
-                KTERROR(adlog, "A problem occurred while creating distributions from the buffer");
+                LERROR(adlog, "A problem occurred while creating distributions from the buffer");
                 return false;
             }
-            KTDEBUG(adlog, "Continuing with direct-to-distribution processing");
+            LDEBUG(adlog, "Continuing with direct-to-distribution processing");
             fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToDistributions;
             return TakeValuesToDistributions(spectrum, component);
         }
@@ -300,7 +300,7 @@ namespace Katydid
             fBuffer[fNSlicesProcessed][component][iBin] = (*spectrum)(iBin).abs();
         }
         fNBuffered++;
-        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
+        LDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
         return true;
     }
 
@@ -317,14 +317,14 @@ namespace Katydid
     {
         if (fNSlicesProcessed == fBufferSize)
         {
-            KTINFO(adlog, "Switching to direct-to-distribution setup");
-            KTDEBUG(adlog, "Creating distributions from buffer");
+            LINFO(adlog, "Switching to direct-to-distribution setup");
+            LDEBUG(adlog, "Creating distributions from buffer");
             if (! CreateDistributionsFromBuffer())
             {
-                KTERROR(adlog, "A problem occurred while creating distributions from the buffer");
+                LERROR(adlog, "A problem occurred while creating distributions from the buffer");
                 return false;
             }
-            KTDEBUG(adlog, "Continuing with direct-to-distribution processing");
+            LDEBUG(adlog, "Continuing with direct-to-distribution processing");
             fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToDistributions;
             return TakeValuesToDistributions(spectrum, component);
         }
@@ -334,7 +334,7 @@ namespace Katydid
             fBuffer[fNSlicesProcessed][component][iBin] = spectrum->GetAbs(iBin);
         }
         fNBuffered++;
-        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
+        LDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
         return true;
     }
 
@@ -352,26 +352,26 @@ namespace Katydid
     {
         if (fBuffer.size() == 0)
         {
-            KTERROR(adlog, "Buffer is empty, but buffer use was requested");
+            LERROR(adlog, "Buffer is empty, but buffer use was requested");
             return false;
         }
 
-        KTDEBUG(adlog, "Initializing NULL distributions: " << fNComponents << " components with " << fNFreqBins << " frequency bins");
+        LDEBUG(adlog, "Initializing NULL distributions: " << fNComponents << " components with " << fNFreqBins << " frequency bins");
         fDistributions->InitializeNull(fNComponents, fNFreqBins);
         if (fDistributions->GetNComponents() != fNComponents)
         {
-            KTERROR(adlog, "The distributions data doesn't have the correct number of components: " << fDistributions->GetNComponents());
+            LERROR(adlog, "The distributions data doesn't have the correct number of components: " << fDistributions->GetNComponents());
             return false;
         }
         if (fDistributions->GetNFreqBins() != fNFreqBins)
         {
-            KTERROR(adlog, "The distributions data doesn't have the correct number of frequency bins: " << fDistributions->GetNFreqBins());
+            LERROR(adlog, "The distributions data doesn't have the correct number of frequency bins: " << fDistributions->GetNFreqBins());
             return false;
         }
 
         if (fBuffer.size() > fNSlicesProcessed)
         {
-            KTDEBUG(adlog, "Buffer is larger than the number of slices processed; resizing to " << fNSlicesProcessed);
+            LDEBUG(adlog, "Buffer is larger than the number of slices processed; resizing to " << fNSlicesProcessed);
             fBuffer.resize(fNSlicesProcessed);
         }
 
@@ -381,23 +381,23 @@ namespace Katydid
         {
             for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
             {
-                KTWARN(adlog, "0  " << iComponent << "  " << iBin << "  " << fBuffer[0][iComponent][iBin]);
+                LWARN(adlog, "0  " << iComponent << "  " << iBin << "  " << fBuffer[0][iComponent][iBin]);
                 distMin = fBuffer[0][iComponent][iBin];
                 distMax = distMin;
-                KTERROR(adlog, distMin << "  " << distMax << "  buffer size: " << fBuffer.size());
+                LERROR(adlog, distMin << "  " << distMax << "  buffer size: " << fBuffer.size());
                 for (unsigned iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
                 {
                     value = fBuffer[iSpectrum][iComponent][iBin];
                     if (value < distMin) distMin = value;
                     else if (value > distMax) distMax = value;
-                    KTERROR(adlog, "   " << distMin << "  " << distMax);
+                    LERROR(adlog, "   " << distMin << "  " << distMax);
                 }
                 if (! fDistributions->InitializeADistribution(iComponent, iBin, fDistNBins, distMin, distMax))
                 {
-                    KTERROR(adlog, "There was a problem initializing a distribution: component " << iComponent << "; frequency bin " << iBin);
+                    LERROR(adlog, "There was a problem initializing a distribution: component " << iComponent << "; frequency bin " << iBin);
                     return false;
                 }
-                KTDEBUG(adlog, "Distribution initialized; filling in from buffer");
+                LDEBUG(adlog, "Distribution initialized; filling in from buffer");
                 for (unsigned iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
                 {
                     value = fBuffer[iSpectrum][iComponent][iBin];

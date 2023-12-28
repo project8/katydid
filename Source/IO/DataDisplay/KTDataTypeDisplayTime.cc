@@ -7,7 +7,7 @@
 
 #include "KT2ROOT.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTSliceHeader.hh"
@@ -25,7 +25,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    LOGGER(publog, "katydid.output");
 
     static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayTime > sDTDERegistrar;
 

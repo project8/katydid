@@ -9,7 +9,7 @@
 #include "KTTrackProcessingWeightedSlope.hh"
 
 #include "KTHoughData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTProcessedTrackData.hh"
 #include "KTSmooth.hh"
@@ -27,7 +27,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(tlog, "KTTrackProcessingWeightedSlope");
+    LOGGER(tlog, "KTTrackProcessingWeightedSlope");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTTrackProcessingWeightedSlope, "track-proc-ws");
@@ -68,7 +68,7 @@ namespace Katydid
         // The & is important!!
         KTProcessedTrackData& procTrack = tlcData.template Of< KTProcessedTrackData >();
 
-        KTDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
+        LDEBUG(tlog, "Setting track reconstruction using \"weighted-slope\" algorithm");
         return KTTrackProcessingWeightedSlope::DoWeightedSlopeAlgorithm(points, trackID, &procTrack);
     }
 
@@ -128,11 +128,11 @@ namespace Katydid
             }
         }
 
-        KTDEBUG(tlog, "Averaging");
+        LDEBUG(tlog, "Averaging");
         for (unsigned iTimeBin = 0; iTimeBin<nTimeBins; ++iTimeBin)
         {
             averageFrequency.push_back(sumPf[iTimeBin]/sumP[iTimeBin]);
-            KTDEBUG(tlog, timeBinInAcq[iTimeBin] << '\t' << averageFrequency[iTimeBin]);
+            LDEBUG(tlog, timeBinInAcq[iTimeBin] << '\t' << averageFrequency[iTimeBin]);
         }
 
         // Determining the slope and intercept from Chi-2 minimization
@@ -150,10 +150,10 @@ namespace Katydid
         double slope = (sumXY*sumOne-sumY*sumX)/(sumXX*sumOne-sumX*sumX);
         double intercept = sumY/sumOne-slope*sumX/sumOne;
         double rho = -sumX/sqrt(sumXX*sumOne); // correlation coefficient between slope and intercept
-        KTDEBUG(tlog, "Weighted average Frequency results: \n" <<
+        LDEBUG(tlog, "Weighted average Frequency results: \n" <<
                       "\tSlope: " << '\t' << slope << '\n' <<
                       "\tIntercept: " << '\t' << intercept);
-        KTDEBUG(tlog, "Amplitude of the track: " << amplitudeSum );
+        LDEBUG(tlog, "Amplitude of the track: " << amplitudeSum );
 
         //Calculating Chi^2_min
         double chi2min = 0;
@@ -161,7 +161,7 @@ namespace Katydid
         {
             double residual = averageFrequency[iTimeBin] - slope*timeBinInAcq[iTimeBin] - intercept;
             chi2min += residual * residual;
-            KTDEBUG(tlog, "Residuals : " << residual );
+            LDEBUG(tlog, "Residuals : " << residual );
         }
         // Calculate error on slope and intercept for a rescaled Ch^2_min = 1
         double deltaSlope = 0;
@@ -172,11 +172,11 @@ namespace Katydid
         // need at least 3 points to get a non-zero Ndf
         if (nTimeBins>2)
         {
-            KTDEBUG(tlog, "Chi2min : " << chi2min );
+            LDEBUG(tlog, "Chi2min : " << chi2min );
 
             if (chi2min < 0.1)
             {
-                KTDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged Frequency points (" << fProcTrackAssignedError << ")");
+                LDEBUG(tlog, "Chi2min too small (points are mostlikely aligned): assigning arbitrary errors to the averaged Frequency points (" << fProcTrackAssignedError << ")");
                 deltaSlope = 1.52/(sqrt(sumXX)/fProcTrackAssignedError);
                 deltaIntercept = 1.52/(sqrt(sumOne)/fProcTrackAssignedError);
             }
@@ -186,7 +186,7 @@ namespace Katydid
                 deltaSlope = 1.52/sqrt(sumXX*ndf/chi2min);
                 deltaIntercept = 1.52/sqrt(sumOne*ndf/chi2min);
             }
-            KTDEBUG(tlog, "Error calculations results: \n" <<
+            LDEBUG(tlog, "Error calculations results: \n" <<
                           "\tSlope: " << '\t' << deltaSlope << '\n' <<
                           "\tIntercept: " << '\t' << deltaIntercept << '\n' <<
                           "\tCorrelation coefficifent: " << '\t' << rho);

@@ -8,11 +8,11 @@
 #include "KTLinearFitCut.hh"
 #include "KTLinearFitResult.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTLinearFitCut");
+    LOGGER(exlog, "KTLinearFitCut");
 
     const std::string KTLinearFitCut::Result::sName = "linear-fit-cut";
 

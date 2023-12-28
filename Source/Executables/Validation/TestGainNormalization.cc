@@ -16,7 +16,7 @@
 #include "KTGainNormalization.hh"
 #include "KTGainVariationData.hh"
 #include "KTGainVariationProcessor.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
@@ -27,7 +27,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestGainNormalization");
+LOGGER(testlog, "TestGainNormalization");
 
 int main()
 {
@@ -49,7 +49,7 @@ int main()
     engine->SetSeed(20398);
     KTRNGGaussian<> rand;
 
-    KTINFO(testlog, "Setting up input data");
+    LINFO(testlog, "Setting up input data");
 
     KTPowerSpectrumData psData;
     KTPowerSpectrum* ps = new KTPowerSpectrum( nBins, minFreq, maxFreq );
@@ -75,7 +75,7 @@ int main()
     varData.SetNComponents( 1 );
     varData.SetSpectrum( var, 0 );
 
-    KTINFO(testlog, "Initializing gain variation");
+    LINFO(testlog, "Initializing gain variation");
 
     KTGainVariationProcessor gvProc;
     gvProc.SetMinFrequency( minFreq );
@@ -84,18 +84,18 @@ int main()
     gvProc.SetNormalize( false );
     gvProc.SetVarianceCalcNBins(100);
 
-    KTINFO(testlog, "Processing gain variation");
+    LINFO(testlog, "Processing gain variation");
     gvProc.CalculateGainVariation(psData, varData);
 
     KTGainVariationData& gvData = psData.Of< KTGainVariationData >();
 
-    KTINFO(testlog, "Initializing gain normalization");
+    LINFO(testlog, "Initializing gain normalization");
 
     KTGainNormalization gainNorm;
     gainNorm.SetMinFrequency( minFreq );
     gainNorm.SetMaxFrequency( maxFreq );
 
-    KTINFO(testlog, "Processing normalization");
+    LINFO(testlog, "Processing normalization");
 
     gainNorm.Normalize(psData, gvData);
 
@@ -103,7 +103,7 @@ int main()
     KTPowerSpectrum* normPS = normPSData.GetSpectrum(0);
 
 #ifdef ROOT_FOUND
-    KTINFO(testlog, "Writing histograms to a ROOT file");
+    LINFO(testlog, "Writing histograms to a ROOT file");
 
     TFile* file = new TFile("gain_norm_test.root", "recreate");
 

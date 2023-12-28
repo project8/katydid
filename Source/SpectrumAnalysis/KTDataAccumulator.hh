@@ -12,7 +12,7 @@
 
 #include "KTData.hh"
 #include "KTDemangle.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
 
@@ -34,7 +34,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
+    LOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     /*!
      @class KTDataAccumulator
@@ -410,7 +410,7 @@ namespace Katydid
         fLastAccumulatorPtr = fDataMap[&dataType];
         if (fLastAccumulatorPtr == nullptr)
         {
-            KTDEBUG(avlog_hh, "Creating new Accumulator for " << DemangledName(dataType));
+            LDEBUG(avlog_hh, "Creating new Accumulator for " << DemangledName(dataType));
             fLastAccumulatorPtr = new KTDataAccumulator::AccumulatorType< XDataType >();
             fLastAccumulatorPtr->fAccumulatorSize = fAccumulatorSize;
             fDataMap[&dataType] = fLastAccumulatorPtr;
@@ -425,13 +425,13 @@ namespace Katydid
         // Check to ensure that the required data type is present
         if (! data->Has< XDataType >())
         {
-            KTERROR(avlog_hh, "Data not found with type <" << DemangledName(typeid(XDataType)) << ">");
+            LERROR(avlog_hh, "Data not found with type <" << DemangledName(typeid(XDataType)) << ">");
             return;
         }
         // Call the function
         if (! AddData(data->Of< XDataType >()))
         {
-            KTERROR(avlog_hh, "Something went wrong while analyzing data with type <" << DemangledName(typeid(XDataType)) << ">");
+            LERROR(avlog_hh, "Something went wrong while analyzing data with type <" << DemangledName(typeid(XDataType)) << ">");
             return;
         }
         // If there's a signal pointer, emit the signal
@@ -447,10 +447,10 @@ namespace Katydid
             }
             if (data->GetLastData())
             {
-                KTDEBUG(avlog_hh, "Emitting last-data signal");
+                LDEBUG(avlog_hh, "Emitting last-data signal");
                 if (! fLastAccumulatorPtr->Finalize())
                 {
-                    KTERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
+                    LERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
                 }
                 (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
             }

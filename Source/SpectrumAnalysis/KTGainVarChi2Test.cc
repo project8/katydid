@@ -27,7 +27,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "KTGainVarChi2Test");
+    LOGGER(sdlog, "KTGainVarChi2Test");
 
     KT_REGISTER_PROCESSOR(KTGainVarChi2Test, "variable-spectrum-chi2test");
 
@@ -79,12 +79,12 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+            LDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+            LDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
         unsigned nComponents = data.GetNComponents();
@@ -96,11 +96,11 @@ namespace Katydid
         {
             if (! CalculateSpectrum(data.GetSpectrum(iComponent), sigma.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
-                KTERROR(sdlog, "Chi-squared calculation on spectrum (component " << iComponent << ") failed");
+                LERROR(sdlog, "Chi-squared calculation on spectrum (component " << iComponent << ") failed");
                 return false;
             }
         }
-        KTINFO(sdlog, "Completed chi-squared calculation on " << nComponents << " components");
+        LINFO(sdlog, "Completed chi-squared calculation on " << nComponents << " components");
 
         return true;
     }
@@ -109,7 +109,7 @@ namespace Katydid
     {
         if (spectrum == NULL)
         {
-            KTERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
+            LERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
             return false;
         }
 

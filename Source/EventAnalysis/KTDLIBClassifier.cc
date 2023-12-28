@@ -10,7 +10,7 @@
 namespace Katydid
 {
 
-    KTLOGGER(evlog_hh, "KTDLIBClassifier");
+    LOGGER(evlog_hh, "KTDLIBClassifier");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTDLIBClassifier, "dlib-classifier");
@@ -44,13 +44,13 @@ namespace Katydid
         {
             try
             {
-                KTDEBUG(avlog_hh,"DF File = " << fDFFile);
+                LDEBUG(avlog_hh,"DF File = " << fDFFile);
                 dlib::deserialize(fDFFile) >> fDecisionFunction; // load train decision function
                 fIsInitialized = true;
             }
             catch(dlib::serialization_error& e)
             {
-                KTERROR(avlog_hh, "Unable to read the decision function from file. Aborting\n" + e.info);
+                LERROR(avlog_hh, "Unable to read the decision function from file. Aborting\n" + e.info);
                 fIsInitialized = false;
             }
         }
@@ -102,11 +102,11 @@ namespace Katydid
         }
         else
         {
-            KTERROR(avlog_hh, "Could not assign appropriate classification label; something went wrong");
+            LERROR(avlog_hh, "Could not assign appropriate classification label; something went wrong");
             return false;
         }
 
-        KTINFO(avlog_hh, "Classification finished!");
+        LINFO(avlog_hh, "Classification finished!");
         return true;
     }
 

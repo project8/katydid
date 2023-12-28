@@ -9,18 +9,18 @@
 #include "KTProcessedTrackData.hh"
 #include "KTROOTTreeTypeWriterEventAnalysis.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestROOTTreeWritingViaCicada");
+LOGGER(testlog, "TestROOTTreeWritingViaCicada");
 
 int main()
 {
     string filename("test_root_tree_writing_via_cicada.root");
 
-    KTINFO(testlog, "Creating processors");
+    LINFO(testlog, "Creating processors");
 
     KTROOTTreeWriter writer;
     writer.SetFilename(filename);
@@ -29,7 +29,7 @@ int main()
     KTROOTTreeTypeWriterEventAnalysis typeWriter;
     typeWriter.SetWriter(&writer);
 
-    KTINFO(testlog, "Creating data objects");
+    LINFO(testlog, "Creating data objects");
 
     Nymph::KTDataPtr data(new Nymph::KTData());
     KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
@@ -40,13 +40,13 @@ int main()
     mteData.SetAcquisitionID(11);
     mteData.AddTrack(ptData);
 
-    KTINFO(testlog, "Writing processed track data");
+    LINFO(testlog, "Writing processed track data");
     typeWriter.WriteProcessedTrack(data);
 
-    KTINFO(testlog, "Writing multi-track event data");
+    LINFO(testlog, "Writing multi-track event data");
     typeWriter.WriteMultiTrackEvent(data);
 
-    KTINFO(testlog, "Done with tests; closing file");
+    LINFO(testlog, "Done with tests; closing file");
 
     writer.CloseFile();
 

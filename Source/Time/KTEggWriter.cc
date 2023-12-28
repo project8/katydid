@@ -27,7 +27,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(eggwritelog, "KTEggWriter");
+    LOGGER(eggwritelog, "KTEggWriter");
 
     KT_REGISTER_WRITER(KTEggWriter, "egg-writer");
     KT_REGISTER_PROCESSOR(KTEggWriter, "egg-writer");
@@ -71,7 +71,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(eggwritelog, "Invalid format mode: <" << modeStr << ">");
+                LERROR(eggwritelog, "Invalid format mode: <" << modeStr << ">");
                 return false;
             }
         }
@@ -85,7 +85,7 @@ namespace Katydid
     {
         if (fFileStatus != kClosed)
         {
-            KTERROR(eggwritelog, "File status must be <" << kClosed << ">, but it is currently <" << fFileStatus << ">");
+            LERROR(eggwritelog, "File status must be <" << kClosed << ">, but it is currently <" << fFileStatus << ">");
             return false;
         }
 
@@ -98,7 +98,7 @@ namespace Katydid
         }
         catch (MonarchException& e)
         {
-            KTERROR(eggwritelog, "Problem opening the egg file: " << e.what());
+            LERROR(eggwritelog, "Problem opening the egg file: " << e.what());
             return false;
         }
 
@@ -116,7 +116,7 @@ namespace Katydid
         }
         catch (MonarchException& e)
         {
-            KTERROR(eggwritelog, "Problem occurred while closing file: " << e.what());
+            LERROR(eggwritelog, "Problem occurred while closing file: " << e.what());
             return;
         }
 
@@ -138,13 +138,13 @@ namespace Katydid
 
         if (fFileStatus != kOpened)
         {
-            KTERROR(eggwritelog, "Cannot write header. File status must be <" << kOpened <<">; currently it is <" << fFileStatus <<">");
+            LERROR(eggwritelog, "Cannot write header. File status must be <" << kOpened <<">; currently it is <" << fFileStatus <<">");
             return;
         }
 
         if (header == NULL)
         {
-            KTERROR(eggwritelog, "Header object is NULL; no header written");
+            LERROR(eggwritelog, "Header object is NULL; no header written");
             return;
         }
 
@@ -177,7 +177,7 @@ namespace Katydid
         }
         catch (MonarchException& e)
         {
-            KTERROR(eggwritelog, "Unable to write header to file: " << e.what());
+            LERROR(eggwritelog, "Unable to write header to file: " << e.what());
             return;
         }
 
@@ -190,26 +190,26 @@ namespace Katydid
     {
         if (fFileStatus == kClosed)
         {
-            KTERROR(eggwritelog, "Cannot write record because the file has not been opened");
+            LERROR(eggwritelog, "Cannot write record because the file has not been opened");
             return false;
         }
 
         if (fFileStatus == kOpened)
         {
-            KTWARN(eggwritelog, "Writing record on file with no header");
+            LWARN(eggwritelog, "Writing record on file with no header");
         }
         fFileStatus = kWritingRecords;
 
         unsigned nComponents = tsData.GetNComponents();
         if (nComponents != fExpectedNChannels)
         {
-            KTERROR(eggwritelog, "Received data contains " << nComponents << " channels of data; " << fExpectedNChannels << " were expected");
+            LERROR(eggwritelog, "Received data contains " << nComponents << " channels of data; " << fExpectedNChannels << " were expected");
             return false;
         }
 
         if (fExpectedNChannels > 2)
         {
-            KTERROR(eggwritelog, "Interleaved record writing is only supported for 2 or fewer channels, not " << fExpectedNChannels);
+            LERROR(eggwritelog, "Interleaved record writing is only supported for 2 or fewer channels, not " << fExpectedNChannels);
             return false;
         }
 
@@ -228,7 +228,7 @@ namespace Katydid
         }
         catch (MonarchException& e)
         {
-            KTERROR(eggwritelog, "A problem occurred while writing the record (interleaved): " << e.what());
+            LERROR(eggwritelog, "A problem occurred while writing the record (interleaved): " << e.what());
             return false;
         }
         return true;
@@ -239,7 +239,7 @@ namespace Katydid
         const KTTimeSeries* ts = tsData.GetTimeSeries(component);
         if (ts->GetNTimeBins() != fExpectedRecordSize)
         {
-            KTERROR(eggwritelog, "Time series does not have the correct size (should be " << fExpectedRecordSize << "; provided component 0: " << ts->GetNTimeBins());
+            LERROR(eggwritelog, "Time series does not have the correct size (should be " << fExpectedRecordSize << "; provided component 0: " << ts->GetNTimeBins());
             return false;
         }
 

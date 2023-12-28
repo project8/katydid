@@ -7,7 +7,7 @@
 
 #include "KTTimeSeriesReal.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -19,7 +19,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(tslog, "KTTimeSeriesReal");
+    LOGGER(tslog, "KTTimeSeriesReal");
 
     KTTimeSeriesReal::KTTimeSeriesReal() :
             KTTimeSeries(),
@@ -66,7 +66,7 @@ namespace Katydid
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
         }
-        KTDEBUG(tslog, "\n" << printStream.str());
+        LDEBUG(tslog, "\n" << printStream.str());
         return;
     }
 
@@ -86,8 +86,8 @@ namespace Katydid
             tsstream << (*this)(i) << "  ";
             histstream << hist->GetBinContent((int)i+1) << "  ";
         }
-        KTWARN( tslog, "ts: " << tsstream.str() );
-        KTWARN( tslog, "hist: " << histstream.str() );
+        LWARN( tslog, "ts: " << tsstream.str() );
+        LWARN( tslog, "hist: " << histstream.str() );
         */
         //**** DEBUG ****//
         hist->SetXTitle("Time (s)");

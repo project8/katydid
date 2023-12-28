@@ -23,7 +23,7 @@ namespace Katydid
 {
     KT_REGISTER_PROCESSOR(KTCompareCandidates, "compare-candidates");
 
-    KTLOGGER(cclog, "KTCompareCandidates");
+    LOGGER(cclog, "KTCompareCandidates");
 
     KTCompareCandidates::KTCompareCandidates(const string& name) :
             KTProcessor(name),
@@ -53,12 +53,12 @@ namespace Katydid
 
         if (events.size() == 0)
         {
-            KTINFO(cclog, "No events are present");
+            LINFO(cclog, "No events are present");
 	    //  return true;
         }
         if (candidates.size() == 0)
         {
-            KTINFO(cclog, "No candidates are present");
+            LINFO(cclog, "No candidates are present");
 	    //   return true;
         }
 
@@ -68,7 +68,7 @@ namespace Katydid
         const unsigned nRecords = mcEventData.GetNRecords();
         if (nRecords != candidateData.GetNRecords())
         {
-            KTERROR(cclog, "The number of records simulated (" << nRecords << ") does not match the number of records analyzed (" << candidateData.GetNRecords() << ")");
+            LERROR(cclog, "The number of records simulated (" << nRecords << ") does not match the number of records analyzed (" << candidateData.GetNRecords() << ")");
             return false;
         }
 
@@ -87,7 +87,7 @@ namespace Katydid
         KTAnalysisCandidates::CandidateSet::const_iterator candStartHere = candidates.begin();
         unsigned candidateCounterStart = 0;
         int comparison = 0;
-        KTDEBUG(cclog, "Comparing candidates to events");
+        LDEBUG(cclog, "Comparing candidates to events");
         for (KTMCTruthEvents::EventSet::const_iterator truthIt = events.begin(); truthIt != events.end() && continueEventLoop; truthIt++)
         {
             candidateCounter = candidateCounterStart;
@@ -98,13 +98,13 @@ namespace Katydid
                 {
                     eventMatches[eventCounter] = eventMatches[eventCounter] + 1;
                     candidateMatches[candidateCounter] = candidateMatches[candidateCounter] + 1;
-                    //KTDEBUG(cclog, "Match found:\n" <<
+                    //LDEBUG(cclog, "Match found:\n" <<
                     //        "\tEvent " << eventCounter << "): " << truthIt->fStartRecord << ", " << truthIt->fStartSample << ", " << truthIt->fEndRecord << ", " << truthIt->fEndSample << '\n' <<
                     //        "\tCandidate " << candidateCounter << "): " << candIt->fStartRecord << ", " << candIt->fStartSample << ", " << candIt->fEndRecord << ", " << candIt->fEndSample << '\n');
                 }
                 else if (comparison < 0)
                 {
-                    //KTDEBUG(cclog, "Candidate before event:\n" <<
+                    //LDEBUG(cclog, "Candidate before event:\n" <<
                     //        "\tEvent: " << truthIt->fStartRecord << ", " << truthIt->fStartSample << ", " << truthIt->fEndRecord << ", " << truthIt->fEndSample << '\n' <<
                     //        "\tCandidate: " << candIt->fStartRecord << ", " << candIt->fStartSample << ", " << candIt->fEndRecord << ", " << candIt->fEndSample << '\n');
                     if (fAssumeSparseCandidates)
@@ -125,7 +125,7 @@ namespace Katydid
                 }
                 else // comparison > 0
                 {
-                    //KTDEBUG(cclog, "Candidate after event:\n" <<
+                    //LDEBUG(cclog, "Candidate after event:\n" <<
                     //        "\tEvent: " << truthIt->fStartRecord << ", " << truthIt->fStartSample << ", " << truthIt->fEndRecord << ", " << truthIt->fEndSample << '\n' <<
                     //        "\tCandidate: " << candIt->fStartRecord << ", " << candIt->fStartSample << ", " << candIt->fEndRecord << ", " << candIt->fEndSample << '\n');
                     // all remaining candidates are after the current truth event, so they can be skipped
@@ -168,14 +168,14 @@ namespace Katydid
         ccrData.ResizeNEventsWithXCandidateMatches(largestNumberOfMatches + 1);
 
         KTPROG(cclog, "Number of events: " << ccrData.GetNEvents());
-        KTINFO(cclog, "Largest number of candidates matching an event: " << largestNumberOfMatches);
+        LINFO(cclog, "Largest number of candidates matching an event: " << largestNumberOfMatches);
         std::stringstream textHist1;
         const vector< unsigned >& nEventsWithXCandidateMatches = ccrData.GetNEventsWithXCandidateMatches();
         for (unsigned iNEvents = 0; iNEvents < nEventsWithXCandidateMatches.size(); iNEvents++)
         {
             textHist1 << iNEvents << ": " << nEventsWithXCandidateMatches[iNEvents] << '\n';
         }
-        KTINFO(cclog, "Number of events (y axis) with a given number of candidate matches (x axis):\n" << textHist1.str());
+        LINFO(cclog, "Number of events (y axis) with a given number of candidate matches (x axis):\n" << textHist1.str());
 
         ccrData.SetEfficiency(double(nEventsWithAtLeastOneCandidateMatch) / double(events.size()));
         KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << ccrData.GetEfficiency());
@@ -196,14 +196,14 @@ namespace Katydid
             ccrData.ResizeNCandidatesWithXEventMatches(largestNumberOfMatches + 1);
         }
         KTPROG(cclog, "Number of candidates: " << ccrData.GetNCandidates());
-        KTINFO(cclog, "Largest number of events matching a candidate: " << largestNumberOfMatches);
+        LINFO(cclog, "Largest number of events matching a candidate: " << largestNumberOfMatches);
         std::stringstream textHist2;
         const vector< unsigned >& nCandidatesWithXEventMatches = ccrData.GetNCandidatesWithXEventMatches();
         for (unsigned iNCandidates = 0; iNCandidates < nCandidatesWithXEventMatches.size(); iNCandidates++)
         {
             textHist2 << iNCandidates << ": " << nCandidatesWithXEventMatches[iNCandidates] << '\n';
         }
-        KTINFO(cclog, "Number of candidates (y axis) with a given number of event matches (x axis):\n" << textHist2.str());
+        LINFO(cclog, "Number of candidates (y axis) with a given number of event matches (x axis):\n" << textHist2.str());
 
         ccrData.SetFalseRate(1.e6 * double(nCandidatesWithXEventMatches[0]) / (double(nRecords) * double(eventRecordSize)));
         KTPROG(cclog, "False rate (10^6 * # candidates not matching events / # of samples simulated): " << ccrData.GetFalseRate());

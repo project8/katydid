@@ -9,7 +9,7 @@
 #include "KTEggHeader.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 #include "KTPrimaryProcessor.hh"
 #include "KTProcessorToolbox.hh"
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(irlog, "ImpulseResponse");
+LOGGER(irlog, "ImpulseResponse");
 
 //*********************************
 // Definition of KTSineGenerator
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     }
     catch( std::exception& e )
     {
-        KTERROR( irlog, "Something went wrong while processing the command line:\n" << e.what() );
+        LERROR( irlog, "Something went wrong while processing the command line:\n" << e.what() );
         return -1;
     }
 
@@ -85,14 +85,14 @@ int main(int argc, char** argv)
     KTProcessorToolbox procTB;
     if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
     {
-        KTERROR(irlog, "Unable to configure processor toolbox. Aborting.");
+        LERROR(irlog, "Unable to configure processor toolbox. Aborting.");
         return -2;
     }
 
     // Configure the processors
     if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
     {
-        KTERROR(irlog, "Unable to configure processors. Aborting.");
+        LERROR(irlog, "Unable to configure processors. Aborting.");
         return -4;
     }
 
@@ -158,7 +158,7 @@ bool KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
     double peakThreeBinFraction = (peakBinValue*peakBinValue + (*fs)(peakBin-1).abs()*(*fs)(peakBin-1).abs() + (*fs)(peakBin+1).abs()*(*fs)(peakBin+1).abs()) / sum;
     double leakagePeakThreeBin = 1. - peakThreeBinFraction;
     double secondHighestBinRatio = previousPeakValue / peakBinValue;
-    //KTDEBUG(irlog, peakFraction << "  " << leakagePeakBin << "  " << peakThreeBinFraction << "  " << leakagePeakThreeBin << "  " << peakBinValue << "  " << peakThreeBinValue << "  " << sum);
+    //LDEBUG(irlog, peakFraction << "  " << leakagePeakBin << "  " << peakThreeBinFraction << "  " << leakagePeakThreeBin << "  " << peakBinValue << "  " << peakThreeBinValue << "  " << sum);
 
     // Examine fractional peak width
     double fraction = 0.1;

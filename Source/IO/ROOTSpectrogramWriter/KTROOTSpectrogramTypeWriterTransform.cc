@@ -11,13 +11,13 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 
-//#include "KTLogger.hh"
+//#include "logger.hh"
 
 using std::vector;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "KTROOTSpectrogramTypeWriterTransform");
+    //LOGGER(publog, "KTROOTSpectrogramTypeWriterTransform");
 
     static Nymph::KTTIRegistrar< KTROOTSpectrogramTypeWriter, KTROOTSpectrogramTypeWriterTransform > sRSTWTRegistrar;
 
@@ -39,7 +39,7 @@ namespace Katydid
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        KTDEBUG("calling output each spectrogram set")
+        LDEBUG("calling output each spectrogram set")
         OutputASpectrogramSet(fFSPolarBundle, false);
         OutputASpectrogramSet(fFSFFTWBundle, false);
         OutputASpectrogramSet(fPowerBundle, false);

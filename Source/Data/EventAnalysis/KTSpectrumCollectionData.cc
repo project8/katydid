@@ -12,9 +12,9 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTSliceHeader.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
-KTLOGGER(scdlog, "SpectrogramCollectionData");
+LOGGER(scdlog, "SpectrogramCollectionData");
 
 namespace Katydid
 {
@@ -74,13 +74,13 @@ namespace Katydid
 
             if( fMinBin >= fMaxBin )
             {
-                KTERROR( scdlog, "Min bin is greater than max bin; Min freq <" << fMinFreq << " is probably greater than max freq <" << fMaxFreq << ">" );
+                LERROR( scdlog, "Min bin is greater than max bin; Min freq <" << fMinFreq << " is probably greater than max freq <" << fMaxFreq << ">" );
                 return;
             }
 
             if( fDeltaT <= 0. )
             {
-                KTERROR( scdlog, "DeltaT has not been set or is invalid: " << fDeltaT );
+                LERROR( scdlog, "DeltaT has not been set or is invalid: " << fDeltaT );
                 return;
             }
 
@@ -96,7 +96,7 @@ namespace Katydid
             SetMaxFreq( maxFreq );
 
             unsigned nSpectra = KTMath::Nint((fEndTime - fStartTime) / fDeltaT) + 1;
-            KTDEBUG(scdlog, "Number of spectra in this new multi-ps: " << nSpectra);
+            LDEBUG(scdlog, "Number of spectra in this new multi-ps: " << nSpectra);
             // fStartTime and fEndTime are times-in-run-c.  the spectrum time boundaries need to be the low and high edges of the bins.
             // So we shift down and up by 0.5*slice length relative to fStartTime and fEndTime for the min and max times, respectively.
             fSpectra[iComponent] = new KTMultiPS(NULL, nSpectra, fStartTime - 0.5 * fDeltaT, fEndTime + 0.5 * fDeltaT);
@@ -123,7 +123,7 @@ namespace Katydid
 
         // add new spectrum to fSpectra
         unsigned iSpectrum = KTMath::Nint((timeStamp - fStartTime) / fDeltaT);
-        KTDEBUG(scdlog, "Adding spectrum " << iSpectrum);
+        LDEBUG(scdlog, "Adding spectrum " << iSpectrum);
         SetSpectrum( newSpectrum, iSpectrum, iComponent );
 
         return;

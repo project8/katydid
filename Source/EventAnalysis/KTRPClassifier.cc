@@ -7,7 +7,7 @@
 
 #include "KTRPClassifier.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTProcessedTrackData.hh"
 #include "KTPowerFitData.hh"
@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTRPClassifier");
+    LOGGER(evlog, "KTRPClassifier");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTRPClassifier, "rp-classifier");

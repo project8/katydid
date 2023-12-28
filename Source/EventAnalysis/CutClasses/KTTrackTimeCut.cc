@@ -8,11 +8,11 @@
 #include "KTTrackTimeCut.hh"
 #include "KTProcessedTrackData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTTrackTimeCut");
+    LOGGER(exlog, "KTTrackTimeCut");
 
     const std::string KTTrackTimeCut::Result::sName = "track-time-cut";
 

@@ -9,7 +9,7 @@
 
 #include "KTCCResults.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -23,7 +23,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTTreeTypeWriterEvaluation");
+    LOGGER(publog, "KTROOTTreeTypeWriterEvaluation");
 
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWERegistrar;
 
@@ -60,7 +60,7 @@ namespace Katydid
         {
             if (! SetupMetaCCLocustMCTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
                 return;
             }
         }
@@ -85,7 +85,7 @@ namespace Katydid
 
             if( fMetaCCLocustMCTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fMetaCCLocustMCTree );
 
                 fMetaCCLocustMCTree->SetBranchAddress("Length", &fCCLocustMC.fLength);
@@ -101,7 +101,7 @@ namespace Katydid
         fMetaCCLocustMCTree = new TTree("mccLocustMC", "Meta-Candidate Comparison -- Locust MC");
         if (fMetaCCLocustMCTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fMetaCCLocustMCTree);

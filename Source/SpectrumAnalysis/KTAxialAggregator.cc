@@ -7,11 +7,11 @@
 
 #include "KTAxialAggregator.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(agglog, "KTAxialAggregator");
+    LOGGER(agglog, "KTAxialAggregator");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTAxialAggregator, "axial-channel-aggregator");
@@ -46,7 +46,7 @@ namespace Katydid
         unsigned nTotalComponents = fftwData.GetNComponents(); // Get number of components
         if(nTotalComponents%fNRings!=0)
         {
-            KTERROR(agglog,"The number of rings has to be an integer multiple of total components");
+            LERROR(agglog,"The number of rings has to be an integer multiple of total components");
         }
         unsigned nComponents = nTotalComponents/fNRings;// Get number of components
 
@@ -71,7 +71,7 @@ namespace Katydid
             }// End of loop over all rings
             newAxialSummedFreqData.SetSpectrum(newFreqSpectrum, iComponent);
         }
-        KTDEBUG(agglog,"Axial channel summation performed over "<< fNRings<<" rings");
+        LDEBUG(agglog,"Axial channel summation performed over "<< fNRings<<" rings");
         return true;
     }
 }

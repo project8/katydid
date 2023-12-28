@@ -10,11 +10,11 @@
 #include "KTCorrelator.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using namespace Katydid;
 
-KTLOGGER(corrtestlog, "TestCorrelator");
+LOGGER(corrtestlog, "TestCorrelator");
 
 int main()
 {
@@ -101,32 +101,32 @@ int main()
     dataInput->SetSpectrum(spectrum0, 0);
     dataInput->SetSpectrum(spectrum1, 1);
 
-    KTINFO(corrtestlog, "Spectrum 0");
+    LINFO(corrtestlog, "Spectrum 0");
     spectrum0->Print(0, 19);
 
-    KTINFO(corrtestlog, "Spectrum 1");
+    LINFO(corrtestlog, "Spectrum 1");
     spectrum1->Print(0, 19);
 
     // Do the correlations
     KTCorrelator* correlator = new KTCorrelator();
     correlator->AddPair(KTCorrelator::UIntPair(0, 0));
     correlator->AddPair(KTCorrelator::UIntPair(0, 1));
-    KTINFO(corrtestlog, "The correlator has " << correlator->GetPairVector().size() << " correlation pairs");
+    LINFO(corrtestlog, "The correlator has " << correlator->GetPairVector().size() << " correlation pairs");
 
     if (! correlator->Correlate(*dataInput))
     {
-        KTERROR(corrtestlog, "Something went wrong during the correlation");
+        LERROR(corrtestlog, "Something went wrong during the correlation");
         return -1;
     }
     KTCorrelationData& dataOutput = dataInput->Of< KTCorrelationData >();
 
-    KTINFO(corrtestlog, "There are " << dataOutput.GetNComponents() << " output spectra");
+    LINFO(corrtestlog, "There are " << dataOutput.GetNComponents() << " output spectra");
     for (unsigned iSpectrum=0; iSpectrum < dataOutput.GetNComponents(); iSpectrum++)
     {
-        KTINFO(corrtestlog, "Output Spectrum " << iSpectrum << "; "
+        LINFO(corrtestlog, "Output Spectrum " << iSpectrum << "; "
                 "pair (" << dataOutput.GetInputPair().first << ", " <<
                 dataOutput.GetInputPair().second << ")");
-        KTINFO(corrtestlog, "Size of spectrum: " << dataOutput.GetSpectrumPolar(iSpectrum)->size());
+        LINFO(corrtestlog, "Size of spectrum: " << dataOutput.GetSpectrumPolar(iSpectrum)->size());
         dataOutput.GetSpectrumPolar(iSpectrum)->Print(0, 10);
     }
 

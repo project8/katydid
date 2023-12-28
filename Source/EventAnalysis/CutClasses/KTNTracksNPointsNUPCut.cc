@@ -9,13 +9,13 @@
 
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(ecnuplog, "KTNTracksNPointsNUPCut");
+    LOGGER(ecnuplog, "KTNTracksNPointsNUPCut");
 
     const std::string KTNTracksNPointsNUPCut::Result::sName = "ntracks-npoints-nup-cut";
 
@@ -43,7 +43,7 @@ namespace Katydid
 
         if (! node->has("parameters") || ! node->at("parameters")->is_array())
         {
-            KTERROR(ecnuplog, "No cut parameters were provided, or \"parameters\" was not an array");
+            LERROR(ecnuplog, "No cut parameters were provided, or \"parameters\" was not an array");
             return false;
         }
 
@@ -74,7 +74,7 @@ namespace Katydid
         {
             if (! (*paramIt)->is_node())
             {
-                KTERROR(ecnuplog, "Invalid set of parameters");
+                LERROR(ecnuplog, "Invalid set of parameters");
                 return false;
             }
             const scarab::param_node& oneSetOfParams = (*paramIt)->as_node();
@@ -96,7 +96,7 @@ namespace Katydid
             catch( scarab::error& e )
             {
                 // this will catch scarab::errors from param_node::get_value in the case that a parameter is missing
-                KTERROR(ecnuplog, "An incomplete set of parameters was found: " << oneSetOfParams);
+                LERROR(ecnuplog, "An incomplete set of parameters was found: " << oneSetOfParams);
                 return false;
             }
 
@@ -108,7 +108,7 @@ namespace Katydid
         // Positions in the array for zero n-tracks and zero ft-npoints are kept to make later indexing of fThresholds simpler
         maxNTracksConfig += 2;
         maxFTNPointsConfig += 2;
-        KTDEBUG(ecnuplog, "maxNTracksConfig = " << maxNTracksConfig << "  " << "maxFTNPointsConfig = " << maxFTNPointsConfig);
+        LDEBUG(ecnuplog, "maxNTracksConfig = " << maxNTracksConfig << "  " << "maxFTNPointsConfig = " << maxFTNPointsConfig);
         fThresholds.clear();
         fThresholds.resize(maxNTracksConfig);
         // skip the first row; there will never be 0 tracks
@@ -138,7 +138,7 @@ namespace Katydid
                 }
                 arrayStream << "]\n";
             }
-            KTDEBUG(ecnuplog, "Thresholds prior to filling:\n" << arrayStream.str());
+            LDEBUG(ecnuplog, "Thresholds prior to filling:\n" << arrayStream.str());
         }
 #endif
 
@@ -169,7 +169,7 @@ namespace Katydid
                 }
                 arrayStream << "]\n";
             }
-            KTDEBUG(ecnuplog, "Thresholds after filling:\n" << arrayStream.str());
+            LDEBUG(ecnuplog, "Thresholds after filling:\n" << arrayStream.str());
         }
 #endif
 
@@ -185,7 +185,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecnuplog, "Invalid string for fWideOrNarrow");
+                LERROR(ecnuplog, "Invalid string for fWideOrNarrow");
                 return false;
             }
         }
@@ -201,7 +201,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecnuplog, "Invalid string for fTimeOrBinAverage");
+                LERROR(ecnuplog, "Invalid string for fTimeOrBinAverage");
                 return false;
             }
         }
@@ -215,9 +215,9 @@ namespace Katydid
         unsigned nTracksIndex = std::min(eventData.GetTotalEventSequences(), (unsigned)fThresholds.size() - 1);
         unsigned ftNPointsIndex = std::min(eventData.GetFirstTrackNTrackBins(), (int)fThresholds[nTracksIndex].size() - 1);
 
-        KTDEBUG(ecnuplog, "Applying n-tracks/n-points/nup cut; (" << eventData.GetTotalEventSequences() << ", " << eventData.GetFirstTrackNTrackBins() << ")");
-        KTDEBUG(ecnuplog, "Using indices: (" << nTracksIndex << ", " << ftNPointsIndex << ")");
-        KTDEBUG(ecnuplog, "Cut thresholds: " << fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP << ", " << fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP << ", " << fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP)
+        LDEBUG(ecnuplog, "Applying n-tracks/n-points/nup cut; (" << eventData.GetTotalEventSequences() << ", " << eventData.GetFirstTrackNTrackBins() << ")");
+        LDEBUG(ecnuplog, "Using indices: (" << nTracksIndex << ", " << ftNPointsIndex << ")");
+        LDEBUG(ecnuplog, "Cut thresholds: " << fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP << ", " << fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP << ", " << fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP)
 
         double ftTotalNUP = eventData.GetFirstTrackTotalNUP();
         if (fWideOrNarrow == WideOrNarrow::wide)
@@ -227,7 +227,7 @@ namespace Katydid
 
         if( ftTotalNUP < fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP )
         {
-            KTDEBUG(ecnuplog, "Event is cut based on total NUP: " << ftTotalNUP << " < " << fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
+            LDEBUG(ecnuplog, "Event is cut based on total NUP: " << ftTotalNUP << " < " << fThresholds[nTracksIndex][ftNPointsIndex].fMinTotalNUP);
             isCut = true;
         }
         else
@@ -240,14 +240,14 @@ namespace Katydid
 
             if( ftTotalNUP / divisor < fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP )
             {
-                KTDEBUG(ecnuplog, "Event is cut based on average NUP: " << ftTotalNUP / divisor << " < " <<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
+                LDEBUG(ecnuplog, "Event is cut based on average NUP: " << ftTotalNUP / divisor << " < " <<fThresholds[nTracksIndex][ftNPointsIndex].fMinAverageNUP);
                 isCut = true;
             }
             else
             {
                 if( eventData.GetFirstTrackMaxNUP() < fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP )
                 {
-                    KTDEBUG(ecnuplog, "Event is cut based on max NUP: " << eventData.GetFirstTrackMaxNUP() << " < " << fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
+                    LDEBUG(ecnuplog, "Event is cut based on max NUP: " << eventData.GetFirstTrackMaxNUP() << " < " << fThresholds[nTracksIndex][ftNPointsIndex].fMinMaxNUP);
                     isCut = true;
                 }
             }

@@ -8,14 +8,14 @@
 #ifndef KTAXISPROPERTIES_GETNBINS_HH_
 #define KTAXISPROPERTIES_GETNBINS_HH_
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <cmath>
 
 namespace Katydid
 {
     
-    KTLOGGER(utillog_getnbins, "KTAxisProperties_GetNBins");
+    LOGGER(utillog_getnbins, "KTAxisProperties_GetNBins");
 
     template< size_t NDims >
     class KTNBinsFunctor
@@ -88,7 +88,7 @@ namespace Katydid
                     fDirectNBinsPtr(NULL),
                     fArrayOfGetNBinsPtrs(NULL)
             {
-                //KTWARN(utillog_getnbins, "in constructor for funcgetnbinsonedim, " << NDims);
+                //LWARN(utillog_getnbins, "in constructor for funcgetnbinsonedim, " << NDims);
                 fPtrToArray = ptrToArray;
                 fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimWithArray;
                 fArrayOfGetNBinsPtrs = new FuncGetNBinsOneDim [NDims];
@@ -96,8 +96,8 @@ namespace Katydid
                 {
                     fArrayOfGetNBinsPtrs[arrPos] = funcGetNBinsArray[arrPos];
                 }
-                //KTWARN(utillog_getnbins, fArrayOfGetNBinsPtrs[0] << "  " << fArrayOfGetNBinsPtrs[1]);
-                //KTWARN(utillog_getnbins, (fPtrToArray->*fArrayOfGetNBinsPtrs[0])() << "  " << (fPtrToArray->*fArrayOfGetNBinsPtrs[1])());
+                //LWARN(utillog_getnbins, fArrayOfGetNBinsPtrs[0] << "  " << fArrayOfGetNBinsPtrs[1]);
+                //LWARN(utillog_getnbins, (fPtrToArray->*fArrayOfGetNBinsPtrs[0])() << "  " << (fPtrToArray->*fArrayOfGetNBinsPtrs[1])());
             }
 
             virtual ~KTNBinsInArray()
@@ -121,7 +121,7 @@ namespace Katydid
                 {
                     return new KTNBinsInArray< NDims, XArrayType >(fPtrToArray, fArrayOfGetNBinsPtrs);
                 }
-                KTERROR(utillog_getnbins, "Error in KTNBinsFunctor< " << NDims << " >::Clone: unknown NBins mode");
+                LERROR(utillog_getnbins, "Error in KTNBinsFunctor< " << NDims << " >::Clone: unknown NBins mode");
                 return NULL;
             }
 

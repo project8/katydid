@@ -6,7 +6,7 @@
  */
 
 #include "KT2ROOT.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTSpectrumCollectionData.hh"
@@ -28,7 +28,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    LOGGER(publog, "katydid.output");
 
 
     static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayEventAnalysis > sBRTWAnalysisRegistrar;
@@ -68,7 +68,7 @@ namespace Katydid
 
         KTPhysicalArray< 1, KTPowerSpectrum* > spectra = *psColl.GetSpectra();
 
-        //KTDEBUG(publog, "2");
+        //LDEBUG(publog, "2");
         if (!spectra.empty())
         {
             stringstream conv;

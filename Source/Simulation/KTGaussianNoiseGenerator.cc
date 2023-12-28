@@ -18,7 +18,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "KTGaussianNoiseGenerator");
+    LOGGER(genlog, "KTGaussianNoiseGenerator");
 
     KT_REGISTER_PROCESSOR(KTGaussianNoiseGenerator, "gaussian-noise-generator");
 
@@ -57,7 +57,7 @@ namespace Katydid
 
             if (timeSeries == NULL)
             {
-                KTERROR(genlog, "Time series " << iComponent << " was not present");
+                LERROR(genlog, "Time series " << iComponent << " was not present");
                 continue;
             }
 
@@ -66,7 +66,7 @@ namespace Katydid
             {
                 timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
                 //binCenter += binWidth;
-                //KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
+                //LDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
             }
         }
 

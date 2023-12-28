@@ -14,7 +14,7 @@
 
 #include "KTBiasedACM.hh"
 #include "KTProcessor.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 
 #include "param.hh"
@@ -28,7 +28,7 @@
 
 namespace Katydid {
 
-  KTLOGGER(nrq_log, "KTRQProcessor");
+  LOGGER(nrq_log, "KTRQProcessor");
 
   class KTRQProcessor : public Nymph::KTProcessor {
 

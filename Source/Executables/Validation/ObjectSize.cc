@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "complexpolar.hh"
 
@@ -15,7 +15,7 @@
         KTPROG(testlog, "Size of " << STRINGIFY(TYPE) <<": " << sizeof(obj) << " bytes"); \
     }
 
-KTLOGGER(testlog, "ObjectSize");
+LOGGER(testlog, "ObjectSize");
 
 using namespace Katydid;
 

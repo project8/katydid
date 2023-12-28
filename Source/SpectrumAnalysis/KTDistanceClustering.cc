@@ -22,7 +22,7 @@ using std::set;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "KTDistanceClustering");
+    LOGGER(sdlog, "KTDistanceClustering");
 
     KT_REGISTER_PROCESSOR(KTDistanceClustering, "distance-clustering");
 
@@ -89,19 +89,19 @@ namespace Katydid
                     thisPoint = pIt->first;
                     if (thisPoint - lastPointInActiveCluster > fMaxBinDistance)
                     {
-                        //KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                        //LDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                         newData.AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iComponent);
                         activeCluster.clear();
                     }
                     activeCluster.insert(thisPoint);
                     lastPointInActiveCluster = thisPoint;
                 }
-                KTDEBUG(sdlog, "Adding cluster: (ch. " << iComponent << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                LDEBUG(sdlog, "Adding cluster: (ch. " << iComponent << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                 newData.AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iComponent);
             }
             newData.SetThreshold(threshold, iComponent);
 
-            KTINFO(sdlog, newData.GetSetOfClusters(iComponent).size() << " clusters added on channel " << iComponent);
+            LINFO(sdlog, newData.GetSetOfClusters(iComponent).size() << " clusters added on channel " << iComponent);
         }
 
         return true;
@@ -111,12 +111,12 @@ namespace Katydid
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {
-            KTERROR(sdlog, "No discriminated-points data was present");
+            LERROR(sdlog, "No discriminated-points data was present");
             return;
         }
         if (! FindClusters(data->Of< KTDiscriminatedPoints1DData >()))
         {
-            KTERROR(sdlog, "Something went wrong while performing the cluster-finding");
+            LERROR(sdlog, "Something went wrong while performing the cluster-finding");
             return;
         }
         fCluster1DSignal(data);

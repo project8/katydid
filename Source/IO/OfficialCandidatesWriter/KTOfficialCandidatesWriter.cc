@@ -16,7 +16,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTOfficialCandidatesWriter");
+    LOGGER(publog, "KTOfficialCandidatesWriter");
 
     KT_REGISTER_WRITER(KTOfficialCandidatesWriter, "official-candidates-writer");
     KT_REGISTER_PROCESSOR(KTOfficialCandidatesWriter, "official-candidates-writer");
@@ -67,7 +67,7 @@ namespace Katydid
 
         if (fStatus != kNotOpenedYet)
         {
-            KTERROR(publog, "Status must be <" << kNotOpenedYet << "> to open a file; current status is <" << fStatus << ">");
+            LERROR(publog, "Status must be <" << kNotOpenedYet << "> to open a file; current status is <" << fStatus << ">");
             return false;
         }
 
@@ -81,7 +81,7 @@ namespace Katydid
             fFile = fopen(fFilename.c_str(), fFileMode.c_str());
             if (fFile == NULL)
             {
-                KTERROR(publog, "File did not open\n" <<
+                LERROR(publog, "File did not open\n" <<
                         "\tFilename: " << fFilename <<
                         "\tMode: " << fFileMode);
                 return false;
@@ -228,7 +228,7 @@ namespace Katydid
     {
         ScopedLock lock(fMutex);
 
-        KTDEBUG(publog, "Copying summary information before checking if already waiting to stop candidate writing");
+        LDEBUG(publog, "Copying summary information before checking if already waiting to stop candidate writing");
 
         delete fSummaryCopy;
         fSummaryCopy = new KTProcSummary(*summary);
@@ -236,7 +236,7 @@ namespace Katydid
 
         if (fWaitingForSummary)
         {
-            KTDEBUG(publog, "Writer was waiting for summary; writing summary and closing file");
+            LDEBUG(publog, "Writer was waiting for summary; writing summary and closing file");
             WriteSummaryInformationAndCloseFile(fSummaryCopy);
             delete fSummaryCopy;
             fSummaryCopy = NULL;
@@ -244,7 +244,7 @@ namespace Katydid
         }
         else
         {
-            KTDEBUG(publog, "Commencing wait for end of candidate writing");
+            LDEBUG(publog, "Commencing wait for end of candidate writing");
         }
 
         return;
@@ -254,14 +254,14 @@ namespace Katydid
     {
         ScopedLock lock(fMutex);
 
-        KTDEBUG(publog, "Stopping candidate writing before checking if already waiting with summary");
+        LDEBUG(publog, "Stopping candidate writing before checking if already waiting with summary");
 
         EndCandidates();
         fWaitingForSummary = true;
 
         if (fSummaryCopy != NULL)
         {
-            KTDEBUG(publog, "Writer was waiting to stop candidate writing; stopping, writing summary, and closing file");
+            LDEBUG(publog, "Writer was waiting to stop candidate writing; stopping, writing summary, and closing file");
             WriteSummaryInformationAndCloseFile(fSummaryCopy);
             delete fSummaryCopy;
             fSummaryCopy = NULL;
@@ -269,7 +269,7 @@ namespace Katydid
         }
         else
         {
-            KTDEBUG(publog, "Commencing wait for summary");
+            LDEBUG(publog, "Commencing wait for summary");
         }
 
         return;

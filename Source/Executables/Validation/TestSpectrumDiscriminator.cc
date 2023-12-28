@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSpectrumDiscriminator.hh"
 #include "KTVariableSpectrumDiscriminator.hh"
 #include "KTGainVariationData.hh"
@@ -27,7 +27,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestSpectrumDiscriminator");
+LOGGER(testlog, "TestSpectrumDiscriminator");
 
 int main()
 {
@@ -91,7 +91,7 @@ int main()
     // Check things have arrived
     std::shared_ptr< KTSpline::Implementation > splineImp = gvdata.GetSpline(0)->Implement(nBins, minFreq, maxFreq);
     double returnedMean = splineImp->GetMean();
-    KTINFO(testlog, "Spline mean: "<<returnedMean);
+    LINFO(testlog, "Spline mean: "<<returnedMean);
 
 
 
@@ -110,7 +110,7 @@ int main()
     KTPowerSpectrum* powerSpectrum = new KTPowerSpectrum(nBins, minFreq, maxFreq);
 
     // Fill in the noise
-    KTINFO(testlog, "Creating the baseline and noise");
+    LINFO(testlog, "Creating the baseline and noise");
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
 #ifdef ROOT_FOUND
@@ -139,9 +139,9 @@ int main()
                                 spectrumFFTW->GetReal(iBin)*multiplier,
                                 spectrumFFTW->GetImag(iBin)*multiplier);
         (*powerSpectrum)(iBin) = (*powerSpectrum)(iBin) * multiplier;
-        //KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());
-        //KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << std::sqrt((*spectrumFFTW)(iBin)[0] * (*spectrumFFTW)(iBin)[0] + (*spectrumFFTW)(iBin)[1] * (*spectrumFFTW)(iBin)[1]));
-        KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*powerSpectrum)(iBin));
+        //LINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());
+        //LINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << std::sqrt((*spectrumFFTW)(iBin)[0] * (*spectrumFFTW)(iBin)[0] + (*spectrumFFTW)(iBin)[1] * (*spectrumFFTW)(iBin)[1]));
+        LINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*powerSpectrum)(iBin));
 
     }
 
@@ -167,20 +167,20 @@ int main()
     disc.SetNeighborhoodRadius(1);
     disc.SetNormalize(true);
 
-    KTINFO(testlog, "Discriminating data");
+    LINFO(testlog, "Discriminating data");
     if (! disc.Discriminate(dataPS, gvdata))
     {
-        KTERROR(testlog, "Something went wrong while discriminating peaks");
+        LERROR(testlog, "Something went wrong while discriminating peaks");
         return -1;
     }
     KTDiscriminatedPoints1DData& pointData = dataPS.Of< KTDiscriminatedPoints1DData >();
 
     KTDiscriminatedPoints1DData::SetOfPoints setOfPoints = pointData.GetSetOfPoints(0);
-    KTINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
+    LINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        KTINFO(testlog, "spline[Bin]: "<<(*splineImp)(it->first));
-        KTINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ", "<< it->second.fMean << ", "<< it->second.fVariance << ", "<< it->second.fNeighborhoodAmplitude<<")");
+        LINFO(testlog, "spline[Bin]: "<<(*splineImp)(it->first));
+        LINFO(testlog, "Bin " << it->first << " = (" << it->second.fAbscissa << ", " << it->second.fOrdinate << ", "<< it->second.fMean << ", "<< it->second.fVariance << ", "<< it->second.fNeighborhoodAmplitude<<")");
     }
 
 #ifdef ROOT_FOUND

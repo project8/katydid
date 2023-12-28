@@ -22,7 +22,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(inlog, "KTMultiFileJSONReader");
+    LOGGER(inlog, "KTMultiFileJSONReader");
 
     KT_REGISTER_READER(KTMultiFileJSONReader, "multifile-json-reader");
     KT_REGISTER_PROCESSOR(KTMultiFileJSONReader, "multifile-json-reader");
@@ -58,7 +58,7 @@ namespace Katydid
             for (KTParamArray::const_iterator ifIt = inputFileArray->Begin(); ifIt != inputFileArray->End(); ++ifIt)
             {
                 AddFilename((*ifIt)->AsValue().Get());
-                KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+                LDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
             }
         }
 
@@ -70,7 +70,7 @@ namespace Katydid
             for (KTParamArray::const_iterator dtIt = dataTypeArray->Begin(); dtIt != dataTypeArray->End(); ++dtIt)
             {
                 AddDataType((*dtIt)->AsValue().Get());
-                KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">");
+                LDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">");
             }
         }
 
@@ -93,7 +93,7 @@ namespace Katydid
         }
         else
         {
-            KTERROR(inlog, "Invalid run-data-type: " << type);
+            LERROR(inlog, "Invalid run-data-type: " << type);
             return false;
         }
 
@@ -105,7 +105,7 @@ namespace Katydid
         FILE* file = fopen(filename.c_str(), fFileMode.c_str());
         if (file == NULL)
         {
-            KTERROR(inlog, "File did not open\n" <<
+            LERROR(inlog, "File did not open\n" <<
                     "\tFilename: " << filename <<
                     "\tMode: " << fFileMode);
             return false;
@@ -115,7 +115,7 @@ namespace Katydid
 
         if (document.ParseStream<0>(fileStream).HasParseError())
         {
-            KTERROR(inlog, "Unable to parse file <" << filename << ">\n" <<
+            LERROR(inlog, "Unable to parse file <" << filename << ">\n" <<
                     "\tReason: " << document.GetParseError() << '\n' <<
                     "\tLocation: character (sorry!) " << document.GetErrorOffset());
             fclose(file);
@@ -124,7 +124,7 @@ namespace Katydid
 
         fclose(file);
 
-        KTINFO(inlog, "Input file open and parsed: <" << filename << ">");
+        LINFO(inlog, "Input file open and parsed: <" << filename << ">");
 
         return true;
     }
@@ -136,17 +136,17 @@ namespace Katydid
             rapidjson::Document document;
             if (! OpenAndParseFile(*fFileIter, document))
             {
-                KTERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
+                LERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
                 return false;
             }
 
             Nymph::KTDataPtr newData(new Nymph::KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
-                KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+                LDEBUG(inlog, "Appending data of type " << dtIt->fName);
                 if (! (this->*(dtIt->fAppendFcn))(document, *(newData.get())))
                 {
-                    KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
+                    LERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
                 }
                 (*(dtIt->fSignal))(newData);
             }
@@ -161,23 +161,23 @@ namespace Katydid
     {
         if (fFileIter == fFilenames.end())
         {
-            KTERROR(inlog, "File iterator has already reached the end of the filenames");
+            LERROR(inlog, "File iterator has already reached the end of the filenames");
             return false;
         }
 
         rapidjson::Document document;
         if (! OpenAndParseFile(*fFileIter, document))
         {
-            KTERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
+            LERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
             return false;
         }
 
         for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
         {
-            KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+            LDEBUG(inlog, "Appending data of type " << dtIt->fName);
             if (! (this->*(dtIt->fAppendFcn))(document, data))
             {
-                KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
+                LERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
             }
         }
 
@@ -190,21 +190,21 @@ namespace Katydid
     {
         if (! document["record_size"].IsUint())
         {
-            KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
+            LERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
             return false;
         }
         unsigned recordSize = document["record_size"].GetUint();
 
         if (! document["records_simulated"].IsUint())
         {
-            KTERROR(inlog, "\"records_simulated\" value is missing or is not an unsigned integer");
+            LERROR(inlog, "\"records_simulated\" value is missing or is not an unsigned integer");
             return false;
         }
         unsigned recordsSimulated = document["records_simulated"].GetUint();
 
         if (! document["egg_name"].IsString())
         {
-            KTERROR(inlog, "\"egg_name\" value is missing or is not a string");
+            LERROR(inlog, "\"egg_name\" value is missing or is not a string");
             return false;
         }
         KTLocustMCFilename parsedFilename(document["egg_name"].GetString());
@@ -212,7 +212,7 @@ namespace Katydid
         const rapidjson::Value& events = document["events"];
         if (! events.IsArray())
         {
-            KTERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
+            LERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
             return false;
         }
 
@@ -233,10 +233,10 @@ namespace Katydid
                 unsigned startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 unsigned endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 unsigned endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
+                LDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
                 if (endRec < startRec || (endRec == startRec && endSample < startSample))
                 {
-                    KTWARN(inlog, "Invalid event: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
+                    LWARN(inlog, "Invalid event: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
                 }
                 else
                 {
@@ -245,11 +245,11 @@ namespace Katydid
             }
             else
             {
-                KTWARN(inlog, "\"support\" value is either missing or not an array");
+                LWARN(inlog, "\"support\" value is either missing or not an array");
             }
         }
 
-        KTDEBUG(inlog, "new data object has " << mcTruth.GetEvents().size() << " events");
+        LDEBUG(inlog, "new data object has " << mcTruth.GetEvents().size() << " events");
 
         return true;
     }
@@ -258,14 +258,14 @@ namespace Katydid
     {
         if (! document["record_size"].IsUint())
         {
-            KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
+            LERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
             return false;
         }
         unsigned recordSize = document["record_size"].GetUint();
 
         if (! document["records_analyzed"].IsUint())
         {
-            KTERROR(inlog, "\"records_analyzed\" value is missing or is not an unsigned integer");
+            LERROR(inlog, "\"records_analyzed\" value is missing or is not an unsigned integer");
             return false;
         }
         unsigned recordsAnalyzed = document["records_analyzed"].GetUint();
@@ -273,7 +273,7 @@ namespace Katydid
         const rapidjson::Value& events = document["candidates"];
         if (! events.IsArray())
         {
-            KTERROR(inlog, "\"candidates\" value in the analysis candidates file is either missing or not an array");
+            LERROR(inlog, "\"candidates\" value in the analysis candidates file is either missing or not an array");
             return false;
         }
 
@@ -290,10 +290,10 @@ namespace Katydid
                 unsigned startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 unsigned endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 unsigned endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
+                LDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
                 if (endRec < startRec || (endRec == startRec && endSample < startSample))
                 {
-                    KTWARN(inlog, "Invalid candidate: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
+                    LWARN(inlog, "Invalid candidate: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
                 }
                 else
                 {
@@ -302,11 +302,11 @@ namespace Katydid
             }
             else
             {
-                KTWARN(inlog, "\"support\" value is either missing or not an array");
+                LWARN(inlog, "\"support\" value is either missing or not an array");
             }
         }
 
-        KTDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " candidates");
+        LDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " candidates");
 
         return true;
     }
@@ -317,7 +317,7 @@ namespace Katydid
         const rapidjson::Value& ccResults = document["cc-results"];
         if (! ccResults.IsObject())
         {
-            KTERROR(inlog, "\"cc-results\" value is missing or is not an object");
+            LERROR(inlog, "\"cc-results\" value is missing or is not an object");
             return false;
         }
 
@@ -331,7 +331,7 @@ namespace Katydid
         const rapidjson::Value& newxcm = ccResults["n-events-with-x-cand-matches"];
         if (! newxcm.IsArray())
         {
-            KTERROR(inlog, "\"n-events-with-x-cand-matches\" value is either missing or is not an array");
+            LERROR(inlog, "\"n-events-with-x-cand-matches\" value is either missing or is not an array");
             return false;
         }
 
@@ -347,7 +347,7 @@ namespace Katydid
         const rapidjson::Value& ncwxem = ccResults["n-cands-with-x-event-matches"];
         if (! ncwxem.IsArray())
         {
-            KTERROR(inlog, "\"n-events-with-x-cand-matches\" value is either missing or is not an array");
+            LERROR(inlog, "\"n-events-with-x-cand-matches\" value is either missing or is not an array");
             return false;
         }
 

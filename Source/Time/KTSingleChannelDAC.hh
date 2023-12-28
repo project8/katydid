@@ -12,7 +12,7 @@
 #include "param.hh"
 
 #include "KTConstants.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMemberVariable.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -23,7 +23,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(egglog_scdac, "KTSingleChannelDAC");
+    LOGGER(egglog_scdac, "KTSingleChannelDAC");
 
     class KTChannelHeader;
     class KTEggHeader;
@@ -127,7 +127,7 @@ namespace Katydid
     {
         if (fDigitizedDataFormat != sDigitizedS && fDigitizedDataFormat != sDigitizedUS)
         {
-            KTERROR(egglog_scdac, "Invalid digitized data format: " << fDigitizedDataFormat);
+            LERROR(egglog_scdac, "Invalid digitized data format: " << fDigitizedDataFormat);
             return false;
         }
         fDigitizedDataFormat = format;
@@ -190,13 +190,13 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToFFTW(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw");
+        LDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw");
 
         if (fShouldRunInitialize)
         {
             if (! Initialize())
             {
-                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                LERROR(egglog_scdac, "Failed to initialize single-channel DAC");
                 return NULL;
             }
         }
@@ -214,13 +214,13 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToReal(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-real");
+        LDEBUG(egglog_scdac, "Converting raw-ts to ts-real");
 
         if (fShouldRunInitialize)
         {
             if (! Initialize())
             {
-                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                LERROR(egglog_scdac, "Failed to initialize single-channel DAC");
                 return NULL;
             }
         }
@@ -239,8 +239,8 @@ namespace Katydid
             rawtsstream << (ts)(iBin) << "  ";
             tsstream << (*newTS)(iBin) << "  ";
         }
-        KTWARN(egglog_scdac, "Raw TS:  " << rawtsstream.str());
-        KTWARN(egglog_scdac, "TS:  " << tsstream.str());
+        LWARN(egglog_scdac, "Raw TS:  " << rawtsstream.str());
+        LWARN(egglog_scdac, "TS:  " << tsstream.str());
         */
         //*** DEBUG ***//
         return newTS;
@@ -249,13 +249,13 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToFFTWOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw with oversampling");
+        LDEBUG(egglog_scdac, "Converting raw-ts to ts-fftw with oversampling");
 
         if (fShouldRunInitialize)
         {
             if (! Initialize())
             {
-                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                LERROR(egglog_scdac, "Failed to initialize single-channel DAC");
                 return NULL;
             }
         }
@@ -282,7 +282,7 @@ namespace Katydid
 #ifndef NDEBUG
         if (bin != ts.size() / 2)
         {
-            KTWARN(egglog_scdac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
+            LWARN(egglog_scdac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
         }
 #endif
         return newTS;
@@ -291,13 +291,13 @@ namespace Katydid
     template< typename XInterfaceType >
     KTTimeSeries* KTSingleChannelDAC::DoConvertToRealOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
     {
-        KTDEBUG(egglog_scdac, "Converting raw-ts to ts-real with oversampling");
+        LDEBUG(egglog_scdac, "Converting raw-ts to ts-real with oversampling");
 
         if (fShouldRunInitialize)
         {
             if (! Initialize())
             {
-                KTERROR(egglog_scdac, "Failed to initialize single-channel DAC");
+                LERROR(egglog_scdac, "Failed to initialize single-channel DAC");
                 return NULL;
             }
         }
@@ -319,7 +319,7 @@ namespace Katydid
 #ifndef NDEBUG
         if (bin != ts.size())
         {
-            KTWARN(egglog_scdac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
+            LWARN(egglog_scdac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
         }
 #endif
         return newTS;

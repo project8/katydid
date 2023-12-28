@@ -16,7 +16,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTPowerSpectrumData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <vector>
 #include <cmath>
@@ -73,7 +73,7 @@ namespace Katydid
      - "fs-polar": void (Nymph::KTDataPtr) -- Emitted upon convolution of a frequency spectrum; Guarantees KTConvolvedFrequencySpectrumDataPolar
     */
 
-    KTLOGGER(convlog_hh, "KTConvolution.hh");
+    LOGGER(convlog_hh, "KTConvolution.hh");
 
     class KTConvolution1D : public Nymph::KTProcessor
     {
@@ -214,12 +214,12 @@ namespace Katydid
         int overlap = fKernelSize - 1;
         int step = block - overlap;
 
-        KTINFO(convlog_hh, "Block size: " << block);
-        KTINFO(convlog_hh, "Overlap: " << overlap);
-        KTINFO(convlog_hh, "Step size: " << step);
+        LINFO(convlog_hh, "Block size: " << block);
+        LINFO(convlog_hh, "Overlap: " << overlap);
+        LINFO(convlog_hh, "Step size: " << step);
 
         int nBinsTotal = GetSpectrum( data, 0 )->GetNFrequencyBins();
-        KTINFO(convlog_hh, "nBinsTotal = " << nBinsTotal);
+        LINFO(convlog_hh, "nBinsTotal = " << nBinsTotal);
 
         // Now that nBinsTotal is determined, we can initialize the DFTs
         // The following conditional should only be true on the first slice
@@ -231,23 +231,23 @@ namespace Katydid
         // First loop over components
         for( unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent )
         {
-            KTINFO(convlog_hh, "Starting component: " << iComponent);
+            LINFO(convlog_hh, "Starting component: " << iComponent);
 
             // Get power spectrum and initialize convolved spectrum for this component
             typename XSpectrumDataCore::spectrum_type* transformedSpectrum = DoConvolution( GetSpectrum( data, iComponent ), block, step, overlap );
 
             if( transformedSpectrum == nullptr )
             {
-                KTERROR( convlog_hh, "Convolution was unsuccessful. Aborting." );
+                LERROR( convlog_hh, "Convolution was unsuccessful. Aborting." );
                 return false;
             }
 
             // Set power spectrum
             newData.SetSpectrum( transformedSpectrum, iComponent );
-            KTDEBUG(convlog_hh, "Filled new spectrum");
+            LDEBUG(convlog_hh, "Filled new spectrum");
         }
 
-        KTINFO(convlog_hh, "All components finished successfully!");
+        LINFO(convlog_hh, "All components finished successfully!");
 
         return true;
     }
@@ -270,7 +270,7 @@ namespace Katydid
 
         if( ! SetUpGeneralVars< XSpectraType* >() )
         {
-            KTERROR(convlog_hh, "Spectrum type unknown. Returning blank spectrum");
+            LERROR(convlog_hh, "Spectrum type unknown. Returning blank spectrum");
             return transformedSpectrum;
         }
 
@@ -279,9 +279,9 @@ namespace Katydid
         int position = 0;
         while( (blockNumber+1) * step <= nBinsTotal )
         {
-            KTDEBUG(convlog_hh, "Block number: " << blockNumber);
-            KTDEBUG(convlog_hh, "Starting position: " << blockNumber * step - overlap);
-            KTDEBUG(convlog_hh, "nBinsTotal: " << nBinsTotal);
+            LDEBUG(convlog_hh, "Block number: " << blockNumber);
+            LDEBUG(convlog_hh, "Starting position: " << blockNumber * step - overlap);
+            LDEBUG(convlog_hh, "nBinsTotal: " << nBinsTotal);
 
             // Fill input array
             for( int nBin = 0; nBin < block; ++nBin )
@@ -291,11 +291,11 @@ namespace Katydid
             }
 
             // FFT of input block
-            KTDEBUG(convlog_hh, "Performing DFT");
+            LDEBUG(convlog_hh, "Performing DFT");
             fftw_execute( fGeneralForwardPlan );
 
             // Bin multiplication in fourier space
-            KTDEBUG(convlog_hh, "Multiplying arrays in fourier space");
+            LDEBUG(convlog_hh, "Multiplying arrays in fourier space");
 
             for( int nBin = 0; nBin < nBinLimitRegular; ++nBin )
             {
@@ -304,7 +304,7 @@ namespace Katydid
             }
 
             // Reverse FFT of output block
-            KTDEBUG(convlog_hh, "Performing reverse DFT");
+            LDEBUG(convlog_hh, "Performing reverse DFT");
             fftw_execute( fGeneralReversePlan );
 
             // Loop over bins in the output block and fill the convolved spectrum
@@ -319,12 +319,12 @@ namespace Katydid
 
         if( blockNumber * step == nBinsTotal )
         {
-            KTINFO(convlog_hh, "Reached end of input data");
+            LINFO(convlog_hh, "Reached end of input data");
             return transformedSpectrum;
         }
 
-        KTINFO(convlog_hh, "Reached final block");
-        KTINFO(convlog_hh, "Starting position: " << blockNumber * step - overlap);
+        LINFO(convlog_hh, "Reached final block");
+        LINFO(convlog_hh, "Starting position: " << blockNumber * step - overlap);
 
         // Same procedure as above, this time with a shorter final block
 
@@ -340,8 +340,8 @@ namespace Katydid
 #endif
         }
 
-        KTDEBUG(convlog_hh, "Short array length = " << lastNBin);
-        KTDEBUG(convlog_hh, "Initialized short array length = " << fShortSize);
+        LDEBUG(convlog_hh, "Short array length = " << lastNBin);
+        LDEBUG(convlog_hh, "Initialized short array length = " << fShortSize);
 
         // FFT of input block
         fftw_execute( fGeneralForwardPlanShort );
@@ -361,7 +361,7 @@ namespace Katydid
             SetOutputArray( nBin - overlap + blockNumber * step, nBin, *transformedSpectrum, fShortSize );
         }
 
-        KTINFO(convlog_hh, "Component finished!");
+        LINFO(convlog_hh, "Component finished!");
 
         return transformedSpectrum;
     }

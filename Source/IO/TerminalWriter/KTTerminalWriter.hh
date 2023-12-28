@@ -11,12 +11,12 @@
 
 #include "KTWriter.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
     
-    KTLOGGER(termlog, "KTTerminalWriter");
+    LOGGER(termlog, "KTTerminalWriter");
 
     class KTTerminalWriter;
 

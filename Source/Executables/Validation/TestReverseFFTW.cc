@@ -13,7 +13,7 @@
 #include "KT2ROOT.hh"
 #include "KTReverseFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -28,7 +28,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestReverseFFTW");
+LOGGER(vallog, "TestReverseFFTW");
 
 int main()
 {
@@ -40,7 +40,7 @@ int main()
 
     const double mult = 30.;
 
-    KTINFO(vallog, "Testing the 1D complex-to-complex rFFT\n" <<
+    LINFO(vallog, "Testing the 1D complex-to-complex rFFT\n" <<
            "\tFrequency spectrum characteristics:\n" <<
            "\tSize: " << nBins << " bins\n" <<
            "\tRange: " << startFreq << " to " << endFreq << " Hz\n" <<
@@ -60,12 +60,12 @@ int main()
     c2crFFT.SetTransformFlag("ESTIMATE");
     if (! c2crFFT.InitializeForComplexTDD())
     {
-        KTERROR(vallog, "Error while initializing the FFT");
+        LERROR(vallog, "Error while initializing the FFT");
         exit(-1);
     }
 
     // Perform the FFT and get the results
-    KTINFO(vallog, "Performing FFT");
+    LINFO(vallog, "Performing FFT");
     KTTimeSeriesFFTW* timeSeries = c2crFFT.TransformToComplex(fsFFTW);
 
     // Find the peak frequency
@@ -84,7 +84,7 @@ int main()
         }
     }
 
-    KTINFO(vallog, "FFT complete\n" <<
+    LINFO(vallog, "FFT complete\n" <<
            "\tTime Series characteristics:\n" <<
            "\tSize: " << nTimeBins << " bins\n" <<
            "\tRange: " << timeSeries->GetRangeMin() << " to " << timeSeries->GetRangeMax() << " s\n" <<
@@ -104,7 +104,7 @@ int main()
 #endif
 
     // Use Parseval's theorem to check the normalization of the FFT
-    KTINFO(vallog, "Using Parceval's theorem to check the normalization of the transform.\n"
+    LINFO(vallog, "Using Parceval's theorem to check the normalization of the transform.\n"
            "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (double)nBins);
     // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
 
@@ -115,7 +115,7 @@ int main()
         tsSum += timeSeries->GetNorm(iBin);
     }
 
-    KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
+    LINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
     double fsSum = 0.; // units: volts^2
@@ -124,20 +124,20 @@ int main()
         fsSum += fsFFTW->GetNorm(iBin);
     }
 
-    KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
+    LINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
 
     double fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
     double threshold = 1.e-4;
     if (fractionalDiff > threshold)
     {
-        KTWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
+        LWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
                 "\ttsSum - fsSum = " << tsSum - fsSum << "\n"
                 "\ttsSum / fsSum = " << tsSum / fsSum << "\n"
                 "\t|diff|/avg    = " << fractionalDiff);
     }
     else
     {
-        KTINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
+        LINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
                 "\t|diff|/avg = " << fractionalDiff);
     }
 

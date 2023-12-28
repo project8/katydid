@@ -9,7 +9,7 @@
 
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using namespace Katydid;
 
@@ -20,7 +20,7 @@ using scarab::param_value;
 using Nymph::KTDataPtr;
 using Nymph::KTData;
 
-KTLOGGER(testlog, "TestNTracksNPointsNUPCut");
+LOGGER(testlog, "TestNTracksNPointsNUPCut");
 
 int main()
 {

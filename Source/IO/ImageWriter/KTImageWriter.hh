@@ -17,7 +17,7 @@
 #include "KTSliceHeader.hh"
 
 #include "KTData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
@@ -28,7 +28,7 @@
 
 namespace Katydid
 {
-    KTLOGGER( publog_rsw, "KTImageWriter" );
+    LOGGER( publog_rsw, "KTImageWriter" );
     
     class KTFrequencyDomainArrayData;
     class KTImageWriter;
@@ -164,7 +164,7 @@ namespace Katydid
      template< class XDataType >
      void KTImageTypeWriter::AddFrequencySpectrumDataHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms)
      {
-         KTDEBUG( publog_rsw, "Adding frequency-spectrum-type data" );
+         LDEBUG( publog_rsw, "Adding frequency-spectrum-type data" );
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
          double sliceLength = sliceHeader.GetSliceLength();
@@ -203,7 +203,7 @@ namespace Katydid
      template< class XDataType >
      void KTImageTypeWriter::AddPowerSpectrumDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms)
      {
-         KTDEBUG( publog_rsw, "Adding power-spectrum-type data" );
+         LDEBUG( publog_rsw, "Adding power-spectrum-type data" );
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
          double sliceLength = sliceHeader.GetSliceLength();
@@ -241,7 +241,7 @@ namespace Katydid
      template< class XDataType >
      void KTImageTypeWriter::AddPowerSpectralDensityDataCoreHelper(Nymph::KTDataPtr data, std::vector< SpectrogramData >& spectrograms)
      {
-         KTDEBUG( publog_rsw, "Adding power-spectral-density-type data" );
+         LDEBUG( publog_rsw, "Adding power-spectral-density-type data" );
          KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
          double timeInRun = sliceHeader.GetTimeInRun();
          double sliceLength = sliceHeader.GetSliceLength();

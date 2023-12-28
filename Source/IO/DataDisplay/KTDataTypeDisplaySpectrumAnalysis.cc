@@ -12,7 +12,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTGainVariationData.hh"
 #include "KTHoughData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
@@ -33,7 +33,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    LOGGER(publog, "katydid.output");
 
 
     static Nymph::KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplaySpectrumAnalysis > sBRTWAnalysisRegistrar;
@@ -488,13 +488,13 @@ namespace Katydid
             const TSpline* spline = data->GetSpline(iPlot);
             if (spline == NULL)
             {
-                KTDEBUG(publog, "No spline in the data");
+                LDEBUG(publog, "No spline in the data");
                 continue;
             }
             TSpline* splineClone = (TSpline*)spline->Clone();
             splineClone->SetName(splineName.c_str());
             splineClone->Write();
-            KTDEBUG(publog, "Spline <" << splineName << "> written to ROOT file");
+            LDEBUG(publog, "Spline <" << splineName << "> written to ROOT file");
             */
         }
         return;

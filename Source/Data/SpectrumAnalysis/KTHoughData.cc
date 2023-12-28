@@ -7,13 +7,13 @@
 
 #include "KTHoughData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(htlog, "KTHoughData");
+    LOGGER(htlog, "KTHoughData");
 
     const std::string KTHoughData::sName("hough");
 

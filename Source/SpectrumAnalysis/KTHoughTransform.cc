@@ -24,7 +24,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(htlog, "KTHoughTransform");
+    LOGGER(htlog, "KTHoughTransform");
 
     KT_REGISTER_PROCESSOR(KTHoughTransform, "hough-transform");
 
@@ -62,20 +62,20 @@ namespace Katydid
         KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinFrequency(), data.GetFrequencyWidth());
         if (newTransform == NULL)
         {
-            KTERROR(htlog, "Something went wrong in the transform");
+            LERROR(htlog, "Something went wrong in the transform");
         }
         else
         {
             newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinFrequency(), data.GetFrequencyWidth(), 0);
         }
-        KTINFO(htlog, "Completed hough transform");
+        LINFO(htlog, "Completed hough transform");
 
         return true;
     }
 
     KTPhysicalArray< 2, double >* KTHoughTransform::TransformPoints(const SWFPoints& points, double minTime, double timeLength, double minFreq, double freqWidth)
     {
-        KTINFO(htlog, "Number of time/frequency points: " << points.size());
+        LINFO(htlog, "Number of time/frequency points: " << points.size());
 
         double maxR = KTMath::Sqrt2();
         double timeScaling = 1. / timeLength;
@@ -136,13 +136,13 @@ namespace Katydid
         KTPhysicalArray< 2, double >* newTransform = TransformSpectrum(candidate);
         if (newTransform == NULL)
         {
-            KTERROR(htlog, "Something went wrong in the transform");
+            LERROR(htlog, "Something went wrong in the transform");
         }
         else
         {
             newData.SetTransform(newTransform, 0., candidate->GetTimeBinWidth(), 0., candidate->GetFrequencyBinWidth(), 0);
         }
-        KTINFO(htlog, "Completed hough transform");
+        LINFO(htlog, "Completed hough transform");
 
         return true;
     }
@@ -152,8 +152,8 @@ namespace Katydid
         unsigned nTimeBins = powerSpectrum->GetNTimeBins();
         unsigned nFreqBins = powerSpectrum->GetNFrequencyBins();
 
-        //KTINFO(htlog, "time info: " << nTimeBins << "  " << powerSpectrum->GetRangeMin(0) << "  " << powerSpectrum->GetRangeMax(0) << "  " << powerSpectrum->GetBinWidth(0));
-        //KTINFO(htlog, "freq info: " << nFreqBins << "  " << powerSpectrum->GetRangeMin(1) << "  " << powerSpectrum->GetRangeMax(1) << "  " << powerSpectrum->GetBinWidth(1));
+        //LINFO(htlog, "time info: " << nTimeBins << "  " << powerSpectrum->GetRangeMin(0) << "  " << powerSpectrum->GetRangeMax(0) << "  " << powerSpectrum->GetBinWidth(0));
+        //LINFO(htlog, "freq info: " << nFreqBins << "  " << powerSpectrum->GetRangeMin(1) << "  " << powerSpectrum->GetRangeMax(1) << "  " << powerSpectrum->GetBinWidth(1));
 
         double maxR = sqrt(double(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
@@ -222,7 +222,7 @@ namespace Katydid
             KTPhysicalArray< 2, double >* newTransform = TransformSetOfPoints(inputPoints, data.GetNBinsX(), data.GetNBinsY());
             if (newTransform == NULL)
             {
-                KTERROR(htlog, "Something went wrong in transform " << iComponent);
+                LERROR(htlog, "Something went wrong in transform " << iComponent);
                 return false;
             }
             else
@@ -230,14 +230,14 @@ namespace Katydid
                 newData.SetTransform(newTransform, 0., 1., 0., 1., iComponent);
             }
         }
-        KTINFO(htlog, "Completed hough transform for " << nComponents << " components");
+        LINFO(htlog, "Completed hough transform for " << nComponents << " components");
 
         return true;
     }
 
     KTPhysicalArray< 2, double >* KTHoughTransform::TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins)
     {
-        KTINFO(htlog, "Number of time/frequency points: " << points.size());
+        LINFO(htlog, "Number of time/frequency points: " << points.size());
 
         double maxR = sqrt(double(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 

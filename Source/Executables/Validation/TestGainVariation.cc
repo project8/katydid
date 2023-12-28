@@ -15,7 +15,7 @@
 #include "KTGainVariationData.hh"
 #include "KTGainVariationProcessor.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
@@ -29,7 +29,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "TestGainVariation");
+LOGGER(vallog, "TestGainVariation");
 
 struct Parameters
 {
@@ -44,7 +44,7 @@ double TestFunction(const Parameters& results, double x);
 
 int main(int argc, char** argv)
 {
-    KTINFO(vallog, "Commencing gain variation test");
+    LINFO(vallog, "Commencing gain variation test");
 
     unsigned nBins = 1000000;
 
@@ -79,8 +79,8 @@ int main(int argc, char** argv)
         }
     }
 
-    KTINFO(vallog, "Number of fit points: " << nFitPoints);
-    KTINFO(vallog, "Function parameters:\n" <<
+    LINFO(vallog, "Number of fit points: " << nFitPoints);
+    LINFO(vallog, "Function parameters:\n" <<
            "\tA: " << funcParams.fA << '\n' <<
            "\tB: " << funcParams.fB << '\n' <<
            "\tC: " << funcParams.fC << '\n');
@@ -96,9 +96,9 @@ int main(int argc, char** argv)
 
 #ifdef ROOT_FOUND
     TRandom3 rand(0);
-    KTINFO(vallog, "Adding Gaussian noise with sigma = " << noiseSigma);
+    LINFO(vallog, "Adding Gaussian noise with sigma = " << noiseSigma);
 #else
-    KTWARN(vallog, "No noise is being added");
+    LWARN(vallog, "No noise is being added");
 #endif
 
     double value;
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
         (*spectrum)(iBin).set_polar(rand.Gaus(value, value * noiseSigma / value0), 0.);
         if (iBin < 100)
         {
-            KTDEBUG(vallog, "Point " << iBin << "   " << (*spectrum)(iBin));
+            LDEBUG(vallog, "Point " << iBin << "   " << (*spectrum)(iBin));
         }
 #else
         (*spectrum)(iBin).set_polar(TestFunction(funcParams, spectrum->GetBinCenter(iBin)));
@@ -126,18 +126,18 @@ int main(int argc, char** argv)
     spectrumHist->Write();
 #endif
 
-    KTINFO(vallog, "Performing variation calculation");
+    LINFO(vallog, "Performing variation calculation");
 
     if (! gainVarProc.CalculateGainVariation(fsData))
     {
-        KTERROR(vallog, "Gain variation failed");
+        LERROR(vallog, "Gain variation failed");
         return -1;
     }
     KTGainVariationData& gvData = fsData.Of< KTGainVariationData >();
 
     /*
     KTGainVariationProcessor::FitResult fitResult = gvData->GetFitResult(0);
-    KTINFO(vallog, "Fit function parameters:\n" <<
+    LINFO(vallog, "Fit function parameters:\n" <<
            "\tA: " << fitResult.fA << '\n' <<
            "\tB: " << fitResult.fB << '\n' <<
            "\tC: " << fitResult.fC << '\n');
@@ -160,15 +160,15 @@ int main(int argc, char** argv)
     gainNorm.SetMinBin(0);
     gainNorm.SetMaxBin(nBins-1);
 
-    KTINFO(vallog, "Normalizing the spectrum");
+    LINFO(vallog, "Normalizing the spectrum");
     if (! gainNorm.Normalize(fsData, gvData))
     {
-        KTERROR(vallog, "Somethign went wrong during gain normalization");
+        LERROR(vallog, "Somethign went wrong during gain normalization");
         return -1;
     }
     KTFrequencySpectrumDataPolar& normData = fsData.Of< KTFrequencySpectrumDataPolar >();
 
-    KTINFO(vallog, "Processing complete");
+    LINFO(vallog, "Processing complete");
 #ifdef ROOT_FOUND
     TH1D* normalizedHist = KT2ROOT::CreateMagnitudeHistogram(normData.GetSpectrumPolar(0), "hOutputMag");
     normalizedHist->SetLineColor(2);

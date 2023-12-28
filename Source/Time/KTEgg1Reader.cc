@@ -8,7 +8,7 @@
 #include "KTEgg1Reader.hh"
 
 #include "KTEggHeader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTRawTimeSeries.hh"
@@ -28,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "KTEgg1Reader");
+    LOGGER(eggreadlog, "KTEgg1Reader");
 
     const ifstream::pos_type KTEgg1Reader::sPreludeSize = 9;
 
@@ -65,14 +65,14 @@ namespace Katydid
         // open the file stream
         if (filenames.size() > 1)
         {
-            KTWARN(eggreadlog, "Egg1 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+            LWARN(eggreadlog, "Egg1 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
         }
-        KTINFO(eggreadlog, "Opening egg file <" << filenames[0].first << ">")
+        LINFO(eggreadlog, "Opening egg file <" << filenames[0].first << ">")
         fEggStream.open(filenames[0].first.c_str(), ifstream::in|ifstream::binary);
 
         if (! fEggStream.is_open())
         {
-            KTERROR(eggreadlog, "Egg filestream did not open (file: " << filenames[0].first << ")");
+            LERROR(eggreadlog, "Egg filestream did not open (file: " << filenames[0].first << ")");
             return Nymph::KTDataPtr();
         }
 
@@ -84,7 +84,7 @@ namespace Katydid
         fEggStream.read(readBuffer, readSize);
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Egg filestream is bad after reading the prelude");
+            LERROR(eggreadlog, "Egg filestream is bad after reading the prelude");
             delete [] readBuffer;
             return Nymph::KTDataPtr();
         }
@@ -95,7 +95,7 @@ namespace Katydid
         stringstream conversion;
         conversion << readBuffer;
         conversion >> std::hex >> fHeaderSize;
-        //KTDEBUG(eggreadlog, "header size: " << fHeaderSize);
+        //LDEBUG(eggreadlog, "header size: " << fHeaderSize);
 
         // read the header
         delete [] readBuffer;
@@ -103,14 +103,14 @@ namespace Katydid
         fEggStream.read(readBuffer, fHeaderSize);
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Egg filestream is bad after reading the header");
+            LERROR(eggreadlog, "Egg filestream is bad after reading the header");
             delete [] readBuffer;
             return Nymph::KTDataPtr();
         }
         readBuffer[fHeaderSize] = '\0';
         string newHeader(readBuffer);
         fHeader = newHeader;
-        KTDEBUG(eggreadlog, "Header: " << newHeader);
+        LDEBUG(eggreadlog, "Header: " << newHeader);
 
         delete [] readBuffer;
 
@@ -132,7 +132,7 @@ namespace Katydid
         }
         catch (rapidxml::parse_error& e)
         {
-            KTERROR(eggreadlog, "Caught exception while parsing header:\n" <<
+            LERROR(eggreadlog, "Caught exception while parsing header:\n" <<
                     '\t' << e.what() << '\n' <<
                     '\t' << e.where<char>());
             return Nymph::KTDataPtr();
@@ -142,20 +142,20 @@ namespace Katydid
         rapidxml::xml_node<char>* nodeHeader = headerDOM.first_node("header");
         if (nodeHeader == NULL)
         {
-            KTERROR(eggreadlog, "No header node");
+            LERROR(eggreadlog, "No header node");
             return Nymph::KTDataPtr();
         }
 
         rapidxml::xml_node<char>* nodeDataFormat = nodeHeader->first_node("data_format");
         if (nodeDataFormat == NULL)
         {
-            KTERROR(eggreadlog, "No data format node");
+            LERROR(eggreadlog, "No data format node");
             return Nymph::KTDataPtr();
         }
 
         rapidxml::xml_attribute<char>* attr = nodeDataFormat->first_attribute("id");
         if (attr == NULL)        {
-            KTERROR(eggreadlog, "No id attribute in the data format node");
+            LERROR(eggreadlog, "No id attribute in the data format node");
             return Nymph::KTDataPtr();
         };
         fHeaderInfo.fFrameIDSize = ConvertFromArray< int >(attr->value());
@@ -163,7 +163,7 @@ namespace Katydid
         attr = nodeDataFormat->first_attribute("ts");
         if (attr == NULL)
         {
-            KTERROR(eggreadlog, "No ts attribute in the data format node");
+            LERROR(eggreadlog, "No ts attribute in the data format node");
             return Nymph::KTDataPtr();
         }
         fHeaderInfo.fTimeStampSize = ConvertFromArray< int >(attr->value());
@@ -171,7 +171,7 @@ namespace Katydid
         attr = nodeDataFormat->first_attribute("data");
         if (attr == NULL)
         {
-            KTERROR(eggreadlog, "No data attribute in the data format node");
+            LERROR(eggreadlog, "No data attribute in the data format node");
             return Nymph::KTDataPtr();
         }
         fHeaderInfo.fRecordSize = ConvertFromArray< int >(attr->value());
@@ -181,14 +181,14 @@ namespace Katydid
         rapidxml::xml_node<char>* nodeDigitizer = nodeHeader->first_node("digitizer");
         if (nodeDigitizer == NULL)
         {
-            KTERROR(eggreadlog, "No digitizer node");
+            LERROR(eggreadlog, "No digitizer node");
             return Nymph::KTDataPtr();
         }
 
         attr = nodeDigitizer->first_attribute("rate");
         if (attr == NULL)
         {
-            KTERROR(eggreadlog, "No rate attribute in the digitizer node");
+            LERROR(eggreadlog, "No rate attribute in the digitizer node");
             return Nymph::KTDataPtr();
         }
         fHeaderInfo.fSampleRate = ConvertFromArray< double >(attr->value()) * fHeaderInfo.fHertzPerSampleRateUnit;
@@ -196,20 +196,20 @@ namespace Katydid
         rapidxml::xml_node<char>* nodeRun = nodeHeader->first_node("run");
         if (nodeRun == NULL)
         {
-            KTERROR(eggreadlog, "No run node");
+            LERROR(eggreadlog, "No run node");
             return Nymph::KTDataPtr();
         }
 
         attr = nodeRun->first_attribute("length");
         if (attr == NULL)        {
-            KTERROR(eggreadlog, "No length attribute in the run node");
+            LERROR(eggreadlog, "No length attribute in the run node");
             return Nymph::KTDataPtr();
         }
         fHeaderInfo.fRunLength = ConvertFromArray< double >(attr->value()) * fHeaderInfo.fSecondsPerRunLengthUnit; // in seconds
 
         delete [] headerCopy;
 
-        KTDEBUG(eggreadlog, "Parsed header:\n"
+        LDEBUG(eggreadlog, "Parsed header:\n"
              << "\tFrame ID Size: " << fHeaderInfo.fFrameIDSize << '\n'
              << "\tTime Stamp Size: " << fHeaderInfo.fTimeStampSize << '\n'
              << "\tRecord Size: " << fHeaderInfo.fRecordSize << '\n'
@@ -232,7 +232,7 @@ namespace Katydid
         // description
         // run type
         unsigned iChannel = 0;
-        KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
+        LDEBUG(eggreadlog, "Adding header for channel " << iChannel);
         //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
         KTChannelHeader* newChanHeader = new KTChannelHeader();
         newChanHeader->SetNumber(iChannel);
@@ -270,7 +270,7 @@ namespace Katydid
         fEggStream.read((char*)(&readBuffer[0]), fHeaderInfo.fTimeStampSize);
         if (fEggStream.gcount() != fHeaderInfo.fTimeStampSize)
         {
-            KTWARN(eggreadlog, "Size of the data read for the time stamp did not match the size expected\n"
+            LWARN(eggreadlog, "Size of the data read for the time stamp did not match the size expected\n"
                     << "\tExpected: " << fHeaderInfo.fTimeStampSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
@@ -288,7 +288,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
+            LERROR(eggreadlog, "Reached end of file after reading time stamp size");
             return Nymph::KTDataPtr();
         }
 
@@ -297,7 +297,7 @@ namespace Katydid
         fEggStream.read((char*)(&readBuffer[0]), fHeaderInfo.fFrameIDSize);
         if (fEggStream.gcount() != fHeaderInfo.fFrameIDSize)
         {
-            KTWARN(eggreadlog, "The size of the data read for the frame ID did not match the expected size\n"
+            LWARN(eggreadlog, "The size of the data read for the frame ID did not match the expected size\n"
                     << "\tExpected: " << fHeaderInfo.fFrameIDSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
@@ -320,7 +320,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Reached end of file after reading frame size");
+            LERROR(eggreadlog, "Reached end of file after reading frame size");
             return Nymph::KTDataPtr();
         }
 
@@ -345,7 +345,7 @@ namespace Katydid
         fEggStream.read((char*)(&readBuffer[0]), fHeaderInfo.fRecordSize);
         if (fEggStream.gcount() != fHeaderInfo.fRecordSize)
         {
-            KTWARN(eggreadlog, "Size of the data read for the record did not match the amount expected"
+            LWARN(eggreadlog, "Size of the data read for the record did not match the amount expected"
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
@@ -366,7 +366,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Egg stream state is not good after reading in this slice.");
+            LERROR(eggreadlog, "Egg stream state is not good after reading in this slice.");
         }
 
         return newData;

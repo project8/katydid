@@ -8,13 +8,13 @@
 #include "KTRandom.hh"
 
 //#include "KTFactory.hh"
-//#include "KTLogger.hh"
+//#include "logger.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(rnglog, "KTRandom");
+    //LOGGER(rnglog, "KTRandom");
 
     KTRNGEngine::KTRNGEngine(const string& name) :
             KTSelfConfigurable(name),
@@ -34,7 +34,7 @@ namespace Katydid
         }
         else
         {
-            KTWARN(rnglog, "The RNG engine <" << fConfigName << "> is being seeded with the default value");
+            LWARN(rnglog, "The RNG engine <" << fConfigName << "> is being seeded with the default value");
         }
         return true;
     }

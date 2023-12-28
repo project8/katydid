@@ -13,7 +13,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTMultiSliceROOTWriter");
+    LOGGER(publog, "KTMultiSliceROOTWriter");
 
 
     KT_REGISTER_WRITER(KTMultiSliceROOTWriter, "multislice-root-writer");
@@ -87,7 +87,7 @@ namespace Katydid
             {
                 fFileManager->DiscardFile(this, fTFilename);
                 fFile = NULL;
-                KTERROR(publog, "Output file <" << fTFilename << "> did not open!");
+                LERROR(publog, "Output file <" << fTFilename << "> did not open!");
                 return false;
             }
             fFile->cd();

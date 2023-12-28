@@ -70,7 +70,7 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds: " << i << " >= " << size();
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
@@ -84,7 +84,7 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds: " << i << " >= " << size();
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
@@ -329,14 +329,14 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 1: " << i << " >= " << size(1);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
         if (j >= size(2))
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 2: " << j << " >= " << size(2);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
@@ -351,14 +351,14 @@ namespace Katydid
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 1: " << i << " >= " << size(1);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
          }
         if (j >= size(2))
         {
             std::stringstream msg;
             msg << "Out of bounds on axis 2: " << j << " >= " << size(2);
-            KTERROR(utillog_physarr, msg.str());
+            LERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif

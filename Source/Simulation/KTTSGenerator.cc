@@ -9,7 +9,7 @@
 
 #include "KTConstants.hh"
 #include "KTEggHeader.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTProcSummary.hh"
 #include "param.hh"
 #include "KTSliceHeader.hh"
@@ -27,7 +27,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "KTTSGenerator");
+    LOGGER(genlog, "KTTSGenerator");
 
     KTTSGenerator::KTTSGenerator(const string& name) :
             KTPrimaryProcessor(name),
@@ -73,7 +73,7 @@ namespace Katydid
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
         {
-            KTERROR(genlog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
+            LERROR(genlog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
             return false;
         }
 
@@ -87,7 +87,7 @@ namespace Katydid
         // Create, signal, and destroy the egg header
         KTEggHeader* newHeader = CreateEggHeader();
 
-        KTDEBUG(genlog, "Created header:\n" << *newHeader);
+        LDEBUG(genlog, "Created header:\n" << *newHeader);
 
         fHeaderSignal(newHeader);
         delete newHeader;
@@ -100,19 +100,19 @@ namespace Katydid
 
             if (! AddSliceHeader(*newData.get()))
             {
-                KTERROR(genlog, "Something went wrong while adding the slice header");
+                LERROR(genlog, "Something went wrong while adding the slice header");
                 return false;
             }
 
             if (! AddEmptySlice(*newData.get()))
             {
-                KTERROR(genlog, "Something went wrong while adding the empty slices");
+                LERROR(genlog, "Something went wrong while adding the empty slices");
                 return false;
             }
 
             if (! newData->Has< KTTimeSeriesData >())
             {
-                KTERROR(genlog, "New data does not contain time-series data!");
+                LERROR(genlog, "New data does not contain time-series data!");
                 return false;
             }
 
@@ -199,7 +199,7 @@ namespace Katydid
             sliceHeader.SetRecordID(0);
         }
 
-        KTDEBUG(genlog, "Filled out slice header:\n"
+        LDEBUG(genlog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
                 << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
                 << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"

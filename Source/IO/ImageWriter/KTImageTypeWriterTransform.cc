@@ -9,7 +9,7 @@
 
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPowerSpectrumData.hh"
 
 #include "path.hh"
@@ -18,7 +18,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTImageTypeWriterTransform");
+    LOGGER(publog, "KTImageTypeWriterTransform");
 
     static Nymph::KTTIRegistrar< KTImageTypeWriter, KTImageTypeWriterTransform > sRSTWTRegistrar;
 
@@ -42,7 +42,7 @@ namespace Katydid
 
     void KTImageTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet, const std::string& aDataTypeIndicator)
     {
-        KTDEBUG(publog, "Outputting spectrograms for type <" << aDataTypeIndicator << ">");
+        LDEBUG(publog, "Outputting spectrograms for type <" << aDataTypeIndicator << ">");
         while (! aSpectrogramSet.empty())
         {
             std::stringstream filenameStream;
@@ -66,7 +66,7 @@ namespace Katydid
 
     void KTImageTypeWriterTransform::OutputSpectrograms()
     {
-        KTINFO(publog, "Outputting Transform spectrograms")
+        LINFO(publog, "Outputting Transform spectrograms")
         OutputASpectrogramSet(fFSPolarSpectrograms, fFSPolarIndicator);
         OutputASpectrogramSet(fFSFFTWSpectrograms, fFSFFTWIndicator);
         OutputASpectrogramSet(fPowerSpectrograms, fPowerIndicator);

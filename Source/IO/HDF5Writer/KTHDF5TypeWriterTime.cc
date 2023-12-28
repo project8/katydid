@@ -11,7 +11,7 @@
 #include "KTEggHeader.hh"
 #include "KTHDF5TypeWriterTime.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
@@ -23,7 +23,7 @@ using std::stringstream;
 using std::string;
 
 namespace Katydid {
-    KTLOGGER(publog, "KTHDF5TypeWriterTime");
+    LOGGER(publog, "KTHDF5TypeWriterTime");
 
     static Nymph::KTTIRegistrar< KTHDF5TypeWriter, 
                           KTHDF5TypeWriterTime > sHDF5TWEggRegistrar;

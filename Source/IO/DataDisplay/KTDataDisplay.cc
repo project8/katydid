@@ -7,12 +7,12 @@
 
 #include "KTDataDisplay.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    LOGGER(publog, "katydid.output");
 
 
     KT_REGISTER_WRITER(KTDataDisplay, "data-display");
@@ -49,7 +49,7 @@ namespace Katydid
     {
         if (gClient == NULL)
         {
-            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via KTKatydidApp)");
+            LERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via KTKatydidApp)");
             return false;
         }
 

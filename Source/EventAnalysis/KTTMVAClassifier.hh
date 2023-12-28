@@ -24,7 +24,7 @@ namespace Katydid
     class KTProcessedTrackData;
     class KTPowerFitData;
     
-    KTLOGGER(avlog_hh, "KTTMVAClassifier.hh");
+    LOGGER(avlog_hh, "KTTMVAClassifier.hh");
 
     /*
      @class KTTMVAClassifier

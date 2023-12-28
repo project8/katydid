@@ -12,7 +12,7 @@
 #include "KTProcessedTrackData.hh"
 #include "KTLinearFitResult.hh"
 #include "KTGainVariationData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include <vector>
 
 #ifdef ROOT_FOUND
@@ -26,7 +26,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestLinearDensityProbe");
+LOGGER(testlog, "TestLinearDensityProbe");
 
 // Method to determine whether a line intersects a bin with finite size
 // The line extends over a finite segment from (x1,y1) to (x2,y2)
@@ -82,7 +82,7 @@ int main()
     
     KTDiscriminatedPoints2DData threshPts;
 
-    KTINFO(testlog, "Creating 2D thresholded points");
+    LINFO(testlog, "Creating 2D thresholded points");
     int iBin = 0, jBin = 0;
     for( int i = 50e6; i < 150e6; i += 0.1e6 )
     {
@@ -123,7 +123,7 @@ int main()
     double* xArray = &xx[0];
     double* yArray = &yy[0];
 
-    KTINFO(testlog, "Writing to file");
+    LINFO(testlog, "Writing to file");
 
     // Write to file
 #ifdef ROOT_FOUND
@@ -143,7 +143,7 @@ int main()
     lineFitter.SetStepSize( 0.2e6 );
     lineFitter.SetStepSize( 0.004e6 );
 
-    KTINFO(testlog, "Performing density fit");
+    LINFO(testlog, "Performing density fit");
     
     // Make a stupid PS collection data
     // All that matters are the time range and the frequency range of the spectrum
@@ -193,7 +193,7 @@ int main()
     
     if( !lineFitter.DensityMaximization( tr, threshPts, psColl ) )
     {
-        KTERROR(testlog, "Something went wrong in the fit");
+        LERROR(testlog, "Something went wrong in the fit");
     }
 
     KTLinearFitResult& result = tr.Of< KTLinearFitResult >();
@@ -204,9 +204,9 @@ int main()
 
     double actualSlope = (tr.GetEndFrequency() - tr.GetStartFrequency())/(tr.GetEndTimeInRunC() - tr.GetStartTimeInRunC());
 
-    KTINFO(testlog, "Actual slope: " << actualSlope << "\nFit slope: " << fitSlope);
-    KTINFO(testlog, "Actual starting frequency: " << tr.GetStartFrequency() << "\nFit starting frequency: " << fitStartFrequency);
-    KTINFO(testlog, "Actual sideband separation: " << sideband_separation << "\nFit sideband separation: " << fitSidebandSeparation);
+    LINFO(testlog, "Actual slope: " << actualSlope << "\nFit slope: " << fitSlope);
+    LINFO(testlog, "Actual starting frequency: " << tr.GetStartFrequency() << "\nFit starting frequency: " << fitStartFrequency);
+    LINFO(testlog, "Actual sideband separation: " << sideband_separation << "\nFit sideband separation: " << fitSidebandSeparation);
 
     return 0;
 }

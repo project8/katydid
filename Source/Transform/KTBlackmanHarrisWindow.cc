@@ -7,7 +7,7 @@
 
 #include "KTBlackmanHarrisWindow.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 #include <cmath>
@@ -16,7 +16,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "KTBlackmanHarrisWindow");
+    LOGGER(windowlog, "KTBlackmanHarrisWindow");
 
     KT_REGISTER_WINDOWFUNCTION(KTBlackmanHarrisWindow, "blackman-harris")
 
@@ -31,7 +31,7 @@ namespace Katydid
 
     bool KTBlackmanHarrisWindow::ConfigureWFSubclass(const scarab::param_node*)
     {
-        KTDEBUG(windowlog, "Blackman-Harris WF configured");
+        LDEBUG(windowlog, "Blackman-Harris WF configured");
         return true;
     }
 

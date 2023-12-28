@@ -9,7 +9,7 @@
 namespace Katydid 
 {
 
-    KTLOGGER(ats_log, "KTBasicASCIITypeWriterTS");
+    LOGGER(ats_log, "KTBasicASCIITypeWriterTS");
 
     static Nymph::KTTIRegistrar< KTBasicASCIITypeWriter, KTBasicASCIITypeWriterTS > sBATWReg;
 
@@ -54,12 +54,12 @@ namespace Katydid
                     }
                 }
                 else {
-                    KTWARN(ats_log, "Channel #" << iCh << " was missing from slice!  Logic error?");
+                    LWARN(ats_log, "Channel #" << iCh << " was missing from slice!  Logic error?");
                 }
             }
         } // if CanWrite
         else {
-            KTWARN(ats_log, "Writer for ASCII TS type-writer cannot write.  No data will be written!");
+            LWARN(ats_log, "Writer for ASCII TS type-writer cannot write.  No data will be written!");
         } // if cannot write
     }
 

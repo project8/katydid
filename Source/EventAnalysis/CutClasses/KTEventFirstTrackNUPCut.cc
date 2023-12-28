@@ -8,11 +8,11 @@
 #include "KTEventFirstTrackNUPCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(ecnuplog, "KTEventFirstTrackNUPCut");
+    LOGGER(ecnuplog, "KTEventFirstTrackNUPCut");
 
     const std::string KTEventFirstTrackNUPCut::Result::sName = "event-first-track-nup-cut";
 
@@ -50,7 +50,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecnuplog, "Invalid string for fWideOrNarrow");
+                LERROR(ecnuplog, "Invalid string for fWideOrNarrow");
                 return false;
             }
         }
@@ -66,7 +66,7 @@ namespace Katydid
             }
             else
             {
-                KTERROR(ecnuplog, "Invalid string for fTimeOrBinAverage");
+                LERROR(ecnuplog, "Invalid string for fTimeOrBinAverage");
                 return false;
             }
         }

@@ -9,7 +9,7 @@
 
 #include "KTPowerSpectrumData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    KTLOGGER( inlog, "KTDPTReader" );
+    LOGGER( inlog, "KTDPTReader" );
 
     KTDPTReader::KTDPTReader(const std::string& name) :
             Nymph::KTReader(name),
@@ -58,7 +58,7 @@ namespace Katydid
         }
         catch (rapidxml::parse_error& e)
         {
-            KTERROR(inlog, "Caught exception while parsing DPT file:\n" <<
+            LERROR(inlog, "Caught exception while parsing DPT file:\n" <<
                     '\t' << e.what() << '\n' <<
                     '\t' << e.where<char>());
             return false;
@@ -98,7 +98,7 @@ namespace Katydid
         rapidxml::xml_node< char >* parentNode = dptDoc.first_node(nodeNameIt->c_str());
         if (parentNode == nullptr)
         {
-            KTERROR(inlog, "Did not find node <" << *nodeNameIt << ">; nesting level: " << nodeNameIt - nodeSequence.begin());
+            LERROR(inlog, "Did not find node <" << *nodeNameIt << ">; nesting level: " << nodeNameIt - nodeSequence.begin());
             return false;
         }
         for (++nodeNameIt; nodeNameIt != nodeSequence.end(); ++nodeNameIt)
@@ -106,7 +106,7 @@ namespace Katydid
             parentNode = parentNode->first_node(nodeNameIt->c_str());
             if (parentNode == nullptr)
             {
-                KTERROR(inlog, "Did not find node <" << *nodeNameIt << ">; nesting level: " << nodeNameIt - nodeSequence.begin());
+                LERROR(inlog, "Did not find node <" << *nodeNameIt << ">; nesting level: " << nodeNameIt - nodeSequence.begin());
                 return false;
             }
         }
@@ -115,14 +115,14 @@ namespace Katydid
         rapidxml::xml_node< char >* xUnitsNode = parentNode->first_node("XUnits");
         if (xUnitsNode == nullptr || strcmp(xUnitsNode->value(), "Hz") != 0)
         {
-            KTERROR(inlog, "Did not find x-axis units or units were not as expected (Hz)");
+            LERROR(inlog, "Did not find x-axis units or units were not as expected (Hz)");
             return false;
         }
 
         rapidxml::xml_node< char >* yUnitsNode = parentNode->first_node("YUnits");
         if (yUnitsNode == nullptr || strcmp(yUnitsNode->value(), "dBm") != 0)
         {
-            KTERROR(inlog, "Did not find y-axis units or units were not as expected (dBm)");
+            LERROR(inlog, "Did not find y-axis units or units were not as expected (dBm)");
             return false;
         }
 
@@ -130,7 +130,7 @@ namespace Katydid
         rapidxml::xml_node< char >* nBinsNode = parentNode->first_node("Count");
         if (nBinsNode == nullptr)
         {
-            KTERROR(inlog, "Did not find <Count> node");
+            LERROR(inlog, "Did not find <Count> node");
             return false;
         }
         unsigned nBins = strtoul(nBinsNode->value(), NULL, 10);
@@ -138,7 +138,7 @@ namespace Katydid
         rapidxml::xml_node< char >* minFreqNode = parentNode->first_node("XStart");
         if (nBinsNode == nullptr)
         {
-            KTERROR(inlog, "Did not find <XStart> node");
+            LERROR(inlog, "Did not find <XStart> node");
             return false;
         }
         double minFreq = strtod(minFreqNode->value(), NULL);
@@ -146,11 +146,11 @@ namespace Katydid
         rapidxml::xml_node< char >* maxFreqNode = parentNode->first_node("XStop");
         if (nBinsNode == nullptr)
         {
-            KTERROR(inlog, "Did not find <XStop> node");
+            LERROR(inlog, "Did not find <XStop> node");
             return false;
         }
         double maxFreq = strtod(maxFreqNode->value(), NULL);
-        KTDEBUG(inlog, "DPT power spectrum will have " << nBins << " bins and frequency range " << minFreq << " - " << maxFreq << " Hz");
+        LDEBUG(inlog, "DPT power spectrum will have " << nBins << " bins and frequency range " << minFreq << " - " << maxFreq << " Hz");
 
         // create spectrum
         KTPowerSpectrumData& psData = data.Of< KTPowerSpectrumData >().SetNComponents(1);
@@ -162,7 +162,7 @@ namespace Katydid
         {
             if (powerNode == nullptr)
             {
-                KTERROR(inlog, "Did not find node for bin <" << iBin << ">");
+                LERROR(inlog, "Did not find node for bin <" << iBin << ">");
                 delete newSpectrum;
                 return false;
             }

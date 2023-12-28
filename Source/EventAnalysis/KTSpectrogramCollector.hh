@@ -11,7 +11,7 @@
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTSpectrumCollectionData.hh"
 #include "KTSliceHeader.hh"
@@ -22,7 +22,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
+    LOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     class KTPowerSpectrumData;
     class KTProcessedTrackData;
@@ -163,12 +163,12 @@ namespace Katydid
         // Check to ensure that the required data types are present
         if (! data->Has< KTPowerSpectrumData >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTPowerSpectrumData >!");
+            LERROR(avlog_hh, "Data not found with type < KTPowerSpectrumData >!");
             return;
         }
         if (! data->Has< KTSliceHeader >())
         {
-            KTERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
+            LERROR(avlog_hh, "Data not found with type < KTSliceHeader >!");
             return;
         }
 
@@ -176,13 +176,13 @@ namespace Katydid
         bool force = data->GetLastData() || data->Of< KTSliceHeader >().GetIsNewAcquisition();
         if (force)
         {
-            KTDEBUG(avlog_hh, "Reached last-data, forcing emit");
+            LDEBUG(avlog_hh, "Reached last-data, forcing emit");
         }
 
         // Call the function
         if (! ReceiveSpectrum(data->Of< KTPowerSpectrumData >(), data->Of< KTSliceHeader >(), force))
         {
-            KTERROR(avlog_hh, "Something went wrong while analyzing data with type < KTPSCollectionData >");
+            LERROR(avlog_hh, "Something went wrong while analyzing data with type < KTPSCollectionData >");
             return;
         }
     

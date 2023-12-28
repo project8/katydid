@@ -15,7 +15,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTJSONWriter");
+    LOGGER(publog, "KTJSONWriter");
 
     KT_REGISTER_WRITER(KTJSONWriter, "json-writer");
     KT_REGISTER_PROCESSOR(KTJSONWriter, "json-writer");
@@ -63,7 +63,7 @@ namespace Katydid
             fFile = fopen(fFilename.c_str(), fFileMode.c_str());
             if (fFile == NULL)
             {
-                KTERROR(publog, "File did not open\n" <<
+                LERROR(publog, "File did not open\n" <<
                         "\tFilename: " << fFilename <<
                         "\tMode: " << fFileMode);
                 return false;

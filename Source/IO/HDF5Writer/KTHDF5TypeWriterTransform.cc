@@ -9,7 +9,7 @@
 #include <sstream>
 
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -24,7 +24,7 @@
 
 
 namespace Katydid {
-    KTLOGGER(publog, "KTHDF5TypeWriterTransform");
+    LOGGER(publog, "KTHDF5TypeWriterTransform");
 
     static Nymph::KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterTransform> sH5TWFFTReg;
 
@@ -79,15 +79,15 @@ namespace Katydid {
         KTEggHeader* header = fWriter->GetHeader();
         if(header != NULL)
         {
-            KTDEBUG(publog, "Configuring from Egg header...");
+            LDEBUG(publog, "Configuring from Egg header...");
             fNChannels = header->GetNChannels();
-            KTDEBUG(publog, "Header Number of Channels: " << header->GetNChannels());
+            LDEBUG(publog, "Header Number of Channels: " << header->GetNChannels());
             fSliceSize = header->GetChannelHeader(0)->GetSliceSize();
             //fNumberOfSlices = (int) ceil ( (double) (header->GetChannelHeader(0)->GetRecordSize()) / (double) (fSliceSize));
             fNumberOfSlices = header->GetChannelHeader(0)->GetRecordSize()/fSliceSize + (header->GetChannelHeader(0)->GetRecordSize() % fSliceSize != 0);
-            KTDEBUG(publog, "Number of Slices: " << fNumberOfSlices);
+            LDEBUG(publog, "Number of Slices: " << fNumberOfSlices);
         }
-        KTDEBUG(publog, "Done.");
+        LDEBUG(publog, "Done.");
         if ( fWriter->GetUseCompressionFlag() )
         {
             SetUseCompressionFlag(true);
@@ -140,7 +140,7 @@ namespace Katydid {
         //////////////////////////////////////////////////////////////////////////////////
         // Create Data Space
 
-        KTDEBUG(publog, "Creating HDF5 Dataspace...");
+        LDEBUG(publog, "Creating HDF5 Dataspace...");
 
         if(fFFTDataSpace == NULL)
         {
@@ -164,7 +164,7 @@ namespace Katydid {
         //////////////////////////////////////////////////////////////////////////////////
         // Create Dataset
 
-        KTDEBUG(publog, "Creating Spectrum Dataset in HDF5 file...");
+        LDEBUG(publog, "Creating Spectrum Dataset in HDF5 file...");
         std::string FreqArray_name ("FreqArray");
         if (fFFTGroup == NULL)       fFFTGroup = new H5::Group(fSpectraGroup->createGroup("/spectra/spectrum"));
         if (fDSet_FreqArray == NULL) fDSet_FreqArray = CreateDSet(FreqArray_name, fFFTGroup, *fFFTFreqArrayDataSpace);
@@ -205,12 +205,12 @@ namespace Katydid {
         if ( fUseCompressionFlag )
         {
           plist.setDeflate(6);
-          KTDEBUG(publog, "Creating compressed HDF5 dataset.");
+          LDEBUG(publog, "Creating compressed HDF5 dataset.");
         }
-        KTDEBUG(publog, "Creating HDF5 dataset " << name);
-        KTDEBUG(publog, grp);
+        LDEBUG(publog, "Creating HDF5 dataset " << name);
+        LDEBUG(publog, grp);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(), H5::PredType::NATIVE_DOUBLE, ds, plist));
-        KTDEBUG("Done.");
+        LDEBUG("Done.");
         return dset;
     }
 
@@ -222,7 +222,7 @@ namespace Katydid {
         // Get Data and Slice Number
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
         fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        KTDEBUG(publog, "Writing Slice " << fSliceNumber);
+        LDEBUG(publog, "Writing Slice " << fSliceNumber);
 
         // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() )
@@ -246,7 +246,7 @@ namespace Katydid {
         // For now we need to do this because of the way we want to save the data.
         // The spec object has the data organized in [Samples][Parts].
         // The dataset is [...][Parts][Samples].
-        KTDEBUG(publog, "Copying Spectrum Dataset (Complex FFT) to Buffer.");
+        LDEBUG(publog, "Copying Spectrum Dataset (Complex FFT) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; ++iC)
         {
@@ -263,13 +263,13 @@ namespace Katydid {
         }
 
         // Write Buffer to Dataset
-        KTDEBUG(publog, "Writing Spectrum Dataset (Complex FFT) to HDF5 file.");
+        LDEBUG(publog, "Writing Spectrum Dataset (Complex FFT) to HDF5 file.");
         if (!fFirstSliceHasBeenWritten) {
             fDSet_FreqArray->write(fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
             SetFirstSliceHasBeenWritten(true);
         }
         fDSet->write(fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1,filespace1);
-        KTDEBUG(publog, "Done Writing Slice to File.");
+        LDEBUG(publog, "Done Writing Slice to File.");
     }
 
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolar(Nymph::KTDataPtr data)
@@ -279,7 +279,7 @@ namespace Katydid {
         // Get Data and Slice Number
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
         fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        KTDEBUG(publog, "Writing Slice " << fSliceNumber);
+        LDEBUG(publog, "Writing Slice " << fSliceNumber);
 
         // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() )
@@ -303,7 +303,7 @@ namespace Katydid {
         // For now we need to do this because of the way we want to save the data.
         // The spec object has the data organized in [Samples][Parts].
         // The dataset is [...][Parts][Samples].
-        KTDEBUG(publog, "Copying Spectrum Dataset (Polar FFT) to Buffer.");
+        LDEBUG(publog, "Copying Spectrum Dataset (Polar FFT) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++)
         {
@@ -320,25 +320,25 @@ namespace Katydid {
         }
 
         // Write Buffer to Dataset
-        KTDEBUG(publog, "Writing Spectrum Dataset (Polar FFT) to HDF5 file.");
+        LDEBUG(publog, "Writing Spectrum Dataset (Polar FFT) to HDF5 file.");
         if (!fFirstSliceHasBeenWritten)
         {
             fDSet_FreqArray->write(fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
             SetFirstSliceHasBeenWritten(true);
         }
         fDSet->write(fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1, filespace1);
-        KTDEBUG(publog, "Done Writing Slice to File.");
+        LDEBUG(publog, "Done Writing Slice to File.");
 
     }
 
 /*
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPhase(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPhase(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
 */
 
@@ -349,7 +349,7 @@ namespace Katydid {
         // Get Data and Slice Number
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
         fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        KTDEBUG(publog, "Writing Slice " << fSliceNumber);
+        LDEBUG(publog, "Writing Slice " << fSliceNumber);
 
         // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() )
@@ -373,7 +373,7 @@ namespace Katydid {
         // For now we need to do this because of the way we want to save the data.
         // The spec object has the data organized in [Samples][Parts].
         // The dataset is [...][Parts][Samples].
-        KTDEBUG(publog, "Copying Spectrum Dataset (Polar PS) to Buffer.");
+        LDEBUG(publog, "Copying Spectrum Dataset (Polar PS) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; ++iC)
         {
@@ -389,14 +389,14 @@ namespace Katydid {
         }
 
         // Write Buffer to Dataset
-        KTDEBUG(publog, "Writing Spectrum Dataset (Polar PS) to HDF5 file.");
+        LDEBUG(publog, "Writing Spectrum Dataset (Polar PS) to HDF5 file.");
         if (!fFirstSliceHasBeenWritten)
         {
             fDSet_FreqArray->write(fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
             SetFirstSliceHasBeenWritten(true);
         }
         fDSet->write(fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1, filespace1);
-        KTDEBUG(publog, "Done Writing Slice to File.");
+        LDEBUG(publog, "Done Writing Slice to File.");
     }
 
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPower(Nymph::KTDataPtr data)
@@ -406,7 +406,7 @@ namespace Katydid {
         // Get Data and Slice Number
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
         fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        KTDEBUG(publog, "Writing Slice " << fSliceNumber);
+        LDEBUG(publog, "Writing Slice " << fSliceNumber);
 
         // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() )
@@ -430,7 +430,7 @@ namespace Katydid {
         // For now we need to do this because of the way we want to save the data.
         // The spec object has the data organized in [Samples][Parts].
         // The dataset is [...][Parts][Samples].
-        KTDEBUG(publog, "Copying Spectrum Dataset (Complex PS) to Buffer.");
+        LDEBUG(publog, "Copying Spectrum Dataset (Complex PS) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; ++iC)
         {
@@ -446,32 +446,32 @@ namespace Katydid {
         }
 
         // Write Buffer to Dataset
-        KTDEBUG(publog, "Writing Spectrum Dataset (Complex PS) to HDF5 file.");
+        LDEBUG(publog, "Writing Spectrum Dataset (Complex PS) to HDF5 file.");
         if (!fFirstSliceHasBeenWritten)
         {
             fDSet_FreqArray->write(fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
             SetFirstSliceHasBeenWritten(true);
         }
         fDSet->write(fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1, filespace1);
-        KTDEBUG(publog, "Done Writing Slice to File.");
+        LDEBUG(publog, "Done Writing Slice to File.");
     }
 
 /*
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarMagnitudeDistribution(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataPolarPowerDistribution(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteFrequencySpectrumDataFFTWPowerDistribution(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
 */
 
@@ -482,7 +482,7 @@ namespace Katydid {
         // Get Data and Slice Number
         KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
         fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        KTDEBUG(publog, "Writing Slice " << fSliceNumber);
+        LDEBUG(publog, "Writing Slice " << fSliceNumber);
 
         // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() )
@@ -506,7 +506,7 @@ namespace Katydid {
         // For now we need to do this because of the way we want to save the data.
         // The spec object has the data organized in [Samples][Parts].
         // The dataset is [...][Parts][Samples].
-        KTDEBUG(publog, "Copying Spectrum Dataset (PS) to Buffer.");
+        LDEBUG(publog, "Copying Spectrum Dataset (PS) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; ++iC)
         {
@@ -523,13 +523,13 @@ namespace Katydid {
         }
 
         // Write Buffer to Dataset
-        KTDEBUG(publog, "Writing Spectrum Dataset (PS) to HDF5 file.");
+        LDEBUG(publog, "Writing Spectrum Dataset (PS) to HDF5 file.");
         if (!fFirstSliceHasBeenWritten) {
             fDSet_FreqArray->write(fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
             SetFirstSliceHasBeenWritten(true);
         }
         fDSet->write(fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1, filespace1);
-        KTDEBUG(publog, "Done Writing Slice to File.");
+        LDEBUG(publog, "Done Writing Slice to File.");
     }
 
     void KTHDF5TypeWriterTransform::WritePowerSpectralDensity(Nymph::KTDataPtr data)
@@ -539,7 +539,7 @@ namespace Katydid {
         // Get Data and Slice Number
         KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
         fSliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        KTDEBUG(publog, "Writing Slice " << fSliceNumber);
+        LDEBUG(publog, "Writing Slice " << fSliceNumber);
 
         // Prepare HDF5 for writing
         if ( fWriter->DidParseHeader() )
@@ -563,7 +563,7 @@ namespace Katydid {
         // For now we need to do this because of the way we want to save the data.
         // The spec object has the data organized in [Samples][Parts].
         // The dataset is [...][Parts][Samples].
-        KTDEBUG(publog, "Copying Spectrum Dataset (PSD) to Buffer.");
+        LDEBUG(publog, "Copying Spectrum Dataset (PSD) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; ++iC)
         {
@@ -580,44 +580,44 @@ namespace Katydid {
         }
 
         // Write Buffer to Dataset
-        KTDEBUG(publog, "Writing Spectrum Dataset (PSD) to HDF5 file.");
+        LDEBUG(publog, "Writing Spectrum Dataset (PSD) to HDF5 file.");
         if (!fFirstSliceHasBeenWritten)
         {
             fDSet_FreqArray->write(fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
             SetFirstSliceHasBeenWritten(true);
         }
         fDSet->write(fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, memspace1, filespace1);
-        KTDEBUG(publog, "Done Writing Slice to File.");
+        LDEBUG(publog, "Done Writing Slice to File.");
     }
 
 /*
     void KTHDF5TypeWriterTransform::WritePowerSpectrumDistribution(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WritePowerSpectralDensityDistribution(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolar(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolarPhase(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteTimeFrequencyDataPolarPower(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteMultiFSDataPolar(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterTransform::WriteMultiFSDataFFTW(Nymph::KTDataPtr data)
     {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        LDEBUG(publog, "NOT IMPLEMENTED");
     }
 */
 }

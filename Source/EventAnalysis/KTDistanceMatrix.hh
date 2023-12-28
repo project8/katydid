@@ -21,12 +21,12 @@
 #include <cmath>
 #include <vector>
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
     
-    KTLOGGER(dmlog, "KTDBSCAN");
+    LOGGER(dmlog, "KTDBSCAN");
 
     // Euclidean distance
     template < typename VEC_T >
@@ -101,7 +101,7 @@ namespace Katydid
 #ifndef NDEBUG
                 if (i % 100 == 0)
                 {
-                    KTDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
+                    LDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
                 }
 #endif
                 unsigned j = i + 1;
@@ -160,11 +160,11 @@ namespace Katydid
             Distance< DistanceType > dist;
             for (unsigned i=0; i < nPoints; ++i)
             {
-                //KTDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
+                //LDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
 #ifndef NDEBUG
                 if (i % 100 == 0)
                 {
-                    KTDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
+                    LDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
                 }
 #endif
                 unsigned j = i + 1;
@@ -173,7 +173,7 @@ namespace Katydid
                 {
                     fDist.insert_element(i, j, dist.GetDistance(points[i], points[j]));
                     fDist.insert_element(j, i, fDist(i, j));
-                    /*if (i < 100 && j < 100)*/ //KTDEBUG(dmlog, "i = " << i << "  j = " << j << "  dist = " << fDist(i, j));
+                    /*if (i < 100 && j < 100)*/ //LDEBUG(dmlog, "i = " << i << "  j = " << j << "  dist = " << fDist(i, j));
                     //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
                 }
             }
@@ -195,7 +195,7 @@ namespace Katydid
                      neighbors.push_back(colIt.index());
                 }
             }
-            //KTDEBUG(dmlog, "pid: " << pid << ";  columns actually checked: " << nonzerocols);
+            //LDEBUG(dmlog, "pid: " << pid << ";  columns actually checked: " << nonzerocols);
 
             return neighbors;
         }

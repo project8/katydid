@@ -7,12 +7,12 @@
 
 #include "KTPowerSpectrum.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
 
-    KTLOGGER(pslog, "KTPowerSpectrum");
+    LOGGER(pslog, "KTPowerSpectrum");
 
     KTPowerSpectrum::KTPowerSpectrum(size_t nBins, double rangeMin, double rangeMax) :
             KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax),
@@ -47,7 +47,7 @@ namespace Katydid
     {
         if (fMode == kPower) return;
 
-        KTDEBUG(pslog, "Converting to Power Spectrum");
+        LDEBUG(pslog, "Converting to Power Spectrum");
         (*this) *= GetBinWidth();
         fMode = kPower;
         SetDataLabel("Power (W)");
@@ -59,7 +59,7 @@ namespace Katydid
     {
         if (fMode == kPSD) return;
 
-        KTDEBUG(pslog, "Converting to Power SpectralDensity");
+        LDEBUG(pslog, "Converting to Power SpectralDensity");
         (*this) *= 1. / GetBinWidth();
         fMode = kPSD;
         SetDataLabel("Power Spectral Density (W/Hz)");

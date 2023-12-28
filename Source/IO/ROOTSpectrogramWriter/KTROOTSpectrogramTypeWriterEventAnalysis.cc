@@ -12,11 +12,11 @@
 #include "TLine.h"
 #include "TOrdCollection.h"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTSpectrogramTypeWriterEventAnalysis");
+    LOGGER(publog, "KTROOTSpectrogramTypeWriterEventAnalysis");
 
     static Nymph::KTTIRegistrar< KTROOTSpectrogramTypeWriter, KTROOTSpectrogramTypeWriterEventAnalysis > sRSTWEARegistrar;
 
@@ -42,7 +42,7 @@ namespace Katydid
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        KTDEBUG("calling output lines")
+        LDEBUG("calling output lines")
         OutputLines();
 
         return;
@@ -50,7 +50,7 @@ namespace Katydid
 
     void KTROOTSpectrogramTypeWriterEventAnalysis::OutputLines()
     {
-        KTDEBUG(publog, "Outputing lines");
+        LDEBUG(publog, "Outputing lines");
         fWriter->GetFile()->WriteTObject(fLineCollection, "AllLines", "SingleKey");
         fLineCollection = NULL;
         return;
@@ -73,7 +73,7 @@ namespace Katydid
 
 //        if( thisLine.GetIsCut() )
 //        {
-//            KTINFO("The track is cut! Will not add it to the Line Collection");
+//            LINFO("The track is cut! Will not add it to the Line Collection");
 //            return;
 //        }
 

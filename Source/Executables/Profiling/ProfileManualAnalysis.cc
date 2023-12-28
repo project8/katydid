@@ -25,7 +25,7 @@
 #endif
 
 #include "KTData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTRawTimeSeriesData.hh"
 
@@ -50,7 +50,7 @@ using namespace std;
 using std::string;
 //
 
-KTLOGGER(proflog, "ProfileManualAnalysis");
+LOGGER(proflog, "ProfileManualAnalysis");
 
 int main()
 {
@@ -120,7 +120,7 @@ int main()
     Nymph::KTDataPtr headerData = eggReader->BreakEgg(filename);
     if (! headerData)
     {
-        KTERROR(proflog, "Egg did not break");
+        LERROR(proflog, "Egg did not break");
         delete eggReader;
         return -1;
     }
@@ -144,7 +144,7 @@ int main()
     {
         if (iSlice >= nSlices) break;
 
-        KTINFO(proflog, "Slice " << iSlice);
+        LINFO(proflog, "Slice " << iSlice);
 
         // Hatch the slice
         Nymph::KTDataPtr data = eggReader->HatchNextSlice();
@@ -156,7 +156,7 @@ int main()
 
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(proflog, "No time-series data is present");
+            LERROR(proflog, "No time-series data is present");
             continue;
         }
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
@@ -167,7 +167,7 @@ int main()
         // Calcualte the FFT
         if (! compFFT.TransformRealData(tsData))
         {
-            KTERROR(proflog, "A problem occurred while performing the FFT");
+            LERROR(proflog, "A problem occurred while performing the FFT");
             continue;
         }
         KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
@@ -176,7 +176,7 @@ int main()
         // Calculate the gain variation
         if (! gainVar.CalculateGainVariation(fsData))
         {
-            KTERROR(proflog, "A problem occurred while calculating the gain variation");
+            LERROR(proflog, "A problem occurred while calculating the gain variation");
             continue;
         }
         KTGainVariationData& gainVarData = data->Of< KTGainVariationData >();
@@ -184,7 +184,7 @@ int main()
         // Normalize the spectra
         if (! gainNorm.Normalize(fsData, gainVarData))
         {
-            KTERROR(proflog, "A problem occurred while normalizing the spectra");
+            LERROR(proflog, "A problem occurred while normalizing the spectra");
             continue;
         }
         KTNormalizedFSDataFFTW& normFSData = data->Of< KTNormalizedFSDataFFTW >();
@@ -197,7 +197,7 @@ int main()
         if (! corr.Correlate(fsData))
 #endif
         {
-            KTERROR(proflog, "A problem occurred while correlating");
+            LERROR(proflog, "A problem occurred while correlating");
             continue;
         }
         KTCorrelationData& corrData = data->Of< KTCorrelationData >();
@@ -205,7 +205,7 @@ int main()
         // Pick out peaks
         if (! spectDisc.Discriminate(corrData))
         {
-            KTERROR(proflog, "A problem occurred while discriminating peaks");
+            LERROR(proflog, "A problem occurred while discriminating peaks");
             continue;
         }
         KTDiscriminatedPoints1DData& discPointsData = data->Of< KTDiscriminatedPoints1DData >();
@@ -213,7 +213,7 @@ int main()
         // Find clusters in the peak bins
         if (! distClust.FindClusters(discPointsData))
         {
-            KTERROR(proflog, "A problem occurred while finding clusters");
+            LERROR(proflog, "A problem occurred while finding clusters");
             continue;
         }
         KTCluster1DData& clusterData = data->Of< KTCluster1DData >();
@@ -221,7 +221,7 @@ int main()
         // Identify the clusters as candidates
         if (! candIdent.IdentifyCandidates(clusterData, corrData))
         {
-            KTERROR(proflog, "A problem occurred while identifying candidates");
+            LERROR(proflog, "A problem occurred while identifying candidates");
             continue;
         }
         //KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();

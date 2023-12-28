@@ -8,7 +8,7 @@ This executable tests the Track processing processor by faking a SparseWaterfall
 and tests the behavior of the algorithms in this processor.
 */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTTrackProcessingWeightedSlope.hh"
 #include "KTProcessedTrackData.hh"
@@ -32,7 +32,7 @@ int avgPointsPerSlice = 1;
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestTrackProcessing");
+LOGGER(testlog, "TestTrackProcessing");
 
 KTSparseWaterfallCandidateData createFakeData(double trackSlope, 
                                               double trackIntercept,
@@ -53,7 +53,7 @@ KTSparseWaterfallCandidateData createFakeData(double trackSlope,
     typedef KTDiscriminatedPoint Point;
     
     if (nSlices<=1){
-        KTERROR( testlog, "Number of slices <" << nSlices <<"> should be larger than 1!");
+        LERROR( testlog, "Number of slices <" << nSlices <<"> should be larger than 1!");
         return swfData;
     }
     double timeStep = (trackLength)/(nSlices-1);
@@ -76,7 +76,7 @@ KTSparseWaterfallCandidateData createFakeData(double trackSlope,
 int main()
 {
 
-    KTINFO(testlog, "Finally, a customer!");
+    LINFO(testlog, "Finally, a customer!");
 
     double trackSlope = 100e6; // [Hz/s]
     double trackIntercept = 1e5; // [Hz]
@@ -110,7 +110,7 @@ int main()
     // treeWriter.SetupProcessedTrackTree();
     treeTypeWriter.WriteSparseWaterfallCandidate(dataPtr);
     treeTypeWriter.WriteProcessedTrack(dataPtr);
-    KTINFO(testlog, "Processed track saved in file");
+    LINFO(testlog, "Processed track saved in file");
 #endif
 
     // Check the results of the processing
@@ -118,12 +118,12 @@ int main()
     double foundFrequency = procTrack.GetStartFrequency();
     double toBeFoundFrequency = trackIntercept + trackSlope*trackStart;
     double diff = foundFrequency - toBeFoundFrequency;
-    KTINFO(testlog, "Found a track with start frequency: " << foundFrequency << "; should be close to " << toBeFoundFrequency );
+    LINFO(testlog, "Found a track with start frequency: " << foundFrequency << "; should be close to " << toBeFoundFrequency );
     if (std::abs(diff)>1.e5){
-        KTERROR(testlog, "The difference seems too large (>1e5 Hz)! " );
+        LERROR(testlog, "The difference seems too large (>1e5 Hz)! " );
         return -1;
     }
-    KTINFO(testlog, "Track SNR: " << procTrack.GetTotalTrackSNR());
-    KTINFO(testlog, "NTrackBins: " << procTrack.GetNTrackBins());
+    LINFO(testlog, "Track SNR: " << procTrack.GetTotalTrackSNR());
+    LINFO(testlog, "NTrackBins: " << procTrack.GetNTrackBins());
     return 0;
 }

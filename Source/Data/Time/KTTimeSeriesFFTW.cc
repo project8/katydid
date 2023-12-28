@@ -7,7 +7,7 @@
 
 #include "KTTimeSeriesFFTW.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -19,7 +19,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(tslog, "KTTimeSeriesFFTW");
+    LOGGER(tslog, "KTTimeSeriesFFTW");
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW() :
             KTTimeSeries(),
@@ -55,7 +55,7 @@ namespace Katydid
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
         }
-        KTDEBUG(tslog, "\n" << printStream.str());
+        LDEBUG(tslog, "\n" << printStream.str());
         return;
     }
 

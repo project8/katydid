@@ -7,7 +7,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 
 #include "TFile.h"
@@ -24,7 +24,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTROOTTreeTypeWriterTime");
+    LOGGER(publog, "KTROOTTreeTypeWriterTime");
 
     static Nymph::KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterTime > sRTTWCRegistrar;
 
@@ -70,7 +70,7 @@ namespace Katydid
         {
             if (! SetupEggHeaderTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the egg header tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the egg header tree! Nothing was written.");
                 return;
             }
         }
@@ -79,7 +79,7 @@ namespace Katydid
         {
             if (! SetupChannelHeaderTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the channel header tree! Nothing was written.");
+                LERROR(publog, "Something went wrong while setting up the channel header tree! Nothing was written.");
                 return;
             }
         }
@@ -87,7 +87,7 @@ namespace Katydid
         KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
         *fEggHeaderData.fFilename = header.GetFilename();
-        KTDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
+        LDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
         fEggHeaderData.fCenterFrequency = header.GetCenterFrequency();
         fEggHeaderData.fMaximumFrequency = header.GetMaximumFrequency();
         fEggHeaderData.fMinimumFrequency = header.GetMinimumFrequency();
@@ -130,7 +130,7 @@ namespace Katydid
 
             if( fEggHeaderTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fEggHeaderTree );
 
                 fEggHeaderTree->SetBranchAddress("Filename", &fEggHeaderData.fFilename);
@@ -151,7 +151,7 @@ namespace Katydid
         fEggHeaderTree = new TTree("eggHeader", "Egg Header");
         if (fEggHeaderTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fEggHeaderTree);
@@ -178,7 +178,7 @@ namespace Katydid
 
             if( fChannelHeaderTree != NULL )
             {
-                KTINFO( publog, "Tree already exists; will add to it" );
+                LINFO( publog, "Tree already exists; will add to it" );
                 fWriter->AddTree( fChannelHeaderTree );
 
                 fChannelHeaderTree->SetBranchAddress("Number", &fChannelHeaderData.fNumber);
@@ -201,7 +201,7 @@ namespace Katydid
         fChannelHeaderTree = new TTree("channelHeader", "Channel Headers");
         if (fChannelHeaderTree == NULL)
         {
-            KTERROR(publog, "Tree was not created!");
+            LERROR(publog, "Tree was not created!");
             return false;
         }
         fWriter->AddTree(fChannelHeaderTree);

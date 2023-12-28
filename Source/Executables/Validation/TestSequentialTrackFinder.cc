@@ -9,7 +9,7 @@ and tests the behavior of the algorithms in this processor.
 */
 
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "KTSliceHeader.hh"
 #include "KTSequentialTrackFinder.hh"
@@ -27,7 +27,7 @@ and tests the behavior of the algorithms in this processor.
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestSequentialTrackFinder");
+LOGGER(testlog, "TestSequentialTrackFinder");
 
 KTSliceHeader createFakeHeader( unsigned sliceNumber, double timeBinWidth )
 {
@@ -75,7 +75,7 @@ KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber, double timeBinW
         double power = powerDistribution();
         unsigned iBin = yBin();
         disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth*((double)iBin + 0.5), power, threshold, pointPowerMean, pointPowerStd, 2*power), component);
-        KTDEBUG(testlog, "Adding point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
+        LDEBUG(testlog, "Adding point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
     }
     // track points
     if (sliceNumber >= trackStart and sliceNumber < trackStart + trackLength)
@@ -83,14 +83,14 @@ KTDiscriminatedPoints1DData createFakeData(unsigned sliceNumber, double timeBinW
         double power = powerDistribution();
         unsigned iBin = trackIntercept + trackSlope*(sliceNumber - trackStart);
         disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth*((double)iBin + 0.5), power, threshold, pointPowerMean,pointPowerStd, 2*power), component);
-        KTDEBUG(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
+        LDEBUG(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
     }
     if (sliceNumber >= trackStart2 and sliceNumber < trackStart2 + trackLength)
         {
             double power = powerDistribution();
             unsigned iBin = trackIntercept + trackSlope*(sliceNumber - trackStart);
             disc1d.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freqBinWidth * ((double)iBin + 0.5), power, threshold, pointPowerMean, pointPowerStd, 2*power), component);
-            KTDEBUG(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
+            LDEBUG(testlog, "Adding track point: "<<iBin<<" "<<freqBinWidth* ((double)iBin + 0.5)<<" "<<power);
         }
     return disc1d;
 }
@@ -106,7 +106,7 @@ int main()
     double freqBinWidth = 24000.;
 
 
-    KTINFO(testlog, "Testing STF!");
+    LINFO(testlog, "Testing STF!");
 
     KTSequentialTrackFinder stf;
     KTOverlappingTrackClustering otc;
@@ -135,7 +135,7 @@ int main()
     for (unsigned iSlice = 0; iSlice <= nSlices; ++iSlice )
     {
         KTSliceHeader header = createFakeHeader(iSlice, timeBinWidth);
-        KTDEBUG(testlog, "Sample rate is "<<header.GetSampleRate());
+        LDEBUG(testlog, "Sample rate is "<<header.GetSampleRate());
 
         KTDiscriminatedPoints1DData disc1d = createFakeData(iSlice, timeBinWidth, freqBinWidth);
         stf.CollectDiscrimPointsFromSlice(header, disc1d);
@@ -144,7 +144,7 @@ int main()
 
     // Get STF output
     const std::set< Nymph::KTDataPtr >& candidates = stf.GetCandidates();
-    KTINFO(testlog, "Candidates found: " << candidates.size());
+    LINFO(testlog, "Candidates found: " << candidates.size());
 
 
     // Print some output
@@ -152,21 +152,21 @@ int main()
     for (std::set< Nymph::KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
-        KTDEBUG(testlog, "Candidate " << sqlData.GetCandidateID());
-        KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
+        LDEBUG(testlog, "Candidate " << sqlData.GetCandidateID());
+        LDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        LDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
 
-        //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        //LINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
         const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-        KTDEBUG(testlog, "Length [bins]: "<<candPoints.size());
+        LDEBUG(testlog, "Length [bins]: "<<candPoints.size());
         STFPoints += candPoints.size();
         //for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         //{
-        //    KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
+        //    LINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         //}
     }
-    KTINFO(testlog, "Total STF Points: "<<STFPoints);
+    LINFO(testlog, "Total STF Points: "<<STFPoints);
 
 
 
@@ -181,7 +181,7 @@ int main()
     // Get OTC output
     std::set< Nymph::KTDataPtr > otccandidates = otc.GetCandidates();
 
-    KTINFO(testlog, "OTC Candidates found: " << otccandidates.size());
+    LINFO(testlog, "OTC Candidates found: " << otccandidates.size());
 
     // Print some output
     unsigned OTCPoints = 0;
@@ -189,10 +189,10 @@ int main()
     while( otcIt != otccandidates.end())
     {
         KTSequentialLineData& sqlData = (*otcIt)->Of< KTSequentialLineData >();
-        KTDEBUG(testlog, "OTC Candidate " << sqlData.GetCandidateID());
-        KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
-        //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        LDEBUG(testlog, "OTC Candidate " << sqlData.GetCandidateID());
+        LDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        LDEBUG(testlog, "Properties (total snr - total nup) "<<sqlData.GetTotalWideSNR()<<" / "<<sqlData.GetTotalWideNUP());
+        //LINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
 
         Nymph::KTData data = (*otcIt)->Of< Nymph::KTData >();
         snrcut.Apply(data, sqlData);
@@ -203,19 +203,19 @@ int main()
         else
         {
             const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-            KTDEBUG(testlog, "Length [bins]: "<<candPoints.size());
+            LDEBUG(testlog, "Length [bins]: "<<candPoints.size());
             OTCPoints += candPoints.size();
             ++otcIt;
         }
 
         //for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
         //{
-        //    KTINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
+        //    LINFO(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
         //}
 
     }
-    KTINFO(testlog, "OTC Candidates after Cut: " << otccandidates.size());
-    KTINFO(testlog, "Total OTC Points: "<<OTCPoints);
+    LINFO(testlog, "OTC Candidates after Cut: " << otccandidates.size());
+    LINFO(testlog, "Total OTC Points: "<<OTCPoints);
 
 
     // Test ITC
@@ -228,7 +228,7 @@ int main()
 
     // Get ITC output
     std::set< Nymph::KTDataPtr > itccandidates = itc.GetCandidates();
-    KTINFO(testlog, "ITC Candidates found: " << itccandidates.size());
+    LINFO(testlog, "ITC Candidates found: " << itccandidates.size());
 
     // Print some output
     unsigned ITCPoints = 0;
@@ -242,18 +242,18 @@ int main()
 
     // KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
     // treeTypeWriter.SetWriter(&writer);
-    // KTINFO(testlog, "Processed track saved in file");
+    // LINFO(testlog, "Processed track saved in file");
 // #endif
 
     while(cIt != itccandidates.end())
     {
         KTSequentialLineData& sqlData = (*cIt)->Of< KTSequentialLineData >();
 
-        KTDEBUG(testlog, "ITC Candidate " << sqlData.GetCandidateID());
-        KTDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
-        KTDEBUG(testlog, "Properties (total snr - wide snr - total nup - total wide nup) "<<sqlData.GetTotalSNR()<<" - "<<sqlData.GetTotalWideSNR()<<" - "<<sqlData.GetTotalNUP()<<" - "<<sqlData.GetTotalWideNUP());
-        //KTINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
-        //KTINFO(testlog, "AcquisitionsID - CandidateID: "<<sqlData.GetAcquisitionID()<<" - "<<sqlData.GetCandidateID());
+        LDEBUG(testlog, "ITC Candidate " << sqlData.GetCandidateID());
+        LDEBUG(testlog, "Properties (starttime/frequnecy - endtime/frequency - slope) "<<sqlData.GetStartTimeInRunC()<<" / "<<sqlData.GetStartFrequency()<<" - "<<sqlData.GetEndTimeInRunC()<<" / "<<sqlData.GetEndFrequency()<<" - "<<sqlData.GetSlope());
+        LDEBUG(testlog, "Properties (total snr - wide snr - total nup - total wide nup) "<<sqlData.GetTotalSNR()<<" - "<<sqlData.GetTotalWideSNR()<<" - "<<sqlData.GetTotalNUP()<<" - "<<sqlData.GetTotalWideNUP());
+        //LINFO(testlog, "Length (end time - start time [bins]): "<<(sqlData.GetEndTimeInRunC() - sqlData.GetStartTimeInRunC()) / timeBinWidth);
+        //LINFO(testlog, "AcquisitionsID - CandidateID: "<<sqlData.GetAcquisitionID()<<" - "<<sqlData.GetCandidateID());
 
         Nymph::KTData data = (*cIt)->Of< Nymph::KTData >();
         nupcut.Apply(data, sqlData);
@@ -270,19 +270,19 @@ int main()
         else
         {
             const KTDiscriminatedPoints& candPoints = sqlData.GetPoints();
-            KTDEBUG(testlog, "Length [bins]: "<<candPoints.size());
+            LDEBUG(testlog, "Length [bins]: "<<candPoints.size());
             ITCPoints += candPoints.size();
 
             for(KTDiscriminatedPoints::const_iterator pointIt = candPoints.begin(); pointIt != candPoints.end(); ++pointIt )
             {
-                KTDEBUG(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
+                LDEBUG(testlog, "Point: "<<pointIt->fTimeInRunC<<" "<<pointIt->fFrequency<<" "<<pointIt->fNeighborhoodAmplitude);
             }
             ++cIt;
         }
 
     }
-    KTINFO(testlog, "ITC Candidates after Cut: " << itccandidates.size());
-    KTINFO(testlog, "Total ITC Points: "<<ITCPoints);
+    LINFO(testlog, "ITC Candidates after Cut: " << itccandidates.size());
+    LINFO(testlog, "Total ITC Points: "<<ITCPoints);
 
 #ifdef ROOT_FOUND
     KTROOTTreeWriter writer;
@@ -292,7 +292,7 @@ int main()
     KTROOTTreeTypeWriterEventAnalysis treeTypeWriter;
     treeTypeWriter.SetWriter(&writer);
     treeTypeWriter.WriteSequentialLine(*itccandidates.begin());
-    KTINFO(testlog, "Processed track saved in file");
+    LINFO(testlog, "Processed track saved in file");
 #endif
 
 

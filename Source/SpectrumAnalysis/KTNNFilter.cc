@@ -8,14 +8,14 @@
 #include "KTNNFilter.hh"
 
 #include "KTKDTreeData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using std::string;
 
 
 namespace Katydid
 {
-    KTLOGGER(flog, "KTNNFilter");
+    LOGGER(flog, "KTNNFilter");
 
     KT_REGISTER_PROCESSOR(KTNNFilter, "nn-filter");
 
@@ -49,7 +49,7 @@ namespace Katydid
 
     bool KTNNFilter::FilterByNNDist(KTKDTreeData& kdTreeData)
     {
-        KTINFO(flog, "Performing filtering by nearest-neighbor distance on k-d tree data");
+        LINFO(flog, "Performing filtering by nearest-neighbor distance on k-d tree data");
         unsigned nComponents = kdTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -58,17 +58,17 @@ namespace Katydid
             std::vector< size_t > noisePoints;
             if (! FilterByNNDist(kdTree, setOfPoints, noisePoints))
             {
-                KTERROR(flog, "Filtering by nearest-neighbor distance failed");
+                LERROR(flog, "Filtering by nearest-neighbor distance failed");
                 return false;
             }
             if (fRemoveNoiseFlag)
             {
-                KTDEBUG(flog, "Filtering by nearest-neighbor distance is removing " << noisePoints.size() << " points");
+                LDEBUG(flog, "Filtering by nearest-neighbor distance is removing " << noisePoints.size() << " points");
                 kdTreeData.RemovePoints(noisePoints); // also rebuilds k-d tree index
             }
             else
             {
-                KTDEBUG(flog, "Filtering by nearest-neighbor distance is flagging " << noisePoints.size() << " points");
+                LDEBUG(flog, "Filtering by nearest-neighbor distance is flagging " << noisePoints.size() << " points");
                 kdTreeData.FlagPoints(noisePoints); // does NOT rebuild k-d tree index
             }
         }
@@ -77,7 +77,7 @@ namespace Katydid
 
     bool KTNNFilter::FilterByMinInRadius(KTKDTreeData& kdTreeData)
     {
-        KTINFO(flog, "Performing filtering by minimum in radius on k-d tree data");
+        LINFO(flog, "Performing filtering by minimum in radius on k-d tree data");
         unsigned nComponents = kdTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -86,17 +86,17 @@ namespace Katydid
             std::vector< size_t > noisePoints;
             if (! FilterByMinInRadius(kdTree, setOfPoints, noisePoints))
             {
-                KTERROR(flog, "Filtering by minimum in radius failed");
+                LERROR(flog, "Filtering by minimum in radius failed");
                 return false;
             }
             if (fRemoveNoiseFlag)
             {
-                KTDEBUG(flog, "Filtering by minimum in radius is removing " << noisePoints.size() << " points");
+                LDEBUG(flog, "Filtering by minimum in radius is removing " << noisePoints.size() << " points");
                 kdTreeData.RemovePoints(noisePoints); // also rebuilds k-d tree index
             }
             else
             {
-                KTDEBUG(flog, "Filtering by minimum in radius is flagging " << noisePoints.size() << " points");
+                LDEBUG(flog, "Filtering by minimum in radius is flagging " << noisePoints.size() << " points");
                 kdTreeData.FlagPoints(noisePoints); // does NOT rebuild k-d tree index
             }
         }

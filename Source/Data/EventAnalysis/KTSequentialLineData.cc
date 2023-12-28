@@ -7,7 +7,7 @@
  */
 #include <KTSequentialLineData.hh>
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <iostream>
 #include <cmath>
@@ -16,7 +16,7 @@
 namespace Katydid
 {
     const std::string KTSequentialLineData::sName("sequential-line");
-	KTLOGGER(seqlog, "KTSeqLine");
+	LOGGER(seqlog, "KTSeqLine");
 
     KTSequentialLineData::KTSequentialLineData():
         fLinePoints(),
@@ -53,26 +53,26 @@ namespace Katydid
         fSNRList.push_back(point.fNeighborhoodAmplitude/point.fMean);
         fTotalWideSNR += point.fNeighborhoodAmplitude/point.fMean;
         fLinePoints.insert(point);
-        //KTINFO(seqlog, "Adding point line "<<fLinePoints.size());
+        //LINFO(seqlog, "Adding point line "<<fLinePoints.size());
         this->UpdateLineProperties();
     }
 
     void KTSequentialLineData::LineSNRTrimming( const double& trimmingThreshold, const unsigned& minPoints )
     {
-        //KTDEBUG( seqlog, "Trimming line edges. Trimming SNR threshold is "<<trimmingThreshold );
+        //LDEBUG( seqlog, "Trimming line edges. Trimming SNR threshold is "<<trimmingThreshold );
 
         if ( !fSNRList.empty() )
         {
             while ( fSNRList.back() < trimmingThreshold and fNPoints >= minPoints )
             {
-                KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
+                LDEBUG( seqlog, "SNR is "<<fSNRList.back() );
                 fSNRList.erase(fSNRList.end() -1);
                 fLinePoints.erase(*fLinePoints.rbegin());
                 fNPoints = fLinePoints.size();
             }
             while ( fSNRList.front() < trimmingThreshold and fNPoints >= minPoints )
             {
-                KTDEBUG( seqlog, "SNR is "<<fSNRList.back() );
+                LDEBUG( seqlog, "SNR is "<<fSNRList.back() );
                 fSNRList.erase(fSNRList.begin());
                 fLinePoints.erase(*fLinePoints.begin());
                 fNPoints = fLinePoints.size();
@@ -90,7 +90,7 @@ namespace Katydid
 
     void KTSequentialLineData::UpdateLineProperties()
     {
-        //KTDEBUG(seqlog, "Updating line parameters");
+        //LDEBUG(seqlog, "Updating line parameters");
         SetNPoints( fLinePoints.size() );
         if ( fNPoints == 1 or fLinePoints.begin()->fTimeInRunC < GetStartTimeInRunC())
         {

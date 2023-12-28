@@ -10,7 +10,7 @@
 #include "KTArbitraryMetadata.hh"
 #include "KTEggHeader.hh"
 #include "KTEggProcessor.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTRawTimeSeries.hh"
@@ -33,7 +33,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "KTEgg3Reader");
+    LOGGER(eggreadlog, "KTEgg3Reader");
 
     KT_REGISTER_EGGREADER(KTEgg3Reader, "egg3");
 
@@ -102,25 +102,25 @@ namespace Katydid
         fCurrentFileIt = fFilenames.begin();
 
         // open the file
-        KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0].first << ">");
+        LINFO(eggreadlog, "Opening egg file <" << fFilenames[0].first << ">");
         try
         {
             fMonarch = Monarch3::OpenForReading(fFilenames[0].first.native());
         }
         catch (M3Exception& e)
         {
-            KTERROR(eggreadlog, "Unable to break egg: " << e.what());
+            LERROR(eggreadlog, "Unable to break egg: " << e.what());
             return Nymph::KTDataPtr();
         }
 
-        KTDEBUG(eggreadlog, "File open; reading header");
+        LDEBUG(eggreadlog, "File open; reading header");
         try
         {
             fMonarch->ReadHeader();
         }
         catch (M3Exception& e)
         {
-            KTERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
+            LERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
                     "Egg breaking aborted.");
             delete fMonarch;
             fMonarch = NULL;
@@ -131,7 +131,7 @@ namespace Katydid
         scarab::version_semantic eggVersion(fMonarch->GetHeader()->GetEggVersion());
         if (eggVersion.major_version() != 3)
         {
-            KTERROR(eggreadlog, "Cannot read egg version " << eggVersion.version_str());
+            LERROR(eggreadlog, "Cannot read egg version " << eggVersion.version_str());
             delete fMonarch;
             fMonarch = NULL;
             return Nymph::KTDataPtr();
@@ -140,12 +140,12 @@ namespace Katydid
         // Set the appropriate time-in-run calculation function based on the egg version
         if (eggVersion < scarab::version_semantic("3.2.0"))
         {
-            KTDEBUG(eggreadlog, "Egg version is " << eggVersion.version_str() << "; switching GetTIR function to manual");
+            LDEBUG(eggreadlog, "Egg version is " << eggVersion.version_str() << "; switching GetTIR function to manual");
             fGetTimeInRun = &KTEgg3Reader::GetTimeInRunManually;
         }
         else
         {
-            KTDEBUG(eggreadlog, "Egg version is " << eggVersion.version_str() << "; switching GetTIR function to from-monarch");
+            LDEBUG(eggreadlog, "Egg version is " << eggVersion.version_str() << "; switching GetTIR function to from-monarch");
             fGetTimeInRun = &KTEgg3Reader::GetTimeInRunFromMonarch;
         }
 
@@ -160,37 +160,37 @@ namespace Katydid
         AddMetadata();
         if (fRequireMetadata && ! MetadataIsPresent())
         {
-            KTERROR(eggreadlog, "Metadata is required but not present");
+            LERROR(eggreadlog, "Metadata is required but not present");
             delete fMonarch;
             fMonarch = nullptr;
             return Nymph::KTDataPtr();
         }
 
-        KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
+        LDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
         /*
         const M3StreamHeader& stream0Header = fMonarch->GetHeader()->GetStreamHeaders()[0];
         if (stream0Header.GetDataFormat() == sAnalog && stream0Header.GetSampleSize() == 2)
         {
             // complex, analog data is currently readable
-            KTDEBUG(eggreadlog, "Setting hatch-next-slice function to complex, analog");
+            LDEBUG(eggreadlog, "Setting hatch-next-slice function to complex, analog");
             fHatchNextSlicePtr = &KTEgg3Reader::HatchNextSliceComplex;
         }
         else if (stream0Header.GetDataFormat() == sDigitizedUS && stream0Header.GetSampleSize() == 1)
         {
             // real, digitized data is currently readable
-            KTDEBUG(eggreadlog, "Setting hatch-next-slice function to real, digitized");
+            LDEBUG(eggreadlog, "Setting hatch-next-slice function to real, digitized");
             fHatchNextSlicePtr = &KTEgg3Reader::HatchNextSliceRealUnsigned;
         }
         else if (stream0Header.GetDataFormat() == sDigitizedS && stream0Header.GetSampleSize() == 1)
         {
             // real, digitized data is currently readable
-            KTDEBUG(eggreadlog, "Setting hatch-next-slice function to real, digitized");
+            LDEBUG(eggreadlog, "Setting hatch-next-slice function to real, digitized");
             fHatchNextSlicePtr = &KTEgg3Reader::HatchNextSliceRealSigned;
         }
         else
         {
-            KTERROR(eggreadlog, "Cannot read data with data format <" << stream0Header.GetDataFormat() << "> and sample size <" << stream0Header.GetSampleSize() << ">");
+            LERROR(eggreadlog, "Cannot read data with data format <" << stream0Header.GetDataFormat() << "> and sample size <" << stream0Header.GetSampleSize() << ">");
             delete fMonarch;
             fMonarch = NULL;
             return Nymph::KTDataPtr();
@@ -239,12 +239,12 @@ namespace Katydid
     {
         if (fMonarch == NULL)
         {
-            KTERROR(eggreadlog, "Monarch file has not been opened");
+            LERROR(eggreadlog, "Monarch file has not been opened");
             return Nymph::KTDataPtr();
         }
         if (fReadState.fStatus == MonarchReadState::kInvalid)
         {
-            KTERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
+            LERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
             return Nymph::KTDataPtr();
         }
 
@@ -273,28 +273,28 @@ namespace Katydid
                 int startingRecordShift = fReadState.fStartOfLastSliceRecord;
                 // and set the read position
                 readPos = fReadState.fStartOfLastSliceReadPtr;
-                KTINFO(eggreadlog, "Starting offset into the run: record shift = " << startingRecordShift << "; read position = " << readPos);
+                LINFO(eggreadlog, "Starting offset into the run: record shift = " << startingRecordShift << "; read position = " << readPos);
 
-                KTDEBUG(eggreadlog, "Reading first record");
+                LDEBUG(eggreadlog, "Reading first record");
                 isNewAcquisition = true;
 
                 // if we're at the beginning of the run, load the first record
                 // second argument specifies that monarch should not go to the first record if it's a new acquisition
                 if (! fM3Stream->ReadRecord(startingRecordShift, false))
                 {
-                    KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
+                    LERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the (first) file");
                     return Nymph::KTDataPtr();
                 }
                 ++fRecordsProcessed;
 
                 // set the time offset for the run based on the first channel
                 fT0Offset = fM3Stream->GetAcqFirstRecordTime();
-                KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
+                LDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
 
                 // set fStartOFLastSliceRecord properly, considering that the first record in the file might not be record 0
                 // this has to be done after the first record is read, because Monarch only knows what the first record number is after accessing the records
                 fReadState.fStartOfLastSliceRecord += fM3Stream->GetFirstRecordInFile();
-                KTDEBUG(eggreadlog, "File starts with record " << fReadState.fStartOfLastSliceRecord);
+                LDEBUG(eggreadlog, "File starts with record " << fReadState.fStartOfLastSliceRecord);
 
                 // the current record is the one we just loaded
                 fReadState.fCurrentRecord = fReadState.fStartOfLastSliceRecord;
@@ -326,7 +326,7 @@ namespace Katydid
                     readPos -= recordSize;
                     ++recordShift;
                 }
-                KTDEBUG(eggreadlog, "Preparing to read next slice; Record shift: " << recordShift << "; Read position (in record): " << readPos);
+                LDEBUG(eggreadlog, "Preparing to read next slice; Record shift: " << recordShift << "; Read position (in record): " << readPos);
                 // readPos is now the read position in the new record that will be loaded (or the current record, if we stay on this record)
 
                 // if necessary, move to a new record
@@ -338,12 +338,12 @@ namespace Katydid
                         // we've reached the end of the file
                         if (! LoadNextFile())
                         {
-                            KTINFO(eggreadlog, "End of egg file reached after reading new records");
+                            LINFO(eggreadlog, "End of egg file reached after reading new records");
                             return Nymph::KTDataPtr();
                         }
                         if (! fM3Stream->ReadRecord())
                         {
-                            KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
+                            LERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
                             return Nymph::KTDataPtr();
                         }
                         inNewFile = true;
@@ -355,7 +355,7 @@ namespace Katydid
                     // check if we're in a new acquisition
                     if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId() || inNewFile)
                     {
-                        KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId() << "; is a new file? " << inNewFile << "; Starting at record << " << fReadState.fCurrentRecord);
+                        LDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId() << "; is a new file? " << inNewFile << "; Starting at record << " << fReadState.fCurrentRecord);
                         isNewAcquisition = true;
                         // then we need to start reading at the start of this record
                         readPos = 0;
@@ -407,7 +407,7 @@ namespace Katydid
                 sliceHeader.SetRawDataFormatType(fHeader.GetChannelHeader( iChan )->GetDataFormat(), iChan);
             }
 
-            KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
+            LDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
             // the write position on the new slice
             unsigned writePos = 0;
@@ -447,7 +447,7 @@ namespace Katydid
                 unsigned readPosBytes = readPos * nBytesInSample;
 
                 // copy the samples from this record for each channel
-                KTDEBUG(eggreadlog, "Copying data to slice; " << bytesToCopy << " bytes in " << samplesToCopyFromThisRecord << " samples");
+                LDEBUG(eggreadlog, "Copying data to slice; " << bytesToCopy << " bytes in " << samplesToCopyFromThisRecord << " samples");
                 for( unsigned iChan = 0; iChan < nChannels; ++iChan )
                 {
                     memcpy( newSlices[iChan]->GetStorage() + writePosBytes,
@@ -466,8 +466,8 @@ namespace Katydid
                     readstream << readIfc.at( readPos + iBin ) << "  ";
                     writestream << writeIfc( writePos + iBin ) << "  ";
                 }
-                KTWARN(eggreadlog, "Reading:  " << readstream.str());
-                KTWARN(eggreadlog, "Writing:  " << writestream.str());
+                LWARN(eggreadlog, "Reading:  " << readstream.str());
+                LWARN(eggreadlog, "Writing:  " << writestream.str());
                 */
                 //*** DEBUG ***//
 
@@ -483,12 +483,12 @@ namespace Katydid
                     {
                         if (! LoadNextFile())
                         {
-                            KTINFO(eggreadlog, "End of file reached in the middle of reading out a slice");
+                            LINFO(eggreadlog, "End of file reached in the middle of reading out a slice");
                             return Nymph::KTDataPtr();
                         }
                         if (! fM3Stream->ReadRecord())
                         {
-                            KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
+                            LERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
                             return Nymph::KTDataPtr();
                         }
                         inNewFile = true;
@@ -501,7 +501,7 @@ namespace Katydid
                     // check if we've moved to a new acquisition
                     if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId() || inNewFile)
                     {
-                        KTDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
+                        LDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
                                 "\tUnused samples: " << writePos + samplesToCopyFromThisRecord);
                         // now we need to start the slice over with the now-current record
                         writePos = 0;
@@ -525,7 +525,7 @@ namespace Katydid
                         }
                         sliceHeader.SetTimeInRun(GetTimeInRun());
                         fAcqTimeInRun = sliceHeader.GetTimeInRun();
-                        KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
+                        LDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
                                 "\tCurent record = " << fReadState.fCurrentRecord << '\n' <<
                                 "\tSlice start sample in record = " << readPos);
                     } // end if-block dealing with new acquisitions
@@ -552,20 +552,20 @@ namespace Katydid
         }
         catch (M3Exception& e)
         {
-            KTERROR(eggreadlog, "Error while hatching a slice: " << e.what());
+            LERROR(eggreadlog, "Error while hatching a slice: " << e.what());
             return Nymph::KTDataPtr();
         }
     }
 
     bool KTEgg3Reader::LoadNextFile()
     {
-        KTDEBUG(eggreadlog, "Attempting to load next file");
+        LDEBUG(eggreadlog, "Attempting to load next file");
 
         // advance the iterator and check if we're done with the list of files
         ++fCurrentFileIt;
         if (fCurrentFileIt == fFilenames.end())
         {
-            KTINFO(eggreadlog, "There are no more files to open");
+            LINFO(eggreadlog, "There are no more files to open");
             return false;
         }
 
@@ -576,25 +576,25 @@ namespace Katydid
         }
 
         // open the next file
-        KTINFO(eggreadlog, "Opening next egg file <" << fCurrentFileIt->first << ">");
+        LINFO(eggreadlog, "Opening next egg file <" << fCurrentFileIt->first << ">");
         try
         {
             fMonarch = Monarch3::OpenForReading(fCurrentFileIt->first.native());
         }
         catch (M3Exception& e)
         {
-            KTERROR(eggreadlog, "Unable to open the file: " << e.what());
+            LERROR(eggreadlog, "Unable to open the file: " << e.what());
             return false;
         }
 
-        KTDEBUG(eggreadlog, "File open; reading header");
+        LDEBUG(eggreadlog, "File open; reading header");
         try
         {
             fMonarch->ReadHeader();
         }
         catch (M3Exception& e)
         {
-            KTERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
+            LERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
                     "file-opening aborted.");
             delete fMonarch;
             fMonarch = nullptr;
@@ -626,7 +626,7 @@ namespace Katydid
         }
         catch (M3Exception& e)
         {
-            KTERROR(eggreadlog, "Something went wrong while closing the file: " << e.what());
+            LERROR(eggreadlog, "Something went wrong while closing the file: " << e.what());
         }
         delete fMonarch;
         fMonarch = NULL;
@@ -656,7 +656,7 @@ namespace Katydid
         {
             if (monarchHeader->GetChannelStreams()[iChanInFile] == streamNum)
             {
-                KTDEBUG(eggreadlog, "Adding channel " << iChanInFile << " in the egg file");
+                LDEBUG(eggreadlog, "Adding channel " << iChanInFile << " in the egg file");
                 const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
                 KTChannelHeader* newChanHeader = new KTChannelHeader();
                 if (! haveSetHeaderFreqs)
@@ -665,7 +665,7 @@ namespace Katydid
                     fHeader.SetMinimumFrequency(channelHeader.GetFrequencyMin());
                     fHeader.SetMaximumFrequency(channelHeader.GetFrequencyMin() + channelHeader.GetFrequencyRange());
                     fHeader.SetCenterFrequency(0.5 * channelHeader.GetFrequencyRange() + fHeader.GetMinimumFrequency());
-                    KTDEBUG(eggreadlog, "Extracted frequencies from channel (in file) " << iChanInFile <<
+                    LDEBUG(eggreadlog, "Extracted frequencies from channel (in file) " << iChanInFile <<
                             ";  min freq: " << fHeader.GetMinimumFrequency() <<
                             ";  center freq: " << fHeader.GetCenterFrequency() <<
                             ";  max freq: " << fHeader.GetMaximumFrequency() );
@@ -690,7 +690,7 @@ namespace Katydid
                 else if (sampleSize == 2) newChanHeader->SetTSDataType(KTChannelHeader::kIQ);
                 else
                 {
-                    KTWARN(eggreadlog, "Sample size <" << sampleSize << "> on channel " << iChanInFile << " may cause problems with downstream processing");
+                    LWARN(eggreadlog, "Sample size <" << sampleSize << "> on channel " << iChanInFile << " may cause problems with downstream processing");
                 }
                 fHeader.SetChannelHeader(newChanHeader, iChanInKatydid);
                 ++iChanInKatydid;
@@ -713,13 +713,13 @@ namespace Katydid
         scarab::param* metadata = translator.read_file(fHeader.GetMetadataFilename());
         if (metadata == nullptr)
         {
-            KTWARN(eggreadlog, "Metadata file was not present or could not be converted to a param object");
+            LWARN(eggreadlog, "Metadata file was not present or could not be converted to a param object");
         }
 #ifndef NDEBUG
         if (metadata != nullptr)
         {
-            KTDEBUG(eggreadlog, "Adding metadata from <" << fHeader.GetMetadataFilename() << ">");
-            KTDEBUG(eggreadlog, *metadata);
+            LDEBUG(eggreadlog, "Adding metadata from <" << fHeader.GetMetadataFilename() << ">");
+            LDEBUG(eggreadlog, *metadata);
         }
 #endif
         fHeader.Of< KTArbitraryMetadata >().SetMetadata(metadata);

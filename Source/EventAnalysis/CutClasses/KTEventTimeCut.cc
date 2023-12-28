@@ -8,11 +8,11 @@
 #include "KTEventTimeCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTEventTimeCut");
+    LOGGER(exlog, "KTEventTimeCut");
 
     const std::string KTEventTimeCut::Result::sName = "event-time-cut";
 

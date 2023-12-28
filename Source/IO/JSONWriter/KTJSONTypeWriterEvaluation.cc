@@ -9,7 +9,7 @@
 
 #include "KTCCResults.hh"
 #include "KTTIFactory.hh"
-//#include "KTLogger.hh"
+//#include "logger.hh"
 
 
 
@@ -17,7 +17,7 @@ using std::vector;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "KTJSONTypeWriterEvaluation");
+    //LOGGER(publog, "KTJSONTypeWriterEvaluation");
 
     static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEvaluation > sJSONTWERegistrar;
 

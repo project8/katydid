@@ -8,11 +8,11 @@
 #include "KTEventTimeInAcqCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTEventTimeInAcqCut");
+    LOGGER(exlog, "KTEventTimeInAcqCut");
 
     const std::string KTEventTimeInAcqCut::Result::sName = "event-time-in-acq-cut";
 

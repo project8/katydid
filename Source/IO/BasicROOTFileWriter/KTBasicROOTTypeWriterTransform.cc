@@ -9,7 +9,7 @@
 
 #include "KT2ROOT.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -35,7 +35,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTBasicROOTTypeWriterTransform");
+    LOGGER(publog, "KTBasicROOTTypeWriterTransform");
 
 
     static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterTransform > sBRTWFFTRegistrar;
@@ -106,7 +106,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -135,7 +135,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -164,7 +164,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -193,7 +193,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -222,7 +222,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -251,7 +251,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -280,7 +280,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -309,7 +309,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -338,7 +338,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -367,7 +367,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -396,7 +396,7 @@ namespace Katydid
                 TH1D* varianceSpectrum = KT2ROOT::CreateHistogram(variance, histName);
                 varianceSpectrum->SetDirectory(fWriter->GetFile());
                 varianceSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -425,7 +425,7 @@ namespace Katydid
                 TH1D* varianceSpectrum = KT2ROOT::CreateHistogram(variance, histName);
                 varianceSpectrum->SetDirectory(fWriter->GetFile());
                 varianceSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -459,7 +459,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -489,7 +489,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -519,7 +519,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -549,7 +549,7 @@ namespace Katydid
                 TH1D* powerSpectrum = KT2ROOT::CreatePowerDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -578,7 +578,7 @@ namespace Katydid
                 TH1D* varianceSpectrum = KT2ROOT::CreateHistogram(variance, histName);
                 varianceSpectrum->SetDirectory(fWriter->GetFile());
                 varianceSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -612,7 +612,7 @@ namespace Katydid
                 TH2D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -641,7 +641,7 @@ namespace Katydid
                 TH2D* powerSpectrum = spectrum->CreatePhaseHistogram(histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -669,7 +669,7 @@ namespace Katydid
                 TH2D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -700,7 +700,7 @@ namespace Katydid
             TH2D* mfsHist = fsData.CreateMagnitudeHistogram(iPlot, histName);
             mfsHist->SetDirectory(fWriter->GetFile());
             mfsHist->Write();
-            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;
     }
@@ -725,7 +725,7 @@ namespace Katydid
             TH2D* mfsHist = fsData.CreateMagnitudeHistogram(iPlot, histName);
             mfsHist->SetDirectory(fWriter->GetFile());
             mfsHist->Write();
-            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;
     }
@@ -736,22 +736,22 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterTransform::WriteMultiPSData(Nymph::KTDataPtr data)
     {
-        KTINFO(publog, "Got multi-ps signal, going to write spectrogram");
+        LINFO(publog, "Got multi-ps signal, going to write spectrogram");
         bool hastype = data->Has<KTMultiPSData>();
-        KTDEBUG(publog, "Has data: "<<hastype);
+        LDEBUG(publog, "Has data: "<<hastype);
         bool hastype1 = data->Has<KTPSCollectionData>();
-        KTDEBUG(publog, "Has data: "<<hastype1);
+        LDEBUG(publog, "Has data: "<<hastype1);
         if (! data) return;
 
         //uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        //KTDEBUG(publog, "Slice number: "<<sliceNumber);
+        //LDEBUG(publog, "Slice number: "<<sliceNumber);
 
         KTPSCollectionData& psData = data->Of<KTPSCollectionData>();
         unsigned nComponents = psData.GetNComponents();
-        KTDEBUG(publog, "nComponents: "<<nComponents);
+        LDEBUG(publog, "nComponents: "<<nComponents);
 
         uint64_t spectrogramNumber = psData.GetSpectrogramCounter();
-        KTDEBUG(publog, "Slice number: "<<spectrogramNumber);
+        LDEBUG(publog, "Slice number: "<<spectrogramNumber);
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -764,7 +764,7 @@ namespace Katydid
             TH2D* mpsHist = psData.CreatePowerHistogram(iPlot, histName);
             mpsHist->SetDirectory(fWriter->GetFile());
             mpsHist->Write();
-            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;
     }

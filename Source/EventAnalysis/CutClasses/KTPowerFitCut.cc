@@ -8,11 +8,11 @@
 #include "KTPowerFitCut.hh"
 #include "KTPowerFitData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTPowerFitCut");
+    LOGGER(exlog, "KTPowerFitCut");
 
     const std::string KTPowerFitCut::Result::sName = "power-fit-cut";
 

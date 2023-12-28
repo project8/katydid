@@ -11,7 +11,7 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTMath.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRSAMatReader.hh"
 #include "KTTimeSeriesData.hh"
@@ -34,7 +34,7 @@ using namespace Katydid;
 
 
 
-KTLOGGER(exelog, "RSAMatToEgg");
+LOGGER(exelog, "RSAMatToEgg");
 
 void PrintUsage()
 {
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
         }
     }
 
-    KTINFO(exelog, "Output file: " << outputFilename.string());
+    LINFO(exelog, "Output file: " << outputFilename.string());
 
     boost::filesystem::path currentPath(boost::filesystem::current_path());
 
@@ -88,16 +88,16 @@ int main(int argc, char** argv)
         if (candidate.is_relative()) candidate = currentPath / candidate;
         if (! candidate.has_filename())
         {
-            KTERROR(exelog, "Output file provided does not specify a file: " << candidate);
+            LERROR(exelog, "Output file provided does not specify a file: " << candidate);
             exit(-1);
         }
         matFiles.push_back(candidate);
-        KTDEBUG(exelog, "Added input file: " << matFiles.back().string());
+        LDEBUG(exelog, "Added input file: " << matFiles.back().string());
     }
 
     if (matFiles.empty())
     {
-        KTERROR(exelog, "No input files were provided");
+        LERROR(exelog, "No input files were provided");
         exit(-1);
     }
 
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
     monarch3::Monarch3* monarch = monarch3::Monarch3::OpenForWriting(outputFilename.string());
     if (monarch == NULL)
     {
-        KTERROR(exelog, "Unable to open output file <" << outputFilename.string() << ">");
+        LERROR(exelog, "Unable to open output file <" << outputFilename.string() << ">");
         exit(-1);
     }
 
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
             KTEggHeader& newEggHeader = matHeaderPtr->Of< KTEggHeader >();
             if (newEggHeader.GetAcquisitionRate() != acqRate || newEggHeader.GetChannelHeader(0)->GetRecordSize() != recSize)
             {
-                KTERROR(exelog, "File <" << matIt->string() << "> has parameters that don't match the first file:\n" <<
+                LERROR(exelog, "File <" << matIt->string() << "> has parameters that don't match the first file:\n" <<
                         "\tAcquisition rate: first = " << acqRate << "\tthis = " << newEggHeader.GetAcquisitionRate() << '\n' <<
                         "\tRecord size:      first = " << recSize << "\tthis = " << newEggHeader.GetChannelHeader(0)->GetRecordSize());
                 success = false;
@@ -168,12 +168,12 @@ int main(int argc, char** argv)
         while (data)
         {
             KTSliceHeader& slHeader = data->Of< KTSliceHeader >();
-            KTDEBUG(exelog, "Processing slice " << slHeader.GetSliceNumber());
+            LDEBUG(exelog, "Processing slice " << slHeader.GetSliceNumber());
             KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
             KTTimeSeriesFFTW* timeSeries = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(0));
             if (timeSeries == NULL)
             {
-                KTERROR(exelog, "Time series was not of type KTTimeSeriesFFTW");
+                LERROR(exelog, "Time series was not of type KTTimeSeriesFFTW");
                 success = false;
                 matReader->CloseEgg();
                 delete matReader;
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 
     if (! success)
     {
-        KTERROR(exelog, "An error occurred while writing the egg file");
+        LERROR(exelog, "An error occurred while writing the egg file");
     }
 
     monarch->FinishWriting();

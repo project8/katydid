@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTThroughputProfiler.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -23,7 +23,7 @@ using namespace std;
 
 using boost::unordered_map;
 
-KTLOGGER(proflog, "ProfileDataAccessMethods");
+LOGGER(proflog, "ProfileDataAccessMethods");
 
 struct Data
 {
@@ -370,7 +370,7 @@ int main()
     DataF* dataPtrF;
 
     // Test string-keyed bundle
-    KTINFO(proflog, "Testing the String-Keyed Bundle");
+    LINFO(proflog, "Testing the String-Keyed Bundle");
     prof.Start();
     for (unsigned iIteration = 0; iIteration < nIterations; iIteration++)
     {
@@ -384,11 +384,11 @@ int main()
     prof.Stop();
     timespec elapsed = prof.Elapsed();
     double elapsed_sec = elapsed.tv_sec + elapsed.tv_nsec * 1.e-9;
-    KTINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
-    KTINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
+    LINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
+    LINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
 
     // Test type-and-string-keyed bundle
-    KTINFO(proflog, "Testing the Type-and-String-Keyed Bundle");
+    LINFO(proflog, "Testing the Type-and-String-Keyed Bundle");
     prof.Start();
     for (unsigned iIteration = 0; iIteration < nIterations; iIteration++)
     {
@@ -402,11 +402,11 @@ int main()
     prof.Stop();
     elapsed = prof.Elapsed();
     elapsed_sec = elapsed.tv_sec + elapsed.tv_nsec * 1.e-9;
-    KTINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
-    KTINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
+    LINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
+    LINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
 
     // Test extensible struct
-    KTINFO(proflog, "Testing the Extensible Struct");
+    LINFO(proflog, "Testing the Extensible Struct");
     prof.Start();
     for (unsigned iIteration = 0; iIteration < nIterations; iIteration++)
     {
@@ -420,11 +420,11 @@ int main()
     prof.Stop();
     elapsed = prof.Elapsed();
     elapsed_sec = elapsed.tv_sec + elapsed.tv_nsec * 1.e-9;
-    KTINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
-    KTINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
+    LINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
+    LINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
 /*
     // Test mapped extensible struct
-    KTINFO(proflog, "Testing the Mapped Extensible Struct");
+    LINFO(proflog, "Testing the Mapped Extensible Struct");
     prof.Start();
     for (unsigned iIteration = 0; iIteration < nIterations; iIteration++)
     {
@@ -438,8 +438,8 @@ int main()
     prof.Stop();
     elapsed = prof.Elapsed();
     elapsed_sec = elapsed.tv_sec + elapsed.tv_nsec * 1.e-9;
-    KTINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
-    KTINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
+    LINFO(proflog, "Elapsed time: " << elapsed_sec << " s");
+    LINFO(proflog, "Time per access: " << elapsed_sec / double(nNames * nIterations))
 */
 
     return 0;

@@ -8,7 +8,7 @@
 #include "KTFrequencyCandidate.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
-//#include "KTLogger.hh"
+//#include "logger.hh"
 
 #include <sstream>
 #include "KTJSONTypeWriterEventAnalysis.hh"
@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "KTJSONTypeWriterEventAnalysis");
+    //LOGGER(publog, "KTJSONTypeWriterEventAnalysis");
 
     static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEventAnalysis > sJSONTWCRegistrar;
 

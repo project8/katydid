@@ -7,7 +7,7 @@
 
 #include "KTFrequencySpectrumFFTW.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTFrequencySpectrumPolar.hh"
 
@@ -21,7 +21,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(fslog, "KTFrequencySpectrumFFTW");
+    LOGGER(fslog, "KTFrequencySpectrumFFTW");
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
             KTPhysicalArray< 1, std::complex<double> >(),
@@ -57,8 +57,8 @@ namespace Katydid
             fConstBinAccess = &KTFrequencySpectrumFFTW::AsIsBinAccess;
             fBinAccess = &KTFrequencySpectrumFFTW::AsIsBinAccess;
         }
-        //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
-        //KTINFO(fslog, "neg freq offset: " << fLeftOfCenterOffset);
+        //LINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
+        //LINFO(fslog, "neg freq offset: " << fLeftOfCenterOffset);
     }
 
     // I have doubts about this function
@@ -165,7 +165,7 @@ namespace Katydid
             firstPosFreqBin = 0; // lastPosFreqBin = size();
             firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
         }
-        //KTWARN( fslog, "firstPosFreqBin = " << firstPosFreqBin << "; lastPosFreqBin = " << lastPosFreqBin << "; firstNegFreqBin = " << firstNegFreqBin << "; lastNegFreqBin = " << lastNegFreqBin);
+        //LWARN( fslog, "firstPosFreqBin = " << firstPosFreqBin << "; lastPosFreqBin = " << lastPosFreqBin << "; firstNegFreqBin = " << firstNegFreqBin << "; lastNegFreqBin = " << lastNegFreqBin);
 
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 
@@ -207,7 +207,7 @@ namespace Katydid
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
         }
-        KTDEBUG(fslog, "\n" << printStream.str());
+        LDEBUG(fslog, "\n" << printStream.str());
         return;
     }
 

@@ -10,7 +10,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(applog, "KTKatydidApp");
+    LOGGER(applog, "KTKatydidApp");
 
     KTKatydidApp::KTKatydidApp(bool makeTApp) :
             KTApplication()
@@ -25,7 +25,7 @@ namespace Katydid
 #else
         if (makeTApp)
         {
-            KTWARN(applog, "TApplication requested, but Nymph has been built without ROOT dependence.");
+            LWARN(applog, "TApplication requested, but Nymph has been built without ROOT dependence.");
         }
 #endif
     }
@@ -42,7 +42,7 @@ namespace Katydid
 #else
         if (makeTApp)
         {
-            KTWARN(applog, "TApplication requested, but Nymph has been built without ROOT dependence.");
+            LWARN(applog, "TApplication requested, but Nymph has been built without ROOT dependence.");
         }
 #endif
     }
@@ -67,7 +67,7 @@ namespace Katydid
 #ifdef ROOT_FOUND
             StartTApplication();
 #else
-            KTWARN(applog, "TApplication requested, but Nymph has been built without ROOT dependence.");
+            LWARN(applog, "TApplication requested, but Nymph has been built without ROOT dependence.");
 #endif
         }
         return true;

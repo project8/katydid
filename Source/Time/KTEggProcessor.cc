@@ -28,7 +28,7 @@ namespace Katydid
     static Nymph::KTCommandLineOption< string > sMetadataCLO("Egg Processor", "Metadata filename to open", "metadata-file", 'm');
     static Nymph::KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
 
-    KTLOGGER(egglog, "KTEggProcessor");
+    LOGGER(egglog, "KTEggProcessor");
 
     KT_REGISTER_PROCESSOR(KTEggProcessor, "egg-processor");
 
@@ -77,18 +77,18 @@ namespace Katydid
 
             if (node.has("filename"))
             {
-                KTDEBUG(egglog, "Adding single file to egg processor");
+                LDEBUG(egglog, "Adding single file to egg processor");
                 fFilenames.clear();
                 scarab::path metadataFilename(scarab::expand_path(node.get_value("metadata", "")));
-                if (! metadataFilename.empty()) KTINFO(egglog, "Added metadata file to egg processor: <" << metadataFilename << ">" );
+                if (! metadataFilename.empty()) LINFO(egglog, "Added metadata file to egg processor: <" << metadataFilename << ">" );
                 fFilenames.push_back( std::make_pair(scarab::expand_path(node["filename"]().as_string()), metadataFilename) );
-                KTINFO(egglog, "Added file to egg processor:\n" <<
+                LINFO(egglog, "Added file to egg processor:\n" <<
                         "\tegg: <" << fFilenames.back().first << ">\n" <<
                         "\tmetadata: <" << fFilenames.back().second << ">");
             }
             else if (node.has("filenames"))
             {
-                KTDEBUG(egglog, "Adding multiple files to egg processor");
+                LDEBUG(egglog, "Adding multiple files to egg processor");
                 fFilenames.clear();
                 const scarab::param_array& tFilenames = node["filenames"].as_array();
                 const scarab::param_array* tMetadataPtrs = nullptr;
@@ -98,7 +98,7 @@ namespace Katydid
                 }
                 if (tMetadataPtrs != nullptr && tMetadataPtrs->size() != tFilenames.size())
                 {
-                    KTERROR(egglog, "Number of egg files (" << tFilenames.size() << ") and metadata files (" << tMetadataPtrs->size() << ") were not the same");
+                    LERROR(egglog, "Number of egg files (" << tFilenames.size() << ") and metadata files (" << tMetadataPtrs->size() << ") were not the same");
                     return false;
                 }
                 scarab::path metadataFilename;
@@ -106,7 +106,7 @@ namespace Katydid
                 {
                     if (tMetadataPtrs != nullptr) metadataFilename = scarab::expand_path((*tMetadataPtrs)[iFile].as_value().as_string());
                     fFilenames.push_back( std::make_pair(scarab::expand_path(tFilenames[iFile].as_value().as_string()), metadataFilename) );
-                    KTINFO(egglog, "Added file to egg processor:\n" <<
+                    LINFO(egglog, "Added file to egg processor:\n" <<
                             "\tegg: <" << fFilenames.back().first << ">\n" <<
                             "\tmetadata: <" << fFilenames.back().second << ">");
                 }
@@ -124,7 +124,7 @@ namespace Katydid
 
             if (fSliceSize == 0)
             {
-                KTERROR(egglog, "Slice size MUST be specified");
+                LERROR(egglog, "Slice size MUST be specified");
                 return false;
             }
 
@@ -140,21 +140,21 @@ namespace Katydid
         SetNSlices(fCLHandler->GetCommandLineValue("n-slices", fNSlices));
         if (fCLHandler->IsCommandLineOptSet("egg-file"))
         {
-            KTDEBUG(egglog, "Specifying single egg file to egg processor from the CL");
+            LDEBUG(egglog, "Specifying single egg file to egg processor from the CL");
             fFilenames.clear();
             fFilenames.push_back( std::make_pair(scarab::expand_path(fCLHandler->GetCommandLineValue< string >("egg-file")), scarab::path()) );
-            KTINFO(egglog, "Added egg file to egg processor: <" << fFilenames.back().first << ">");
+            LINFO(egglog, "Added egg file to egg processor: <" << fFilenames.back().first << ">");
         }
         if (fCLHandler->IsCommandLineOptSet("metadata-file"))
         {
             if (fFilenames.size() != 1)
             {
-                KTERROR(egglog, "Can only specify metadata file if there's already a single egg file specified" );
+                LERROR(egglog, "Can only specify metadata file if there's already a single egg file specified" );
                 return false;
             }
-            KTDEBUG(egglog, "Specifying single metadata file to egg processor from the CL");
+            LDEBUG(egglog, "Specifying single metadata file to egg processor from the CL");
             fFilenames.back().second = scarab::expand_path(fCLHandler->GetCommandLineValue< string >("metadata-file"));
-            KTINFO(egglog, "Added metadata file to egg processor: <" << fFilenames.back().second << ">");
+            LINFO(egglog, "Added metadata file to egg processor: <" << fFilenames.back().second << ">");
         }
 
         return true;
@@ -167,14 +167,14 @@ namespace Katydid
         KTEggReader* reader = scarab::factory< KTEggReader >::get_instance()->create(fEggReaderType);
         if (reader == NULL)
         {
-            KTERROR(egglog, "Invalid egg reader type: " << fEggReaderType);
+            LERROR(egglog, "Invalid egg reader type: " << fEggReaderType);
             return false;
         }
         reader->Configure(*this);
 
         if (fFilenames.size() == 0)
         {
-            KTERROR(egglog, "No files have been specified");
+            LERROR(egglog, "No files have been specified");
             return false;
         }
 
@@ -183,7 +183,7 @@ namespace Katydid
         Nymph::KTDataPtr headerPtr = reader->BreakEgg(fFilenames);
         if (! headerPtr)
         {
-            KTERROR(egglog, "Egg did not break");
+            LERROR(egglog, "Egg did not break");
             delete reader;
             return false;
         }
@@ -193,12 +193,12 @@ namespace Katydid
         // pass the digitizer parameters from the egg header to the DAC
         if (! fDAC->InitializeWithHeader(header))
         {
-            KTERROR(egglog, "Unable to initialize the DAC");
+            LERROR(egglog, "Unable to initialize the DAC");
             return false;
         }
 
         fHeaderSignal(headerPtr);
-        KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
+        LINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 
         if (fNSlices == 0) UnlimitedLoop(reader);
@@ -210,13 +210,13 @@ namespace Katydid
         summary->SetNSlicesProcessed(reader->GetNSlicesProcessed());
         summary->SetNRecordsProcessed(reader->GetNRecordsProcessed());
         summary->SetIntegratedTime(reader->GetIntegratedTime());
-        KTDEBUG(egglog, "Summary of processing:\n" <<
+        LDEBUG(egglog, "Summary of processing:\n" <<
                 "\tSlices processed: " << summary->GetNSlicesProcessed() << '\n' <<
                 "\tRecords processed: " << summary->GetNRecordsProcessed() << '\n' <<
                 "\tIntegrated time: " << summary->GetIntegratedTime() << " s");
         if(fNSlices != 0 && summary->GetNSlicesProcessed() != fNSlices)
         {
-            KTWARN(egglog, "Could not process the requested number of slices because there was not enough data in the file(s):\n" <<
+            LWARN(egglog, "Could not process the requested number of slices because there was not enough data in the file(s):\n" <<
                     "\tSlices requested: " << fNSlices << '\n' <<
                     "\tSlices processed: " << summary->GetNSlicesProcessed());
         }
@@ -235,12 +235,12 @@ namespace Katydid
         bool nextSliceIsValid = true;
         if (! HatchNextSlice(reader, data))
         {
-            KTERROR(egglog, "Unable to hatch first slice of data.");
+            LERROR(egglog, "Unable to hatch first slice of data.");
             return;
         }
         while (true)
         {
-            KTINFO(egglog, "Hatching slice " << iSlice);
+            LINFO(egglog, "Hatching slice " << iSlice);
 
             // Hatch the slice
             if (! HatchNextSlice(reader, nextData))
@@ -251,18 +251,18 @@ namespace Katydid
 
             if (data->Has< KTRawTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Raw time series data is present.");
+                LDEBUG(egglog, "Raw time series data is present.");
                 fRawDataSignal(data);
                 NormalizeData(data);
             }
             if (data->Has< KTTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Normalized time series data is present.");
+                LDEBUG(egglog, "Normalized time series data is present.");
                 fDataSignal(data);
             }
             else
             {
-                KTWARN(egglog, "No time-series data present in slice");
+                LWARN(egglog, "No time-series data present in slice");
             }
 
             ++iSlice;
@@ -292,7 +292,7 @@ namespace Katydid
                 break;
             }
 
-            KTINFO(egglog, "Hatching slice " << iSlice << "/" << fNSlices);
+            LINFO(egglog, "Hatching slice " << iSlice << "/" << fNSlices);
 
             // Hatch the slice
             if (! HatchNextSlice(reader, data)) break;
@@ -301,18 +301,18 @@ namespace Katydid
 
             if (data->Has< KTRawTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Raw time series data is present.");
+                LDEBUG(egglog, "Raw time series data is present.");
                 fRawDataSignal(data);
                 NormalizeData(data);
             }
             if (data->Has< KTTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Normalized time series data is present.");
+                LDEBUG(egglog, "Normalized time series data is present.");
                 fDataSignal(data);
             }
             else
             {
-                KTWARN(egglog, "No time-series data present in slice");
+                LWARN(egglog, "No time-series data present in slice");
             }
 
             ++iSlice;

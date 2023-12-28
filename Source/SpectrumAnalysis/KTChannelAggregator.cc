@@ -6,7 +6,7 @@
  */
 
 #include "KTChannelAggregator.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <boost/algorithm/string.hpp>
 using namespace boost::algorithm;
@@ -15,7 +15,7 @@ using namespace boost::algorithm;
 
 namespace Katydid
 {
-    KTLOGGER(agglog, "KTChannelAggregator");
+    LOGGER(agglog, "KTChannelAggregator");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTChannelAggregator, "channel-aggregator");
@@ -138,7 +138,7 @@ namespace Katydid
                 if( !ends_with(fUserDefinedGridFile, ".txt") )
                 {
                     //if(!ends_with(fTextFileName.c_str(),".txt"))
-                    KTDEBUG(agglog,"`grid-file` file must end in .txt");
+                    LDEBUG(agglog,"`grid-file` file must end in .txt");
                     return -1;
                 }
                 double gridLocationX;
@@ -146,7 +146,7 @@ namespace Katydid
                 std::fstream textFile(fUserDefinedGridFile.c_str(),std::ios::in);
                 if (textFile.fail())
                 {
-                    KTDEBUG(agglog,"`grid-file` cannot be opened");
+                    LDEBUG(agglog,"`grid-file` cannot be opened");
                     return -1;
                 }
                 while(!textFile.eof())
@@ -164,7 +164,7 @@ namespace Katydid
                             else if( wordCount==1 ) gridLocationY = std::stod(token);
                             else
                             {
-                                KTDEBUG(agglog,"`grid-file` cannot have more than 2 columns"); 
+                                LDEBUG(agglog,"`grid-file` cannot have more than 2 columns"); 
                                 return -1;
                             }
                             ++wordCount;
@@ -214,7 +214,7 @@ namespace Katydid
         }
         if( nTotalComponents%fNRings!=0 )
         {
-            KTERROR(agglog,"The number of rings has to be an integer multiple of total components");
+            LERROR(agglog,"The number of rings has to be an integer multiple of total components");
         }
         unsigned nComponents = nTotalComponents/fNRings;// Get number of components
 
@@ -294,7 +294,7 @@ namespace Katydid
                 newAggFreqData.SetSummedGridVoltage(gridPointNumber, maxVoltageFreq);
             } // End of grid
         }// End of loop over all rings
-        KTDEBUG(agglog,"Channel summation performed over "<< fNRings<<" rings and "<<gridPointsPerRing<<" grid points per ring in the range of frequencies ("<< fSummationMinFreq<< "," <<fSummationMaxFreq<<")");
+        LDEBUG(agglog,"Channel summation performed over "<< fNRings<<" rings and "<<gridPointsPerRing<<" grid points per ring in the range of frequencies ("<< fSummationMinFreq<< "," <<fSummationMaxFreq<<")");
         return true;
     }
 }

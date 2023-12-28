@@ -53,7 +53,7 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when clustering is complete
     */
 
-    KTLOGGER(itchlog, "KTIterativeTrackClustering");
+    LOGGER(itchlog, "KTIterativeTrackClustering");
 
     class KTIterativeTrackClustering : public Nymph::KTPrimaryProcessor
     {
@@ -139,11 +139,11 @@ namespace Katydid
     {
         if (! FindMatchingCandidates(compCands, newCands))
         {
-            KTERROR(itchlog, "An error occurred while identifying extrapolated tracks");
+            LERROR(itchlog, "An error occurred while identifying extrapolated tracks");
             return false;
         }
 
-        KTDEBUG(itchlog, "Candidate building complete");
+        LDEBUG(itchlog, "Candidate building complete");
         fDoneSignal();
 
         return true;
@@ -152,8 +152,8 @@ namespace Katydid
     template<typename TracklikeCandidate>
     bool KTIterativeTrackClustering::FindMatchingCandidates(std::vector<TracklikeCandidate> compCands, std::vector<TracklikeCandidate> newCands)
     {
-        KTINFO(itchlog, "Finding extrapolated candidates");
-        KTDEBUG(itchlog, "TimeGapTolerance FrequencyAcceptance and MaxTrackWidth are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance<< " "<<fMaxTrackWidth);
+        LINFO(itchlog, "Finding extrapolated candidates");
+        LDEBUG(itchlog, "TimeGapTolerance FrequencyAcceptance and MaxTrackWidth are: "<<fTimeGapTolerance<< " "<<fFrequencyAcceptance<< " "<<fMaxTrackWidth);
         newCands.clear();
 
         unsigned numberOfCandidates = compCands.size();
@@ -165,13 +165,13 @@ namespace Katydid
             while (numberOfCandidates!=numberOfNewCandidates)
             {
                 numberOfCandidates = compCands.size();
-                KTDEBUG(itchlog, "Number of candidates to cluster: "<< numberOfCandidates);
+                LDEBUG(itchlog, "Number of candidates to cluster: "<< numberOfCandidates);
                 this->ExtrapolateClustering(compCands, newCands);
 
                 // Update number of tracks
                 numberOfNewCandidates = newCands.size();
 
-                KTDEBUG(itchlog, "Number of candidates after clustering: "<< numberOfNewCandidates);
+                LDEBUG(itchlog, "Number of candidates after clustering: "<< numberOfNewCandidates);
 
                 compCands.clear();
                 compCands = newCands;
@@ -196,7 +196,7 @@ namespace Katydid
                 if (this->DoTheyMatch(*compIt, *newIt))
                 {
                     match = true;
-                    KTDEBUG(itchlog, "Found matching candidates");
+                    LDEBUG(itchlog, "Found matching candidates");
                     this->CombineCandidates(*compIt, *newIt);
                     break;
                 }
@@ -205,7 +205,7 @@ namespace Katydid
                 if (this->DoTheyOverlap(*compIt, *newIt))
                 {
                     match = true;
-                    KTDEBUG(itchlog, "Found overlapping candidates");
+                    LDEBUG(itchlog, "Found overlapping candidates");
                     this->CombineCandidates(*compIt, *newIt);
                     break;
                 }

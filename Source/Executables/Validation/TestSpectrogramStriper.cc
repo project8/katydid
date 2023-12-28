@@ -11,14 +11,14 @@
 #include "KTSliceHeader.hh"
 #include "KTSpectrogramStriper.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
 #include "TH2.h"
 #endif
 
-KTLOGGER(testlog, "TestSpectrogramStriper");
+LOGGER(testlog, "TestSpectrogramStriper");
 
 namespace Katydid
 {
@@ -41,7 +41,7 @@ namespace Katydid
 
             void PrintHistogram(Nymph::KTDataPtr dataPtr)
             {
-                KTINFO(testlog, "Printing a histogram");
+                LINFO(testlog, "Printing a histogram");
 #ifdef ROOT_FOUND
                 TFile* file = new TFile(fFilename.c_str(), "update");
                 KTMultiFSDataFFTW& data = dataPtr->Of< KTMultiFSDataFFTW >();
@@ -68,7 +68,7 @@ using namespace Katydid;
 
 int main()
 {
-    KTINFO(testlog, "Preparing");
+    LINFO(testlog, "Preparing");
 
     // Test parameters
     unsigned nFreqBins = 10;
@@ -104,20 +104,20 @@ int main()
     // Connect the strip signal to the print-hist slot
     striper.ConnectASlot("str-fs-fftw", &printer, "print-hist");
 
-    KTINFO(testlog, "Deleting the output file if it exists");
+    LINFO(testlog, "Deleting the output file if it exists");
     boost::filesystem::remove(filename);
 
-    KTINFO(testlog, "Everything is prepared; starting the action");
+    LINFO(testlog, "Everything is prepared; starting the action");
 
     unsigned peakPos = 0;
     for (unsigned iAcq = 0; iAcq < nAcquisitions; ++iAcq)
     {
-        KTINFO(testlog, "New acquisition");
+        LINFO(testlog, "New acquisition");
         header.SetIsNewAcquisition(true);
         header.SetTimeInAcq(0.);
         for (unsigned iSlice = 0; iSlice < slicesPerAcq; ++iSlice)
         {
-            KTDEBUG(testlog, "New slice");
+            LDEBUG(testlog, "New slice");
             spectrum->SetRect(peakPos, 10., spectrum->GetImag(peakPos));
 
             striper.AddData(header, spectrumData);
@@ -135,7 +135,7 @@ int main()
 
     striper.OutputStripes();
 
-    KTINFO(testlog, "Testing complete");
+    LINFO(testlog, "Testing complete");
 
     return 0;
 }

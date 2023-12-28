@@ -7,7 +7,7 @@
 
 #include "KTMultiPeakTrackProcessing.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTProcessedMPTData.hh"
 #include "KTMultiTrackEventData.hh"
@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(evlog, "KTMultiPeakTrackProcessing");
+    LOGGER(evlog, "KTMultiPeakTrackProcessing");
 
     // Register the processor
     KT_REGISTER_PROCESSOR(KTMultiPeakTrackProcessing, "mpt-processing");
@@ -52,30 +52,30 @@ namespace Katydid
                 ++nMainband;
             }
         }
-        KTDEBUG(evlog, "Determined number of mainband tracks = " << nMainband);
+        LDEBUG(evlog, "Determined number of mainband tracks = " << nMainband);
 
         // Determine multiplicity
         int mult = mptData.GetMultiplicity();
-        KTDEBUG(evlog, "Determined multiplicity = " << mult);
+        LDEBUG(evlog, "Determined multiplicity = " << mult);
 
         // If there are fewer than 2 tracks, abort
         if( mult < 2 )
         {
-            KTWARN(evlog, "MPT only has one track; I cannot analyze this. Aborting");
+            LWARN(evlog, "MPT only has one track; I cannot analyze this. Aborting");
             return false;
         }
 
         // If there is more than 1 mainband track, abort
         if( nMainband > 1 )
         {
-            KTWARN(evlog, "This MPT has more than 1 track identified as mainband; I cannot analyze this. Aborting");
+            LWARN(evlog, "This MPT has more than 1 track identified as mainband; I cannot analyze this. Aborting");
             return false;
         }
 
         // If there are more than 2 sidebands, abort
         if( mult - nMainband > 2 )
         {
-            KTWARN(evlog, "This MPT has more than 2 tracks identified as sidebands; I cannot analyze this. Aborting");
+            LWARN(evlog, "This MPT has more than 2 tracks identified as sidebands; I cannot analyze this. Aborting");
             return false;
         }
 
@@ -92,7 +92,7 @@ namespace Katydid
         {
             if( nMainband != 1 )
             {
-                KTWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
+                LWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
                 return false;
             }
 
@@ -121,7 +121,7 @@ namespace Katydid
         {
             if( mult != 2 )
             {
-                KTWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
+                LWARN(evlog, "Something went wrong determining the multiplicity. Aborting");
                 return false;
             }
 
@@ -139,7 +139,7 @@ namespace Katydid
         }
 
         // Set axial frequency
-        KTINFO(evlog, "Found axial frequency: " << axialFreq);
+        LINFO(evlog, "Found axial frequency: " << axialFreq);
         procData.SetAxialFrequency( axialFreq );
 
         return true;

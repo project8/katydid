@@ -8,11 +8,11 @@
 #include "KTMultiPeakTrackEventSequenceIDCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTMultiPeakTrackEventSequenceIDCut");
+    LOGGER(exlog, "KTMultiPeakTrackEventSequenceIDCut");
 
     const std::string KTMultiPeakTrackEventSequenceIDCut::Result::sName = "mpt-event-sequence-cut";
 

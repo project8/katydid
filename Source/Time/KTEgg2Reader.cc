@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTEggProcessor.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTRawTimeSeries.hh"
@@ -30,7 +30,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "KTEgg2Reader");
+    LOGGER(eggreadlog, "KTEgg2Reader");
 
     KT_REGISTER_EGGREADER(KTEgg2Reader, "egg2");
 
@@ -101,28 +101,28 @@ namespace Katydid
         // open the file
         if (filenames.size() > 1)
         {
-            KTWARN(eggreadlog, "Egg2 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
+            LWARN(eggreadlog, "Egg2 reader is only setup to handle a single file; multiple files have been specified and all but the first one will be skipped");
         }
-        KTINFO(eggreadlog, "Opening egg file <" << filenames[0].first << ">");
+        LINFO(eggreadlog, "Opening egg file <" << filenames[0].first << ">");
         try
         {
             fMonarch = Monarch2::OpenForReading(filenames[0].first.native());
         }
         catch (M2Exception& e)
         {
-            KTERROR(eggreadlog, "Unable to break egg: " << e.what());
+            LERROR(eggreadlog, "Unable to break egg: " << e.what());
             return Nymph::KTDataPtr();
 
         }
 
-        KTDEBUG(eggreadlog, "File open; reading header");
+        LDEBUG(eggreadlog, "File open; reading header");
         try
         {
             fMonarch->ReadHeader();
         }
         catch (M2Exception& e)
         {
-            KTERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
+            LERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
                     "Egg breaking aborted.");
             fMonarch->Close();
             delete fMonarch;
@@ -132,7 +132,7 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetMetadataFilename(filenames[0].second.native())
 
-        KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
+        LDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
         fRecordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
@@ -171,22 +171,22 @@ namespace Katydid
 
         if (fMonarch == NULL)
         {
-            KTERROR(eggreadlog, "Monarch file has not been opened");
+            LERROR(eggreadlog, "Monarch file has not been opened");
             return Nymph::KTDataPtr();
         }
         if (fReadState.fStatus == MonarchReadState::kInvalid)
         {
-            KTERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
+            LERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
             return Nymph::KTDataPtr();
         }
 
         if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
         {
-            KTDEBUG(eggreadlog, "Reading first record");
+            LDEBUG(eggreadlog, "Reading first record");
             // if we're at the beginning of the run, load the first records
             if (! fMonarch->ReadRecord(fReadState.fAbsoluteRecordOffset))
             {
-                KTERROR(eggreadlog, "File appears to contain no slices.");
+                LERROR(eggreadlog, "File appears to contain no slices.");
                 return Nymph::KTDataPtr();
             }
             fSliceNumber = 0;
@@ -197,13 +197,13 @@ namespace Katydid
 
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
-                KTDEBUG(eggreadlog, "Slice and record boundaries coincided; reading new record before creating new slice");
+                LDEBUG(eggreadlog, "Slice and record boundaries coincided; reading new record before creating new slice");
                 // if the slice boundary and record boundary coincide, we need to load the next record because the final position
                 // of the read pointer from the previous slice is at the sample after the end of the previous slice,
                 // which in this case would be the start of the next record.
                 if (! fMonarch->ReadRecord())
                 {
-                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                    LWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
                     return Nymph::KTDataPtr();
                 }
                 ++(fReadState.fAbsoluteRecordOffset);
@@ -232,11 +232,11 @@ namespace Katydid
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made
                 fReadState.fAbsoluteRecordOffset += readPtrRecordOffsetShift;
                 --readPtrRecordOffsetShift;
-                KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
+                LDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
                 // move the read pointer to the slice start pointer (first move monarch to the correct record)
                 if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
                 {
-                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                    LWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
                     return Nymph::KTDataPtr();
                 }
             }
@@ -268,7 +268,7 @@ namespace Katydid
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
         sliceHeader.SetRecordSize(fHeader.GetChannelHeader(0)->GetRecordSize());
-        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
+        LDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // Setup pointers to monarch and new katydid records
         unsigned nChannels = fHeader.GetNChannels();
@@ -288,7 +288,7 @@ namespace Katydid
             newRecords[iChannel] = new KTRawTimeSeries(fHeader.GetChannelHeader(iChannel)->GetDataTypeSize(), sDigitizedUS, fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
         }
 
-        KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
+        LDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
                 "\tBin width = " << fBinWidth << '\n' <<
                 "\tMonarch record size = " << fRecordSize << '\n' <<
                 "\tRecord offset = " << fReadState.fAbsoluteRecordOffset << '\n' <<
@@ -306,12 +306,12 @@ namespace Katydid
         {
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
-                KTDEBUG(eggreadlog, "Reading new record mid-slice");
+                LDEBUG(eggreadlog, "Reading new record mid-slice");
                 // try reading the next record
                 if (! fMonarch->ReadRecord())
                 {
                     // the end of the file has been reached or there was some other error preventing the reading of the next record
-                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                    LWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
                     for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
                     {
                         delete newRecords[iChannel];
@@ -325,7 +325,7 @@ namespace Katydid
                 // check if the acquisition ID has changed on any channel
                 if (fReadState.fAcquisitionID != monarchRecords[0]->fAcquisitionId)
                 {
-                    KTDEBUG(eggreadlog, "Acquisition ID change; resetting slice to start with this monarch record.\n"
+                    LDEBUG(eggreadlog, "Acquisition ID change; resetting slice to start with this monarch record.\n"
                             << "\tNumber of unused bins: " << iBin - 1);
                     // this means that a new monarch record has come up, and it has a different acquisition id.
                     // in this situation we need to start the time series over with the new monarch record
@@ -349,7 +349,7 @@ namespace Katydid
                     iBin = 0;
                     // change the time in run since we're going back to the beginning of the record
                     sliceHeader.SetTimeInRun(GetTimeInRun());
-                    KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
+                    LDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
                             "\tBin width = " << fBinWidth << '\n' <<
                             "\tMonarch record size = " << fRecordSize << '\n' <<
                             "\tRecord offset = " << fReadState.fAbsoluteRecordOffset << '\n' <<
@@ -375,7 +375,7 @@ namespace Katydid
             // check if we've reached the end of a monarch record
             if (fReadState.fReadPtrOffset >= recordSize)
             {
-                KTDEBUG(eggreadlog, "End of Monarch record reached.");
+                LDEBUG(eggreadlog, "End of Monarch record reached.");
                 fReadState.fStatus = MonarchReadState::kReachedNextRecord;
             }
         } // end loop over bins
@@ -408,7 +408,7 @@ namespace Katydid
         }
         catch (M2Exception& e)
         {
-            KTERROR(eggreadlog, "Something went wrong while closing the file: " << e.what());
+            LERROR(eggreadlog, "Something went wrong while closing the file: " << e.what());
         }
         delete fMonarch;
         fMonarch = NULL;
@@ -427,7 +427,7 @@ namespace Katydid
         fHeader.SetDescription(monarchHeader->GetDescription());
         for (unsigned iChannel = 0; iChannel < fHeader.GetNChannels(); ++iChannel)
         {
-            KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
+            LDEBUG(eggreadlog, "Adding header for channel " << iChannel);
             //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
             KTChannelHeader* newChanHeader = new KTChannelHeader();
             newChanHeader->SetNumber(iChannel);
@@ -453,15 +453,15 @@ namespace Katydid
     double KTEgg2Reader::GetTimeInRunFirstCall() const
     {
         fT0Offset = (fMonarch->*fMonarchGetRecord[0])()->fTime;
-        KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
+        LDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
         if (fT0Offset == 0)
         {
-            KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is 0; switching GetTIR function to manual");
+            LDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is 0; switching GetTIR function to manual");
             fGetTimeInRun = &KTEgg2Reader::GetTimeInRunManually;
         }
         else
         {
-            KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is not 0; switching GetTIR function to from-monarch");
+            LDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is not 0; switching GetTIR function to from-monarch");
             fGetTimeInRun = &KTEgg2Reader::GetTimeInRunFromMonarch;
         }
         return GetTimeInRun();

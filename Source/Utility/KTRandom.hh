@@ -10,7 +10,7 @@
 
 #include "KTConfigurable.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include "param.hh"
 #include "singleton.hh"
@@ -29,7 +29,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(rnglog, "KTRandom");
+    LOGGER(rnglog, "KTRandom");
 
     //**************************************
     // Definition of the RNG engine class

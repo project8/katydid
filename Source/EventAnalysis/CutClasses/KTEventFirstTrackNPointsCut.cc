@@ -8,11 +8,11 @@
 #include "KTEventFirstTrackNPointsCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(ecnuplog, "KTEventFirstTrackNPointsCut");
+    LOGGER(ecnuplog, "KTEventFirstTrackNPointsCut");
 
     const std::string KTEventFirstTrackNPointsCut::Result::sName = "event-first-track-npoints-cut";
 

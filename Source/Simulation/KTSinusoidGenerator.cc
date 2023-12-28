@@ -8,7 +8,7 @@
 #include "KTSinusoidGenerator.hh"
 
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "param.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "KTSinusoidGenerator");
+    LOGGER(genlog, "KTSinusoidGenerator");
 
     KT_REGISTER_PROCESSOR(KTSinusoidGenerator, "sinusoid-generator");
 
@@ -61,7 +61,7 @@ namespace Katydid
 
             if (timeSeries == NULL)
             {
-                KTERROR(genlog, "Time series " << iComponent << " was not present");
+                LERROR(genlog, "Time series " << iComponent << " was not present");
                 continue;
             }
 
@@ -70,7 +70,7 @@ namespace Katydid
             {
                 timeSeries->SetValue(iBin, fAmplitude * sin(binCenter * mult + fPhase) + timeSeries->GetValue(iBin));
                 binCenter += binWidth;
-                //KTDEBUG(genlog, iBin << "  " << (*timeSeries)(iBin));
+                //LDEBUG(genlog, iBin << "  " << (*timeSeries)(iBin));
             }
         }
 

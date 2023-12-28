@@ -16,7 +16,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTImageWriter");
+    LOGGER(publog, "KTImageWriter");
 
     KT_REGISTER_WRITER(KTImageWriter, "image-writer");
     KT_REGISTER_PROCESSOR(KTImageWriter, "image-writer");
@@ -68,14 +68,14 @@ namespace Katydid
         }
         else
         {
-            KTWARN(publog, "Unable to set color palette to <" << aName << ">; palette remains set to <" << fColorPaletteName << ">");
+            LWARN(publog, "Unable to set color palette to <" << aName << ">; palette remains set to <" << fColorPaletteName << ">");
         }
         return;
     }
 
     void KTImageWriter::WriteFiles()
     {
-        KTINFO(publog, "Writing images");
+        LINFO(publog, "Writing images");
         for (TypeWriterMap::iterator thisTypeWriter = fTypeWriters.begin(); thisTypeWriter != fTypeWriters.end(); ++thisTypeWriter)
         {
             thisTypeWriter->second->OutputSpectrograms();
@@ -120,7 +120,7 @@ namespace Katydid
                 unsigned nFreqBins = spectrograms[iComponent].fLastFreqBin - spectrograms[iComponent].fFirstFreqBin + 1;
                 double startFreq = axis.GetBinLowEdge(spectrograms[iComponent].fFirstFreqBin);
                 double endFreq = axis.GetBinLowEdge(spectrograms[iComponent].fLastFreqBin) + freqBinWidth;
-                KTDEBUG(publog, "Creating new spectrogram image for component " << iComponent << ": " << nSlices << ", " << startTime << ", " << endTime << ", " << nFreqBins  << ", " << startFreq << ", " << endFreq);
+                LDEBUG(publog, "Creating new spectrogram image for component " << iComponent << ": " << nSlices << ", " << startTime << ", " << endTime << ", " << nFreqBins  << ", " << startFreq << ", " << endFreq);
                 spectrograms[iComponent].fSpectrogram = new KTPhysicalArray< 2, double >(nSlices, startTime, endTime, nFreqBins, startFreq, endFreq); //Magick::Image(Magick::Geometry(nSlices, nFreqBins), "white");
             }
         } // done initializing new spectrograms
@@ -135,31 +135,31 @@ namespace Katydid
 
     Magick::Image KTImageTypeWriter::SpectrogramData::CreateSpectrogram()
     {
-        KTDEBUG(publog, "Creating a spectrogram image");
+        LDEBUG(publog, "Creating a spectrogram image");
         unsigned nTimeBins = fSpectrogram->GetNBins(1);
         unsigned nFreqBins = fSpectrogram->GetNBins(2);
 
-        KTWARN(publog, "Making the actual image; nTimeBins: " << nTimeBins << "; nFreqBins: " << nFreqBins);
+        LWARN(publog, "Making the actual image; nTimeBins: " << nTimeBins << "; nFreqBins: " << nFreqBins);
         Magick::Image image(Magick::Geometry(nTimeBins, nFreqBins), "white");
         image.modifyImage();
         //Magick::PixelPacket* pixels = image.getPixels(0, 0, 0, 0);
         //if (pixels == nullptr)
         //{
-        //    KTERROR(publog, "PixelPacket pointer is null");
+        //    LERROR(publog, "PixelPacket pointer is null");
         //    raise(SIGINT);
         //}
 
-        KTWARN(publog, "Getting max and min bins");
+        LWARN(publog, "Getting max and min bins");
         unsigned minXBin, minYBin, maxXBin, maxYBin;
         std::pair< double, double > minMaxValues = fSpectrogram->GetMinMaxBin(minXBin, minYBin, maxXBin, maxYBin);
-        //KTWARN(publog, "MinX: " << minXBin << ", MinY: " << minYBin << ", minVal: " << minMaxValues.first << ", MaxX: " << maxXBin << ", MaxY: " << maxYBin << ", maxVal: " << minMaxValues.second);
+        //LWARN(publog, "MinX: " << minXBin << ", MinY: " << minYBin << ", minVal: " << minMaxValues.first << ", MaxX: " << maxXBin << ", MaxY: " << maxYBin << ", maxVal: " << minMaxValues.second);
         //double minValue = fSpectrogram->GetMinimumBin(minXBin, minYBin);
         //double maxValue = fSpectrogram->GetMaximumBin(maxXBin, maxYBin);
 
         double scaling = 1. / (minMaxValues.second - minMaxValues.first);
         double newValue = 0.;
 
-        KTDEBUG(publog, "Transferring spectrogram from KTPhysicalArray to image");
+        LDEBUG(publog, "Transferring spectrogram from KTPhysicalArray to image");
         for (unsigned iTime = 0; iTime < nTimeBins; ++iTime)
         {
             for (unsigned iFreq = 0; iFreq < nFreqBins; ++iFreq)

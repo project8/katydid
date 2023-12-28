@@ -16,7 +16,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTHDF5Writer");
+    LOGGER(publog, "KTHDF5Writer");
 
 
     KT_REGISTER_WRITER(KTHDF5Writer, "hdf5-writer");
@@ -63,7 +63,7 @@ namespace Katydid
         if (!fFile) {
             delete fFile;
             fFile = NULL;
-            KTERROR(publog, "Error opening HDF5 file <" << fFilename << ">");
+            LERROR(publog, "Error opening HDF5 file <" << fFilename << ">");
             return false;
         }
         return true;
@@ -79,21 +79,21 @@ namespace Katydid
 
         if (! scarab::fs::is_directory(fileDir))
         {
-            KTERROR(publog, "Parent directory of output file <" << fileDir << "> does not exist or is not a directory");
+            LERROR(publog, "Parent directory of output file <" << fileDir << "> does not exist or is not a directory");
             return nullptr;
         }
 
-        KTDEBUG(publog, "Opening file <" << absFilepath << ">");
+        LDEBUG(publog, "Opening file <" << absFilepath << ">");
 
         fFile = new H5::H5File(absFilepath.c_str(), H5F_ACC_TRUNC);
-        KTINFO(publog, "opened HDF5 file <" << absFilepath << ">");
+        LINFO(publog, "opened HDF5 file <" << absFilepath << ">");
         return fFile;
     }
 
     void KTHDF5Writer::CloseFile()
     {
         if (fFile != NULL) {
-            KTINFO(publog, "HDF5 data written to file <" << fFilename << ">; closing file");
+            LINFO(publog, "HDF5 data written to file <" << fFilename << ">; closing file");
             delete fFile;
             fFile = NULL;
         }
@@ -172,7 +172,7 @@ namespace Katydid
             group_name_builder >> group_name;
             loc = AddGroup(group_name);
             name.erase(0, pos + delimiter.length());
-            KTINFO(group_name + delimiter + name);
+            LINFO(group_name + delimiter + name);
         }
         H5::DataSpace dspace(H5S_SCALAR);
         H5::DSetCreatPropList plist;

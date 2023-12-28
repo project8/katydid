@@ -7,7 +7,7 @@
 
 
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSimpleClustering.hh"
 
 #include <vector>
@@ -15,7 +15,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "TestSimpleClustering")
+LOGGER(vallog, "TestSimpleClustering")
 
 int main()
 {
@@ -68,8 +68,8 @@ int main()
     allPoints.push_back(freqPoints);
     // total number of "truth" clusters: 6
 
-    KTINFO(vallog, "Discriminated points have been simulated.");
-    KTINFO(vallog, "There should be 6 clusters");
+    LINFO(vallog, "Discriminated points have been simulated.");
+    LINFO(vallog, "There should be 6 clusters");
 
     KTSimpleClustering clustering;
     clustering.SetFrequencyBinWidth(freqBW);
@@ -77,37 +77,37 @@ int main()
 
     KTSimpleClustering::NewBundleList allNewBundles;
 
-    KTINFO(vallog, "Commencing with the clustering process");
+    LINFO(vallog, "Commencing with the clustering process");
     for (vector< KTDiscriminatedPoints1DData::SetOfPoints >::const_iterator setIt = allPoints.begin(); setIt != allPoints.end(); setIt++)
     {
-        KTINFO(vallog, "Creating time bin");
+        LINFO(vallog, "Creating time bin");
         // Setup this frequency bin's input data
         KTDiscriminatedPoints1DData dataIn(1);
         dataIn.SetBinWidth(freqBW);
         dataIn.SetThreshold(1., 0);
         for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pointIt = setIt->begin(); pointIt != setIt->end(); pointIt++)
         {
-            KTDEBUG(vallog, "    adding point");
+            LDEBUG(vallog, "    adding point");
             dataIn.AddPoint(pointIt->first, pointIt->second, 0);
         }
-        KTINFO(vallog, "Time bin created");
+        LINFO(vallog, "Time bin created");
 
-        KTINFO(vallog, "Adding points to clusters");
+        LINFO(vallog, "Adding points to clusters");
         KTSimpleClustering::NewBundleList* newBundles = clustering.AddPointsToClusters(&dataIn);
-        KTINFO(vallog, "New bundles produced: " << newBundles->size());
+        LINFO(vallog, "New bundles produced: " << newBundles->size());
 
         allNewBundles.splice(allNewBundles.end(), *newBundles);
         delete newBundles;
     }
 
-    KTINFO(vallog, "Cleaning up remaining active clusters");
+    LINFO(vallog, "Cleaning up remaining active clusters");
     KTSimpleClustering::NewBundleList* newBundles = clustering.CompleteAllClusters(0);
-    KTINFO(vallog, "New bundles produced: " << newBundles->size());
+    LINFO(vallog, "New bundles produced: " << newBundles->size());
 
     allNewBundles.splice(allNewBundles.end(), *newBundles);
     delete newBundles;
 
-    KTINFO(vallog, "Test complete; " << allNewBundles.size() << " new bundles were created.");
+    LINFO(vallog, "Test complete; " << allNewBundles.size() << " new bundles were created.");
 
     return 0;
 }

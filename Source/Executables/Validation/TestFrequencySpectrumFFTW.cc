@@ -7,19 +7,19 @@
 
 
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <sstream>
 
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestFrequencySpectrumFFTW");
+LOGGER(testlog, "TestFrequencySpectrumFFTW");
 
 int main()
 {
-    KTINFO(testlog, "Creating a KTPhysicalVectorFFTW and a KTFrequencySpectrumFFTW of length 10, and filling with integers from 0 to 9.");
-    KTINFO(testlog, "Access to the arrays will be via operator().");
+    LINFO(testlog, "Creating a KTPhysicalVectorFFTW and a KTFrequencySpectrumFFTW of length 10, and filling with integers from 0 to 9.");
+    LINFO(testlog, "Access to the arrays will be via operator().");
 
     unsigned size = 10;
     double min = 0.;
@@ -36,7 +36,7 @@ int main()
         freqSpect(i)[1] = 0.;
     }
 
-    KTINFO(testlog, "Printing contents of the two arrays by accessing the data storage directly.");
+    LINFO(testlog, "Printing contents of the two arrays by accessing the data storage directly.");
     const KTPhysicalArray< 1, fftw_complex >::array_type dataForPhysArr = physArr.GetData();
     const KTFrequencySpectrumFFTW::array_type dataForFreqSpect = freqSpect.GetData();
 
@@ -47,9 +47,9 @@ int main()
     {
         printer << '\t' << dataForPhysArr[i] << '\t' << dataForFreqSpect[i] << '\n';
     }
-    KTWARN(testlog, printer.str());
+    LWARN(testlog, printer.str());
 
-    KTINFO(testlog, "Test complete.");
+    LINFO(testlog, "Test complete.");
 
     return 0;
 }

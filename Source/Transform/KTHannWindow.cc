@@ -7,7 +7,7 @@
 
 #include "KTHannWindow.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 #include <cmath>
@@ -18,7 +18,7 @@ namespace Katydid
 {
     KT_REGISTER_WINDOWFUNCTION(KTHannWindow, "hann")
 
-    KTLOGGER(windowlog, "KTHannWindow");
+    LOGGER(windowlog, "KTHannWindow");
 
     KTHannWindow::KTHannWindow(const string& name) :
             KTWindowFunction(name)
@@ -31,7 +31,7 @@ namespace Katydid
 
     bool KTHannWindow::ConfigureWFSubclass(const scarab::param_node*)
     {
-        KTDEBUG(windowlog, "Hann WF configured");
+        LDEBUG(windowlog, "Hann WF configured");
         return true;
     }
 

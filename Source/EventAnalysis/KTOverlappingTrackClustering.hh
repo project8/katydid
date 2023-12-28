@@ -50,7 +50,7 @@ namespace Katydid
      - "swf-cand: void (KTDataPtr) -- Created and emitted for each group found; Guarantees KTSequentialLineData.
      - "clustering-done": void () -- Emitted when clustering is complete
     */
-    KTLOGGER(otchlog, "KTOverlappingTrackClusteringHeader");
+    LOGGER(otchlog, "KTOverlappingTrackClusteringHeader");
 
     class KTOverlappingTrackClustering : public Nymph::KTPrimaryProcessor
     {
@@ -129,11 +129,11 @@ namespace Katydid
     {
         if (! FindMatchingCandidates(compCands, newCands))
         {
-            KTERROR(otchlog, "An error occurred while identifying overlapping tracks");
+            LERROR(otchlog, "An error occurred while identifying overlapping tracks");
             return false;
         }
 
-        KTDEBUG(otchlog, "Track clustering complete");
+        LDEBUG(otchlog, "Track clustering complete");
         fDoneSignal();
 
         return true;
@@ -142,8 +142,8 @@ namespace Katydid
     template<typename TracklikeCandidate>
     bool KTOverlappingTrackClustering::FindMatchingCandidates(std::vector<TracklikeCandidate>& compCands, std::vector<TracklikeCandidate>& newCands)
     {
-        KTINFO( otchlog, "Finding overlapping candidates" );
-        KTDEBUG( otchlog, "FrequencyAcceptance is: "<<fMaxTrackWidth );
+        LINFO( otchlog, "Finding overlapping candidates" );
+        LDEBUG( otchlog, "FrequencyAcceptance is: "<<fMaxTrackWidth );
         newCands.clear();
 
         unsigned numberOfCands =compCands.size();
@@ -156,13 +156,13 @@ namespace Katydid
             while (numberOfCands!=numberOfNewCands)
             {
                 numberOfCands = compCands.size();
-                KTDEBUG(otchlog, "Number of candidates to cluster: "<< numberOfCands);
+                LDEBUG(otchlog, "Number of candidates to cluster: "<< numberOfCands);
                 this->OverlapClustering(compCands, newCands);
 
                 // Update number of tracks
                 numberOfNewCands = newCands.size();
 
-                KTDEBUG(otchlog, "Number of candidates after clustering: "<< numberOfNewCands);
+                LDEBUG(otchlog, "Number of candidates after clustering: "<< numberOfNewCands);
 
                 compCands.clear();
                 compCands = newCands;
@@ -188,7 +188,7 @@ namespace Katydid
                 if (this->DoTheyOverlap(*compIt, *newIt))
                 {
                     match = true;
-                    KTDEBUG(otchlog, "Found overlapping candidates")
+                    LDEBUG(otchlog, "Found overlapping candidates")
                     this->CombineCandidates(*compIt, *newIt);
                     break;
                 }
@@ -197,7 +197,7 @@ namespace Katydid
                 /*if (this->DoTheyCross(*compIt, *newIt))
                 {
                     match = true;
-                    KTDEBUG(otchlog, "Found crossing tracks")
+                    LDEBUG(otchlog, "Found crossing tracks")
                     this->CombineTracks(*compIt, *newIt);
                     break;
                 }*/

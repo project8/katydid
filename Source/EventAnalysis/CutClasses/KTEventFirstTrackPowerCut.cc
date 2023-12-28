@@ -8,11 +8,11 @@
 #include "KTEventFirstTrackPowerCut.hh"
 #include "KTMultiTrackEventData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(exlog, "KTEventFitTrackPowerCut");
+    LOGGER(exlog, "KTEventFitTrackPowerCut");
 
     const std::string KTEventFirstTrackPowerCut::Result::sName = "event-first-track-power-cut";
 

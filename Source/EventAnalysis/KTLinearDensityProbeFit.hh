@@ -14,14 +14,14 @@
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMemberVariable.hh"
 
 #include <vector>
 
 namespace Katydid
 {
-    KTLOGGER(avlog_hh, "KTLinearDensityProbeFit.hh");
+    LOGGER(avlog_hh, "KTLinearDensityProbeFit.hh");
 
     /// function to evaluate gaussian function
     inline double GausEval( double arg, double sigma )

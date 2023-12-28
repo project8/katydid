@@ -12,7 +12,7 @@
 #include "KTProcessor.hh"
 
 #include "KTData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSlot.hh"
 
 #include <string>
@@ -27,7 +27,7 @@ namespace Nymph
 namespace Katydid
 {
     
-    KTLOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
+    LOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
 
     class KTEggHeader;
     class KTSliceHeader;

@@ -25,7 +25,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(gnlog, "KTGainNormalization");
+    LOGGER(gnlog, "KTGainNormalization");
 
     KT_REGISTER_PROCESSOR(KTGainNormalization, "gain-normalization");
 
@@ -114,7 +114,7 @@ namespace Katydid
         unsigned nComponents = fsData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
-            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            LERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
             return false;
         }
 
@@ -126,15 +126,15 @@ namespace Katydid
             KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), normalizedMean, normalizedVariance);
             if (newSpectrum == NULL)
             {
-                KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
+                LERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+            LDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             newData.SetSpectrum(newSpectrum, iComponent);
             newData.SetNormalizedMean(normalizedMean, iComponent);
             newData.SetNormalizedVariance(normalizedVariance, iComponent);
         }
-        KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
+        LINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }
@@ -144,7 +144,7 @@ namespace Katydid
         unsigned nComponents = fsData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
-            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            LERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
             return false;
         }
 
@@ -156,15 +156,15 @@ namespace Katydid
             KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), normalizedMean, normalizedVariance);
             if (newSpectrum == NULL)
             {
-                KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
+                LERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+            LDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             newData.SetSpectrum(newSpectrum, iComponent);
             newData.SetNormalizedMean(normalizedMean, iComponent);
             newData.SetNormalizedVariance(normalizedVariance, iComponent);
         }
-        KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
+        LINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
 
         return true;
     }
@@ -174,7 +174,7 @@ namespace Katydid
         unsigned nComponents = psData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
-            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            LERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
             return false;
         }
 
@@ -186,15 +186,15 @@ namespace Katydid
             KTPowerSpectrum* newSpectrum = Normalize(psData.GetSpectrum(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), normalizedMean, normalizedVariance);
             if (newSpectrum == NULL)
             {
-                KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
+                LERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+            LDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             newData.SetSpectrum(newSpectrum, iComponent);
             newData.SetNormalizedMean(normalizedMean, iComponent);
             newData.SetNormalizedVariance(normalizedVariance, iComponent);
         }
-        KTINFO(gnlog, "Completed gain normalization of " << nComponents << " power spectra");
+        LINFO(gnlog, "Completed gain normalization of " << nComponents << " power spectra");
 
         return true;
     }
@@ -214,13 +214,13 @@ namespace Katydid
         // Average of each spline
         normalizedMean = splineImp->GetMean();
         normalizedVariance = varSplineImp->GetMean();
-        KTDEBUG(gnlog, "Normalized mean and variance: " << normalizedMean << "  " << normalizedVariance);
+        LDEBUG(gnlog, "Normalized mean and variance: " << normalizedMean << "  " << normalizedVariance);
 
         unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
         double freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
-        KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
+        LDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumPolar* newSpectrum = new KTFrequencySpectrumPolar(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
         newSpectrum->SetNTimeBins(frequencySpectrum->GetNTimeBins());
 
@@ -270,12 +270,12 @@ namespace Katydid
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
         double freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
-        KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
+        LDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
         newSpectrum->SetNTimeBins(frequencySpectrum->GetNTimeBins());
 
-        //KTDEBUG(gnlog, "array range: 0 - " << frequencySpectrum->size());
-        //KTDEBUG(gnlog, "new array range: 0 - " << newSpectrum->size());
+        //LDEBUG(gnlog, "array range: 0 - " << frequencySpectrum->size());
+        //LDEBUG(gnlog, "new array range: 0 - " << newSpectrum->size());
 
         // First directly copy data that's outside the scaling range
         unsigned iBin;
@@ -330,7 +330,7 @@ namespace Katydid
         double freqSpectrumMin = powerSpectrum->GetRangeMin();
         double freqSpectrumMax = powerSpectrum->GetRangeMax();
 
-        KTDEBUG(gnlog, "Creating new PS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
+        LDEBUG(gnlog, "Creating new PS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
         newSpectrum->OverrideMode(KTPowerSpectrum::kPower);
 

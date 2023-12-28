@@ -22,7 +22,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "KTConvolution1D");
+    LOGGER(sdlog, "KTConvolution1D");
 
     KT_REGISTER_PROCESSOR(KTConvolution1D, "convolution");
 
@@ -98,15 +98,15 @@ namespace Katydid
         // Find transform type
         if( GetTransformType() == "convolution" )
         {
-            KTINFO(sdlog, "Transform type is ordinary convolution. Proceeding with kernel");
+            LINFO(sdlog, "Transform type is ordinary convolution. Proceeding with kernel");
         }
         else if( GetTransformType() == "cross-correlation" )
         {
-            KTINFO(sdlog, "Transform type is cross-correlation. Will conjugate and reverse input data first");
+            LINFO(sdlog, "Transform type is cross-correlation. Will conjugate and reverse input data first");
         }
         else
         {
-            KTWARN(sdlog, "Transform type not recognized. Please make sure you've typed it correctly. Aborting");
+            LWARN(sdlog, "Transform type not recognized. Please make sure you've typed it correctly. Aborting");
             return false;
         }
 
@@ -117,7 +117,7 @@ namespace Katydid
         // Read in the kernel
         if( ! ParseKernel() )
         {
-            KTERROR(sdlog, "Failed to parse kernel json. Aborting");
+            LERROR(sdlog, "Failed to parse kernel json. Aborting");
             return false;
         }
 
@@ -126,19 +126,19 @@ namespace Katydid
 
     void KTConvolution1D::AllocateArrays( int nSizeRegular, int nSizeShort )
     {
-        KTDEBUG(sdlog, "DFT initialization started");
-        KTDEBUG(sdlog, "Regular size = " << nSizeRegular);
-        KTDEBUG(sdlog, "Short size = " << nSizeShort);
+        LDEBUG(sdlog, "DFT initialization started");
+        LDEBUG(sdlog, "Regular size = " << nSizeRegular);
+        LDEBUG(sdlog, "Short size = " << nSizeShort);
 
         if( nSizeShort > nSizeRegular )
         {
-            KTWARN(sdlog, "Short size is larger than regular size; something weird happened. Aborting DFT initialization");
+            LWARN(sdlog, "Short size is larger than regular size; something weird happened. Aborting DFT initialization");
             return;
         }
 
         if( fInitialized )
         {
-            KTDEBUG(sdlog, "Already initialized! Freeing arrays first");
+            LDEBUG(sdlog, "Already initialized! Freeing arrays first");
             FreeArrays();
         }
 
@@ -170,7 +170,7 @@ namespace Katydid
 
         if( nSizeShort == fKernelSize - 1 )
         {
-            KTINFO(sdlog, "Input blocks are divided evenly! I will only initialize one group of FFTW plans");
+            LINFO(sdlog, "Input blocks are divided evenly! I will only initialize one group of FFTW plans");
 
             fRegularSize = nSizeRegular;
             fShortSize = nSizeShort;
@@ -273,7 +273,7 @@ namespace Katydid
 
     bool KTConvolution1D::ParseKernel()
     {
-        KTINFO(sdlog, "Attempting to parse kernel");
+        LINFO(sdlog, "Attempting to parse kernel");
         // Read in json with scarab::param
 
         scarab::path kernelFilePath = scarab::expand_path( GetKernel() );
@@ -283,17 +283,17 @@ namespace Katydid
 
         if( ! kernelNode.has( "kernel" ) )
         {
-            KTERROR( sdlog, "Kernel configuration file is not properly written. Aboring" );
+            LERROR( sdlog, "Kernel configuration file is not properly written. Aboring" );
             return false;
         }
 
         // Get kernel as array
         scarab::param_array& kernel1DArray = kernelNode["kernel"].as_array();
-        KTDEBUG(sdlog, "Obtained kernel as array");
+        LDEBUG(sdlog, "Obtained kernel as array");
 
         // We need to store this because we're about to periodically extend it
         fKernelSize = kernel1DArray.size();
-        KTDEBUG(sdlog, "Kernel size = " << fKernelSize);
+        LDEBUG(sdlog, "Kernel size = " << fKernelSize);
 
         // Fill kernel vector
         // Also calculate the norm in case we need that
@@ -304,7 +304,7 @@ namespace Katydid
             kernelX.push_back( kernel1DArray.get_value< double >(iValue) );
             norm += kernelX[iValue];
         }
-        KTDEBUG(sdlog, "Kernel norm = " << norm);
+        LDEBUG(sdlog, "Kernel norm = " << norm);
 
         // Here is where we set block size if left unspecified
         // We need it to periodically extend the kernel
@@ -314,12 +314,12 @@ namespace Katydid
             int power = log2( GetBlockSize() ); // int will take the floor of the log
             SetBlockSize( pow( 2, power ) );    // largest power of 2 which is <= 8 * kernel size
         }
-        KTDEBUG(sdlog, "Set block size: " << GetBlockSize());
+        LDEBUG(sdlog, "Set block size: " << GetBlockSize());
 
         // Check that kernel size is not more than block size
         if( GetBlockSize() < kernelX.size() )
         {
-            KTERROR( sdlog, "Block size is smaller than kernel length. Aborting." );
+            LERROR( sdlog, "Block size is smaller than kernel length. Aborting." );
             return false;
         }
 
@@ -331,20 +331,20 @@ namespace Katydid
 
         if( GetNormalizeKernel() )
         {
-            KTDEBUG(sdlog, "Normalizing kernel");
+            LDEBUG(sdlog, "Normalizing kernel");
             for( int iPosition = 0; iPosition < GetBlockSize(); ++iPosition )
             {
                 kernelX[iPosition] = kernelX[iPosition] / norm;
             }
         }
 
-        KTINFO(sdlog, "Successfully parsed kernel!");
+        LINFO(sdlog, "Successfully parsed kernel!");
         return true;
     }
 
     bool KTConvolution1D::Convolve1D( KTPowerSpectrumData& data )
     {
-        KTINFO(sdlog, "Received power spectrum. Performing 1D convolution");
+        LINFO(sdlog, "Received power spectrum. Performing 1D convolution");
         // New data object
         KTConvolvedPowerSpectrumData& newData = data.Of< KTConvolvedPowerSpectrumData >();
         
@@ -353,7 +353,7 @@ namespace Katydid
 
     bool KTConvolution1D::Convolve1D( KTFrequencySpectrumDataFFTW& data )
     {
-        KTINFO(sdlog, "Received frequency spectrum. Performing 1D convolution");
+        LINFO(sdlog, "Received frequency spectrum. Performing 1D convolution");
         // New data object
         KTConvolvedFrequencySpectrumDataFFTW& newData = data.Of< KTConvolvedFrequencySpectrumDataFFTW >();
         
@@ -362,7 +362,7 @@ namespace Katydid
 
     bool KTConvolution1D::Convolve1D( KTFrequencySpectrumDataPolar& data )
     {
-        KTINFO(sdlog, "Received frequency spectrum. Performing 1D convolution");
+        LINFO(sdlog, "Received frequency spectrum. Performing 1D convolution");
         // New data object
         KTConvolvedFrequencySpectrumDataPolar& newData = data.Of< KTConvolvedFrequencySpectrumDataPolar >();
         
@@ -534,7 +534,7 @@ namespace Katydid
 
     void KTConvolution1D::SetupInternalMaps()
     {
-        KTDEBUG(sdlog, "Setting up internal maps");
+        LDEBUG(sdlog, "Setting up internal maps");
 
         // transform flag map
         fTransformFlagMap.clear();
@@ -549,7 +549,7 @@ namespace Katydid
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
-            KTWARN(sdlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            LWARN(sdlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
 
@@ -560,7 +560,7 @@ namespace Katydid
 
     void KTConvolution1D::Initialize( int nBinsTotal, int block, int step, int overlap )
     {
-        KTINFO(sdlog, "DFTs are not yet initialized; doing so now");
+        LINFO(sdlog, "DFTs are not yet initialized; doing so now");
 
         // Slightly obnoxious conditionals to determine the sizes
         // Ordinary block is given, but the shorter block at the end is harder
@@ -576,7 +576,7 @@ namespace Katydid
         }
 
         // Also transform the kernel, we only need to do this once
-        KTDEBUG(sdlog, "Transforming kernel");
+        LDEBUG(sdlog, "Transforming kernel");
 
         for( int iBin = 0; iBin < block; ++iBin )
         {

@@ -7,7 +7,7 @@
 
 #include "KTDBSCANNoiseFiltering.hh"
 #include "KTKDTreeData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TCanvas.h"
@@ -18,7 +18,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBSCANNoiseFiltering");
+LOGGER(testlog, "TestDBSCANNoiseFiltering");
 
 int main()
 {
@@ -30,7 +30,7 @@ int main()
     std::pair< double, double > trackYRange( 0.6, 0.605 );
     unsigned nTrackPoints = 100;
 
-    KTINFO(testlog, "Creating data");
+    LINFO(testlog, "Creating data");
 
     KTPointCloud< KTKDTreeData::Point > points;
     points.fPoints.reserve(nNoisePoints + nTrackPoints);
@@ -58,19 +58,19 @@ int main()
         points.fPoints.push_back(pt);
     }
 
-    KTINFO(testlog, "Building the kd-tree index");
+    LINFO(testlog, "Building the kd-tree index");
     KTTreeIndex< double >* treeIndex = new KTTreeIndexEuclidean< double, KTPointCloud< KTKDTreeData::Point > >(2, points, nanoflann::KDTreeSingleIndexAdaptorParams(10));
     treeIndex->BuildIndex();
 
-    KTINFO(testlog, "Setting up DBSCANNoiseFiltering");
+    LINFO(testlog, "Setting up DBSCANNoiseFiltering");
     KTDBSCANNoiseFiltering filter;
     filter.SetRadius(0.01);
     filter.SetMinPoints(3);
 
-    KTINFO(testlog, "Filtering data");
+    LINFO(testlog, "Filtering data");
     filter.DoFiltering(treeIndex, points.fPoints);
 
-    //KTINFO(testlog, results);
+    //LINFO(testlog, results);
 
 
 
@@ -92,7 +92,7 @@ int main()
     ptsGraph->Draw("ap");
     ptsGraph->Write("Points");
 
-    KTINFO(testlog, "Number of noise points: " << nNoisePointsFound);
+    LINFO(testlog, "Number of noise points: " << nNoisePointsFound);
 
     TGraph* noiseGraph = new TGraph(nNoisePoints);
     noiseGraph->SetMarkerStyle(4);

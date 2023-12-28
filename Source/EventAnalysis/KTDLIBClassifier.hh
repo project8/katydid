@@ -16,7 +16,7 @@
 #include "KTClassifierResultsData.hh"
 
 #include "KTSlot.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 // Undefine to avoid conflict between dlib and scarab logger macros
 #undef LINFO
@@ -36,7 +36,7 @@
 namespace Katydid
 {
     
-    KTLOGGER(avlog_hh, "KTDLIBClassifier.hh");
+    LOGGER(avlog_hh, "KTDLIBClassifier.hh");
 
 
     /*

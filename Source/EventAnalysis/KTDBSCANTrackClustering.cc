@@ -7,7 +7,7 @@
 
 #include "KTDBSCANTrackClustering.hh"
 #include "KTKDTreeData.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTMath.hh"
 
 #include "KTSliceHeader.hh"
@@ -20,7 +20,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(tclog, "katydid.fft");
+    LOGGER(tclog, "katydid.fft");
 
     KT_REGISTER_PROCESSOR(KTDBSCANTrackClustering, "dbscan-track-clustering");
 
@@ -64,7 +64,7 @@ namespace Katydid
             const KTParamArray* radii = node->ArrayAt("radii");
             if (radii->Size() != fNDimensions)
             {
-                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->Size() << "> instead of <" << fNDimensions << ">");
+                LERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->Size() << "> instead of <" << fNDimensions << ">");
                 return false;
             }
             fRadii(0) = radii->GetValue< double >(0);
@@ -83,7 +83,7 @@ namespace Katydid
         {
             if (! DoClustering())
             {
-                KTERROR(tclog, "An error occurred while clustering from the previous acquisition");
+                LERROR(tclog, "An error occurred while clustering from the previous acquisition");
                 return false;
             }
         }
@@ -108,7 +108,7 @@ namespace Katydid
             {
                 newPoint(1) = pIt->second.fAbscissa;
                 fCompPoints[iComponent].push_back(newPoint);
-                KTDEBUG(tclog, "Point " << fCompPoints[iComponent].size()-1 << " is now " << fCompPoints[iComponent].back());
+                LDEBUG(tclog, "Point " << fCompPoints[iComponent].size()-1 << " is now " << fCompPoints[iComponent].back());
             }
         }
 
@@ -127,7 +127,7 @@ namespace Katydid
         newPoint(1) = frequency;
         fCompPoints[component].push_back(newPoint);
 
-        KTDEBUG(tclog, "Point " << fCompPoints[component].size()-1 << " is now " << fCompPoints[component].back());
+        LDEBUG(tclog, "Point " << fCompPoints[component].size()-1 << " is now " << fCompPoints[component].back());
 
         return true;
     }
@@ -136,7 +136,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the track clustering");
+            LERROR(tclog, "An error occurred while running the track clustering");
         }
         return;
     }
@@ -158,35 +158,35 @@ namespace Katydid
 
         dbScan.SetRadius(fRadius);
         dbScan.SetMinPoints(fMinPoints);
-        KTINFO(tclog, "DBSCAN configured");
+        LINFO(tclog, "DBSCAN configured");
 
         for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
         {
-            KTDEBUG(tclog, "Clustering component " << iComponent);
+            LDEBUG(tclog, "Clustering component " << iComponent);
 
             // do the clustering!
-            KTINFO(tclog, "Starting DBSCAN");
+            LINFO(tclog, "Starting DBSCAN");
             DBSCAN::DBSResults results;
             if (! dbScan.DoClustering(*(data.GetTreeIndex(iComponent)), results))
             {
-                KTERROR(tclog, "An error occurred while clustering");
+                LERROR(tclog, "An error occurred while clustering");
                 return false;
             }
-            KTDEBUG(tclog, "DBSCAN finished");
+            LDEBUG(tclog, "DBSCAN finished");
 
             std::vector< KTKDTreeData::Point > points = data.GetSetOfPoints(iComponent);
 
             // loop over the clusters found, and create data objects for them
-            KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidates");
+            LDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidates");
             for (vector< DBSCAN::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
                 {
-                    KTWARN(tclog, "Empty cluster");
+                    LWARN(tclog, "Empty cluster");
                     continue;
                 }
 
-                KTDEBUG(tclog, "Creating candidate " << fDataCount << "; includes " << clustIt->size() << " points");
+                LDEBUG(tclog, "Creating candidate " << fDataCount << "; includes " << clustIt->size() << " points");
 
                 ++fDataCount;
 
@@ -206,7 +206,7 @@ namespace Katydid
                 double variance = points[*pointIdIt].fVariance;
                 double neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
                 cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude, points[*pointIdIt].fBinInSlice));
-                KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
+                LDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
                 {
@@ -217,7 +217,7 @@ namespace Katydid
                     variance = points[*pointIdIt].fVariance;
                     neighborhoodAmplitude = points[*pointIdIt].fNeighborhoodAmplitude;
                     cand.AddPoint(KTDiscriminatedPoint(time, freq, points[*pointIdIt].fAmplitude, timeInAcq, mean, variance, neighborhoodAmplitude, points[*pointIdIt].fBinInSlice));
-                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
+                    LDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq << ", " << points[*pointIdIt].fAmplitude)
 
                     if (time > maxTime)
                     {
@@ -227,7 +227,7 @@ namespace Katydid
                     {
                         minTime = time;
                         minTimeInAcq = timeInAcq;
-                        KTDEBUG(tclog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
+                        LDEBUG(tclog, "changing min time in Acq to time in Acq "<< minTimeInAcq)
                     }
 
                     if (freq > maxFreq)
@@ -263,7 +263,7 @@ namespace Katydid
 
         } // loop over components
 
-        KTDEBUG(tclog, "Clustering complete");
+        LDEBUG(tclog, "Clustering complete");
         fClusterDoneSignal();
 
         return true;

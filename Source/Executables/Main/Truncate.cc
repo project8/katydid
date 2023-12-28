@@ -23,7 +23,7 @@
  *        -w --- (optional) Skips the warning message and opportunity to abort.
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #include <cstdlib>
 #include <fstream>
@@ -34,7 +34,7 @@
 using namespace std;
 using namespace Nymph;
 
-KTLOGGER(tclog, "Truncate");
+LOGGER(tclog, "Truncate");
 
 int main(int argc, char** argv)
 {
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     // the input file name must be provided; exit if it isn't
     if (inputFileName.empty())
     {
-        KTERROR(tclog, "Please provide a file name using '-f [filename]'");
+        LERROR(tclog, "Please provide a file name using '-f [filename]'");
         return -1;
     }
     bool newOutputFile = (! outputFileName.empty() && outputFileName != inputFileName);
@@ -79,34 +79,34 @@ int main(int argc, char** argv)
     int result = stat(inputFileName.c_str(), &fileStatus);
     if (result != 0)
     {
-        KTERROR(tclog, "Unable to get file information; aborting!");
+        LERROR(tclog, "Unable to get file information; aborting!");
         return -2;
     }
     if (fileStatus.st_size < newFileSize)
     {
-        KTERROR(tclog, "Current file size (" << fileStatus.st_size << " bytes) is smaller than the requested truncated size (" << newFileSize << " bytes); process aborted!");
+        LERROR(tclog, "Current file size (" << fileStatus.st_size << " bytes) is smaller than the requested truncated size (" << newFileSize << " bytes); process aborted!");
         return -3;
     }
 
     // print out useful information so the user knows what's about to happen
-    KTINFO(tclog, "File to truncate: " << inputFileName);
+    LINFO(tclog, "File to truncate: " << inputFileName);
     if (newOutputFile)
     {
-        KTINFO(tclog, "New filename will be: " << outputFileName);
+        LINFO(tclog, "New filename will be: " << outputFileName);
     }
-    KTINFO(tclog, "Original file size: " << fileStatus.st_size << " bytes");
-    KTINFO(tclog, "Truncated file size: " << newFileSize << " bytes\n");
+    LINFO(tclog, "Original file size: " << fileStatus.st_size << " bytes");
+    LINFO(tclog, "Truncated file size: " << newFileSize << " bytes\n");
 
     // if the user specified to skip the warning, than do so
     if (! skipWarning)
     {
         // print the warning message and ask the user if s/he wants to continue
-        KTWARN(tclog, "File truncation will result in data loss! Are you sure you want to continue? (y/n)");
+        LWARN(tclog, "File truncation will result in data loss! Are you sure you want to continue? (y/n)");
         char response;
         cin >> response;
         if (response != 'y')
         {
-            KTINFO(tclog, "Truncation ABORTED");
+            LINFO(tclog, "Truncation ABORTED");
             return 0;
         }
     }
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
     if (newOutputFile)
     {
         // copy file to outputFileName
-        KTINFO(tclog, "Copying the input file to the output file");
+        LINFO(tclog, "Copying the input file to the output file");
         ifstream inputFileStream(inputFileName.c_str(), ios::binary);
         ofstream outputFileStream(outputFileName.c_str(), ios::binary);
         outputFileStream << inputFileStream.rdbuf();
@@ -128,17 +128,17 @@ int main(int argc, char** argv)
     }
 
     // perform the truncation
-    KTINFO(tclog, "Truncating the file");
+    LINFO(tclog, "Truncating the file");
     result = truncate(outputFileName.c_str(), newFileSize);
 
     // print the results of the truncation
     if (result == 0)
     {
-        KTINFO(tclog, "File truncated successfully")
+        LINFO(tclog, "File truncated successfully")
     }
     else
     {
-        KTERROR(tclog, "An error occurred during file truncation!");
+        LERROR(tclog, "An error occurred during file truncation!");
     }
 
     return result;

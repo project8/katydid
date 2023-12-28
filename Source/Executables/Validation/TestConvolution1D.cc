@@ -3,7 +3,7 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KT2ROOT.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -15,7 +15,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestConvolution1D");
+LOGGER(vallog, "TestConvolution1D");
 
 int main()
 {
@@ -92,7 +92,7 @@ int main()
     	std::cout << (*convolvedPowerSpect)(i) << std::endl;
     }
 */
-    KTINFO(vallog, "Writing to ROOT file");
+    LINFO(vallog, "Writing to ROOT file");
 
     #ifdef ROOT_FOUND
 	    TFile* file = new TFile("TestConvolution1D.root", "recreate");

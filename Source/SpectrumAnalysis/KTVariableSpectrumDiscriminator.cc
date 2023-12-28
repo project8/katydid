@@ -36,7 +36,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "KTVariableSpectrumDiscriminator");
+    LOGGER(sdlog, "KTVariableSpectrumDiscriminator");
 
     KT_REGISTER_PROCESSOR(KTVariableSpectrumDiscriminator, "variable-spectrum-discriminator");
 
@@ -133,12 +133,12 @@ namespace Katydid
     {
         if( fGVData.GetSpline() == nullptr )
         {
-            KTERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
+            LERROR( sdlog, "I don't have any gain variation data! Did you forget to send me some?" );
             return false;
         }
         if( fGVData.GetVarianceSpline() == nullptr && fThresholdMode == eSigma )
         {
-            KTERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
+            LERROR( sdlog, "I don't have any gain variation variance data! Did you forget to send me some?" );
             return false;
         }
 
@@ -234,10 +234,10 @@ namespace Katydid
 
         // Min and Max bins must be recalculated with these temp frequencies
         SetMinBin((*data.GetSpectra())(0)->FindBin(tempMinFrequency));
-        KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+        LDEBUG(sdlog, "Minimum bin set to " << fMinBin);
     
         SetMaxBin((*data.GetSpectra())(0)->FindBin(tempMaxFrequency) - 1); // -1 to avoid out-of-range error
-        KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+        LDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         
         // Parametrize 2D and 1D point objects
 
@@ -258,7 +258,7 @@ namespace Katydid
         double Xmin = data.GetStartTime();
         double Ymin = (*data.GetSpectra())(0)->GetRangeMin();
 
-        KTDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
+        LDEBUG(sdlog, "Set XbinWidth to " << XbinWidth << " and YbinWidth to " << YbinWidth);
 
         unsigned nSpectra = data.GetSpectra()->GetNBins();     // Number of time slices in the spectrogram collection
         unsigned nPoints = 0;                           // Number of points above threshold in one slice
@@ -273,12 +273,12 @@ namespace Katydid
             // Discriminate the 1D spectrum
             if (! DiscriminateSpectrum(*it, gvData.GetSpline(0), gvData.GetVarianceSpline(0), newDataSlice, sliceNumber))
             {
-                KTERROR(sdlog, "Discrimination on spectrogram (slice " << sliceNumber << ") failed");
+                LERROR(sdlog, "Discrimination on spectrogram (slice " << sliceNumber << ") failed");
                 return false;
             }
 
             nPoints = newDataSlice.GetSetOfPoints( sliceNumber ).size();
-            KTDEBUG(sdlog, "Spectrogram slice " << sliceNumber << " has " << nPoints << " points above threshold");
+            LDEBUG(sdlog, "Spectrogram slice " << sliceNumber << " has " << nPoints << " points above threshold");
 
             // Iterate through the 1D points and add them to the 2D points
             for( KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pointsIt = newDataSlice.GetSetOfPoints( sliceNumber ).begin(); pointsIt != newDataSlice.GetSetOfPoints( sliceNumber ).end(); ++pointsIt )
@@ -297,12 +297,12 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << ")");
+            LDEBUG(sdlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << ")");
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
+            LDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
         unsigned nComponents = data.GetNComponents();
@@ -314,12 +314,12 @@ namespace Katydid
         {
             if (! DiscriminateSpectrum(data.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), newData, iComponent))
             {
-                KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
+                LERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;
             }
-            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
+            LDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
         }
-        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
+        LINFO(sdlog, "Completed discrimination on " << nComponents << " components");
 
         return true;
 
@@ -331,12 +331,12 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+            LDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+            LDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
         unsigned nComponents = data.GetNComponents();
@@ -348,12 +348,12 @@ namespace Katydid
         {
             if (! DiscriminateSpectrum(data.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), newData, iComponent))
             {
-                KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
+                LERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;
             }
-            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
+            LDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
         }
-        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
+        LINFO(sdlog, "Completed discrimination on " << nComponents << " components");
 
         return true;
     }
@@ -363,12 +363,12 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrum(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+            LDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrum(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+            LDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
         unsigned nComponents = data.GetNComponents();
@@ -380,12 +380,12 @@ namespace Katydid
         {
             if (! DiscriminateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), gvData.GetVarianceSpline(iComponent), newData, iComponent))
             {
-                KTERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
+                LERROR(sdlog, "Discrimination on spectrum (component " << iComponent << ") failed");
                 return false;
             }
-            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
+            LDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
         }
-        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
+        LINFO(sdlog, "Completed discrimination on " << nComponents << " components");
 
         return true;
     }
@@ -394,7 +394,7 @@ namespace Katydid
     {
         if (spectrum == NULL)
         {
-            KTERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
+            LERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
             return false;
         }
 
@@ -419,13 +419,13 @@ namespace Katydid
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
                 thresholdMult = sqrt(fSNRThreshold);
-                KTDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-amplitude mode)");
+                LDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-amplitude mode)");
             }
             else
             {
                 // SNR = P_signal / P_noise, P_noise = mean
                 thresholdMult = fSNRThreshold;
-                KTDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-power mode)");
+                LDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-power mode)");
             }
 
             // loop over bins, checking against the threshold
@@ -498,7 +498,7 @@ namespace Katydid
     {
         if (spectrum == NULL)
         {
-            KTERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
+            LERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
             return false;
         }
 
@@ -523,13 +523,13 @@ namespace Katydid
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
                 thresholdMult = sqrt(fSNRThreshold);
-                KTDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-amplitude mode)");
+                LDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-amplitude mode)");
             }
             else
             {
                 // SNR = P_signal / P_noise, P_noise = mean
                 thresholdMult = fSNRThreshold;
-                KTDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-power mode)");
+                LDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-power mode)");
             }
 
             // loop over bins, checking against the threshold
@@ -601,7 +601,7 @@ namespace Katydid
     {
         if (spectrum == NULL)
         {
-            KTERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
+            LERROR(sdlog, "Frequency spectrum pointer (component " << component << ") is NULL!");
             return false;
         }
 
@@ -626,13 +626,13 @@ namespace Katydid
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
                 thresholdMult = sqrt(fSNRThreshold);
-                KTDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-amplitude mode)");
+                LDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-amplitude mode)");
             }
             else
             {
                 // SNR = P_signal / P_noise, P_noise = mean
                 thresholdMult = fSNRThreshold;
-                KTDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-power mode)");
+                LDEBUG(sdlog, "Discriminator threshold multiplier for component " << component << " set at <" << thresholdMult << "> (SNR-power mode)");
             }
 
             // loop over bins, checking against the threshold

@@ -199,7 +199,7 @@ void generateRandomPointCloud(KTKDTreeData &data, const size_t N, const double m
     KTKDTreeData::Point point;
     for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
     {
-        //KTDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
+        //LDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
         point.fCoords[0] = (*tIt)/timeScale;
         point.fCoords[1] = (*fIt)/freqScale;
         point.fAmplitude = *aIt;

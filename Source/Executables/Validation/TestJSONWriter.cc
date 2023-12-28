@@ -8,16 +8,16 @@
 #include "KTJSONTypeWriterTime.hh"
 #include "KTEggHeader.hh"
 #include "KTJSONWriter.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestJSONWriter");
+LOGGER(testlog, "TestJSONWriter");
 
 int main()
 {
-    KTINFO(testlog, "Preparing for test");
+    LINFO(testlog, "Preparing for test");
 
     // Setup a dummy header to print
     Nymph::KTDataPtr headerPtr(new Nymph::KTData());
@@ -39,7 +39,7 @@ int main()
     writer.SetFileMode("w+");
     writer.SetPrettyJSONFlag(false);
 
-    KTINFO(testlog, "Writing to file");
+    LINFO(testlog, "Writing to file");
 
     // Writer the data
     writer.GetTypeWriter< KTJSONTypeWriterTime >()->WriteEggHeader(headerPtr);
@@ -47,22 +47,22 @@ int main()
     // Close the file
     writer.CloseFile();
 
-    KTINFO(testlog, "Writing complete");
+    LINFO(testlog, "Writing complete");
 
     // Switch setup to print to the terminal
     writer.SetFilename("stdout");
     writer.SetPrettyJSONFlag(true);
 
-    KTINFO(testlog, "Writing to terminal");
+    LINFO(testlog, "Writing to terminal");
 
     writer.GetTypeWriter< KTJSONTypeWriterTime >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();
 
-    KTINFO(testlog, "Writing complete");
+    LINFO(testlog, "Writing complete");
 
-    KTINFO(testlog, "Test complete; see file output in test_writer.json");
+    LINFO(testlog, "Test complete; see file output in test_writer.json");
 
     return 0;
 

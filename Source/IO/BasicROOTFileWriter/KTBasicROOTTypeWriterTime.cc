@@ -7,7 +7,7 @@
 
 #include "KT2ROOT.hh"
 #include "KTTIFactory.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
@@ -29,7 +29,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "KTBasicROOTTypeWriterTime");
+    LOGGER(publog, "KTBasicROOTTypeWriterTime");
 
     static Nymph::KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterTime > sBRTWERegistrar;
 
@@ -94,7 +94,7 @@ namespace Katydid
                     }
                     tsHist->SetDirectory(fWriter->GetFile());
                     tsHist->Write();
-                    KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                    LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
                 }
                 else if (ts->GetSampleSize() == 2)
                 {
@@ -114,7 +114,7 @@ namespace Katydid
                     }
                     tsHistReal->SetDirectory(fWriter->GetFile());
                     tsHistReal->Write();
-                    KTDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
+                    LDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
 
                     stringstream convImag;
                     convImag << "histRawTSImag_" << sliceNumber << "_" << iComponent;
@@ -132,11 +132,11 @@ namespace Katydid
                     }
                     tsHistImag->SetDirectory(fWriter->GetFile());
                     tsHistImag->Write();
-                    KTDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
+                    LDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
                 }
                 else
                 {
-                    KTWARN(publog, "Invalid sample size: " << ts->GetSampleSize());
+                    LWARN(publog, "Invalid sample size: " << ts->GetSampleSize());
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace Katydid
                 TH1I* powerSpectrum = KT2ROOT::CreateAmplitudeDistributionHistogram(spectrum, histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -200,7 +200,7 @@ namespace Katydid
                 TH1D* tsHist = ts->CreateHistogram(histName);
                 tsHist->SetDirectory(fWriter->GetFile());
                 tsHist->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -229,7 +229,7 @@ namespace Katydid
                 TH1I* amplitudeSpectrum = KT2ROOT::CreateHistogram(distribution, histName);
                 amplitudeSpectrum->SetDirectory(fWriter->GetFile());
                 amplitudeSpectrum->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;
@@ -262,7 +262,7 @@ namespace Katydid
                 TH1D* tsHistReal = ts->CreateHistogram(histNameReal);
                 tsHistReal->SetDirectory(fWriter->GetFile());
                 tsHistReal->Write();
-                KTDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
 
                 // Imaginary component
                 stringstream convImag;
@@ -272,7 +272,7 @@ namespace Katydid
                 TH1D* tsHistImag = ts->CreateHistogram(histNameImag);
                 tsHistImag->SetDirectory(fWriter->GetFile());
                 tsHistImag->Write();
-                KTDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
+                LDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
             }
         }
         return;

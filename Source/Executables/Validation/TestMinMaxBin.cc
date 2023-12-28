@@ -11,14 +11,14 @@
  *  Note: As of 7/25/14, the only function implemented (and therefore tested) is KTPhysicalArray<2, [type]>::GetMaximumBin()
  */
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPhysicalArray.hh"
 
 #include <cstdlib>
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestSmoothing");
+LOGGER(testlog, "TestSmoothing");
 
 int main()
 {
@@ -30,13 +30,13 @@ int main()
     unsigned peakMaxXBin = 5, peakMaxYBin = 8;
     double peakMinValue = -100., peakMaxValue = 50.;
 
-    KTINFO(testlog, "Min Bin Test Parameters");
-    KTINFO(testlog, "Peak X bin: " << peakMinXBin);
-    KTINFO(testlog, "Peak Y bin: " << peakMinYBin << "  (not used in 1-D tests)\n");
+    LINFO(testlog, "Min Bin Test Parameters");
+    LINFO(testlog, "Peak X bin: " << peakMinXBin);
+    LINFO(testlog, "Peak Y bin: " << peakMinYBin << "  (not used in 1-D tests)\n");
 
-    KTINFO(testlog, "Max Bin Test Parameters");
-    KTINFO(testlog, "Peak X bin: " << peakMaxXBin);
-    KTINFO(testlog, "Peak Y bin: " << peakMaxYBin << "  (not used in 1-D tests)\n");
+    LINFO(testlog, "Max Bin Test Parameters");
+    LINFO(testlog, "Peak X bin: " << peakMaxXBin);
+    LINFO(testlog, "Peak Y bin: " << peakMaxYBin << "  (not used in 1-D tests)\n");
 
     //**************
     // 1-D Array
@@ -45,7 +45,7 @@ int main()
     //**************
     // 2-D Array
     //**************
-    KTINFO(testlog, "Testing 2D GetMaximumBin");
+    LINFO(testlog, "Testing 2D GetMaximumBin");
 
     // Fill the array with values on [0, 10)
     KTPhysicalArray< 2, double > array2D(nBins, 0., 1., nBins, 0., 1.);
@@ -60,9 +60,9 @@ int main()
 
     unsigned peakXBinFound, peakYBinFound;
     array2D.GetMaximumBin(peakXBinFound, peakYBinFound);
-    KTINFO(testlog, "Maximum bin found at: (" << peakXBinFound << ", " << peakYBinFound << ")");
+    LINFO(testlog, "Maximum bin found at: (" << peakXBinFound << ", " << peakYBinFound << ")");
 
-    KTINFO(testlog, "Min/Max bin test complete");
+    LINFO(testlog, "Min/Max bin test complete");
 
     return 0;
 }

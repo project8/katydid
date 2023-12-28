@@ -7,11 +7,11 @@
 
 #include "KTMultiPSData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(datalog, "KTMultiPSData");
+    LOGGER(datalog, "KTMultiPSData");
 
     KTMultiPSDataCore::KTMultiPSDataCore() :
             fSpectra()
@@ -36,12 +36,12 @@ namespace Katydid
     {
         if (component >= fSpectra.size())
         {
-            KTDEBUG(datalog, "Attempting to set spectrum in data which doesn't have component " << component << "; growing the data");
+            LDEBUG(datalog, "Attempting to set spectrum in data which doesn't have component " << component << "; growing the data");
             SetNComponents(component+1);
         }
         if (fSpectra[component] == NULL)
         {
-            KTDEBUG(datalog, "Pointer to spectra is NULL; adding new spectra with " << iSpect + 1 << "bins");
+            LDEBUG(datalog, "Pointer to spectra is NULL; adding new spectra with " << iSpect + 1 << "bins");
             fSpectra[component] = new KTMultiPS(iSpect+1, 0., 1.);
         }
         (*fSpectra[component])(iSpect) = spectrum;
@@ -67,12 +67,12 @@ namespace Katydid
 
         if (component >= fSpectra.size())
         {
-            KTWARN(datalog, "Component too large. Returning null");
+            LWARN(datalog, "Component too large. Returning null");
             return NULL;
         }
         if (fSpectra[component] == NULL)
         {
-            KTWARN(datalog, "Spectrum empty. Returning null");
+            LWARN(datalog, "Spectrum empty. Returning null");
             return NULL;
         }
 
@@ -84,13 +84,13 @@ namespace Katydid
         }
         if (firstPS == NULL)
         {
-            KTWARN(datalog, "First power spectrum didn't fill. Returning null");
+            LWARN(datalog, "First power spectrum didn't fill. Returning null");
             return NULL;
         }
         else
         {
             --firstPSBin; // need to decrement firstPSBin, because it was incremented at the end of the last time through the loop
-            KTDEBUG(datalog, "First non-zero power spectrum in the multiPS: " << firstPSBin);
+            LDEBUG(datalog, "First non-zero power spectrum in the multiPS: " << firstPSBin);
         }
 
         std::string strName = name + "_" + std::to_string(histCount);
@@ -99,8 +99,8 @@ namespace Katydid
                 fSpectra[component]->size(), fSpectra[component]->GetRangeMin(), fSpectra[component]->GetRangeMax(),
                 firstPS->size(), firstPS->GetRangeMin(), firstPS->GetRangeMax());
 
-        KTINFO(datalog, "Frequency axis: " << firstPS->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        LINFO(datalog, "Frequency axis: " << firstPS->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        LINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         for (int iBinX=firstPSBin; iBinX<(int)fSpectra[component]->size(); ++iBinX)
         {

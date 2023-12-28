@@ -7,7 +7,7 @@
 
 #include "KTTimeFrequencyPolar.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 #include "KTPowerSpectrum.hh"
 
 #ifdef ROOT_FOUND
@@ -24,7 +24,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(fslog, "KTTimeFrequencyPolar");
+    LOGGER(fslog, "KTTimeFrequencyPolar");
 
     KTTimeFrequencyPolar::KTTimeFrequencyPolar() :
             KTPhysicalArray< 2, complexpolar< double > >(),
@@ -105,7 +105,7 @@ namespace Katydid
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
         }
-        KTDEBUG(fslog, "\n" << printStream.str());
+        LDEBUG(fslog, "\n" << printStream.str());
         return;
     }
 */

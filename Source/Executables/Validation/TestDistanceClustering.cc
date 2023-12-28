@@ -8,17 +8,17 @@
 #include "KTCluster1DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDistanceClustering.hh"
-#include "KTLogger.hh"
+#include "logger.hh"
 
 
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "TestDistanceClustering");
+LOGGER(testlog, "TestDistanceClustering");
 
 int main()
 {
-    KTINFO(testlog, "Setting up points");
+    LINFO(testlog, "Setting up points");
 
     KTDiscriminatedPoints1DData discPoints;
     discPoints.SetNComponents(1);
@@ -37,17 +37,17 @@ int main()
     unsigned iPoint = 0;
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt=discPoints.GetSetOfPoints(0).begin(); pIt != discPoints.GetSetOfPoints(0).end(); pIt++)
     {
-        KTINFO(testlog, "Point #" << iPoint << ":  " << pIt->first << "  " << pIt->second.fAbscissa);
+        LINFO(testlog, "Point #" << iPoint << ":  " << pIt->first << "  " << pIt->second.fAbscissa);
         iPoint++;
     }
 
     KTDistanceClustering clustering;
     clustering.SetMaxBinDistance(2);
 
-    KTINFO(testlog, "Analyzing points");
+    LINFO(testlog, "Analyzing points");
     if (! clustering.FindClusters(discPoints))
     {
-        KTERROR(testlog, "Something went wrong while finding clusters");
+        LERROR(testlog, "Something went wrong while finding clusters");
         return -1;
     }
     KTCluster1DData& clusters = discPoints.Of< KTCluster1DData >();
@@ -55,7 +55,7 @@ int main()
     unsigned iCluster = 0;
     for (KTCluster1DData::SetOfClusters::const_iterator cIt = clusters.GetSetOfClusters(0).begin(); cIt != clusters.GetSetOfClusters(0).end(); cIt++)
     {
-        KTINFO(testlog, "Cluster #" << iCluster << ":  " << cIt->first << " --> " << cIt->second);
+        LINFO(testlog, "Cluster #" << iCluster << ":  " << cIt->first << " --> " << cIt->second);
         iCluster++;
     }
 

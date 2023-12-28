@@ -7,11 +7,11 @@
 
 #include "KTKDTreeData.hh"
 
-#include "KTLogger.hh"
+#include "logger.hh"
 
 namespace Katydid
 {
-    KTLOGGER(kdtlog, "KTKDTreeData");
+    LOGGER(kdtlog, "KTKDTreeData");
 
     const std::string KTKDTreeData::sName("kd-tree");
 
@@ -48,13 +48,13 @@ namespace Katydid
         fComponentData[component].fMaxLeafSize = maxLeafSize;
         if (dist == kManhattan)
         {
-            KTDEBUG(kdtlog, "Creating index with Manhattan distance metric");
+            LDEBUG(kdtlog, "Creating index with Manhattan distance metric");
             fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, KTPointCloud< Point > >(fNDimensions, fComponentData[component].fCloud, nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
             fComponentData[component].fTreeIndex->BuildIndex();
         }
         else
         {
-            KTDEBUG(kdtlog, "Creating index with Euclidean distance metric");
+            LDEBUG(kdtlog, "Creating index with Euclidean distance metric");
             fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, KTPointCloud< Point > >(fNDimensions, fComponentData[component].fCloud, nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
             fComponentData[component].fTreeIndex->BuildIndex();
         }
@@ -73,7 +73,7 @@ namespace Katydid
             fComponentData[component].fCloud.fPoints.erase(fComponentData[component].fCloud.fPoints.begin() + *pIt);
             //points.pop_back();
         }
-        KTDEBUG(kdtlog, "Removing " << points.size() << " points; original size: " << origSize << "; new size: " << fComponentData[component].fCloud.fPoints.size());
+        LDEBUG(kdtlog, "Removing " << points.size() << " points; original size: " << origSize << "; new size: " << fComponentData[component].fCloud.fPoints.size());
         BuildIndex();
         return;
     }
