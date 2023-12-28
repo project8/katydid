@@ -7,6 +7,10 @@ set (UTILITY_DICT_HEADERFILES
 
 set (UTILITY_NODICT_HEADERFILES
     complexpolar.hh
+    complexpolar/class.hh
+    complexpolar/functions.hh
+    complexpolar/operators.hh
+    complexpolar/specialization.hh
     KTAxisProperties_GetNBins.hh
     KTAxisProperties.hh
     KTConstants.hh
@@ -69,14 +73,28 @@ if (ROOT_FOUND)
     pbuilder_install_files (${LIB_INSTALL_DIR} ${UTILITY_DICT_PCMFILE})
 endif (ROOT_FOUND)
 
-pbuilder_library (KatydidUtility UTILITY_SOURCEFILES "")
+pbuilder_library( 
+    TARGET KatydidUtility 
+    SOURCES ${UTILITY_SOURCEFILES}
+    PUBLIC_EXTERNAL_LIBRARIES ${PUBLIC_EXT_LIBS}
+)
+
+pbuilder_component_install_and_export( 
+    COMPONENT Library
+    LIBTARGETS KatydidUtility
+)
+
+pbuilder_install_headers( ${UTILITY_HEADERFILES} )
+
+
+##pbuilder_library (KatydidUtility UTILITY_SOURCEFILES "")
 #pbuilder_install_headers(${CICADA_HEADERFILES})
 
 #add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
 #target_link_libraries (KatydidUtility ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
-pbuilder_install_headers (${UTILITY_HEADERFILES})
-pbuilder_install_header_dirs ("*.hh" ${UTILITY_HEADER_SUBDIRS})
+##pbuilder_install_headers (${UTILITY_HEADERFILES})
+##pbuilder_install_header_dirs ("*.hh" ${UTILITY_HEADER_SUBDIRS})
 #pbuilder_install_libraries (KatydidUtility)
 
 

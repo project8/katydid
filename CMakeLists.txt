@@ -1,18 +1,19 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-# Minimum cmake verison 3.6 required for CMake 3.27 and higher (3.5 and below is deprecated)
-cmake_minimum_required (VERSION 3.6)
+# Minimum cmake verison 3.12 required by Nymph
+cmake_minimum_required (VERSION 3.12)
 
 
 # Define the project
 cmake_policy( SET CMP0048 NEW ) # version in project()
 project (Katydid VERSION 2.20.0)
 
-list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/Scarab/cmake )
+list( APPEND CMAKE_MODULE_PATH 
+    ${PROJECT_SOURCE_DIR}/nymph/Scarab/cmake
+    ${PROJECT_SOURCE_DIR}/nymph/cmake 
+)
 include( PackageBuilder )
-
-list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/Nymph/cmake )
 include( Nymph )
 
 # Specify the local directory for CMake modules
@@ -26,17 +27,24 @@ pbuilder_prepare_project()
 #########
 
 # require C++17
-set_option( USE_CPP17 TRUE )
+set( CMAKE_CXX_STANDARD 17 )
+
+# TODO: These were turned off to enable building and need to be returned to service:
+#         * USE_MONARCH
+#         * USE_MATLAB
+#         * USE_FFTW
+#         * USE_ROOT
+#         * USE_HDF5
 
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
 option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
-option (Katydid_USE_MONARCH "Flag to optionally use Monarch" ON)
+option (Katydid_USE_MONARCH "Flag to optionally use Monarch" OFF)
 #option (Katydid_USE_PYTHON "Flag to optionally build python bindings" OFF) # this is an old python integration that was never completed and won't be used
-option (Katydid_USE_MATLAB "Flag to optionally use MatIO libraries, needed to read MAT files" ON)
-option (Katydid_USE_FFTW "Flag to optionally use FFTW" ON)
-option (Katydid_USE_ROOT "Flag to optionally use ROOT" ON)
-option (Katydid_USE_HDF5 "Flag to optionally use HDF5" ON)
+option (Katydid_USE_MATLAB "Flag to optionally use MatIO libraries, needed to read MAT files" OFF)
+option (Katydid_USE_FFTW "Flag to optionally use FFTW" OFF)
+option (Katydid_USE_ROOT "Flag to optionally use ROOT" OFF)
+option (Katydid_USE_HDF5 "Flag to optionally use HDF5" OFF)
 option (Katydid_USE_MAGICKPP "Flag to optionally use GraphicsMagick and the Magick++ API" OFF)
 #option (Katydid_USE_EIGEN "Flag to optionally use eigen" ON) # eigen is now required
 option (Katydid_USE_DLIB "Flag to optionally use DLIB library, required for classifier" OFF)
@@ -66,7 +74,9 @@ list( APPEND PUBLIC_EXT_LIBS Boost::filesystem Boost::program_options )
 
 # eigen
 # versions earlier than 3.3 may work; the exact minimum version is not known for sure.
-find_package (Eigen3 3.3 REQUIRED)
+if (Katydid_USE_EIGEN)
+    find_package (Eigen3 3.3 REQUIRED)
+endif(Katydid_USE_EIGEN)
 if (EIGEN3_FOUND)
    message (STATUS "Eigen found.")
    list( APPEND PUBLIC_EXT_LIBS Eigen3::Eigen )
@@ -213,39 +223,40 @@ pbuilder_prepare_project()
 ############
 
 # Nymph
-pbuilder_add_submodule( Nymph Nymph )
-nymph_process_options()
+pbuilder_add_submodule( Nymph nymph )
+pbuilder_use_sm_library( Nymph Nymph )
+
 add_definitions( -DRAPIDJSON_FILE_BUFFER_SIZE=${RAPIDJSON_FILE_BUFFER_SIZE} )
 
 # Monarch
-if (Katydid_USE_MONARCH)
-    pbuilder_add_submodule( Monarch Source/Time/Monarch )
-    add_definitions (-DUSE_MONARCH)
-    if (Monarch_BUILD_MONARCH2)
-        add_definitions(-DUSE_MONARCH2)
-    else (Monarch_BUILD_MONARCH2)
-        remove_definitions(-DUSE_MONARCH2)
-    endif (Monarch_BUILD_MONARCH2)
-    if (Monarch_BUILD_MONARCH3 )
-        add_definitions(-DUSE_MONARCH3)
-    else (Monarch_BUILD_MONARCH3)
-        remove_definitions(-DUSE_MONARCH3)
-    endif (Monarch_BUILD_MONARCH3)
-    # we need the definitions for HAS_ATTR_IFC and HAS_GRP_IFC from Monarch to use the proper class interfaces in M3Header and M3Stream
-    set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} APPEND PROPERTY COMPILE_DEFINITIONS ${Monarch_COMPILE_DEFINITIONS} )
-    message(STATUS "Monarch compile definitions: ${Monarch_COMPILE_DEFINITIONS}")
-else (Katydid_USE_MONARCH)
-    message(STATUS "Building without Monarch")
-    add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)
-    remove_definitions (-DUSE_MONARCH)
-    remove_definitions (-DUSE_MONARCH2)
-    remove_definitions (-DUSE_MONARCH3)
-endif (Katydid_USE_MONARCH)
+##if (Katydid_USE_MONARCH)
+##    pbuilder_add_submodule( Monarch Source/Time/Monarch )
+##    add_definitions (-DUSE_MONARCH)
+##    if (Monarch_BUILD_MONARCH2)
+##        add_definitions(-DUSE_MONARCH2)
+##    else (Monarch_BUILD_MONARCH2)
+##        remove_definitions(-DUSE_MONARCH2)
+##    endif (Monarch_BUILD_MONARCH2)
+##    if (Monarch_BUILD_MONARCH3 )
+##        add_definitions(-DUSE_MONARCH3)
+##    else (Monarch_BUILD_MONARCH3)
+##        remove_definitions(-DUSE_MONARCH3)
+##    endif (Monarch_BUILD_MONARCH3)
+##    # we need the definitions for HAS_ATTR_IFC and HAS_GRP_IFC from Monarch to use the proper class interfaces in M3Header and M3Stream
+##    set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} APPEND PROPERTY COMPILE_DEFINITIONS ${Monarch_COMPILE_DEFINITIONS} )
+##    message(STATUS "Monarch compile definitions: ${Monarch_COMPILE_DEFINITIONS}")
+##else (Katydid_USE_MONARCH)
+##    message(STATUS "Building without Monarch")
+##    add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)
+##    remove_definitions (-DUSE_MONARCH)
+##    remove_definitions (-DUSE_MONARCH2)
+##    remove_definitions (-DUSE_MONARCH3)
+##endif (Katydid_USE_MONARCH)
 
 # Cicada
-if (Katydid_USE_ROOT)
-    pbuilder_add_submodule( Cicada Cicada )
-endif (Katydid_USE_ROOT)
+##if (Katydid_USE_ROOT)
+##    pbuilder_add_submodule( Cicada Cicada )
+##endif (Katydid_USE_ROOT)
 
 
 
@@ -295,40 +306,40 @@ include_directories (BEFORE
 )
 
 add_subdirectory (Source/Utility)
-add_subdirectory (Source/Data)
-add_subdirectory (Source/IO)
-add_subdirectory (Source/Time)
+##add_subdirectory (Source/Data)
+##add_subdirectory (Source/IO)
+##add_subdirectory (Source/Time)
 #add_subdirectory (Source/Simulation)
 #add_subdirectory (Source/Evaluation)
-add_subdirectory (Source/Transform)
-add_subdirectory (Source/SpectrumAnalysis)
-add_subdirectory (Source/EventAnalysis)
-if (Katydid_ENABLE_EXECUTABLES)
-    add_subdirectory (Source/Executables/Main)
-    add_subdirectory (Source/Executables/Profiling)
-    add_subdirectory (Source/Executables/Validation)
-endif (Katydid_ENABLE_EXECUTABLES)
-add_subdirectory (Examples)
+##add_subdirectory (Source/Transform)
+##add_subdirectory (Source/SpectrumAnalysis)
+##add_subdirectory (Source/EventAnalysis)
+##if (Katydid_ENABLE_EXECUTABLES)
+##    add_subdirectory (Source/Executables/Main)
+##    add_subdirectory (Source/Executables/Profiling)
+##    add_subdirectory (Source/Executables/Validation)
+##endif (Katydid_ENABLE_EXECUTABLES)
+##add_subdirectory (Examples)
 
 # Build the main executables (from Nymph, but linked to all of the Katydid libraries)
-nymph_build_executables()
+##nymph_build_executables()
 
 # Python
 
-if (Katydid_USE_PYTHON)
-    python_package_add_module( Source/KatydidPy.cc )
-endif (Katydid_USE_PYTHON)
+##if (Katydid_USE_PYTHON)
+##    python_package_add_module( Source/KatydidPy.cc )
+##endif (Katydid_USE_PYTHON)
 
 # Extract compile definitions to pass to config files
 get_directory_property (Katydid_COMP_DEFS COMPILE_DEFINITIONS)
 
 # Install config files
-pbuilder_install_config_files()
+##pbuilder_install_config_files()
 
 # Install the this_katydid_root script
 configure_file( this_katydid.sh.in this_katydid.sh )
 pbuilder_install_files( ${BIN_INSTALL_DIR} ${CMAKE_CURRENT_BINARY_DIR}/this_katydid.sh )
 
 # Install the example CMakeLists file for building with this installation of Katydid
-configure_file (${PROJECT_SOURCE_DIR}/Examples/CustomApplications/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
-pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Examples/CustomApplications/MyApplication.cc)
+##configure_file (${PROJECT_SOURCE_DIR}/Examples/CustomApplications/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
+##pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Examples/CustomApplications/MyApplication.cc)
