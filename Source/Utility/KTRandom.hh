@@ -8,7 +8,7 @@
 #ifndef KTRANDOM_HH_
 #define KTRANDOM_HH_
 
-#include "KTConfigurable.hh"
+#include "Service.hh"
 
 #include "logger.hh"
 
@@ -35,7 +35,7 @@ namespace Katydid
     // Definition of the RNG engine class
     //**************************************
 
-    class KTRNGEngine : public Nymph::KTSelfConfigurable
+    class KTRNGEngine : public Nymph::Service
     {
         public:
             typedef boost::random::mt19937 generator_type;
@@ -45,10 +45,7 @@ namespace Katydid
             virtual ~KTRNGEngine();
 
         public:
-            using Nymph::KTSelfConfigurable::Configure;
-
-            virtual bool Configure(const scarab::param_node* node);
-            virtual bool IsReady() const;
+            virtual void Configure(const scarab::param_node& node);
 
             virtual void SetSeed(unsigned seed);
 
@@ -57,11 +54,6 @@ namespace Katydid
         private:
             generator_type fGenerator;
     };
-
-    inline bool KTRNGEngine::IsReady() const
-    {
-        return true;
-    }
 
     inline void KTRNGEngine::SetSeed(unsigned seed)
     {
@@ -98,11 +90,10 @@ namespace Katydid
     //*********************************************
 
     template< class Engine >
-    class KTRNGDistribution : public Nymph::KTConfigurable
+    class KTRNGDistribution
     {
         public:
             KTRNGDistribution(Engine* rng = KTGlobalRNGEngine::get_instance(), const std::string& name = "rng") :
-                    KTConfigurable(name),
                     fEngine(rng)
                 {}
             virtual ~KTRNGDistribution() {}
@@ -112,10 +103,6 @@ namespace Katydid
 
         protected:
             Engine* fEngine;
-
-        public:
-            virtual bool Configure(const scarab::param_node* node);
-            virtual bool ConfigureDistribution(const scarab::param_node* node) = 0;
 
     };
 
@@ -131,13 +118,6 @@ namespace Katydid
         fEngine = rng;
         return;
     }
-
-    template< class Engine >
-    inline bool KTRNGDistribution< Engine >::Configure(const scarab::param_node* node)
-    {
-        return this->ConfigureDistribution(node);
-    }
-
 
 
     //*********************
@@ -156,7 +136,7 @@ namespace Katydid
      Available configuration options:
        N/A
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
+    template< typename Engine = KTRNGEngine, typename RealType = double >
     struct KTRNGUniform01 : KTRNGDistribution< Engine >, boost::random::uniform_01<RealType>
     {
         typedef boost::random::uniform_01<RealType> dist_type;
@@ -168,11 +148,6 @@ namespace Katydid
         virtual ~KTRNGUniform01() {}
 
         inline result_type operator()() {return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());}
-
-        inline virtual bool ConfigureDistribution(const scarab::param_node*)
-        {
-            return true;
-        }
     };
 
     /*!
@@ -184,11 +159,13 @@ namespace Katydid
      @details
      Returns a floating point value distributed in the range [min, max)
 
-     Available configuration options:
-       - "min": double -- Minimum for the uniform distribution range (inclusive)
-       - "max": double -- Maximum for the uniform distribution range (exclusive)
+     Distribution parameters:
+       - Minimum for the uniform distribution range (inclusive)
+       - Maximum for the uniform distribution range (exclusive)
+
+     Set the parameters with: `this->param(param_type([min], [max]))`
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
+    template< typename Engine = KTRNGEngine, typename RealType = double >
     struct KTRNGUniform : KTRNGDistribution< Engine >, boost::random::uniform_real_distribution<RealType>
     {
         typedef boost::random::uniform_real_distribution<RealType> dist_type;
@@ -213,14 +190,6 @@ namespace Katydid
         {
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(min, max));
         }
-
-        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
-        {
-            input_type min = node->get_value< input_type >("min", this->a());
-            input_type max = node->get_value< input_type >("max", this->b());
-            this->param(param_type(min, max));
-            return true;
-        }
     };
 
     /*!
@@ -234,11 +203,13 @@ namespace Katydid
 
      The PDF for the distribution is: \f$ p(x) = \frac{1}{\sqrt{2\pi\sigma}} \exp{-\frac{(x-\mu)^2}{2\sigma^2}} \f$
 
-     Available configuration options:
-       - "mean": double -- Mean of the Gaussian distribution
-       - "sigma": double -- Standard deviation of the Gaussian distribution
+     Distribution parameters
+       - Mean of the Gaussian distribution, mu
+       - Standard deviation of the Gaussian distribution, sigma
+
+     Set the parameters with: `this->param(param_type([mean], [stddev]))`
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
+    template< typename Engine = KTRNGEngine, typename RealType = double >
     struct KTRNGGaussian : KTRNGDistribution< Engine >, boost::random::normal_distribution<RealType>
     {
         typedef boost::random::normal_distribution<RealType> dist_type;
@@ -263,14 +234,6 @@ namespace Katydid
         {
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
         }
-
-        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
-        {
-            input_type mean = node->get_value< input_type >("mean", this->mean());
-            input_type sigma = node->get_value< input_type >("sigma", this->sigma());
-            this->param(param_type(mean, sigma));
-            return true;
-        }
     };
 
     /*!
@@ -284,10 +247,12 @@ namespace Katydid
 
      The PDF for the distribution is: \f$ p(i) = \frac{exp{-\lambda}\lambda^i}{i!} \f$
 
-     Available configuration options:
-       - "mean": double -- Mean of the Poisson distribution
+     Distribution parameter:
+       - Mean of the Poisson distribution, lambda
+    
+     Set the parameter with: `this->param(param_type([lambda]))`
     */
-    template< typename Engine = KTGlobalRNGEngine, typename IntType = int, typename RealType = double >
+    template< typename Engine = KTRNGEngine, typename IntType = int, typename RealType = double >
     struct KTRNGPoisson : KTRNGDistribution< Engine >, boost::random::poisson_distribution<IntType, RealType>
     {
         typedef boost::random::poisson_distribution<IntType, RealType> dist_type;
@@ -312,13 +277,6 @@ namespace Katydid
         {
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean));
         }
-
-        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
-        {
-            input_type mean = node->get_value< input_type >("mean", this->mean());
-            this->param(param_type(mean));
-            return true;
-        }
     };
 
     /*!
@@ -332,10 +290,12 @@ namespace Katydid
 
      The PDF for the distribution is: \f$ p(x) = \lambda\exp{-\lambda{}x} \f$
 
-     Available configuration options:
-       - "lambda": double -- rate parameter of the exponential distribution
+     Distribution parameter:
+       - Rate parameter of the exponential distribution, lambda
+
+     Set the parameter with: `this->param(param_type([lambda]))`
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
+    template< typename Engine = KTRNGEngine, typename RealType = double >
     struct KTRNGExponential : KTRNGDistribution< Engine >, boost::random::exponential_distribution<RealType>
     {
         typedef boost::random::exponential_distribution<RealType> dist_type;
@@ -360,13 +320,6 @@ namespace Katydid
         {
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(lambda));
         }
-
-        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
-        {
-            input_type lambda = node->get_value< input_type >("lambda", this->lambda());
-            this->param(param_type(lambda));
-            return true;
-        }
     };
 
     /*!
@@ -380,10 +333,12 @@ namespace Katydid
 
      The PDF for the distribution is: \f$ p(x) = \frac{x^{n/2-1}\exp{-x/2}}{\Gamma(n/2)2^{n/2}} \f$
 
-     Available configuration options:
-       - "lambda": double -- rate parameter of the exponential distribution
+     Distribution parameter:
+       - Degree of the chi-squared function, n
+
+     Set the parameter with: `this->param(param_type([n]))`
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
+    template< typename Engine = KTRNGEngine, typename RealType = double >
     struct KTRNGChiSquared : KTRNGDistribution< Engine >, boost::random::chi_squared_distribution<RealType>
     {
         typedef boost::random::chi_squared_distribution<RealType> dist_type;
@@ -409,11 +364,11 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(n));
         }
 
-        inline virtual bool ConfigureDistribution(const scarab::param_node* node)
+        inline virtual void ConfigureDistribution(const scarab::param_node& node)
         {
-            input_type n = node->get_value< input_type >("n", this->n());
+            input_type n = node.get_value("n", this->n());
             this->param(param_type(n));
-            return true;
+            return;
         }
     };
 

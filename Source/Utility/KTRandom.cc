@@ -16,8 +16,10 @@ namespace Katydid
 {
     //LOGGER(rnglog, "KTRandom");
 
+    REGISTER_SERVICE(Katydid, KTRNGEngine, "rng-engine");
+
     KTRNGEngine::KTRNGEngine(const string& name) :
-            KTSelfConfigurable(name),
+            Nymph::Service(name),
             fGenerator()
     {
     }
@@ -26,17 +28,17 @@ namespace Katydid
     {
     }
 
-    bool KTRNGEngine::Configure(const scarab::param_node* node)
+    void KTRNGEngine::Configure(const scarab::param_node& node)
     {
-        if (node->has("seed"))
+        if (node.has("seed"))
         {
-            SetSeed(node->get_value< unsigned >("seed"));
+            SetSeed(node["seed"]().as_uint());
         }
         else
         {
-            LWARN(rnglog, "The RNG engine <" << fConfigName << "> is being seeded with the default value");
+            LWARN(rnglog, "The RNG engine <" << fName << "> is being seeded with the default value");
         }
-        return true;
+        return;
     }
 
 } /* namespace Katydid */
