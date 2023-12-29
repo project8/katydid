@@ -20,7 +20,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTDBSCAN.hh
     KTDemangle.hh
     KTECDF.hh
-    KTKatydidApp.hh
+    # KTKatydidApp.hh  # Removed 12/28/23 -- functionality may be replaced by RunNymph.hh
     KTMaskedArray.hh
     KTMath.hh
     KTPhysicalArray.hh
@@ -44,7 +44,7 @@ set (UTILITY_SOURCEFILES
     KTAxisProperties.cc
     KTCountHistogram.cc
     KTECDF.cc
-    KTKatydidApp.cc
+    # KTKatydidApp.cc  # Removed 12/28/23 -- functionality may be replaced by RunNymph.cc
     KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
