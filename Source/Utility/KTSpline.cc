@@ -128,9 +128,9 @@ namespace Katydid
         return 1.;
     }
 
-    KTPhysicalArray< 1, double >* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
+    std::shared_ptr< KTSpline::Implementation > KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
     {
-        return NULL;
+        return std::shared_ptr< KTSpline::Implementation >();
     }
 
 #endif
