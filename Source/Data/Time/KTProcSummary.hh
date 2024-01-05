@@ -8,7 +8,7 @@
 #ifndef KTPROCSUMMARY_HH_
 #define KTPROCSUMMARY_HH_
 
-#include "KTMemberVariable.hh"
+#include "MemberVariable.hh"
 
 #include <string>
 
@@ -24,9 +24,9 @@ namespace Katydid
             KTProcSummary& operator=(const KTProcSummary& rhs);
 
         public:
-            MEMBERVARIABLE(unsigned, NSlicesProcessed);
-            MEMBERVARIABLE(unsigned, NRecordsProcessed); /// if any samples from a record were used, it's counted
-            MEMBERVARIABLE(double, IntegratedTime); /// # of slices * slice size * bin width
+            MEMVAR(unsigned, NSlicesProcessed);
+            MEMVAR(unsigned, NRecordsProcessed); /// if any samples from a record were used, it's counted
+            MEMVAR(double, IntegratedTime); /// # of slices * slice size * bin width
     };
 
 } /* namespace Katydid */

@@ -25,11 +25,9 @@ namespace Katydid
     }
 
 
-    const std::string KTTimeSeriesData::sName("time-series");
-
     KTTimeSeriesData::KTTimeSeriesData() :
             KTTimeSeriesDataCore(),
-            KTExtensibleData< KTTimeSeriesData >()
+            Data()
     {
     }
 

@@ -11,7 +11,7 @@
 #ifndef KTTIMESERIESDATA_HH_
 #define KTTIMESERIESDATA_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
 #include "KTTimeSeries.hh"
 
@@ -67,17 +67,13 @@ namespace Katydid
     }
 
 
-
-    class KTTimeSeriesData : public KTTimeSeriesDataCore, public Nymph::KTExtensibleData< KTTimeSeriesData >
+    class KTTimeSeriesData : public KTTimeSeriesDataCore, public Nymph::Data
     {
         public:
             KTTimeSeriesData();
             virtual ~KTTimeSeriesData();
 
             virtual KTTimeSeriesData& SetNComponents(unsigned num);
-
-        public:
-            static const std::string sName;
     };
 
 } /* namespace Katydid */

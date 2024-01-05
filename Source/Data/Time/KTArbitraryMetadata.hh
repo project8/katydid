@@ -8,33 +8,22 @@
 #ifndef KTARBITRARY_METADATA_HH_
 #define KTARBITRARY_METADATA_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
+
+#include "MemberVariable.hh"
 
 #include "param.hh"
 
 
 namespace Katydid
 {
-    class KTArbitraryMetadata : public Nymph::KTExtensibleData< KTArbitraryMetadata >
+    class KTArbitraryMetadata : public Nymph::Data
     {
         public:
             KTArbitraryMetadata();
             virtual ~KTArbitraryMetadata();
 
-            void SetMetadata( scarab::param* metadata );
-            MEMBERVARIABLE_NOSET(scarab::param*, Metadata);
-
-        public:
-            static const std::string sName;
-
+            MEMVAR_PTR(scarab::param*, Metadata);
     };
-
-    inline void KTArbitraryMetadata::SetMetadata( scarab::param* metadata )
-    {
-        delete fMetadata;
-        fMetadata = metadata;
-        return;
-    }
-
 } /* namespace Katydid */
 #endif /* KTARBITRARY_METADATA_HH_ */

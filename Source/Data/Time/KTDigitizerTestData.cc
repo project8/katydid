@@ -11,10 +11,8 @@ using std::vector;
 
 namespace Katydid
 {
-    const std::string KTDigitizerTestData::sName("digitizer-test");
-
     KTDigitizerTestData::KTDigitizerTestData() :
-            KTExtensibleData< KTDigitizerTestData >(),
+            Nymph::Data(),
             fNBits(8),
             fBitOccupancyFlag(false),
             fBitOccupancyData(),

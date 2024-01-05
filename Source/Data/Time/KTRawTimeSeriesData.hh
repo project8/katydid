@@ -8,7 +8,7 @@
 #ifndef KTRAWTIMESERIESDATA_HH_
 #define KTRAWTIMESERIESDATA_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
 #include <vector>
 
@@ -17,7 +17,7 @@ namespace Katydid
     
     class KTRawTimeSeries;
 
-    class KTRawTimeSeriesData : public Nymph::KTExtensibleData< KTRawTimeSeriesData >
+    class KTRawTimeSeriesData : public Nymph::Data
     {
         public:
             KTRawTimeSeriesData();
@@ -32,9 +32,6 @@ namespace Katydid
 
         private:
             std::vector< KTRawTimeSeries* > fTimeSeries;
-
-        public:
-            static const std::string sName;
     };
 
     inline unsigned KTRawTimeSeriesData::GetNComponents() const

@@ -306,7 +306,7 @@ include_directories (BEFORE
 )
 
 add_subdirectory (Source/Utility)
-##add_subdirectory (Source/Data)
+add_subdirectory (Source/Data)
 ##add_subdirectory (Source/IO)
 ##add_subdirectory (Source/Time)
 #add_subdirectory (Source/Simulation)

@@ -11,10 +11,8 @@
 
 namespace Katydid
 {
-    const std::string KTRawTimeSeriesData::sName("raw-time-series");
-
     KTRawTimeSeriesData::KTRawTimeSeriesData() :
-            KTExtensibleData< KTRawTimeSeriesData >()
+            Nymph::Data()
     {
     }
 

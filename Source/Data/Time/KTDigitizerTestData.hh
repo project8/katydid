@@ -8,7 +8,7 @@
 #ifndef KTDIGITIZERTESTDATA_HH_
 #define KTDIGITIZERTESTDATA_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
 #include "KTCountHistogram.hh"
 
@@ -17,7 +17,7 @@
 namespace Katydid
 {
     
-    class KTDigitizerTestData : public Nymph::KTExtensibleData< KTDigitizerTestData >
+    class KTDigitizerTestData : public Nymph::Data
     {
         public:
             KTDigitizerTestData();
@@ -55,10 +55,6 @@ namespace Katydid
             double GetMaxDiffStdevD(unsigned component = 0) const;
             double GetAvgLinRegSlopeD(unsigned componenet = 0) const;
             void SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component = 0);
-
-
-        public:
-            static const std::string sName;
 
         private:
             unsigned fNBits;

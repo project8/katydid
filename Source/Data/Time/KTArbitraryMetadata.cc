@@ -9,10 +9,9 @@
 
 namespace Katydid
 {
-    const std::string KTArbitraryMetadata::sName("arbitrary-metadata");
-
+    
     KTArbitraryMetadata::KTArbitraryMetadata() :
-            KTExtensibleData< KTArbitraryMetadata >(),
+            Nymph::Data(),
             fMetadata(nullptr)
     {
     }

@@ -15,8 +15,6 @@ using std::vector;
 
 namespace Katydid
 {
-    const std::string KTEggHeader::sName("egg-header");
-
     KTChannelHeader::KTChannelHeader() :
             fNumber(0),
             fSource(),
@@ -83,7 +81,7 @@ namespace Katydid
 
 
     KTEggHeader::KTEggHeader() :
-            KTExtensibleData< KTEggHeader >(),
+            Nymph::Data(),
             fFilename(),
             fMetadataFilename(),
             fAcquisitionMode(1),
@@ -184,8 +182,8 @@ namespace Katydid
     std::ostream& operator<<(std::ostream& out, const KTEggHeader& header)
     {
         out << "File header:\n"
-                << "\tFilename: " << header.GetFilename() << '\n'
-                << "\tMetadata Filename: " << header.GetMetadataFilename() << '\n'
+                << "\tFilename: " << header.Filename() << '\n'
+                << "\tMetadata Filename: " << header.MetadataFilename() << '\n'
                 << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " ms\n"
@@ -193,8 +191,8 @@ namespace Katydid
                 << "\tMinimum Frequency: " << header.GetMinimumFrequency() << " Hz\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
                 << "\tMaximum Frequency: " << header.GetMaximumFrequency() << " Hz\n"
-                << "\tTimestamp: " << header.GetTimestamp() << '\n'
-                << "\tDescription: " << header.GetDescription() << '\n';
+                << "\tTimestamp: " << header.Timestamp() << '\n'
+                << "\tDescription: " << header.Description() << '\n';
         for (unsigned iChan = 0; iChan < header.GetNChannels(); ++iChan)
         {
             out << *header.GetChannelHeader(iChan);

@@ -8,9 +8,9 @@
 #ifndef KTSLICEHEADER_HH_
 #define KTSLICEHEADER_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
-#include "KTMemberVariable.hh"
+#include "MemberVariable.hh"
 
 #include <inttypes.h>
 #include <utility>
@@ -19,7 +19,7 @@
 namespace Katydid
 {
     
-    class KTSliceHeader : public Nymph::KTExtensibleData< KTSliceHeader >
+    class KTSliceHeader : public Nymph::Data
     {
         public:
             KTSliceHeader();
@@ -34,25 +34,25 @@ namespace Katydid
             unsigned GetNComponents() const;
             KTSliceHeader& SetNComponents(unsigned num);
 
-            MEMBERVARIABLE(double, TimeInRun); // in sec
-            MEMBERVARIABLE(double, TimeInAcq); // in sec
-            MEMBERVARIABLE(uint64_t, SliceNumber);
-            MEMBERVARIABLE(unsigned, NSlicesIncluded); // for meta-slices
-            MEMBERVARIABLE(bool, IsNewAcquisition);
+            MEMVAR(double, TimeInRun); // in sec
+            MEMVAR(double, TimeInAcq); // in sec
+            MEMVAR(uint64_t, SliceNumber);
+            MEMVAR(unsigned, NSlicesIncluded); // for meta-slices
+            MEMVAR(bool, IsNewAcquisition);
 
-            MEMBERVARIABLE(unsigned, RawSliceSize); // number of bins before any modification
-            MEMBERVARIABLE(unsigned, SliceSize); // number of bins
-            MEMBERVARIABLE(double, SliceLength); // in sec
-            MEMBERVARIABLE(double, NonOverlapFrac); // fraction of the slice for which there is no overlap with another slice
-            MEMBERVARIABLE(double, SampleRate); // in Hz
-            MEMBERVARIABLE(double, BinWidth); // in sec
+            MEMVAR(unsigned, RawSliceSize); // number of bins before any modification
+            MEMVAR(unsigned, SliceSize); // number of bins
+            MEMVAR(double, SliceLength); // in sec
+            MEMVAR(double, NonOverlapFrac); // fraction of the slice for which there is no overlap with another slice
+            MEMVAR(double, SampleRate); // in Hz
+            MEMVAR(double, BinWidth); // in sec
 
-            MEMBERVARIABLE(unsigned, StartRecordNumber); // record in the run in which the slice starts
-            MEMBERVARIABLE(unsigned, StartSampleNumber); // sample number in the start record
-            MEMBERVARIABLE(unsigned, EndRecordNumber); // record in the run in which the slice ends
-            MEMBERVARIABLE(unsigned, EndSampleNumber); // sample number in the end record
+            MEMVAR(unsigned, StartRecordNumber); // record in the run in which the slice starts
+            MEMVAR(unsigned, StartSampleNumber); // sample number in the start record
+            MEMVAR(unsigned, EndRecordNumber); // record in the run in which the slice ends
+            MEMVAR(unsigned, EndSampleNumber); // sample number in the end record
 
-            MEMBERVARIABLE(unsigned, RecordSize); // number of bins in the records on the egg file
+            MEMVAR(unsigned, RecordSize); // number of bins in the records on the egg file
 
         public:
             // Slice information
@@ -96,9 +96,6 @@ namespace Katydid
 
             // Some temporary storage members to avoid allocating new variables
             unsigned fTemp1, fTemp2, fTemp3;
-
-        public:
-            static const std::string sName;
     };
 
     std::ostream& operator<<(std::ostream& out, const KTSliceHeader& hdr);

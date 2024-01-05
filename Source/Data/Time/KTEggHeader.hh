@@ -8,9 +8,9 @@
 #ifndef KTEGGHEADER_HH_
 #define KTEGGHEADER_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
-#include "KTMemberVariable.hh"
+#include "MemberVariable.hh"
 
 #include <string>
 #include <vector>
@@ -36,25 +36,25 @@ namespace Katydid
 
             KTChannelHeader& operator=(const KTChannelHeader& rhs);
 
-            MEMBERVARIABLE( unsigned, Number );
-            MEMBERVARIABLE( std::string, Source );
-            MEMBERVARIABLE(std::size_t, RawSliceSize); /// Number of bins per slice before any modification
-            MEMBERVARIABLE(std::size_t, SliceSize); /// Number of bins per slice after any initial modification (e.g. by the DAC)
-            MEMBERVARIABLE(std::size_t, SliceStride); /// Number of bins between slices
-            MEMBERVARIABLE(std::size_t, RecordSize); /// Number of bins per Monarch record
-            MEMBERVARIABLE( unsigned, SampleSize );
-            MEMBERVARIABLE( unsigned, DataTypeSize );
-            MEMBERVARIABLE( unsigned, DataFormat );
-            MEMBERVARIABLE( unsigned, BitDepth );
-            MEMBERVARIABLE( unsigned, BitAlignment );
-            MEMBERVARIABLE( double, VoltageOffset );
-            MEMBERVARIABLE( double, VoltageRange );
-            MEMBERVARIABLE( double, DACGain );
-            MEMBERVARIABLE(TimeSeriesDataType, TSDataType );
+            MEMVAR( unsigned, Number );
+            MEMVAR( std::string, Source );
+            MEMVAR(std::size_t, RawSliceSize); /// Number of bins per slice before any modification
+            MEMVAR(std::size_t, SliceSize); /// Number of bins per slice after any initial modification (e.g. by the DAC)
+            MEMVAR(std::size_t, SliceStride); /// Number of bins between slices
+            MEMVAR(std::size_t, RecordSize); /// Number of bins per Monarch record
+            MEMVAR( unsigned, SampleSize );
+            MEMVAR( unsigned, DataTypeSize );
+            MEMVAR( unsigned, DataFormat );
+            MEMVAR( unsigned, BitDepth );
+            MEMVAR( unsigned, BitAlignment );
+            MEMVAR( double, VoltageOffset );
+            MEMVAR( double, VoltageRange );
+            MEMVAR( double, DACGain );
+            MEMVAR(TimeSeriesDataType, TSDataType );
     };
 
 
-    class KTEggHeader : public Nymph::KTExtensibleData< KTEggHeader >
+    class KTEggHeader : public Nymph::Data
     {
         public:
             KTEggHeader();
@@ -63,16 +63,16 @@ namespace Katydid
 
             KTEggHeader& operator=(const KTEggHeader& rhs);
 
-            MEMBERVARIABLEREF(std::string, Filename);
-            MEMBERVARIABLEREF(std::string, MetadataFilename);
-            MEMBERVARIABLE(unsigned, AcquisitionMode);
-            MEMBERVARIABLE(unsigned, RunDuration);  /// in ms
-            MEMBERVARIABLE(double, AcquisitionRate); /// in Hz
-            MEMBERVARIABLE(double, CenterFrequency); /// in Hz
-            MEMBERVARIABLE(double, MinimumFrequency); /// in Hz
-            MEMBERVARIABLE(double, MaximumFrequency); /// in Hz
-            MEMBERVARIABLEREF(std::string, Timestamp);
-            MEMBERVARIABLEREF(std::string, Description);
+            MEMVAR_REF(std::string, Filename);
+            MEMVAR_REF(std::string, MetadataFilename);
+            MEMVAR(unsigned, AcquisitionMode);
+            MEMVAR(unsigned, RunDuration);  /// in ms
+            MEMVAR(double, AcquisitionRate); /// in Hz
+            MEMVAR(double, CenterFrequency); /// in Hz
+            MEMVAR(double, MinimumFrequency); /// in Hz
+            MEMVAR(double, MaximumFrequency); /// in Hz
+            MEMVAR_REF(std::string, Timestamp);
+            MEMVAR_REF(std::string, Description);
 
             unsigned GetNChannels() const;
             KTEggHeader& SetNChannels(unsigned nChannels);
@@ -83,9 +83,6 @@ namespace Katydid
 
         private:
             std::vector< KTChannelHeader* > fChannelHeaders;
-
-        public:
-            static const std::string sName;
     };
 
     std::ostream& operator<<(std::ostream& out, const KTChannelHeader& header);

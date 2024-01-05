@@ -13,7 +13,7 @@
 
 #include "KTVarTypePhysicalArray.hh"
 
-#include "KTMemberVariable.hh"
+#include "MemberVariable.hh"
 
 namespace Katydid
 {
@@ -33,7 +33,7 @@ namespace Katydid
             template< typename XInterfaceType >
             KTVarTypePhysicalArray< XInterfaceType > CreateInterface() const;
 
-            MEMBERVARIABLE(size_t, SampleSize);
+            MEMVAR(size_t, SampleSize);
 
     };
 

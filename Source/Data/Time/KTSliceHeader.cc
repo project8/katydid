@@ -11,10 +11,8 @@
 
 namespace Katydid
 {
-    const std::string KTSliceHeader::sName("slice-header");
-
     KTSliceHeader::KTSliceHeader() :
-            KTExtensibleData< KTSliceHeader >(),
+            Data(),
             fTimeInRun(0.),
             fTimeInAcq(0.),
             fSliceNumber(0),
@@ -37,7 +35,7 @@ namespace Katydid
     }
 
     KTSliceHeader::KTSliceHeader(const KTSliceHeader& orig) :
-            KTExtensibleData< KTSliceHeader >(orig),
+            Data(orig),
             fTimeInRun(orig.fTimeInRun),
             fTimeInAcq(orig.fTimeInAcq),
             fSliceNumber(orig.fSliceNumber),
@@ -65,7 +63,7 @@ namespace Katydid
 
     KTSliceHeader& KTSliceHeader::operator=(const KTSliceHeader& rhs)
     {
-        KTExtensibleData< KTSliceHeader >::operator=(rhs);
+        Data::operator=(rhs);
         CopySliceHeaderOnly(rhs);
         return *this;
     }
