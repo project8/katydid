@@ -26,11 +26,9 @@ namespace Katydid
     }
 
 
-    const std::string KTFrequencySpectrumDataFFTW::sName("frequency-spectrum-fftw");
-
     KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW() :
             KTFrequencySpectrumDataFFTWCore(),
-            KTExtensibleData< KTFrequencySpectrumDataFFTW >()
+            Data()
     {
     }
 
@@ -56,11 +54,9 @@ namespace Katydid
     }
 
 
-    const std::string KTFrequencySpectrumVarianceDataFFTW::sName("frequency-spectrum-variance-fftw");
-
     KTFrequencySpectrumVarianceDataFFTW::KTFrequencySpectrumVarianceDataFFTW() :
             KTFrequencySpectrumVarianceDataCore(),
-            KTExtensibleData()
+            Data()
     {
     }
 

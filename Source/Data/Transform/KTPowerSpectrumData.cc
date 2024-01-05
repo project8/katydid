@@ -25,11 +25,9 @@ namespace Katydid
     }
 
 
-    const std::string KTPowerSpectrumData::sName("power-spectrum");
-
     KTPowerSpectrumData::KTPowerSpectrumData() :
             KTPowerSpectrumDataCore(),
-            KTExtensibleData()
+            Data()
     {
     }
 
@@ -55,11 +53,9 @@ namespace Katydid
     }
 
 
-    const std::string KTPowerSpectrumVarianceData::sName("power-spectrum-variance");
-
     KTPowerSpectrumVarianceData::KTPowerSpectrumVarianceData() :
             KTFrequencySpectrumVarianceDataCore(),
-            KTExtensibleData()
+            Data()
     {
     }
 

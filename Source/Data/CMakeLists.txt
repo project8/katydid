@@ -55,16 +55,16 @@ set (DATA_HEADERFILES
     #Evaluation/KTMCTruthEvents.hh
 
 ##    Transform/KTConvolvedSpectrumData.hh
-##    Transform/KTFrequencyDomainArray.hh
-##    Transform/KTFrequencySpectrum.hh
-##    Transform/KTFrequencySpectrumDataFFTW.hh
-##    Transform/KTFrequencySpectrumDataPolar.hh
-##    Transform/KTFrequencySpectrumFFTW.hh
-##    Transform/KTFrequencySpectrumPolar.hh
-##    Transform/KTFrequencySpectrumVariance.hh
-##    Transform/KTFrequencySpectrumVarianceData.hh
-##    Transform/KTPowerSpectrum.hh
-##    Transform/KTPowerSpectrumData.hh
+    Transform/KTFrequencyDomainArray.hh
+    Transform/KTFrequencySpectrum.hh
+    Transform/KTFrequencySpectrumDataFFTW.hh
+    Transform/KTFrequencySpectrumDataPolar.hh
+    Transform/KTFrequencySpectrumFFTW.hh
+    Transform/KTFrequencySpectrumPolar.hh
+    Transform/KTFrequencySpectrumVariance.hh
+    Transform/KTFrequencySpectrumVarianceData.hh
+    Transform/KTPowerSpectrum.hh
+    Transform/KTPowerSpectrumData.hh
 ##    Transform/KTPowerSpectrumUncertaintyData.hh
 ##    Transform/KTMultiFSDataFFTW.hh
 ##    Transform/KTMultiFSDataPolar.hh
@@ -125,19 +125,19 @@ set (DATA_SOURCEFILES
     #Evaluation/KTMCTruthEvents.cc
 
 ##    Transform/KTConvolvedSpectrumData.cc
-##    Transform/KTFrequencyDomainArray.cc
-##    Transform/KTFrequencySpectrum.cc
-##    Transform/KTFrequencySpectrumDataFFTW.cc
-##    Transform/KTFrequencySpectrumDataPolar.cc
-##    Transform/KTFrequencySpectrumFFTW.cc
-##    Transform/KTFrequencySpectrumPolar.cc
-##    Transform/KTFrequencySpectrumVariance.cc
-##    Transform/KTFrequencySpectrumVarianceData.cc
+    Transform/KTFrequencyDomainArray.cc
+    Transform/KTFrequencySpectrum.cc
+    Transform/KTFrequencySpectrumDataFFTW.cc
+    Transform/KTFrequencySpectrumDataPolar.cc
+    Transform/KTFrequencySpectrumFFTW.cc
+    Transform/KTFrequencySpectrumPolar.cc
+    Transform/KTFrequencySpectrumVariance.cc
+    Transform/KTFrequencySpectrumVarianceData.cc
 ##    Transform/KTMultiFSDataFFTW.cc
 ##    Transform/KTMultiFSDataPolar.cc
 ##    Transform/KTMultiPSData.cc
-##    Transform/KTPowerSpectrum.cc
-##    Transform/KTPowerSpectrumData.cc
+    Transform/KTPowerSpectrum.cc
+    Transform/KTPowerSpectrumData.cc
 ##    Transform/KTPowerSpectrumUncertaintyData.cc
 ##    Transform/KTTimeFrequency.cc
 ##    Transform/KTTimeFrequencyDataPolar.cc

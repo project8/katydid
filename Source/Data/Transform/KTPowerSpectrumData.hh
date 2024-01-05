@@ -8,7 +8,7 @@
 #ifndef KTPOWERSPECTRUMDATA_HH_
 #define KTPOWERSPECTRUMDATA_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
 #include "KTFrequencySpectrumVarianceData.hh"
 #include "KTPowerSpectrum.hh"
@@ -45,31 +45,23 @@ namespace Katydid
     };
 
 
-    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumData >
+    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public Nymph::Data
     {
         public:
             KTPowerSpectrumData();
             virtual ~KTPowerSpectrumData();
 
             KTPowerSpectrumData& SetNComponents(unsigned channels);
-
-        public:
-            static const std::string sName;
-
     };
 
 
-    class KTPowerSpectrumVarianceData : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTPowerSpectrumVarianceData >
+    class KTPowerSpectrumVarianceData : public KTFrequencySpectrumVarianceDataCore, public Nymph::Data
     {
         public:
             KTPowerSpectrumVarianceData();
             virtual ~KTPowerSpectrumVarianceData();
 
             KTPowerSpectrumVarianceData& SetNComponents(unsigned channels);
-
-        public:
-            static const std::string sName;
-
     };
 
 

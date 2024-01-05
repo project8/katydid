@@ -8,7 +8,7 @@
 #ifndef KTFREQUENCYSPECTRUMDATAPOLAR_HH_
 #define KTFREQUENCYSPECTRUMDATAPOLAR_HH_
 
-#include "KTData.hh"
+#include "Data.hh"
 
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumVarianceData.hh"
@@ -49,31 +49,23 @@ namespace Katydid
     };
 
 
-    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::KTExtensibleData< KTFrequencySpectrumDataPolar >
+    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public Nymph::Data
     {
         public:
             KTFrequencySpectrumDataPolar();
             virtual ~KTFrequencySpectrumDataPolar();
 
             KTFrequencySpectrumDataPolar& SetNComponents(unsigned component);
-
-        public:
-            static const std::string sName;
-
     };
 
 
-    class KTFrequencySpectrumVarianceDataPolar : public KTFrequencySpectrumVarianceDataCore, public Nymph::KTExtensibleData< KTFrequencySpectrumVarianceDataPolar >
+    class KTFrequencySpectrumVarianceDataPolar : public KTFrequencySpectrumVarianceDataCore, public Nymph::Data
     {
         public:
             KTFrequencySpectrumVarianceDataPolar();
             virtual ~KTFrequencySpectrumVarianceDataPolar();
 
             KTFrequencySpectrumVarianceDataPolar& SetNComponents(unsigned channels);
-
-        public:
-            static const std::string sName;
-
     };
 
 
