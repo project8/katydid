@@ -11,7 +11,8 @@
 #include "KTAxisProperties.hh"
 
 #include "KTConstants.hh"
-#include "KTException.hh"
+
+#include "Exception.hh"
 
 #include <cstring> // for memcpy
 
@@ -286,11 +287,7 @@ namespace Katydid
             fArrayGetFcn(NULL),
             fArraySetFcn(NULL)
     {
-        try
-        {
-            SetInterface( KTVTPATypeInfo< XDataType >::Size(), KTVTPATypeInfo< XDataType >::DataFormat() );
-        }
-        catch( Nymph::KTException& e ) {throw e;}
+        SetInterface( KTVTPATypeInfo< XDataType >::Size(), KTVTPATypeInfo< XDataType >::DataFormat() );
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
     }
 
@@ -317,11 +314,7 @@ namespace Katydid
             fArrayGetFcn(NULL),
             fArraySetFcn(NULL)
     {
-        try
-        {
-            SetInterfaceFunctions( dataTypeSize, dataFormat );
-        }
-        catch( Nymph::KTException& e ) {throw e;}
+        SetInterfaceFunctions( dataTypeSize, dataFormat );
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
     }
 
@@ -408,7 +401,7 @@ namespace Katydid
             }
             else
             {
-                throw Nymph::KTException() << "Unable to make a digitized unsigned data interface with data type size " << aDataTypeSize;
+                THROW_EXCEPT_HERE(Nymph::Exception() << "Unable to make a digitized unsigned data interface with data type size " << aDataTypeSize);
             }
         }
         else if( aDataFormat == sDigitizedS )
@@ -435,7 +428,7 @@ namespace Katydid
             }
             else
             {
-                throw Nymph::KTException() << "Unable to make a digitized signed data interface with data type size " << aDataTypeSize;
+                THROW_EXCEPT_HERE(Nymph::Exception() << "Unable to make a digitized signed data interface with data type size " << aDataTypeSize);
             }
         }
         else if( aDataFormat == sAnalog )
@@ -452,12 +445,12 @@ namespace Katydid
             }
             else
             {
-                throw Nymph::KTException() << "Unable to make a analog data interface with data type size " << aDataTypeSize;
+                THROW_EXCEPT_HERE(Nymph::Exception() << "Unable to make a analog data interface with data type size " << aDataTypeSize);
             }
         }
         else
         {
-            throw Nymph::KTException() << "Invalid combination of data format <" << aDataFormat << ">, data type size <" << aDataTypeSize << ">";
+            THROW_EXCEPT_HERE(Nymph::Exception() << "Invalid combination of data format <" << aDataFormat << ">, data type size <" << aDataTypeSize << ">");
         }
         return;
     }
