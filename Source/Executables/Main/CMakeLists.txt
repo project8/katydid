@@ -3,28 +3,39 @@
 
 if( Katydid_ENABLE_EXECUTABLES )
 
-    # Executables
-
-    get_property( all_libs GLOBAL PROPERTY ${PROJECT_NAME}_LIBRARIES )
-    message(STATUS "Katydid exectuables library dependencies: ${all_libs}" )
-
-    set( programs
-        Katydid
-        Truncate
+    set( Katydid_LIBS
+    
     )
-    
-    if (Katydid_USE_MONARCH)
-        set( programs ${programs}
-            EggScanner
-        )
-    endif (Katydid_USE_MONARCH)
-    
-    if (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
-         set( programs ${programs}
-            RSAMatToEgg
-        )
-    endif (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
 
-    pbuilder_executables( programs all_libs )
+    set( Katydid_SOURCES
+        Katydid.cc
+#        Truncate.cc
+    )
+
+#    if (Katydid_USE_MONARCH)
+#        list( APPEND Katydid_SOURCES
+#            EggScanner.cc
+#        )
+#    endif (Katydid_USE_MONARCH)
+    
+#    if (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
+#        list( APPEND Katydid_SOURCES
+#            RSAMatToEgg.cc
+#        )
+#    endif (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
+
+    set( Katydid_PROGRAMS )
+    pbuilder_executables( 
+        SOURCES ${Katydid_SOURCES}
+        TARGETS_VAR Katydid_PROGRAMS
+        PROJECT_LIBRARIES ${Katydid_LIBS}
+    #    PUBLIC_EXTERNAL_LIBRARIES ${PUBLIC_EXE_LIBRARIES}
+    #    PRIVATE_EXTERNAL_LIBRARIES ${PRIVATE_EXE_LIBS}
+    )
+
+    pbuilder_component_install_and_export( 
+        COMPONENT Executables
+        EXETARGETS ${Katydid_PROGRAMS}
+    )
 
 endif( Katydid_ENABLE_EXECUTABLES )

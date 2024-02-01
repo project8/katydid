@@ -2,21 +2,23 @@
  * Katydid.cc
  *
  *  Created on: Sep 28, 2012
- *      Author: nsoblath
+ *      Author: N.S. Oblath
+ *  Updated on: Jan 24, 2024
+ *      Author: N.S. Oblath
  *
  *  This program will run any processor-based code in Katydid.
  *  All of the action is setup with a config file.
- *  See KTProcessorToolbox for details on the configuration option.
+ *  See Nymph::ProcessorToolbox for details on the configuration option.
  */
 
-#include "KTKatydidApp.hh"
-#include "logger.hh"
-#include "KTRunNymph.hh"
+#include "RunNymph.hh"
 
-#include <memory>
+#include "application.hh"
+#include "logger.hh"
+#include "param_codec.hh"
+#include "signal_handler.hh"
 
 LOGGER( katydidlog, "Katydid" );
-
 
 int main( int argc, char** argv )
 {
@@ -50,15 +52,29 @@ int main( int argc, char** argv )
             "                                    $=                                          \n" <<
             "                                    =                                           \n");
 
-    try
-    {
-        std::shared_ptr< Katydid::KTKatydidApp > app = std::make_shared< Katydid::KTKatydidApp >( argc, argv );
-        return Nymph::RunNymph( std::dynamic_pointer_cast< Nymph::KTApplication >( app ) );
-    }
-    catch( std::exception& e )
-    {
-        LERROR( katydidlog, "Exception caught:\n" << e.what() );
-        return -1;
-    }
+    // Start handling signals
+    scarab::signal_handler t_sig_hand;
 
+    // Create the application
+    scarab::main_app the_main;
+
+    // Set the default verbosity
+    the_main.set_global_verbosity(scarab::logger::ELevel::eDebug);
+
+    // add the typical CL options
+    Nymph::AddRunNymphOptions( the_main );
+
+    //Runs RunNymph() and sets  the_return based on its return value
+    int the_return = -1;
+    auto t_callback = [&](){
+        the_return = Nymph::RunNymph( the_main.primary_config() );
+    };
+
+    the_main.callback( t_callback );
+
+    // Parse CL options and run the application
+    CLI11_PARSE( the_main, argc, argv );
+
+	return the_return;
+    
 }
