@@ -62,7 +62,7 @@ Directory Structure
 Tips on Installing the Dependencies
 -----------------------------------
 
-MacOS: [Homebrew](https://brew.sh/) is a convenient package manager. Before using it for the installation, make sure that the version available on brew is compatible with what is listed in the dependency list above. [CMake](http://brewformulas.org/Cmake), [Boost](http://brewformulas.org/Boost), [Hdf5](http://brewformulas.org/Hdf5), [Protobuf](http://brewformulas.org/Protobuf), and [Root](http://brewformulas.org/root) are all available through brew via the instructions in these links.
+MacOS: [Homebrew](https://brew.sh/) is a convenient package manager. Before using it for the installation, make sure that the version available on brew is compatible with what is listed in the dependency list above. [CMake](https://formulae.brew.sh/formula/cmake#default), [Boost](https://formulae.brew.sh/formula/boost#default), [Hdf5](https://formulae.brew.sh/formula/hdf5#default), [Protobuf](https://formulae.brew.sh/formula/protobuf#default), and [Root](https://formulae.brew.sh/formula/root#default) are all available through brew via the instructions in these links.
 
 
 Installing
