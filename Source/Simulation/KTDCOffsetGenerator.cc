@@ -31,21 +31,21 @@ namespace Katydid
     {
     }
 
-    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
+    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param* node) //changed scarab::param_node to scarab::param
     {
         if (node == NULL) return false;
 
-        const KTParamArray* offsetPairs = node->ArrayAt("offsets");
-        if (offsetPairs != NULL)
+        const param_array offset_pairs = node->array_at("offsets");
+        if (offset_pairs != NULL)
         {
-            for (KTParamArray::const_iterator pairIt = offsetPairs->Begin(); pairIt != offsetPairs->End(); ++pairIt)
+            for (param_array::const_iterator pair_it = offset_pairs->begin(); pair_it != offset_pairs->end(); ++pair_it)
             {
-                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                if (! ((*pair_it)->is_array() && (*pair_it)->as_array().Size() == 2))
                 {
-                    KTERROR(genlog, "Invalid pair: " << (*pairIt)->ToString());
+                    KTERROR(genlog, "Invalid pair: " << (*pair_it)->ToString());
                     return false;
                 }
-                UIntDoublePair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< double >(1));
+                UIntDoublePair pair((*pair_it)->as_array().get_value<unsigned>(0), (*pair_it)->as_array().get_value<double>(1));
                 if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
                 fOffsets[pair.first] = pair.second;
             }

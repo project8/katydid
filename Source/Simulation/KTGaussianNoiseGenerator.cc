@@ -32,7 +32,7 @@ namespace Katydid
     {
     }
 
-    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
+    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node) //I changed this to scarab::param somewhere else
     {
         if (node == NULL) return false;
 

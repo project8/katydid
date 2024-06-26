@@ -1,0 +1,50 @@
+processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: forward-fftw
+        name: fft
+      - type: root-spectrogram-writer
+        name: writer
+      - type: gaussian-noise-generator
+        name: noise_gen
+      - type: power-spectrum #this is from the KTPowerSpectrumData.cc not .hh
+        name: pow_spec
+    
+
+    connections:
+      - signal: "egg:header"
+        slot: "noise_gen:header" 
+      - signal: "egg:ts"
+        slot: "noise_gen:slice"
+      - signal: "noise_gen:slice"
+        slot: "fft:ts-fftw"
+      - signal: "fft:fft"
+        slot: "writer:fs-fftw" #there are no slots or signals in KTSpectrumData cc or hh so hopefully this is the right order
+      - signal: "egg:egg-done"
+        slot: "writer:write-file"
+
+    run-queue:
+      - egg
+
+egg:
+    filename: "test_input.egg"
+    egg-reader: egg3
+    slice-size: 4096
+    number-of-slices: 0
+
+fft:
+    transform-flag: ESTIMATE
+
+noise_gen:
+    mean: 0.0000000000004
+    sigma: 0.0000000000004
+
+writer:
+    output-file: "test_output_june.root"
+    file-flag: recreate
+    min-time: 0.0
+    max-time: 0.1
+    min-freq: 0.0
+    max-freq: 100.0e6
+    

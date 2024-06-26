@@ -123,9 +123,11 @@ namespace Katydid
             // Signals
             //***************
         private:
-            Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            //Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal; this was the old one
+            Nymph::KTSignalOneArg< KTEggHeader* > fHeaderSignal; //this is the new one according to KTEggProcessor.hh in Source/Time could still be wrong tho
+            //compare in soruce/time directory in KTeggprocessor make the header signal look the same also check done signal in line129
             Nymph::KTSignalData fDataSignal;
-            Nymph::KTSignalOneArg< void > fDoneSignal;
+            Nymph::KTSignalOneArg< void > fDoneSignal; //this looks the same as last 
             Nymph::KTSignalOneArg< const KTProcSummary* > fSummarySignal;
     };
 

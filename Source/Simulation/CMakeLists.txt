@@ -15,16 +15,16 @@ set (SIMULATION_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTSGenerator.cc
 )
 
-#if (ROOT_FOUND)
-#    set (SIMULATION_HEADERFILES 
-#        ${SIMULATION_HEADERFILES}   
-#        ${CMAKE_CURRENT_SOURCE_DIR}/KT.hh
-#    )
-#    set (SIMULATION_SOURCEFILES
-#        ${SIMULATION_SOURCEFILES}
-#        ${CMAKE_CURRENT_SOURCE_DIR}/KT.cc
-#    )
-#endif (ROOT_FOUND)
+if (ROOT_FOUND)
+   set (SIMULATION_HEADERFILES 
+       ${SIMULATION_HEADERFILES}   
+       ${CMAKE_CURRENT_SOURCE_DIR}/KTTSGenerator.hh #changed from /KT.hh
+   )
+   set (SIMULATION_SOURCEFILES
+       ${SIMULATION_SOURCEFILES}
+       ${CMAKE_CURRENT_SOURCE_DIR}/KTTSGenerator.cc #changed from /KT.cc
+   )
+endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
