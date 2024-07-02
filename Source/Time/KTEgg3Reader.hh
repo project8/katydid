@@ -60,6 +60,8 @@ namespace Katydid
                 unsigned fStartOfLastSliceReadPtr;
                 unsigned fStartOfSliceAcquisitionId;
                 unsigned fCurrentRecord;
+                unsigned fFileNumber;
+
                 Status fStatus;
             };
 

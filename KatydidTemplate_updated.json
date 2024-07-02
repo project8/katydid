@@ -1,0 +1,519 @@
+{
+    "processor-toolbox": {
+        "processors": [
+            {
+                "type": "egg-processor",
+                "name": "egg1"
+            },
+            {
+                "type": "forward-fftw",
+                "name": "fft1"
+            },
+            {
+                "type": "convert-to-power",
+                "name": "to-ps1"
+            },
+            {
+                "type": "egg-processor",
+                "name": "egg2"
+            },
+            {
+                "type": "forward-fftw",
+                "name": "fft2"
+            },
+            {
+                "type": "convert-to-power",
+                "name": "to-ps2"
+            },
+            {
+                "type": "data-accumulator",
+                "name": "acc"
+            },
+            {
+                "type": "gain-variation",
+                "name": "gainvar"
+            },
+            {
+                "type": "variable-spectrum-discriminator",
+                "name": "discrim"
+            },
+            {
+                "type": "sequential-track-finder",
+                "name": "seq-tr-clust"
+            },
+            {
+                "type": "overlapping-track-clustering",
+                "name": "otc"
+            },
+            {
+                "type": "iterative-track-clustering",
+                "name": "itc"
+            },
+            {
+                "type": "track-proc-ws",
+                "name": "tr-proc-ws"
+            },
+            {
+                "type": "multi-peak-track-builder",
+                "name": "mptb"
+            },
+            {
+                "type": "multi-peak-event-builder",
+                "name": "mpeb"
+            },
+            {
+                "type": "apply-cut",
+                "name": "ac1b"
+            },
+            {
+                "type": "apply-cut",
+                "name": "event-nup-cut"
+            },
+            {
+                "type": "apply-cut",
+                "name": "event-time-cut"
+            },
+            {
+                "type": "basic-root-writer",
+                "name": "brw"
+            },
+            {
+                "type": "root-tree-writer",
+                "name": "trw"
+            },
+            {
+                "type": "root-spectrogram-writer",
+                "name": "waterfall-writer"
+            }
+        ],
+        "connections": [
+            {
+                "signal": "egg1:header",
+                "slot": "fft1:header"
+            },
+            {
+                "signal": "egg1:ts",
+                "slot": "fft1:ts-fftw"
+            },
+            {
+                "signal": "fft1:fft",
+                "slot": "to-ps1:fs-fftw-to-psd"
+            },
+            {
+                "signal": "to-ps1:psd",
+                "slot": "acc:ps"
+            },
+            {
+                "signal": "to-ps1:psd",
+                "slot": "waterfall-writer:psd"
+            },
+            {
+                "signal": "egg1:egg-done",
+                "slot": "waterfall-writer:write-file"
+            },
+            {
+                "signal": "acc:ps-finished",
+                "slot": "gainvar:ps-var"
+            },
+            {
+                "signal": "acc:ps-finished",
+                "slot": "brw:psd"
+            },
+            {
+                "signal": "gainvar:gain-var",
+                "slot": "brw:gain-var"
+            },
+            {
+                "signal": "gainvar:gain-var",
+                "slot": "discrim:gv"
+            },
+            {
+                "signal": "egg2:header",
+                "slot": "fft2:header"
+            },
+            {
+                "signal": "egg2:ts",
+                "slot": "fft2:ts-fftw"
+            },
+            {
+                "signal": "fft2:fft",
+                "slot": "to-ps2:fs-fftw-to-psd"
+            },
+            {
+                "signal": "to-ps2:psd",
+                "slot": "discrim:ps-pre"
+            },
+            {
+                "signal": "discrim:disc-1d",
+                "slot": "seq-tr-clust:disc-1d"
+            },
+            {
+                "signal": "seq-tr-clust:seq-cand",
+                "slot": "otc:seq-cand"
+            },
+            {
+                "signal": "otc:seq-cand",
+                "slot": "itc:seq-cand"
+            },
+            {
+                "signal": "itc:seq-cand",
+                "slot": "ac1b:apply"
+            },
+            {
+                "signal": "ac1b:pass",
+                "slot": "tr-proc-ws:seq-cand"
+            },
+            {
+                "signal": "tr-proc-ws:track",
+                "slot": "mptb:track"
+            },
+            {
+                "signal": "tr-proc-ws:track",
+                "slot": "trw:proc-track"
+            },
+            {
+                "signal": "egg2:egg-done",
+                "slot": "seq-tr-clust:done"
+            },
+            {
+                "signal": "seq-tr-clust:clustering-done",
+                "slot": "otc:do-clustering"
+            },
+            {
+                "signal": "otc:clustering-done",
+                "slot": "itc:do-clustering"
+            },
+            {
+                "signal": "itc:clustering-done",
+                "slot": "mptb:do-clustering"
+            },
+            {
+                "signal": "mptb:mpt",
+                "slot": "mpeb:mpt"
+            },
+            {
+                "signal": "mptb:mpt-done",
+                "slot": "mpeb:do-clustering"
+            },
+            {
+                "signal": "mpeb:event",
+                "slot": "event-nup-cut:apply"
+            },
+            {
+                "signal": "event-nup-cut:pass",
+                "slot": "event-time-cut:apply"
+            },
+            {
+                "signal": "event-time-cut:pass",
+                "slot": "trw:mt-event"
+            }
+        ],
+        "run-queue": [
+            "egg1",
+            "egg2"
+        ]
+    },
+    "egg1": {
+        "filenames": ["/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_copy.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_another_copy.egg"],
+        "egg-reader": "egg3",
+        "number-of-slices": 400,
+        "slice-size": 8192
+    },
+    "fft1": {
+        "transform-flag": "ESTIMATE"
+    },
+    "waterfall-writer": {
+        "output-file": "/katydid/output/spectrogram_output.root",
+        "file-flag": "recreate",
+        "min-time": 0.0,
+        "max-time": 0.2,
+        "min-freq": 0.0,
+        "max-freq": 403000000.0
+    },
+    "acc": {
+        "number-to-average": 0,
+        "signal-interval": 0
+    },
+    "gainvar": {
+        "normalize": false,
+        "min-frequency": 0,
+        "max-frequency": 403000000.0,
+        "fit-points": 50
+    },
+    "egg2": {
+        "filenames": ["/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_copy.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_another_copy.egg"],
+        "egg-reader": "egg3",
+        "number-of-slices": 400,
+        "slice-size": 8192
+    },
+    "fft2": {
+        "transform-flag": "ESTIMATE"
+    },
+    "discrim": {
+        "min-frequency": 0.0,
+        "max-frequency": 403000000.0,
+        "sigma-threshold": 3.0,
+        "normalize": true,
+        "neighborhood-radius": 2
+    },
+    "seq-tr-clust": {
+        "min-frequency": 0.0,
+        "max-frequency": 403000000.0,
+        "initial-slope": 800000000,
+        "slope-method": "weighted-first-point-ref",
+        "n-slope-points": 10,
+        "time-gap-tolerance": 0.0001,
+        "frequency-acceptance": 56000,
+        "trimming-threshold": 6,
+        "min-points": 3,
+        "min-slope": 0
+    },
+    "otc": {
+        "max-track-width": 150000
+    },
+    "itc": {
+        "time-gap-tolerance": 0.001,
+        "frequency-acceptance": 100000,
+        "max-track-width": 100000
+    },
+    "tr-proc-ws": {
+        "min-slope": 0
+    },
+    "mptb": {
+        "sideband-time-tol": 0.001
+    },
+    "mpeb": {
+        "jump-time-tol": 0.003
+    },
+    "ac1b": {
+        "seq-line-nup-cut": {
+            "min-total-nup": 0,
+            "min-average-nup": 7,
+            "time-or-bin-average": "bin",
+            "wide-or-narrow": "wide"
+        }
+    },
+    "event-nup-cut": {
+        "ntracks-npoints-nup-cut": {
+            "wide-or-narrow": "wide",
+            "time-or-bin-average": "bin",
+            "default-parameters": {
+                "min-total-nup": 0,
+                "min-average-nup": 7.454357052489394,
+                "min-max-nup": 0
+            },
+            "parameters": [
+                {
+                    "ft-npoints": 3,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 15.74668644848628,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 3,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 14.396403491431705,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 3,
+                    "ntracks": 3,
+                    "min-total-nup": 0,
+                    "min-average-nup": 13.032932650345844,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 3,
+                    "ntracks": 4,
+                    "min-total-nup": 0,
+                    "min-average-nup": 11.651179906121854,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 3,
+                    "ntracks": 5,
+                    "min-total-nup": 0,
+                    "min-average-nup": 10.242207772240628,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 3,
+                    "ntracks": 6,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.78782196327628,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 4,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 12.735418234003228,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 4,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 11.681651640175646,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 4,
+                    "ntracks": 3,
+                    "min-total-nup": 0,
+                    "min-average-nup": 10.610759932504259,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 4,
+                    "ntracks": 4,
+                    "min-total-nup": 0,
+                    "min-average-nup": 9.515056968514685,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 4,
+                    "ntracks": 5,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.379691045166915,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 5,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 10.869025304065605,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 5,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 9.987041877860296,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 5,
+                    "ntracks": 3,
+                    "min-total-nup": 0,
+                    "min-average-nup": 9.083012737896947,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 5,
+                    "ntracks": 4,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.144983909889586,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 6,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 9.831510394306793,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 6,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 9.148730213081482,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 6,
+                    "ntracks": 3,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.436488780835134,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 6,
+                    "ntracks": 4,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.67794591793375,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 7,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.893879615160312,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 7,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.294285562892895,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 7,
+                    "ntracks": 3,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.658861173418163,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 8,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 8.277213651025455,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 8,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.722303890626092,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 9,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.9962037692806796,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 9,
+                    "ntracks": 2,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.46339335340889,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 10,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.725369787485035,
+                    "min-max-nup": 0
+                },
+                {
+                    "ft-npoints": 11,
+                    "ntracks": 1,
+                    "min-total-nup": 0,
+                    "min-average-nup": 7.454357052489394,
+                    "min-max-nup": 0
+                }
+            ]
+        }
+    },
+    "event-time-cut": {
+        "event-time-in-acq-cut": {
+            "min-time": 0.0005,
+            "max-time": 5
+        }
+    },
+    "brw": {
+        "output-file": "/katydid/output/basic_output.root",
+        "file-flag": "recreate"
+    },
+    "trw": {
+        "output-file": "/katydid/output/tree_output.root",
+        "file-flag": "update"
+    }
+}

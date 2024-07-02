@@ -68,6 +68,7 @@ namespace Katydid
         fReadState.fStartOfLastSliceReadPtr = 0;
         fReadState.fStartOfSliceAcquisitionId = 0;
         fReadState.fCurrentRecord = 0;
+        fReadState.fFileNumber = 0;
     }
 
     KTEgg3Reader::~KTEgg3Reader()
@@ -102,7 +103,10 @@ namespace Katydid
         fCurrentFileIt = fFilenames.begin();
 
         // open the file
+        //KTINFO(eggreadlog, "All egg files <" << fFilenames << ">");
         KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0].first << ">");
+        //KTINFO(eggreadlog, "Variable type <" << typeid(fFilenames[0].first).name() << ">");
+
         try
         {
             fMonarch = Monarch3::OpenForReading(fFilenames[0].first.native());
@@ -207,6 +211,9 @@ namespace Katydid
         fReadState.fStartOfSliceAcquisitionId = 0;
         fReadState.fCurrentRecord = 0;
 
+        KTDEBUG(eggreadlog, "Filenumber is :\n" << fReadState.fFileNumber+1);
+
+
         // skip forward in the run if fStartTime is non-zero
         if (fStartRecord == 0 && fStartTime > 0.)
         {
@@ -230,6 +237,16 @@ namespace Katydid
         fMasterSliceHeader.CalculateBinWidthAndSliceLength();
         fMasterSliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
         fMasterSliceHeader.SetRecordSize(fHeader.GetChannelHeader(0)->GetRecordSize());
+        fMasterSliceHeader.SetFileNumber(fReadState.fFileNumber);
+
+
+        fHeader.SetFileNumber(fReadState.fFileNumber+1); //Setting FileNumber in KTHeader 
+        //KTDEBUG(eggreadlog, "Updated MasterSliceHeader :\n" << fMasterSliceHeader);
+        //if (LoadNextFile() == false)
+        //{
+        //    KTDEBUG(eggreadlog, "Filenumber is :\n" << fReadState.fFileNumber);
+        //}
+
 
         return fHeaderPtr;
     }
@@ -563,6 +580,8 @@ namespace Katydid
 
         // advance the iterator and check if we're done with the list of files
         ++fCurrentFileIt;
+        ++fReadState.fFileNumber;
+
         if (fCurrentFileIt == fFilenames.end())
         {
             KTINFO(eggreadlog, "There are no more files to open");
@@ -612,7 +631,7 @@ namespace Katydid
         fReadState.fStartOfLastSliceRecord = 0;
         fReadState.fStartOfLastSliceReadPtr = 0;
         fReadState.fStartOfSliceAcquisitionId = 0;
-        fReadState.fCurrentRecord = 0;
+        fReadState.fCurrentRecord = 0; 
 
         return true;
     }

@@ -206,6 +206,7 @@ namespace Katydid
 
         fHeaderSignal(headerPtr);
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
+        KTDEBUG(egglog, "From EggProcessor: FileNumber is ;" << header.GetFileNumber());
         KTPROG(egglog, "Proceeding with slice processing");
 
         if (fNSlices == 0) UnlimitedLoop(reader);

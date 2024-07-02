@@ -92,6 +92,7 @@ namespace Katydid
             fCenterFrequency(0.0),
             fMinimumFrequency(0.0),
             fMaximumFrequency(0.0),
+            fFileNumber(0),
             fTimestamp(),
             fDescription(),
             fChannelHeaders()
@@ -107,6 +108,7 @@ namespace Katydid
             fCenterFrequency(orig.fCenterFrequency),
             fMinimumFrequency(orig.fMinimumFrequency),
             fMaximumFrequency(orig.fMaximumFrequency),
+            fFileNumber(orig.fFileNumber),
             fTimestamp(orig.fTimestamp),
             fDescription(orig.fDescription),
             fChannelHeaders()
@@ -131,6 +133,7 @@ namespace Katydid
         fCenterFrequency = rhs.fCenterFrequency;
         fMinimumFrequency = rhs.fMinimumFrequency;
         fMaximumFrequency = rhs.fMaximumFrequency;
+        fFileNumber = rhs.fFileNumber;
         fTimestamp = rhs.fTimestamp;
         fDescription = rhs.fDescription;
         fChannelHeaders.clear();
@@ -193,6 +196,7 @@ namespace Katydid
                 << "\tMinimum Frequency: " << header.GetMinimumFrequency() << " Hz\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
                 << "\tMaximum Frequency: " << header.GetMaximumFrequency() << " Hz\n"
+                << "\tFileNumber: " << header.GetFileNumber() << "\n"
                 << "\tTimestamp: " << header.GetTimestamp() << '\n'
                 << "\tDescription: " << header.GetDescription() << '\n';
         for (unsigned iChan = 0; iChan < header.GetNChannels(); ++iChan)

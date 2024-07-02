@@ -71,6 +71,8 @@ namespace Katydid
             MEMBERVARIABLE(double, CenterFrequency); /// in Hz
             MEMBERVARIABLE(double, MinimumFrequency); /// in Hz
             MEMBERVARIABLE(double, MaximumFrequency); /// in Hz
+            MEMBERVARIABLE(unsigned, FileNumber );
+
             MEMBERVARIABLEREF(std::string, Timestamp);
             MEMBERVARIABLEREF(std::string, Description);
 
