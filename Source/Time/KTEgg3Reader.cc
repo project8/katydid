@@ -211,7 +211,7 @@ namespace Katydid
         fReadState.fStartOfSliceAcquisitionId = 0;
         fReadState.fCurrentRecord = 0;
 
-        KTDEBUG(eggreadlog, "Filenumber is :\n" << fReadState.fFileNumber+1);
+        KTDEBUG(eggreadlog, "Filenumber is :\n" << fReadState.fFileNumber);
 
 
         // skip forward in the run if fStartTime is non-zero
@@ -580,7 +580,7 @@ namespace Katydid
 
         // advance the iterator and check if we're done with the list of files
         ++fCurrentFileIt;
-        ++fReadState.fFileNumber;
+        //++fReadState.fFileNumber;
 
         if (fCurrentFileIt == fFilenames.end())
         {
