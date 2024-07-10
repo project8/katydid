@@ -31,22 +31,22 @@ namespace Katydid
     {
     }
 
-    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param* node) //changed scarab::param_node to scarab::param
+    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param_node* node) //changed scarab::param_node to scarab::param
     {
         if (node == NULL) return false;
 
-        const param_array offset_pairs = node->array_at("offsets");
-        if (offset_pairs != NULL)
+        const scarab::param_array* offsetPairs = node-> array_at("offsets"); //changing this based on DevGuide &KTCorrelator
+        if (offsetPairs != NULL)
         {
-            for (param_array::const_iterator pair_it = offset_pairs->begin(); pair_it != offset_pairs->end(); ++pair_it)
+            for (scarab::param_array::const_iterator pairIt = offsetPairs->begin(); pairIt != offsetPairs->end(); ++pairIt)
             {
-                if (! ((*pair_it)->is_array() && (*pair_it)->as_array().Size() == 2))
+                if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
-                    KTERROR(genlog, "Invalid pair: " << (*pair_it)->ToString());
+                    KTERROR(genlog, "Invalid pair: " << (*pairIt)->to_string());
                     return false;
                 }
-                UIntDoublePair pair((*pair_it)->as_array().get_value<unsigned>(0), (*pair_it)->as_array().get_value<double>(1));
-                if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
+                UIntDoublePair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< double >(1));
+                if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1); //keeping fOffsets for now bc it is defined in the .hh
                 fOffsets[pair.first] = pair.second;
             }
         }
@@ -73,7 +73,7 @@ namespace Katydid
 
             for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
             {
-                timeSeries->SetValue(iBin, fOffsets[iComponent] + timeSeries->GetValue(iBin));
+                timeSeries->SetValue(iBin, fOffsets[iComponent] + timeSeries->GetValue(iBin)); //is this GetValue diff
             }
         }
 

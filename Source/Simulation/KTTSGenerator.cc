@@ -12,12 +12,13 @@
 #include "KTLogger.hh"
 #include "KTProcSummary.hh"
 #include "param.hh"
+#include "time.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-#include "thorax.hh"
+//#include "thorax.hh" it appears this isn't defined anywhere?
 
 #include <cmath>
 
@@ -165,7 +166,7 @@ namespace Katydid
 
         }
 
-        newHeader->SetTimestamp(get_absolute_time_string());
+        newHeader->SetTimestamp(scarab::get_absolute_time_string()); //this is a membervariableref... whatever that means
 
         return newHeader;
     }
@@ -194,7 +195,8 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fNChannels; ++iComponent)
         {
-            sliceHeader.SetTimeStamp((uint64_t)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((uint64_t)(sliceHeader.GetTimeInRun() * (double)CLOCKS_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            // changed above to clocks_per_sec bc that was what the builder suggested... how much do we trust it
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }
