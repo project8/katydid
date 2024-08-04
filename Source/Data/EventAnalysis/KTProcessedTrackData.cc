@@ -18,6 +18,8 @@ namespace Katydid
             fTrackID(0),
             fEventID(0),
             fEventSequenceID(-1),
+            fFileNumber(1234),
+            fFilename(""),
             fIsCut(false),
             fMVAClassifier(-999.),
             fMainband(true),
@@ -57,6 +59,8 @@ namespace Katydid
             fTrackID(orig.fTrackID),
             fEventID(orig.fEventID),
             fEventSequenceID(orig.fEventSequenceID),
+            fFileNumber(orig.fFileNumber),
+            fFilename(orig.fFilename),
             fIsCut(orig.fIsCut),
             fMVAClassifier(orig.fMVAClassifier),
             fMainband(orig.fMainband),
@@ -99,6 +103,8 @@ namespace Katydid
         fTrackID = rhs.fTrackID;
         fEventID = rhs.fEventID;
         fEventSequenceID = rhs.fEventSequenceID;
+        fFileNumber = rhs.fFileNumber;
+        fFilename = rhs.fFilename;
         fIsCut = rhs.fIsCut;
         fMVAClassifier = rhs.fMVAClassifier;
         fMainband = rhs.fMainband;

@@ -32,6 +32,7 @@ namespace Katydid
             fEndSampleNumber(0),
             fRecordSize(1),
             fFileNumber(0),
+            fFilename(""),
             fComponentData(1),
             fTemp1(0), fTemp2(0), fTemp3(0)
     {
@@ -56,6 +57,7 @@ namespace Katydid
             fEndSampleNumber(orig.fEndSampleNumber),
             fRecordSize(orig.fRecordSize),
             fFileNumber(orig.fFileNumber),
+            fFilename(orig.fFilename),
             fComponentData(orig.fComponentData),
             fTemp1(0), fTemp2(0), fTemp3(0) // temporary variables aren't copied
     {
@@ -91,6 +93,7 @@ namespace Katydid
         fEndSampleNumber = rhs.fEndSampleNumber;
         fRecordSize = rhs.fRecordSize;
         fFileNumber = rhs.fFileNumber;
+        fFilename = rhs.fFilename;
         fComponentData = rhs.fComponentData;
         // temporary variables aren't copied
         return;
@@ -116,6 +119,7 @@ namespace Katydid
                 "\tEnd Sample: " << hdr.GetEndSampleNumber() << '\n' <<
                 "\tRecord Size: " << hdr.GetRecordSize() << '\n' <<
                 "\tFile Number: " << hdr.GetFileNumber() << '\n' <<
+                "\tFile Name: " << hdr.GetFilename() << '\n' <<
                 "\t# of Components: " << hdr.GetNComponents();
         for (unsigned iComponent = 0; iComponent < hdr.GetNComponents(); ++iComponent)
         {

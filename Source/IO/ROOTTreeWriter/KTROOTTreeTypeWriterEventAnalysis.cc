@@ -516,8 +516,13 @@ namespace Katydid
             fProcessedTrackTree->SetBranchAddress(fProcessedTrackDataPtr->GetBranchName().c_str(), &fProcessedTrackDataPtr);
         }
 
-        KT2ROOT::LoadProcTrackData(ptData, *fProcessedTrackDataPtr);
+        //Adding FileNumber information from the SliceHeader
+        KTSliceHeader& header = data->Of< KTSliceHeader >();
+        ptData.SetFileNumber(header.GetFileNumber());
+        ptData.SetFilename(header.GetFilename());
 
+        KT2ROOT::LoadProcTrackData(ptData, *fProcessedTrackDataPtr);
+        KTDEBUG(publog, "Track Information written to Cicada Header root tree here");
         fProcessedTrackTree->Fill();
 
         return;

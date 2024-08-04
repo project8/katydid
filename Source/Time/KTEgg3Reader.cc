@@ -105,7 +105,7 @@ namespace Katydid
         // open the file
         //KTINFO(eggreadlog, "All egg files <" << fFilenames << ">");
         KTINFO(eggreadlog, "Opening egg file <" << fFilenames[0].first << ">");
-        //KTINFO(eggreadlog, "Variable type <" << typeid(fFilenames[0].first).name() << ">");
+        KTINFO(eggreadlog, "Variable type <" << typeid(fFilenames[0].first.string()).name() << ">");
 
         try
         {
@@ -211,6 +211,7 @@ namespace Katydid
         fReadState.fStartOfSliceAcquisitionId = 0;
         fReadState.fCurrentRecord = 0;
 
+
         KTDEBUG(eggreadlog, "Filenumber is :\n" << fReadState.fFileNumber);
 
 
@@ -230,6 +231,9 @@ namespace Katydid
 
         fSliceNumber = 0;
 
+        fHeader.SetFileNumber(fReadState.fFileNumber+1); //Setting FileNumber in KTHeader 
+        fHeader.SetFilename(fFilenames[0].first.string());
+
         // set a few values in the master slice header that don't change with each slice
         fMasterSliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         fMasterSliceHeader.SetRawSliceSize(fSliceSize);
@@ -238,9 +242,13 @@ namespace Katydid
         fMasterSliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
         fMasterSliceHeader.SetRecordSize(fHeader.GetChannelHeader(0)->GetRecordSize());
         fMasterSliceHeader.SetFileNumber(fReadState.fFileNumber);
+        fMasterSliceHeader.SetFilename(fFilenames[0].first.string());
 
+        //KTDEBUG(eggreadlog, "Slice Header now: " << fMasterSliceHeader);
+        //KTDEBUG(eggreadlog, "Slice Header filename now: " << fMasterSliceHeader.GetFilename());
 
-        fHeader.SetFileNumber(fReadState.fFileNumber+1); //Setting FileNumber in KTHeader 
+        
+        //KTDEBUG(eggreadlog, "Updated Filename: " << fHeader.GetFilename());
         //KTDEBUG(eggreadlog, "Updated MasterSliceHeader :\n" << fMasterSliceHeader);
         //if (LoadNextFile() == false)
         //{

@@ -214,7 +214,7 @@
         ]
     },
     "egg1": {
-        "filenames": ["/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_copy.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_another_copy.egg"],
+        "filenames": ["/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000.egg"],
         "egg-reader": "egg3",
         "number-of-slices": 0,
         "slice-size": 8192
@@ -241,7 +241,7 @@
         "fit-points": 50
     },
     "egg2": {
-        "filenames": ["/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_copy.egg", "/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000_another_copy.egg"],
+        "filenames": ["/katydid/locust_mc_Seed651_Angle90.0000000_Pos0.0040000_Energy18600.000000.egg"],
         "egg-reader": "egg3",
         "number-of-slices": 0,
         "slice-size": 8192

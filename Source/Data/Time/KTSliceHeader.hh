@@ -54,6 +54,8 @@ namespace Katydid
 
             MEMBERVARIABLE(unsigned, RecordSize); // number of bins in the records on the egg file
             MEMBERVARIABLE(unsigned, FileNumber); //to identify the file being processed
+            MEMBERVARIABLE(std::string, Filename); //to identify the file being processed
+
 
         public:
             // Slice information

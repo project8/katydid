@@ -672,6 +672,8 @@ namespace Katydid
         rootPTData.SetTrackID(ptData.GetTrackID());
         rootPTData.SetEventID(ptData.GetEventID());
         rootPTData.SetEventSequenceID(ptData.GetEventSequenceID());
+        rootPTData.SetFileNumber(ptData.GetFileNumber());
+        rootPTData.SetFilename(ptData.GetFilename());
         rootPTData.SetIsCut(ptData.GetIsCut());
         rootPTData.SetStartTimeInRunC(ptData.GetStartTimeInRunC());
         rootPTData.SetStartTimeInAcq(ptData.GetStartTimeInAcq());
@@ -710,6 +712,8 @@ namespace Katydid
         ptData.SetTrackID(rootPTData.GetTrackID());
         ptData.SetEventID(rootPTData.GetEventID());
         ptData.SetEventSequenceID(rootPTData.GetEventSequenceID());
+        ptData.SetFileNumber(rootPTData.GetFileNumber());
+        ptData.SetFilename(rootPTData.GetFilename());
         ptData.SetIsCut(rootPTData.GetIsCut());
         ptData.SetStartTimeInRunC(rootPTData.GetStartTimeInRunC());
         ptData.SetStartTimeInAcq(rootPTData.GetStartTimeInAcq());
