@@ -12,7 +12,6 @@
 #include <boost/functional/hash.hpp>
 
 #include <cstddef>
-#include <functional>
 #include <set>
 #include <utility>
 
@@ -84,7 +83,7 @@ namespace Katydid
             };
 
         private:
-            struct RangeIteratorEqualTo : std::binary_function< XRangeIteratorType, XRangeIteratorType, bool >
+            struct RangeIteratorEqualTo
             {
                 bool operator() (const XRangeIteratorType& lhs, const XRangeIteratorType& rhs) const
                 {
@@ -92,7 +91,7 @@ namespace Katydid
                 }
             };
 
-            struct RangeIteratorHash : std::unary_function< XRangeIteratorType, std::size_t >
+            struct RangeIteratorHash
             {
                 std::size_t operator()(const XRangeIteratorType& it) const
                 {
