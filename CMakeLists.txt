@@ -80,7 +80,7 @@ if (Katydid_USE_MANTIS)
     link_directories (${Mantis_LIBRARY_DIRS})
     pbuilder_add_ext_libraries (${Mantis_LIBRARIES})
     add_definitions (-DUSE_MANTIS)
-    set (Mantis_FOUND TRUE)
+    set_option (Mantis_FOUND TRUE)
 endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
@@ -111,6 +111,7 @@ if (Katydid_USE_PYTHON)
     SET( Nymph_ENABLE_PYTHON ON CACHE BOOL "" FORCE)
 else (Katydid_USE_PYTHON)
     set( Nymph_ENABLE_PYTHON OFF CACHE BOOL "" FORCE)
+    set_option (Katydid_USE_PYTHON FALSE)
 endif (Katydid_USE_PYTHON)
 
 # FFTW
@@ -134,6 +135,7 @@ else (FFTW_FOUND)
     remove_definitions(-DFFTW_FOUND)
     remove_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
     set (FFTW_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/External/FFTW)
+    set_option (Katydid_USE_FFTW FALSE)
 endif (FFTW_FOUND)
 include_directories (${FFTW_INCLUDE_DIR})
 
@@ -150,6 +152,7 @@ if (HDF5_FOUND)
 else (HDF5_FOUND)
     #remove_definitions (-DHDF5_FOUND)
     message (STATUS "Building without HDF5")
+    set_option (Katydid_USE_HDF5 FALSE)
 endif (HDF5_FOUND)
 
 # ROOT
@@ -165,6 +168,7 @@ if (ROOT_FOUND)
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     remove_definitions(-DROOT_FOUND)
+    set_option (Katydid_USE_ROOT FALSE)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDE_DIR})
 
@@ -181,6 +185,7 @@ if (MATIO_FOUND)
 else (MATIO_FOUND)
     message (STATUS "Building without Matlab")
     remove_definitions(-DUSE_MATLAB)
+    set_option (Katydid_USE_MATLAB FALSE)
 endif (MATIO_FOUND)
 
 # GraphicsMagic & Magick++
@@ -207,6 +212,7 @@ if (DLIB_FOUND)
 else (DLIB_FOUND)
     message (STATUS "Building without DLIB")
     remove_definitions(-DUSE_DLIB)
+    set_option (Katydid_USE_DLIB FALSE)
 endif (DLIB_FOUND)
 
 # OpenMP
