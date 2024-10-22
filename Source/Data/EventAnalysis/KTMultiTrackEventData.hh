@@ -36,6 +36,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(uint64_t, AcquisitionID);
             MEMBERVARIABLE(unsigned, EventID);
+            MEMBERVARIABLE(std::string, Filename);
             MEMBERVARIABLE(unsigned, TotalEventSequences); // a sequence is a collection of lines with common start and end time, TotalEventSequences should be exactly the number of scatters plus one
 
             // this group of member variables is set by ProcessTracks()

@@ -30,6 +30,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, TrackID);
             MEMBERVARIABLE(unsigned, EventID);
             MEMBERVARIABLE(ssize_t, EventSequenceID);
+            MEMBERVARIABLE(std::string, Filename);
 
             MEMBERVARIABLE(bool, IsCut);
 

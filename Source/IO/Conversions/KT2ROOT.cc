@@ -672,6 +672,7 @@ namespace Katydid
         rootPTData.SetTrackID(ptData.GetTrackID());
         rootPTData.SetEventID(ptData.GetEventID());
         rootPTData.SetEventSequenceID(ptData.GetEventSequenceID());
+        rootPTData.SetFilename(ptData.GetFilename());
         rootPTData.SetIsCut(ptData.GetIsCut());
         rootPTData.SetStartTimeInRunC(ptData.GetStartTimeInRunC());
         rootPTData.SetStartTimeInAcq(ptData.GetStartTimeInAcq());
@@ -710,6 +711,7 @@ namespace Katydid
         ptData.SetTrackID(rootPTData.GetTrackID());
         ptData.SetEventID(rootPTData.GetEventID());
         ptData.SetEventSequenceID(rootPTData.GetEventSequenceID());
+        ptData.SetFilename(rootPTData.GetFilename());
         ptData.SetIsCut(rootPTData.GetIsCut());
         ptData.SetStartTimeInRunC(rootPTData.GetStartTimeInRunC());
         ptData.SetStartTimeInAcq(rootPTData.GetStartTimeInAcq());
@@ -763,6 +765,7 @@ namespace Katydid
         rootMTEData.SetComponent(mteData.GetComponent());
         rootMTEData.SetAcquisitionID(mteData.GetAcquisitionID());
         rootMTEData.SetEventID(mteData.GetEventID());
+        rootMTEData.SetFilename(mteData.GetFilename());
         rootMTEData.SetTotalEventSequences(mteData.GetTotalEventSequences());
         rootMTEData.SetStartTimeInRunC(mteData.GetStartTimeInRunC());
         rootMTEData.SetStartTimeInAcq(mteData.GetStartTimeInAcq());
@@ -813,6 +816,7 @@ namespace Katydid
         mteData.SetComponent(rootMTEData.GetComponent());
         mteData.SetAcquisitionID(rootMTEData.GetAcquisitionID());
         mteData.SetEventID(rootMTEData.GetEventID());
+        mteData.SetFilename(rootMTEData.GetFilename());
         mteData.SetTotalEventSequences(rootMTEData.GetTotalEventSequences());
         mteData.SetStartTimeInRunC(rootMTEData.GetStartTimeInRunC());
         mteData.SetStartTimeInAcq(rootMTEData.GetStartTimeInAcq());

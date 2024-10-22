@@ -205,6 +205,12 @@ namespace Katydid
         }
 
         fHeaderSignal(headerPtr);
+
+        // Adding the filename to the Context. Getting it from EggHeader
+        fContext->Add("Filename", scarab::param_value(header.GetFilename()));
+        KTDEBUG(egglog, "The filename " << fContext->Get("Filename")().as_string() << " has been added to the context");
+        
+
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 

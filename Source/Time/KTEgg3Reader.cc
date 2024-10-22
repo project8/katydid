@@ -222,6 +222,11 @@ namespace Katydid
         }
 
         fSliceNumber = 0;
+        //Setting Filename in the Header, will be added to the Context in the EggProcessor
+        fHeader.SetFilename(fFilenames[0].first.string());
+
+        //fContext->Add(“test”, scarab::param_value(5));
+
 
         // set a few values in the master slice header that don't change with each slice
         fMasterSliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());

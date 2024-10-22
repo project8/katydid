@@ -67,6 +67,9 @@ namespace Katydid
 
         KTProcessedTrackData& track = data->Of< KTProcessedTrackData >();
 
+        //Adding the name of the egg file (obtained from the context) to the track
+        track.SetFilename(fContext->Get("Filename")().as_string());
+
         if (track.GetAcquisitionID() != fCurrentAcquisitionID)
         {
             KTINFO(tclog, "Incoming track has a new acquisition ID (new: " << track.GetAcquisitionID() << "; current: " << fCurrentAcquisitionID << "). Will do clustering for the current acquisition.");

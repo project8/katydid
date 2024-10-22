@@ -23,6 +23,7 @@ namespace Katydid
             fComponent(0),
             fAcquisitionID(0.),
             fEventID(0),
+            fFilename(""),
             fTotalEventSequences(0),
             fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
@@ -62,6 +63,7 @@ namespace Katydid
             fComponent(orig.fComponent),
             fAcquisitionID(orig.fAcquisitionID),
             fEventID(orig.fEventID),
+            fFilename(orig.fFilename),
             fTotalEventSequences(orig.fTotalEventSequences),
             fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
@@ -113,6 +115,7 @@ namespace Katydid
 
         fAcquisitionID = rhs.fAcquisitionID;
         fEventID = rhs.fEventID;
+        fFilename = rhs.fFilename;
 
         fTotalEventSequences = rhs.fTotalEventSequences;
 
