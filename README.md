@@ -146,3 +146,4 @@ We suggest that you use the aptly-named git extension, git-flow, which is availa
 * https://github.com/nvie/gitflow
 
 Issues should be posted via [GitHub](https://github.com/project8/katydid/issues).
+
