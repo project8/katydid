@@ -1,11 +1,12 @@
 /*
- * KTChannelAggregator.cc
+ * KTPhasedAggregator.cc
  *
- *  Created on: Jan 25, 2019
- *      Author: P. T. Surukuchi
+ *  Created on: Dec 13, 2024
+ *      Author: J. K. Gaison
+ *      Based on KTChannelAggregator.cc by P. T. Surukuchi
  */
 
-#include "KTChannelAggregator.hh"
+#include "KTPhasedAggregator.hh"
 #include "KTLogger.hh"
 
 #include <boost/algorithm/string.hpp>
@@ -15,16 +16,16 @@ using namespace boost::algorithm;
 
 namespace Katydid
 {
-    KTLOGGER(agglog, "KTChannelAggregator");
+    KTLOGGER(agglog, "KTPhasedAggregator");
 
     // Register the processor
-    KT_REGISTER_PROCESSOR(KTChannelAggregator, "channel-aggregator");
+    KT_REGISTER_PROCESSOR(KTPhasedAggregator, "phased-aggregator");
 
-    KTChannelAggregator::KTChannelAggregator(const std::string& name) :
+    KTPhasedAggregator::KTPhasedAggregator(const std::string& name) :
         KTProcessor(name),
         fSummedFrequencyData("agg-fft", this),
-        fPhaseChFrequencySumSlot("fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
-        fAxialSumSlot("ax-agg-fft", this, &KTChannelAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
+        fPhaseChFrequencySumSlot("fft", this, &KTPhasedAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
+        fAxialSumSlot("ax-agg-fft", this, &KTPhasedAggregator::SumChannelVoltageWithPhase, &fSummedFrequencyData),
         fActiveRadius(0),
         fNGrid(0),
         fWavelength(0),
@@ -36,15 +37,19 @@ namespace Katydid
         fSummationMaxFreq(200e6),
         fUseAntiSpiralPhaseShifts(false),
         fAntiSpiralPhaseShifts(),
-        fNRings(1)
+        fPhase_str("0."),
+        fScale_str("1."),
+        fNRings(1),
+        fPhases({0}),
+        fScales({1.}) 
     {
     }
 
-    KTChannelAggregator::~KTChannelAggregator()
+    KTPhasedAggregator::~KTPhasedAggregator()
     {
     }
 
-    bool KTChannelAggregator::Configure(const scarab::param_node* node)
+    bool KTPhasedAggregator::Configure(const scarab::param_node* node)
     {
         if (node != NULL)
         {
@@ -58,12 +63,31 @@ namespace Katydid
             fSummationMinFreq= node->get_value< double >("min-freq", fSummationMinFreq);
             fSummationMaxFreq= node->get_value< double >("max-freq", fSummationMaxFreq);
             fNRings = node->get_value< unsigned >("n-rings", fNRings);
+            fPhase_str = node->get_value< std::string >("phases", fPhase_str);
+            std::vector<std::string> sPhase;
+	    boost::split(sPhase, fPhase_str, boost::is_any_of(", "), boost::token_compress_on);
+            fPhases.resize(sPhase.size());
+            fScale_str = node->get_value< std::string >("scales", fScale_str);
+            std::vector<std::string> sScale;
+            boost::split(sScale, fScale_str, boost::is_any_of(", "), boost::token_compress_on);
+            if(sPhase.size() != sScale.size())
+            {
+	        KTERROR(agglog,"The imported phases and scales are not the same size.");
+            }
+            fPhases.resize(sPhase.size());
+            fScales.resize(sScale.size());
+            for(int i=0; i<sPhase.size(); i++)
+	    {
+		fPhases[i] = stod(sPhase[i]);
+                fScales[i] = stod(sScale[i]);
+
+	    }
             fUseAntiSpiralPhaseShifts = node->get_value< bool>("use-antispiral-phase-shifts", fUseAntiSpiralPhaseShifts);
         }
         return true;
     }
 
-    bool KTChannelAggregator::ApplyPhaseShift(double &realVal, double &imagVal, double phase)
+    bool KTPhasedAggregator::ApplyPhaseShift(double &realVal, double &imagVal, double phase)
     {
         double tempRealVal = realVal;
         double tempImagVal = imagVal;
@@ -72,7 +96,7 @@ namespace Katydid
         return true;
     }
 
-    double KTChannelAggregator::GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
+    double KTPhasedAggregator::GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
     {
         // X position based on the angle of the channel
         double xChannel = fActiveRadius * cos(channelAngle);
@@ -84,7 +108,7 @@ namespace Katydid
         return 2.0 * KTMath::Pi() * pointDistance / wavelength;
     }
 
-    double KTChannelAggregator::GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
+    double KTPhasedAggregator::GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const
     {
         // X position based on the angle of the channel
         double xChannel = fActiveRadius * cos(channelAngle);
@@ -94,14 +118,14 @@ namespace Katydid
         return atan2(yChannel-yPosition,xChannel-xPosition);
     }
 
-    bool KTChannelAggregator::GetGridLocation(unsigned gridNumber, unsigned gridSize, double &gridLocation)
+    bool KTPhasedAggregator::GetGridLocation(unsigned gridNumber, unsigned gridSize, double &gridLocation)
     {
         if (gridNumber >= gridSize) return false;
         gridLocation = fActiveRadius * (((2.0 * gridNumber + 1.0) / gridSize) - 1);
         return true;
     }
 
-    bool KTChannelAggregator::GenerateAntiSpiralPhaseShifts(unsigned channelCount)
+    bool KTPhasedAggregator::GenerateAntiSpiralPhaseShifts(unsigned channelCount)
     {
         for(unsigned i=0;i<channelCount;++i)
         {
@@ -116,19 +140,18 @@ namespace Katydid
         return true;
     }
 
-    bool KTChannelAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
+    bool KTPhasedAggregator::SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData)
     {
         KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(0);
         return PerformPhaseSummation(fftwData, newAggFreqData);
     }
 
-    bool KTChannelAggregator::SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData)
+    bool KTPhasedAggregator::SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData)
     {
         KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData = fftwData.Of< KTAggregatedFrequencySpectrumDataFFTW >().SetNComponents(0);
         return PerformPhaseSummation(fftwData, newAggFreqData);
     }
-
-    unsigned KTChannelAggregator::DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
+    unsigned KTPhasedAggregator::DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
     {
         unsigned nTotalGridPoints=0;
         for (unsigned iRing = 0; iRing < fNRings; ++iRing)
@@ -199,8 +222,7 @@ namespace Katydid
         }
         return nTotalGridPoints;
     }
-
-    bool KTChannelAggregator::PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
+    bool KTPhasedAggregator::PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData)
     {
         const KTFrequencySpectrumFFTW* freqSpectrum = fftwData.GetSpectrumFFTW(0);
         unsigned nTimeBins = freqSpectrum->GetNTimeBins();
@@ -222,13 +244,11 @@ namespace Katydid
         double maxValue = 0.0;
         double maxGridLocationX = 0.0;
         double maxGridLocationY = 0.0;
-
         // Setting up the active radius of the KTAggregatedFrequencySpectrumDataFFTW object to maintain consistency
         // This doesn't need to be done if there is a way to provide config values to data objects
         newAggFreqData.SetActiveRadius(fActiveRadius);
         // Set the number of rings present
         newAggFreqData.SetNAxialPositions(fNRings);
-
         unsigned nTotalGridPoints = DefineGrid(newAggFreqData);
         if(nTotalGridPoints<=0) return false;
         unsigned  gridPointsPerRing=nTotalGridPoints/fNRings;
@@ -246,26 +266,13 @@ namespace Katydid
                 double gridLocationY = 0;
                 double gridLocationZ = 0;
                 newAggFreqData.GetGridPoint(gridPointNumber, gridLocationX, gridLocationY, gridLocationZ);
-		std::cout << "nComponents: " << nComponents << ", nRings: " << fNRings << std::endl;
                 for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     // Arbitarily assign 0 to the first channel and progresively add 2pi/N for the rest of the channels in increasing order
-                    double channelAngle = 2 * KTMath::Pi() * iComponent / nComponents;
-                    double phaseShift = GetPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
+                    double PhaseShift = fPhases[fNRings*iRing + iComponent];
+                    double ScaleCoefficient = fScales[fNRings*iRing + iComponent];
                     // Just being redundantly cautious, the phaseShifts are already zerors but checking to make sure anyway
-                    if(fUseAntiSpiralPhaseShifts)
-                    {
-                        phaseShift-=GetAntiSpiralPhaseShift(gridLocationX, gridLocationY, fWavelength, channelAngle);
-                    }
-                    // Get the frequency spectrum for that specific component
-                    if(fIsPartialRing)
-                    { 
-                        unsigned partialNComponents=nComponents/fPartialRingMultiplicity;
-                        // Estimate the channel that needs to be used as a copy for the non-existent iComponent in case of partial rings
-                        unsigned partialComponent=((int)(iComponent/partialNComponents)%2)?(partialNComponents-(iComponent%partialNComponents)-1):(iComponent%partialNComponents);
-                        freqSpectrum = fftwData.GetSpectrumFFTW(partialComponent+iRing*partialNComponents);
-                    }
-                    else freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
+                    freqSpectrum = fftwData.GetSpectrumFFTW(iComponent+iRing*nComponents);
                     double maxVoltage = 0.0;
                     unsigned maxFrequencyBin = 0;
                     //Loop over the frequency bins
@@ -274,9 +281,9 @@ namespace Katydid
                         if( newFreqSpectrum->GetBinCenter(iFreqBin)<fSummationMinFreq || newFreqSpectrum->GetBinCenter(iFreqBin)>fSummationMaxFreq ) continue;
                         double realVal = freqSpectrum->GetReal(iFreqBin);
                         double imagVal = freqSpectrum->GetImag(iFreqBin);
-                        ApplyPhaseShift(realVal, imagVal, phaseShift);
-                        double summedRealVal = realVal + newFreqSpectrum->GetReal(iFreqBin);
-                        double summedImagVal = imagVal + newFreqSpectrum->GetImag(iFreqBin);
+                        ApplyPhaseShift(realVal, imagVal, PhaseShift);
+                        double summedRealVal = ScaleCoefficient*realVal + newFreqSpectrum->GetReal(iFreqBin);
+                        double summedImagVal = ScaleCoefficient*imagVal + newFreqSpectrum->GetImag(iFreqBin);
                         (*newFreqSpectrum)(iFreqBin) = std::complex<double>{ summedRealVal, summedImagVal };
                     } // End of loop over freq bins
                 } // End of loop over all comps
