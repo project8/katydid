@@ -32,7 +32,7 @@ namespace Katydid
     {
     }
 
-    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
+    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node) //I changed this to scarab::param somewhere else
     {
         if (node == NULL) return false;
 
@@ -40,13 +40,14 @@ namespace Katydid
         input_type mean = node->get_value< input_type >("mean", fRNG.mean());
         input_type sigma = node->get_value< input_type >("sigma", fRNG.sigma());
         fRNG.param(KTRNGGaussian<>::param_type(mean, sigma));
+        // fRNG.SetSeed(1) we still need to add a set seed function here but this one does not work
 
         return true;
     }
 
     bool KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        //const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
         const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
         unsigned nComponents = data.GetNComponents();
@@ -61,12 +62,12 @@ namespace Katydid
                 continue;
             }
 
-            //double binCenter = 0.5 * binWidth;
+            double binCenter = 0.5 * binWidth;
             for (unsigned iBin = 0; iBin < sliceSize; iBin++)
             {
                 timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
-                //binCenter += binWidth;
-                //KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
+                binCenter += binWidth;
+                KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
             }
         }
 
