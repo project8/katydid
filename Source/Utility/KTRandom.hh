@@ -109,7 +109,7 @@ namespace Katydid
 
             Engine* GetEngine() const;
             void SetEngine(Engine* rng);
-            void    SetSeed(unsigned seed);
+            void SetSeed(unsigned seed);
 
         protected:
             Engine* fEngine;
