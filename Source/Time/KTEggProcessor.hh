@@ -1,5 +1,5 @@
 /**
- @file KTEggprocessor.hh
+ @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
  @details Iterates over slices in an Egg file.
  @author: N. S. Oblath

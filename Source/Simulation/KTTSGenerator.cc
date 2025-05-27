@@ -18,8 +18,7 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-//#include "thorax.hh" it appears this isn't defined anywhere?
-
+//#include "thorax.hh" :obsolete
 
 #include <cmath>
 
@@ -167,7 +166,7 @@ namespace Katydid
 
         }
 
-        newHeader->SetTimestamp(scarab::get_absolute_time_string()); //this is a membervariableref... whatever that means
+        newHeader->SetTimestamp(scarab::get_absolute_time_string());
 
         return newHeader;
     }
@@ -196,8 +195,7 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fNChannels; ++iComponent)
         {
-            sliceHeader.SetTimeStamp((uint64_t)(sliceHeader.GetTimeInRun() * (double)CLOCKS_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
-            // changed above to clocks_per_sec bc that was what the builder suggested... how much do we trust it
+            sliceHeader.SetTimeStamp((uint64_t)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }

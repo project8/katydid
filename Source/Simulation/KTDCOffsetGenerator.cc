@@ -31,11 +31,11 @@ namespace Katydid
     {
     }
 
-    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param_node* node) //changed scarab::param_node to scarab::param
+    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
-        const scarab::param_array* offsetPairs = node-> array_at("offsets"); //changing this based on DevGuide &KTCorrelator
+        const scarab::param_array* offsetPairs = node-> array_at("offsets"); //change based on DevGuide &KTCorrelator
         if (offsetPairs != NULL)
         {
             for (scarab::param_array::const_iterator pairIt = offsetPairs->begin(); pairIt != offsetPairs->end(); ++pairIt)
@@ -46,7 +46,7 @@ namespace Katydid
                     return false;
                 }
                 UIntDoublePair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< double >(1));
-                if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1); //keeping fOffsets for now bc it is defined in the .hh
+                if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
                 fOffsets[pair.first] = pair.second;
             }
         }
@@ -73,7 +73,7 @@ namespace Katydid
 
             for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
             {
-                timeSeries->SetValue(iBin, fOffsets[iComponent] + timeSeries->GetValue(iBin)); //is this GetValue diff
+                timeSeries->SetValue(iBin, fOffsets[iComponent] + timeSeries->GetValue(iBin));
             }
         }
 

@@ -33,7 +33,7 @@ namespace Katydid
     {
     }
 
-    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node) //I changed this to scarab::param somewhere else
+    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
     {
         if (node == NULL) return false;
 
@@ -41,8 +41,8 @@ namespace Katydid
         input_type mean = node->get_value< input_type >("mean", fRNG.mean());
         input_type sigma = node->get_value< input_type >("sigma", fRNG.sigma());
         fRNG.param(KTRNGGaussian<>::param_type(mean, sigma));
-        fRNG.SetSeed(node->get_value<unsigned>("seed"));
-        
+        fRNG.SetSeed(node->get_value< unsigned >("seed"));
+
         return true;
     }
 
