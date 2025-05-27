@@ -78,7 +78,7 @@ namespace Katydid
                     timeSeries->SetValue(iBin, timeSeries->GetValue(iBin) + fRNG());
                 }
             }
-            }
+        }
 
         return true;
     }
