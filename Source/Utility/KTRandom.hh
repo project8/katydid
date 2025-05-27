@@ -109,6 +109,7 @@ namespace Katydid
 
             Engine* GetEngine() const;
             void SetEngine(Engine* rng);
+            void    SetSeed(unsigned seed);
 
         protected:
             Engine* fEngine;
@@ -129,6 +130,13 @@ namespace Katydid
     inline void KTRNGDistribution< Engine >::SetEngine(Engine* rng)
     {
         fEngine = rng;
+        return;
+    }
+
+    template< class Engine >
+    inline void KTRNGDistribution< Engine >::SetSeed(unsigned seed)
+    {
+        fEngine->SetSeed(seed);
         return;
     }
 

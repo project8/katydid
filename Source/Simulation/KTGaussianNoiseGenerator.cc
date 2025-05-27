@@ -41,8 +41,8 @@ namespace Katydid
         input_type mean = node->get_value< input_type >("mean", fRNG.mean());
         input_type sigma = node->get_value< input_type >("sigma", fRNG.sigma());
         fRNG.param(KTRNGGaussian<>::param_type(mean, sigma));
-        // fRNG.SetSeed(1) we still need to add a set seed function here but this one does not work
-
+        fRNG.SetSeed(node->get_value<unsigned>("seed"));
+        
         return true;
     }
 
