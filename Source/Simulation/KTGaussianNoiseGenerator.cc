@@ -11,6 +11,7 @@
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
+#include "KTTimeSeriesFFTW.hh"
 
 #include <cmath>
 
@@ -63,13 +64,21 @@ namespace Katydid
             }
 
             double binCenter = 0.5 * binWidth;
-            for (unsigned iBin = 0; iBin < sliceSize; iBin++)
+            if (auto* tsFFTW = dynamic_cast<KTTimeSeriesFFTW*>(timeSeries))   // Handling complex FFTW time series correctly
             {
-                timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
-                binCenter += binWidth;
-                KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
+                for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
+                {
+                    tsFFTW->SetRect(iBin, tsFFTW->GetReal(iBin) + fRNG(), tsFFTW->GetImag(iBin) + fRNG());  // Complex white-Gaussian noise
+                }
             }
-        }
+            else
+            {
+                for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
+                {
+                    timeSeries->SetValue(iBin, timeSeries->GetValue(iBin) + fRNG());
+                }
+            }
+            }
 
         return true;
     }
