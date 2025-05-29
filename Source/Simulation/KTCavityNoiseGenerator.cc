@@ -1,0 +1,167 @@
+/*
+ * KTCavityNoiseGenerator.cc
+ *
+ *  Created on: May 28, 2025
+ *      Author: ehtkarim
+ */
+
+#include "KTCavityNoiseGenerator.hh"
+
+#include "param.hh"
+#include "KTMath.hh"
+#include "KTTimeSeriesData.hh"
+#include "KTTimeSeries.hh"
+#include "KTTimeSeriesFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTReverseFFTW.hh"
+
+#include <cmath>
+#include <memory>
+
+using std::string;
+
+namespace Katydid
+{
+    KTLOGGER(genlog, "KTCavityNoiseGenerator");
+
+    KT_REGISTER_PROCESSOR(KTCavityNoiseGenerator, "cavity-noise-generator");
+
+    KTCavityNoiseGenerator::ModelPars::ModelPars() :
+            f0(25.904e9),
+            Q_L(625.0),
+            Q0(1.e4),
+            A(0.90),
+            T_line_start(80.0),
+            T_line_end(5.2),
+            T_cav(80.0),
+            T_isol(5.2),
+            epsilon(0.5),
+            f_lo(25.9702e9)
+    {
+    }
+
+    KTCavityNoiseGenerator::KTCavityNoiseGenerator(const string& name) :
+            KTGaussianNoiseGenerator(name),
+            fPars(),
+            fTransformFlag("ESTIMATE"),
+            fNoiseScaling(1.0)
+    {
+    }
+
+    KTCavityNoiseGenerator::~KTCavityNoiseGenerator()
+    {
+    }
+
+    bool KTCavityNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
+    {
+        if (! KTGaussianNoiseGenerator::ConfigureDerivedGenerator(node)) return false;
+        if (node == NULL) return false;
+
+        fRNG.param(KTRNGGaussian<>::param_type(0.0, 1.0));  // Cavity noise should have fRNG() with default (mean, sigma), not derived from KTGaussianNoiseGenerator
+
+        if (node->as_node().has("cavity"))
+        {
+            const scarab::param_node& m = (*node)["cavity"].as_node();
+            #define GET(v)  v = m.get_value<double>(#v, v)
+            GET(fPars.f0);  GET(fPars.Q_L);  GET(fPars.Q0);  GET(fPars.A);
+            GET(fPars.T_line_start); GET(fPars.T_line_end);
+            GET(fPars.T_cav); GET(fPars.T_isol);
+            GET(fPars.epsilon); GET(fPars.f_lo);
+            #undef GET
+        }
+
+        fNoiseScaling = node->get_value<double>("noise-scaling", fNoiseScaling);
+        if (fNoiseScaling <= 0.0)
+        {
+            KTWARN(genlog, "\"noise-scaling\" must be > 0; using 1.0");
+            fNoiseScaling = 1.0;
+        }
+
+        fTransformFlag = node->get_value("transform-flag", fTransformFlag);
+
+        return true;
+    }
+
+    bool KTCavityNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
+    {
+        const double binWidth   = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
+        const unsigned nComponents = data.GetNComponents();
+
+        const double fs = 1.0 / binWidth;
+        const double df = fs / sliceSize;
+        const unsigned N2 = sliceSize / 2;
+
+        KTFrequencySpectrumFFTW spec(sliceSize, -fs*0.5, fs*0.5, false);
+        spec.SetNTimeBins(sliceSize);
+
+        for (unsigned k = 0; k <= N2; ++k)
+        {
+            const double f_if = k * df;
+            const double f_rf = -f_if + fPars.f_lo;     // Down-converted
+            const double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
+            const double amp  = fNoiseScaling * std::sqrt(pBin) * N2;
+
+            const double re = amp * fRNG();
+            const double im = (k==0 || (sliceSize%2==0 && k==N2)) ? 0.0 : amp * fRNG(); // Set imag component 0 for the DC bin (k = 0) and for the Nyquist bin (k = N/2) (even); otherwise amp * fRNG()
+
+            spec.SetRect(k, re, im);
+            if (k>0 && k<N2)
+                spec.SetRect(sliceSize - k,  re, -im);
+        }
+
+        KTReverseFFTW rfft;
+        rfft.SetTransformFlag(fTransformFlag);
+        rfft.InitializeForComplexTDD(sliceSize);
+
+        std::unique_ptr< KTTimeSeriesFFTW > noiseTS( rfft.TransformToComplex(&spec) );
+        if (! noiseTS)
+        {
+            KTERROR(genlog, "Inverse FFT failed while producing cavity noise");
+            return false;
+        }
+
+        const double norm = 1.0 / sliceSize;    // 1/N normalization
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTTimeSeries* ts = data.GetTimeSeries(iComponent);
+
+            if (auto* tsFFTW = dynamic_cast< KTTimeSeriesFFTW* >(ts))
+            {
+                for (unsigned i = 0; i < sliceSize; ++i)
+                    tsFFTW->SetRect(i, tsFFTW->GetReal(i) + noiseTS->GetReal(i)*norm, tsFFTW->GetImag(i) + noiseTS->GetImag(i)*norm);
+            }
+            else
+            {
+                for (unsigned i = 0; i < sliceSize; ++i)
+                    ts->SetValue(i, ts->GetValue(i) + noiseTS->GetReal(i)*norm);
+            }
+        }
+
+        return true;
+    }
+
+    double KTCavityNoiseGenerator::NoisePSD(double f) const
+    {
+        const double g   = fPars.Q0 / fPars.Q_L;
+        const double lor = 1.0 / ( 1.0 + std::pow( 2.0 * fPars.Q_L * (f - fPars.f0) / fPars.f0, 2.0 ) );    // Lorentzian
+
+        const double kB  = 1.380649e-23;
+        const double hbar= 1.054571817e-34;
+        const double omega = 2.0 * M_PI * f;
+
+        auto eta = [](double x){ return x/(std::exp(x)-1.0) + 0.5; };   // Bose-Einstein factor
+
+        const double Tcav  = fPars.T_cav  * eta(hbar*omega/(kB*fPars.T_cav));
+        const double Tisol = fPars.T_isol * eta(hbar*omega/(kB*fPars.T_isol));
+
+        const double P_cav  = kB*Tcav  * (4.*g/std::pow(1.+g,2)) * lor;
+        const double P_loss = kB*( fPars.A*fPars.T_line_start + (1.-fPars.A)*fPars.T_line_end );
+        const double P_isol = kB*Tisol * (1. - (4.*g/std::pow(1.+g,2))*lor);
+        const double P_amp  = hbar*omega / fPars.epsilon;
+
+        return P_cav + P_loss + P_isol + P_amp;
+    }
+
+} /* namespace Katydid */

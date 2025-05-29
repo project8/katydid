@@ -61,7 +61,7 @@ namespace Katydid
             double GetSigma() const;
             void SetSigma(double sigma);
 
-        private:
+        protected:
             KTRNGGaussian<> fRNG;
 
         public:

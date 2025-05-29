@@ -4,6 +4,7 @@
 set (SIMULATION_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDCOffsetGenerator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGaussianNoiseGenerator.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCavityNoiseGenerator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSinusoidGenerator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTSGenerator.hh
 )
@@ -11,6 +12,7 @@ set (SIMULATION_HEADERFILES
 set (SIMULATION_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDCOffsetGenerator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGaussianNoiseGenerator.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCavityNoiseGenerator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSinusoidGenerator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTSGenerator.cc
 )
