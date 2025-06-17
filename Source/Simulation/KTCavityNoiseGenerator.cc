@@ -54,20 +54,24 @@ namespace Katydid
 
     bool KTCavityNoiseGenerator::ConfigureDerivedGenerator(const scarab::param_node* node)
     {
-        if (! KTGaussianNoiseGenerator::ConfigureDerivedGenerator(node)) return false;
         if (node == NULL) return false;
+        if (! KTGaussianNoiseGenerator::ConfigureDerivedGenerator(node)) return false;
 
         fRNG.param(KTRNGGaussian<>::param_type(0.0, 1.0));  // Cavity noise should have fRNG() with default (mean, sigma), not derived from KTGaussianNoiseGenerator
 
-        if (node->as_node().has("cavity"))
+        if (node->has("cavity"))
         {
             const scarab::param_node& m = (*node)["cavity"].as_node();
-            #define GET(v)  v = m.get_value<double>(#v, v)
-            GET(fPars.f0);  GET(fPars.Q_L);  GET(fPars.Q0);  GET(fPars.A);
-            GET(fPars.T_line_start); GET(fPars.T_line_end);
-            GET(fPars.T_cav); GET(fPars.T_isol);
-            GET(fPars.epsilon); GET(fPars.f_lo);
-            #undef GET
+            fPars.f0           = m.get_value("f0", fPars.f0);
+            fPars.Q_L          = m.get_value("Q_L", fPars.Q_L);
+            fPars.Q0           = m.get_value("Q0", fPars.Q0);
+            fPars.A            = m.get_value("A", fPars.A);
+            fPars.T_line_start = m.get_value("T_line_start", fPars.T_line_start);
+            fPars.T_line_end   = m.get_value("T_line_end", fPars.T_line_end);
+            fPars.T_cav        = m.get_value("T_cav", fPars.T_cav);
+            fPars.T_isol       = m.get_value("T_isol", fPars.T_isol);
+            fPars.epsilon      = m.get_value("epsilon", fPars.epsilon);
+            fPars.f_lo         = m.get_value("f_lo", fPars.f_lo);
         }
 
         fNoiseScaling = node->get_value<double>("noise-scaling", fNoiseScaling);
@@ -92,22 +96,39 @@ namespace Katydid
         const double df = fs / sliceSize;
         const unsigned N2 = sliceSize / 2;
 
+        bool isComplex = dynamic_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(0)) != NULL;
+
         KTFrequencySpectrumFFTW spec(sliceSize, -fs*0.5, fs*0.5, false);
         spec.SetNTimeBins(sliceSize);
 
-        for (unsigned k = 0; k <= N2; ++k)
+        if (isComplex)
         {
-            const double f_if = k * df;
-            const double f_rf = -f_if + fPars.f_lo;     // Down-converted
-            const double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
-            const double amp  = fNoiseScaling * std::sqrt(pBin) * N2;
+            for (unsigned k = 0; k < sliceSize; ++k)
+            {
+                double f_if = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
+                double f_rf = f_if + fPars.f_lo;     // Down-converted
+                double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
+                double amp  = fNoiseScaling * std::sqrt(pBin) * N2;
 
-            const double re = amp * fRNG();
-            const double im = (k==0 || (sliceSize%2==0 && k==N2)) ? 0.0 : amp * fRNG(); // Set imag component 0 for the DC bin (k = 0) and for the Nyquist bin (k = N/2) (even); otherwise amp * fRNG()
+                spec.SetRect(k, amp * fRNG(), amp * fRNG());
+            }
+        }
+        else
+        {
+            for (unsigned k = 0; k <= N2; ++k)
+            {
+                double f_if = k * df;
+                double f_rf = f_if + fPars.f_lo;     // Down-converted
+                double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
+                double amp  = fNoiseScaling * std::sqrt(pBin) * N2;
 
-            spec.SetRect(k, re, im);
-            if (k>0 && k<N2)
-                spec.SetRect(sliceSize - k,  re, -im);
+                double re = amp * fRNG();
+                double im = (k==0 || (sliceSize%2==0 && k==N2)) ? 0.0 : amp * fRNG(); // Set imag component 0 for the DC bin (k = 0) and for the Nyquist bin (k = N/2) (even); otherwise amp * fRNG()
+
+                spec.SetRect(k, re, im);
+                if (k>0 && k<N2)
+                    spec.SetRect(sliceSize - k,  re, -im);
+            }
         }
 
         KTReverseFFTW rfft;
