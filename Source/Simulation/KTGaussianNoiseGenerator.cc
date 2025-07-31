@@ -3,6 +3,8 @@
  *
  *  Created on: May 3, 2013
  *      Author: nsoblath
+ *   Edited on: Jul 25, 2025
+ *      Author: ehtkarim
  */
 
 #include "KTGaussianNoiseGenerator.hh"
@@ -14,6 +16,7 @@
 #include "KTTimeSeriesFFTW.hh"
 
 #include <cmath>
+#include <random>
 
 using std::string;
 
@@ -25,7 +28,10 @@ namespace Katydid
 
     KTGaussianNoiseGenerator::KTGaussianNoiseGenerator(const string& name) :
             KTTSGenerator(name),
-            fRNG()
+            fRNG(),
+            fSigmaPSD(0.0),
+            fGain(1.0),
+            fResistance(50.0) // (Ω)
     {
     }
 
@@ -38,17 +44,64 @@ namespace Katydid
         if (node == NULL) return false;
 
         typedef KTRNGGaussian<>::input_type input_type;
-        input_type mean = node->get_value< input_type >("mean", fRNG.mean());
-        input_type sigma = node->get_value< input_type >("sigma", fRNG.sigma());
+
+        if (node->has("noise-floor-psd") && node->has("noise-temperature"))
+        {
+            KTERROR(genlog, "Both noise-floor-psd and noise-temperature are defined. Only one can be used!");
+            return false;
+        }
+
+        input_type sigma = 0.0;
+
+        if (node->has("noise-floor-psd"))
+        {
+            sigma = std::sqrt(node->get_value<input_type>("noise-floor-psd"));
+        }
+        else if (node->has("noise-temperature"))
+        {
+            static constexpr double kBoltzmann = 1.38064852e-23; // J/K - Boltzmann constant; there's none defined in Source/Utility, so keeping a local constexpr
+            sigma = std::sqrt(kBoltzmann * node->get_value<input_type>("noise-temperature"));
+        }
+        else   // falling back to the old "sigma" parameter
+        {
+            sigma = node->get_value<input_type>("sigma", fRNG.sigma());
+        }
+
+        input_type mean = node->get_value<input_type>("mean", fRNG.mean());
+
+        fSigmaPSD = sigma; // to avoid sigma growing in each time-slice
         fRNG.param(KTRNGGaussian<>::param_type(mean, sigma));
-        fRNG.SetSeed(node->get_value< unsigned >("seed"));
+
+        unsigned seed;
+        if (node-> has("seed"))
+        {
+            seed = node->get_value< unsigned >("seed");
+        }
+        else
+        {
+            std::random_device rd;
+            seed = rd();
+        }
+        fRNG.SetSeed(seed);
+
+        fGain = node->get_value<double>("gain", fGain);
+        fResistance = node->get_value<double>("resistance", fResistance);
 
         return true;
     }
 
     bool KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const double binWidth        = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const double acquisitionRate = 1.0 / binWidth; // (Hz)
+        static constexpr double kInvSqrt2 = M_SQRT1_2;   // sqrt(0.5) - sigma scaling for complex signal
+
+        // Converting the stored PSD‑sigma (V/sqrt(Hz)) into the per‑sample sigma (V)
+        double sampledSigma = fSigmaPSD * std::sqrt(acquisitionRate);
+
+        sampledSigma *= fGain * std::sqrt(fResistance); // V = sigma x Gain x sqrt(R)
+        fRNG.param(KTRNGGaussian<>::param_type(fRNG.mean(), sampledSigma)); // Updating the RNG
+
         const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
         unsigned nComponents = data.GetNComponents();
@@ -68,7 +121,7 @@ namespace Katydid
             {
                 for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
                 {
-                    tsFFTW->SetRect(iBin, tsFFTW->GetReal(iBin) + fRNG(), tsFFTW->GetImag(iBin) + fRNG());  // Complex white-Gaussian noise
+                    tsFFTW->SetRect(iBin, tsFFTW->GetReal(iBin) + fRNG() * kInvSqrt2, tsFFTW->GetImag(iBin) + fRNG() * kInvSqrt2);  // Complex white-Gaussian noise
                 }
             }
             else

@@ -39,7 +39,7 @@ fft:
     
 noise-gen:
     mean: 0.0
-    sigma: 0.02		# varying this shifts the noise floor
+    noise-floor-psd: 2.2e-13	# Noise power in W/Hz
     seed: 12345
 
 writer:

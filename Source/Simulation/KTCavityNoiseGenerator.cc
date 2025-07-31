@@ -108,7 +108,7 @@ namespace Katydid
                 double f_if = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
                 double f_rf = f_if + fPars.f_lo;     // Down-converted
                 double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
-                double amp  = fNoiseScaling * std::sqrt(pBin) * N2;
+                double amp  = fNoiseScaling*fGain*std::sqrt(fResistance)*std::pow(sliceSize, 1.5)*std::sqrt(pBin / 2.0);  // N^{3/2}*sqrt(P_bin/2) - N^{3/2} since ReverseFFTW does a sqrt(N) normalization
 
                 spec.SetRect(k, amp * fRNG(), amp * fRNG());
             }
@@ -120,7 +120,7 @@ namespace Katydid
                 double f_if = k * df;
                 double f_rf = f_if + fPars.f_lo;     // Down-converted
                 double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
-                double amp  = fNoiseScaling * std::sqrt(pBin) * N2;
+                double amp  = fNoiseScaling*fGain*std::sqrt(fResistance)*std::pow(sliceSize, 1.5)*std::sqrt(pBin);  // N^{3/2}*sqrt(P_bin) - for real signal bins P_bin/2 -> P_bin
 
                 double re = amp * fRNG();
                 double im = (k==0 || (sliceSize%2==0 && k==N2)) ? 0.0 : amp * fRNG(); // Set imag component 0 for the DC bin (k = 0) and for the Nyquist bin (k = N/2) (even); otherwise amp * fRNG()
@@ -142,8 +142,6 @@ namespace Katydid
             return false;
         }
 
-        const double norm = 1.0 / sliceSize;    // 1/N normalization
-
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeries* ts = data.GetTimeSeries(iComponent);
@@ -151,12 +149,12 @@ namespace Katydid
             if (auto* tsFFTW = dynamic_cast< KTTimeSeriesFFTW* >(ts))
             {
                 for (unsigned i = 0; i < sliceSize; ++i)
-                    tsFFTW->SetRect(i, tsFFTW->GetReal(i) + noiseTS->GetReal(i)*norm, tsFFTW->GetImag(i) + noiseTS->GetImag(i)*norm);
+                    tsFFTW->SetRect(i, tsFFTW->GetReal(i) + noiseTS->GetReal(i), tsFFTW->GetImag(i) + noiseTS->GetImag(i));
             }
             else
             {
                 for (unsigned i = 0; i < sliceSize; ++i)
-                    ts->SetValue(i, ts->GetValue(i) + noiseTS->GetReal(i)*norm);
+                    ts->SetValue(i, ts->GetValue(i) + noiseTS->GetReal(i));
             }
         }
 

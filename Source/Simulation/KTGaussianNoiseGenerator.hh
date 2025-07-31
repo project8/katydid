@@ -36,8 +36,11 @@ namespace Katydid
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
        - "record-size": unsigned -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
      - From KTGaussianNoiseGenerator
+       - "seed": int -- Seed used to generate random noise. If this is omitted then the noise spectrum is irreproducible
        - "mean": double -- Mean for the randomly-chosen time-series values
        - "sigma": double -- Standard deviation for the randomly-chosen time-series values
+       - "noise-floor-psd": double -- Noise power in W/Hz
+       - "noise-temperature" - double -- Noise temperature in K
 
      Slots: (inherited from KTTSGenerator)
      - "slice": void (Nymph::KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
@@ -63,6 +66,9 @@ namespace Katydid
 
         protected:
             KTRNGGaussian<> fRNG;
+            double fSigmaPSD;
+            double fGain;
+            double fResistance;
 
         public:
             virtual bool GenerateTS(KTTimeSeriesData& data);
