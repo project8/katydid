@@ -34,6 +34,7 @@ set (EVENTANALYSIS_HEADERFILES
     KTIterativeTrackClustering.hh
     KTMultiPeakEventBuilder.hh
     KTMultiPeakTrackProcessing.hh
+    KTCavityMultiPeakTrackProcessing.hh
     KTMultiPeakTrackBuilder.hh
     KTMultiSliceClustering.hh
     KTOverlappingTrackClustering.hh
@@ -73,6 +74,7 @@ set (EVENTANALYSIS_SOURCEFILES
     KTIterativeTrackClustering.cc
     KTMultiPeakEventBuilder.cc
     KTMultiPeakTrackProcessing.cc
+    KTCavityMultiPeakTrackProcessing.cc
     KTMultiPeakTrackBuilder.cc
     KTMultiSliceClustering.cc
     KTOverlappingTrackClustering.cc
