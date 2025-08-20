@@ -17,6 +17,7 @@
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
 #include "KTProcessedMPTData.hh"
+#include "KTProcessedCavityMPTData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -59,6 +60,7 @@ namespace Katydid
                     fSparseWaterfallCandidateTree(NULL),
                     fSequentialLineTree(NULL),
                     fProcessedMPTTree(NULL),
+                    fProcessedCavityMPTTree(NULL),
                     fProcessedTrackTree(NULL),
                     fMultiPeakTrackTree(NULL),
                     fMultiTrackEventTree(NULL),
@@ -71,6 +73,7 @@ namespace Katydid
                     fSequentialLineDataPtr(NULL),
                     fProcessedTrackDataPtr(NULL),
                     fProcessedMPTDataPtr(NULL),
+                    fProcessedCavityMPTData(),
                     fMultiPeakTrackData(),
                     fMultiTrackEventDataPtr(NULL),
                     fMTEWithClassifierResultsDataPtr(NULL),
@@ -95,6 +98,7 @@ namespace Katydid
         fWriter->RegisterSlot("swfc", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("seq-cand", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSequentialLine);
         fWriter->RegisterSlot("processed-mpt", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT);
+        fWriter->RegisterSlot("processed-cavity-mpt", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedCavityMPT);
         fWriter->RegisterSlot("proc-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("mp-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
         fWriter->RegisterSlot("mt-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
@@ -680,6 +684,67 @@ namespace Katydid
 
         return true;
     }
+
+    //****************************
+    // Processed Cavity Multi-Peak Track
+    //****************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedCavityMPT(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to processed cavity mpt root tree");
+        KTProcessedCavityMPTData& procCavityMPTData = data->Of< KTProcessedCavityMPTData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fProcessedCavityMPTTree == NULL)
+        {
+            if (! SetupProcessedCavityMPTTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the processed cavity mpt tree! Nothing was written.");
+                return;
+            }
+        }
+
+        fProcessedCavityMPTData.fComponent = procCavityMPTData.GetComponent();
+        fProcessedCavityMPTData.fAxialFrequency = procCavityMPTData.GetAxialFrequency();
+
+        fProcessedCavityMPTTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupProcessedCavityMPTTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "processed-cavity-mpt", fProcessedCavityMPTTree );
+
+            if (fProcessedCavityMPTTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fProcessedCavityMPTTree );
+
+                fProcessedCavityMPTTree->SetBranchAddress( "Component", &fProcessedCavityMPTData.fComponent );
+                fProcessedCavityMPTTree->SetBranchAddress( "AxialFrequency", &fProcessedCavityMPTData.fAxialFrequency );
+
+                return true;
+            }
+        }
+
+        fProcessedCavityMPTTree = new TTree("processed-cavity-mpt", "Processed Cavity MPT");
+        if( fProcessedCavityMPTTree == NULL )
+        {
+            KTERROR( publog, "Tree was not created!" );
+            return false;
+        }
+        fWriter->AddTree( fProcessedCavityMPTTree );
+
+        fProcessedCavityMPTTree->Branch( "Component", &fProcessedCavityMPTData.fComponent, "fComponent/i" );
+        fProcessedCavityMPTTree->Branch( "AxialFrequency", &fProcessedCavityMPTData.fAxialFrequency, "fAxialFrequency/i" );
+
+        return true;
+    }
+
 
     //**************************
     // Multi-Peak Track
