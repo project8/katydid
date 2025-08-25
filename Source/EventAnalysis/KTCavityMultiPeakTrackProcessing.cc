@@ -144,20 +144,20 @@ namespace Katydid
         } 
         else 
         {
-            KTDEBUG(evlog, "Error: Frequency distances vector is empty or minimum value is zero. Aborting!")
+            KTWARN(evlog, "Frequency distances vector is empty or minimum value is zero. Aborting!")
             return false;
         }
 
         if (frequencyDistances.size() != separationOrder.size() || frequencyDistances.empty()) 
         {
-            KTDEBUG(evlog, "Error: Frequency distances vector empty or has different size to separation order vector. Aborting!")
+            KTWARN(evlog, "Frequency distances vector empty or has different size to separation order vector. Aborting!")
             return false;
         }
 
         KTDEBUG(evlog, "Separation order of frequency distances:")
         for (std::size_t i = 0; i < separationOrder.size(); ++i)
         {
-            KTDEBUG(evlog, separationOrder[i]);
+            KTDEBUG(evlog, i+1 << " : " << separationOrder[i]);
         }
 
         double sum = 0.0;
@@ -165,7 +165,7 @@ namespace Katydid
         {
             if (separationOrder[i] == 0.0) 
             {
-                KTDEBUG(evlog, "Error: Frequency distance division by 0 separation order. Aborting!")
+                KTWARN(evlog, "Frequency distance division by 0 separation order. Aborting!")
                 return false;
             }
             sum += frequencyDistances[i] / (2*separationOrder[i]);// Assuming only even order sidebands visible!!!

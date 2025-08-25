@@ -707,7 +707,6 @@ namespace Katydid
 
         fProcessedCavityMPTData.fComponent = procCavityMPTData.GetComponent();
         fProcessedCavityMPTData.fAxialFrequency = procCavityMPTData.GetAxialFrequency();
-        KTDEBUG(publog, "Writing axial frequency: " << procCavityMPTData.GetAxialFrequency());
 
         fProcessedCavityMPTTree->Fill();
 
@@ -741,7 +740,7 @@ namespace Katydid
         fWriter->AddTree( fProcessedCavityMPTTree );
 
         fProcessedCavityMPTTree->Branch( "Component", &fProcessedCavityMPTData.fComponent, "fComponent/i" );
-        fProcessedCavityMPTTree->Branch( "AxialFrequency", &fProcessedCavityMPTData.fAxialFrequency, "fAxialFrequency/i" );
+        fProcessedCavityMPTTree->Branch( "AxialFrequency", &fProcessedCavityMPTData.fAxialFrequency, "fAxialFrequency/d" );
 
         return true;
     }
