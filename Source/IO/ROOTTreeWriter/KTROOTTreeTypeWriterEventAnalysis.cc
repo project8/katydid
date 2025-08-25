@@ -707,6 +707,7 @@ namespace Katydid
 
         fProcessedCavityMPTData.fComponent = procCavityMPTData.GetComponent();
         fProcessedCavityMPTData.fAxialFrequency = procCavityMPTData.GetAxialFrequency();
+        KTDEBUG(publog, "Writing axial frequency: " << procCavityMPTData.GetAxialFrequency());
 
         fProcessedCavityMPTTree->Fill();
 
