@@ -39,6 +39,7 @@ namespace Katydid
             fFilenames(),
             fEggReaderType("none"),
             fRequireMetadata(false),
+            fHaveMetadata(false),
             fSliceSize(1024),
             fStride(1024),
             fStartTime(0.),
@@ -47,6 +48,7 @@ namespace Katydid
             fNormalizeVoltages(true),
             fHeaderSignal("header", this),
             fRawDataSignal("raw-ts", this),
+            fMetadataSignal("metadata", this),
             fDataSignal("ts", this),
             fEggDoneSignal("egg-done", this),
             fSummarySignal("summary", this)
@@ -159,6 +161,7 @@ namespace Katydid
                 KTERROR(egglog, "Can only specify metadata file if there's already a single egg file specified" );
                 return false;
             }
+            fHaveMetadata = true;
             KTDEBUG(egglog, "Specifying single metadata file to egg processor from the CL");
             fFilenames.back().second = scarab::expand_path(fCLHandler->GetCommandLineValue< string >("metadata-file"));
             KTINFO(egglog, "Added metadata file to egg processor: <" << fFilenames.back().second << ">");
@@ -205,6 +208,11 @@ namespace Katydid
         }
 
         fHeaderSignal(headerPtr);
+        if ( fHaveMetadata )
+        {
+            fMetadataSignal(headerPtr);
+        }
+
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 

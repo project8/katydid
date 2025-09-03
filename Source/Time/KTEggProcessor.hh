@@ -74,6 +74,7 @@ namespace Katydid
         produced; guarantees KTRawTimeSeriesData
      - "ts": void (Nymph::KTDataPtr) -- emitted when the new calibrated time series is
         produced; Guarantees KTTimeSeriesData
+     - "metadata": void (Nymph::KTDataPtr) -- emitted when the file header is parsed.
      - "egg-done": void () --  emitted when a file is finished.
      - "summary": void (const KTProcSummary*) -- emitted when a file is 
         finished (after "egg-done")
@@ -99,6 +100,8 @@ namespace Katydid
             MEMBERVARIABLEREF(KTEggReader::path_vec, Filenames);
             MEMBERVARIABLEREF(std::string, EggReaderType);
             MEMBERVARIABLE(bool, RequireMetadata);
+            MEMBERVARIABLE(bool, HaveMetadata);
+
 
             MEMBERVARIABLE(unsigned, SliceSize);
             MEMBERVARIABLE(unsigned, Stride);
@@ -131,6 +134,7 @@ namespace Katydid
             Nymph::KTSignalData fHeaderSignal;
             Nymph::KTSignalData fRawDataSignal;
             Nymph::KTSignalData fDataSignal;
+            Nymph::KTSignalData fMetadataSignal;
             Nymph::KTSignalOneArg< void > fEggDoneSignal;
             Nymph::KTSignalOneArg< const KTProcSummary* > fSummarySignal;
 
