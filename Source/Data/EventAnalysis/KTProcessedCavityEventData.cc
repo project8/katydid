@@ -1,0 +1,54 @@
+/*
+ * KTProcessedCavityEventData.cc
+ *
+ *  Created on: Sep 11, 2025
+ *      Author: juniorpe
+ */
+
+#include "KTProcessedCavityEventData.hh"
+
+#include "KTLogger.hh"
+
+namespace Katydid
+{
+
+    const std::string KTProcessedCavityEventData::sName("proc-cavity-event");
+
+    KTProcessedCavityEventData::KTProcessedCavityEventData() :
+            KTExtensibleData< KTProcessedCavityEventData >(),
+            fComponent(0),
+            fAcquisitionID(0.),
+            fEventID(0),
+            fTotalEventSequences(0),
+            fInitialCyclotronFrequency(0.)
+    {
+    }
+
+    KTProcessedCavityEventData::KTProcessedCavityEventData(const KTProcessedCavityEventData& orig) :
+            KTExtensibleData< KTProcessedCavityEventData >(orig),
+            
+            fComponent(orig.fComponent),
+            fAcquisitionID(orig.fAcquisitionID),
+            fEventID(orig.fEventID),
+            fTotalEventSequences(orig.fTotalEventSequences),
+            fInitialCyclotronFrequency(orig.fInitialCyclotronFrequency)
+    {
+    }
+
+    KTProcessedCavityEventData::~KTProcessedCavityEventData()
+    {
+    }
+
+    KTProcessedCavityEventData& KTProcessedCavityEventData::operator=(const KTProcessedCavityEventData& rhs)
+    {
+        KTExtensibleData< KTProcessedCavityEventData >::operator=(rhs);
+        fComponent = rhs.fComponent;
+        fAcquisitionID = rhs.fAcquisitionID;
+        fEventID = rhs.fEventID;
+        fTotalEventSequences = rhs.fTotalEventSequences;
+
+        fInitialCyclotronFrequency = rhs.fInitialCyclotronFrequency;
+        return *this;
+    }
+
+}

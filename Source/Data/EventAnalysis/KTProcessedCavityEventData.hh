@@ -1,0 +1,40 @@
+/*
+ * KTProcessedCavityEventData.hh
+ *
+ *  Created on: Sep 11, 2025
+ *      Author: juniorpe
+ */
+
+#ifndef KTPROCESSEDCAVITYEVENTDATA_HH_
+#define KTPROCESSEDCAVITYEVENTDATA_HH_
+
+#include "KTData.hh"
+#include "KTMultiTrackEventData.hh"
+#include "KTMemberVariable.hh"
+
+namespace Katydid
+{
+
+    class KTProcessedCavityEventData : public Nymph::KTExtensibleData< KTProcessedCavityEventData >
+    {
+        public:
+            KTProcessedCavityEventData();
+            KTProcessedCavityEventData(const KTProcessedCavityEventData& orig);
+            virtual ~KTProcessedCavityEventData();
+
+            KTProcessedCavityEventData& operator=(const KTProcessedCavityEventData& rhs);
+
+            MEMBERVARIABLE(unsigned, Component);
+            MEMBERVARIABLE(uint64_t, AcquisitionID);
+            MEMBERVARIABLE(unsigned, EventID);
+            MEMBERVARIABLE(unsigned, TotalEventSequences);
+
+            MEMBERVARIABLE(double, InitialCyclotronFrequency);
+
+        public:
+            static const std::string sName;
+    };
+
+}
+#endif
+

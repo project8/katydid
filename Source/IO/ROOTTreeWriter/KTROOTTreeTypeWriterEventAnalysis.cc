@@ -17,6 +17,7 @@
 #include "KTMultiTrackEventData.hh"
 #include "KTPowerFitData.hh"
 #include "KTProcessedMPTData.hh"
+#include "KTProcessedCavityEventData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -71,6 +72,7 @@ namespace Katydid
                     fSequentialLineDataPtr(NULL),
                     fProcessedTrackDataPtr(NULL),
                     fProcessedMPTDataPtr(NULL),
+                    fProcessedCavityEventData(),
                     fMultiPeakTrackData(),
                     fMultiTrackEventDataPtr(NULL),
                     fMTEWithClassifierResultsDataPtr(NULL),
@@ -95,6 +97,7 @@ namespace Katydid
         fWriter->RegisterSlot("swfc", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("seq-cand", this, &KTROOTTreeTypeWriterEventAnalysis::WriteSequentialLine);
         fWriter->RegisterSlot("processed-mpt", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedMPT);
+        fWriter->RegisterSlot("processed-cavity-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedCavityEvent);
         fWriter->RegisterSlot("proc-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteProcessedTrack);
         fWriter->RegisterSlot("mp-track", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiPeakTrack);
         fWriter->RegisterSlot("mt-event", this, &KTROOTTreeTypeWriterEventAnalysis::WriteMultiTrackEvent);
@@ -680,6 +683,76 @@ namespace Katydid
 
         return true;
     }
+
+    //****************************
+    // Processed Cavity Event 
+    //****************************
+
+    void KTROOTTreeTypeWriterEventAnalysis::WriteProcessedCavityEvent(Nymph::KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to processed cavity event root tree");
+        KTProcessedCavityEventData& procCavityEventData = data->Of< KTProcessedCavityEventData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fProcessedCavityEventTree == NULL)
+        {
+            if (! SetupProcessedCavityEventTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the processed cavity mpt tree! Nothing was written.");
+                return;
+            }
+        }
+
+        fProcessedCavityEventData.fComponent = procCavityEventData.GetComponent();
+        fProcessedCavityEventData.fAcquisitionID = procCavityEventData.GetAcquisitionID();
+        fProcessedCavityEventData.fEventID = procCavityEventData.GetEventID();
+        fProcessedCavityEventData.fTotalEventSequences = procCavityEventData.GetTotalEventSequences();
+        fProcessedCavityEventData.fInitialCyclotronFrequency = procCavityEventData.GetInitialCyclotronFrequency();
+
+        fProcessedCavityEventTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterEventAnalysis::SetupProcessedCavityEventTree()
+    {
+        if( fWriter->GetAccumulate() )
+        {
+            fWriter->GetFile()->GetObject( "processed-cavity-event", fProcessedCavityEventTree );
+
+            if (fProcessedCavityEventTree != NULL)
+            {
+                KTINFO(publog, "Tree already exists; will add to it");
+                fWriter->AddTree( fProcessedCavityEventTree );
+
+                fProcessedCavityEventTree->SetBranchAddress( "Component", &fProcessedCavityEventData.fComponent );
+                fProcessedCavityEventTree->SetBranchAddress( "AcquisitionID", &fProcessedCavityEventData.fAcquisitionID );
+                fProcessedCavityEventTree->SetBranchAddress( "EventID", &fProcessedCavityEventData.fEventID );
+                fProcessedCavityEventTree->SetBranchAddress( "TotalEventSequences", &fProcessedCavityEventData.fTotalEventSequences );
+                fProcessedCavityEventTree->SetBranchAddress( "InitialCyclotronFrequency", &fProcessedCavityEventData.fInitialCyclotronFrequency );
+
+                return true;
+            }
+        }
+
+        fProcessedCavityEventTree = new TTree("processed-cavity-event", "Processed Cavity Event");
+        if( fProcessedCavityEventTree == NULL )
+        {
+            KTERROR( publog, "Tree was not created!" );
+            return false;
+        }
+        fWriter->AddTree( fProcessedCavityEventTree );
+
+        fProcessedCavityEventTree->Branch( "Component", &fProcessedCavityEventData.fComponent, "fComponent/i" );
+        fProcessedCavityEventTree->Branch( "AcquisitionID", &fProcessedCavityEventData.fAcquisitionID, "fAcquisitionID/l" );
+        fProcessedCavityEventTree->Branch( "EventID", &fProcessedCavityEventData.fEventID, "fEventID/i" );
+        fProcessedCavityEventTree->Branch( "TotalEventSequences", &fProcessedCavityEventData.fTotalEventSequences, "fTotalEventSequences/i" );
+        fProcessedCavityEventTree->Branch( "InitialCyclotronFrequency", &fProcessedCavityEventData.fInitialCyclotronFrequency, "fInitialCyclotronFrequency/d" );
+
+        return true;
+    }
+
 
     //**************************
     // Multi-Peak Track
