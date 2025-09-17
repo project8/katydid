@@ -11,6 +11,9 @@
 #include "KTTIFactory.hh"
 
 //#include "KTLogger.hh"
+#include "param.hh"
+#include "param_json.hh"
+
 
 using std::string;
 
@@ -50,90 +53,9 @@ namespace Katydid
 
         scarab::param* metadata = data->Of< KTArbitraryMetadata >().GetMetadata();
 
-        KTJSONWriter::JSONMaker* jsonMaker = fWriter->GetJSONMaker();
+        scarab::param_output_json tOutput;
 
-        jsonMaker->String("run-id");
-        jsonMaker->String(metadata->as_node()["run-id"]().as_string().c_str());
-
-        jsonMaker->String("run-parameters");
-        jsonMaker->StartObject();
-        jsonMaker->String("run-type");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["run-type"]().as_string().c_str());
-        jsonMaker->String("simulation-type");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["simulation-type"]().as_string().c_str());
-        jsonMaker->String("simulation-subtype");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["simulation-subtype"]().as_string().c_str());
-        jsonMaker->String("user-defined-tag");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["user-defined-tag"]().as_string().c_str());
-        jsonMaker->String("sampling-freq-mega-hz");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["sampling-freq-mega-hz"]().as_string().c_str());
-        jsonMaker->String("configured-e-min");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["configured-e-min"]().as_string().c_str());
-        jsonMaker->String("configured-pitch-min");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["configured-pitch-min"]().as_string().c_str());
-        jsonMaker->String("configured-x-min");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["configured-x-min"]().as_string().c_str());
-        jsonMaker->String("configured-y-min");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["configured-y-min"]().as_string().c_str());
-        jsonMaker->String("configured-z-min");
-        jsonMaker->String(metadata->as_node()["run-parameters"]["configured-z-min"]().as_string().c_str());
-        jsonMaker->EndObject();
-
-        jsonMaker->String("nevents");
-        jsonMaker->String(metadata->as_node()["nevents"]().as_string().c_str());
-
-        for (int iEvent = 0; iEvent < metadata->as_node()["nevents"]().as_int(); iEvent++)
-        {
-            jsonMaker->String(std::to_string(iEvent).c_str());
-            jsonMaker->StartObject();
-            jsonMaker->String("event-tag");
-            jsonMaker->String(metadata->as_node()[std::to_string(iEvent)]["event-tag"]().as_string().c_str());
-            jsonMaker->String("kassiopeia-seed");
-            jsonMaker->String(metadata->as_node()[std::to_string(iEvent)]["kassiopeia-seed"]().as_string().c_str());
-            jsonMaker->String("track-length-seed");
-            jsonMaker->String(metadata->as_node()[std::to_string(iEvent)]["track-length-seed"]().as_string().c_str());
-            jsonMaker->String("track-delay-seed");
-            jsonMaker->String(metadata->as_node()[std::to_string(iEvent)]["track-delay-seed"]().as_string().c_str());
-            jsonMaker->String("ntracks");
-            jsonMaker->String(metadata->as_node()[std::to_string(iEvent)]["ntracks"]().as_string().c_str());
-            for (int iTrack = 0; iTrack < metadata->as_node()[std::to_string(iEvent)]["ntracks"]().as_int(); iTrack++)
-            {
-                jsonMaker->String(std::to_string(iTrack).c_str());
-                jsonMaker->StartObject();
-                jsonMaker->String("start-time");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["start-time"]().as_double());
-                jsonMaker->String("end-time");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["end-time"]().as_double());
-                jsonMaker->String("energy-ev");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["energy-ev"]().as_double());
-                jsonMaker->String("start-radius");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["start-radius"]().as_double());
-                jsonMaker->String("start-radial-phase");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["start-radial-phase"]().as_double());
-                jsonMaker->String("output-avg-frequency");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["output-avg-frequency"]().as_double());
-                jsonMaker->String("output-track-start-frequency");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["output-track-start-frequency"]().as_double());
-                jsonMaker->String("output-inst-start-frequency");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["output-inst-start-frequency"]().as_double());
-                jsonMaker->String("pitch-angle");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["pitch-angle"]().as_double());
-                jsonMaker->String("slope");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["slope"]().as_double());
-                jsonMaker->String("avg-axial-frequency");
-                jsonMaker->Double(metadata->as_node()[std::to_string(iEvent)][std::to_string(iTrack)]["avg-axial-frequency"]().as_double());
-
-                jsonMaker->EndObject();
-
-
-            }
-
-            jsonMaker->EndObject();
-        }
-
-
-
-//        fWriter->CloseFile();
+        bool t_did_write_file = tOutput.write_file( *metadata, fWriter->GetFilename() );
 
         return;
     }
