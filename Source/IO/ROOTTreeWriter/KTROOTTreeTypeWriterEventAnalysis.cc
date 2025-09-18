@@ -711,6 +711,8 @@ namespace Katydid
         fProcessedCavityEventData.fInitialCyclotronFrequency = procCavityEventData.GetInitialCyclotronFrequency();
         //fProcessedCavityEventData.fFirstTrackAxialFrequency = procCavityEventData.GetFirstTrackAxialFrequency();
 
+        KTDEBUG(publog, "Writing first track initial cyclotron frequency: " << procCavityEventData.GetInitialCyclotronFrequency());
+
         fProcessedCavityEventTree->Fill();
 
         return;
