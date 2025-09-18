@@ -709,6 +709,7 @@ namespace Katydid
         fProcessedCavityEventData.fEventID = procCavityEventData.GetEventID();
         fProcessedCavityEventData.fTotalEventSequences = procCavityEventData.GetTotalEventSequences();
         fProcessedCavityEventData.fInitialCyclotronFrequency = procCavityEventData.GetInitialCyclotronFrequency();
+        //fProcessedCavityEventData.fFirstTrackAxialFrequency = procCavityEventData.GetFirstTrackAxialFrequency();
 
         fProcessedCavityEventTree->Fill();
 
@@ -731,6 +732,7 @@ namespace Katydid
                 fProcessedCavityEventTree->SetBranchAddress( "EventID", &fProcessedCavityEventData.fEventID );
                 fProcessedCavityEventTree->SetBranchAddress( "TotalEventSequences", &fProcessedCavityEventData.fTotalEventSequences );
                 fProcessedCavityEventTree->SetBranchAddress( "InitialCyclotronFrequency", &fProcessedCavityEventData.fInitialCyclotronFrequency );
+                //fProcessedCavityEventTree->SetBranchAddress( "FirstTrackAxialFrequency", &fProcessedCavityEventData.fFirstTrackAxialFrequency );
 
                 return true;
             }
@@ -749,6 +751,7 @@ namespace Katydid
         fProcessedCavityEventTree->Branch( "EventID", &fProcessedCavityEventData.fEventID, "fEventID/i" );
         fProcessedCavityEventTree->Branch( "TotalEventSequences", &fProcessedCavityEventData.fTotalEventSequences, "fTotalEventSequences/i" );
         fProcessedCavityEventTree->Branch( "InitialCyclotronFrequency", &fProcessedCavityEventData.fInitialCyclotronFrequency, "fInitialCyclotronFrequency/d" );
+        //fProcessedCavityEventTree->Branch( "FirstTrackAxialFrequency", &fProcessedCavityEventData.fFirstTrackAxialFrequency, "fFirstTrackAxialFrequency/d" );
 
         return true;
     }

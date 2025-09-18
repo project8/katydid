@@ -123,6 +123,7 @@ namespace Katydid
         UInt_t fEventID;
         UInt_t fTotalEventSequences;
         Double_t fInitialCyclotronFrequency;
+        Double_t fFirstTrackAxialFrequency;
     };
 
     struct TLinearFitResult

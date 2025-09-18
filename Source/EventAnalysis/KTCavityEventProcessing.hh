@@ -11,6 +11,7 @@
 #include "KTProcessor.hh"
 #include "KTData.hh"
 #include "KTSlot.hh"
+#include "KTMemberVariable.hh"
 
 namespace Katydid
 {
@@ -40,6 +41,8 @@ namespace Katydid
             virtual ~KTCavityEventProcessing();
 
             bool Configure(const scarab::param_node* node);
+
+            MEMBERVARIABLE(float, TrackClass3BandRelPowerThresh);
 
         public:
             bool AnalyzeEvent( KTMultiTrackEventData& mtEventData );

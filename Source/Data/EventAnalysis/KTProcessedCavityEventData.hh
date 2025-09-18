@@ -30,6 +30,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, TotalEventSequences);
 
             MEMBERVARIABLE(double, InitialCyclotronFrequency);
+            MEMBERVARIABLE(double, FirstTrackAxialFrequency);
 
         public:
             static const std::string sName;
