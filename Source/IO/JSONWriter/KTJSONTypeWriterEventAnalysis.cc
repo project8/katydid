@@ -34,6 +34,7 @@ namespace Katydid
 
     KTJSONTypeWriterEventAnalysis::~KTJSONTypeWriterEventAnalysis()
     {
+        delete fProcTrackParams;
     }
 
 
