@@ -5,16 +5,18 @@
  *      Author: nsoblath
  */
 
+#include "KTArbitraryMetadata.hh"
 #include "KTEggHeader.hh"
 #include "KTJSONTypeWriterTime.hh"
 #include "KTTIFactory.hh"
-//#include "KTLogger.hh"
+#include "KTLogger.hh"
+
 
 using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "KTJSONTypeWriterTime");
+    KTLOGGER(publog, "KTJSONTypeWriterTime");
 
     static Nymph::KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterTime > sJSONTWERegistrar;
 
@@ -32,6 +34,45 @@ namespace Katydid
     void KTJSONTypeWriterTime::RegisterSlots()
     {
         fWriter->RegisterSlot("header", this, &KTJSONTypeWriterTime::WriteEggHeader);
+        fWriter->RegisterSlot("metadata", this, &KTJSONTypeWriterTime::WriteArbitraryMetadata);
+        return;
+    }
+
+
+    void KTJSONTypeWriterTime::WriteArbitraryMetadata(Nymph::KTDataPtr data)
+    {
+
+        using rapidjson::SizeType;
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (! data) return;
+
+        scarab::param* metadata = data->Of< KTArbitraryMetadata >().GetMetadata();
+        if (! metadata)
+        {
+            KTWARN(publog, "Can't find any arbitrary metadata to record.");
+            return;
+        }
+
+        scarab::param_value tFormat;
+        if ( fWriter->GetPrettyJSONFlag() )
+        {
+            tFormat.set( "pretty" );
+        }
+        else
+        {
+            tFormat.set( "compact" );
+        }
+        scarab::param_node* tStyle = new scarab::param_node();
+        tStyle->add("style", tFormat);
+        KTDEBUG(publog, "Arbitrary metadata output format:\n" << *tStyle);
+
+        // TO-DO:  Propagate file mode (a, w, r, etc.) from config file to the json writer.
+        scarab::param_output_json tOutput;
+        bool t_did_write_file = tOutput.write_file( *metadata, fWriter->GetFilename(), tStyle);
+        delete tStyle;
+
         return;
     }
 

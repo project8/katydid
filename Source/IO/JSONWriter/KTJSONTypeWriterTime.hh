@@ -9,7 +9,7 @@
 #define KTJSONTYPEWRITERTIME_HH_
 
 #include "KTJSONWriter.hh"
-
+#include "param_json.hh"
 #include "KTData.hh"
 
 namespace Katydid
@@ -27,6 +27,8 @@ namespace Katydid
 
         public:
             void WriteEggHeader(Nymph::KTDataPtr headerPtr);
+            void WriteArbitraryMetadata(Nymph::KTDataPtr data);
+
     };
 
 } /* namespace Katydid */
