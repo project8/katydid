@@ -12,6 +12,8 @@
 
 #include "KTData.hh"
 
+#include "param.hh"
+
 namespace Katydid
 {
     
@@ -25,6 +27,12 @@ namespace Katydid
 
         public:
             void WriteFrequencyCandidates(Nymph::KTDataPtr data);
+            void AccumulateProcessedTracks(Nymph::KTDataPtr data);
+            void WriteProcessedTracks();
+
+        private:
+            scarab::param_array* fProcTrackParams;
+
 
     };
 
