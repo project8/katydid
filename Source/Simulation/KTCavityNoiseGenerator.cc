@@ -57,7 +57,7 @@ namespace Katydid
         if (node == NULL) return false;
         if (! KTGaussianNoiseGenerator::ConfigureDerivedGenerator(node)) return false;
 
-        fRNG.param(KTRNGGaussian<>::param_type(0.0, 1.0));  // Cavity noise should have fRNG() with default (mean, sigma), not derived from KTGaussianNoiseGenerator
+        fRNG.param(KTRNGGaussian<>::param_type(0.0, 1.0));  // Cavity noise should have fRNG() with default (mean, sigma), not inherited from KTGaussianNoiseGenerator
 
         if (node->has("cavity"))
         {
