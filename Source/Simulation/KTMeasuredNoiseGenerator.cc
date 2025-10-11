@@ -494,7 +494,7 @@ namespace Katydid
         KTFrequencySpectrumFFTW spec(sliceSize, -fs*0.5, fs*0.5, false);
         spec.SetNTimeBins(sliceSize);
 
-        const double scale = fNoiseScaling * fGain * std::sqrt(fResistance) * std::pow(sliceSize, 1.5);
+        const double scale = fNoiseScaling * fGain * std::sqrt(fResistance) * sliceSize;
 
         if (isComplex)
         {
@@ -537,7 +537,7 @@ namespace Katydid
                     }
                     else
                     {
-                        const double R = scale * std::sqrt(2.0 * pBin);
+                        const double R = scale * std::sqrt(pBin);
                         double c = 1.0, s = 0.0; RandomUnitComplex(c, s);
                         const double re = R * c;
                         const double im = R * s;
