@@ -62,6 +62,7 @@ namespace Katydid
      - "max-frequency": double -- maximum frequency for the fit
      - "min-bin": unsigned -- minimum bin for the fit
      - "max-bin": unsigned -- maximum bin for the fit
+     - "fit-points": unsigned -- number of spline points to use in the fit
      - "variance-n-bins": unsigned -- number of bins to use around each point to calculate the variance if the variance is not provided using one of the "-var" slots
 
      Slots:
