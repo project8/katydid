@@ -105,6 +105,13 @@ namespace Katydid
     bool KTCavityEventProcessing::ReconstructCyclotronFrequency(const std::vector<AllTrackData>& tracksInMPT, double& outStartCyclotronFrequency) const
     {
         outStartCyclotronFrequency = -1.0;
+
+        if (tracksInMPT.empty())
+        {
+            KTWARN(evlog, "MPT has no tracks; cannot reconstruct cyclotron frequency.");
+            return false;
+        }
+
         KTINFO(evlog, "Beginning start cyclotron frequency reconstruction of MPT.");
         KTDEBUG(evlog, "Relative NUP threshold for classification of bands in 3 band multi-peak-tracks is " << this->fTrackClass3BandRelPowerThresh); //float fTrackClass3BandRelPowerThresh = 0.7; // Tuned parameter for CCA simulation data
     
@@ -158,12 +165,7 @@ namespace Katydid
         size_t numBands = sortedMPTBands.size();
         int carrierIndex = -1;
 
-        if (numBands==0)
-        {
-            KTWARN(evlog, "MPT has no tracks; I cannot analyze this for cyclotron frequency. Aborting");
-            return false;
-        }
-        else if (numBands==1)
+        if (numBands==1)
         {
             carrierIndex = 0;
             KTDEBUG(evlog, "MPT has 1 band!");
@@ -231,121 +233,128 @@ namespace Katydid
     bool KTCavityEventProcessing::ReconstructAxialFrequency(const std::vector<AllTrackData>& tracksInMPT, double& outAxialFrequency) const
     {
         outAxialFrequency = -1.0;
-        if(tracksInMPT.size()>1)
+        if (tracksInMPT.size() <= 1)
         {
-            KTINFO(evlog, "Beginning axial frequency reconstruction of MPT.");
-            KTDEBUG(evlog, "Attemping frequency distance calculation between bands in MPT.");
-            std::set<double> timeStampSet;
-            std::vector<double> frequencyDistances;
-
-            // Calculating all unique frequency distances between tracks at their start and end times
-            for (auto outerIt = tracksInMPT.begin(); outerIt != tracksInMPT.end(); ++outerIt) 
-            {
-                double t1StartTime = outerIt->fProcTrack.GetStartTimeInRunC();
-                double t1EndTime = outerIt->fProcTrack.GetEndTimeInRunC();
-                double t1StartFreq = outerIt->fProcTrack.GetStartFrequency();
-                double t1EndFreq = outerIt->fProcTrack.GetEndFrequency();
-                double t1Slope = outerIt->fProcTrack.GetSlope();
-                double t1Intercept = outerIt->fProcTrack.GetIntercept();
-                
-                KTDEBUG(evlog, "Outer loop track id: " << outerIt->fProcTrack.GetTrackID());
-
-                // Looping through track start and end times to calculate frequency distance to other tracks at those time stamps
-                for (const double& timeStamp : {t1StartTime, t1EndTime})
-                {
-                    KTDEBUG(evlog, "Time stamp: " << timeStamp)
-                    //Skip redundant time stamps
-                    if (timeStampSet.count(timeStamp) > 0) 
-                    {
-                        KTDEBUG(evlog, "Redundant time stamp encountered. Skipping frequency distance calculation!"); 
-                        continue;
-                    }
-                    //Store unique time stamps
-                    timeStampSet.insert(timeStamp);
-
-                    double freqDist = 0;
-                    double t1FreqAtTimeStamp = t1Slope*timeStamp + t1Intercept;
-
-                    for (auto innerIt = tracksInMPT.begin(); innerIt != tracksInMPT.end(); ++innerIt) 
-                    {
-                        // Skip outer loop track
-                        if (outerIt == innerIt) continue; 
-                        
-                        double t2StartTime = innerIt->fProcTrack.GetStartTimeInRunC();
-                        double t2EndTime = innerIt->fProcTrack.GetEndTimeInRunC();
-                        double t2StartFreq = innerIt->fProcTrack.GetStartFrequency();
-                        double t2EndFreq = innerIt->fProcTrack.GetEndFrequency();
-                        double t2Slope = innerIt->fProcTrack.GetSlope();
-                        double t2Intercept = innerIt->fProcTrack.GetIntercept();
-
-
-                        KTDEBUG(evlog, "Inner loop track id: " << innerIt->fProcTrack.GetTrackID())
-
-                        // Check that time stamp is contained within other track lengths before calculating frequency distance
-                        if (t2StartTime <= timeStamp && t2EndTime >= timeStamp)
-                        {
-                            double t2FreqAtTimeStamp = t2Slope*timeStamp + t2Intercept;
-                            freqDist = std::abs(t1FreqAtTimeStamp - t2FreqAtTimeStamp);
-                            frequencyDistances.push_back(freqDist);
-                            KTDEBUG(evlog, "Successfully calculated frequency distance: " << freqDist)
-                        }
-                        else 
-                        {
-                            KTDEBUG(evlog, "Time stamp not contained in inner loop track length. Aborting frequency distance calculation!");
-                            continue;
-                        }
-                    }
-
-                }
-            
-            }
-
-            KTINFO(evlog, "Beginning calculation of average axial frequency from all frequency distances.");
-            // Calculating average axial frequency from frequency distances between tracks
-            auto minDist = std::min_element(frequencyDistances.begin(), frequencyDistances.end());
-            std::vector<double> separationOrder;
-            // Check if the vector is not empty and min is not zero to avoid division by zero
-            if (minDist != frequencyDistances.end() && *minDist != 0.0) 
-            {
-                double min_val = *minDist;
-                // Divide all frequency distances by the minimum frequency distance and store value
-                for (double& val : frequencyDistances) {
-                    separationOrder.push_back(std::round(val/min_val));
-                }
-            } 
-            else 
-            {
-                KTDEBUG(evlog, "Error: Frequency distances vector is empty or minimum value is zero.");
-            }
-
-            if (frequencyDistances.size() != separationOrder.size() || frequencyDistances.empty()) 
-            {
-                KTDEBUG(evlog, "Error: Frequency distances vector empty or has different size to separation order vector.");
-            }
-
-            KTDEBUG(evlog, "Separation order of frequency distances:");
-            for (std::size_t i = 0; i < separationOrder.size(); ++i)
-            {
-                KTDEBUG(evlog, separationOrder[i]);
-            }
-
-            double sum = 0.0;
-            for (std::size_t i = 0; i < frequencyDistances.size(); ++i) 
-            {
-                if (separationOrder[i] == 0.0) 
-                {
-                    KTDEBUG(evlog, "Error: Frequency distance division by 0 separation order.");
-                }
-                sum += frequencyDistances[i] / (2*separationOrder[i]);// Assuming only even order sidebands visible!!!
-                KTDEBUG(evlog, "Average axial frequency constribution " << i+1  << " : " << frequencyDistances[i] / (2*separationOrder[i]));
-            }
-            outAxialFrequency = sum/frequencyDistances.size();
-        }
-        else
-        {
-            KTINFO(evlog, "First MPT in event has <= 1 band. Impossible to reconstruct axial frequency.");
+            KTINFO(evlog, "MPT has <= 1 band; axial frequency reconstruction impossible.");
             return false;
         }
+
+
+        KTINFO(evlog, "Beginning axial frequency reconstruction of MPT.");
+        KTDEBUG(evlog, "Attemping frequency distance calculation between bands in MPT.");
+        std::set<double> timeStampSet;
+        std::vector<double> frequencyDistances;
+
+        // Calculating all unique frequency distances between tracks at their start and end times
+        for (auto outerIt = tracksInMPT.begin(); outerIt != tracksInMPT.end(); ++outerIt) 
+        {
+            double t1StartTime = outerIt->fProcTrack.GetStartTimeInRunC();
+            double t1EndTime = outerIt->fProcTrack.GetEndTimeInRunC();
+            double t1StartFreq = outerIt->fProcTrack.GetStartFrequency();
+            double t1EndFreq = outerIt->fProcTrack.GetEndFrequency();
+            double t1Slope = outerIt->fProcTrack.GetSlope();
+            double t1Intercept = outerIt->fProcTrack.GetIntercept();
+            
+            KTDEBUG(evlog, "Outer loop track id: " << outerIt->fProcTrack.GetTrackID());
+
+            // Looping through track start and end times to calculate frequency distance to other tracks at those time stamps
+            for (const double& timeStamp : {t1StartTime, t1EndTime})
+            {
+                KTDEBUG(evlog, "Time stamp: " << timeStamp)
+                //Skip redundant time stamps
+                if (timeStampSet.count(timeStamp) > 0) 
+                {
+                    KTDEBUG(evlog, "Redundant time stamp encountered. Skipping frequency distance calculation!"); 
+                    continue;
+                }
+                //Store unique time stamps
+                timeStampSet.insert(timeStamp);
+
+                double freqDist = 0;
+                double t1FreqAtTimeStamp = t1Slope*timeStamp + t1Intercept;
+
+                for (auto innerIt = tracksInMPT.begin(); innerIt != tracksInMPT.end(); ++innerIt) 
+                {
+                    // Skip outer loop track
+                    if (outerIt == innerIt) continue; 
+                    
+                    double t2StartTime = innerIt->fProcTrack.GetStartTimeInRunC();
+                    double t2EndTime = innerIt->fProcTrack.GetEndTimeInRunC();
+                    double t2StartFreq = innerIt->fProcTrack.GetStartFrequency();
+                    double t2EndFreq = innerIt->fProcTrack.GetEndFrequency();
+                    double t2Slope = innerIt->fProcTrack.GetSlope();
+                    double t2Intercept = innerIt->fProcTrack.GetIntercept();
+
+
+                    KTDEBUG(evlog, "Inner loop track id: " << innerIt->fProcTrack.GetTrackID())
+
+                    // Check that time stamp is contained within other track lengths before calculating frequency distance
+                    if (t2StartTime <= timeStamp && t2EndTime >= timeStamp)
+                    {
+                        double t2FreqAtTimeStamp = t2Slope*timeStamp + t2Intercept;
+                        freqDist = std::abs(t1FreqAtTimeStamp - t2FreqAtTimeStamp);
+                        frequencyDistances.push_back(freqDist);
+                        KTDEBUG(evlog, "Successfully calculated frequency distance: " << freqDist)
+                    }
+                    else 
+                    {
+                        KTDEBUG(evlog, "Time stamp not contained in inner loop track length. Aborting frequency distance calculation!");
+                        continue;
+                    }
+                }
+
+            }
+        
+        }
+
+        if (frequencyDistances.empty())
+        {
+            KTWARN(evlog, "No valid frequency distances found; cannot reconstruct axial frequency.");
+            return false;
+        }
+
+        KTINFO(evlog, "Beginning calculation of average axial frequency from all frequency distances.");
+        // Calculating average axial frequency from frequency distances between tracks
+        auto minDist = std::min_element(frequencyDistances.begin(), frequencyDistances.end());
+        std::vector<double> separationOrder;
+        // Check if the vector is not empty and min is not zero to avoid division by zero
+        if (minDist == frequencyDistances.end() || *minDist == 0.0)
+        {
+            KTWARN(evlog, "Cannot determine minimum frequency distance (empty or zero); cannot reconstruct axial frequency.");
+            return false;
+        }
+        double min_val = *minDist;
+        // Divide all frequency distances by the minimum frequency distance and store value
+        for (double& val : frequencyDistances) {
+            separationOrder.push_back(std::round(val/min_val));
+        }
+
+        if (frequencyDistances.size() != separationOrder.size()) 
+        {
+            KTWARN(evlog, "Error: Frequency distances vector has different size to separation order vector.");
+            return false;
+        }
+
+        KTDEBUG(evlog, "Separation order of frequency distances:");
+        for (std::size_t i = 0; i < separationOrder.size(); ++i)
+        {
+            KTDEBUG(evlog, separationOrder[i]);
+        }
+
+        double sum = 0.0;
+        for (std::size_t i = 0; i < frequencyDistances.size(); ++i) 
+        {
+            if (separationOrder[i] == 0.0) 
+            {
+                KTWARN(evlog, "Error: Frequency distance division by 0 separation order.");
+                return false;
+            }
+            sum += frequencyDistances[i] / (2*separationOrder[i]);// Assuming only even order sidebands visible!!!
+            KTDEBUG(evlog, "Average axial frequency constribution " << i+1  << " : " << frequencyDistances[i] / (2*separationOrder[i]));
+        }
+
+        outAxialFrequency = sum/frequencyDistances.size();
+        
 
         return true;
     }
