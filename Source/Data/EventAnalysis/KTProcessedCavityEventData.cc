@@ -20,7 +20,7 @@ namespace Katydid
             fAcquisitionID(0.),
             fEventID(0),
             fTotalEventSequences(0),
-            fInitialCyclotronFrequency(0.),
+            fFirstTrackStartCyclotronFrequency(0.),
             fFirstTrackAxialFrequency(0.)
     {
     }
@@ -32,7 +32,7 @@ namespace Katydid
             fAcquisitionID(orig.fAcquisitionID),
             fEventID(orig.fEventID),
             fTotalEventSequences(orig.fTotalEventSequences),
-            fInitialCyclotronFrequency(orig.fInitialCyclotronFrequency),
+            fFirstTrackStartCyclotronFrequency(orig.fFirstTrackStartCyclotronFrequency),
             fFirstTrackAxialFrequency(orig.fFirstTrackAxialFrequency)
     {
     }
@@ -49,7 +49,7 @@ namespace Katydid
         fEventID = rhs.fEventID;
         fTotalEventSequences = rhs.fTotalEventSequences;
 
-        fInitialCyclotronFrequency = rhs.fInitialCyclotronFrequency;
+        fFirstTrackStartCyclotronFrequency = rhs.fFirstTrackStartCyclotronFrequency;
         fFirstTrackAxialFrequency = rhs.fFirstTrackAxialFrequency;
         return *this;
     }

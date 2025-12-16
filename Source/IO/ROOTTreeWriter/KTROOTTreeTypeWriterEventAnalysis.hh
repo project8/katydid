@@ -122,7 +122,7 @@ namespace Katydid
         ULong64_t fAcquisitionID;
         UInt_t fEventID;
         UInt_t fTotalEventSequences;
-        Double_t fInitialCyclotronFrequency;
+        Double_t fFirstTrackStartCyclotronFrequency;
         Double_t fFirstTrackAxialFrequency;
     };
 

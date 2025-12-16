@@ -29,7 +29,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, EventID);
             MEMBERVARIABLE(unsigned, TotalEventSequences);
 
-            MEMBERVARIABLE(double, InitialCyclotronFrequency);
+            MEMBERVARIABLE(double, FirstTrackStartCyclotronFrequency);
             MEMBERVARIABLE(double, FirstTrackAxialFrequency);
 
         public:
