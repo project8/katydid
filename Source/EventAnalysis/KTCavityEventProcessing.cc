@@ -49,6 +49,8 @@ namespace Katydid
         // Create and fill new data object
         KTProcessedCavityEventData& procEvent = mtEventData.Of<KTProcessedCavityEventData>();
 
+        procEvent.ClearProcessedMPT();
+
         procEvent.SetComponent(mtEventData.GetComponent());
         procEvent.SetAcquisitionID(mtEventData.GetAcquisitionID());
         procEvent.SetEventID(mtEventData.GetEventID());
@@ -97,6 +99,9 @@ namespace Katydid
                 procEvent.SetFirstTrackAxialFrequency(reconstructedAxialFrequency);
             }
 
+            procEvent.AddProcessedMPT(eventSeqID, reconstructedStartCyclotronFrequency, reconstructedAxialFrequency);
+            
+
         }
 
         return true;
@@ -142,18 +147,6 @@ namespace Katydid
             });
 
         KTDEBUG("Max Total Track NUP out of all bands in first MPT : " << maxTotNUP);
-
-        /*
-        for (const AllTrackData* trackPtr : sortedMPTBands)
-        {
-            KTDEBUG(evlog, "TrackID: " << trackPtr->fProcTrack.GetTrackID());
-            KTDEBUG(evlog, "TotalTrackNUP: " << trackPtr->fProcTrack.GetTotalTrackNUP());
-            KTDEBUG(evlog, "StartFrequency: " << trackPtr->fProcTrack.GetStartFrequency());
-            KTDEBUG(evlog, "EndFrequency: " << trackPtr->fProcTrack.GetEndFrequency());
-            KTDEBUG(evlog, "StartTimeInRunC: " << trackPtr->fProcTrack.GetStartTimeInRunC());
-            KTDEBUG(evlog, "EndTimeInRunC: " << trackPtr->fProcTrack.GetEndTimeInRunC());
-        }
-        */
 
         // Classifying bands in MPT. Number of bands determines possible topologies as follows
         // Bands |        Topologies
@@ -354,6 +347,7 @@ namespace Katydid
         }
 
         outAxialFrequency = sum/frequencyDistances.size();
+        KTDEBUG(evlog, "Reconstructed Axial Frequency: " << outAxialFrequency);
         
 
         return true;

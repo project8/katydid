@@ -12,6 +12,8 @@
 #include "KTMultiTrackEventData.hh"
 #include "KTMemberVariable.hh"
 
+#include <vector>
+
 namespace Katydid
 {
 
@@ -32,9 +34,29 @@ namespace Katydid
             MEMBERVARIABLE(double, FirstTrackStartCyclotronFrequency);
             MEMBERVARIABLE(double, FirstTrackAxialFrequency);
 
+            MEMBERVARIABLEREF(std::vector<int>, MPTEventSequenceID);
+            MEMBERVARIABLEREF(std::vector<double>, MPTStartCyclotronFrequency);
+            MEMBERVARIABLEREF(std::vector<double>, MPTAxialFrequency);
+            void AddProcessedMPT(int seqID, double startCyclFreq, double axialFreq);
+            void ClearProcessedMPT();
+
         public:
             static const std::string sName;
     };
+
+    inline void KTProcessedCavityEventData::AddProcessedMPT(int seqID, double startCyclFreq, double axialFreq)
+    {
+        fMPTEventSequenceID.push_back(seqID);
+        fMPTStartCyclotronFrequency.push_back(startCyclFreq);
+        fMPTAxialFrequency.push_back(axialFreq);
+    }
+
+    inline void KTProcessedCavityEventData::ClearProcessedMPT()
+    {
+        fMPTEventSequenceID.clear();
+        fMPTStartCyclotronFrequency.clear();
+        fMPTAxialFrequency.clear();
+    }
 
 }
 #endif

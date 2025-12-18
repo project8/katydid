@@ -711,6 +711,9 @@ namespace Katydid
         fProcessedCavityEventData.fTotalEventSequences = procCavityEventData.GetTotalEventSequences();
         fProcessedCavityEventData.fFirstTrackStartCyclotronFrequency = procCavityEventData.GetFirstTrackStartCyclotronFrequency();
         fProcessedCavityEventData.fFirstTrackAxialFrequency = procCavityEventData.GetFirstTrackAxialFrequency();
+        fProcessedCavityEventData.fMPTEventSequenceID = procCavityEventData.GetMPTEventSequenceID();
+        fProcessedCavityEventData.fMPTStartCyclotronFrequency = procCavityEventData.GetMPTStartCyclotronFrequency();
+        fProcessedCavityEventData.fMPTAxialFrequency = procCavityEventData.GetMPTAxialFrequency();
 
         KTDEBUG(publog, "Writing first track initial cyclotron frequency: " << procCavityEventData.GetFirstTrackStartCyclotronFrequency());
         KTDEBUG(publog, "Writing first track axial frequency: " << procCavityEventData.GetFirstTrackAxialFrequency());
@@ -737,6 +740,9 @@ namespace Katydid
                 fProcessedCavityEventTree->SetBranchAddress( "TotalEventSequences", &fProcessedCavityEventData.fTotalEventSequences );
                 fProcessedCavityEventTree->SetBranchAddress( "FirstTrackStartCyclotronFrequency", &fProcessedCavityEventData.fFirstTrackStartCyclotronFrequency );
                 fProcessedCavityEventTree->SetBranchAddress( "FirstTrackAxialFrequency", &fProcessedCavityEventData.fFirstTrackAxialFrequency );
+                fProcessedCavityEventTree->SetBranchAddress( "MPTEventSequenceID", &fProcessedCavityEventData.fMPTEventSequenceID);
+                fProcessedCavityEventTree->SetBranchAddress( "MPTStartCyclotronFrequency", &fProcessedCavityEventData.fMPTStartCyclotronFrequency);
+                fProcessedCavityEventTree->SetBranchAddress( "MPTAxialFrequency", &fProcessedCavityEventData.fMPTAxialFrequency);
 
                 return true;
             }
@@ -756,6 +762,9 @@ namespace Katydid
         fProcessedCavityEventTree->Branch( "TotalEventSequences", &fProcessedCavityEventData.fTotalEventSequences, "fTotalEventSequences/i" );
         fProcessedCavityEventTree->Branch( "FirstTrackStartCyclotronFrequency", &fProcessedCavityEventData.fFirstTrackStartCyclotronFrequency, "fFirstTrackStartCyclotronFrequency/d" );
         fProcessedCavityEventTree->Branch( "FirstTrackAxialFrequency", &fProcessedCavityEventData.fFirstTrackAxialFrequency, "fFirstTrackAxialFrequency/d" );
+        fProcessedCavityEventTree->Branch( "MPTEventSequenceID", "std::vector<int>", &fProcessedCavityEventData.fMPTEventSequenceID);
+        fProcessedCavityEventTree->Branch( "MPTStartCyclotronFrequency", "std::vector<double>", &fProcessedCavityEventData.fMPTStartCyclotronFrequency);
+        fProcessedCavityEventTree->Branch( "MPTAxialFrequency", "std::vector<double>", &fProcessedCavityEventData.fMPTAxialFrequency);
 
         return true;
     }

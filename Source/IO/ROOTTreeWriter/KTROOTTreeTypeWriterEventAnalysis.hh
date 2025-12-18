@@ -124,6 +124,11 @@ namespace Katydid
         UInt_t fTotalEventSequences;
         Double_t fFirstTrackStartCyclotronFrequency;
         Double_t fFirstTrackAxialFrequency;
+
+        std::vector<int> fMPTEventSequenceID;
+        std::vector<double> fMPTStartCyclotronFrequency;
+        std::vector<double> fMPTAxialFrequency;
+
     };
 
     struct TLinearFitResult
