@@ -13,6 +13,7 @@
 #include "KTSlot.hh"
 #include "KTMemberVariable.hh"
 #include "KTProcessedTrackData.hh"
+#include "KTProcessedCavityEventData.hh"
 
 namespace Katydid
 {
@@ -48,7 +49,7 @@ namespace Katydid
         public:
             bool AnalyzeEvent( KTMultiTrackEventData& mtEventData );
             
-            bool ReconstructCyclotronFrequency(const std::vector<AllTrackData>& tracksInMPT, double& outStartCyclotronFrequency) const;
+            bool ReconstructCyclotronFrequency(const std::vector<AllTrackData>& tracksInMPT, KTProcessedCavityEventData& procEvent, double& outStartCyclotronFrequency) const;
             bool ReconstructAxialFrequency(const std::vector<AllTrackData>& tracksInMPT, double& outAxialFrequency) const;
 
 

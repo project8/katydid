@@ -13,6 +13,7 @@
 #include "KTMemberVariable.hh"
 
 #include <vector>
+#include <set>
 
 namespace Katydid
 {
@@ -37,8 +38,16 @@ namespace Katydid
             MEMBERVARIABLEREF(std::vector<int>, MPTEventSequenceID);
             MEMBERVARIABLEREF(std::vector<double>, MPTStartCyclotronFrequency);
             MEMBERVARIABLEREF(std::vector<double>, MPTAxialFrequency);
+
+            MEMBERVARIABLEREF(std::vector<int>, AllTrackIDs);
+            MEMBERVARIABLEREF(std::vector<int>, AllTrackEventSequenceIDs);
+            MEMBERVARIABLEREF(std::vector<int>, AllTrackBandClassifications);
+
             void AddProcessedMPT(int seqID, double startCyclFreq, double axialFreq);
             void ClearProcessedMPT();
+
+            void AddClassificationData(int trackID, int seqID, int bandClassification);
+            void AddClassificationData(const std::vector<AllTrackData>& tracksInMPT, int seqID, int bandClassification);
 
         public:
             static const std::string sName;
@@ -56,6 +65,25 @@ namespace Katydid
         fMPTEventSequenceID.clear();
         fMPTStartCyclotronFrequency.clear();
         fMPTAxialFrequency.clear();
+
+        fAllTrackIDs.clear();
+        fAllTrackEventSequenceIDs.clear();
+        fAllTrackBandClassifications.clear();
+    }
+
+    inline void KTProcessedCavityEventData::AddClassificationData(int trackID, int seqID, int bandClassification)
+    {
+        fAllTrackIDs.push_back(trackID);
+        fAllTrackEventSequenceIDs.push_back(seqID);
+        fAllTrackBandClassifications.push_back(bandClassification);
+    }
+
+    inline void KTProcessedCavityEventData::AddClassificationData(const std::vector<AllTrackData>& tracksInMPT, int seqID, int bandClassification)
+    {
+        for (const auto& trk : tracksInMPT)
+        {
+            AddClassificationData(trk.fProcTrack.GetTrackID(), seqID, bandClassification);
+        }
     }
 
 }

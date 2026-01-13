@@ -73,10 +73,12 @@ namespace Katydid
         // Iterating through MPTs
         for (auto& [eventSeqID, tracksInMPT] : mptsBySequence)
         {
+            
+
             KTDEBUG(evlog, "Looking at MultiPeakTrack with Event Sequence ID: " << eventSeqID);
 
             double reconstructedStartCyclotronFrequency = -1.0;
-            if (!ReconstructCyclotronFrequency(tracksInMPT, reconstructedStartCyclotronFrequency))
+            if (!ReconstructCyclotronFrequency(tracksInMPT, procEvent, reconstructedStartCyclotronFrequency))
             {
                 KTWARN(evlog, "Cyclotron frequency reconstruction failed for MPT with Event Sequence ID: " << eventSeqID);
                 if(eventSeqID==0) {return false;}
@@ -107,7 +109,7 @@ namespace Katydid
         return true;
     }
 
-    bool KTCavityEventProcessing::ReconstructCyclotronFrequency(const std::vector<AllTrackData>& tracksInMPT, double& outStartCyclotronFrequency) const
+    bool KTCavityEventProcessing::ReconstructCyclotronFrequency(const std::vector<AllTrackData>& tracksInMPT, KTProcessedCavityEventData& procEvent, double& outStartCyclotronFrequency) const
     {
         outStartCyclotronFrequency = -1.0;
 
@@ -120,25 +122,21 @@ namespace Katydid
         KTINFO(evlog, "Beginning start cyclotron frequency reconstruction of MPT.");
         KTDEBUG(evlog, "Relative NUP threshold for classification of bands in 3 band multi-peak-tracks is " << this->fTrackClass3BandRelPowerThresh); //float fTrackClass3BandRelPowerThresh = 0.7; // Tuned parameter for CCA simulation data
     
-        //Calculating MPT start time for start cyclotron frequency reconstruction
-        double startTime = tracksInMPT[0].fProcTrack.GetStartTimeInRunC();
-        KTDEBUG(evlog, "Initial MPT start time guess : " << startTime);
-        for (const auto& track : tracksInMPT)
-        {
-            if(track.fProcTrack.GetStartTimeInRunC() < startTime) {startTime=track.fProcTrack.GetStartTimeInRunC();}
-            
-        }
-        KTDEBUG(evlog, "MPT start time : " << startTime);
-
         // Sorting bands in MPT by increasing order of start frequency used for track classification.
         // Finding the maximum TotalTrackNUP out of all bands in MPT used for track classification of MPTs with 3 bands to decide between [-4, -2, 0] and [-2, 0, 2] topologies
+        // Calculating MPT start time for start cyclotron frequency reconstruction
         double maxTotNUP = 0;
-
+        double startTime = tracksInMPT.front().fProcTrack.GetStartTimeInRunC();
+        KTDEBUG(evlog, "Initial MPT start time guess : " << startTime);
         std::vector<const AllTrackData*> sortedMPTBands;
+        size_t numBands = tracksInMPT.size();
+        sortedMPTBands.reserve(numBands);
+
         for (const auto& track : tracksInMPT)
         {
             sortedMPTBands.push_back(&track);
-            if (track.fProcTrack.GetTotalTrackNUP() >= maxTotNUP) {maxTotNUP=track.fProcTrack.GetTotalTrackNUP();}
+            if (track.fProcTrack.GetTotalTrackNUP() > maxTotNUP) {maxTotNUP=track.fProcTrack.GetTotalTrackNUP();}
+            if (track.fProcTrack.GetStartTimeInRunC() < startTime) {startTime=track.fProcTrack.GetStartTimeInRunC();}
         }
         std::sort(sortedMPTBands.begin(), sortedMPTBands.end(), 
             [](const AllTrackData* a, const AllTrackData* b)
@@ -146,7 +144,8 @@ namespace Katydid
                 return a->fProcTrack.GetStartFrequency() < b->fProcTrack.GetStartFrequency();
             });
 
-        KTDEBUG("Max Total Track NUP out of all bands in first MPT : " << maxTotNUP);
+        KTDEBUG(evlog, "Max Total Track NUP out of all bands in MPT : " << maxTotNUP);
+        KTDEBUG(evlog, "MPT start time : " << startTime);
 
         // Classifying bands in MPT. Number of bands determines possible topologies as follows
         // Bands |        Topologies
@@ -155,17 +154,19 @@ namespace Katydid
         //   4   |      [-4, -2, 0, 2]
         // Integers in topologies refer to sideband "order" (ie. -2 means second order lower sideband)
         // Inital cyclotron frequency extracted from carrier with sideband order 0 by determine its position depending on topology
-        size_t numBands = sortedMPTBands.size();
         int carrierIndex = -1;
+        std::vector<int> bandClassification;
 
         if (numBands==1)
         {
             carrierIndex = 0;
+            bandClassification = {0};
             KTDEBUG(evlog, "MPT has 1 band!");
         }
         else if (numBands==2)
         {
             carrierIndex = 1;
+            bandClassification = {-2, 0};
             KTDEBUG(evlog, "MPT has 2 bands! Assumed band topology = [-2, 0].");
         }
         else if (numBands==3)
@@ -180,11 +181,13 @@ namespace Katydid
                 if (lastTrackRelTotalNUP> this->fTrackClass3BandRelPowerThresh)
                 {
                     carrierIndex = 2;
+                    bandClassification = {-4, -2, 0};
                     KTDEBUG(evlog, "MPT has 3 bands! Relative band threshold classification determined band topology = [-4, -2, 0].");
                 }
                 else
                 {
                     carrierIndex = 1;
+                    bandClassification = {-2, 0, 2};
                     KTDEBUG(evlog, "MPT has 3 bands! Relative band threshold classification determined band topology = [-2, 0, 2].");
 
                 }
@@ -199,6 +202,7 @@ namespace Katydid
         else if (numBands==4)
         {
             carrierIndex = 2;
+            bandClassification = {-4, -2, 0, 2};
             KTDEBUG(evlog, "MPT has 4 bands! Assumed band topology = [-4, -2, 0, 2].");
         }
         else if (numBands>=5)
@@ -218,6 +222,26 @@ namespace Katydid
         {
             KTWARN(evlog, "Faulty index for carrier returned. Aborting");
             return false;
+        }
+
+        if (bandClassification.size() != numBands)
+        {
+            KTWARN(evlog, "Band classification size (" << bandClassification.size()<< ") is different from number of bands found in MPT (" << numBands << "). Aborting");
+            return false;
+        }
+
+        const int seqID = sortedMPTBands.front()->fProcTrack.GetEventSequenceID();
+        KTDEBUG(evlog, "Adding individual track sideband classification: (trackID, classification)");
+        for (std::size_t i = 0; i < numBands; ++i)
+        {
+            const auto* track = sortedMPTBands[i];
+            if (track->fProcTrack.GetEventSequenceID() != seqID)
+            {
+                KTWARN(evlog, "Sorted bands contain multiple EventSequenceIDs(expected " << seqID << "), something upstream is wrong. Aborting");
+                return false;
+            }
+            procEvent.AddClassificationData(track->fProcTrack.GetTrackID(), seqID, bandClassification[i]);
+            KTDEBUG(evlog, "( " << track->fProcTrack.GetTrackID() << ", " << bandClassification[i] << " )");
         }
 
         return true;
