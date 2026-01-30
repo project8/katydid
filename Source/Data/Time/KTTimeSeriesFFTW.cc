@@ -73,6 +73,20 @@ namespace Katydid
         return hist;
     }
 
+    TH1D* KTTimeSeriesFFTW::CreateHistogramImag(const std::string& name) const
+    {
+        unsigned nBins = GetNBins();
+        TH1D* hist = new TH1D(name.c_str(), "Time Series Imag", (int)nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).imag());
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+
     TH1D* KTTimeSeriesFFTW::CreateAmplitudeDistributionHistogram(const std::string& name) const
     {
         double tMaxMag = -1.;
