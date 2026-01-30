@@ -25,7 +25,7 @@ namespace Katydid
      
 
      Available configuration values:
-     (none)
+     - "3band-class-rel-power-thresh": float -- Relative power threshold which is criteria in classifying bands in MPTs with 3 bands into either [-4,-2,0] or [-2,0,2]
 
      Slots:
      - "mt-event": void (Nymph::KTDataPtr) -- Analyzes a multi-track-event; Requires KTMultiPeakEventData; Adds nothing
