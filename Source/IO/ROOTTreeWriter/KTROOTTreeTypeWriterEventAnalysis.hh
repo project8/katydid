@@ -124,6 +124,8 @@ namespace Katydid
         UInt_t fTotalEventSequences;
         Double_t fFirstTrackStartCyclotronFrequency;
         Double_t fFirstTrackAxialFrequency;
+        std::vector<int> fFirstTrackBandIDs;
+        std::vector<int> fFirstTrackBandClassifications;
 
         std::vector<int> fMPTEventSequenceID;
         std::vector<double> fMPTStartCyclotronFrequency;

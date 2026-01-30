@@ -34,6 +34,8 @@ namespace Katydid
 
             MEMBERVARIABLE(double, FirstTrackStartCyclotronFrequency);
             MEMBERVARIABLE(double, FirstTrackAxialFrequency);
+            MEMBERVARIABLE(std::vector<int>, FirstTrackBandIDs);
+            MEMBERVARIABLE(std::vector<int>, FirstTrackBandClassifications);
 
             MEMBERVARIABLEREF(std::vector<int>, MPTEventSequenceID);
             MEMBERVARIABLEREF(std::vector<double>, MPTStartCyclotronFrequency);
@@ -43,8 +45,12 @@ namespace Katydid
             MEMBERVARIABLEREF(std::vector<int>, AllTrackEventSequenceIDs);
             MEMBERVARIABLEREF(std::vector<int>, AllTrackBandClassifications);
 
+            void ClearProcessedEvent();
+
+            void AddFirstTrackBandInfo(int trackID, int classification);
+            void ClearFirstTrackBandInfo();
+
             void AddProcessedMPT(int seqID, double startCyclFreq, double axialFreq);
-            void ClearProcessedMPT();
 
             void AddClassificationData(int trackID, int seqID, int bandClassification);
             void AddClassificationData(const std::vector<AllTrackData>& tracksInMPT, int seqID, int bandClassification);
@@ -53,15 +59,11 @@ namespace Katydid
             static const std::string sName;
     };
 
-    inline void KTProcessedCavityEventData::AddProcessedMPT(int seqID, double startCyclFreq, double axialFreq)
+    inline void KTProcessedCavityEventData::ClearProcessedEvent()
     {
-        fMPTEventSequenceID.push_back(seqID);
-        fMPTStartCyclotronFrequency.push_back(startCyclFreq);
-        fMPTAxialFrequency.push_back(axialFreq);
-    }
+        fFirstTrackBandIDs.clear();
+        fFirstTrackBandClassifications.clear();
 
-    inline void KTProcessedCavityEventData::ClearProcessedMPT()
-    {
         fMPTEventSequenceID.clear();
         fMPTStartCyclotronFrequency.clear();
         fMPTAxialFrequency.clear();
@@ -69,6 +71,25 @@ namespace Katydid
         fAllTrackIDs.clear();
         fAllTrackEventSequenceIDs.clear();
         fAllTrackBandClassifications.clear();
+    }
+
+    inline void KTProcessedCavityEventData::AddFirstTrackBandInfo(int trackID, int classification)
+    {
+        fFirstTrackBandIDs.push_back(trackID);
+        fFirstTrackBandClassifications.push_back(classification);
+    }
+
+    inline void KTProcessedCavityEventData::ClearFirstTrackBandInfo()
+    {
+        fFirstTrackBandIDs.clear();
+        fFirstTrackBandClassifications.clear();
+    }
+
+    inline void KTProcessedCavityEventData::AddProcessedMPT(int seqID, double startCyclFreq, double axialFreq)
+    {
+        fMPTEventSequenceID.push_back(seqID);
+        fMPTStartCyclotronFrequency.push_back(startCyclFreq);
+        fMPTAxialFrequency.push_back(axialFreq);
     }
 
     inline void KTProcessedCavityEventData::AddClassificationData(int trackID, int seqID, int bandClassification)

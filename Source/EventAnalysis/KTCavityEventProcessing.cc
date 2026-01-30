@@ -49,7 +49,7 @@ namespace Katydid
         // Create and fill new data object
         KTProcessedCavityEventData& procEvent = mtEventData.Of<KTProcessedCavityEventData>();
 
-        procEvent.ClearProcessedMPT();
+        procEvent.ClearProcessedEvent();
 
         procEvent.SetComponent(mtEventData.GetComponent());
         procEvent.SetAcquisitionID(mtEventData.GetAcquisitionID());
@@ -230,8 +230,16 @@ namespace Katydid
             return false;
         }
 
+
         const int seqID = sortedMPTBands.front()->fProcTrack.GetEventSequenceID();
         KTDEBUG(evlog, "Adding individual track sideband classification: (trackID, classification)");
+
+        // Clearing values for first MPT band classification
+        if (seqID==0)
+        {
+            procEvent.ClearFirstTrackBandInfo();
+        }
+
         for (std::size_t i = 0; i < numBands; ++i)
         {
             const auto* track = sortedMPTBands[i];
@@ -240,8 +248,17 @@ namespace Katydid
                 KTWARN(evlog, "Sorted bands contain multiple EventSequenceIDs(expected " << seqID << "), something upstream is wrong. Aborting");
                 return false;
             }
-            procEvent.AddClassificationData(track->fProcTrack.GetTrackID(), seqID, bandClassification[i]);
-            KTDEBUG(evlog, "( " << track->fProcTrack.GetTrackID() << ", " << bandClassification[i] << " )");
+            const int trackID = track->fProcTrack.GetTrackID();
+            const int classification = bandClassification[i];
+
+            procEvent.AddClassificationData(trackID, seqID, classification);
+            KTDEBUG(evlog, "( " << trackID << ", " << classification << " )");
+
+            if (seqID == 0)
+            {
+                procEvent.AddFirstTrackBandInfo(trackID, classification);
+                KTINFO(evlog, "First MPT Band Classifications (trackID, bandClassification): (" << trackID << ", " << classification << " )");
+            }
         }
 
         return true;
