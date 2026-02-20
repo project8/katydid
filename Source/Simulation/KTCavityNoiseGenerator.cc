@@ -26,23 +26,18 @@ namespace Katydid
 
     KT_REGISTER_PROCESSOR(KTCavityNoiseGenerator, "cavity-noise-generator");
 
-    KTCavityNoiseGenerator::ModelPars::ModelPars() :
-            f0(25.904e9),
-            Q_L(625.0),
-            Q0(1.e4),
-            A(0.90),
-            T_line_start(80.0),
-            T_line_end(5.2),
-            T_cav(80.0),
-            T_isol(5.2),
-            epsilon(0.5),
-            f_lo(25.9702e9)
-    {
-    }
-
     KTCavityNoiseGenerator::KTCavityNoiseGenerator(const string& name) :
             KTGaussianNoiseGenerator(name),
-            fPars(),
+            fF0(25.904e9),
+            fQL(625.0),
+            fQ0(1.e4),
+            fA(0.90),
+            fTLineStart(80.0),
+            fTLineEnd(5.2),
+            fTCav(80.0),
+            fTIsol(5.2),
+            fEpsilon(0.5),
+            fFLo(25.9702e9),
             fTransformFlag("ESTIMATE"),
             fNoiseScaling(1.0)
     {
@@ -62,16 +57,16 @@ namespace Katydid
         if (node->has("cavity"))
         {
             const scarab::param_node& m = (*node)["cavity"].as_node();
-            fPars.f0           = m.get_value("f0", fPars.f0);
-            fPars.Q_L          = m.get_value("Q_L", fPars.Q_L);
-            fPars.Q0           = m.get_value("Q0", fPars.Q0);
-            fPars.A            = m.get_value("A", fPars.A);
-            fPars.T_line_start = m.get_value("T_line_start", fPars.T_line_start);
-            fPars.T_line_end   = m.get_value("T_line_end", fPars.T_line_end);
-            fPars.T_cav        = m.get_value("T_cav", fPars.T_cav);
-            fPars.T_isol       = m.get_value("T_isol", fPars.T_isol);
-            fPars.epsilon      = m.get_value("epsilon", fPars.epsilon);
-            fPars.f_lo         = m.get_value("f_lo", fPars.f_lo);
+            fF0         = m.get_value("f0", fF0);
+            fQL = m.get_value("Q_L", fQL);
+            fQ0 = m.get_value("Q0",  fQ0);
+            fA          = m.get_value("A", fA);
+            fTLineStart = m.get_value("T_line_start", fTLineStart);
+            fTLineEnd   = m.get_value("T_line_end", fTLineEnd);
+            fTCav       = m.get_value("T_cav", fTCav);
+            fTIsol      = m.get_value("T_isol", fTIsol);
+            fEpsilon    = m.get_value("epsilon", fEpsilon);
+            fFLo        = m.get_value("f_lo", fFLo);
         }
 
         fNoiseScaling = node->get_value<double>("noise-scaling", fNoiseScaling);
@@ -105,9 +100,9 @@ namespace Katydid
         {
             for (unsigned k = 0; k < sliceSize; ++k)
             {
-                double f_if = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
-                double f_rf = f_if + fPars.f_lo;     // Down-converted
-                double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
+                double fIf = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
+                double fRf = fIf + fFLo;     // Down-converted
+                double pBin = NoisePSD(fRf) * df;    // PSD -> power in one FFT bin
                 double amp  = fNoiseScaling*fGain*std::sqrt(fResistance)*std::pow(sliceSize, 1.5)*std::sqrt(pBin / 2.0);  // N^{3/2}*sqrt(P_bin/2) - N^{3/2} since ReverseFFTW does a sqrt(N) normalization
 
                 spec.SetRect(k, amp * fRNG(), amp * fRNG());
@@ -117,9 +112,9 @@ namespace Katydid
         {
             for (unsigned k = 0; k <= N2; ++k)
             {
-                double f_if = k * df;
-                double f_rf = f_if + fPars.f_lo;     // Down-converted
-                double pBin = NoisePSD(f_rf) * df;    // PSD -> power in one FFT bin
+                double fIf = k * df;
+                double fRf = fIf + fFLo;     // Down-converted
+                double pBin = NoisePSD(fRf) * df;    // PSD -> power in one FFT bin
                 double amp  = fNoiseScaling*fGain*std::sqrt(fResistance)*std::pow(sliceSize, 1.5)*std::sqrt(pBin);  // N^{3/2}*sqrt(P_bin) - for real signal bins P_bin/2 -> P_bin
 
                 double re = amp * fRNG();
@@ -161,24 +156,26 @@ namespace Katydid
         return true;
     }
 
+    double KTCavityNoiseGenerator::Eta(double x) const
+    {
+        return x/(std::exp(x)-1.0) + 0.5;
+    }
+
     double KTCavityNoiseGenerator::NoisePSD(double f) const
     {
-        const double g   = fPars.Q0 / fPars.Q_L;
-        const double lor = 1.0 / ( 1.0 + std::pow( 2.0 * fPars.Q_L * (f - fPars.f0) / fPars.f0, 2.0 ) );    // Lorentzian
+        const double lor = 1.0 / ( 1.0 + ( 2.0 * fQL * (f - fF0) / fF0)*( 2.0 * fQL * (f - fF0) / fF0) );    // Lorentzian
 
-        const double kB  = 1.380649e-23;
-        const double hbar= 1.054571817e-34;
-        const double omega = 2.0 * M_PI * f;
+        const double kB  = KTMath::BoltzmannConstant();
+        const double hbar= KTMath::ReducedPlanckConstant();
+        const double omega = KTMath::TwoPi() * f;
 
-        auto eta = [](double x){ return x/(std::exp(x)-1.0) + 0.5; };   // Bose-Einstein factor
+        const double Tcav  = fTCav  * Eta(hbar*omega/(kB*fTCav));
+        const double Tisol = fTIsol * Eta(hbar*omega/(kB*fTIsol));
 
-        const double Tcav  = fPars.T_cav  * eta(hbar*omega/(kB*fPars.T_cav));
-        const double Tisol = fPars.T_isol * eta(hbar*omega/(kB*fPars.T_isol));
-
-        const double P_cav  = kB*Tcav  * (4.*g/std::pow(1.+g,2)) * lor;
-        const double P_loss = kB*( fPars.A*fPars.T_line_start + (1.-fPars.A)*fPars.T_line_end );
-        const double P_isol = kB*Tisol * (1. - (4.*g/std::pow(1.+g,2))*lor);
-        const double P_amp  = hbar*omega / fPars.epsilon;
+        const double P_cav  = kB*Tcav  * (4.*fG/((1.+fG)*(1.+fG))) * lor;
+        const double P_loss = kB*( fA*fTLineStart + (1.-fA)*fTLineEnd );
+        const double P_isol = kB*Tisol * (1. - (4.*fG/((1.+fG)*(1.+fG)))*lor);
+        const double P_amp  = hbar*omega / fEpsilon;
 
         return P_cav + P_loss + P_isol + P_amp;
     }

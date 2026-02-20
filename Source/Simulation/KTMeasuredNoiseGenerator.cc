@@ -500,10 +500,10 @@ namespace Katydid
         {
             for (unsigned k = 0; k < sliceSize; ++k)
             {
-                const double f_if  = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
-                const double f_abs = std::fabs(f_if);
+                const double fIf  = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
+                const double fAbs = std::fabs(fIf);
 
-                const double psd  = DrawPSD(f_abs);
+                const double psd  = DrawPSD(fAbs);
                 const double pBin = psd * df;
 
                 if (fFixedRadius)
@@ -523,8 +523,8 @@ namespace Katydid
         {
             for (unsigned k = 0; k <= N2; ++k)
             {
-                const double f_if = k * df;
-                const double psd  = DrawPSD(f_if);
+                const double fIf = k * df;
+                const double psd  = DrawPSD(fIf);
                 const double pBin = psd * df;
 
                 if (fFixedRadius)

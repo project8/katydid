@@ -65,31 +65,59 @@ namespace Katydid
             virtual bool ConfigureDerivedGenerator(const scarab::param_node* node);
 
         protected:
-            struct ModelPars
-            {
-                double f0;
-                double Q_L;
-                double Q0;
-                double A;
-                double T_line_start;
-                double T_line_end;
-                double T_cav;
-                double T_isol;
-                double epsilon;
-                double f_lo;
+            double fF0;
+            double fA;
+            double fQL;
+            double fQ0;
+            double fTLineStart;
+            double fTLineEnd;
+            double fTCav;
+            double fTIsol;
+            double fEpsilon;
+            double fFLo;
 
-                ModelPars();
-            };
+            double GetQL() const;
+            double GetQ0() const;
 
-            ModelPars   fPars;
+            void SetQL(double ql);
+            void SetQ0(double q0);
+
             std::string fTransformFlag;
             double      fNoiseScaling;
 
             double NoisePSD(double f) const;
+            double Eta(double x) const;
+
+        private:
+            double fG;    
 
         public:
             virtual bool GenerateTS(KTTimeSeriesData& data);
     };
+
+    inline double KTCavityNoiseGenerator::GetQL() const
+    {
+        return fQL;
+    }
+
+    inline void KTCavityNoiseGenerator::SetQL(double ql)
+    {
+        fQL = ql;
+        fG = fQ0 / fQL;
+        return;
+    }
+
+    inline double KTCavityNoiseGenerator::GetQ0() const
+    {
+        return fQ0;
+    }
+
+    inline void KTCavityNoiseGenerator::SetQ0(double q0)
+    {
+        fQ0 = q0;
+        fG = fQ0 / fQL;
+        return;
+    }
 
 } /* namespace Katydid */
 

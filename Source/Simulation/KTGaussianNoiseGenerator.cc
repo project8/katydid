@@ -59,8 +59,7 @@ namespace Katydid
         }
         else if (node->has("noise-temperature"))
         {
-            static constexpr double kBoltzmann = 1.38064852e-23; // J/K - Boltzmann constant; there's none defined in Source/Utility, so keeping a local constexpr
-            sigma = std::sqrt(kBoltzmann * node->get_value<input_type>("noise-temperature"));
+            sigma = std::sqrt(KTMath::BoltzmannConstant() * node->get_value<input_type>("noise-temperature"));
         }
         else   // falling back to the old "sigma" parameter
         {
