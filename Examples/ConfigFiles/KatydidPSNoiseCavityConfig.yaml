@@ -1,0 +1,58 @@
+processor-toolbox:
+    processors:
+      - type: egg-processor
+        name: egg
+      - type: forward-fftw
+        name: fft
+      - type: cavity-noise-generator
+        name: noise-gen
+      - type: convert-to-power
+        name: to-ps
+      - type: basic-root-writer
+        name: writer
+
+    connections:
+      - signal: "egg:header"
+        slot: "fft:header"
+      - signal: "egg:ts"
+        slot: "noise-gen:slice"
+      - signal: "noise-gen:slice" 
+        slot: "fft:ts-fftw"
+      - signal: "fft:fft"
+        slot: "to-ps:fs-fftw-to-psd" 
+      - signal: "to-ps:psd"
+        slot: "writer:ps"
+      - signal: "egg:ts"
+        slot: "writer:ts"
+
+    run-queue:
+      - egg
+
+egg:
+    filename: "locust_mc_Seed600_Angle90.000000000_Pos0.0040000_Energy18563.251000000.egg"
+    egg-reader: egg3
+    slice-size: 4096
+    number-of-slices: 1
+
+fft:
+    transform-flag: ESTIMATE
+    
+noise-gen:
+    seed: 1234
+    transform-flag: ESTIMATE
+    noise-scaling:   5000000.0  # noise amplitude scaling
+    cavity:			# optional
+       f0             : 25.904e9
+       Q_L            : 625
+       Q0             : 10000
+       A              : 0.90
+       T_line_start   : 80.0
+       T_line_end     : 5.2
+       T_cav          : 80.0
+       T_isol         : 5.2
+       epsilon        : 0.5
+       f_lo           : 25.9702e9
+
+writer:
+    output-file: "ps_output_noise_cavity.root"
+    file-flag: recreate

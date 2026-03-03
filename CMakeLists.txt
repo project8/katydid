@@ -285,7 +285,7 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/IO/ROOTTreeWriter
     ${PROJECT_SOURCE_DIR}/Source/IO/TerminalWriter
     ${PROJECT_SOURCE_DIR}/Source/Time
-    #${PROJECT_SOURCE_DIR}/Source/Simulation
+    ${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/Transform
     ${PROJECT_SOURCE_DIR}/Source/SpectrumAnalysis
@@ -297,7 +297,7 @@ add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
 add_subdirectory (Source/Time)
-#add_subdirectory (Source/Simulation)
+add_subdirectory (Source/Simulation)
 #add_subdirectory (Source/Evaluation)
 add_subdirectory (Source/Transform)
 add_subdirectory (Source/SpectrumAnalysis)

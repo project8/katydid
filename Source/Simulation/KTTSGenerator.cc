@@ -12,12 +12,13 @@
 #include "KTLogger.hh"
 #include "KTProcSummary.hh"
 #include "param.hh"
+#include "time.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-#include "thorax.hh"
+//#include "thorax.hh" :obsolete
 
 #include <cmath>
 
@@ -165,7 +166,7 @@ namespace Katydid
 
         }
 
-        newHeader->SetTimestamp(get_absolute_time_string());
+        newHeader->SetTimestamp(scarab::get_absolute_time_string());
 
         return newHeader;
     }
