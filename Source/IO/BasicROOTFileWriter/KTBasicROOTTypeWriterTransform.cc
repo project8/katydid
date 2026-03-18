@@ -743,25 +743,58 @@ namespace Katydid
         KTDEBUG(publog, "Has data: "<<hastype1);
         if (! data) return;
 
-        //uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
-        //KTDEBUG(publog, "Slice number: "<<sliceNumber);
+        bool hasBoth = hastype && hastype1;
+        bool onlyMultiPS = hastype && !hastype1;
 
-        KTPSCollectionData& psData = data->Of<KTPSCollectionData>();
-        unsigned nComponents = psData.GetNComponents();
-        KTDEBUG(publog, "nComponents: "<<nComponents);
+        KTPSCollectionData& psDataFromCollection = data->Of<KTPSCollectionData>();
+        KTMultiPSData& psDataFromMultiPS = data->Of<KTMultiPSData>();
+        unsigned nComponents;
+        uint64_t spectrogramNumber;
+        
+        if (hasBoth)
+        {
+            KTDEBUG(publog, "Data has both KTMultiPSData and KTPSCollectionData");
 
-        uint64_t spectrogramNumber = psData.GetSpectrogramCounter();
-        KTDEBUG(publog, "Slice number: "<<spectrogramNumber);
+            nComponents = psDataFromCollection.GetNComponents();
+            KTDEBUG(publog, "nComponents: "<<nComponents);
+
+            spectrogramNumber = psDataFromCollection.GetSpectrogramCounter();
+            KTDEBUG(publog, "Slice number: "<<spectrogramNumber);
+        }
+        else if (onlyMultiPS)
+        {
+            KTDEBUG(publog, "Data has KTMultiPSData, but not KTPSCollectionData");
+
+            nComponents = psDataFromMultiPS.GetNComponents();
+            KTDEBUG(publog, "nComponents: "<<nComponents);
+        }
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
         for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
         {
             stringstream conv;
-            conv << "histMPS_" << spectrogramNumber << "_" << iPlot;
+            if (hasBoth)
+            {
+                conv << "histMPS_" << spectrogramNumber << "_" << iPlot;
+            }
+            else if (onlyMultiPS)
+            {
+                conv << "histMPS_" << iPlot;
+            }
             string histName;
             conv >> histName;
-            TH2D* mpsHist = psData.CreatePowerHistogram(iPlot, histName);
+            
+            TH2D* mpsHist;
+            if (hasBoth)
+            {
+                mpsHist = psDataFromCollection.CreatePowerHistogram(iPlot, histName);
+            }
+            else if (onlyMultiPS)
+            {
+                mpsHist = psDataFromMultiPS.CreatePowerHistogram(iPlot, histName);
+            }
+
             mpsHist->SetDirectory(fWriter->GetFile());
             mpsHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");

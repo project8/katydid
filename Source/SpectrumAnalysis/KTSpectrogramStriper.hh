@@ -290,6 +290,7 @@ namespace Katydid
             // emit the signal for this stripe
             KTDEBUG(sslog_h, "Finished a stripe; emitting signal");
             fStripeFSFFTWSignal(stripeDataStruct.fDataPtr);
+            fStripePSSignal(stripeDataStruct.fDataPtr);
             stripeDataStruct.fNextBin = fStripeOverlap;
             stripeDataStruct.fFirstAccumulation = false;
         }
