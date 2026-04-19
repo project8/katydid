@@ -259,7 +259,7 @@ namespace Katydid
                 convReal << "histTSReal_" << sliceNumber << "_" << iComponent;
                 string histNameReal;
                 convReal >> histNameReal;
-                TH1D* tsHistReal = ts->CreateHistogram(histNameReal);
+                TH1D* tsHistReal = tsFFTW->CreateHistogram(histNameReal);
                 tsHistReal->SetDirectory(fWriter->GetFile());
                 tsHistReal->Write();
                 KTDEBUG(publog, "Histogram <" << histNameReal << "> written to ROOT file");
@@ -269,7 +269,7 @@ namespace Katydid
                 convImag << "histTSImag_" << sliceNumber << "_" << iComponent;
                 string histNameImag;
                 convImag >> histNameImag;
-                TH1D* tsHistImag = ts->CreateHistogram(histNameImag);
+                TH1D* tsHistImag = tsFFTW->CreateHistogramImag(histNameImag);
                 tsHistImag->SetDirectory(fWriter->GetFile());
                 tsHistImag->Write();
                 KTDEBUG(publog, "Histogram <" << histNameImag << "> written to ROOT file");
