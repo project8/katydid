@@ -165,8 +165,8 @@ namespace Katydid
     {
         const double lor = 1.0 / ( 1.0 + ( 2.0 * fQL * (f - fF0) / fF0)*( 2.0 * fQL * (f - fF0) / fF0) );    // Lorentzian
 
-        const double kB  = KTMath::BoltzmannConstant();
-        const double hbar= KTMath::ReducedPlanckConstant();
+        constexpr double kB  = KTMath::BoltzmannConstant();
+        constexpr double hbar= KTMath::ReducedPlanckConstant();
         const double omega = KTMath::TwoPi() * f;
 
         const double Tcav  = fTCav  * Eta(hbar*omega/(kB*fTCav));

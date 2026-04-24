@@ -29,30 +29,30 @@ processor-toolbox:
       - egg
 
 egg:
-    filename: "locust_mc_Seed600_Angle90.000000000_Pos0.0040000_Energy18563.251000000.egg"
+    filename: "/path/to/file.root"
     egg-reader: egg3
-    slice-size: 4096
+    slice-size: 8192
     number-of-slices: 1
 
 fft:
     transform-flag: ESTIMATE
     
 noise-gen:
-    seed: 1234
+    seed: 12345
     transform-flag: ESTIMATE
-    noise-scaling:   5000000.0  # noise amplitude scaling
-    cavity:			# optional
-       f0             : 25.904e9
-       Q_L            : 625
-       Q0             : 10000
-       A              : 0.90
-       T_line_start   : 80.0
-       T_line_end     : 5.2
-       T_cav          : 80.0
-       T_isol         : 5.2
-       epsilon        : 0.5
-       f_lo           : 25.9702e9
+    #noise-scaling:   1.0  # noise amplitude scaling
+    #cavity:			# for CCA cavity, tune as needed
+    #   f0             : 25.904e9
+    #   Q_L            : 625
+    #   Q0             : 10000
+    #   A              : 0.90
+    #   T_line_start   : 80.0
+    #   T_line_end     : 5.2
+    #   T_cav          : 80.0
+    #   T_isol         : 5.2
+    #   epsilon        : 0.5
+    #   f_lo           : 25.9702e9
 
 writer:
-    output-file: "ps_output_noise_cavity.root"
+    output-file: "/path/to/file.root"
     file-flag: recreate

@@ -29,10 +29,10 @@ processor-toolbox:
       - egg
 
 egg:
-    filename: "locust_mc_Seed600_Angle90.000000000_Pos0.0040000_Energy18563.251000000.egg"
+    filename: "/path/to/file.root"
     egg-reader: egg3
-    slice-size: 4096
-    number-of-slices: 1
+    slice-size: 8192
+    number-of-slices: 0
 
 fft:
     transform-flag: ESTIMATE
@@ -43,5 +43,5 @@ noise-gen:
     seed: 12345
 
 writer:
-    output-file: "ps_output_noise.root"
+    output-file: "/path/to/file.root"
     file-flag: recreate

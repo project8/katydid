@@ -9,6 +9,7 @@
 #define KTMEASUREDNOISEGENERATOR_HH_
 
 #include "KTGaussianNoiseGenerator.hh"
+#include "KTSpline.hh"
 
 #include <string>
 #include <vector>
@@ -66,33 +67,13 @@ namespace Katydid
             virtual bool GenerateTS(KTTimeSeriesData& data);
 
         protected:
-            // Simple natural cubic spline for doubles
-            class KCubicSpline
-            {
-                public:
-                    KCubicSpline();
-                    ~KCubicSpline();
-
-                    void Clear();
-                    bool Build(const std::vector< double >& x, const std::vector< double >& y);
-                    double Evaluate(double xval) const;
-                    bool IsBuilt() const;
-
-                private:
-                    std::vector< double > fX;
-                    std::vector< double > fA;
-                    std::vector< double > fB;
-                    std::vector< double > fC;
-                    std::vector< double > fD;
-            };
-
-            // Helpers for reading arrays and building splines
+            bool LoadMeasuredNoiseNode(const scarab::param_node& node, double freqScale);
             bool LoadPointsFromArray(const scarab::param_array& arr, std::vector< double >& xs, std::vector< double >& ys, double freqScale) const;
 
             bool BuildSplines();
 
-            // Drawing a PSD (W/Hz) sample at |f| using mean and variance splines
-            double DrawPSD(double f_abs_hz);
+            // Drawing a PSD (W/Hz) sample using spline-evaluated mean and variance
+            double DrawPSD(double meanPSD, double varPSD);
 
             // Random unit complex (cos, sin) using 2D Gaussians; avoids a new RNG
             void RandomUnitComplex(double& c, double& s);
@@ -112,8 +93,8 @@ namespace Katydid
             std::vector< double > fMeanY;     // W/Hz
             std::vector< double > fVarY;      // (W/Hz)^2
 
-            KCubicSpline           fMeanSpline;
-            KCubicSpline           fVarSpline;
+            KTSpline               fMeanSpline;
+            KTSpline               fVarSpline;
 
             bool                   fHaveMean;
             bool                   fHaveVar;
@@ -122,4 +103,3 @@ namespace Katydid
 } /* namespace Katydid */
 
 #endif /* KTMEASUREDNOISEGENERATOR_HH_ */
-

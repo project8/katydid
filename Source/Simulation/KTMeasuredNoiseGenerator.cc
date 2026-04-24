@@ -9,7 +9,6 @@
 
 #include "param.hh"
 #include "param_yaml.hh"
-#include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -28,93 +27,19 @@ namespace Katydid
 
     KT_REGISTER_PROCESSOR(KTMeasuredNoiseGenerator, "measured-noise-generator");
 
-    // ---------- KCubicSpline ----------
-
-    KTMeasuredNoiseGenerator::KCubicSpline::KCubicSpline() :
-            fX(), fA(), fB(), fC(), fD()
-    {}
-
-    KTMeasuredNoiseGenerator::KCubicSpline::~KCubicSpline() = default;
-
-    void KTMeasuredNoiseGenerator::KCubicSpline::Clear()
+    namespace
     {
-        fX.clear(); fA.clear(); fB.clear(); fC.clear(); fD.clear();
-    }
-
-    bool KTMeasuredNoiseGenerator::KCubicSpline::IsBuilt() const
-    {
-        return ! fX.empty();
-    }
-
-    bool KTMeasuredNoiseGenerator::KCubicSpline::Build(const std::vector< double >& x, const std::vector< double >& y)
-    {
-        Clear();
-
-        if (x.size() < 2 || x.size() != y.size()) return false;
-
-        for (size_t i = 1; i < x.size(); ++i)
+        bool GetFrequencyScale(const string& units, double& freqScale)
         {
-            if (x[i] <= x[i-1]) return false;
+            if      (units == "Hz")  freqScale = 1.0;
+            else if (units == "kHz") freqScale = 1.0e3;
+            else if (units == "MHz") freqScale = 1.0e6;
+            else if (units == "GHz") freqScale = 1.0e9;
+            else return false;
+
+            return true;
         }
-
-        size_t n = x.size();
-        fX = x;
-        fA = y;
-        fB.assign(n - 1, 0.0);
-        fC.assign(n,     0.0);
-        fD.assign(n - 1, 0.0);
-
-        std::vector< double > h(n - 1, 0.0);
-        for (size_t i = 0; i < n - 1; ++i) h[i] = fX[i+1] - fX[i];
-
-        std::vector< double > alpha(n, 0.0);
-        for (size_t i = 1; i < n - 1; ++i)
-        {
-            alpha[i] = 3.0/h[i]*(fA[i+1]-fA[i]) - 3.0/h[i-1]*(fA[i]-fA[i-1]);
-        }
-
-        std::vector< double > l(n, 0.0), mu(n, 0.0), z(n, 0.0);
-        l[0] = 1.0;
-        mu[0] = 0.0;
-        z[0] = 0.0;
-
-        for (size_t i = 1; i < n - 1; ++i)
-        {
-            l[i] = 2.0*(fX[i+1]-fX[i-1]) - h[i-1]*mu[i-1];
-            if (l[i] == 0.0) return false;
-            mu[i] = h[i]/l[i];
-            z[i] = (alpha[i] - h[i-1]*z[i-1]) / l[i];
-        }
-
-        l[n-1] = 1.0;
-        z[n-1] = 0.0;
-        fC[n-1] = 0.0;
-
-        for (int j = static_cast<int>(n) - 2; j >= 0; --j)
-        {
-            fC[j] = z[j] - mu[j]*fC[j+1];
-            fB[j] = (fA[j+1]-fA[j])/h[j] - h[j]*(fC[j+1] + 2.0*fC[j])/3.0;
-            fD[j] = (fC[j+1]-fC[j]) / (3.0*h[j]);
-        }
-
-        return true;
     }
-
-    double KTMeasuredNoiseGenerator::KCubicSpline::Evaluate(double xval) const
-    {
-        if (fX.empty()) return 0.0;
-
-        if (xval <= fX.front()) return fA.front();
-        if (xval >= fX.back())  return fA.back();
-
-        std::vector<double>::const_iterator it = std::upper_bound(fX.begin(), fX.end(), xval);
-        size_t j = static_cast<size_t>(std::distance(fX.begin(), it) - 1);
-
-        double dx = xval - fX[j];
-        return fA[j] + fB[j]*dx + fC[j]*dx*dx + fD[j]*dx*dx*dx;
-    }
-
-    // ---------- KTMeasuredNoiseGenerator ----------
 
     KTMeasuredNoiseGenerator::KTMeasuredNoiseGenerator(const string& name) :
             KTGaussianNoiseGenerator(name),
@@ -141,29 +66,38 @@ namespace Katydid
         xs.clear();
         ys.clear();
 
-        for (unsigned i = 0; i < arr.size(); ++i)
+        for (unsigned iPoint = 0; iPoint < arr.size(); ++iPoint)
         {
-            double f_in = 0.0;
-            double v    = 0.0;
+            double fIn = 0.0;
+            double value = 0.0;
 
-            if (arr[i].is_array())
+            if (arr[iPoint].is_array())
             {
-                const scarab::param_array& pair = arr[i].as_array();
+                const scarab::param_array& pair = arr[iPoint].as_array();
                 if (pair.size() < 2 || ! pair[0].is_value() || ! pair[1].is_value())
                 {
                     KTERROR(genlog, "Each point must be a two-element array [frequency, value]");
                     return false;
                 }
-                f_in = pair[0].as_value().as_double();
-                v    = pair[1].as_value().as_double();
+                fIn = pair[0].as_value().as_double();
+                value = pair[1].as_value().as_double();
             }
-            else if (arr[i].is_node())
+            else if (arr[iPoint].is_node())
             {
-                const scarab::param_node& pn = arr[i].as_node();
-                f_in = pn.get_value("f", 0.0);
-                if (pn.has("value"))      v = pn["value"].as_value().as_double();
-                else if (pn.has("psd"))   v = pn["psd"].as_value().as_double();
-                else if (pn.has("var"))   v = pn["var"].as_value().as_double();
+                const scarab::param_node& pointNode = arr[iPoint].as_node();
+
+                if      (pointNode.has("f"))         fIn = pointNode["f"].as_value().as_double();
+                else if (pointNode.has("frequency")) fIn = pointNode["frequency"].as_value().as_double();
+                else if (pointNode.has("freq"))      fIn = pointNode["freq"].as_value().as_double();
+                else
+                {
+                    KTERROR(genlog, "Point node must contain \"f\", \"frequency\", or \"freq\"");
+                    return false;
+                }
+
+                if      (pointNode.has("value")) value = pointNode["value"].as_value().as_double();
+                else if (pointNode.has("psd"))   value = pointNode["psd"].as_value().as_double();
+                else if (pointNode.has("var"))   value = pointNode["var"].as_value().as_double();
                 else
                 {
                     KTERROR(genlog, "Point node must contain \"value\", \"psd\", or \"var\"");
@@ -176,16 +110,24 @@ namespace Katydid
                 return false;
             }
 
-            const double f_hz = f_in * freqScale;
+            const double fHz = fIn * freqScale;
 
-            if (f_hz < fFreqMinHz || f_hz > fFreqMaxHz)
+            if (! std::isfinite(fHz) || ! std::isfinite(value))
             {
-                KTERROR(genlog, "Frequency value " << f_in << " (scaled to " << f_hz << " Hz) is outside the allowed range [0, 400 MHz]");
+                KTERROR(genlog, "Input frequencies and values must be finite");
                 return false;
             }
 
-            xs.push_back(f_hz);
-            ys.push_back(v);
+            if (fHz < fFreqMinHz || fHz > fFreqMaxHz)
+            {
+                KTERROR(genlog, "Frequency value " << fIn << " (scaled to " << fHz
+                        << " Hz) is outside the allowed range [" << fFreqMinHz
+                        << ", " << fFreqMaxHz << "] Hz");
+                return false;
+            }
+
+            xs.push_back(fHz);
+            ys.push_back(value);
         }
 
         if (xs.size() < 2)
@@ -195,26 +137,98 @@ namespace Katydid
         }
 
         std::vector< size_t > order(xs.size());
-        for (size_t i = 0; i < order.size(); ++i) order[i] = i;
+        for (size_t iPoint = 0; iPoint < order.size(); ++iPoint) order[iPoint] = iPoint;
         std::sort(order.begin(), order.end(), [&](size_t a, size_t b){ return xs[a] < xs[b]; });
 
-        std::vector< double > xs_sorted(xs.size()), ys_sorted(xs.size());
-        for (size_t i = 0; i < order.size(); ++i)
+        std::vector< double > xsSorted(xs.size()), ysSorted(xs.size());
+        for (size_t iPoint = 0; iPoint < order.size(); ++iPoint)
         {
-            xs_sorted[i] = xs[order[i]];
-            ys_sorted[i] = ys[order[i]];
+            xsSorted[iPoint] = xs[order[iPoint]];
+            ysSorted[iPoint] = ys[order[iPoint]];
         }
-        for (size_t i = 1; i < xs_sorted.size(); ++i)
+        for (size_t iPoint = 1; iPoint < xsSorted.size(); ++iPoint)
         {
-            if (xs_sorted[i] <= xs_sorted[i-1])
+            if (xsSorted[iPoint] <= xsSorted[iPoint-1])
             {
                 KTERROR(genlog, "Input frequencies must be strictly increasing");
                 return false;
             }
         }
 
-        xs.swap(xs_sorted);
-        ys.swap(ys_sorted);
+        xs.swap(xsSorted);
+        ys.swap(ysSorted);
+        return true;
+    }
+
+    bool KTMeasuredNoiseGenerator::LoadMeasuredNoiseNode(const scarab::param_node& node, double freqScale)
+    {
+        fMeanXHz.clear();
+        fMeanY.clear();
+        fVarY.clear();
+        fHaveMean = false;
+        fHaveVar = false;
+
+        if (! node.has("psd-mean") || ! node["psd-mean"].is_array())
+        {
+            KTERROR(genlog, "Missing required array \"psd-mean\"");
+            return false;
+        }
+
+        fHaveMean = LoadPointsFromArray(node["psd-mean"].as_array(), fMeanXHz, fMeanY, freqScale);
+        if (! fHaveMean) return false;
+
+        for (double meanValue : fMeanY)
+        {
+            if (meanValue < 0.0)
+            {
+                KTERROR(genlog, "Mean PSD values must be non-negative");
+                return false;
+            }
+        }
+
+        if (! node.has("psd-variance"))
+        {
+            if (fUseVariance)
+            {
+                KTWARN(genlog, "No \"psd-variance\" provided; will inject using mean only");
+            }
+            return true;
+        }
+
+        if (! node["psd-variance"].is_array())
+        {
+            KTERROR(genlog, "\"psd-variance\" must be an array of [frequency, value] pairs");
+            return false;
+        }
+
+        std::vector< double > varXHz, varVals;
+        if (! LoadPointsFromArray(node["psd-variance"].as_array(), varXHz, varVals, freqScale)) return false;
+
+        if (varXHz.size() != fMeanXHz.size())
+        {
+            KTERROR(genlog, "Variance and mean arrays must use the same frequency knots");
+            return false;
+        }
+        for (size_t iPoint = 0; iPoint < varXHz.size(); ++iPoint)
+        {
+            if (std::fabs(varXHz[iPoint] - fMeanXHz[iPoint]) > 0.5)
+            {
+                KTERROR(genlog, "Variance and mean arrays must share identical frequency knots");
+                return false;
+            }
+        }
+
+        for (double varValue : varVals)
+        {
+            if (varValue < 0.0)
+            {
+                KTERROR(genlog, "Variance values must be non-negative");
+                return false;
+            }
+        }
+
+        fVarY.swap(varVals);
+        fHaveVar = true;
         return true;
     }
 
@@ -225,19 +239,16 @@ namespace Katydid
             KTERROR(genlog, "Mean PSD points were not provided");
             return false;
         }
-        if (! fMeanSpline.Build(fMeanXHz, fMeanY))
-        {
-            KTERROR(genlog, "Failed to build mean PSD spline");
-            return false;
-        }
+
+        fMeanSpline = KTSpline(fMeanXHz.data(), fMeanY.data(), (unsigned)fMeanXHz.size());
 
         if (fHaveVar)
         {
-            if (! fVarSpline.Build(fMeanXHz, fVarY))
-            {
-                KTERROR(genlog, "Failed to build variance PSD spline");
-                return false;
-            }
+            fVarSpline = KTSpline(fMeanXHz.data(), fVarY.data(), (unsigned)fMeanXHz.size());
+        }
+        else
+        {
+            fVarSpline = KTSpline();
         }
 
         return true;
@@ -250,7 +261,7 @@ namespace Katydid
 
         fRNG.param(KTRNGGaussian<>::param_type(0.0, 1.0));
 
-        fNoiseScaling  = node->get_value<double>("noise-scaling", fNoiseScaling);
+        fNoiseScaling = node->get_value<double>("noise-scaling", fNoiseScaling);
         if (fNoiseScaling <= 0.0)
         {
             KTWARN(genlog, "\"noise-scaling\" must be > 0; using 1.0");
@@ -258,16 +269,11 @@ namespace Katydid
         }
 
         fTransformFlag = node->get_value("transform-flag", fTransformFlag);
-        fUseVariance   = node->get_value("use-variance", fUseVariance);
-        fFixedRadius   = node->get_value("fixed-radius", fFixedRadius);
+        fUseVariance = node->get_value("use-variance", fUseVariance);
+        fFixedRadius = node->get_value("fixed-radius", fFixedRadius);
 
-        // Default units for values provided in *this* config
         string units = node->get_value("frequency-units", string("MHz"));
-        if      (units == "Hz")  fFreqScale = 1.0;
-        else if (units == "kHz") fFreqScale = 1.0e3;
-        else if (units == "MHz") fFreqScale = 1.0e6;
-        else if (units == "GHz") fFreqScale = 1.0e9;
-        else
+        if (! GetFrequencyScale(units, fFreqScale))
         {
             KTWARN(genlog, "Unrecognized frequency-units \"" << units << "\"; assuming MHz");
             fFreqScale = 1.0e6;
@@ -279,23 +285,22 @@ namespace Katydid
             return false;
         }
 
-        const scarab::param_node& mn = (*node)["measured-noise"].as_node();
+        const scarab::param_node& measuredNoiseNode = (*node)["measured-noise"].as_node();
 
-        // ---- loading arrays from an external YAML file if provided ----
         string yamlFile;
-        if (mn.has("psd-file"))           yamlFile = mn.get_value("psd-file", string());
-        else if (mn.has("psd-values-file")) yamlFile = mn.get_value("psd-values-file", string());
-        else if (mn.has("psd-file-dir"))
+        if (measuredNoiseNode.has("psd-file")) yamlFile = measuredNoiseNode.get_value("psd-file", string());
+        else if (measuredNoiseNode.has("psd-values-file")) yamlFile = measuredNoiseNode.get_value("psd-values-file", string());
+        else if (measuredNoiseNode.has("psd-file-dir"))
         {
-            string dir  = mn.get_value("psd-file-dir", string());
-            string name = mn.get_value("psd-file-name", string());
+            string dir = measuredNoiseNode.get_value("psd-file-dir", string());
+            string name = measuredNoiseNode.get_value("psd-file-name", string());
             if (name.empty())
             {
                 KTERROR(genlog, "\"psd-file-dir\" provided but \"psd-file-name\" is missing");
                 return false;
             }
             yamlFile = dir;
-            if (! yamlFile.empty() && yamlFile.back() != '/' ) yamlFile += "/";
+            if (! yamlFile.empty() && yamlFile.back() != '/') yamlFile += "/";
             yamlFile += name;
         }
 
@@ -303,153 +308,42 @@ namespace Katydid
         {
             scarab::param_input_yaml reader;
             auto doc = reader.read_file(yamlFile);
-            if (!doc || !doc->is_node())
+            if (! doc || ! doc->is_node())
             {
                 KTERROR(genlog, "Failed to read YAML file \"" << yamlFile << "\"");
                 return false;
             }
-            const scarab::param_node& root = doc->as_node();
-            const scarab::param_node* src = &root;
-            if (root.has("measured-noise") && root["measured-noise"].is_node())
-                src = &root["measured-noise"].as_node();
 
-            // Allowing the file to override frequency units (for values in the file)
-            double fileFreqScale = fFreqScale;
-            if (src->has("frequency-units"))
+            const scarab::param_node& root = doc->as_node();
+            const scarab::param_node* sourceNode = &root;
+            if (root.has("measured-noise") && root["measured-noise"].is_node())
             {
-                string fu = src->get_value("frequency-units", string("MHz"));
-                if      (fu == "Hz")  fileFreqScale = 1.0;
-                else if (fu == "kHz") fileFreqScale = 1.0e3;
-                else if (fu == "MHz") fileFreqScale = 1.0e6;
-                else if (fu == "GHz") fileFreqScale = 1.0e9;
-                else
+                sourceNode = &root["measured-noise"].as_node();
+            }
+
+            double fileFreqScale = fFreqScale;
+            if (sourceNode->has("frequency-units"))
+            {
+                string fileUnits = sourceNode->get_value("frequency-units", string("MHz"));
+                if (! GetFrequencyScale(fileUnits, fileFreqScale))
                 {
-                    KTERROR(genlog, "Unrecognized frequency-units in PSD file: \"" << fu << "\"");
+                    KTERROR(genlog, "Unrecognized frequency-units in PSD file: \"" << fileUnits << "\"");
                     return false;
                 }
             }
 
-            // PSD units must be W/Hz (default)
-            string psdUnits = src->get_value("psd-units", string("W/Hz"));
+            string psdUnits = sourceNode->get_value("psd-units", string("W/Hz"));
             if (psdUnits != "W/Hz")
             {
-                KTERROR(genlog, "Unsupported psd-units \"" << psdUnits
-                        << "\"; only W/Hz is accepted");
+                KTERROR(genlog, "Unsupported psd-units \"" << psdUnits << "\"; only W/Hz is accepted");
                 return false;
             }
 
-            if (! src->has("psd-mean") || ! (*src)["psd-mean"].is_array())
-            {
-                KTERROR(genlog, "PSD file is missing required array \"psd-mean\"");
-                return false;
-            }
-
-            const scarab::param_array& meanArr = (*src)["psd-mean"].as_array();
-            fHaveMean = LoadPointsFromArray(meanArr, fMeanXHz, fMeanY, fileFreqScale);
-            if (! fHaveMean) return false;
-
-            fHaveVar = false;
-            if (src->has("psd-variance"))
-            {
-                if (! (*src)["psd-variance"].is_array())
-                {
-                    KTERROR(genlog, "\"psd-variance\" must be an array of [frequency, value] pairs");
-                    return false;
-                }
-                const scarab::param_array& varArr = (*src)["psd-variance"].as_array();
-                std::vector< double > varXHz, varVals;
-                if (! LoadPointsFromArray(varArr, varXHz, varVals, fileFreqScale)) return false;
-
-                if (varXHz.size() != fMeanXHz.size())
-                {
-                    KTERROR(genlog, "Variance and mean arrays must use the same frequency knots");
-                    return false;
-                }
-                for (size_t i = 0; i < varXHz.size(); ++i)
-                {
-                    if (std::abs(varXHz[i] - fMeanXHz[i]) > 0.5)
-                    {
-                        KTERROR(genlog, "Variance and mean arrays must share identical frequency knots");
-                        return false;
-                    }
-                }
-
-                for (double v : varVals)
-                {
-                    if (v < 0.0)
-                    {
-                        KTERROR(genlog, "Variance values must be non-negative");
-                        return false;
-                    }
-                }
-
-                fVarY   = varVals;
-                fHaveVar= true;
-            }
-            else
-            {
-                KTWARN(genlog, "PSD file has no \"psd-variance\"; will inject using mean only");
-            }
+            if (! LoadMeasuredNoiseNode(*sourceNode, fileFreqScale)) return false;
         }
         else
         {
-            // ---- Backward-compatible path: arrays inline in main config ----
-            if (! mn.has("psd-mean"))
-            {
-                KTERROR(genlog, "Missing required array \"measured-noise.psd-mean\"");
-                return false;
-            }
-            if (! mn["psd-mean"].is_array())
-            {
-                KTERROR(genlog, "\"measured-noise.psd-mean\" must be an array of [frequency, value] pairs");
-                return false;
-            }
-            const scarab::param_array& meanArr = mn["psd-mean"].as_array();
-            fHaveMean = LoadPointsFromArray(meanArr, fMeanXHz, fMeanY, fFreqScale);
-            if (! fHaveMean) return false;
-
-            fHaveVar = false;
-            if (mn.has("psd-variance"))
-            {
-                if (! mn["psd-variance"].is_array())
-                {
-                    KTERROR(genlog, "\"measured-noise.psd-variance\" must be an array of [frequency, value] pairs");
-                    return false;
-                }
-                const scarab::param_array& varArr = mn["psd-variance"].as_array();
-                std::vector< double > varXHz, varVals;
-                if (! LoadPointsFromArray(varArr, varXHz, varVals, fFreqScale)) return false;
-
-                if (varXHz.size() != fMeanXHz.size())
-                {
-                    KTERROR(genlog, "Variance and mean arrays must use the same frequency knots");
-                    return false;
-                }
-                for (size_t i = 0; i < varXHz.size(); ++i)
-                {
-                    if (std::abs(varXHz[i] - fMeanXHz[i]) > 0.5)
-                    {
-                        KTERROR(genlog, "Variance and mean arrays must share identical frequency knots");
-                        return false;
-                    }
-                }
-
-                for (double v : varVals)
-                {
-                    if (v < 0.0)
-                    {
-                        KTERROR(genlog, "Variance values must be non-negative");
-                        return false;
-                    }
-                }
-
-                fVarY    = varVals;
-                fHaveVar = true;
-            }
-            else
-            {
-                KTWARN(genlog, "No \"psd-variance\" provided; will inject using mean only");
-            }
+            if (! LoadMeasuredNoiseNode(measuredNoiseNode, fFreqScale)) return false;
         }
 
         if (! BuildSplines()) return false;
@@ -457,16 +351,16 @@ namespace Katydid
         return true;
     }
 
-    double KTMeasuredNoiseGenerator::DrawPSD(double f_abs_hz)
+    double KTMeasuredNoiseGenerator::DrawPSD(double meanPSD, double varPSD)
     {
-        const double mean_psd = std::max(0.0, fMeanSpline.Evaluate(f_abs_hz));
+        const double clippedMeanPSD = std::max(0.0, meanPSD);
 
-        if (! fUseVariance || ! fVarSpline.IsBuilt()) return mean_psd;
+        if (! fUseVariance || ! fHaveVar) return clippedMeanPSD;
 
-        const double var_psd   = std::max(0.0, fVarSpline.Evaluate(f_abs_hz));
-        const double stdev_psd = std::sqrt(var_psd);
+        const double clippedVarPSD = std::max(0.0, varPSD);
+        const double stdevPSD = std::sqrt(clippedVarPSD);
+        const double draw = clippedMeanPSD + stdevPSD * fRNG();
 
-        const double draw = mean_psd + stdev_psd * fRNG();
         return (draw > 0.0) ? draw : 0.0;
     }
 
@@ -474,115 +368,165 @@ namespace Katydid
     {
         const double x = fRNG();
         const double y = fRNG();
-        const double r = std::sqrt(x*x + y*y);
-        if (r > 0.0) { c = x / r; s = y / r; }
-        else { c = 1.0; s = 0.0; }
+        const double radius = std::sqrt(x*x + y*y);
+
+        if (radius > 0.0)
+        {
+            c = x / radius;
+            s = y / radius;
+        }
+        else
+        {
+            c = 1.0;
+            s = 0.0;
+        }
     }
 
     bool KTMeasuredNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const double binWidth     = data.GetTimeSeries(0)->GetTimeBinWidth();
-        const unsigned sliceSize  = data.GetTimeSeries(0)->GetNTimeBins();
         const unsigned nComponents = data.GetNComponents();
+        if (nComponents == 0)
+        {
+            KTERROR(genlog, "Cannot add measured noise to data with no components");
+            return false;
+        }
+
+        if (data.GetTimeSeries(0) == NULL)
+        {
+            KTERROR(genlog, "Cannot add measured noise to null time series");
+            return false;
+        }
+
+        const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
+
+        if (binWidth <= 0.0 || sliceSize == 0)
+        {
+            KTERROR(genlog, "Invalid time-series bin width or slice size");
+            return false;
+        }
 
         const double fs = 1.0 / binWidth;
-        const double df = fs / sliceSize;
-        const unsigned N2 = sliceSize / 2;
+        const double df = fs / (double)sliceSize;
+        const unsigned n2 = sliceSize / 2;
+        const unsigned nPositiveBins = n2 + 1;
 
-        bool isComplex = dynamic_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(0)) != NULL;
-
-        KTFrequencySpectrumFFTW spec(sliceSize, -fs*0.5, fs*0.5, false);
-        spec.SetNTimeBins(sliceSize);
+        std::shared_ptr< KTSpline::Implementation > meanPSD = fMeanSpline.Implement(nPositiveBins, -0.5 * df, ((double)nPositiveBins - 0.5) * df);
+        std::shared_ptr< KTSpline::Implementation > varPSD;
+        if (fUseVariance && fHaveVar)
+        {
+            varPSD = fVarSpline.Implement(nPositiveBins, -0.5 * df, ((double)nPositiveBins - 0.5) * df);
+        }
 
         const double scale = fNoiseScaling * fGain * std::sqrt(fResistance) * sliceSize;
-
-        if (isComplex)
-        {
-            for (unsigned k = 0; k < sliceSize; ++k)
-            {
-                const double fIf  = (k <= N2) ? k * df : (static_cast<int>(k) - static_cast<int>(sliceSize)) * df;
-                const double fAbs = std::fabs(fIf);
-
-                const double psd  = DrawPSD(fAbs);
-                const double pBin = psd * df;
-
-                if (fFixedRadius)
-                {
-                    const double R = scale * std::sqrt(pBin);
-                    double c = 1.0, s = 0.0; RandomUnitComplex(c, s);
-                    spec.SetRect(k, R * c, R * s);
-                }
-                else
-                {
-                    const double amp = scale * std::sqrt(pBin / 2.0);
-                    spec.SetRect(k, amp * fRNG(), amp * fRNG());
-                }
-            }
-        }
-        else
-        {
-            for (unsigned k = 0; k <= N2; ++k)
-            {
-                const double fIf = k * df;
-                const double psd  = DrawPSD(fIf);
-                const double pBin = psd * df;
-
-                if (fFixedRadius)
-                {
-                    if (k==0 || (sliceSize%2==0 && k==N2))
-                    {
-                        const double R0 = scale * std::sqrt(pBin);
-                        const double sign = (fRNG() >= 0.0) ? 1.0 : -1.0;
-                        spec.SetRect(k, sign * R0, 0.0);
-                    }
-                    else
-                    {
-                        const double R = scale * std::sqrt(pBin);
-                        double c = 1.0, s = 0.0; RandomUnitComplex(c, s);
-                        const double re = R * c;
-                        const double im = R * s;
-
-                        spec.SetRect(k, re, im);
-                        spec.SetRect(sliceSize - k,  re, -im);
-                    }
-                }
-                else
-                {
-                    const double amp  = scale * std::sqrt(pBin);
-                    const double re   = amp * fRNG();
-                    const double im   = (k==0 || (sliceSize%2==0 && k==N2)) ? 0.0 : amp * fRNG();
-
-                    spec.SetRect(k, re, im);
-                    if (k>0 && k<N2)
-                        spec.SetRect(sliceSize - k,  re, -im);
-                }
-            }
-        }
 
         KTReverseFFTW rfft;
         rfft.SetTransformFlag(fTransformFlag);
         rfft.InitializeForComplexTDD(sliceSize);
 
-        std::unique_ptr< KTTimeSeriesFFTW > noiseTS( rfft.TransformToComplex(&spec) );
-        if (! noiseTS)
-        {
-            KTERROR(genlog, "Inverse FFT failed while producing measured noise");
-            return false;
-        }
-
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
-            KTTimeSeries* ts = data.GetTimeSeries(iComponent);
-
-            if (auto* tsFFTW = dynamic_cast< KTTimeSeriesFFTW* >(ts))
+            KTTimeSeries* timeSeries = data.GetTimeSeries(iComponent);
+            if (timeSeries == NULL)
             {
-                for (unsigned i = 0; i < sliceSize; ++i)
-                    tsFFTW->SetRect(i, tsFFTW->GetReal(i) + noiseTS->GetReal(i), tsFFTW->GetImag(i) + noiseTS->GetImag(i));
+                KTWARN(genlog, "Time series " << iComponent << " is null; skipping measured-noise injection for this component");
+                continue;
+            }
+
+            const bool isComplex = dynamic_cast< KTTimeSeriesFFTW* >(timeSeries) != NULL;
+
+            KTFrequencySpectrumFFTW spec(sliceSize, -fs*0.5, fs*0.5, false);
+            spec.SetNTimeBins(sliceSize);
+
+            if (isComplex)
+            {
+                for (unsigned k = 0; k < sliceSize; ++k)
+                {
+                    const unsigned iFreq = (k <= n2) ? k : sliceSize - k;
+                    const double psd = DrawPSD((*meanPSD)(iFreq), varPSD ? (*varPSD)(iFreq) : 0.0);
+                    const double pBin = psd * df;
+
+                    if (fFixedRadius)
+                    {
+                        const double radius = scale * std::sqrt(pBin);
+                        double c = 1.0;
+                        double s = 0.0;
+                        RandomUnitComplex(c, s);
+                        spec.SetRect(k, radius * c, radius * s);
+                    }
+                    else
+                    {
+                        const double amp = scale * std::sqrt(pBin / 2.0);
+                        spec.SetRect(k, amp * fRNG(), amp * fRNG());
+                    }
+                }
             }
             else
             {
-                for (unsigned i = 0; i < sliceSize; ++i)
-                    ts->SetValue(i, ts->GetValue(i) + noiseTS->GetReal(i));
+                for (unsigned k = 0; k <= n2; ++k)
+                {
+                    const bool isDC = (k == 0);
+                    const bool isNyquist = (sliceSize % 2 == 0 && k == n2);
+
+                    const double psd = DrawPSD((*meanPSD)(k), varPSD ? (*varPSD)(k) : 0.0);
+                    const double pBin = psd * df;
+
+                    if (fFixedRadius)
+                    {
+                        if (isDC || isNyquist)
+                        {
+                            const double radius = scale * std::sqrt(pBin);
+                            const double sign = (fRNG() >= 0.0) ? 1.0 : -1.0;
+                            spec.SetRect(k, sign * radius, 0.0);
+                        }
+                        else
+                        {
+                            const double radius = scale * std::sqrt(pBin);
+                            double c = 1.0;
+                            double s = 0.0;
+                            RandomUnitComplex(c, s);
+                            const double re = radius * c;
+                            const double im = radius * s;
+
+                            spec.SetRect(k, re, im);
+                            spec.SetRect(sliceSize - k, re, -im);
+                        }
+                    }
+                    else
+                    {
+                        const double amp = scale * std::sqrt(pBin);
+                        const double re = amp * fRNG();
+                        const double im = (isDC || isNyquist) ? 0.0 : amp * fRNG();
+
+                        spec.SetRect(k, re, im);
+                        if (! isDC && ! isNyquist)
+                        {
+                            spec.SetRect(sliceSize - k, re, -im);
+                        }
+                    }
+                }
+            }
+
+            std::unique_ptr< KTTimeSeriesFFTW > noiseTS( rfft.TransformToComplex(&spec) );
+            if (! noiseTS)
+            {
+                KTERROR(genlog, "Inverse FFT failed while producing measured noise");
+                return false;
+            }
+
+            if (auto* tsFFTW = dynamic_cast< KTTimeSeriesFFTW* >(timeSeries))
+            {
+                for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
+                {
+                    tsFFTW->SetRect(iBin, tsFFTW->GetReal(iBin) + noiseTS->GetReal(iBin), tsFFTW->GetImag(iBin) + noiseTS->GetImag(iBin));
+                }
+            }
+            else
+            {
+                for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
+                {
+                    timeSeries->SetValue(iBin, timeSeries->GetValue(iBin) + noiseTS->GetReal(iBin));
+                }
             }
         }
 
