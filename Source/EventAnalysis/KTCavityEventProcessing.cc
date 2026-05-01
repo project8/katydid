@@ -25,7 +25,7 @@ namespace Katydid
 
     KTCavityEventProcessing::KTCavityEventProcessing(const std::string& name) :
             KTProcessor(name),
-            fTrackClass3BandRelPowerThresh(0.),
+            fMaxRelPowerThresh(0.),
             fProcessedCavityEventSignal("proc-cavity-event", this),
             fEventSlot("mt-event", this, &KTCavityEventProcessing::AnalyzeEvent, &fProcessedCavityEventSignal)
     {
@@ -39,7 +39,7 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetTrackClass3BandRelPowerThresh(node->get_value("3band-class-rel-power-thresh", GetTrackClass3BandRelPowerThresh()));
+        SetMaxRelPowerThresh(node->get_value("max-rel-power-thresh", GetMaxRelPowerThresh()));
         
         return true;
     }
@@ -120,7 +120,7 @@ namespace Katydid
         }
 
         KTINFO(evlog, "Beginning start cyclotron frequency reconstruction of MPT.");
-        KTDEBUG(evlog, "Relative NUP threshold for classification of bands in 3 band multi-peak-tracks is " << this->fTrackClass3BandRelPowerThresh); //float fTrackClass3BandRelPowerThresh = 0.7; // Tuned parameter for CCA simulation data
+        KTDEBUG(evlog, "Relative NUP threshold for classification of bands in 3 band multi-peak-tracks is " << this->fMaxRelPowerThresh); //float fMaxRelPowerThresh = 0.1; // Tuned parameter for CCA simulation data
     
         // Sorting bands in MPT by increasing order of start frequency used for track classification.
         // Finding the maximum TotalTrackNUP out of all bands in MPT used for track classification of MPTs with 3 bands to decide between [-4, -2, 0] and [-2, 0, 2] topologies
@@ -148,8 +148,8 @@ namespace Katydid
         KTDEBUG(evlog, "MPT start time : " << startTime);
 
         // Classifying bands in MPT. Number of bands determines possible topologies as follows
-        // Bands |        Topologies
-        //   2   |          [-2, 0]
+        // Bands |         Topologies
+        //   2   |     [-2, 0] OR [0, 2]
         //   3   | [-4, -2, 0] OR [-2, 0, 2]
         //   4   |      [-4, -2, 0, 2]
         // Integers in topologies refer to sideband "order" (ie. -2 means second order lower sideband)
@@ -165,20 +165,43 @@ namespace Katydid
         }
         else if (numBands==2)
         {
-            carrierIndex = 1;
-            bandClassification = {-2, 0};
-            KTDEBUG(evlog, "MPT has 2 bands! Assumed band topology = [-2, 0].");
+            // For 2 band MPT 2 possibilities for topology. 
+            // If the relative TotalTrackNUP of the band with the highest start frequency is smaller than would be expected for a carrier, assume 2nd order lower sideband was missed and assign [0, 1]
+            // Threshold for expectation of largest possible relative TotalTrackNUP is the configurable parameter
+            const AllTrackData* lastTrack = sortedMPTBands[numBands-1];
+            if (maxTotNUP!=0)
+            {
+                double lastTrackRelTotalNUP = lastTrack->fProcTrack.GetTotalTrackNUP()/maxTotNUP;
+                if (lastTrackRelTotalNUP> this->fMaxRelPowerThresh)
+                {
+                    carrierIndex = 1;
+                    bandClassification = {-2, 0};
+                    KTDEBUG(evlog, "MPT has 2 bands! Relative band threshold classification determined band topology = [-2, 0].");
+                }
+                else
+                {
+                    carrierIndex = 0;
+                    bandClassification = {0, 2};
+                    KTDEBUG(evlog, "MPT has 2 bands! Relative band threshold classification determined band topology = [0, 2].");
+
+                }
+                
+            }
+            else
+            {
+                KTWARN(evlog, "MPT has 2 bands; however, the band with the maximum total track NUP is 0 and I am unable to calculate the relative power of bands. Aborting");
+                return false;
+            }
         }
         else if (numBands==3)
         {
             // For 3 band MPT 2 possibilities for topology. 
             // If the relative TotalTrackNUP of the band with the highest start frequency is larger than would be expected for a 2nd order upper sideband, it is assumed to be a carrier thus fixing the topology to [-4, -2, 0]
-            // Threshold for expectation of largest possible relative TotalTrackNUP for 2nd order sidebands initialized above (will be configurable parameter soon)
             const AllTrackData* lastTrack = sortedMPTBands[numBands-1];
             if (maxTotNUP!=0)
             {
                 double lastTrackRelTotalNUP = lastTrack->fProcTrack.GetTotalTrackNUP()/maxTotNUP;
-                if (lastTrackRelTotalNUP> this->fTrackClass3BandRelPowerThresh)
+                if (lastTrackRelTotalNUP> this->fMaxRelPowerThresh)
                 {
                     carrierIndex = 2;
                     bandClassification = {-4, -2, 0};
