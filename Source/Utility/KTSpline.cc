@@ -1,8 +1,14 @@
 /*
- * KTSpline.cc
+ * KTSpline.hh
  *
  *  Created on: Dec 13, 2012
  *      Author: nsoblath
+ *
+ *  Edited on: April 24, 2026
+ *      Author: ehtkarim
+ * 
+ *   - The KTSpline class now implements its own natural cubic spline interpolation, and no longer depends on ROOT.
+ *   - The old ROOT TSpline3-based implementation is removed.
  */
 
 #include "KTSpline.hh"
@@ -10,15 +16,19 @@
 #include "KTLogger.hh"
 #include "KTPhysicalArray.hh"
 
+#include <algorithm>
+
 KTLOGGER(splinelog, "KTSpline");
 
 namespace Katydid
 {
 
-#ifdef ROOT_FOUND
-
     KTSpline::KTSpline() :
-            fSpline(),
+            fX(),
+            fA(),
+            fB(),
+            fC(),
+            fD(),
             fXMin(0.),
             fXMax(0.),
             fCache()
@@ -26,15 +36,91 @@ namespace Katydid
     }
 
     KTSpline::KTSpline(double* xVals, double* yVals, unsigned nVals) :
-            fSpline("spline", xVals, yVals, nVals),
-            fXMin(xVals[0]),
-            fXMax(xVals[nVals-1]),
+            fX(),
+            fA(),
+            fB(),
+            fC(),
+            fD(),
+            fXMin(0.),
+            fXMax(0.),
             fCache()
     {
+        if (xVals == NULL || yVals == NULL)
+        {
+            KTERROR(splinelog, "Cannot build a spline from null input arrays!");
+            return;
+        }
+
+        if (nVals < 2)
+        {
+            KTERROR(splinelog, "At least two points are required to build a spline");
+            return;
+        }
+
+        for (unsigned iVal = 1; iVal < nVals; ++iVal)
+        {
+            if (xVals[iVal] <= xVals[iVal-1])
+            {
+                KTERROR(splinelog, "Input x values must be strictly increasing!");
+                return;
+            }
+        }
+
+        fXMin = xVals[0];
+        fXMax = xVals[nVals-1];
+
+        fX.assign(xVals, xVals + nVals);
+        fA.assign(yVals, yVals + nVals);
+        fB.assign(nVals - 1, 0.0);
+        fC.assign(nVals,     0.0);
+        fD.assign(nVals - 1, 0.0);
+
+        std::vector< double > h(nVals - 1, 0.0);
+        for (unsigned iVal = 0; iVal < nVals - 1; ++iVal) h[iVal] = fX[iVal+1] - fX[iVal];
+
+        std::vector< double > alpha(nVals, 0.0);
+        for (unsigned iVal = 1; iVal < nVals - 1; ++iVal)
+        {
+            alpha[iVal] = 3.0/h[iVal]*(fA[iVal+1]-fA[iVal]) - 3.0/h[iVal-1]*(fA[iVal]-fA[iVal-1]);
+        }
+
+        std::vector< double > l(nVals, 0.0), mu(nVals, 0.0), z(nVals, 0.0);
+        l[0] = 1.0;
+        mu[0] = 0.0;
+        z[0] = 0.0;
+
+        for (unsigned iVal = 1; iVal < nVals - 1; ++iVal)
+        {
+            l[iVal] = 2.0*(fX[iVal+1]-fX[iVal-1]) - h[iVal-1]*mu[iVal-1];
+            if (l[iVal] == 0.0)
+            {
+                KTERROR(splinelog, "Encountered singular spline system at i = " << iVal);
+                fX.clear(); fA.clear(); fB.clear(); fC.clear(); fD.clear();
+                fXMin = 0.; fXMax = 0.;
+                return;
+            }
+            mu[iVal] = h[iVal]/l[iVal];
+            z[iVal] = (alpha[iVal] - h[iVal-1]*z[iVal-1]) / l[iVal];
+        }
+
+        l[nVals-1] = 1.0;
+        z[nVals-1] = 0.0;
+        fC[nVals-1] = 0.0;
+
+        for (int jVal = static_cast<int>(nVals) - 2; jVal >= 0; --jVal)
+        {
+            fC[jVal] = z[jVal] - mu[jVal]*fC[jVal+1];
+            fB[jVal] = (fA[jVal+1]-fA[jVal])/h[jVal] - h[jVal]*(fC[jVal+1] + 2.0*fC[jVal])/3.0;
+            fD[jVal] = (fC[jVal+1]-fC[jVal]) / (3.0*h[jVal]);
+        }
     }
 
     KTSpline::KTSpline(const KTSpline& orig) :
-            fSpline(orig.fSpline),
+            fX(orig.fX),
+            fA(orig.fA),
+            fB(orig.fB),
+            fC(orig.fC),
+            fD(orig.fD),
             fXMin(orig.fXMin),
             fXMax(orig.fXMax),
             fCache()
@@ -47,7 +133,12 @@ namespace Katydid
 
     KTSpline& KTSpline::operator=(const KTSpline& rhs)
     {
-        fSpline = rhs.fSpline;
+        if (this == &rhs) return *this;
+        fX = rhs.fX;
+        fA = rhs.fA;
+        fB = rhs.fB;
+        fC = rhs.fC;
+        fD = rhs.fD;
         fXMin = rhs.fXMin;
         fXMax = rhs.fXMax;
         fCache.clear();
@@ -56,12 +147,21 @@ namespace Katydid
 
     double KTSpline::Evaluate(double xValue)
     {
-        return fSpline.Eval(xValue);
+        return static_cast<const KTSpline*>(this)->Evaluate(xValue);
     }
 
     double KTSpline::Evaluate(double xValue) const
     {
-        return fSpline.Eval(xValue);
+        if (fX.empty()) return 0.0;
+
+        if (xValue <= fX.front()) return fA.front();
+        if (xValue >= fX.back())  return fA.back();
+
+        std::vector< double >::const_iterator it = std::upper_bound(fX.begin(), fX.end(), xValue);
+        size_t j = static_cast<size_t>(it - fX.begin() - 1);
+
+        double dx = xValue - fX[j];
+        return fA[j] + fB[j]*dx + fC[j]*dx*dx + fD[j]*dx*dx*dx;
     }
 
     std::shared_ptr< KTSpline::Implementation > KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
@@ -71,6 +171,14 @@ namespace Katydid
 
         KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
         imp = std::make_shared< Implementation >(nBins, xMin, xMax);
+
+        if (nBins == 0)
+        {
+            imp->SetMean(0.0);
+            AddToCache(imp);
+            return imp;
+        }
+
         double mean = 0.;
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
@@ -83,57 +191,6 @@ namespace Katydid
         AddToCache(imp);
         return imp;
     }
-
-
-#else
-
-    KTSpline::KTSpline() :
-            fXMin(0.),
-            fXMax(0.)
-    {
-        KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
-    }
-
-    KTSpline::KTSpline(double* xVals, double* yVals, unsigned nVals) :
-            fXMin(xVals[0]),
-            fXMax(xVals[nVals-1])
-    {
-        KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
-    }
-
-    KTSpline::KTSpline(const KTSpline& orig) :
-            fXMin(orig.fXMin),
-            fXMax(orig.fXMax)
-    {
-    }
-
-    KTSpline::~KTSpline()
-    {
-    }
-
-    KTSpline& KTSpline::operator=(const KTSpline& rhs)
-    {
-        fXMin = rhs.fXMin;
-        fXMax = rhs.fXMax;
-        return *this;
-    }
-
-    double KTSpline::Evaluate(double xValue)
-    {
-      return 1.;
-    }
-
-    double KTSpline::Evaluate(double xValue) const
-    {
-        return 1.;
-    }
-
-    KTPhysicalArray< 1, double >* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
-    {
-        return NULL;
-    }
-
-#endif
 
     void KTSpline::AddToCache(std::shared_ptr< Implementation > imp) const
     {

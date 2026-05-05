@@ -3,6 +3,12 @@
  *
  *  Created on: Dec 13, 2012
  *      Author: nsoblath
+ *
+ *  Edited on: April 24, 2026
+ *      Author: ehtkarim
+ * 
+ *   - The KTSpline class now implements its own natural cubic spline interpolation, and no longer depends on ROOT.
+ *   - The old ROOT TSpline3-based implementation is removed.
  */
 
 #ifndef KTSPLINE_HH_
@@ -10,13 +16,10 @@
 
 #include "KTPhysicalArray.hh"
 
-#ifdef ROOT_FOUND
-#include "TSpline.h"
-#endif
-
-#include <set>
 #include <cstddef>
 #include <memory>
+#include <set>
+#include <vector>
 
 namespace Katydid
 {
@@ -61,28 +64,27 @@ namespace Katydid
             double GetXMax() const;
             void SetXMax(double max);
 
-#ifdef ROOT_FOUND
-            TSpline3* GetSpline();
-#endif
-
         private:
-#ifdef ROOT_FOUND
-            TSpline3 fSpline;
-#endif
+            // Natural cubic spline coefficients
+            std::vector< double > fX;
+            std::vector< double > fA;
+            std::vector< double > fB;
+            std::vector< double > fC;
+            std::vector< double > fD;
 
             double fXMin;
             double fXMax;
 
         public:
-            /// Retrieves a matching implementation from the cache; returns NULL if one does not exist. The matching implementation is removed from the cache and ownership is transferred to the caller.
+            /// Retrieves a matching implementation from the cache; returns an empty shared_ptr if one does not exist.
             std::shared_ptr< Implementation > GetFromCache(unsigned nBins, double xMin, double xMax) const;
 
             void ClearCache() const;
 
         private:
-            /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.
+            /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is removed.
             void AddToCache(std::shared_ptr< Implementation > imp) const;
-            ImplementationCache::iterator FindInCache(unsigned nBins, double xMin, double XMax) const;
+            ImplementationCache::iterator FindInCache(unsigned nBins, double xMin, double xMax) const;
 
             mutable ImplementationCache fCache;
 
@@ -109,13 +111,6 @@ namespace Katydid
         fXMax = max;
         return;
     }
-
-#ifdef ROOT_FOUND
-    inline TSpline3* KTSpline::GetSpline()
-    {
-        return &fSpline;
-    }
-#endif
 
 } /* namespace Katydid */
 #endif /* KTSPLINE_HH_ */

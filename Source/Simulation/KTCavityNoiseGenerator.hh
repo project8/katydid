@@ -64,6 +64,12 @@ namespace Katydid
 
             virtual bool ConfigureDerivedGenerator(const scarab::param_node* node);
 
+            double GetQL() const;
+            void SetQL(double ql);
+
+            double GetQ0() const;
+            void SetQ0(double q0);
+
         protected:
             double fF0;
             double fA;
@@ -75,12 +81,6 @@ namespace Katydid
             double fTIsol;
             double fEpsilon;
             double fFLo;
-
-            double GetQL() const;
-            double GetQ0() const;
-
-            void SetQL(double ql);
-            void SetQ0(double q0);
 
             std::string fTransformFlag;
             double      fNoiseScaling;
