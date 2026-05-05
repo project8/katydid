@@ -52,6 +52,8 @@ namespace Katydid
         public:
             virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeries") const;
 
+            virtual TH1D* CreateHistogramImag(const std::string& name = "hTimeSeriesImag") const;
+
             virtual TH1D* CreateAmplitudeDistributionHistogram(const std::string& name = "hTimeSeriesDist") const;
 #endif
     };

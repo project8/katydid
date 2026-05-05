@@ -25,7 +25,7 @@ namespace Katydid
      
 
      Available configuration values:
-     - "3band-class-rel-power-thresh": float -- Relative power threshold which is criteria in classifying bands in MPTs with 3 bands into either [-4,-2,0] or [-2,0,2]
+     - "max-rel-power-thresh": float -- Relative power threshold which is criteria in classifying bands in MPTs
 
      Slots:
      - "mt-event": void (Nymph::KTDataPtr) -- Analyzes a multi-track-event; Requires KTMultiPeakEventData; Adds nothing
@@ -44,7 +44,7 @@ namespace Katydid
 
             bool Configure(const scarab::param_node* node);
 
-            MEMBERVARIABLE(float, TrackClass3BandRelPowerThresh);
+            MEMBERVARIABLE(float, MaxRelPowerThresh);
 
         public:
             bool AnalyzeEvent( KTMultiTrackEventData& mtEventData );
