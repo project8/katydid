@@ -33,7 +33,7 @@ namespace Katydid
      - "max-rel-power-thresh": float -- Relative power threshold which is criteria in classifying bands in MPTs
 
      Slots:
-     - "mt-event": void (Nymph::KTDataPtr) -- Analyzes a multi-track-event; Requires KTMultiPeakEventData; Adds nothing
+     - "mt-event": void (Nymph::KTDataPtr) -- Analyzes a multi-track-event; Requires KTMultiTrackEventData; Adds nothing
 
      Signals:
      - "proc-cavity-event": void (Nymph::KTDataPtr) -- Emitted upon successful determination of cyclotron frequency; Guarantees KTProcessedCavityEventData
