@@ -22,6 +22,7 @@ set (SPECTRUMANALYSIS_HEADERFILES
     KTSpectrumDiscriminator.hh
     KTSpectrogramStriper.hh
     KTSwitchFFTWPolar.hh
+    KTUnetSpectrumDiscriminator.hh  # FIXME: if ONNL FOUND?
     KTVariableSpectrumDiscriminator.hh
     #KTAutoCorrMatrix.hh
 )
@@ -47,6 +48,7 @@ set (SPECTRUMANALYSIS_SOURCEFILES
     KTSpectrumDiscriminator.cc
     KTSpectrogramStriper.cc
     KTSwitchFFTWPolar.cc
+    KTUnetSpectrumDiscriminator.cc  # FIXME: if ONNL FOUND?
     KTVariableSpectrumDiscriminator.cc
     #KTAutoCorrMatrix.cc
 )

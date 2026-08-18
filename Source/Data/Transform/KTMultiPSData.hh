@@ -86,6 +86,42 @@ namespace Katydid
             virtual ~KTMultiPSData();
 
             KTMultiPSData& SetNComponents(unsigned component);
+            
+            template< typename XDataType >
+            std::vector< std::vector < XDataType > > GetAsVector(const unsigned component = 0) const
+            {
+                KTLOGGER(datalog, "KTMultiPSData");
+                std::vector< std::vector < XDataType > > result(0);
+
+                if (component >= fSpectra.size())
+                {
+                    KTWARN(datalog, "Component too large. Returning empty vector");
+                    return result;
+                }
+                if (fSpectra[component] == NULL)
+                {
+                    KTWARN(datalog, "Spectra empty. Returning empty vector");
+                    return result;
+                }
+
+                for (KTMultiPS::const_iterator spectrum = fSpectra[component]->begin(); spectrum != fSpectra[component]->end(); ++spectrum)
+                {
+                    if (*spectrum == NULL)
+                    {
+                        KTWARN(datalog, "An empty spectrum found. Skipping it.");
+                        continue;
+                    }
+
+                    std::vector< XDataType > thisVector((*spectrum)->size());
+                    for (unsigned iBin = 0; iBin < (*spectrum)->size(); ++iBin)
+                    {
+                        thisVector[iBin] = (*spectrum)->operator()(iBin);
+                    }
+                    result.push_back(thisVector);
+                }
+
+                return result;
+            }
 
         public:
             static const std::string sName;

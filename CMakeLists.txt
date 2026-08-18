@@ -219,6 +219,16 @@ else (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
     remove_definitions(-DUSE_OPENMP)
 endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
+# ONNX Runtime
+list (APPEND ONNX_LIBRARY_DIRS ${PROJECT_SOURCE_DIR}/External/onnxruntime/lib)
+list (APPEND ONNX_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/External/onnxruntime/include)
+list (APPEND ONNX_LIBRARIES onnxruntime)
+include_directories (${ONNX_INCLUDE_DIRS})
+link_directories (${ONNX_LIBRARY_DIRS})
+pbuilder_add_ext_libraries (${ONNX_LIBRARIES})
+add_definitions (-DUSE_ONNX_RUNTIME)
+set (ONNX_RUNTIME_FOUND TRUE)
+
 # External packages distributed with Katydid
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)

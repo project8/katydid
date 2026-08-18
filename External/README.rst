@@ -8,4 +8,5 @@ Directories
 ------------
 * FFTW - library to perform fast Fourier transforms
 * nanoflann - used in our DBSCAN (see wikipedia) for storing multi-dimensional data
+* onnxruntime - library to run ONNX models, used for the U-net spectrum discriminator
 * RapidXML - an xml parser, used for egg1 files (backwards compatibility)
