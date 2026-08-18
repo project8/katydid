@@ -35,17 +35,17 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        const KTParamArray* offsetPairs = node->ArrayAt("offsets");
+        const scarab::param_array* offsetPairs = node-> array_at("offsets"); //change based on DevGuide &KTCorrelator
         if (offsetPairs != NULL)
         {
-            for (KTParamArray::const_iterator pairIt = offsetPairs->Begin(); pairIt != offsetPairs->End(); ++pairIt)
+            for (scarab::param_array::const_iterator pairIt = offsetPairs->begin(); pairIt != offsetPairs->end(); ++pairIt)
             {
-                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                if (! ((*pairIt)->is_array() && (*pairIt)->as_array().size() == 2))
                 {
-                    KTERROR(genlog, "Invalid pair: " << (*pairIt)->ToString());
+                    KTERROR(genlog, "Invalid pair: " << (*pairIt)->to_string());
                     return false;
                 }
-                UIntDoublePair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< double >(1));
+                UIntDoublePair pair((*pairIt)->as_array().get_value< unsigned >(0), (*pairIt)->as_array().get_value< double >(1));
                 if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
                 fOffsets[pair.first] = pair.second;
             }

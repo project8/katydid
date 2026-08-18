@@ -32,6 +32,7 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph.h"
 #include "TGraph2D.h"
 
 #include <sstream>
