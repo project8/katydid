@@ -116,6 +116,27 @@ namespace Katydid
         UInt_t fUnknownEventTopology;
     };
 
+    struct TProcessedCavityEventData
+    {
+        UInt_t fComponent;
+        ULong64_t fAcquisitionID;
+        UInt_t fEventID;
+        UInt_t fTotalEventSequences;
+        Double_t fFirstTrackStartCyclotronFrequency;
+        Double_t fFirstTrackAxialFrequency;
+        std::vector<int> fFirstTrackBandIDs;
+        std::vector<int> fFirstTrackBandClassifications;
+
+        std::vector<int> fMPTEventSequenceID;
+        std::vector<double> fMPTStartCyclotronFrequency;
+        std::vector<double> fMPTAxialFrequency;
+
+        std::vector<int> fAllTrackIDs;
+        std::vector<int> fAllTrackEventSequenceIDs;
+        std::vector<int> fAllTrackBandClassifications;
+
+    };
+
     struct TLinearFitResult
     {
         UInt_t fFitNumber;
@@ -198,6 +219,7 @@ namespace Katydid
             void WriteSparseWaterfallCandidate(Nymph::KTDataPtr data);
             void WriteSequentialLine(Nymph::KTDataPtr data);
             void WriteProcessedMPT(Nymph::KTDataPtr data);
+            void WriteProcessedCavityEvent(Nymph::KTDataPtr data);
             void WriteProcessedTrack(Nymph::KTDataPtr data);
             void WriteMultiPeakTrack(Nymph::KTDataPtr data);
             void WriteMultiTrackEvent(Nymph::KTDataPtr data);
@@ -211,6 +233,7 @@ namespace Katydid
             TTree* GetSparseWaterfallCandidateTree() const;
             TTree* GetSequentialLineTree() const;
             TTree* GetProcessedMPTTree() const;
+            TTree* GetProcessedCavityEventTree() const;
             TTree* GetProcessedTrackTree() const;
             TTree* GetMultiPeakTrackTree() const;
             TTree* GetMultiTrackEventTree() const;
@@ -224,6 +247,7 @@ namespace Katydid
             bool SetupSparseWaterfallCandidateTree();
             bool SetupSequentialLineTree();
             bool SetupProcessedMPTTree();
+            bool SetupProcessedCavityEventTree();
             bool SetupProcessedTrackTree();
             bool SetupMultiPeakTrackTree();
             bool SetupMultiTrackEventTree();
@@ -236,6 +260,7 @@ namespace Katydid
             TTree* fSparseWaterfallCandidateTree;
             TTree* fSequentialLineTree;
             TTree* fProcessedMPTTree;
+            TTree* fProcessedCavityEventTree;
             TTree* fProcessedTrackTree;
             TTree* fMultiPeakTrackTree;
             TTree* fMultiTrackEventTree;
@@ -249,6 +274,7 @@ namespace Katydid
             TSequentialLineData* fSequentialLineDataPtr;
             Cicada::TProcessedTrackData* fProcessedTrackDataPtr;
             Cicada::TProcessedMPTData* fProcessedMPTDataPtr;
+            TProcessedCavityEventData fProcessedCavityEventData;
             TMultiPeakTrackData fMultiPeakTrackData;
             Cicada::TMultiTrackEventData* fMultiTrackEventDataPtr;
             Cicada::TMTEWithClassifierResultsData* fMTEWithClassifierResultsDataPtr;
@@ -280,6 +306,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedMPTTree() const
     {
         return fProcessedMPTTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedCavityEventTree() const
+    {
+        return fProcessedCavityEventTree;
     }
 
     inline TTree* KTROOTTreeTypeWriterEventAnalysis::GetProcessedTrackTree() const

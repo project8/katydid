@@ -30,6 +30,7 @@ set (DATA_HEADERFILES
     EventAnalysis/KTMultiTrackEventData.hh
     EventAnalysis/KTPowerFitData.hh
     EventAnalysis/KTProcessedMPTData.hh
+    EventAnalysis/KTProcessedCavityEventData.hh
     EventAnalysis/KTProcessedTrackData.hh
     EventAnalysis/KTRPTrackData.hh
     EventAnalysis/KTSequentialLineData.hh
@@ -96,6 +97,7 @@ set (DATA_SOURCEFILES
     EventAnalysis/KTMultiTrackEventData.cc
     EventAnalysis/KTPowerFitData.cc
     EventAnalysis/KTProcessedMPTData.cc
+    EventAnalysis/KTProcessedCavityEventData.cc
     EventAnalysis/KTProcessedTrackData.cc
     EventAnalysis/KTRPTrackData.cc
     EventAnalysis/KTSequentialLineData.cc
