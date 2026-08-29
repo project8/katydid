@@ -1,0 +1,184 @@
+/*
+ * KTPhasedAggregator.hh
+ *
+ *  Created on: Dec 13, 2024
+ *      Author: J. K. Gaison
+ *      Based on KTChannelAggregator by P. T. Surukuchi
+ */
+
+#ifndef KTPHASEDAGGREGATOR_HH_
+#define KTPHASEDAGGREGATOR_HH_
+
+#include "KTProcessor.hh"
+#include "KTData.hh"
+#include "KTPowerSpectrumData.hh"
+#include "KTChannelAggregatedData.hh"
+#include "KTAxialChannelAggregatedData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTAxisProperties.hh"
+
+#include "KTMemberVariable.hh"
+
+#include "KTSlot.hh"
+
+#include "KTMath.hh"
+
+namespace Katydid
+{
+
+    class KTChannelAggregatedData;
+    class KTAxialChannelAggregatedData;
+    class KTPowerSpectrumData;
+
+    /*
+     @class KTPhasedAggregator
+     @author J. K. Gaison
+     
+     @brief Multiple channel summation for Phase-III and IV
+     
+     @details
+     More details to come.
+     
+     Configuration name: "phased-aggregator"
+     
+     Available configuration options:
+     - "active-radius": double -- The active radius of the detection volume
+     - "grid-size": unsigned -- Size of the grid; If square grid is considered, the number of points in the grid is the square of grid-size
+     - "use-grid-file": bool, -- Check whether to define the grid based on an input text file
+     - "grid-file": : std::string, -- Text file which has the user-defined grid positions 
+     - "wavelength": double -- Wavelength of the cyclotron motion
+     - "min-freq": double -- The minimum frequency value above which the channel aggregated spectrum is calculated. This particularly helps in enforcing bramforming around the central peak and avoiding side bands
+     - "max-freq": double -- The maximum frequency value below which the channel aggregated spectrum is calculated
+     - "use-antispiral-phase-shifts": bool, -- A flad to indicate whether to use antispiral phase shifts
+     - "n-rings": unsigned -- Number of axial rings
+     - "phases": vector<double> -- relative phases of separate channels in radians [given as <double>, <double>, ...]
+     - "scales": vector<double> -- scaling coefficients for separate channels, set individual channels to 0.0 if not included [given as <double>, <double>, ...] 
+
+     Slots:
+     - "fft": void (Nymph::KTDataPtr) -- Adds channels voltages using FFTW-phase information for appropriate phase addition; Requires KTFrequencySpectrumDataFFTW; Adds summation of the channel results; Emits signal "fft"
+     
+     Signals:
+     - "fft": void (Nymph::KTDataPtr) -- Emitted upon summation of all channels; Guarantees KTFrequencySpectrumDataFFTW
+     */
+
+    class KTPhasedAggregator : public Nymph::KTProcessor
+    {
+        public:
+            KTPhasedAggregator(const std::string& name = "phased-aggregator");
+            virtual ~KTPhasedAggregator();
+
+            bool Configure(const scarab::param_node* node);
+
+            // in meters, should not be hard-coded
+            MEMBERVARIABLE(double, ActiveRadius);
+
+            // Get the grid size assuming a square grid
+            // Set default to 30 currently
+            MEMBERVARIABLE(unsigned, NGrid);
+
+            // PTS:: for 18.6 keV electrons, this somehow needs to come from the data file or config file
+            MEMBERVARIABLE(double, Wavelength);
+
+            //For exception handling to make sure the grid is defined before the spectra are assigned.
+            MEMBERVARIABLE(bool, IsGridDefined);
+            
+            // A boolean value to check whether the grid should be defined by the user
+            MEMBERVARIABLE(bool, IsUserDefinedGrid);
+
+            // A boolean to run channel aggreagator when only a partial ring is defined
+            MEMBERVARIABLE(bool, IsPartialRing);
+
+            // If IsPartialRing is true, the total number of channels is the product of the number of channels extracted from the egg file and the PartialRingMultiplicity
+            MEMBERVARIABLE(unsigned, PartialRingMultiplicity)
+
+            // The text file to be used for the user-defined grid
+            MEMBERVARIABLE(std::string, UserDefinedGridFile);
+
+            //The minimum frequency value above which the channel aggregated spectrum is calculated
+            MEMBERVARIABLE(double, SummationMinFreq);
+
+            //The maximum frequency value below which the channel aggregated spectrum is calculated
+            MEMBERVARIABLE(double, SummationMaxFreq);
+
+            // Number of axial rings/subarrays
+            MEMBERVARIABLE(unsigned, NRings);
+
+            // Phase shifts and scale factors for complex signal summation
+            // variables read in as strings from config file and cast into vector<double>
+            MEMBERVARIABLE(std::string, Phase_str);
+            MEMBERVARIABLE(std::string, Scale_str);
+            MEMBERVARIABLE(std::vector<double>, Phases);
+            MEMBERVARIABLE(std::vector<double>, Scales);
+
+            //AN electron undergoiing cyclotron motion has a spiral motion and not all receving channels are in phase.
+            //If selected this option will make sure that there is a relative phase-shift applied
+            MEMBERVARIABLE(bool,UseAntiSpiralPhaseShifts);
+        
+            virtual bool SumChannelVoltageWithPhase(KTFrequencySpectrumDataFFTW& fftwData);
+            virtual bool SumChannelVoltageWithPhase(KTAxialAggregatedFrequencySpectrumDataFFTW& fftwData);
+
+        protected:
+
+            ///map that stores antispiral phase shifts
+            std::map<unsigned,double> fAntiSpiralPhaseShifts;
+
+            /// Define the grid based (one per ring)
+            /*If fIsUserDefinedGrid it true, the grid is defined based on text file defined by fUserDefinedGridFile. 
+             * If fIsUserDefinedGrid is false, defines a square grid with fNGrid*fNGrid points
+             * Returns total number of grid points defined
+             */
+            unsigned DefineGrid(KTAggregatedFrequencySpectrumDataFFTW &newAggFreqData);
+
+            /// Returns the phase shift based on a given point, angle of the channel and the wavelength
+            double GetPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
+
+            /// Returns the phase shift based on a given point, angle of the channel and the wavelength
+            double GetAntiSpiralPhaseShift(double xPosition, double yPosition, double wavelength, double channelAngle) const;
+
+            /// Get location of the point in the grid based on the given grid number and the size of the grid.
+            /* Returns true if the assigment went well, false if there was some mistake
+             */
+            bool GetGridLocation(unsigned gridNumber, unsigned gridSize, double &gridLocation);
+
+            /// Apply shift phase to the supplied points based on the phase provided
+            bool ApplyPhaseShift(double &realVal, double &imagVal, double phase);
+	    
+	          /// Generate antispiral phase shifts and save in fAntiSpiralPhaseShifts vector to be applied to channels
+	          bool GenerateAntiSpiralPhaseShifts(unsigned channelCount);
+
+            /// Convert frquency to wavlength
+            double ConvertFrequencyToWavelength(double frequency);
+
+            virtual bool PerformPhaseSummation(KTFrequencySpectrumDataFFTWCore& fftwData,KTAggregatedFrequencySpectrumDataFFTW& newAggFreqData);
+        protected:
+            //PTS: This needs fixing, currently just setting each element to 0. But why does it have to be done to begin with.
+            // Perhaps there is some function in the utilities to do this ?
+            bool NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum);
+
+            //***************
+            // Signals
+            //***************
+
+        protected:
+            Nymph::KTSignalData fSummedFrequencyData;
+
+            //***************
+            // Slots
+            //***************
+
+        protected:
+            Nymph::KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fPhaseChFrequencySumSlot;
+            Nymph::KTSlotDataOneType< KTAxialAggregatedFrequencySpectrumDataFFTW> fAxialSumSlot;
+    };
+
+    inline bool KTPhasedAggregator::NullFreqSpectrum(KTFrequencySpectrumFFTW &freqSpectrum)
+    {
+        for (unsigned i = 0; i < freqSpectrum.size(); ++i)
+        {
+            freqSpectrum.SetRect(i, 0.0, 0.0);
+        }
+        return true;
+    }
+}
+
+#endif  /* KTPHASEDAGGREGATOR_HH_  */
