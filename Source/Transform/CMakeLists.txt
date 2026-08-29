@@ -14,6 +14,8 @@ set (TRANSFORM_NODICT_HEADERFILES
     KTSincWindow.hh
     KTWindower.hh
     KTWindowFunction.hh
+    KTMatrixAggregator.hh
+    KTConvertToTemplate.hh
 )
 
 if (FFTW_FOUND)
@@ -37,6 +39,8 @@ set (TRANSFORM_SOURCEFILES
     KTSincWindow.cc
     KTWindower.cc
     KTWindowFunction.cc
+    KTMatrixAggregator.cc
+    KTConvertToTemplate.cc
 )
 
 if (FFTW_FOUND)
