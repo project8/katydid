@@ -288,7 +288,9 @@ namespace Katydid
     {
         try
         {
-            SetInterface( KTVTPATypeInfo< XDataType >::Size(), KTVTPATypeInfo< XDataType >::DataFormat() );
+            fDataTypeSize = KTVTPATypeInfo< XDataType >::Size();
+            fDataFormat = KTVTPATypeInfo< XDataType >::DataFormat();
+            SetInterfaceFunctions( fDataTypeSize, fDataFormat );
         }
         catch( Nymph::KTException& e ) {throw e;}
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
